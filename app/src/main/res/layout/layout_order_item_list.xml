@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraint_layout_parent_order_item_list"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <TextView
+        android:id="@+id/text_view_title_order_item_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_vertical_order_item_list"
+        android:layout_marginStart="@dimen/margin_start_order_list"
+        android:textColor="?attr/colorPrimaryDark"
+        android:textSize="@dimen/text_size_large"
+        app:layout_constraintEnd_toStartOf="@id/guideline_end_grid"
+        app:layout_constraintStart_toEndOf="@id/image_view_order_item_list"
+        app:layout_constraintTop_toBottomOf="@id/text_view_price_order_item_list"
+        app:layout_constraintTop_toTopOf="@id/image_view_order_item_list"
+        app:layout_constraintVertical_chainStyle="spread"
+        tools:text="Item 1" />
+
+    <TextView
+        android:id="@+id/text_view_price_order_item_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="@dimen/margin_vertical_order_item_list"
+        android:layout_marginStart="@dimen/margin_start_order_list"
+        android:gravity="start"
+        android:textColor="@color/blue_grey_700"
+        android:textSize="@dimen/text_size_medium"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom_grid"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end_grid"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toEndOf="@id/image_view_order_item_list"
+        app:layout_constraintTop_toBottomOf="@id/text_view_title_order_item_list"
+        tools:text="Rs. 100" />
+
+    <TextView
+        android:id="@+id/text_view_extra_order_item_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/blue_grey_700"
+        android:textSize="@dimen/text_size_extra_small"
+        android:textStyle="italic"
+        app:layout_constraintBottom_toBottomOf="@id/guideline_bottom_grid"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end_grid"
+        tools:text="Same day shipping" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/teal_50"
+        app:layout_constraintEnd_toEndOf="@id/guideline_end_grid"
+        app:layout_constraintStart_toEndOf="@id/image_view_order_item_list"
+        app:layout_constraintTop_toBottomOf="@id/image_view_order_item_list" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_start_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_end_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_bottom_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_end="16dp" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_top_grid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_begin="16dp" />
+
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/image_view_order_item_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/grey_50_20"
+        android:scaleType="fitXY"
+        android:src="@drawable/ic_android_device"
+        app:layout_constraintBottom_toTopOf="@id/guideline_bottom_grid"
+        app:layout_constraintDimensionRatio="4:3"
+        app:layout_constraintStart_toStartOf="@id/guideline_start_grid"
+        app:layout_constraintTop_toTopOf="@id/guideline_top_grid"
+        app:layout_constraintWidth_percent="0.3"
+        app:shapeAppearanceOverlay="@style/ShapeAppearanceOverlay.App.CornerSize10Percent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
