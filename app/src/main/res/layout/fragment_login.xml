@@ -254,6 +254,6 @@
 
     <variable
       name="viewModel"
-      type="com.tothenew.android_starter_project.module.login.LoginViewModel" />
+      type="com.patsurvey.nudge.module.login.LoginViewModel" />
   </data>
 </layout>

@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 
 }
-
+def version = "0.0"
 android {
     compileSdk 33
 
@@ -16,7 +16,7 @@ android {
         minSdk 23
         targetSdk 33
         versionCode 1
-        versionName "1.0"
+        versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -26,8 +26,33 @@ android {
 
     buildTypes {
         release {
-            minifyEnabled false
+            shrinkResources true
+            minifyEnabled true
+            debuggable false
+            jniDebuggable = false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug{
+            shrinkResources false
+            minifyEnabled false
+            jniDebuggable = true
+            debuggable true
+            testCoverageEnabled true
+        }
+    }
+    flavorDimensions "default"
+    productFlavors{
+        uat{
+            applicationIdSuffix = ".uat"
+            manifestPlaceholders.app_name= "Nudge UAT"
+        }
+        staging{
+            manifestPlaceholders.app_name= "Nudge STAGE"
+            versionName '0.0.0'
+        }
+        production{
+            manifestPlaceholders.app_name= "The Nudge"
+            versionName '0.0.0'
         }
     }
     compileOptions {
@@ -44,7 +69,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.1.1'
+        kotlinCompilerExtensionVersion '1.4.0'
     }
     packagingOptions {
         resources {
@@ -79,10 +104,10 @@ dependencies {
     implementation "com.github.bumptech.glide:glide:$glide"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.1'
     implementation 'androidx.activity:activity-compose:1.7.0'
-    implementation "androidx.compose.ui:ui:1.4.1"
-    implementation "androidx.compose.ui:ui-tooling-preview:1.4.1"
-    implementation 'androidx.compose.material:material:1.4.1'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:1.4.1"
+    implementation "androidx.compose.ui:ui:$compose_version"
+    implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
+    implementation "androidx.compose.material:material:$compose_version"
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"
 
@@ -104,9 +129,9 @@ dependencies {
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
     androidTestImplementation "androidx.test.espresso:espresso-core:3.5.1"
-    implementation("com.google.dagger:hilt-android:2.44")
-    debugImplementation "androidx.compose.ui:ui-tooling:1.4.1"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:1.4.1"
-    kapt("com.google.dagger:hilt-android-compiler:2.39")
+    implementation("com.google.dagger:hilt-android:2.43.2")
+    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
+    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    kapt("com.google.dagger:hilt-android-compiler:2.43.2")
 
 }

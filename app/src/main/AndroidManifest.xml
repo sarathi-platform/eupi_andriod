@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.tothenew.android_starter_project">
+    package="com.patsurvey.nudge">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".StarterApplication"
+        android:name="com.patsurvey.nudge.MyApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_starter_project">
         <activity
-            android:name=".activities.SplashComposeActivity"
+            android:name="com.patsurvey.nudge.activities.SplashComposeActivity"
             android:exported="true"
             android:label="@string/title_activity_splash_compose"
             android:theme="@style/Theme.Android_starter_project">
@@ -28,12 +28,12 @@
                 android:value="" />
         </activity>
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="com.patsurvey.nudge.activities.LoginActivity"
             android:exported="true"
             android:theme="@style/FullScreenTheme" />
-        <activity android:name=".activities.MainActivity" />
+        <activity android:name="com.patsurvey.nudge.activities.MainActivity" />
         <activity
-            android:name=".activities.SplashActivity"
+            android:name="com.patsurvey.nudge.activities.SplashActivity"
             android:exported="true"
             android:label="@string/app_name">
         </activity>
