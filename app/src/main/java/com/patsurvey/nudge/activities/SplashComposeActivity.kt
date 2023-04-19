@@ -17,7 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.lifecycleScope
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.Android_starter_projectTheme
+import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.Teal50
 import kotlinx.coroutines.delay
 
@@ -28,7 +28,7 @@ class SplashComposeActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            Android_starter_projectTheme {
+            Nudge_Theme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
@@ -72,7 +72,7 @@ fun Greeting() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    Android_starter_projectTheme {
+    Nudge_Theme {
         Greeting()
     }
 }
