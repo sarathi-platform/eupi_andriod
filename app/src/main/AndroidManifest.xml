@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_starter_project">
         <activity
-            android:name="com.patsurvey.nudge.activities.SplashComposeActivity"
+            android:name="com.patsurvey.nudge.activities.MainActivity"
             android:exported="true"
             android:label="@string/title_activity_splash_compose"
             android:theme="@style/Theme.Android_starter_project">
@@ -26,16 +26,6 @@
             <meta-data
                 android:name="android.app.lib_name"
                 android:value="" />
-        </activity>
-        <activity
-            android:name="com.patsurvey.nudge.activities.LoginActivity"
-            android:exported="true"
-            android:theme="@style/FullScreenTheme" />
-        <activity android:name="com.patsurvey.nudge.activities.MainActivity" />
-        <activity
-            android:name="com.patsurvey.nudge.activities.SplashActivity"
-            android:exported="true"
-            android:label="@string/app_name">
         </activity>
     </application>
 
