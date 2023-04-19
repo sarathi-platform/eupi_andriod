@@ -8,3 +8,17 @@ val Purple700 = Color(0xFF3700B3)
 val Teal200 = Color(0xFF03DAC5)
 
 val Teal50 = Color(0xFFE0F2F1)
+
+val blueDark = Color(0xFF222E50)
+val buttonBgColor = Color(0xFFEFF2FC)
+val textColorDark = Color(0xCC271914)
+val textColorBlueLight = Color(0x80271914)
+val languageItemActiveBg = Color(0xFFF7F7F7)
+val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
+val languageItemActiveBorderBg = Color(0xFF212C4D)
+val greyBorder = Color(0xFF707070)
+val greyIndicator = Color(0xFFC1C1C1)
+
+val greenLight = Color(0xFFF4FFFC)
+val green = Color(0xFF46989A)
+val greenDark = Color(0xFF0B9A52)
