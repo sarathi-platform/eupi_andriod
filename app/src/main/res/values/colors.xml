@@ -18,4 +18,6 @@
     <color name="blue_1">#036BB9</color>
     <color name="blue_2">#0386D0</color>
     <color name="red_1">#ff0000</color>
+
+    <color name="grey_lighter">#F7F7F7</color>
 </resources>

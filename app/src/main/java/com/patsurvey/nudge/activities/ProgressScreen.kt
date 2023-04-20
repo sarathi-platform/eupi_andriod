@@ -107,8 +107,11 @@ fun StepsBox(
                     BlueButton(
                         buttonText = "Start Now",
                         isArrowRequired = true,
-                        shouldBeActive,
-                        modifier = Modifier.padding(end = 14.dp)
+                        shouldBeActive = shouldBeActive,
+                        modifier = Modifier.padding(end = 14.dp),
+                        onClick = {
+
+                        }
                     )
                 }
             }
