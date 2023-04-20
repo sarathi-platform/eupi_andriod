@@ -16,7 +16,7 @@
         <activity
             android:name="com.patsurvey.nudge.activities.MainActivity"
             android:exported="true"
-            android:label="@string/title_activity_splash_compose"
+            android:label="MainActivity"
             android:theme="@style/Theme.Android_starter_project">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
