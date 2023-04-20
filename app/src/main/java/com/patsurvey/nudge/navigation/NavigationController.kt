@@ -17,7 +17,7 @@ fun StartFlowNavigation() {
             SplashScreen(navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
-            LanguageScreen(navController, modifier = Modifier.fillMaxSize())
+            LanguageScreen(/*navController,*/ modifier = Modifier.fillMaxSize())
         }
     }
 }

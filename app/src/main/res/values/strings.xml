@@ -1,9 +1,13 @@
 <resources>
     <string name="app_name">The Nudge</string>
+    <string name="english" translatable="false">English</string>
     <string name="hindi">हिंदी</string>
     <string name="bangla">হিন্দি</string>
     <string name="gujrati">હિન્દી</string>
     <string name="kannada">ಹಿಂದಿ</string>
+
+    <string name="mark_complete_text">Mark Complete</string>
+    <string name="go_back_text">Go Back</string>
 
 
     <string name="title_list">List</string>

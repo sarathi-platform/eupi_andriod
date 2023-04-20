@@ -6,6 +6,9 @@
     <string name="gujrati">હિન્દી</string>
     <string name="kannada">ಹಿಂದಿ</string>
 
+    <string name="mark_complete_text">Mark Complete</string>
+    <string name="go_back_text">Go Back</string>
+
     <string name="title_list">List</string>
     <string name="title_grid">Grid</string>
     <string name="shopping">Shopping</string>

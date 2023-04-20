@@ -1,0 +1,255 @@
+package com.patsurvey.nudge.activities
+
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.theme.*
+
+@Composable
+fun BlueButton(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    isArrowRequired: Boolean,
+    shouldBeActive: Boolean = false,
+    onClick: () -> Unit
+) {
+    Button(
+        onClick = {
+            onClick
+        },
+        modifier = Modifier
+            .padding(vertical = 14.dp)
+            .background(Color.Transparent)
+            .width(180.dp)
+            .then(modifier),
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp)
+
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                fontSize = 18.sp,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier/*.align(Alignment.Center)*/
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Forward arrow",
+                    tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                    modifier = Modifier.absolutePadding(top = 4.dp)
+
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonPositive(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(blueDark)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                onClick
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(14.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                color = Color.White
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Positive Button",
+                    tint = Color.White,
+                    modifier = Modifier
+                        .absolutePadding(top = 4.dp, left = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonNegative(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(languageItemActiveBg)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+
+            ) {
+                onClick
+            }
+            .padding(horizontal = 10.dp)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.baseline_arrow_back),
+                contentDescription = "Negative Button",
+                modifier = Modifier
+                    .absolutePadding(top = 2.dp),
+                colorFilter = ColorFilter.tint(blueDark)
+            )
+            Text(
+                text = buttonTitle,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+                color = blueDark
+            )
+        }
+    }
+}
+
+
+@Composable
+fun ButtonOutline(
+    modifier: Modifier = Modifier,
+    buttonTitle: String = "Add Tola",
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = {
+            onClick
+        },
+        border = BorderStroke(1.dp, greyBorder),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                Icons.Default.Add,
+                contentDescription = "Add Button",
+                tint = blueDark,
+                modifier = Modifier.absolutePadding(top = 4.dp, right = 2.dp)
+            )
+            Text(
+                text = buttonTitle,
+                color = blueDark,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 18.sp,
+            )
+        }
+    }
+}
+
+@Composable
+fun DoubleButtonBox(
+    modifier: Modifier = Modifier,
+    positiveButtonText: String,
+    negativeButtonRequired: Boolean = true,
+    negativeButtonText: String,
+    positiveButtonOnClick: () -> Unit,
+    negativeButtonOnClick: () -> Unit,
+) {
+    Surface(
+        elevation = 10.dp,
+        modifier = Modifier
+            .padding(0.dp)
+            .fillMaxWidth()
+            .background(Color.White)
+            .then(modifier)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                if (negativeButtonRequired) {
+                    ButtonNegative(
+                        modifier = Modifier.weight(1f),
+                        buttonTitle = negativeButtonText
+                    ) {
+                        negativeButtonOnClick
+                    }
+                    Spacer(modifier = Modifier.padding(10.dp))
+                }
+                ButtonPositive(
+                    modifier = Modifier.weight(1.25f),
+                    buttonTitle = positiveButtonText
+                ) {
+                    positiveButtonOnClick
+                }
+            }
+        }
+    }
+}
