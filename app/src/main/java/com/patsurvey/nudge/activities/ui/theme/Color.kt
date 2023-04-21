@@ -22,3 +22,8 @@ val greyIndicator = Color(0xFFC1C1C1)
 val greenLight = Color(0xFFF4FFFC)
 val green = Color(0xFF46989A)
 val greenDark = Color(0xFF0B9A52)
+val greenOnline = Color(0xFF439A86)
+
+val greenActiveIcon = Color(0xFF02B5C6)
+
+val dropDownBg = Color(0xCCF7F7F7)

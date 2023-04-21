@@ -30,8 +30,8 @@ import com.patsurvey.nudge.activities.ui.theme.*
 fun BlueButton(
     modifier: Modifier = Modifier,
     buttonText: String,
-    isArrowRequired: Boolean,
-    shouldBeActive: Boolean = false,
+    isArrowRequired: Boolean = false,
+    shouldBeActive: Boolean = true,
     onClick: () -> Unit
 ) {
     Button(
@@ -41,15 +41,16 @@ fun BlueButton(
         modifier = Modifier
             .padding(vertical = 14.dp)
             .background(Color.Transparent)
-            .width(180.dp)
+            .width(160.dp)
             .then(modifier),
+        enabled = shouldBeActive,
         colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
         shape = RoundedCornerShape(6.dp)
 
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(160.dp)
                 .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
@@ -57,10 +58,8 @@ fun BlueButton(
             Text(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
-                fontSize = 18.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier/*.align(Alignment.Center)*/
+                modifier = Modifier,
+                style = mediumTextStyle
             )
             if (isArrowRequired) {
                 Icon(
@@ -109,10 +108,8 @@ fun ButtonPositive(
         ) {
             Text(
                 text = buttonTitle,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-                color = Color.White
+                color = Color.White,
+                style = mediumTextStyle
             )
             if (isArrowRequired) {
                 Icon(
@@ -164,10 +161,8 @@ fun ButtonNegative(
             )
             Text(
                 text = buttonTitle,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
-                color = blueDark
+                color = blueDark,
+                style = mediumTextStyle
             )
         }
     }
@@ -203,9 +198,7 @@ fun ButtonOutline(
             Text(
                 text = buttonTitle,
                 color = blueDark,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 18.sp,
+                style = mediumTextStyle,
             )
         }
     }

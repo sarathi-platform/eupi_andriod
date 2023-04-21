@@ -1,31 +1,183 @@
 package com.patsurvey.nudge.activities
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import android.widget.Toast
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+
+//@Preview
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ProgressScreen(
+    modifier: Modifier = Modifier,
+) {
+
+    val context = LocalContext.current
+    val villageName = arrayOf("Kanpur", "Lucknow", "Noida", "Hapur", "Meerut")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedText by remember { mutableStateOf("Select Village") }
+
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+            .then(modifier)
+    ) {
+        Column(
+            Modifier
+                .background(Color.White)
+        ) {
+
+            Text(
+                text = "Akhilesh Negi",
+                color = textColorDark,
+                modifier = Modifier
+                    .padding(top = 20.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                style = largeTextStyle
+            )
+            Text(
+                text = "ID: 234567",
+                color = textColorDark,
+                modifier = Modifier
+                    .padding(top = 6.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                style = smallTextStyle
+            )
+
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier
+                    .background(Color.Transparent)
+                    .clip(RoundedCornerShape(6.dp))
+                    .fillMaxWidth()
+                    .padding(vertical = 20.dp)
+            ) {
+                TextField(
+                    value = selectedText,
+                    onValueChange = {},
+                    readOnly = true,
+                    trailingIcon = {
+                        Icon(
+                            painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                            contentDescription = "drop down menu icon",
+                            tint = blueDark
+                        )
+//                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+                    },
+                    modifier = Modifier
+                        .border(1.dp, dropDownBg)
+                        .background(dropDownBg)
+                        .clip(RoundedCornerShape(6.dp))
+                        .fillMaxWidth(),
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = blueDark,
+                        disabledTextColor = Color.Transparent,
+                        backgroundColor = dropDownBg,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    shape = RoundedCornerShape(6.dp)
+                )
+
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    Modifier.fillMaxWidth().background(dropDownBg)
+                ) {
+                    villageName.forEach { item ->
+                        DropdownMenuItem(
+                            content = { Text(text = item, color = blueDark, modifier = Modifier.fillMaxWidth().background(dropDownBg), style = smallTextStyle) },
+                            onClick = {
+                                selectedText = item
+                                expanded = false
+                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
+                            },
+                            modifier = Modifier.fillMaxWidth().background(dropDownBg)
+                        )
+                    }
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .verticalScroll(rememberScrollState())
+
+            ) {
+                StepsBox(
+                    boxTitle = "Transect Walk",
+                    stepNo = 1,
+                    isCompleted = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                StepsBox(
+                    boxTitle = "Social Mapping",
+                    stepNo = 2,
+                    isCompleted = true,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                StepsBox(
+                    boxTitle = "Participatory " +
+                            "\nWealth Ranking",
+                    stepNo = 3,
+                    isCompleted = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                StepsBox(
+                    boxTitle = "Pat Survey",
+                    stepNo = 4,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                StepsBox(
+                    boxTitle = "VO Endorsement",
+                    stepNo = 5,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                StepsBox(
+                    boxTitle = "BMP Approval",
+                    stepNo = 6,
+                    shouldBeActive = false,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+        }
+    }
+}
 
 @Composable
 fun StepsBox(
+    modifier: Modifier = Modifier,
     boxTitle: String,
     stepNo: Int,
     isCompleted: Boolean = false,
-    shouldBeActive: Boolean = false,
-    modifier: Modifier = Modifier
+    shouldBeActive: Boolean = true
 ) {
     val dividerMargins = 32.dp
     ConstraintLayout(
@@ -66,15 +218,11 @@ fun StepsBox(
                     Text(
                         text = boxTitle/* "Transect Walk"*/,
                         color = textColorDark,
-                        fontSize = 18.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .padding(start = 16.dp, top = 16.dp, end = 48.dp),
                         softWrap = true,
-                        overflow = TextOverflow.Ellipsis
-
-
+                        overflow = TextOverflow.Ellipsis,
+                        style = mediumTextStyle
                     )
                     Row(
                         modifier = Modifier
@@ -92,9 +240,7 @@ fun StepsBox(
                         Text(
                             text = if (isCompleted) "Completed" else "Not Started",
                             color = if (isCompleted) greenDark else textColorDark,
-                            fontSize = 12.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
+                            style = smallerTextStyle,
                             modifier = Modifier.padding(start = 6.dp, bottom = 4.dp)
 
                         )
@@ -135,9 +281,7 @@ fun StepsBox(
             Text(
                 text = "Step $stepNo",
                 color = textColorDark,
-                fontSize = 12.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.Normal,
+                style = smallerTextStyleNormalWeight,
                 modifier = Modifier.padding(vertical = 2.dp, horizontal = 16.dp)
 
             )
