@@ -26,3 +26,39 @@ val NotoSans = FontFamily(
     Font(R.font.noto_sans_medium, FontWeight.Medium),
     Font(R.font.noto_sans_thin, FontWeight.Thin),
 )
+
+val largeTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp
+)
+
+val mediumTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 18.sp
+)
+
+val smallTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+
+val smallerTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 12.sp
+)
+
+val smallerTextStyleNormalWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp
+)
+
+val smallestTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 10.sp
+)

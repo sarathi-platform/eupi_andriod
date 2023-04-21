@@ -13,19 +13,23 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 
-@Preview
 @Composable
 fun TolaScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavController
 ) {
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(languageItemActiveBg)
+            .then(modifier)
     ) {
         val (bottomActionBox, mainBox) = createRefs()
 
@@ -48,9 +52,8 @@ fun TolaScreen(
                 ) {
                     Text(
                         text = "Transact Walk",
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 20.sp,
+                        style = largeTextStyle,
+                        color = blueDark,
 //                        modifier = Modifier.weight(1f)
                     )
                     Spacer(modifier = Modifier.padding(16.dp))
