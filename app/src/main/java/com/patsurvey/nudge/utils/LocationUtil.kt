@@ -62,7 +62,14 @@ object LocationUtil {
                 )
             ) {
                 val locationProvider =
-                    mLocationManager.getBestProvider(getCriteria(Criteria.ACCURACY_FINE), true)
+                    mLocationManager.getBestProvider(
+                        getCriteria(
+                            if (batteryLevel > 30)
+                                Criteria.ACCURACY_FINE
+                            else
+                                Criteria.ACCURACY_COARSE
+                        ), true
+                    )
                 val location = locationProvider?.let { mLocationManager.getLastKnownLocation(it) }
                 Log.d(
                     "LocationUtil",
