@@ -11,7 +11,7 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
-import com.patsurvey.nudge.activities.ui.selectlanguage.CommonViewModel
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 
 @Composable
@@ -22,7 +22,7 @@ fun StartFlowNavigation(navController: NavHostController) {
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
             LanguageScreen(navController = navController,
-                viewModel= CommonViewModel(),
+                viewModel= LanguageViewModel(),
                 modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LOGIN_SCREEN.route) {

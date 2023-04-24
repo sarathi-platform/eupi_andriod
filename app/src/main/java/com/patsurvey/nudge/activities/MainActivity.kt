@@ -26,13 +26,10 @@ import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.navigation.StartFlowNavigation
 import java.util.*
-import com.patsurvey.nudge.utils.PermissionUtil
-import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_COARSE_LOCATION_PERMISSION
-import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_FINE_LOCATION_PERMISSION
-import com.patsurvey.nudge.utils.PermissionUtil.PREF_CAMERA_PERMISSION
 
 class MainActivity : ComponentActivity() , OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         localizationDelegate.addOnLocaleChangedListener(this)
         localizationDelegate.onCreate()

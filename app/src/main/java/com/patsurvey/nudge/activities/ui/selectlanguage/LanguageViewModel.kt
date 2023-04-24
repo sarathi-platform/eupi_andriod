@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CommonViewModel :BaseViewModel() {
+class LanguageViewModel :BaseViewModel() {
     private val _languageList= MutableStateFlow<List<LanguageSelectionModel>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageSelectionModel>()

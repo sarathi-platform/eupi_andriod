@@ -33,7 +33,7 @@ import com.patsurvey.nudge.utils.NugdePrefs.saveLanguageCode
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun LanguageScreen(
-    viewModel: CommonViewModel,
+    viewModel: LanguageViewModel,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
