@@ -154,25 +154,31 @@ fun ProgressScreen(
                 ){
 
                 }
-                /*StepsBox(
+                StepsBox(
                     boxTitle = "Pat Survey",
                     stepNo = 4,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
                 StepsBox(
                     boxTitle = "VO Endorsement",
                     stepNo = 5,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
                 StepsBox(
                     boxTitle = "BMP Approval",
                     stepNo = 6,
                     shouldBeActive = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                )*/
+                ) {
+
+                }
             }
         }
     }

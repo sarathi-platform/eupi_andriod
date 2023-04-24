@@ -164,7 +164,18 @@ fun TransectWalkScreen(
                     if (tolaList.isEmpty() && !showAddTolaBox) {
                         Box(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                text = "No Tolas Added",
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("No Tolas Added")
+                                    }
+                                },
                                 modifier = Modifier.align(Alignment.Center)
                             )
                         }
@@ -207,8 +218,7 @@ fun TransectWalkScreen(
                     bottomPadding = with(localDensity) {
                         coordinates.size.height.toDp()
                     }
-                }
-            ,
+                },
             positiveButtonText = stringResource(id = R.string.mark_complete_text),
             negativeButtonText = stringResource(id = R.string.go_back_text),
             positiveButtonOnClick = {
