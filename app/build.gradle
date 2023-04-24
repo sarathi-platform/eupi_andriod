@@ -139,6 +139,10 @@ dependencies {
 
     //Compose Layout
     implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+
+    //Permissions
+    implementation "com.google.accompanist:accompanist-permissions:0.21.1-beta"
+
     implementation 'com.github.magneto3572:Magotp:1.0.4'
     implementation 'com.akexorcist:localization:1.2.11'
 }

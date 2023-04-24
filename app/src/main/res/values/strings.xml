@@ -22,6 +22,8 @@
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get Otp</string>
 
+    <string name="transect_wale_title">Transact Walk</string>
+
 
    <!-- <string name="title_list">List</string>
     <string name="title_grid">Grid</string>

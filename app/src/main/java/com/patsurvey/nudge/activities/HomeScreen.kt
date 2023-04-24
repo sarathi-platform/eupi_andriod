@@ -32,6 +32,7 @@ fun HomeScreen(
     modifier: Modifier = Modifier
 ) {
     val homeScreenNavController = rememberNavController()
+    val stepsNavController = rememberNavController()
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -45,7 +46,7 @@ fun HomeScreen(
                 items = listOf(
                     BottomNavItem(
                         stringResource(R.string.progress_item_text),
-                        ScreenRoutes.PROFILE_SCREEN.route,
+                        ScreenRoutes.PROGRESS_SCREEN.route,
                         painterResource(R.drawable.progress_icon)
                     ),
                     BottomNavItem(
@@ -77,6 +78,7 @@ fun HomeScreen(
             )
             HomeScreenFlowNavigation(
                 homeScreenNavController = homeScreenNavController,
+                stepsNavHostController = stepsNavController,
                 modifier = Modifier
                     .padding(top = 4.dp)
                     .constrainAs(homeScreen) {

@@ -8,7 +8,9 @@ enum class ScreenRoutes(val route: String) {
     HOME_SCREEN("home_route"),
     PROFILE_SCREEN("profile_screen"),
     DIDI_SCREEN("didi_screen"),
-    MORE_SCREEN("more_screen");
+    MORE_SCREEN("more_screen"),
+    PROGRESS_SCREEN("progress_scree"),
+    TRANSECT_WALK_SCREEN("transect_walk_screen");
 
     override fun toString(): String {
         return route

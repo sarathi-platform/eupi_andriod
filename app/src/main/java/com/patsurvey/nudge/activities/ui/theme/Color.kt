@@ -31,3 +31,13 @@ val greenOnline = Color(0xFF439A86)
 val greenActiveIcon = Color(0xFF02B5C6)
 
 val dropDownBg = Color(0xCCF7F7F7)
+
+val brownLight = Color(0xFFDDD4D1)
+val red = Color(0xFFFF0808)
+val placeholderGrey = Color(0xFFACACAC)
+val borderGrey = Color(0xFFE2E2E2)
+
+val borderGreyLight = Color(0xFFEBEBEB)
+val bgGreyLight = Color(0xFFFAFAFA)
+
+val redDark =  Color(0xFFD12222)
