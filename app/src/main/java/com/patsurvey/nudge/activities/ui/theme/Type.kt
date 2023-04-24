@@ -45,6 +45,18 @@ val smallTextStyle = TextStyle(
     fontSize = 14.sp
 )
 
+val smallTextStyleMediumWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium,
+    fontSize = 15.sp
+)
+
+val smallTextStyleNormalWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 15.sp
+)
+
 val smallerTextStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,

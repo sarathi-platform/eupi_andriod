@@ -11,15 +11,52 @@ import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import android.Manifest
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.navigation.StartFlowNavigation
+import com.patsurvey.nudge.utils.PermissionUtil
+import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_COARSE_LOCATION_PERMISSION
+import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_FINE_LOCATION_PERMISSION
+import com.patsurvey.nudge.utils.PermissionUtil.PREF_CAMERA_PERMISSION
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             Nudge_Theme {
+                val permissionsState = rememberMultiplePermissionsState(
+                    permissions = listOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.CAMERA
+                    )
+                )
+
+                val lifecycleOwner = LocalLifecycleOwner.current
+                DisposableEffect(
+                    key1 = lifecycleOwner,
+                    effect = {
+                        val observer = LifecycleEventObserver { _, event ->
+                            if(event == Lifecycle.Event.ON_START) {
+                                permissionsState.launchMultiplePermissionRequest()
+                            }
+                        }
+                        lifecycleOwner.lifecycle.addObserver(observer)
+
+                        onDispose {
+                            lifecycleOwner.lifecycle.removeObserver(observer)
+                        }
+                    }
+                )
+
                 val navController = rememberNavController()
                 val isLoggedIn = true
                 // A surface container using the 'background' color from the theme
@@ -31,8 +68,9 @@ class MainActivity : ComponentActivity() {
                 ) {
                     if (isLoggedIn)
                         HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
-                    else
+                    else {
                         StartFlowNavigation(navController = navController)
+                    }
                 }
             }
         }
