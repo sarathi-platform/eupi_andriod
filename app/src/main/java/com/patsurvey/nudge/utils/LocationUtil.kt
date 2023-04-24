@@ -91,7 +91,7 @@ object LocationUtil {
         criteria.isAltitudeRequired = false;
         criteria.isBearingRequired = false;
         criteria.isSpeedRequired = false;
-        criteria.isCostAllowed = true;
+        criteria.isCostAllowed = false;
         criteria.powerRequirement = Criteria.POWER_MEDIUM
 
         return criteria
