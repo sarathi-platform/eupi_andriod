@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name" translatable="false">The Nudge</string>
+    <string name="english" translatable="false">English</string>
+    <string name="hindi" translatable="false">हिंदी</string>
+    <string name="bangla">হিন্দি</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+
+    <string name="mark_complete_text">मार्क पूरा हो गइल बा</string>
+    <string name="go_back_text">वापस जाइए</string>
+
+    <string name="progress_item_text">आगे बढ़ल</string>
+    <string name="didis_item_text">बड़हन</string>
+    <string name="more_item_text">अधिका</string>
+
+    <string name="online_text">ऑनलाइन</string>
+    <string name="offline_text">ऑफलाइन बा</string>
+    <string name="choose_language">भाषा चुने के बा</string>
+    <string name="continue_text">चालू रखीं</string>
+    <string name="enter_mobile_number">मोबाइल नंबर दर्ज करीं</string>
+    <string name="mobile_text">मोबाइल</string>
+    <string name="verification_text">सत्यापन के बा</string>
+    <string name="get_otp">ओटीपी मिल जाला</string>
+
+</resources>

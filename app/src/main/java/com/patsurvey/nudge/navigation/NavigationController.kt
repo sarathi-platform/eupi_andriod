@@ -1,17 +1,17 @@
 package com.patsurvey.nudge.navigation
 
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
+import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.SplashScreen
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.CommonViewModel
 import com.patsurvey.nudge.activities.*
 
 @Composable
@@ -21,7 +21,12 @@ fun StartFlowNavigation(navController: NavHostController) {
             SplashScreen(navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
-            LanguageScreen(navController = navController, modifier = Modifier.fillMaxSize())
+            LanguageScreen(navController = navController,
+                viewModel= CommonViewModel(),
+                modifier = Modifier.fillMaxSize())
+        }
+        composable(route = ScreenRoutes.LOGIN_SCREEN.route) {
+            LoginScreen(navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
@@ -38,5 +43,9 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, modifie
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             TolaScreen(navController = homeScreenNavController, modifier = Modifier.fillMaxSize().then(modifier))
         }
+        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
+            OtpVerificationScreen(homeScreenNavController, modifier = Modifier.fillMaxSize())
+        }
+
     }
 }

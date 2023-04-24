@@ -12,6 +12,7 @@ object NugdePrefs {
 
 
     private const val PREF_FILE = "NudgePrefs"
+    const val PREF_KEY_LANGUAGE_CODE = "language_code"
 
     @Volatile
     private var appSharedPreferences: SharedPreferences? = null
@@ -104,6 +105,12 @@ object NugdePrefs {
     fun setPref(name: String, value: String): String {
         appSharedPreferences?.edit()?.putString(name, value)?.apply()
         return value
+    }
+    fun saveLanguageCode(code:String){
+        appSharedPreferences?.edit()?.putString(PREF_KEY_LANGUAGE_CODE,code)?.apply()
+    }
+    fun getLanguageCode(): String? {
+        return appSharedPreferences?.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE)
     }
 
 }
