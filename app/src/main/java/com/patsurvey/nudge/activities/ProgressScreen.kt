@@ -12,20 +12,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.navigation.ScreenRoutes
 
 //@Preview
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
+    stepsNavHostController: NavHostController,
 ) {
 
     val context = LocalContext.current
@@ -128,44 +129,56 @@ fun ProgressScreen(
                 StepsBox(
                     boxTitle = "Transect Walk",
                     stepNo = 1,
-                    isCompleted = true,
+                    isCompleted = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                }
                 StepsBox(
                     boxTitle = "Social Mapping",
                     stepNo = 2,
-                    isCompleted = true,
+                    isCompleted = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
                 StepsBox(
                     boxTitle = "Participatory " +
-                            "\nWealth Ranking",
+                            "Wealth Ranking",
                     stepNo = 3,
                     isCompleted = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ){
+
+                }
                 StepsBox(
                     boxTitle = "Pat Survey",
                     stepNo = 4,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
                 StepsBox(
                     boxTitle = "VO Endorsement",
                     stepNo = 5,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
                 StepsBox(
                     boxTitle = "BMP Approval",
                     stepNo = 6,
                     shouldBeActive = false,
                     modifier = Modifier
                         .fillMaxWidth()
-                )
+                ) {
+
+                }
             }
         }
     }
@@ -177,7 +190,8 @@ fun StepsBox(
     boxTitle: String,
     stepNo: Int,
     isCompleted: Boolean = false,
-    shouldBeActive: Boolean = true
+    shouldBeActive: Boolean = true,
+    onclick: () -> Unit
 ) {
     val dividerMargins = 32.dp
     ConstraintLayout(
@@ -214,7 +228,7 @@ fun StepsBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Column(modifier = Modifier.absolutePadding(left = 10.dp)) {
+                Column(modifier = Modifier.absolutePadding(left = 10.dp).weight(1.2f)) {
                     Text(
                         text = boxTitle/* "Transect Walk"*/,
                         color = textColorDark,
@@ -222,6 +236,7 @@ fun StepsBox(
                             .padding(start = 16.dp, top = 16.dp, end = 48.dp),
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis,
+                        maxLines = 2,
                         style = mediumTextStyle
                     )
                     Row(
@@ -254,9 +269,9 @@ fun StepsBox(
                         buttonText = "Start Now",
                         isArrowRequired = true,
                         shouldBeActive = shouldBeActive,
-                        modifier = Modifier.padding(end = 14.dp),
+                        modifier = Modifier.padding(end = 14.dp).weight(0.8f),
                         onClick = {
-
+                            onclick()
                         }
                     )
                 }

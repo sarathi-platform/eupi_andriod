@@ -9,6 +9,8 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.patsurvey.nudge.R
 import kotlinx.coroutines.*
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
 
 fun ImageView.loadImage(url: String?) {
     Glide.with(this)
@@ -52,4 +54,9 @@ fun View.delayOnLifeCycle(
         delay(durationInMillis)
         block.invoke()
     }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+fun PermissionState.isPermanentlyDenied(): Boolean {
+    return !shouldShowRationale && !hasPermission
 }
