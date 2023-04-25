@@ -15,11 +15,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -110,14 +114,18 @@ fun OtpCell(
 //    }
 
     Surface(modifier = Modifier
-        .height(50.dp)
-        .width(48.dp)
-        .padding(4.dp)
+        .height(dimensionResource(id = R.dimen.otp_box_height))
+        .width(dimensionResource(id = R.dimen.otp_box_width))
+        .padding(dimensionResource(id = R.dimen.dp_4))
         .border(width = 1.dp, color = otpBorderColor, shape = MaterialTheme.shapes.small))
         {
             Text(
                 text = char,
-                modifier = Modifier.wrapContentSize(align = Alignment.Center)
+                style = mediumTextStyle,
+                color = blueDark,
+                modifier = Modifier
+                    .wrapContentSize(align = Alignment.Center)
+
             )
 
     }

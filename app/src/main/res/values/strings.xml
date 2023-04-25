@@ -21,8 +21,8 @@
     <string name="mobile_text">Mobile</string>
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get Otp</string>
-
     <string name="transect_wale_title">Transact Walk</string>
+    <string name="invalid_mobile_number">Invalid Mobile Number</string>
 
 
    <!-- <string name="title_list">List</string>

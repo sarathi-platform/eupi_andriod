@@ -22,5 +22,8 @@
     <string name="mobile_text">मोबाइल</string>
     <string name="verification_text">सत्यापन के बा</string>
     <string name="get_otp">ओटीपी मिल जाला</string>
+    <string name="transect_wale_title">ट्रांसेक्ट वॉक के बा</string>
+    <string name="invalid_mobile_number">अमान्य मोबाइल नंबर बा</string>
+
 
 </resources>

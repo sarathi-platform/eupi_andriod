@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,7 +12,6 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
-import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 
 @Composable
@@ -22,11 +22,14 @@ fun StartFlowNavigation(navController: NavHostController) {
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
             LanguageScreen(navController = navController,
-                viewModel= LanguageViewModel(),
+                viewModel= hiltViewModel(),
                 modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LOGIN_SCREEN.route) {
-            LoginScreen(navController, modifier = Modifier.fillMaxSize())
+            LoginScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
+        }
+        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
+            OtpVerificationScreen(navController,modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
@@ -42,9 +45,6 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .fillMaxSize()
                 .then(modifier), stepsNavHostController)
         }
-//        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-//            W
-//        }
     }
     NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
@@ -57,7 +57,9 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
-            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier.fillMaxSize().then(modifier))
+            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
         }
     }
 }
