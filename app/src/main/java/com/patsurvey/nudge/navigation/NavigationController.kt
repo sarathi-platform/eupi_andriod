@@ -7,6 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
+import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.SplashScreen
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 
 @Composable
@@ -16,7 +21,12 @@ fun StartFlowNavigation(navController: NavHostController) {
             SplashScreen(navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
-            LanguageScreen(navController = navController, modifier = Modifier.fillMaxSize())
+            LanguageScreen(navController = navController,
+                viewModel= LanguageViewModel(),
+                modifier = Modifier.fillMaxSize())
+        }
+        composable(route = ScreenRoutes.LOGIN_SCREEN.route) {
+            LoginScreen(navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
@@ -42,6 +52,10 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .fillMaxSize()
                 .then(modifier), stepsNavHostController)
         }
+        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
+            OtpVerificationScreen(homeScreenNavController, modifier = Modifier.fillMaxSize())
+        }
+
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
             TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier.fillMaxSize().then(modifier))
         }

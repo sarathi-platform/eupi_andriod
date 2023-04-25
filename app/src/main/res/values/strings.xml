@@ -1,10 +1,10 @@
 <resources>
-    <string name="app_name">The Nudge</string>
+    <string name="app_name" translatable="false">The Nudge</string>
     <string name="english" translatable="false">English</string>
-    <string name="hindi">हिंदी</string>
+    <string name="hindi" translatable="false">हिंदी</string>
     <string name="bangla">হিন্দি</string>
-    <string name="gujrati">હિન્દી</string>
-    <string name="kannada">ಹಿಂದಿ</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <string name="mark_complete_text">Mark Complete</string>
     <string name="go_back_text">Go Back</string>
@@ -15,6 +15,12 @@
 
     <string name="online_text">Online</string>
     <string name="offline_text">Offline</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="continue_text">Continue</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="mobile_text">Mobile</string>
+    <string name="verification_text">Verification</string>
+    <string name="get_otp">Get Otp</string>
 
     <string name="transect_wale_title">Transact Walk</string>
 
