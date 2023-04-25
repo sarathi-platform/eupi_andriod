@@ -13,8 +13,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.patsurvey.nudge.MyApplication
-import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_COARSE_LOCATION_PERMISSION
-import com.patsurvey.nudge.utils.PermissionUtil.PREF_ACCESS_FINE_LOCATION_PERMISSION
 
 object LocationUtil {
 

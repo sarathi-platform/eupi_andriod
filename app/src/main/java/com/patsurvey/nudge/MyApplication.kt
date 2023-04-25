@@ -5,8 +5,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE
-import com.patsurvey.nudge.utils.NugdePrefs
 import dagger.hilt.android.HiltAndroidApp
 import java.util.*
 
@@ -15,7 +13,6 @@ class MyApplication: Application() {
 
     init {
         instance = this
-        NugdePrefs.init(this)
     }
     companion object {
         lateinit var instance: MyApplication

@@ -23,6 +23,9 @@
     <string name="mobile_text">মুঠোফোন</string>
     <string name="verification_text">প্রতিপাদন</string>
     <string name="get_otp">Otp পান</string>
+    <string name="transect_wale_title">ট্রানসেক্ট ওয়াক</string>
+    <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
+
 
 
 </resources>

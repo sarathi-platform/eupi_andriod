@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -28,7 +29,6 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
-import com.patsurvey.nudge.utils.NugdePrefs.saveLanguageCode
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -37,16 +37,18 @@ fun LanguageScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    var selectedIndex by remember {
-        mutableStateOf(-1)
-    }
     val context = LocalContext.current
 
     Box(
         modifier = Modifier
             .background(color = Color.White)
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 32.dp)
+            .padding(
+                horizontal = dimensionResource(id = R.dimen.padding_16dp),
+                vertical = dimensionResource(
+                    id = R.dimen.padding_32dp
+                )
+            )
             .then(modifier)
     ) {
         Column(
@@ -62,14 +64,14 @@ fun LanguageScreen(
                 fontWeight = FontWeight.SemiBold,
 
                 )
-            Spacer(modifier = Modifier.height(25.dp))
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Column(modifier = Modifier) {
                 viewModel.languageList?.value?.let {
                     LazyColumn {
 
                         itemsIndexed(items = it) { index, item ->
-                            LanguageItem(languageModel = item, index, selectedIndex) { i ->
-                                selectedIndex = i
+                            LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
+                                viewModel.languagePosition.value = i
                             }
                         }
                     }
@@ -80,9 +82,9 @@ fun LanguageScreen(
 
         Button(
             onClick = {
-                viewModel.languageList.value?.get(selectedIndex)?.let {
+                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                     it.code?.let { code ->
-                        saveLanguageCode(code)
+                        viewModel.prefRepo.saveAppLanguage(code)
                         (context as MainActivity).setLanguage(code)
                     }
                 }

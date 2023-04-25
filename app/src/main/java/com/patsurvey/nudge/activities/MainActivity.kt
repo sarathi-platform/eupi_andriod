@@ -25,8 +25,9 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.navigation.StartFlowNavigation
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
-
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() , OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
     @OptIn(ExperimentalPermissionsApi::class)
