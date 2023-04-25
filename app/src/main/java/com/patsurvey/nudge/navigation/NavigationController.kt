@@ -67,5 +67,11 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .fillMaxSize()
                 .then(modifier))
         }
+
+        composable(route = ScreenRoutes.SOCIAL_MAPPING_SCREEN.route) {
+            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
+        }
     }
 }
