@@ -20,10 +20,14 @@
     <string name="enter_mobile_number">Enter Mobile Number</string>
     <string name="mobile_text">Mobile</string>
     <string name="verification_text">Verification</string>
-    <string name="get_otp">Get Otp</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
     <string name="transect_wale_title">Transact Walk</string>
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
-
+    <string name="submit">Submit</string>
+    <string name="resend_otp">Resend Otp</string>
+    <string name="otp_text" translatable="false">OTP</string>
+    <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s sec</string>
 
    <!-- <string name="title_list">List</string>
     <string name="title_grid">Grid</string>

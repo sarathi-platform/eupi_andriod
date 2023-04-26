@@ -25,6 +25,12 @@
     <string name="get_otp">Otp পান</string>
     <string name="transect_wale_title">ট্রানসেক্ট ওয়াক</string>
     <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
+    <string name="submit">জমা দিন</string>
+    <string name="resend_otp">Otp আবার পাঠান</string>
+    <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
+
+
+
 
 
 
