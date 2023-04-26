@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -19,12 +20,10 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
+import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable
 fun LoginScreen(
@@ -32,6 +31,7 @@ fun LoginScreen(
     viewModel: LoginViewModel,
     modifier: Modifier
 ){
+    val context= LocalContext.current
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -45,27 +45,14 @@ fun LoginScreen(
             .then(modifier)
     ) {
 
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-        ) {
-            Text(
-                text = stringResource(id = R.string.verification_text),
-                color = textColorDark,
-                fontSize = 24.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.align(Alignment.Center)
-            )
-
-        }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
             Text(
                 text = stringResource(id = R.string.mobile_text),
-                fontSize = 18.sp,
+                color = blueDark,
+                fontSize = 16.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Start,
@@ -73,18 +60,30 @@ fun LoginScreen(
                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_6)))
-            Column(
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.height_50dp))
+                .border(
+                    dimensionResource(id = R.dimen.dp_1),
+                    Color.Black,
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                )
             ) {
+
+                Text(text = "+91 - ",
+                    color = languageItemInActiveBorderBg,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Normal,
+                    textAlign = TextAlign.Center,
+                   modifier = Modifier.padding(top = dimensionResource(id = R.dimen.dp_10),
+                                                bottom = dimensionResource(id = R.dimen.dp_10),
+                                                start = dimensionResource(id = R.dimen.dp_20)))
                     TextField(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(dimensionResource(id = R.dimen.height_60dp))
-                            .background(Color.Transparent)
-                            .border(
-                                dimensionResource(id = R.dimen.dp_1),
-                                Color.Black,
-                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                            ),
+                            .height(dimensionResource(id = R.dimen.height_50dp))
+                            .background(Color.Transparent),
                         singleLine=true,
                         value = viewModel.mobileNumber.value,
                         onValueChange ={
@@ -92,8 +91,12 @@ fun LoginScreen(
                                      viewModel.mobileNumber.value=it
                             },
                         colors =TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent,
-                            textColor = blueDark),
-                        placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
+                            textColor = blueDark,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent,
+                        ),
+//                        placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
                         keyboardOptions = KeyboardOptions(
                             capitalization = KeyboardCapitalization.None,
                             autoCorrect = true,
@@ -101,12 +104,24 @@ fun LoginScreen(
                         ),
 
                         )
+
+
                 }
-            
+            Text(
+                text = stringResource(id = R.string.otp_will_be_sent_to_this_number),
+                color = blueDark,
+                fontSize = 16.sp,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+            )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
             Button(onClick = {
-                navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                        showCustomToast(context = context,"OTP sent to ${viewModel.mobileNumber.value.text}")
+                           navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
                              },
                 modifier = Modifier
                     .fillMaxWidth()

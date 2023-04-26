@@ -29,7 +29,7 @@ fun StartFlowNavigation(navController: NavHostController) {
             LoginScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(navController,modifier = Modifier.fillMaxSize())
+            OtpVerificationScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
@@ -53,7 +53,7 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .then(modifier), stepsNavHostController)
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(homeScreenNavController, modifier = Modifier.fillMaxSize())
+            OtpVerificationScreen(homeScreenNavController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {

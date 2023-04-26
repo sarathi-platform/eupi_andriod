@@ -23,6 +23,12 @@
     <string name="get_otp">ओटीपी प्राप्त करें</string>
     <string name="transect_wale_title">ट्रान्सेक्ट वॉक</string>
     <string name="invalid_mobile_number">अमान्य मोबाइल नंबर</string>
+    <string name="submit">जमा करना</string>
+    <string name="resend_otp">ओटीपी पुनः भेजें</string>
+    <string name="otp_will_be_sent_to_this_number">इस नंबर पर ओटीपी भेजा जाएगा</string>
+
+
+
 
 
 </resources>
