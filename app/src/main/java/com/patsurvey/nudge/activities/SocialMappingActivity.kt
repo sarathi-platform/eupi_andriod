@@ -9,12 +9,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
@@ -23,7 +25,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
@@ -75,11 +81,33 @@ class SocialMappingActivity : ComponentActivity() {
 
 @Composable
 fun SocialMapping() {
-    SocialMappingScreen(true, stringResource(id = R.string.social_mapping), tolas)
+    val tolaList = remember {
+        val list = mutableStateListOf<Tola>()
+        list.addAll(tolas)
+        list
+    }
+    SocialMappingScreen(
+        true,
+        stringResource(id = R.string.social_mapping),
+        tolaList,
+        onCompleteClick = { index, tola ->
+            // will be called, on "mark as complete" clicked
+            tolaList.removeAt(index)
+            tolaList.add(index, tola)
+        }) {
+        // will be called, on card item clicked
+
+    }
 }
 
 @Composable
-fun SocialMappingScreen(isOnline: Boolean, title: String, tolas: List<Tola>) {
+fun SocialMappingScreen(
+    isOnline: Boolean,
+    title: String,
+    tolas: List<Tola>,
+    onCompleteClick: (Int, Tola) -> Unit,
+    onItemclick: (Tola) -> Unit
+) {
     val context = LocalContext.current
     Column() {
         NetworkBanner(
@@ -97,7 +125,17 @@ fun SocialMappingScreen(isOnline: Boolean, title: String, tolas: List<Tola>) {
         )
         Spacer(modifier = Modifier.padding(12.dp))
         Text(
-            text = stringResource(id = R.string.showing_added_tolas, tolas.size),
+            text = buildAnnotatedString {
+                append("${stringResource(id = R.string.showing)} ")
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.SemiBold
+                    )
+                ) {
+                    append("${tolas.size}")
+                }
+                append(" ${stringResource(id = R.string.added_tolas)}")
+            },
             style = smallTextStyleMediumWeight,
             color = black1,
             modifier = Modifier
@@ -108,16 +146,18 @@ fun SocialMappingScreen(isOnline: Boolean, title: String, tolas: List<Tola>) {
         )
         Spacer(modifier = Modifier.padding(12.dp))
         LazyColumn(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f),
             contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            items(tolas) { tola ->
+            itemsIndexed(tolas) { index, tola ->
                 PendingTolaCard(tola, tola.completed, onItemclick = {
-
+                    onItemclick(tola)
                 }) {
-                val updatedTola =Tola(tola.name, tola.location, !tola.completed)
-
+                    val updatedTola = Tola(tola.name, tola.location, !tola.completed)
+                    onCompleteClick(index, updatedTola)
                 }
             }
 
@@ -130,7 +170,7 @@ fun SocialMappingScreen(isOnline: Boolean, title: String, tolas: List<Tola>) {
 
             },
             negativeButtonOnClick = {
-                if(context is Activity) {
+                if (context is Activity) {
                     context.finish()
                 }
             }
@@ -142,7 +182,12 @@ fun SocialMappingScreen(isOnline: Boolean, title: String, tolas: List<Tola>) {
 }
 
 @Composable
-fun PendingTolaCard(tola: Tola, isCompleted: Boolean, onItemclick: () -> Unit, onCompleteClick: () -> Unit) {
+fun PendingTolaCard(
+    tola: Tola,
+    isCompleted: Boolean,
+    onItemclick: () -> Unit,
+    onCompleteClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -171,8 +216,7 @@ fun PendingTolaCard(tola: Tola, isCompleted: Boolean, onItemclick: () -> Unit, o
                 if (tola.completed) {
                     Image(
                         painter = painterResource(R.drawable.ic_completed_tick),
-                        contentDescription = "completed",
-                        modifier = Modifier.padding(end = 15.dp)
+                        contentDescription = "completed"
                     )
                 }
             }
