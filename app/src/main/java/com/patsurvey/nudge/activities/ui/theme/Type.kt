@@ -27,6 +27,12 @@ val NotoSans = FontFamily(
     Font(R.font.noto_sans_thin, FontWeight.Thin),
 )
 
+val veryLargeTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 32.sp
+)
+
 val largeTextStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,

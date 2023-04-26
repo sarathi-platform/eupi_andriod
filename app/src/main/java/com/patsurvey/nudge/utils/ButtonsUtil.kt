@@ -215,7 +215,7 @@ fun DoubleButtonBox(
     modifier: Modifier = Modifier,
     positiveButtonText: String,
     negativeButtonRequired: Boolean = true,
-    negativeButtonText: String,
+    negativeButtonText: String = "",
     positiveButtonOnClick: () -> Unit,
     negativeButtonOnClick: () -> Unit,
 ) {

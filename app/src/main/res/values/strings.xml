@@ -24,6 +24,9 @@
     <string name="transect_wale_title">Transact Walk</string>
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
 
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
+    <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
+
 
    <!-- <string name="title_list">List</string>
     <string name="title_grid">Grid</string>

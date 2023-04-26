@@ -46,3 +46,5 @@ val redDark =  Color(0xFFD12222)
 val brownLoght = Color(0xFFF4E9E2)
 val yellowLight = Color(0xFFFDEACB)
 val blueLighter = Color(0xFFF0F7FC)
+
+val yellowBg = Color(0xFFFCF6F0)
