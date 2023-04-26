@@ -3,7 +3,6 @@ package com.patsurvey.nudge.utils
 import android.content.Context
 import android.content.SharedPreferences
 import android.util.Log
-import com.patsurvey.nudge.MyApplication
 
 object NugdePrefs {
 
@@ -110,7 +109,7 @@ object NugdePrefs {
         appSharedPreferences?.edit()?.putString(PREF_KEY_LANGUAGE_CODE,code)?.apply()
     }
     fun getLanguageCode(): String? {
-        return appSharedPreferences?.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE)
+        return appSharedPreferences?.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
     }
 
 }

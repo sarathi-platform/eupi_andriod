@@ -31,7 +31,7 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel,
     modifier: Modifier
-){
+) {
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -75,51 +75,56 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_6)))
             Column(
             ) {
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(dimensionResource(id = R.dimen.height_60dp))
-                            .background(Color.Transparent)
-                            .border(
-                                dimensionResource(id = R.dimen.dp_1),
-                                Color.Black,
-                                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                            ),
-                        singleLine=true,
-                        value = viewModel.mobileNumber.value,
-                        onValueChange ={
-                            if(it.text.length<= MOBILE_NUMBER_LENGTH)
-                                     viewModel.mobileNumber.value=it
-                            },
-                        colors =TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent,
-                            textColor = blueDark),
-                        placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrect = true,
-                            keyboardType = KeyboardType.Number,
+                TextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.height_60dp))
+                        .background(Color.Transparent)
+                        .border(
+                            dimensionResource(id = R.dimen.dp_1),
+                            Color.Black,
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
                         ),
+                    singleLine = true,
+                    value = viewModel.mobileNumber.value,
+                    onValueChange = {
+                        if (it.text.length <= MOBILE_NUMBER_LENGTH)
+                            viewModel.mobileNumber.value = it
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        textColor = blueDark
+                    ),
+                    placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    ),
 
-                        )
-                }
-            
+                    )
+            }
+
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
-            Button(onClick = {
-                navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
-                             },
+            Button(
+                onClick = {
+                    navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent),
-                colors = if(viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
-                    ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(buttonBgColor) ,
+                colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
+                    ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                    buttonBgColor
+                ),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
                 enabled = viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH
             ) {
 
                 Text(
                     text = stringResource(id = R.string.get_otp),
-                    color = if(viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
+                    color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
                         Color.White else blueDark,
                     fontSize = 18.sp,
                     fontFamily = NotoSans,
