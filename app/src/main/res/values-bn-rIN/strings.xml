@@ -35,6 +35,16 @@
     <string name="medium_text">মধ্যম</string>
     <string name="rich_text">ধনী</string>
     <string name="social_mapping">সামাজিক ম্যাপিং</string>
+    <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
+    <string name="showing">দেখাচ্ছে</string>
+    <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">যোগ করা হয়নি</string>
+    <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
+
+
+
+
 
 
 </resources>

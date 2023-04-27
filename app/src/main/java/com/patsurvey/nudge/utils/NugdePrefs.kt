@@ -110,7 +110,7 @@ object NugdePrefs {
         appSharedPreferences?.edit()?.putString(PREF_KEY_LANGUAGE_CODE,code)?.apply()
     }
     fun getLanguageCode(): String? {
-        return appSharedPreferences?.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE)
+        return appSharedPreferences?.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
     }
 
 }
