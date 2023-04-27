@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.utils
 
 import android.graphics.drawable.Icon
 import androidx.compose.foundation.*

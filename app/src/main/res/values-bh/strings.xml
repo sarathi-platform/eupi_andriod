@@ -27,7 +27,12 @@
     <string name="invalid_mobile_number">अमान्य मोबाइल नंबर बा</string>
     <string name="submit">जमा करीं</string>
     <string name="resend_otp">ओटीपी के फेर से भेजल जाला</string>
-
+    <string name="ranking_text">रैंकिंग:</string>
+    <string name="search_didis">खोज दीदीस के बा</string>
+    <string name="count_didis_pending">%1s दीदीस लंबित बा</string>
+    <string name="poor_text">गरीब</string>
+    <string name="medium_text">माध्यम</string>
+    <string name="rich_text">धनी</string>
     <string name="social_mapping">सोशल मैपिंग</string>
     <string name="showing_added_tolas">देखावत बा %s टोलस के जोड़ल गइल</string>
     <string name="showing">देखावत बा</string>
