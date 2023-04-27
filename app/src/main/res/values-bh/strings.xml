@@ -28,6 +28,14 @@
     <string name="submit">जमा करीं</string>
     <string name="resend_otp">ओटीपी के फेर से भेजल जाला</string>
 
+    <string name="social_mapping">सोशल मैपिंग</string>
+    <string name="showing_added_tolas">देखावत बा %s टोलस के जोड़ल गइल</string>
+    <string name="showing">देखावत बा</string>
+    <string name="added_tolas">टोलस के जोड़ल गइल</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">ना जोड़ल गइल</string>
+    <string name="mark_as_completed">पूरा भइल बा निशान लगाईं</string>
+
 
 
 

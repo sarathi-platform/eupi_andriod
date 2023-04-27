@@ -31,9 +31,6 @@ fun StartFlowNavigation(navController: NavHostController) {
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
             OtpVerificationScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
-        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(navController, modifier = Modifier.fillMaxSize())
-        }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
         }

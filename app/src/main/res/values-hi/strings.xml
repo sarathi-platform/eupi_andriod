@@ -27,6 +27,14 @@
     <string name="resend_otp">ओटीपी पुनः भेजें</string>
     <string name="otp_will_be_sent_to_this_number">इस नंबर पर ओटीपी भेजा जाएगा</string>
 
+    <string name="social_mapping">सामाजिक मानचित्रण</string>
+    <string name="showing_added_tolas">जोड़े गए %s टोला दिखा रहा है</string>
+    <string name="showing">दिखा रहा है</string>
+    <string name="added_tolas">जोड़े गए टोला</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">नहीं जोड़ा गया</string>
+    <string name="mark_as_completed">पूर्ण के रूप में चिह्नित करें</string>
+
 
 
 
