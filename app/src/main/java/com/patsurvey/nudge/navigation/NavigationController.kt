@@ -31,6 +31,9 @@ fun StartFlowNavigation(navController: NavHostController) {
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
             OtpVerificationScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
+        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
+            OtpVerificationScreen(navController, modifier = Modifier.fillMaxSize())
+        }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
         }
@@ -43,7 +46,7 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
             ProgressScreen(modifier = Modifier
                 .fillMaxSize()
-                .then(modifier), stepsNavHostController)
+                .then(modifier), homeScreenNavController)
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             DidiScreen()
@@ -51,8 +54,14 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen()
         }
+
+        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
+            TransectWalkScreen(navController = homeScreenNavController, modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
+        }
     }
-    NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
+    /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
             ProgressScreen(modifier = Modifier
                 .fillMaxSize()
@@ -73,5 +82,5 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .fillMaxSize()
                 .then(modifier))
         }
-    }
+    }*/
 }

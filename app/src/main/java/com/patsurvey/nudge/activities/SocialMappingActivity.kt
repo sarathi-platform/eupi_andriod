@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.LocationCoordinates
@@ -65,6 +67,7 @@ class SocialMappingActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.i("SocialMappingActivity", "opening Social Mapping...")
         setContent {
             Nudge_Theme {
                 // A surface container using the 'background' color from the theme
@@ -129,14 +132,17 @@ fun SocialMappingScreen(
                 append("${stringResource(id = R.string.showing)} ")
                 withStyle(
                     style = SpanStyle(
-                        fontWeight = FontWeight.SemiBold
+                        color = textColorDark,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
                     )
                 ) {
                     append("${tolas.size}")
                 }
                 append(" ${stringResource(id = R.string.added_tolas)}")
             },
-            style = smallTextStyleMediumWeight,
+            style = smallTextStyleNormalWeight,
             color = black1,
             modifier = Modifier
                 .align(Alignment.Start)
