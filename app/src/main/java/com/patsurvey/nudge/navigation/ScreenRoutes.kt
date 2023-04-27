@@ -11,6 +11,7 @@ enum class ScreenRoutes(val route: String) {
     MORE_SCREEN("more_screen"),
     PROGRESS_SCREEN("progress_scree"),
     TRANSECT_WALK_SCREEN("transect_walk_screen"),
+    RANKED_DIDI_LIST_SCREEN("ranked_didi_list_screen"),
     SOCIAL_MAPPING_SCREEN("social_mapping_screen");
 
 

@@ -26,7 +26,13 @@
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
     <string name="submit">Submit</string>
     <string name="resend_otp">Resend Otp</string>
+    <string name="ranking_text">Ranking:</string>
+    <string name="poor_text">Poor</string>
+    <string name="medium_text">Medium</string>
+    <string name="rich_text">Rich</string>
+    <string name="search_didis">Search Didis</string>
     <string name="otp_text" translatable="false">OTP</string>
+    <string name="count_didis_pending">%1s Didis Pending</string>
     <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s sec</string>
     <string name="social_mapping">Social Mapping</string>
     <string name="showing_added_tolas">Showing %s added Tolas</string>
@@ -36,34 +42,4 @@
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
 
-
-    <!-- <string name="title_list">List</string>
-    <string name="title_grid">Grid</string>
-    <string name="shopping">Shopping</string>
-    <string name="title_explore">Explore</string>
-    <string name="search_your_orders_here">Search your orders here</string>
-    <string name="menu_filter">Filter</string>
-    <string name="menu_login">Login</string>
-    <string name="sorting_by_message">\"Sorting by: \"</string>
-    <string name="sort_by">Sort By</string>
-    <string name="login">Login</string>
-    <string name="term_and_privacy_policy">By signing in you are agreeing\n our Term and privacy policy</string>
-    <string name="register">Register</string>
-    <string name="email_address">Email Address</string>
-    <string name="password">Password</string>
-    <string name="remember_password">Remember password</string>
-    <string name="forget_password">Forget password</string>
-    <string name="or_connect_with">or connect with</string>
-
-    <string-array name="sorting_options">
-        <item>Clear Sorting</item>&lt;!&ndash; This is placed the farthest from the thumb&ndash;&gt;
-        &lt;!&ndash;        <item>Price: Asc</item>&ndash;&gt;
-        &lt;!&ndash;        <item>Price: Desc</item>&ndash;&gt;
-        <item>Name: Asc</item>
-        <item>Name: Desc</item>
-        <item>Same Day Shipping</item>
-    </string-array>
-    &lt;!&ndash; TODO: Remove or change this placeholder text &ndash;&gt;
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_splash_compose">SplashComposeActivity</string>-->
 </resources>

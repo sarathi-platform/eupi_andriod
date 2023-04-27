@@ -27,8 +27,13 @@
     <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
     <string name="submit">জমা দিন</string>
     <string name="resend_otp">Otp আবার পাঠান</string>
+    <string name="ranking_text">র‍্যাঙ্কিং:</string>
     <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
-
+    <string name="search_didis">Didis অনুসন্ধান</string>
+    <string name="count_didis_pending">%1s দিদি পেন্ডিং</string>
+    <string name="poor_text">দরিদ্র</string>
+    <string name="medium_text">মধ্যম</string>
+    <string name="rich_text">ধনী</string>
     <string name="social_mapping">সামাজিক ম্যাপিং</string>
     <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
     <string name="showing">দেখাচ্ছে</string>
