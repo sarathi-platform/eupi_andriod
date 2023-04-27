@@ -29,8 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.*
 
 @Composable
 fun AddTolaBox(

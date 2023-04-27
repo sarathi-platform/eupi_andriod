@@ -21,14 +21,18 @@
     <string name="mobile_text">मोबाइल</string>
     <string name="verification_text">सत्यापन</string>
     <string name="get_otp">ओटीपी प्राप्त करें</string>
-    <string name="transect_wale_title">ट्रान्सेक्ट वॉक</string>
+    <string name="transect_wale_title">गाँव की सैर</string>
     <string name="invalid_mobile_number">अमान्य मोबाइल नंबर</string>
     <string name="submit">जमा करना</string>
     <string name="resend_otp">ओटीपी पुनः भेजें</string>
     <string name="otp_will_be_sent_to_this_number">इस नंबर पर ओटीपी भेजा जाएगा</string>
-
-
-
+    <string name="search_didis">दीदियों को खोजें</string>
+    <string name="count_didis_pending">%1s दीदी पेंडिंग</string>
+    <string name="ranking_text">श्रेणी:</string>
+    <string name="poor_text">गरीब</string>
+    <string name="medium_text">मध्यम</string>
+    <string name="rich_text">अमीर</string>
+    <string name="social_mapping">सामाजिक मानचित्रण</string>
 
 
 </resources>

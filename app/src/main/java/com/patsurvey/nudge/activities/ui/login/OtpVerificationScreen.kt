@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.showToast
@@ -158,7 +159,7 @@ fun OtpVerificationScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(
                     onClick = {
-
+                        navController.navigate(ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route)
                     },
                     modifier = Modifier
                         .background(Color.Transparent)
