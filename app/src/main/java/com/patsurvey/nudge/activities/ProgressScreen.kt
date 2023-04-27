@@ -1,29 +1,28 @@
 package com.patsurvey.nudge.activities
 
-import android.content.Intent
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import kotlinx.coroutines.launch
 
-//@Preview
+@Preview
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProgressScreen(
@@ -31,156 +30,213 @@ fun ProgressScreen(
     stepsNavHostController: NavHostController,
 ) {
 
-    val context = LocalContext.current
-    val villageName = arrayOf("Kanpur", "Lucknow", "Noida", "Hapur", "Meerut")
-    var expanded by remember { mutableStateOf(false) }
+    val scaffoldState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
+    val scope = rememberCoroutineScope()
+
     var selectedText by remember { mutableStateOf("Select Village") }
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 20.dp, start = 16.dp, end = 16.dp)
             .then(modifier)
     ) {
-        Column(
-            Modifier
-                .background(Color.White)
-        ) {
-
-            Text(
-                text = "Akhilesh Negi",
-                color = textColorDark,
-                modifier = Modifier
-                    .padding(top = 20.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start,
-                style = largeTextStyle
-            )
-            Text(
-                text = "ID: 234567",
-                color = textColorDark,
-                modifier = Modifier
-                    .padding(top = 6.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start,
-                style = smallTextStyle
-            )
-
-            ExposedDropdownMenuBox(
-                expanded = expanded,
-                onExpandedChange = { expanded = !expanded },
-                modifier = Modifier
-                    .background(Color.Transparent)
-                    .clip(RoundedCornerShape(6.dp))
-                    .fillMaxWidth()
-                    .padding(vertical = 20.dp)
-            ) {
-                TextField(
-                    value = selectedText,
-                    onValueChange = {},
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            painterResource(id = R.drawable.baseline_keyboard_arrow_down),
-                            contentDescription = "drop down menu icon",
-                            tint = blueDark
-                        )
-//                        ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
-                    },
+        ModalBottomSheetLayout(
+            sheetContent = {
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .border(1.dp, dropDownBg)
-                        .background(dropDownBg)
-                        .clip(RoundedCornerShape(6.dp))
-                        .fillMaxWidth(),
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = blueDark,
-                        disabledTextColor = Color.Transparent,
-                        backgroundColor = dropDownBg,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    shape = RoundedCornerShape(6.dp)
-                )
-
-                ExposedDropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    Modifier.fillMaxWidth().background(dropDownBg)
+                        .padding(start = 16.dp, end = 16.dp, top = 26.dp)
+                        .height(550.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    villageName.forEach { item ->
-                        DropdownMenuItem(
-                            content = { Text(text = item, color = blueDark, modifier = Modifier.fillMaxWidth().background(dropDownBg), style = smallTextStyle) },
-                            onClick = {
-                                selectedText = item
-                                expanded = false
-                                Toast.makeText(context, item, Toast.LENGTH_SHORT).show()
+                    Text(
+                        text = "Select Village & VO",
+                        style = smallTextStyle,
+                        color = textColorDark,
+                    )
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier,
+                    ) {
+
+                    }
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+                    VillageAndVoBox(
+                        tolaName = "Sundar Pahar",
+                        voName = "Sundar Pahar Mahila Mandal",
+                        modifier = modifier
+                    ) {}
+
+                }
+            },
+            sheetState = scaffoldState,
+            sheetElevation = 20.dp,
+            sheetBackgroundColor = Color.White,
+            sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+        ) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp)
+            ) {
+
+                Column(
+                    Modifier
+                        .background(Color.White)
+                ) {
+
+                    Text(
+                        text = "Akhilesh Negi",
+                        color = textColorDark,
+                        modifier = Modifier
+                            .padding(top = 20.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                        style = largeTextStyle
+                    )
+                    Text(
+                        text = "ID: 234567",
+                        color = textColorDark,
+                        modifier = Modifier
+                            .padding(top = 6.dp, bottom = 16.dp)
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyle
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .background(dropDownBg)
+                            .clip(RoundedCornerShape(6.dp))
+                            .height(56.dp)
+                            .fillMaxWidth()
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = true,
+                                    color = Color.Black
+                                )
+                            ) {
+                                scope.launch {
+                                    if (!scaffoldState.isVisible) {
+                                        scaffoldState.show()
+                                    } else {
+                                        scaffoldState.hide()
+                                    }
+                                }
                             },
-                            modifier = Modifier.fillMaxWidth().background(dropDownBg)
-                        )
+
+                        ) {
+                        Row(
+                            Modifier
+                                .padding(14.dp)
+                                .fillMaxWidth()
+                                .align(Alignment.Center),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = selectedText,
+                                color = blueDark,
+                            )
+                            Icon(
+                                painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                                contentDescription = "drop down menu icon",
+                                tint = blueDark
+                            )
+                        }
+
                     }
                 }
-            }
 
-            Column(
-                modifier = Modifier
-                    .background(Color.White)
-                    .verticalScroll(rememberScrollState())
-
-            ) {
-                StepsBox(
-                    boxTitle = "Transect Walk",
-                    stepNo = 1,
-                    isCompleted = false,
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .background(Color.White)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
-                }
-                StepsBox(
-                    boxTitle = "Social Mapping",
-                    stepNo = 2,
-                    isCompleted = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
-                    Log.i("Progress screen", "opening Social Mapping")
-                    context.startActivity(Intent(context, SocialMappingActivity::class.java))
-                }
-                StepsBox(
-                    boxTitle = "Participatory " +
-                            "Wealth Ranking",
-                    stepNo = 3,
-                    isCompleted = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ){
+                    StepsBox(
+                        boxTitle = "Transect Walk",
+                        stepNo = 1,
+                        isCompleted = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+//                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                    }
+                    StepsBox(
+                        boxTitle = "Social Mapping",
+                        stepNo = 2,
+                        isCompleted = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
 
-                }
-                StepsBox(
-                    boxTitle = "Pat Survey",
-                    stepNo = 4,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                    }
+                    StepsBox(
+                        boxTitle = "Participatory " +
+                                "Wealth Ranking",
+                        stepNo = 3,
+                        isCompleted = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
 
-                }
-                StepsBox(
-                    boxTitle = "VO Endorsement",
-                    stepNo = 5,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                    }
+                    StepsBox(
+                        boxTitle = "Pat Survey",
+                        stepNo = 4,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
 
-                }
-                StepsBox(
-                    boxTitle = "BMP Approval",
-                    stepNo = 6,
-                    shouldBeActive = false,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                ) {
+                    }
+                    StepsBox(
+                        boxTitle = "VO Endorsement",
+                        stepNo = 5,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
 
+                    }
+                    StepsBox(
+                        boxTitle = "BMP Approval",
+                        stepNo = 6,
+                        shouldBeActive = false,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+
+                    }
                 }
             }
         }
@@ -231,7 +287,11 @@ fun StepsBox(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
-                Column(modifier = Modifier.absolutePadding(left = 10.dp).weight(1.2f)) {
+                Column(
+                    modifier = Modifier
+                        .absolutePadding(left = 10.dp)
+                        .weight(1.2f)
+                ) {
                     Text(
                         text = boxTitle/* "Transect Walk"*/,
                         color = textColorDark,
@@ -272,7 +332,9 @@ fun StepsBox(
                         buttonText = "Start Now",
                         isArrowRequired = true,
                         shouldBeActive = shouldBeActive,
-                        modifier = Modifier.padding(end = 14.dp).weight(0.8f),
+                        modifier = Modifier
+                            .padding(end = 14.dp)
+                            .weight(0.8f),
                         onClick = {
                             onclick()
                         }

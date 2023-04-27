@@ -62,7 +62,7 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
             ProgressScreen(modifier = Modifier
                 .fillMaxSize()
-                .then(modifier), stepsNavHostController)
+                .then(modifier), /*stepsNavHostController*/)
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
             OtpVerificationScreen(homeScreenNavController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
