@@ -28,6 +28,8 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.utils.ButtonOutline
+import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.Tola
 

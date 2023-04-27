@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities
 
+import android.content.Intent
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -20,6 +22,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.BlueButton
 
 //@Preview
 @OptIn(ExperimentalMaterialApi::class)
@@ -142,7 +145,8 @@ fun ProgressScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                 ) {
-
+                    Log.i("Progress screen", "opening Social Mapping")
+                    context.startActivity(Intent(context, SocialMappingActivity::class.java))
                 }
                 StepsBox(
                     boxTitle = "Participatory " +

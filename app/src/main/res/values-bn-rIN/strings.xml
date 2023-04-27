@@ -25,6 +25,25 @@
     <string name="get_otp">Otp পান</string>
     <string name="transect_wale_title">ট্রানসেক্ট ওয়াক</string>
     <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
+    <string name="submit">জমা দিন</string>
+    <string name="resend_otp">Otp আবার পাঠান</string>
+    <string name="ranking_text">র‍্যাঙ্কিং:</string>
+    <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
+    <string name="search_didis">Didis অনুসন্ধান</string>
+    <string name="count_didis_pending">%1s দিদি পেন্ডিং</string>
+    <string name="poor_text">দরিদ্র</string>
+    <string name="medium_text">মধ্যম</string>
+    <string name="rich_text">ধনী</string>
+    <string name="social_mapping">সামাজিক ম্যাপিং</string>
+    <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
+    <string name="showing">দেখাচ্ছে</string>
+    <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">যোগ করা হয়নি</string>
+    <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
+
+
+
 
     <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
 

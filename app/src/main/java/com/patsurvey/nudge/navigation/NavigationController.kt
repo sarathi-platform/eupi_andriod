@@ -14,6 +14,7 @@ import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
 @Composable
 fun StartFlowNavigation(navController: NavHostController) {
@@ -30,10 +31,13 @@ fun StartFlowNavigation(navController: NavHostController) {
             LoginScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(navController,modifier = Modifier.fillMaxSize())
+            OtpVerificationScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
+        }
+        composable(route = ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route) {
+            SocialMappingScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
         }
     }
 }
@@ -44,7 +48,19 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
             ProgressScreen(modifier = Modifier
                 .fillMaxSize()
-                .then(modifier), stepsNavHostController)
+                .then(modifier), homeScreenNavController)
+        }
+        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
+            DidiScreen()
+        }
+        composable(route = ScreenRoutes.MORE_SCREEN.route) {
+            MoreScreen()
+        }
+
+        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
+            TransectWalkScreen(navController = homeScreenNavController, modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             DidiScreen()
@@ -53,14 +69,14 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
             MoreScreen()
         }
     }
-    NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
+    /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
             ProgressScreen(modifier = Modifier
                 .fillMaxSize()
                 .then(modifier), stepsNavHostController)
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(homeScreenNavController, modifier = Modifier.fillMaxSize())
+            OtpVerificationScreen(homeScreenNavController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
@@ -68,5 +84,11 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .fillMaxSize()
                 .then(modifier))
         }
-    }
+
+        composable(route = ScreenRoutes.SOCIAL_MAPPING_SCREEN.route) {
+            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
+        }
+    }*/
 }
