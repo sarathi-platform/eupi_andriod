@@ -18,6 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
@@ -28,7 +29,7 @@ import com.patsurvey.nudge.utils.BottomNavItem
 
 @Composable
 fun HomeScreen(
-    navController: NavController,
+    navController: NavHostController,
     modifier: Modifier = Modifier
 ) {
     val homeScreenNavController = rememberNavController()
@@ -60,7 +61,7 @@ fun HomeScreen(
                         painterResource(R.drawable.more_icon)
                     )
                 ),
-                navController = navController,
+                navController = homeScreenNavController,
                 onItemClick = {
                     homeScreenNavController.navigate(it.route)
                 }
@@ -100,15 +101,16 @@ fun BottomNavigationBar(
     modifier: Modifier = Modifier,
     onItemClick: (BottomNavItem) -> Unit
 ) {
-    val backStackEntry by navController.currentBackStackEntryAsState()
+    val backStackEntry = navController.currentBackStackEntryAsState()
     BottomNavigation(
         modifier = modifier,
         backgroundColor = Color.White,
         elevation = 5.dp
     ) {
         items.forEach { item ->
+            val selected = item.route == backStackEntry.value?.destination?.route
             BottomNavigationItem(
-                selected = item.route == backStackEntry?.destination?.route,
+                selected = selected,
                 onClick = { onItemClick(item) },
                 alwaysShowLabel = true,
                 icon = {
@@ -117,7 +119,7 @@ fun BottomNavigationBar(
                         Icon(
                             painter = item.icon,
                             contentDescription = item.name,
-                            tint = if (item.route == backStackEntry?.destination?.route) greenActiveIcon else blueDark
+                            tint = if (selected) greenActiveIcon else blueDark
                         )
                         Text(
                             text = item.name,

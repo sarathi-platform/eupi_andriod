@@ -13,6 +13,7 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
@@ -115,7 +116,7 @@ fun ButtonPositive(
             Text(
                 text = buttonTitle,
                 color = Color.White,
-                style = mediumTextStyle
+                style = buttonTextStyle
             )
             if (isArrowRequired) {
                 Icon(
@@ -168,7 +169,7 @@ fun ButtonNegative(
             Text(
                 text = buttonTitle,
                 color = blueDark,
-                style = mediumTextStyle
+                style = buttonTextStyle
             )
         }
     }
@@ -286,6 +287,48 @@ fun OutlineButtonWithIcon(
                 text = buttonTitle,
                 color = contentColor,
                 style = smallTextStyleMediumWeight,
+            )
+        }
+    }
+}
+
+
+@Composable
+fun SimpleActionButton(
+    buttonTitle: String,
+    textColor: Color,
+    backgroundColor: Color,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(backgroundColor)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(14.dp)
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                color = textColor,
+                style = buttonTextStyle
             )
         }
     }

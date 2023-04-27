@@ -28,8 +28,16 @@
     <string name="resend_otp">Resend Otp</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s sec</string>
+    <string name="social_mapping">Social Mapping</string>
+    <string name="showing_added_tolas">Showing %s added Tolas</string>
+    <string name="showing">Showing</string>
+    <string name="added_tolas">added Tolas</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">Not added</string>
+    <string name="mark_as_completed">Mark as completed</string>
 
-   <!-- <string name="title_list">List</string>
+
+    <!-- <string name="title_list">List</string>
     <string name="title_grid">Grid</string>
     <string name="shopping">Shopping</string>
     <string name="title_explore">Explore</string>

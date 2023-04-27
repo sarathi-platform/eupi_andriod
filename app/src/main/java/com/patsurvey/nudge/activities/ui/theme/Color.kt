@@ -41,3 +41,7 @@ val borderGreyLight = Color(0xFFEBEBEB)
 val bgGreyLight = Color(0xFFFAFAFA)
 
 val redDark =  Color(0xFFD12222)
+
+val black1 = Color(0xCC271914)
+
+val white = Color(0xFFFFFFFF)
