@@ -40,8 +40,10 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">ना जोड़ल गइल</string>
     <string name="mark_as_completed">पूरा भइल बा निशान लगाईं</string>
-
-
+    <string name="village_text">गांव</string>
+    <string name="participation_date_wealth_ranking">भागीदारी के तारीख धन रैंकिंग के बा</string>
+    <string name="vo_name">वीओ के नाम बा</string>
+    <string name="total">कुल</string>
 
 
 </resources>

@@ -41,5 +41,9 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
+    <string name="village_text">Village</string>
+    <string name="vo_name">VO Name</string>
+    <string name="total">Total</string>
+    <string name="participation_date_wealth_ranking">Participation Date Wealth Ranking</string>
 
 </resources>

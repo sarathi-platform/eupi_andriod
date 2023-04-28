@@ -41,10 +41,10 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">যোগ করা হয়নি</string>
     <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
-
-
-
-
+    <string name="village_text">গ্রাম</string>
+    <string name="participation_date_wealth_ranking">অংশগ্রহণের তারিখ সম্পদ র‌্যাঙ্কিং</string>
+    <string name="vo_name">VO নাম</string>
+    <string name="total">মোট</string>
 
 
 </resources>

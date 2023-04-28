@@ -39,9 +39,10 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">नहीं जोड़ा गया</string>
     <string name="mark_as_completed">पूर्ण के रूप में चिह्नित करें</string>
-
-
-
+    <string name="village_text">गाँव</string>
+    <string name="participation_date_wealth_ranking">भागीदारी दिनांक धन रैंकिंग</string>
+    <string name="vo_name">वीओ नाम</string>
+    <string name="total">कुल</string>
 
 
 </resources>

@@ -13,6 +13,7 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
 @Composable
@@ -37,6 +38,9 @@ fun StartFlowNavigation(navController: NavHostController) {
         }
         composable(route = ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route) {
             SocialMappingScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
+        }
+        composable(route = ScreenRoutes.DIGITAL_FORM_A_SCREEN.route) {
+            DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
         }
     }
 }
