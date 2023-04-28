@@ -6,7 +6,7 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
-    <string name="mark_complete_text">Mark Complete</string>
+    <string name="mark_complete_text">Complete Tola Addition</string>
     <string name="go_back_text">Go Back</string>
 
     <string name="progress_item_text">Progress</string>
@@ -41,5 +41,6 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
+    <string name="add_tola">Add Tola</string>
 
 </resources>

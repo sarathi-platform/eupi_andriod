@@ -22,32 +22,58 @@ fun StartFlowNavigation(navController: NavHostController) {
             SplashScreen(navController = navController, modifier = Modifier.fillMaxSize())
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
-            LanguageScreen(navController = navController,
-                viewModel= hiltViewModel(),
-                modifier = Modifier.fillMaxSize())
+            LanguageScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = ScreenRoutes.LOGIN_SCREEN.route) {
-            LoginScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
+            LoginScreen(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
+            OtpVerificationScreen(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
         }
         composable(route = ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route) {
-            SocialMappingScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
+            SocialMappingScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+        composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
+            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }
 
 @Composable
-fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNavHostController: NavHostController, modifier: Modifier = Modifier) {
-    NavHost(navController =homeScreenNavController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
+fun HomeScreenFlowNavigation(
+    homeScreenNavController: NavHostController,
+    stepsNavHostController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = homeScreenNavController,
+        startDestination = ScreenRoutes.PROGRESS_SCREEN.route
+    ) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            ProgressScreen(modifier = Modifier
-                .fillMaxSize()
-                .then(modifier), homeScreenNavController)
+            ProgressScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier), viewModel = hiltViewModel(), homeScreenNavController
+            )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             DidiScreen()
@@ -57,9 +83,11 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
-            TransectWalkScreen(navController = homeScreenNavController, modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
+            TransectWalkScreen(
+                navController = homeScreenNavController, modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier)
+            )
         }
     }
     /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {

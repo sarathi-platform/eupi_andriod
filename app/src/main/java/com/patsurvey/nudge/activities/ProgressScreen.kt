@@ -3,6 +3,8 @@ package com.patsurvey.nudge.activities
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
@@ -14,26 +16,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.BlueButton
 import kotlinx.coroutines.launch
 
-@Preview
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
+    viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
 ) {
 
-    val scaffoldState = rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
+    val scaffoldState =
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
     var selectedText by remember { mutableStateOf("Select Village") }
+
+    val steps by viewModel.stepList.collectAsState()
+    val villages by viewModel.villageList.collectAsState()
 
     Surface(
         modifier = Modifier
@@ -48,55 +56,29 @@ fun ProgressScreen(
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, top = 26.dp)
                         .height(550.dp)
-                        .verticalScroll(rememberScrollState())
                 ) {
                     Text(
                         text = "Select Village & VO",
                         style = smallTextStyle,
                         color = textColorDark,
                     )
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier,
-                    ) {
-
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        itemsIndexed(villages) { index, village ->
+                            VillageAndVoBox(
+                                tolaName = village.villageName,
+                                voName = village.voName,
+                                index = index,
+                                selectedIndex = viewModel.villageSelected.value,
+                                screenName = ScreenRoutes.PROGRESS_SCREEN
+                            ) {
+                                viewModel.villageSelected.value = it
+                                selectedText = viewModel.villageList.value[it].villageName
+                                scope.launch {
+                                    scaffoldState.hide()
+                                }
+                            }
+                        }
                     }
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
-                    VillageAndVoBox(
-                        tolaName = "Sundar Pahar",
-                        voName = "Sundar Pahar Mahila Mandal",
-                        modifier = modifier
-                    ) {}
 
                 }
             },
@@ -179,63 +161,28 @@ fun ProgressScreen(
                     }
                 }
 
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .background(Color.White)
-                        .verticalScroll(rememberScrollState())
                 ) {
-                    StepsBox(
-                        boxTitle = "Transect Walk",
-                        stepNo = 1,
-                        isCompleted = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-//                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
-                    }
-                    StepsBox(
-                        boxTitle = "Social Mapping",
-                        stepNo = 2,
-                        isCompleted = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
+                    itemsIndexed(items = steps) { index, step ->
+                        StepsBox(
+                            boxTitle = step.stepName,
+                            stepNo = step.stepNo,
+                            index = index,
+                            shouldBeActive = (viewModel.stepSelected.value == index)
+                        ) {
+                            viewModel.stepSelected.value = it
+                            when (it) {
+                                0 -> { stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route) }
+                                1 -> {}
+                                2 -> {}
+                                3 -> {}
+                                4 -> {}
+                                5 -> {}
+                            }
 
-                    }
-                    StepsBox(
-                        boxTitle = "Participatory " +
-                                "Wealth Ranking",
-                        stepNo = 3,
-                        isCompleted = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-
-                    }
-                    StepsBox(
-                        boxTitle = "Pat Survey",
-                        stepNo = 4,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-
-                    }
-                    StepsBox(
-                        boxTitle = "VO Endorsement",
-                        stepNo = 5,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-
-                    }
-                    StepsBox(
-                        boxTitle = "BMP Approval",
-                        stepNo = 6,
-                        shouldBeActive = false,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-
+                        }
                     }
                 }
             }
@@ -248,9 +195,10 @@ fun StepsBox(
     modifier: Modifier = Modifier,
     boxTitle: String,
     stepNo: Int,
+    index: Int,
     isCompleted: Boolean = false,
     shouldBeActive: Boolean = true,
-    onclick: () -> Unit
+    onclick: (Int) -> Unit
 ) {
     val dividerMargins = 32.dp
     ConstraintLayout(
@@ -336,7 +284,7 @@ fun StepsBox(
                             .padding(end = 14.dp)
                             .weight(0.8f),
                         onClick = {
-                            onclick()
+                            onclick(index)
                         }
                     )
                 }

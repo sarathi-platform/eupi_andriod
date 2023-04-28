@@ -157,26 +157,28 @@ fun AddTolaBox(
                     )
                 }
             }
-            Row(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 14.dp)
             ) {
-                ButtonNegative(
-                    buttonTitle = "Cancel",
-                    modifier = Modifier
-                        .weight(1f)
-                ) {
-                    onCancelClicked()
-                }
-                Spacer(modifier = Modifier.width(10.dp))
                 ButtonPositive(
                     buttonTitle = "Save",
-                    modifier = Modifier
-                        .weight(1f)
+                    isArrowRequired = false,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     onSaveClicked(mTolaName, location)
                 }
+                Spacer(modifier = Modifier.height(10.dp))
+                ButtonOutline(
+                    buttonTitle = "Cancel",
+                    outlineColor = redDark,
+                    textColor = redDark,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    onCancelClicked()
+                }
+
             }
         }
     }
