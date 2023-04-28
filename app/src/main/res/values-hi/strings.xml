@@ -39,6 +39,14 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">नहीं जोड़ा गया</string>
     <string name="mark_as_completed">पूर्ण के रूप में चिह्नित करें</string>
+    <string name="add_didi">दीदी जोड़ें</string>
+    <string name="house_number">घर का नंबर</string>
+    <string name="didi_name">दीदी नाम</string>
+    <string name="dada_name">दादा नाम</string>
+    <string name="enter">दर्ज करें</string>
+    <string name="caste">जाति</string>
+    <string name="tola">टोला</string>
+    <string name="select">चुनेंं</string>
 
 
 

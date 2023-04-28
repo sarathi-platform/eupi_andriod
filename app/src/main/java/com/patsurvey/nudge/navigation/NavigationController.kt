@@ -50,7 +50,9 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
                 .then(modifier), homeScreenNavController)
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen()
+            DidiScreen(modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen()
