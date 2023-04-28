@@ -6,17 +6,13 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.material.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
@@ -25,6 +21,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
@@ -43,180 +40,242 @@ fun DigitalFormAScreen(
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
 
-    Box(modifier = Modifier
+    ConstraintLayout(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)
-        .then(modifier)
-    ){
-        Column(modifier = Modifier
-            .fillMaxWidth()) {
-            Box(modifier = Modifier.fillMaxWidth()) {
-                NetworkBanner()
+        .then(modifier)) {
+        val (mainCard, buttonCard) = createRefs()
+        Box(modifier = Modifier
+            .constrainAs(mainCard) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
             }
-            Text(
-                text = "Digital Form A",
-                color = Color.Black,
-                fontSize = 20.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_10))
-            )
-            Card(
-                backgroundColor = Color.White,
-                contentColor = Color(ContextCompat.getColor(context, R.color.placeholder_color)),
-                elevation = dimensionResource(id = R.dimen.dp_5),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = dimensionResource(id = R.dimen.dp_16)
-                    )
-                    .padding(
-                        top = dimensionResource(id = R.dimen.dp_10),
-                        bottom = dimensionResource(id = R.dimen.dp_10)
-                    )
+            .padding(top = 24.dp)
+        ) {
 
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.White)
             ) {
-                Column(verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start,
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    NetworkBanner()
+                }
+                Text(
+                    text = "Digital Form A",
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
-                        .padding(bottom = dimensionResource(id = R.dimen.dp_15))) {
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.village_text) +":",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(top = dimensionResource(id = R.dimen.dp_10))
+                        .fillMaxWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_10))
+                )
+                Card(
+                    backgroundColor = Color.White,
+                    contentColor = Color(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.placeholder_color
                         )
-                        Text(
-                            text = "Ghaghara",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = dimensionResource(id = R.dimen.dp_10),
-                                    start = dimensionResource(id = R.dimen.dp_5)
-                                )
+                    ),
+                    elevation = dimensionResource(id = R.dimen.dp_5),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.dp_16)
                         )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.participation_date_wealth_ranking) +":",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(top = dimensionResource(id = R.dimen.dp_5))
+                        .padding(
+                            top = dimensionResource(id = R.dimen.dp_10),
+                            bottom = dimensionResource(id = R.dimen.dp_10)
                         )
-                        Text(
-                            text = "Ghaghara",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = dimensionResource(id = R.dimen.dp_5),
-                                    start = dimensionResource(id = R.dimen.dp_5)
-                                )
-                        )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.vo_name) +":",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(top = dimensionResource(id = R.dimen.dp_5))
-                        )
-                        Text(
-                            text = "Ghaghara",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = dimensionResource(id = R.dimen.dp_5),
-                                    start = dimensionResource(id = R.dimen.dp_5)
-                                )
-                        )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        Text(
-                            text = stringResource(id = R.string.total) +":",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .padding(top = dimensionResource(id = R.dimen.dp_5))
-                        )
-                        Text(
-                            text = "Ghaghara",
-                            color = Color.Black,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(
-                                    top = dimensionResource(id = R.dimen.dp_5),
-                                    start = dimensionResource(id = R.dimen.dp_5)
-                                )
-                        )
+
+                ) {
+                    Column(
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start,
+                        modifier = Modifier
+                            .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                            .padding(bottom = dimensionResource(id = R.dimen.dp_15))
+                    ) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.village_text) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_10))
+                            )
+                            Text(
+                                text = "Ghaghara",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_10),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.participation_date_wealth_ranking) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_5))
+                            )
+                            Text(
+                                text = "Ghaghara",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_5),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.vo_name) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_5))
+                            )
+                            Text(
+                                text = "Ghaghara",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_5),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(id = R.string.total) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_5))
+                            )
+                            Text(
+                                text = "Ghaghara",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_5),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+
                     }
 
                 }
 
+                Card(
+                    backgroundColor = Color.White,
+                    contentColor = Color(
+                        ContextCompat.getColor(
+                            context,
+                            R.color.placeholder_color
+                        )
+                    ),
+                    elevation = dimensionResource(id = R.dimen.dp_5),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            horizontal = dimensionResource(id = R.dimen.dp_16),
+                        )
+                        .padding(bottom = 70.dp)
+                ) {
+                    // List of Didis with Details
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        items(didiList, DidiDetailsModel::id) { card ->
+                            DidiVillageItem(card)
+                        }
+                    }
+                }
+
+
             }
-       Card(
-        backgroundColor = Color.White,
-        contentColor = Color(ContextCompat.getColor(context, R.color.placeholder_color)),
-        elevation = dimensionResource(id = R.dimen.dp_5),
-        shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
-        modifier = Modifier
+        }
+
+        Row(modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                horizontal = dimensionResource(id = R.dimen.dp_16)
-            )
-            .padding(
-                top = dimensionResource(id = R.dimen.dp_10),
-                bottom = dimensionResource(id = R.dimen.dp_20)
-            )
-    ) {
-           // List of Didis with Details
-           Scaffold(backgroundColor = Color.White) { paddingValues ->
-               LazyColumn(Modifier.padding(paddingValues)) {
-                   items(didiList, DidiDetailsModel::id) { card ->
-                       DidiVillageItem(card)
-                   }
-               }
-           }
-       }
+            .padding(bottom = 10.dp)
+            .constrainAs(buttonCard) {
+                start.linkTo(parent.start)
+                bottom.linkTo(parent.bottom)
+            }
+           ) {
+            Button(
+                onClick = {
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.button_height))
+                    .background(Color.Transparent)
+                    .padding(horizontal = dimensionResource(id = R.dimen.dp_16)),
+                colors = ButtonDefaults.buttonColors(blueDark),
+                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.continue_text),
+                    color = Color.White,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                )
+
+            }
+
+
         }
     }
 }
@@ -230,7 +289,7 @@ fun DidiVillageItem(didiDetailsModel: DidiDetailsModel){
                 .fillMaxWidth()
                 .padding(start = dimensionResource(id = R.dimen.dp_20))
                 .padding(end = dimensionResource(id = R.dimen.dp_15))
-                .padding(vertical = dimensionResource(id = R.dimen.dp_10))
+                .padding(vertical = dimensionResource(id = R.dimen.dp_5))
         ) {
 
             Column{
