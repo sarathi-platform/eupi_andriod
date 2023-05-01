@@ -12,7 +12,8 @@ import androidx.compose.ui.graphics.Color
 fun DidiScreen(
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    /*Box(modifier = modifier.fillMaxSize()) {
         Text(text = "Didi Screen", modifier = Modifier.align(Alignment.Center), color = Color.Red)
-    }
+    }*/
+    AddDidiScreen(modifier)
 }

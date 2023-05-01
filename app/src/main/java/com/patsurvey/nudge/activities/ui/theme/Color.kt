@@ -52,3 +52,5 @@ val yellowBg = Color(0xFFFCF6F0)
 val black1 = Color(0xCC271914)
 
 val white = Color(0xFFFFFFFF)
+
+val black100Percent = Color(0xFF271914)
