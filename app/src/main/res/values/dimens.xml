@@ -46,6 +46,7 @@
     <dimen name="padding_32dp">32dp</dimen>
     <dimen name="height_60dp">60dp</dimen>
     <dimen name="height_50dp">50dp</dimen>
+    <dimen name="button_height">54dp</dimen>
     <dimen name="text_size_12">12sp</dimen>
     <dimen name="text_size_14">14sp</dimen>
     <dimen name="text_size_16">16sp</dimen>
