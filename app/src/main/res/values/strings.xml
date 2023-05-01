@@ -19,6 +19,7 @@
     <string name="continue_text">Continue</string>
     <string name="enter_mobile_number">Enter Mobile Number</string>
     <string name="mobile_text">Mobile</string>
+    <string name="enter_mobile_text">Enter Mobile</string>
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get OTP</string>
     <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
@@ -41,5 +42,6 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
+    <string name="enter_otp_text">Enter OTP</string>
 
 </resources>

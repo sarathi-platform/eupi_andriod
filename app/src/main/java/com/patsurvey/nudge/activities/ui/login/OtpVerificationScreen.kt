@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -68,9 +69,9 @@ fun OtpVerificationScreen(
                 .align(Alignment.BottomCenter)
         ) {
             Text(
-                text = "Enter OTP",
+                text = stringResource(id = R.string.enter_otp_text),
                 color = blueDark,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Start
@@ -93,12 +94,13 @@ fun OtpVerificationScreen(
                     otpValue = otp
                 })
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_30)))
             Row(horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()) {
 
                 Text(
                     text = stringResource(id = R.string.resend_otp),
-                    color = greenDark,
+                    color = colorResource(id = R.color.resend_otp_color),
                     fontSize = 14.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
@@ -156,14 +158,15 @@ fun OtpVerificationScreen(
 //                }
 
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
                 Button(
                     onClick = {
                         navController.navigate(ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route)
                     },
                     modifier = Modifier
                         .background(Color.Transparent)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.height_60dp)),
                     colors = ButtonDefaults.buttonColors(blueDark),
                     shape = RoundedCornerShape(6.dp)
                 ) {

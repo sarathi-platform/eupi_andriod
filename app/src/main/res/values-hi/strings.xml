@@ -39,9 +39,8 @@
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">नहीं जोड़ा गया</string>
     <string name="mark_as_completed">पूर्ण के रूप में चिह्नित करें</string>
-
-
-
+    <string name="enter_mobile_text">मोबाइल दर्ज करें</string>
+    <string name="enter_otp_text">ओटीपी दर्ज करें</string>
 
 
 </resources>
