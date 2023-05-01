@@ -12,7 +12,9 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
 @Composable
@@ -55,6 +57,9 @@ fun StartFlowNavigation(navController: NavHostController) {
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
             VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
         }
+        composable(route = ScreenRoutes.DIGITAL_FORM_A_SCREEN.route) {
+            DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
+        }
     }
 }
 
@@ -76,7 +81,9 @@ fun HomeScreenFlowNavigation(
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen()
+            DidiScreen(modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen()
@@ -88,6 +95,12 @@ fun HomeScreenFlowNavigation(
                     .fillMaxSize()
                     .then(modifier)
             )
+        }
+        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
+            DidiScreen()
+        }
+        composable(route = ScreenRoutes.MORE_SCREEN.route) {
+            MoreScreen()
         }
     }
     /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {

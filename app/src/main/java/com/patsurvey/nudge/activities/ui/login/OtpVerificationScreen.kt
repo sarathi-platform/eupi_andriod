@@ -159,7 +159,7 @@ fun OtpVerificationScreen(
                 Spacer(modifier = Modifier.height(10.dp))
                 Button(
                     onClick = {
-                        navController.navigate(ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route)
+                        navController.navigate(ScreenRoutes.DIGITAL_FORM_A_SCREEN.route)
                     },
                     modifier = Modifier
                         .background(Color.Transparent)
