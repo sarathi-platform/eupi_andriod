@@ -12,6 +12,7 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
@@ -60,6 +61,12 @@ fun HomeScreenFlowNavigation(homeScreenNavController: NavHostController, stepsNa
             TransectWalkScreen(navController = homeScreenNavController, modifier = Modifier
                 .fillMaxSize()
                 .then(modifier))
+        }
+        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
+            DidiScreen()
+        }
+        composable(route = ScreenRoutes.MORE_SCREEN.route) {
+            MoreScreen()
         }
     }
     /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
