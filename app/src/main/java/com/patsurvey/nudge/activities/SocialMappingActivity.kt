@@ -120,14 +120,9 @@ fun SocialMappingScreen(
             modifier = Modifier,
             isOnline = isOnline
         )
-        Spacer(modifier = Modifier.padding(12.dp))
-        Text(
-            text = title,
-            style = largeTextStyle,
-            color = blueDark,
-            modifier = Modifier.align(CenterHorizontally),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        MainTitle(
+            title = stringResource(id = R.string.social_mapping),
+            modifier = Modifier.padding(top = 30.dp).align(CenterHorizontally)
         )
         Spacer(modifier = Modifier.padding(12.dp))
         Text(

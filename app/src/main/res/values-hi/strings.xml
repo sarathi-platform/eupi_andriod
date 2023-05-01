@@ -43,6 +43,20 @@
     <string name="participation_date_wealth_ranking">भागीदारी दिनांक धन रैंकिंग</string>
     <string name="vo_name">वीओ नाम</string>
     <string name="total">कुल</string>
+    <string name="add_didi">दीदी जोड़ें</string>
+    <string name="house_number">घर का नंबर</string>
+    <string name="didi_name">दीदी नाम</string>
+    <string name="dada_name">दादा नाम</string>
+    <string name="enter">दर्ज करें</string>
+    <string name="caste">जाति</string>
+    <string name="tola">टोला</string>
+    <string name="select">चुनेंं</string>
+
+
+
+
+    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \n रैंकिंग सर्वेक्षण </string>
+
 
 
 </resources>
