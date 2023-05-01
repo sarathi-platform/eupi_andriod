@@ -29,6 +29,7 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.utils.DoubleButtonBox
 
 @Preview
 @Composable
