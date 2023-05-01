@@ -36,6 +36,7 @@
             android:exported="true"
             android:label="@string/app_name"
             android:windowSoftInputMode="adjustResize"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.Android_starter_project">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
