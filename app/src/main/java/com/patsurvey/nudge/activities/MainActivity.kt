@@ -65,7 +65,7 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                 )
 
                 val navController = rememberNavController()
-                val isLoggedIn = true
+                val isLoggedIn = false
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier

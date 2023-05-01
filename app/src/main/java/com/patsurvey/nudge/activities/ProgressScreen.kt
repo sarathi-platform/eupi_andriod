@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -38,10 +39,14 @@ fun ProgressScreen(
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
-    var selectedText by remember { mutableStateOf("Select Village") }
+    val selectedVillage = viewModel.villageSelected.value
+    var selectedText by remember { mutableStateOf(if (selectedVillage == -1)"Select Village" else viewModel.villageList.value[selectedVillage].villageName) }
 
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
+
+    Log.d("PROGRESS_SCREEN", "viewModel.villageSelected.value: ${viewModel.villageSelected.value}")
+
 
     Surface(
         modifier = Modifier
@@ -63,6 +68,7 @@ fun ProgressScreen(
                         color = textColorDark,
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                        Log.d("PROGRESS_SCREEN_BottomSheet", "viewModel.villageSelected.value: ${viewModel.villageSelected.value}")
                         itemsIndexed(villages) { index, village ->
                             VillageAndVoBox(
                                 tolaName = village.villageName,
@@ -71,7 +77,9 @@ fun ProgressScreen(
                                 selectedIndex = viewModel.villageSelected.value,
                                 screenName = ScreenRoutes.PROGRESS_SCREEN
                             ) {
+                                Log.d("PROGRESS_SCREEN_BottomSheet", "before viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
                                 viewModel.villageSelected.value = it
+                                Log.d("PROGRESS_SCREEN_BottomSheet", "after viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
                                 selectedText = viewModel.villageList.value[it].villageName
                                 scope.launch {
                                     scaffoldState.hide()
