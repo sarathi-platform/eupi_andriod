@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities
 
-import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
@@ -55,7 +57,7 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .weight(1f),
+                .weight(1f).padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             EditTextWithTitle(
@@ -147,8 +149,8 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
 
         DoubleButtonBox(
             modifier = Modifier.shadow(10.dp),
-            positiveButtonText = stringResource(id = R.string.submit),
-            negativeButtonText = stringResource(id = R.string.go_back_text),
+            negativeButtonRequired = false,
+            positiveButtonText = stringResource(id = R.string.add_didi),
             positiveButtonOnClick = {
                 val allData = "$houseNumber, $didiName, $dadaName, $casteSelectedText, $tolaSelectedText"
                 Toast.makeText(context, allData, Toast.LENGTH_SHORT).show()
