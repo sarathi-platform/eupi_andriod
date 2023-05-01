@@ -6,7 +6,7 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
-    <string name="mark_complete_text">Mark Complete</string>
+    <string name="mark_complete_text">Complete Tola Addition</string>
     <string name="go_back_text">Go Back</string>
 
     <string name="progress_item_text">Progress</string>
@@ -57,5 +57,6 @@
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
+    <string name="add_tola">Add Tola</string>
 
 </resources>

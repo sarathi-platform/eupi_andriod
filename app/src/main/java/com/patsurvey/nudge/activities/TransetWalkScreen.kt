@@ -5,13 +5,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -24,15 +28,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.utils.ButtonOutline
-import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.Tola
+import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.utils.*
 
+@Preview
 @Composable
 fun TransectWalkScreen(
     modifier: Modifier = Modifier,
@@ -68,26 +67,64 @@ fun TransectWalkScreen(
                     .align(Alignment.TopCenter)
                     .padding(horizontal = 16.dp)
             ) {
-
+                if (tolaList.isNotEmpty() || showAddTolaBox) {
+                    Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.home_icn),
+                            contentDescription = null,
+                            tint = textColorDark,
+                        )
+                        Text(
+                            text = "Sundar Pahar",
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            color = textColorDark,
+                            style = smallTextStyle
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .absolutePadding(left = 4.dp)
+                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    ) {
+                        Text(
+                            text = "VO:",
+                            modifier = Modifier,
+                            color = textColorDark,
+                            style = smallTextStyle
+                        )
+                        Text(
+                            text = "Sundar Pahar Mahila Mandal",
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            color = textColorDark,
+                            style = smallTextStyle
+                        )
+                    }
+                }
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Text(
-                        text = stringResource(id = R.string.transect_wale_title),
-                        style = largeTextStyle,
-                        color = blueDark,
-                        modifier = Modifier.weight(1f),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                    )
-                    Spacer(modifier = Modifier.padding(14.dp))
-                    ButtonOutline(
-                        modifier = Modifier.weight(1f),
-                    ) {
-                        if (!showAddTolaBox)
-                            showAddTolaBox = true
+                    if (tolaList.isNotEmpty() || showAddTolaBox) {
+                        Text(
+                            text = stringResource(id = R.string.transect_wale_title),
+                            style = largeTextStyle,
+                            color = blueDark,
+                            modifier = Modifier.weight(1f),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                        )
+                    }
+                    if (tolaList.isNotEmpty()) {
+                        Spacer(modifier = Modifier.padding(14.dp))
+                        ButtonOutline(
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            if (!showAddTolaBox)
+                                showAddTolaBox = true
+                        }
                     }
                 }
                 Column(
@@ -165,21 +202,41 @@ fun TransectWalkScreen(
 
                     if (tolaList.isEmpty() && !showAddTolaBox) {
                         Box(modifier = Modifier.fillMaxSize()) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            fontFamily = NotoSans
-                                        )
-                                    ) {
-                                        append("No Tolas Added")
-                                    }
-                                },
-                                modifier = Modifier.align(Alignment.Center)
-                            )
+                            Column(
+                                modifier = Modifier.align(Alignment.Center),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = stringResource(id = R.string.transect_wale_title),
+                                    style = largeTextStyle,
+                                    color = blueDark,
+                                    modifier = Modifier,
+                                    maxLines = 2,
+                                    overflow = TextOverflow.Ellipsis,
+                                )
+                                Text(
+                                    text = buildAnnotatedString {
+                                        withStyle(
+                                            style = SpanStyle(
+                                                color = textColorDark,
+                                                fontSize = 16.sp,
+                                                fontWeight = FontWeight.Normal,
+                                                fontFamily = NotoSans
+                                            )
+                                        ) {
+                                            append("No Tolas Added")
+                                        }
+                                    },
+                                    modifier = Modifier.padding(top = 32.dp)
+                                )
+                                BlueButtonWithIcon(
+                                    buttonText = stringResource(id = R.string.add_tola),
+                                    icon = Icons.Default.Add
+                                ) {
+                                    if (!showAddTolaBox)
+                                        showAddTolaBox = true
+                                }
+                            }
                         }
                     } else {
                         LazyColumn(
@@ -210,25 +267,32 @@ fun TransectWalkScreen(
             }
         }
 
-        DoubleButtonBox(
-            modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+        if (tolaList.isNotEmpty()) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+
+                positiveButtonText = stringResource(id = R.string.mark_complete_text),
+                negativeButtonRequired = false,
+                positiveButtonOnClick = {
+                    if (tolaList.isNotEmpty()) {
+                        //TODO: mark tola complete
+                    } else {
+                        //TODO: Show error
                     }
                 },
-            positiveButtonText = stringResource(id = R.string.mark_complete_text),
-            negativeButtonText = stringResource(id = R.string.go_back_text),
-            positiveButtonOnClick = {
-
-            },
-            negativeButtonOnClick = {
-                navController.popBackStack()
-            }
-        )
+                negativeButtonOnClick = {
+//
+                }
+            )
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.graphics.drawable.Icon
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -13,13 +12,13 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
@@ -77,6 +76,60 @@ fun BlueButton(
 
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun BlueButtonWithIcon(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    icon: ImageVector,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .padding(vertical = 14.dp)
+            .background(Color.Transparent)
+            .width(160.dp)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .width(160.dp)
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Icon(
+                icon,
+                contentDescription = "Forward arrow",
+                tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier.absolutePadding(top = 4.dp).padding(start = 10.dp)
+
+            )
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
         }
     }
 }
@@ -180,6 +233,7 @@ fun ButtonNegative(
 fun ButtonOutline(
     modifier: Modifier = Modifier,
     buttonTitle: String = "Add Tola",
+    icon: ImageVector = Icons.Default.Add,
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -197,7 +251,7 @@ fun ButtonOutline(
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                Icons.Default.Add,
+                icon,
                 contentDescription = "Add Button",
                 tint = blueDark,
                 modifier = Modifier.absolutePadding(top = 4.dp, right = 2.dp)
@@ -205,6 +259,37 @@ fun ButtonOutline(
             Text(
                 text = buttonTitle,
                 color = blueDark,
+                style = mediumTextStyle,
+            )
+        }
+    }
+}
+
+@Composable
+fun ButtonOutline(
+    modifier: Modifier = Modifier,
+    buttonTitle: String = "Add Tola",
+    outlineColor: Color = greyBorder,
+    textColor: Color = blueDark,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = {
+            onClick()
+        },
+        border = BorderStroke(1.dp, outlineColor),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier.padding(vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                color = textColor,
                 style = mediumTextStyle,
             )
         }
