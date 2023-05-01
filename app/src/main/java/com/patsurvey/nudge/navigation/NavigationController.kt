@@ -59,6 +59,42 @@ fun StartFlowNavigation(navController: NavHostController) {
 }
 
 @Composable
+fun VOHomeScreenFlowNavigation(navController: NavHostController,
+                               modifier: Modifier = Modifier){
+    NavHost(
+        navController = navController,
+        startDestination = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route
+    ) {
+        composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
+            ProgressScreen(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier), viewModel = hiltViewModel(), navController
+            )
+        }
+        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
+            DidiScreen()
+        }
+        composable(route = ScreenRoutes.MORE_SCREEN.route) {
+            MoreScreen()
+        }
+        composable(route = ScreenRoutes.HOME_SCREEN.route) {
+            HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
+        }
+        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
+            TransectWalkScreen(
+                navController = navController, modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier)
+            )
+        }
+        composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
+            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+    }
+}
+
+@Composable
 fun HomeScreenFlowNavigation(
     homeScreenNavController: NavHostController,
     stepsNavHostController: NavHostController,
@@ -88,6 +124,9 @@ fun HomeScreenFlowNavigation(
                     .fillMaxSize()
                     .then(modifier)
             )
+        }
+        composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
+            VillageSelectionScreen(navController = homeScreenNavController, viewModel = hiltViewModel())
         }
     }
     /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
