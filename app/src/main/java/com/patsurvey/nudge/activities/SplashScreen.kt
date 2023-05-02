@@ -21,6 +21,7 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import kotlinx.coroutines.delay
 
 @Preview
@@ -32,7 +33,7 @@ fun SplashScreen(
 
     val isLoggedIn = false //check if user is logged in (currently hard coded until APIs are integrated.)
     LaunchedEffect(key1 = true) {
-        delay(2000L)
+        delay(SPLASH_SCREEN_DURATION)
         navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)
     }
 
