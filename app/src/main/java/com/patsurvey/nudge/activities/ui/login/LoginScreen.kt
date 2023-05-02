@@ -45,6 +45,7 @@ fun LoginScreen(
             .then(modifier)
     ) {
 
+        viewModel.fetchDetails()
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
