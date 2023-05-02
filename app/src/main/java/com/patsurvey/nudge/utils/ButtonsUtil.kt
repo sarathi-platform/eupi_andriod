@@ -121,7 +121,9 @@ fun BlueButtonWithIcon(
                 icon,
                 contentDescription = "Forward arrow",
                 tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
-                modifier = Modifier.absolutePadding(top = 4.dp).padding(start = 10.dp)
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp)
+                    .padding(start = 10.dp)
 
             )
             Text(
@@ -416,5 +418,32 @@ fun SimpleActionButton(
                 style = buttonTextStyle
             )
         }
+    }
+}
+
+@Composable
+fun IconButtonForward(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .clip(RoundedCornerShape(100.dp))
+            .background(blueDark)
+            .clickable {
+                onClick()
+            }
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier)
+    ) {
+        Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
     }
 }

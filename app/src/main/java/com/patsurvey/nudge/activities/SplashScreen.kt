@@ -1,74 +1,114 @@
 package com.patsurvey.nudge.activities
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
+import kotlinx.coroutines.delay
 
+@Preview
 @Composable
 fun SplashScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
 ) {
-    Box(
+
+    val isLoggedIn = false //check if user is logged in (currently hard coded until APIs are integrated.)
+    LaunchedEffect(key1 = true) {
+        delay(SPLASH_SCREEN_DURATION)
+        navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)
+    }
+
+    ConstraintLayout(
         modifier = Modifier
-            .background(color = blueDark)
+            .background(color = Color.White)
             .fillMaxSize()
             .padding(horizontal = 16.dp, vertical = 32.dp)
             .then(modifier)
     ) {
-        Button(
-            onClick = {
-                navController.navigate(ScreenRoutes.LANGUAGE_SCREEN.route)
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .background(Color.Transparent),
-            colors = ButtonDefaults.buttonColors(buttonBgColor),
-            shape = RoundedCornerShape(6.dp)
-        ) {
-            Box(
+
+        val (bottomContent, appNameContent, nrlmContent) = createRefs()
+
+        Box(modifier = Modifier.constrainAs(nrlmContent) {
+            top.linkTo(parent.top)
+            bottom.linkTo(appNameContent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }) {
+            Image(
+                painter = painterResource(id = R.drawable.nrlm_logo),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(137.dp)
+            )
+        }
+
+        Box(modifier = Modifier.constrainAs(appNameContent) {
+            top.linkTo(parent.top)
+            bottom.linkTo(bottomContent.top)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Text(text = "Sarathi", style = veryLargeTextStyle, color = blueDark)
+                Text(text = "To End Ultra Poverty", style = smallTextStyleNormalWeight, color = blueDark)
+            }
+        }
+
+        Box(modifier = Modifier.constrainAs(bottomContent) {
+            bottom.linkTo(parent.bottom)
+            start.linkTo(parent.start)
+            end.linkTo(parent.end)
+        }) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 6.dp)
-                    .background(buttonBgColor),
+                    .align(
+                        Alignment.BottomCenter
+                    )
             ) {
-                Text(
-                    text = "Get Started",
-                    color = textColorDark,
-                    fontSize = 18.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.align(Alignment.Center)
-                )
-                Icon(
-                    Icons.Default.ArrowForward,
-                    contentDescription = "Forward arrow",
-                    tint = textColorDark,
-                    modifier = Modifier.align(Alignment.CenterEnd)
-                )
+                Text(text = "Designed By", style = smallerTextStyle, color = blueDark)
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.nudge_logo),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(93.dp, 19.dp)
+                    )
+                    Spacer(modifier = Modifier.width(14.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.ttn_logo),
+                        contentDescription = null,
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier.size(40.dp, 19.dp)
+                    )
+                }
             }
         }
     }

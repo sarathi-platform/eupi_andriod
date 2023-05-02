@@ -55,3 +55,7 @@ val white = Color(0xFFFFFFFF)
 
 val black100Percent = Color(0xFF271914)
 val lightGrayColor = Color(0xFFEAEAEA)
+
+val greyRadioButton = Color(0xFFDEDEDE)
+
+val stepBoxActiveColor = Color(0xFFFFF4E3)

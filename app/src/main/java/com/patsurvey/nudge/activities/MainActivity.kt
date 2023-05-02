@@ -26,6 +26,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.navigation.StartFlowNavigation
+import com.patsurvey.nudge.navigation.VOHomeScreenFlowNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 @AndroidEntryPoint
@@ -73,8 +74,7 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                         .background(blueDark),
                 ) {
                     if (isLoggedIn)
-//                        VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
-                        HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
+                        VOHomeScreenFlowNavigation(navController = navController, modifier = Modifier.fillMaxWidth())
                     else {
                         StartFlowNavigation(navController = navController)
                     }

@@ -8,6 +8,10 @@ interface PrefRepo {
    fun isPermissionGranted():Boolean?
    fun savePermissionGranted(isGranted: Boolean?)
 
+   fun saveSelectedVillage(id: Int)
+
+   fun getSelectedVillage(): Int?
+
    fun getLoginStatus(): Boolean
 
    fun getAccessToken(): String?
