@@ -5,21 +5,21 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.patsurvey.nudge.database.VillageList
+import com.patsurvey.nudge.database.VillageEntity
 
 @Dao
 interface VillageListDao {
 
-    @Query("SELECT * FROM village_list_table")
-    fun getAllVillages(): LiveData<List<VillageList>>
+    @Query("SELECT * FROM village_table")
+    fun getAllVillages(): LiveData<List<VillageEntity>>
 
-    @Query("Select * FROM village_list_table where id = :id")
-    fun getVillage(id: Int): VillageList
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertVillage(village: VillageList)
+    @Query("Select * FROM village_table where id = :id")
+    fun getVillage(id: Int): VillageEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(villages: List<VillageList>)
+    fun insertVillage(village: VillageEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(villages: List<VillageEntity>)
 
 }

@@ -3,9 +3,10 @@ package com.patsurvey.nudge.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
-@Entity(tableName = "village_list_table")
-data class VillageList(
+@Entity(tableName = VILLAGE_TABLE_NAME)
+data class VillageEntity(
     @PrimaryKey
     @ColumnInfo(name = "id")
     var id: Int,

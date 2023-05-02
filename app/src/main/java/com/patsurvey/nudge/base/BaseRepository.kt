@@ -1,15 +1,10 @@
 package com.patsurvey.nudge.base
 
-import com.patsurvey.nudge.network.interfaces.FailureAPICallback
-import com.patsurvey.nudge.network.interfaces.SuccessAPICallback
-import com.patsurvey.nudge.network.handler.ResponseHandler
-import androidx.lifecycle.MutableLiveData
-import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorDataModel
+import com.patsurvey.nudge.repository.ConfigRepositoryLocal
 import kotlinx.coroutines.*
-import retrofit2.Call
 import retrofit2.Response
 import javax.inject.Inject
 

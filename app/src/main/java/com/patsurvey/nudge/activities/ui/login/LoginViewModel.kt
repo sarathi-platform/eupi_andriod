@@ -41,4 +41,12 @@ class LoginViewModel @Inject constructor(
                 }
             }
         }
+
+    //For testing purpose please delete when implementing you code
+    fun createTestDb() {
+        viewModelScope.launch(Dispatchers.IO) {
+            configRepository.createTestDb()
+        }
+    }
+
 }

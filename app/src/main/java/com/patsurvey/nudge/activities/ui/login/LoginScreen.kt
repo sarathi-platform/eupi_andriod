@@ -51,6 +51,10 @@ fun LoginScreen(
 
 
         viewModel.fetchDetails()
+
+        //For testing purpose please delete when implementing you code
+        //viewModel.createTestDb()
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

@@ -14,7 +14,6 @@ class MyApplication: Application() {
 
     init {
         instance = this
-        NudgeDatabase.getDatabase(applicationContext)
     }
     companion object {
         lateinit var instance: MyApplication
