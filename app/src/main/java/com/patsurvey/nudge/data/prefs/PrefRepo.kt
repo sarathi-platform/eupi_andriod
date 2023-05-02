@@ -7,4 +7,10 @@ interface PrefRepo {
 
    fun isPermissionGranted():Boolean?
    fun savePermissionGranted(isGranted: Boolean?)
+
+   fun getLoginStatus(): Boolean
+
+   fun getAccessToken(): String?
+   fun saveAccessToken(token: String)
+
 }
