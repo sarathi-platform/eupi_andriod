@@ -19,4 +19,4 @@ const val KEY_SOURCE_UAT = "uat"
 const val KEY_SOURCE_PROD = "prod"
 const val ACCESS_TOKEN = "ACCESS_TOKEN"
 const val SUCCESS = "SUCCESS"
-
+const val SPLASH_SCREEN_DURATION = 2000L
