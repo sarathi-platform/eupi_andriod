@@ -69,7 +69,7 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
             ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(modifier), viewModel = hiltViewModel(), navController
+                    .then(modifier), navController
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
@@ -108,7 +108,7 @@ fun HomeScreenFlowNavigation(
             ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(modifier), viewModel = hiltViewModel(), homeScreenNavController
+                    .then(modifier), homeScreenNavController
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {

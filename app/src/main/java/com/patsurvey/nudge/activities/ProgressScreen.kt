@@ -13,11 +13,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
@@ -30,18 +32,19 @@ import kotlinx.coroutines.launch
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
-    viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
 ) {
 
+    val context= LocalContext.current
+    val progressViewModel: ProgressScreenViewModel= hiltViewModel<ProgressScreenViewModel>()
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
     var selectedText by remember { mutableStateOf("Select Village") }
 
-    val steps by viewModel.stepList.collectAsState()
-    val villages by viewModel.villageList.collectAsState()
+    val steps by progressViewModel.stepList.collectAsState()
+    val villages by progressViewModel.villageList.collectAsState()
 
     Surface(
         modifier = Modifier
@@ -68,11 +71,11 @@ fun ProgressScreen(
                                 tolaName = village.villageName,
                                 voName = village.voName,
                                 index = index,
-                                selectedIndex = viewModel.villageSelected.value,
+                                selectedIndex = progressViewModel.villageSelected.value,
                                 screenName = ScreenRoutes.PROGRESS_SCREEN
                             ) {
-                                viewModel.villageSelected.value = it
-                                selectedText = viewModel.villageList.value[it].villageName
+                                progressViewModel.villageSelected?.value = it
+                                selectedText = progressViewModel.villageList.value[it].villageName
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
@@ -170,9 +173,9 @@ fun ProgressScreen(
                             boxTitle = step.stepName,
                             stepNo = step.stepNo,
                             index = index,
-                            shouldBeActive = (viewModel.stepSelected.value == index)
+                            shouldBeActive = (progressViewModel.stepSelected.value == index)
                         ) {
-                            viewModel.stepSelected.value = it
+                            progressViewModel.stepSelected.value = it
                             when (it) {
                                 0 -> { stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route) }
                                 1 -> {}
