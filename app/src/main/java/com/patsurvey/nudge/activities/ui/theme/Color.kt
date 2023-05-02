@@ -11,7 +11,8 @@ val Teal50 = Color(0xFFE0F2F1)
 
 val blueDark = Color(0xFF222E50)
 val buttonBgColor = Color(0xFFEFF2FC)
-val textColorDark = Color(0xCC271914)
+val textColorDark = Color(0xFF271914)
+val textColorDark80 = Color(0xCC271914)
 val textColorBlueLight = Color(0x80271914)
 val languageItemActiveBg = Color(0xFFF7F7F7)
 val languageItemInActiveBorderBg = Color(0xFFB4B4B4)
@@ -42,9 +43,17 @@ val bgGreyLight = Color(0xFFFAFAFA)
 
 val redDark =  Color(0xFFD12222)
 
+val brownLoght = Color(0xFFF4E9E2)
+val yellowLight = Color(0xFFFDEACB)
+val blueLighter = Color(0xFFF0F7FC)
+
+val yellowBg = Color(0xFFFCF6F0)
+
 val black1 = Color(0xCC271914)
 
 val white = Color(0xFFFFFFFF)
+
+val black100Percent = Color(0xFF271914)
 
 val greyRadioButton = Color(0xFFDEDEDE)
 
