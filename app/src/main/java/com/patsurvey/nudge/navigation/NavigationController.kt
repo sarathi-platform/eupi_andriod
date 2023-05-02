@@ -5,16 +5,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
-import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
-import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
 @Composable
@@ -71,7 +68,7 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
             ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(modifier), navController
+                    .then(modifier), viewModel = hiltViewModel(), navController
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
@@ -110,7 +107,7 @@ fun HomeScreenFlowNavigation(
             ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
-                    .then(modifier), homeScreenNavController
+                    .then(modifier), viewModel = hiltViewModel(), homeScreenNavController
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {

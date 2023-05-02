@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -13,42 +14,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BlueButton
+import com.patsurvey.nudge.utils.IconButtonForward
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ProgressScreen(
     modifier: Modifier = Modifier,
+    viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
 ) {
 
-    val context= LocalContext.current
-    val progressViewModel: ProgressScreenViewModel= hiltViewModel<ProgressScreenViewModel>()
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
-    var selectedText by remember { mutableStateOf("Select Village") }
+    val selectedVillage = viewModel.villageSelected.value
+    var selectedText by remember { mutableStateOf(if (selectedVillage == -1) "Select Village" else viewModel.villageList.value[selectedVillage].villageName) }
 
-    val steps by progressViewModel.stepList.collectAsState()
-    val villages by progressViewModel.villageList.collectAsState()
+    val steps by viewModel.stepList.collectAsState()
+    val villages by viewModel.villageList.collectAsState()
+
+    Log.d("PROGRESS_SCREEN", "viewModel.villageSelected.value: ${viewModel.villageSelected.value}")
+
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
+            .padding(bottom = 14.dp)
             .then(modifier)
     ) {
         ModalBottomSheetLayout(
@@ -58,7 +62,7 @@ fun ProgressScreen(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, top = 26.dp)
-                        .height(550.dp)
+                        .height(500.dp)
                 ) {
                     Text(
                         text = "Select Village & VO",
@@ -66,16 +70,16 @@ fun ProgressScreen(
                         color = textColorDark,
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+
                         itemsIndexed(villages) { index, village ->
-                            VillageAndVoBox(
+                            VillageAndVoBoxForBottomSheet(
                                 tolaName = village.villageName,
                                 voName = village.voName,
                                 index = index,
-                                selectedIndex = progressViewModel.villageSelected.value,
-                                screenName = ScreenRoutes.PROGRESS_SCREEN
+                                selectedIndex = viewModel.villageSelected.value,
                             ) {
-                                progressViewModel.villageSelected?.value = it
-                                selectedText = progressViewModel.villageList.value[it].villageName
+                                viewModel.villageSelected.value = it
+                                selectedText = viewModel.villageList.value[it].villageName
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
@@ -173,11 +177,13 @@ fun ProgressScreen(
                             boxTitle = step.stepName,
                             stepNo = step.stepNo,
                             index = index,
-                            shouldBeActive = (progressViewModel.stepSelected.value == index)
+                            shouldBeActive = (viewModel.stepSelected.value == index)
                         ) {
-                            progressViewModel.stepSelected.value = it
+                            viewModel.stepSelected.value = it
                             when (it) {
-                                0 -> { stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route) }
+                                0 -> {
+                                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                                }
                                 1 -> {}
                                 2 -> {}
                                 3 -> {}
@@ -200,7 +206,7 @@ fun StepsBox(
     stepNo: Int,
     index: Int,
     isCompleted: Boolean = false,
-    shouldBeActive: Boolean = true,
+    shouldBeActive: Boolean = false,
     onclick: (Int) -> Unit
 ) {
     val dividerMargins = 32.dp
@@ -220,7 +226,7 @@ fun StepsBox(
                 .clip(RoundedCornerShape(6.dp))
                 .border(
                     width = 1.dp,
-                    color = if (isCompleted) green else greyBorder,
+                    color = greyBorder,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(Color.White)
@@ -233,8 +239,8 @@ fun StepsBox(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (isCompleted) greenLight else Color.White)
-                    .padding(vertical = 14.dp),
+                    .background(if (isCompleted) green else if (shouldBeActive) stepBoxActiveColor else white)
+                    .padding(top = 14.dp, bottom = 14.dp, end = 16.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
 
@@ -247,39 +253,47 @@ fun StepsBox(
                         text = boxTitle/* "Transect Walk"*/,
                         color = textColorDark,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 48.dp),
+                            .padding(start = 16.dp, top = 16.dp, end = 48.dp, bottom = 16.dp),
                         softWrap = true,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
                         style = mediumTextStyle
                     )
-                    Row(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Canvas(
-                            modifier = Modifier
-                                .size(size = 10.dp)
-                        ) {
-                            drawCircle(
-                                color = if (isCompleted) greenDark else greyIndicator,
-                            )
-                        }
-                        Text(
-                            text = if (isCompleted) "Completed" else "Not Started",
-                            color = if (isCompleted) greenDark else textColorDark,
-                            style = smallerTextStyle,
-                            modifier = Modifier.padding(start = 6.dp, bottom = 4.dp)
-
-                        )
-                    }
+//                    Row(
+//                        modifier = Modifier
+//                            .padding(horizontal = 16.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Canvas(
+//                            modifier = Modifier
+//                                .size(size = 10.dp)
+//                        ) {
+//                            drawCircle(
+//                                color = if (isCompleted) greenDark else greyIndicator,
+//                            )
+//                        }
+//                        Text(
+//                            text = if (isCompleted) "Completed" else "Not Started",
+//                            color = if (isCompleted) greenDark else textColorDark,
+//                            style = smallerTextStyle,
+//                            modifier = Modifier.padding(start = 6.dp, bottom = 4.dp)
+//
+//                        )
+//                    }
                     if (isCompleted)
                         Spacer(modifier = Modifier.height(20.dp))
                 }
 
-                if (!isCompleted) {
-                    BlueButton(
+                if (shouldBeActive) {
+                    IconButtonForward(
+                        modifier = Modifier
+                            .aspectRatio(1f)
+                            .weight(0.2f)
+                    ) {
+                        onclick(index)
+                    }
+                }
+                    /*BlueButton(
                         buttonText = "Start Now",
                         isArrowRequired = true,
                         shouldBeActive = shouldBeActive,
@@ -289,10 +303,10 @@ fun StepsBox(
                         onClick = {
                             onclick(index)
                         }
-                    )
+                    )*/
                 }
             }
-        }
+
 
         Box(
             modifier = Modifier

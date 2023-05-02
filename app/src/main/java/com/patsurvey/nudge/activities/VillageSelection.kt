@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.util.Log
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
@@ -30,9 +32,11 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
+import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
 
@@ -40,7 +44,7 @@ import com.patsurvey.nudge.navigation.ScreenRoutes
 fun VillageSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: ProgressScreenViewModel
+    viewModel: VillageSelectionViewModel
 ) {
 
     val villages by viewModel.villageList.collectAsState()
@@ -53,18 +57,16 @@ fun VillageSelectionScreen(
             .then(modifier)
     ) {
         Text(text = "Select Village & VO", style = largeTextStyle, color = textColorDark)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)){
+        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             itemsIndexed(villages) { index, village ->
                 VillageAndVoBox(
                     tolaName = village.villageName,
                     voName = village.voName,
                     index = index,
                     viewModel.villageSelected.value,
-                    ScreenRoutes.VILLAGE_SELECTION_SCREEN
                 ) {
-                    Log.d("VILLAGE_SELECTION_SCREEN", "before viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
                     viewModel.villageSelected.value = it
-                    Log.d("VILLAGE_SELECTION_SCREEN", "after viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
+                    viewModel.updateSelectedVillage()
                     navController.navigate(ScreenRoutes.HOME_SCREEN.route)
                 }
             }
@@ -79,7 +81,6 @@ fun VillageAndVoBox(
     voName: String = "",
     index: Int,
     selectedIndex: Int,
-    screenName: ScreenRoutes,
     modifier: Modifier = Modifier,
     onVillageSeleted: (Int) -> Unit
 ) {
@@ -88,7 +89,7 @@ fun VillageAndVoBox(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) blueDark else if (index == selectedIndex && screenName == ScreenRoutes.PROGRESS_SCREEN) greenLight else greyBorder,
+                color = if (index == selectedIndex) blueDark else greyBorder,
                 shape = RoundedCornerShape(6.dp)
             )
             .shadow(
@@ -107,23 +108,25 @@ fun VillageAndVoBox(
             ) {
                 onVillageSeleted(index)
             }
-            .background(if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) blueDark else if (index == selectedIndex && screenName == ScreenRoutes.PROGRESS_SCREEN) greenLight else White)
+            .background(if (index == selectedIndex) blueDark else White)
             .then(modifier),
         elevation = 10.dp
     ) {
-        Column(modifier = Modifier
-            .background(if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) blueDark else if (index == selectedIndex && screenName == ScreenRoutes.PROGRESS_SCREEN) greenLight else White)) {
+        Column(
+            modifier = Modifier
+                .background(if (index == selectedIndex) blueDark else White)
+        ) {
             Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
                 Icon(
                     painter = painterResource(id = R.drawable.home_icn),
                     contentDescription = null,
-                    tint = if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) White else textColorDark,
+                    tint = if (index == selectedIndex) White else textColorDark,
                 )
                 Text(
                     text = tolaName,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    color = if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) White else textColorDark,
+                    color = if (index == selectedIndex) White else textColorDark,
                     style = smallTextStyle
                 )
             }
@@ -135,14 +138,113 @@ fun VillageAndVoBox(
                 Text(
                     text = "VO:",
                     modifier = Modifier,
-                    color = if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) White else textColorDark,
+                    color = if (index == selectedIndex) White else textColorDark,
                     style = smallTextStyle
                 )
                 Text(
                     text = voName,
                     modifier = Modifier
                         .fillMaxWidth(),
-                    color = if (index == selectedIndex && screenName == ScreenRoutes.VILLAGE_SELECTION_SCREEN) White else textColorDark,
+                    color = if (index == selectedIndex) White else textColorDark,
+                    style = smallTextStyle
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VillageAndVoBoxForBottomSheet(
+    tolaName: String = "",
+    voName: String = "",
+    index: Int,
+    selectedIndex: Int,
+    modifier: Modifier = Modifier,
+    onVillageSeleted: (Int) -> Unit
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = if (index == selectedIndex) blueDark else greyRadioButton,
+                shape = RoundedCornerShape(6.dp)
+            )
+            .clip(RoundedCornerShape(6.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Black
+                )
+            ) {
+                onVillageSeleted(index)
+            }
+            .background(if (index == selectedIndex) dropDownBg else White)
+            .then(modifier),
+        elevation = 10.dp
+    ) {
+        Column(
+            modifier = Modifier
+                .background(if (index == selectedIndex) dropDownBg else White)
+                .fillMaxWidth()
+        ) {
+            ConstraintLayout(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp).fillMaxWidth()) {
+                val (iconRef, textRef, radioRef) = createRefs()
+                Icon(
+                    painter = painterResource(id = R.drawable.home_icn),
+                    contentDescription = null,
+                    tint = textColorDark,
+                    modifier = Modifier.constrainAs(iconRef){
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    }
+                )
+                Text(
+                    text = " $tolaName",
+                    color = textColorDark,
+                    style = smallTextStyle,
+                    modifier = Modifier.constrainAs(textRef){
+                        top.linkTo(parent.top)
+                        start.linkTo(iconRef.end)
+                    }
+                )
+
+                Canvas(
+                    modifier = Modifier.constrainAs(radioRef){
+                        top.linkTo(textRef.top)
+                        end.linkTo(parent.end)
+                    }
+                        .size(size = 20.dp)
+                        .border(
+                            width = 1.dp,
+                            color = if (index == selectedIndex) blueDark else greyRadioButton,
+                            shape = CircleShape
+                        )
+                        .padding(3.dp)
+
+                ) {
+                    drawCircle(
+                        color = if (index == selectedIndex) blueDark else White,
+                    )
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .absolutePadding(left = 4.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+            ) {
+                Text(
+                    text = "VO: ",
+                    modifier = Modifier,
+                    color = textColorDark,
+                    style = smallTextStyle
+                )
+                Text(
+                    text = voName,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    color = textColorDark,
                     style = smallTextStyle
                 )
             }

@@ -45,3 +45,7 @@ val redDark =  Color(0xFFD12222)
 val black1 = Color(0xCC271914)
 
 val white = Color(0xFFFFFFFF)
+
+val greyRadioButton = Color(0xFFDEDEDE)
+
+val stepBoxActiveColor = Color(0xFFFFF4E3)
