@@ -9,10 +9,12 @@ enum class ScreenRoutes(val route: String) {
     PROFILE_SCREEN("profile_screen"),
     DIDI_SCREEN("didi_screen"),
     MORE_SCREEN("more_screen"),
-    PROGRESS_SCREEN("progress_scree"),
+    PROGRESS_SCREEN("progress_screen"),
     TRANSECT_WALK_SCREEN("transect_walk_screen"),
     RANKED_DIDI_LIST_SCREEN("ranked_didi_list_screen"),
-    SOCIAL_MAPPING_SCREEN("social_mapping_screen");
+    DIGITAL_FORM_A_SCREEN("digital_form_a_screen"),
+    SOCIAL_MAPPING_SCREEN("social_mapping_screen"),
+    VILLAGE_SELECTION_SCREEN("village_selection_screen");
 
 
     override fun toString(): String {

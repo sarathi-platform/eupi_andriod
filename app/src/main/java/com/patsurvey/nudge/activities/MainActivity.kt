@@ -20,6 +20,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import android.Manifest
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -72,6 +73,7 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                         .background(blueDark),
                 ) {
                     if (isLoggedIn)
+//                        VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
                         HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
                     else {
                         StartFlowNavigation(navController = navController)
