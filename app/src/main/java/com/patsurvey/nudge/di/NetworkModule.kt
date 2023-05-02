@@ -1,22 +1,30 @@
 package com.patsurvey.nudge.di
 
+import android.app.Application
+import android.content.Context
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.network.BaseNetworkConstants
 import com.patsurvey.nudge.network.ErrorInterceptor
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.ConnectionPool
-import okhttp3.OkHttpClient
+import okhttp3.*
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import javax.net.ssl.HostnameVerifier
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLSession
 
 /**
  * created by anil on 18/05/22
@@ -24,7 +32,19 @@ import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module
-class NetworkModule {
+object NetworkModule {
+
+  @Singleton
+  @Provides
+  fun provideInterceptors():ArrayList<Interceptor>{
+    val interceptors = arrayListOf<Interceptor>()
+    if(BuildConfig.DEBUG){
+      val loggingInterceptor=CurlLoggingInterceptor()
+      interceptors.add(loggingInterceptor)
+    }
+    return interceptors
+  }
+
 
   @Provides
   @Singleton
@@ -39,13 +59,43 @@ class NetworkModule {
    */
   @Singleton
   @Provides
-  fun provideRetrofit(gson: Gson): Retrofit {
-    val baseUrl = BaseNetworkConstants.DOMAIN
-    val builder = Retrofit.Builder()
-      .baseUrl(baseUrl)
-      .client(provideOkHttpClient())
-    builder.addConverterFactory(GsonConverterFactory.create(gson))
-    return builder.build()
+  fun provideRetrofit(
+    interceptors: ArrayList<Interceptor>,
+    sharedPref: PrefRepo,
+    application: Application
+  ): Retrofit {
+    val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
+    val timeout = 60.toLong()
+    val clientBuilder =
+      OkHttpClient.Builder()
+        .connectTimeout(timeout, TimeUnit.SECONDS)
+        .readTimeout(timeout, TimeUnit.SECONDS)
+        .cache(cache)
+    clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
+    clientBuilder.addInterceptor(
+      getHeaderInterceptor(
+        sharedPref,
+        application.applicationContext
+      )
+    )
+    if (interceptors.isNotEmpty()) {
+      interceptors.forEach { interceptor ->
+        clientBuilder.addInterceptor(interceptor)
+      }
+    }
+    clientBuilder.addInterceptor { chain ->
+      val request = chain.request()
+      val response = chain.proceed(request)
+      response
+    }
+
+    val gson = GsonBuilder().setLenient().create()
+
+    return Retrofit.Builder()
+      .client(clientBuilder.build())
+      .addConverterFactory(GsonConverterFactory.create(gson))
+      .baseUrl(BuildConfig.BASE_URL)
+      .build()
   }
 
   @Singleton
@@ -76,4 +126,78 @@ class NetworkModule {
     return httpClientBuilder.build()
   }
 
+
+  private fun getNetworkInterceptor(context: Context): Interceptor {
+    return object : Interceptor {
+      @Throws(IOException::class)
+      override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest = chain.request()
+        val maxAge = 24 * 60 * 60//24hours
+        val cacheHeaderValue =
+          if (DeviceInfoUtils.hasNetwork(context))
+            "public, max-age=$maxAge"
+          else "public, only-if-cached, max-stale=$maxAge"
+
+        //val request = originalRequest.newBuilder().build()
+        val request = originalRequest.newBuilder()
+            .cacheControl(CacheControl.FORCE_NETWORK)
+            .build()
+        val response = chain.proceed(request)
+        return response.newBuilder()
+          .removeHeader("Pragma")
+          .removeHeader("Cache-Control")
+          .header("Cache-Control", cacheHeaderValue)
+          .build()
+      }
+
+    }
+  }
+
+  /**
+   * Header Interceptor For API Call
+   */
+
+  private fun getHeaderInterceptor(sharedPref: PrefRepo, context: Context): Interceptor {
+    return object : Interceptor {
+      @Throws(IOException::class)
+      override fun intercept(chain: Interceptor.Chain): Response {
+        var headerType = chain.request().headers(KEY_HEADER_TYPE)
+
+        if (headerType.isNullOrEmpty()) {
+          headerType = arrayListOf(HEADER_TYPE_NONE)
+        }
+        val requestBuilder = chain.request().newBuilder()
+
+        for(headers in headerType) {
+           when(headers){
+             KEY_HEADER_MOBILE->{
+               if (sharedPref.getLoginStatus()) {
+                   requestBuilder.addHeader(
+                   KEY_HEADER_AUTH,
+                   "bearer " + (sharedPref.getAccessToken()!!)
+                 )
+               }
+             }
+           }
+        }
+
+        if(BuildConfig.FLAVOR.equals("staging")){
+          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_STAGE)
+        }
+        else if(BuildConfig.FLAVOR.equals("uat")){
+          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_UAT)
+        }
+        else{
+          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_PROD)
+        }
+        val method = chain.request().method
+        if(method.equals("POST", true)){
+          requestBuilder.cacheControl(CacheControl.FORCE_NETWORK)
+        }
+        requestBuilder.removeHeader(KEY_HEADER_TYPE)
+        val request = requestBuilder.build()
+        return chain.proceed(request)
+      }
+    }
+  }
 }

@@ -3,6 +3,7 @@ package com.patsurvey.nudge.data.prefs
 import android.content.Context
 import android.content.SharedPreferences
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
+import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -48,5 +49,18 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getSelectedVillage(): Int {
         return prefs.getInt(SELECTED_VILLAGE_ID, 0)
+    }
+
+    override fun getLoginStatus(): Boolean {
+        return !prefs.getString(ACCESS_TOKEN, null).isNullOrBlank()
+    }
+
+
+    override fun getAccessToken(): String? {
+        return prefs.getString(ACCESS_TOKEN, "")
+    }
+
+    override fun saveAccessToken(token: String) {
+        prefs.edit().putString(ACCESS_TOKEN, token).apply()
     }
 }

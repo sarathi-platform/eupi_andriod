@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -25,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -45,13 +47,7 @@ fun OtpVerificationScreen(
         mutableStateOf(true)
     }
     val context= LocalContext.current
-    val textAlpha: Float by animateFloatAsState(
-        targetValue = if (isResendOTPVisible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 100,
-            easing = LinearEasing,
-        )
-    )
+
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -63,14 +59,15 @@ fun OtpVerificationScreen(
             .then(modifier)
 
     ) {
+        SarathiLogoTextView()
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
             Text(
-                text = "Enter OTP",
+                text = stringResource(id = R.string.enter_otp_text),
                 color = blueDark,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Start
@@ -93,12 +90,13 @@ fun OtpVerificationScreen(
                     otpValue = otp
                 })
             }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_30)))
             Row(horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()) {
 
                 Text(
                     text = stringResource(id = R.string.resend_otp),
-                    color = greenDark,
+                    color = colorResource(id = R.color.resend_otp_color),
                     fontSize = 14.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
@@ -156,14 +154,15 @@ fun OtpVerificationScreen(
 //                }
 
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
                 Button(
                     onClick = {
                         navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
                     },
                     modifier = Modifier
                         .background(Color.Transparent)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.height_60dp)),
                     colors = ButtonDefaults.buttonColors(blueDark),
                     shape = RoundedCornerShape(6.dp)
                 ) {

@@ -5,13 +5,15 @@ import com.patsurvey.nudge.network.interfaces.SuccessAPICallback
 import com.patsurvey.nudge.network.handler.ResponseHandler
 import androidx.lifecycle.MutableLiveData
 import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorDataModel
 import kotlinx.coroutines.*
 import retrofit2.Call
+import retrofit2.Response
 import javax.inject.Inject
 
-open class BaseRepository {
+open class BaseRepository{
 
     // job
     private var repoJob = Job()
@@ -21,71 +23,21 @@ open class BaseRepository {
     @Inject
     lateinit var apiInterface: ApiService
 
-    /**
-     * generic async api call for retrofit
-     *
-     * @return live data
-     */
-    fun callApi(
-        call: Call<*>,
-        response: MutableLiveData<ApiResponseModel>? = null,
-        onSuccess: ((BaseResponseModel) -> Boolean)? = null,
-        onFailure: ((Int) -> Boolean)? = null
-    ): MutableLiveData<ApiResponseModel> {
-
-        val onResponseLiveData = response ?: MutableLiveData()
-
-        val responseHandler = ResponseHandler(
-            object :
-                SuccessAPICallback<BaseResponseModel> {
-                override fun onResponse(t: BaseResponseModel) {
-                    uiScope.launch {
-                        withContext(Dispatchers.IO) {
-                            val handled = onSuccess?.invoke(t)
-                            if (handled == null || !handled) {
-                                onResponseLiveData.postValue(
-                                    ApiResponseModel(t, null, null, null)
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            object : FailureAPICallback {
-                override fun onFailure(
-                    code: Int,
-                    reqUrl: String,
-                    throwable: Throwable?,
-                    errorMessage: String?,
-                    httpCode: Int,
-                    mError: ErrorDataModel?
-                ) {
-                    val handled = onFailure?.invoke(code)
-                    if (handled == null || !handled) {
-                        onResponseLiveData.value =
-                            ApiResponseModel(
-                                null,
-                                code,
-                                reqUrl,
-                                throwable,
-                                errorMessage,
-                                httpCode = httpCode,
-                                mError = mError
-                            )
-                    }
+    suspend fun <T> safeApiCall(apiCall:suspend ()->Response<T>):NetworkResult<T>{
+        try {
+            val response=apiCall()
+            if(response.isSuccessful){
+                val body=response.body()
+                body?.let {
+                    return NetworkResult.Success(it)
                 }
             }
-        )
-
-
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    (call as Call<BaseResponseModel>).enqueue(responseHandler)
-                } catch (ignored: Exception) {
-                    // ignored here because failure will be handled by ResponseHandler.FailureAPICallback
-                }
-
-
-        return onResponseLiveData
+            return error("${response.code()} ${response.message()}")
+        }catch (e:Exception){
+            return error(e.message ?: e.toString())
+        }
     }
+
+    private fun <T> error(errorMessage: String): NetworkResult<T> =
+        NetworkResult.Error("Api call failed $errorMessage")
 }

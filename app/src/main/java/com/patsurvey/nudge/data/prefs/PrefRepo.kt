@@ -11,4 +11,10 @@ interface PrefRepo {
    fun saveSelectedVillage(id: Int)
 
    fun getSelectedVillage(): Int?
+
+   fun getLoginStatus(): Boolean
+
+   fun getAccessToken(): String?
+   fun saveAccessToken(token: String)
+
 }
