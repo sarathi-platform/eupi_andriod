@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -46,13 +47,7 @@ fun OtpVerificationScreen(
         mutableStateOf(true)
     }
     val context= LocalContext.current
-    val textAlpha: Float by animateFloatAsState(
-        targetValue = if (isResendOTPVisible) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 100,
-            easing = LinearEasing,
-        )
-    )
+
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -64,6 +59,7 @@ fun OtpVerificationScreen(
             .then(modifier)
 
     ) {
+        SarathiLogoTextView()
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

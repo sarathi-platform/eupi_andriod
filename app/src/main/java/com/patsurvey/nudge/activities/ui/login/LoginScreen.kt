@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.showCustomToast
@@ -46,6 +47,8 @@ fun LoginScreen(
             )
             .then(modifier)
     ) {
+            SarathiLogoTextView()
+
 
         Column(
             modifier = Modifier
