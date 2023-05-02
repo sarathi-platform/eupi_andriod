@@ -86,9 +86,6 @@ object NetworkModule {
     clientBuilder.addInterceptor { chain ->
       val request = chain.request()
       val response = chain.proceed(request)
-      if (response.code == RESPONSE_CODE_UNAUTHORIZED) {
-//        localBroadcastHelper.sendBroadcast(application.applicationContext, localBroadcastHelper.ACTION_LOGOUT)
-      }
       response
     }
 
