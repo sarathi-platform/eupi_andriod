@@ -26,6 +26,7 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
@@ -44,27 +45,26 @@ fun LanguageScreen(
             .background(color = Color.White)
             .fillMaxSize()
             .padding(
-                horizontal = dimensionResource(id = R.dimen.padding_16dp),
-                vertical = dimensionResource(
-                    id = R.dimen.padding_32dp
-                )
+                horizontal = dimensionResource(id = R.dimen.padding_16dp)
             )
+            .padding(bottom = dimensionResource(id = R.dimen.padding_32dp))
             .then(modifier)
     ) {
         Column(
-            modifier = Modifier
-                .align(Alignment.Center),
+            modifier = Modifier,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            SarathiLogoTextView()
+
             Text(
                 text = stringResource(id = R.string.choose_language),
                 color = textColorBlueLight,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
-
+                modifier=Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_30))
                 )
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Column(modifier = Modifier) {
                 viewModel.languageList?.value?.let {
                     LazyColumn {
@@ -127,6 +127,7 @@ fun LanguageItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp, horizontal = 0.dp)
+                .height(dimensionResource(id = R.dimen.height_60dp))
                 .clip(RoundedCornerShape(6.dp))
                 .border(
                     width = 1.dp,
@@ -134,7 +135,6 @@ fun LanguageItem(
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(if (index == selectedIndex) languageItemActiveBg else Color.White)
-                .padding(vertical = 20.dp, horizontal = 0.dp)
                 .clickable {
                     onClick(index)
                 }

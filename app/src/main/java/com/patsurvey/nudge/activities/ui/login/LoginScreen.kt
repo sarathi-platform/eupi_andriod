@@ -11,8 +11,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.showCustomToast
@@ -44,13 +47,16 @@ fun LoginScreen(
             )
             .then(modifier)
     ) {
+            SarathiLogoTextView()
 
+
+        viewModel.fetchDetails()
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
         ) {
             Text(
-                text = stringResource(id = R.string.mobile_text),
+                text = stringResource(id = R.string.enter_mobile_text),
                 color = blueDark,
                 fontSize = 16.sp,
                 fontFamily = NotoSans,
@@ -60,32 +66,34 @@ fun LoginScreen(
                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_6)))
-            Row(modifier = Modifier
-                .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.height_50dp))
-                .border(
-                    dimensionResource(id = R.dimen.dp_1),
-                    Color.Black,
-                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                )
+            Row(verticalAlignment = Alignment.CenterVertically
+                ,modifier = Modifier
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.height_60dp))
+                    .border(
+                        dimensionResource(id = R.dimen.dp_1),
+                        blueDark,
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                    )
             ) {
 
                 Text(text = "+91 - ",
-                    color = languageItemInActiveBorderBg,
-                    fontSize = 16.sp,
+                    color = colorResource(id = R.color.placeholder_91_color),
+                    fontSize = 18.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
-                   modifier = Modifier.padding(top = dimensionResource(id = R.dimen.dp_10),
-                                                bottom = dimensionResource(id = R.dimen.dp_10),
-                                                start = dimensionResource(id = R.dimen.dp_20)))
-                    TextField(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(dimensionResource(id = R.dimen.height_50dp))
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp_20)))
+                    TextField(modifier = Modifier
                             .background(Color.Transparent),
                         singleLine=true,
                         value = viewModel.mobileNumber.value,
+                        textStyle = TextStyle(
+                            fontSize = 18.sp,
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.Medium,
+                            textAlign = TextAlign.Start
+                        ),
                         onValueChange ={
                             if(it.text.length<= MOBILE_NUMBER_LENGTH)
                                      viewModel.mobileNumber.value=it
@@ -102,8 +110,7 @@ fun LoginScreen(
                             autoCorrect = true,
                             keyboardType = KeyboardType.Number,
                         ),
-
-                        )
+                    )
 
 
                 }
