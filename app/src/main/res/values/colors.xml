@@ -22,5 +22,7 @@
 
     <color name="grey_lighter">#F7F7F7</color>
     <color name="placeholder_color">#FCF6F0</color>
+    <color name="placeholder_91_color">#ACACAC</color>
+    <color name="resend_otp_color">#439A86</color>
     <color name="text_didi_name_color">#693D30</color>
 </resources>
