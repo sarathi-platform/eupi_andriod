@@ -30,7 +30,8 @@ import com.patsurvey.nudge.utils.BottomNavItem
 @Composable
 fun HomeScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+
 ) {
     val homeScreenNavController = rememberNavController()
     val stepsNavController = rememberNavController()
@@ -55,11 +56,11 @@ fun HomeScreen(
                         ScreenRoutes.DIDI_SCREEN.route,
                         painterResource(R.drawable.didi_icon)
                     ),
-                    BottomNavItem(
-                        stringResource(R.string.more_item_text),
-                        ScreenRoutes.MORE_SCREEN.route,
-                        painterResource(R.drawable.more_icon)
-                    )
+//                    BottomNavItem(
+//                        stringResource(R.string.more_item_text),
+//                        ScreenRoutes.MORE_SCREEN.route,
+//                        painterResource(R.drawable.more_icon)
+//                    )
                 ),
                 navController = homeScreenNavController,
                 onItemClick = {
@@ -81,12 +82,11 @@ fun HomeScreen(
                 homeScreenNavController = homeScreenNavController,
                 stepsNavHostController = stepsNavController,
                 modifier = Modifier
-                    .padding(top = 4.dp)
                     .constrainAs(homeScreen) {
                         top.linkTo(networkBanner.bottom)
                         start.linkTo(parent.start)
                     }
-                    .padding(top = 4.dp, bottom = it.calculateBottomPadding())
+                    .padding(top = 24.dp, bottom = it.calculateBottomPadding())
 
             )
         }

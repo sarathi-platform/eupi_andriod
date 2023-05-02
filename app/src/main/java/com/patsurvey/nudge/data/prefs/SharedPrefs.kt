@@ -14,6 +14,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     companion object {
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val SELECTED_VILLAGE_ID = "selected_village_id"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -32,6 +33,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
     }
 
+
     override fun isPermissionGranted(): Boolean {
         /*TODO("Not yet implemented")*/
         return false
@@ -39,6 +41,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun savePermissionGranted(isGranted: Boolean?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun saveSelectedVillage(id: Int) {
+        prefs.edit().putInt(SELECTED_VILLAGE_ID, id).apply()
+    }
+
+    override fun getSelectedVillage(): Int {
+        return prefs.getInt(SELECTED_VILLAGE_ID, 0)
     }
 
     override fun getLoginStatus(): Boolean {
