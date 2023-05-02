@@ -35,13 +35,13 @@ class ProgressScreenViewModel @Inject constructor(
             withContext(Dispatchers.Default) {
                 val sampleVillageList = arrayListOf<VillageListModal>()
                 sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 1", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 2", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 3", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 4", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 5", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 6", voName = "Sundar Pahar Mahila Mandal"))
+                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 7", voName = "Sundar Pahar Mahila Mandal"))
                 _villagList.emit(sampleVillageList)
             }
         }

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -61,7 +62,9 @@ fun VillageSelectionScreen(
                     viewModel.villageSelected.value,
                     ScreenRoutes.VILLAGE_SELECTION_SCREEN
                 ) {
+                    Log.d("VILLAGE_SELECTION_SCREEN", "before viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
                     viewModel.villageSelected.value = it
+                    Log.d("VILLAGE_SELECTION_SCREEN", "after viewModel.villageSelected.value: ${viewModel.villageSelected.value} & it: $it")
                     navController.navigate(ScreenRoutes.HOME_SCREEN.route)
                 }
             }

@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,6 +14,7 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 
 @Composable
