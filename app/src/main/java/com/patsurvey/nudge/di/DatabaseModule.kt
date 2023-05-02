@@ -29,6 +29,7 @@ object DatabaseModule {
     fun provideVillageDao(db: NudgeDatabase) = db.villageListDao()
 
     @Provides
-    fun provideVillageEntity() = VillageEntity()
+    @Singleton
+    fun provideUserDao(db: NudgeDatabase) = db.userDao()
 
 }
