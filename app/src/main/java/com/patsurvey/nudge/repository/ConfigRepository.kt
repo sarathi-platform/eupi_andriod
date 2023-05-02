@@ -2,6 +2,8 @@ package com.patsurvey.nudge.repository
 
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.NudgeDatabase
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.NetworkResult
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +13,8 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ConfigRepository @Inject constructor(
-    prefRepo: PrefRepo
+    prefRepo: PrefRepo,
+    villageDao: VillageListDao
 ):BaseRepository() {
 
     suspend fun getConfigurationDetails(): Flow<NetworkResult<List<String>>> {
@@ -19,5 +22,6 @@ class ConfigRepository @Inject constructor(
             emit(safeApiCall { apiInterface.configDetails() })
         }.flowOn(Dispatchers.IO)
     }
+
 
 }
