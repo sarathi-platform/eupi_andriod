@@ -54,3 +54,4 @@ val black1 = Color(0xCC271914)
 val white = Color(0xFFFFFFFF)
 
 val black100Percent = Color(0xFF271914)
+val lightGrayColor = Color(0xFFEAEAEA)
