@@ -8,6 +8,7 @@ enum class ScreenRoutes(val route: String) {
     HOME_SCREEN("home_route"),
     PROFILE_SCREEN("profile_screen"),
     DIDI_SCREEN("didi_screen"),
+    ADD_DIDI_SCREEN("add_didi_screen"),
     MORE_SCREEN("more_screen"),
     PROGRESS_SCREEN("progress_screen"),
     TRANSECT_WALK_SCREEN("transect_walk_screen"),

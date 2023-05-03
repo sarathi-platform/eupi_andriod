@@ -14,5 +14,21 @@ data class DidiDetailsModel(
 
     @SerializedName("village")
     @Expose
-    val village:String
+    val village:String,
+
+    @SerializedName("tola")
+    @Expose
+    val tola:String = "",
+
+    @SerializedName("caste")
+    @Expose
+    val caste:String = "",
+
+    @SerializedName("house_number")
+    @Expose
+    val houseNumber:String = "",
+
+    @SerializedName("dada_name")
+    @Expose
+    val dadaName:String = ""
 )

@@ -217,7 +217,8 @@ fun TransectWalkScreen(
                                 )
                                 BlueButtonWithIcon(
                                     buttonText = stringResource(id = R.string.add_tola),
-                                    icon = Icons.Default.Add
+                                    icon = Icons.Default.Add,
+                                    modifier = Modifier.padding(top = 16.dp)
                                 ) {
                                     if (!showAddTolaBox)
                                         showAddTolaBox = true

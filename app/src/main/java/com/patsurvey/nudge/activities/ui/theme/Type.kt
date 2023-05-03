@@ -86,3 +86,17 @@ val smallestTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 10.sp
 )
+
+val didiDetailItemStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    color = textColorDark80,
+    fontSize = 16.sp
+)
+
+val didiDetailLabelStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    color = textColorBlueLight,
+    fontSize = 16.sp
+)

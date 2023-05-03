@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities
 
-import android.app.Activity
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.*
@@ -16,11 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
 @Composable
-fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
+fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
     val context = LocalContext.current
     var houseNumber by remember {
         mutableStateOf("")
@@ -55,7 +61,7 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .weight(1f),
+                .weight(1f).padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             EditTextWithTitle(
@@ -147,11 +153,13 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
 
         DoubleButtonBox(
             modifier = Modifier.shadow(10.dp),
-            positiveButtonText = stringResource(id = R.string.submit),
-            negativeButtonText = stringResource(id = R.string.go_back_text),
+            negativeButtonRequired = false,
+            positiveButtonText = stringResource(id = R.string.add_didi),
             positiveButtonOnClick = {
                 val allData = "$houseNumber, $didiName, $dadaName, $casteSelectedText, $tolaSelectedText"
                 Toast.makeText(context, allData, Toast.LENGTH_SHORT).show()
+                didiViewModel.addDidiFromData(houseNumber, didiName, dadaName, casteSelectedText, tolaSelectedText)
+                navController.popBackStack()
             },
             negativeButtonOnClick = {
 
@@ -164,5 +172,5 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
 @Preview(showBackground = true)
 @Composable
 fun AddDidiPreview() {
-    AddDidiScreen(modifier = Modifier)
+    AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel())
 }

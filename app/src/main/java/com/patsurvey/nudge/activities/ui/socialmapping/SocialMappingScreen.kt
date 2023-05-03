@@ -330,9 +330,11 @@ fun ExpandableContent(rank:String,
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
                     }
-                    .padding(start = dimensionResource(id = R.dimen.dp_10),
+                    .padding(
+                        start = dimensionResource(id = R.dimen.dp_10),
                         end = dimensionResource(id = R.dimen.dp_10),
-                        bottom = dimensionResource(id = R.dimen.dp_10)),
+                        bottom = dimensionResource(id = R.dimen.dp_10)
+                    ),
                     verticalArrangement = Arrangement.Center
                 ) {
                     Card(modifier = Modifier
