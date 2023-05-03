@@ -3,7 +3,8 @@ package com.patsurvey.nudge.utils
 const val BLANK_STRING=""
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
-var OTP_RESEND_DURATION: Long = 10 * 1000
+const val OTP_LENGTH = 6
+var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
 const val POOR_STRING="Poor"
 const val MEDIUM_STRING="Medium"
@@ -24,3 +25,5 @@ const val NUDGE_DATABASE = "NudgeDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val USER_TABLE_NAME = "user_table"
+
+const val ONLINE_STATUS = "online_status"

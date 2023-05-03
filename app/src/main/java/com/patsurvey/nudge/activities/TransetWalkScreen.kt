@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,7 +32,6 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.*
 
-@Preview
 @Composable
 fun TransectWalkScreen(
     modifier: Modifier = Modifier,
@@ -177,21 +177,7 @@ fun TransectWalkScreen(
                             tolaName = tolaToBeEdited.name,
                             isLocationAvailable = (tolaToBeEdited.location.lat != null && tolaToBeEdited.location.long != null),
                             onSaveClicked = { name, location ->
-
-                                if (tolaToBeEdited.name.isNotEmpty()) {
-                                    val index = tolaList.indexOf(tolaToBeEdited)
-                                    tolaList.remove(tolaToBeEdited)
-                                    tolaList.add(
-                                        index, Tola(
-                                            name,
-                                            location ?: LocationCoordinates()
-                                        )
-                                    )
-                                } else {
-                                    tolaList.add(Tola(name, location ?: LocationCoordinates()))
-                                }
-
-                                tolaToBeEdited = Tola()
+                                tolaList.add(Tola(name, location ?: LocationCoordinates()))
                                 showAddTolaBox = false
                             },
                             onCancelClicked = {
@@ -253,10 +239,22 @@ fun TransectWalkScreen(
                                         isLocationAvailable = (tola.location.lat != null && tola.location.long != null),
                                         deleteButtonClicked = {
                                             tolaList.remove(tola)
+                                            showAddTolaBox = false
                                         },
-                                        editButtonClicked = {
-                                            tolaToBeEdited = tola
-                                            showAddTolaBox = true
+                                        saveButtonClicked = { name, location ->
+                                            showAddTolaBox = if (name == tola.name && (location?.lat == tola.location.lat && location?.long == tola.location.long))
+                                                false
+                                            else {
+                                                val index = tolaList.indexOf(tola)
+                                                tolaList.remove(tola)
+                                                tolaList.add(
+                                                    index, Tola(
+                                                        name,
+                                                        location ?: LocationCoordinates()
+                                                    )
+                                                )
+                                                false
+                                            }
                                         }
                                     )
                                 }

@@ -104,24 +104,50 @@ fun ProgressScreen(
                         .background(Color.White)
                 ) {
 
-                    Text(
-                        text = "Akhilesh Negi",
-                        color = textColorDark,
-                        modifier = Modifier
-                            .padding(top = 20.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start,
-                        style = largeTextStyle
-                    )
-                    Text(
-                        text = "ID: 234567",
-                        color = textColorDark,
-                        modifier = Modifier
-                            .padding(top = 6.dp, bottom = 16.dp)
-                            .fillMaxWidth(),
-                        textAlign = TextAlign.Start,
-                        style = smallTextStyle
-                    )
+                    ConstraintLayout() {
+                        val (userDetail, moreMenu) = createRefs()
+                        Column(
+                            modifier = Modifier
+                                .constrainAs(userDetail) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                }
+                        ) {
+                            Text(
+                                text = "Akhilesh Negi",
+                                color = textColorDark,
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Start,
+                                style = largeTextStyle
+                            )
+                            Text(
+                                text = "ID: 234567",
+                                color = textColorDark,
+                                modifier = Modifier
+                                    .padding(top = 6.dp, bottom = 16.dp)
+                                    .fillMaxWidth(),
+                                textAlign = TextAlign.Start,
+                                style = smallTextStyle
+                            )
+                        }
+                        Icon(
+                            painter = painterResource(id = R.drawable.more_icon),
+                            contentDescription = "more action button",
+                            tint = blueDark,
+                            modifier = Modifier
+                                .constrainAs(moreMenu) {
+                                    top.linkTo(userDetail.top, margin = 10.dp)
+                                    end.linkTo(parent.end, margin = 10.dp)
+                                }
+                                .padding(20.dp)
+                                .clickable {
+
+                                }
+                        )
+
+                    }
 
                     Box(
                         modifier = Modifier
@@ -293,19 +319,19 @@ fun StepsBox(
                         onclick(index)
                     }
                 }
-                    /*BlueButton(
-                        buttonText = "Start Now",
-                        isArrowRequired = true,
-                        shouldBeActive = shouldBeActive,
-                        modifier = Modifier
-                            .padding(end = 14.dp)
-                            .weight(0.8f),
-                        onClick = {
-                            onclick(index)
-                        }
-                    )*/
-                }
+                /*BlueButton(
+                    buttonText = "Start Now",
+                    isArrowRequired = true,
+                    shouldBeActive = shouldBeActive,
+                    modifier = Modifier
+                        .padding(end = 14.dp)
+                        .weight(0.8f),
+                    onClick = {
+                        onclick(index)
+                    }
+                )*/
             }
+        }
 
 
         Box(

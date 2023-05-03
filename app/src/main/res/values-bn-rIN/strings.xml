@@ -56,6 +56,13 @@
 
     <string name="add_tola">টোলা যোগ করুন</string>
 
+    <string name="delete_tola_text">টোলা মুছুন</string>
+    <string name="save_tola_text">সংরক্ষণ</string>
+
+    <string name="tola_name_text">টোলা</string>
+    <string name="cancel_tola_text">বাতিল করুন</string>
+    <string name="get_location_text">Get Location</string>
+    <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
 
 

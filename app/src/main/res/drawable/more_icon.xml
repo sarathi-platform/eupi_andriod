@@ -11,14 +11,14 @@
             android:translateY="0.751">
             <path
                 android:pathData="M22.072 15H4.5"
-                android:strokeColor="#271914"
+                android:strokeColor="#222E50"
                 android:strokeWidth="1.5"
                 android:strokeLineCap="round"
                 android:strokeLineJoin="round" />
         </group>
         <path
             android:pathData="M22.072 9H4.5"
-            android:strokeColor="#271914"
+            android:strokeColor="#222E50"
             android:strokeWidth="1.5"
             android:strokeLineCap="round"
             android:strokeLineJoin="round" />
@@ -26,7 +26,7 @@
             android:translateY="1.502">
             <path
                 android:pathData="M22.072 21H4.5"
-                android:strokeColor="#271914"
+                android:strokeColor="#222E50"
                 android:strokeWidth="1.5"
                 android:strokeLineCap="round"
                 android:strokeLineJoin="round" />
