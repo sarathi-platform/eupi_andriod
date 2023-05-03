@@ -68,6 +68,7 @@
     <string name="participation_date_wealth_ranking">भागीदारी के तारीख धन रैंकिंग के बा</string>
     <string name="vo_name">वीओ के नाम बा</string>
     <string name="total">कुल</string>
+    <string name="otp_send_to_mobile_number_message">%1$ के मोबाइल नंबर पर भेजल गइल ओटीपी</string>
 
 
 </resources>

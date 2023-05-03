@@ -84,7 +84,7 @@ fun LanguageScreen(
         Button(
             onClick = {
                 viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
-                    it.code?.let { code ->
+                    it.langCode?.let { code ->
                         viewModel.prefRepo.saveAppLanguage(code)
                         (context as MainActivity).setLanguage(code)
                     }
@@ -116,7 +116,7 @@ fun LanguageScreen(
 
     LaunchedEffect(key1 = Unit){
         viewModel.languageList.value?.mapIndexed{index, languageEntity ->
-            if(languageEntity.code.equals(viewModel.prefRepo.getAppLanguage(),true)){
+            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
                 viewModel.languagePosition.value=index
             }
         }
@@ -149,7 +149,7 @@ fun LanguageItem(
                 }
         ) {
             Text(
-                text = languageModel.name,
+                text = languageModel.language,
                 color = blueDark,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,

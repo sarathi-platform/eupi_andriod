@@ -21,11 +21,6 @@ class LanguageViewModel @Inject constructor(
   val languageListDao: LanguageListDao
 ) :BaseViewModel(){
 
-    var job: Job? = null
-
-    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
-    }
 
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
@@ -42,14 +37,5 @@ class LanguageViewModel @Inject constructor(
                 _languageList.value=list
             }
         }
-    }
-
-    private fun onError(message: String) {
-//        usersLoadError.value = message
-//        loading.value = false
-    }
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
     }
 }

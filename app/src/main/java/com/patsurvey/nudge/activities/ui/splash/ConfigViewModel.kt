@@ -16,46 +16,19 @@ class ConfigViewModel @Inject constructor(
     apiInterface: ApiService,
     languageListDao: LanguageListDao
 ):BaseViewModel()  {
-    var job: Job? = null
 
-    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
-    }
     init {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiInterface.configDetails()
             withContext(Dispatchers.IO) {
                 if (response.status.equals(SUCCESS,true)) {
                     response.data?.let {
-                        it.languageList.forEachIndexed {index, language->
-                            var code="en"
-                            var isSelected=true
-                                 if(language.equals("Hindi",true)){
-                                  code="hi"
-                                     isSelected=false
-                                 }
-                            if(language.equals("Bengali",true)){
-                                code="bn-rIN"
-                                isSelected=false
-                            }
-                                languageListDao.insertLanguage(LanguageEntity(index,language,code,isSelected))
-                             }
+                        languageListDao.insertAll(it.languageList)
                     }
                 } else {
                     onError("Error : ${response.message} ")
                 }
             }
         }
-
     }
-
-    private fun onError(message: String) {
-//        usersLoadError.value = message
-//        loading.value = false
-    }
-    override fun onCleared() {
-        super.onCleared()
-        job?.cancel()
-    }
-
 }

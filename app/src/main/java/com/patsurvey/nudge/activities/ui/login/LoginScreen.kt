@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -28,6 +29,7 @@ import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.showCustomToast
 
+@SuppressLint("StringFormatInvalid")
 @Composable
 fun LoginScreen(
     navController: NavController,
@@ -125,8 +127,11 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
             Button(onClick = {
-                        showCustomToast(context = context,"OTP sent to ${viewModel.mobileNumber.value.text}")
-                           navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                viewModel.generateOtp{
+                    showCustomToast(context,context.getString(R.string.otp_send_to_mobile_number_message,
+                        viewModel.mobileNumber.value.text))
+                    navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                }
                              },
                 modifier = Modifier
                     .fillMaxWidth()

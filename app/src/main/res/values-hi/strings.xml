@@ -66,7 +66,7 @@
 
 
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \n रैंकिंग सर्वेक्षण </string>
-
+    <string name="otp_send_to_mobile_number_message">" %1$s मोबाइल नंबर पर OTP भेजा गया"</string>
 
 
 </resources>
