@@ -22,4 +22,5 @@ const val SUCCESS = "SUCCESS"
 const val SPLASH_SCREEN_DURATION = 2000L
 const val NUDGE_DATABASE = "NudgeDatabase"
 const val VILLAGE_TABLE_NAME = "village_table"
+const val LANGUAGE_TABLE_NAME = "language_table"
 const val USER_TABLE_NAME = "user_table"

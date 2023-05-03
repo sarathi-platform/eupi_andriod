@@ -21,7 +21,8 @@ import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 fun StartFlowNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = ScreenRoutes.START_SCREEN.route) {
         composable(route = ScreenRoutes.START_SCREEN.route) {
-            SplashScreen(navController = navController, modifier = Modifier.fillMaxSize())
+            SplashScreen(navController = navController, modifier = Modifier.fillMaxSize(),
+                hiltViewModel())
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
             LanguageScreen(

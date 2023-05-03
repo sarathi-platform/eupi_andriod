@@ -1,9 +1,10 @@
 package com.patsurvey.nudge.base
 
-import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.network.NetworkResult
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.repository.ConfigRepositoryLocal
+import com.patsurvey.nudge.utils.SUCCESS
 import kotlinx.coroutines.*
 import retrofit2.Response
 import javax.inject.Inject
