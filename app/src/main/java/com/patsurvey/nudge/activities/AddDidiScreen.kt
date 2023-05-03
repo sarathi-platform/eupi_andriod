@@ -18,11 +18,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
 @Composable
-fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
+fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
     val context = LocalContext.current
     var houseNumber by remember {
         mutableStateOf("")
@@ -154,6 +158,8 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
             positiveButtonOnClick = {
                 val allData = "$houseNumber, $didiName, $dadaName, $casteSelectedText, $tolaSelectedText"
                 Toast.makeText(context, allData, Toast.LENGTH_SHORT).show()
+                didiViewModel.addDidiFromData(houseNumber, didiName, dadaName, casteSelectedText, tolaSelectedText)
+                navController.popBackStack()
             },
             negativeButtonOnClick = {
 
@@ -166,5 +172,5 @@ fun AddDidiScreen(modifier: Modifier, isOnline: Boolean = true) {
 @Preview(showBackground = true)
 @Composable
 fun AddDidiPreview() {
-    AddDidiScreen(modifier = Modifier)
+    AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel())
 }

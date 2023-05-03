@@ -43,24 +43,28 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BlueButtonWithIcon
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 
 @Composable
-fun SocialMappingDidiListScreen(modifier: Modifier, isOnline: Boolean = true) {
-    val didiList = listOf(
+fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier, isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
+    val didiList = didiViewModel.didiList/*listOf(
         DidiDetailsModel(1, "didi 1", "sundar pahar", "sundar pahar", "Kahar", "12", "Rajesh"),
         DidiDetailsModel(2, "didi 2", "sundar pahar2", "sundar pahar2", "Kahar", "131", "Rajesh"),
         DidiDetailsModel(3, "didi 3", "sundar pahar3", "sundar pahar3", "Kahar", "14", "Rajesh"),
         DidiDetailsModel(4, "didi 4", "sundar pahar4", "sundar pahar4", "Kahar", "15", "Rajesh"),
         DidiDetailsModel(5, "didi 5", "sundar pahar5", "sundar pahar5", "Kahar", "16", "Rajesh")
-    )
+    )*/
 
     val expandedIds = remember {
         mutableStateListOf<Int>()
@@ -89,7 +93,7 @@ fun SocialMappingDidiListScreen(modifier: Modifier, isOnline: Boolean = true) {
                 buttonText = stringResource(id = R.string.add_didi),
                 icon = Icons.Default.Add
             ) {
-
+                navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
             }
         }
 
@@ -496,7 +500,9 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expe
                 modifier = Modifier.layoutId("latestStatus")
             )
             
-            Spacer(modifier = Modifier.layoutId("bottomPadding").height(30.dp))
+            Spacer(modifier = Modifier
+                .layoutId("bottomPadding")
+                .height(30.dp))
         }
     }
 }
@@ -550,5 +556,5 @@ fun CircularDidiImage(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SocialMappingDidiListPreview() {
-    SocialMappingDidiListScreen(modifier = Modifier, isOnline = true)
+    SocialMappingDidiListScreen(navController = rememberNavController(), modifier = Modifier, isOnline = true, didiViewModel = viewModel())
 }
