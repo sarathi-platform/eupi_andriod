@@ -15,15 +15,9 @@ interface LanguageListDao {
     @Query("Select * FROM $LANGUAGE_TABLE_NAME where id = :id")
     fun getLanguage(id: Int): LanguageEntity
 
-    @Query("Select * FROM $LANGUAGE_TABLE_NAME where isSelected = 1")
-    fun getSelectedLanguage(): LanguageEntity
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLanguage(language: LanguageEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(villages: List<LanguageEntity>)
-
-    @Query("UPDATE $LANGUAGE_TABLE_NAME SET isSelected=:selected WHERE id = :id")
-    fun updateSelectedLanguage(selected: Boolean, id: Int)
 }

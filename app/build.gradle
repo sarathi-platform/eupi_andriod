@@ -45,17 +45,17 @@ android {
         uat{
             applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "Nudge UAT"
-            buildConfigField 'String', 'BASE_URL', '"http://d335zsgxz4pkic.cloudfront.net/"'
+            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
         }
         staging{
             manifestPlaceholders.app_name= "Nudge STAGE"
             versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"http://d335zsgxz4pkic.cloudfront.net"'
+            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
         }
         production{
             manifestPlaceholders.app_name= "The Nudge"
             versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"http://d335zsgxz4pkic.cloudfront.net"'
+            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
         }
     }
     compileOptions {
