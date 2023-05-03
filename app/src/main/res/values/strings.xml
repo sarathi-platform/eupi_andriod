@@ -60,5 +60,13 @@
 
     <string name="add_tola">Add Tola</string>
     <string name="enter_otp_text">Enter OTP</string>
+    <string name="delete_tola_text">Delete Tola</string>
+    <string name="save_tola_text">Save</string>
+
+    <string name="tola_name_text">Tola Name</string>
+    <string name="cancel_tola_text">Cancel</string>
+    <string name="get_location_text">Get Location</string>
+    <string name="seletc_village_screen_text">Select Village &amp; VO</string>
+
 
 </resources>

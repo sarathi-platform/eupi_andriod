@@ -2,10 +2,15 @@ package com.patsurvey.nudge.activities.ui.login
 
 
 import android.annotation.SuppressLint
+import android.os.CountDownTimer
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -28,10 +33,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
-import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
-import com.patsurvey.nudge.utils.showToast
-import com.patsurvey.nudge.utils.visible
+import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -45,6 +47,12 @@ fun OtpVerificationScreen(
     }
     var isResendOTPVisible by remember {
         mutableStateOf(true)
+    }
+
+    val isResendOTPEnable = remember { mutableStateOf(false) }
+
+    val timeData = remember {
+        mutableStateOf(OTP_RESEND_DURATION)
     }
     val context= LocalContext.current
 
@@ -96,62 +104,62 @@ fun OtpVerificationScreen(
 
                 Text(
                     text = stringResource(id = R.string.resend_otp),
-                    color = colorResource(id = R.color.resend_otp_color),
+                    color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
                     fontSize = 14.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
+                        viewModel.resendOtp()
+                        timeData.value = OTP_RESEND_DURATION
+                        isResendOTPEnable.value = false
+                        showCustomToast(context = context,"OTP Resend")
+                    }
                 )
             }
-//                Row(
-//                    horizontalArrangement = Arrangement.End,
-//                    modifier = Modifier.fillMaxWidth()
-//                        .alpha(textAlpha),
-//
-//                ) {
-//                    val timeData = remember {
-//                        mutableStateOf(OTP_RESEND_DURATION)
-//                    }
-//
-//                    val countDownTimer =
-//                        object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
-//                            override fun onTick(millisUntilFinished: Long) {
-//                                var secs = (millisUntilFinished / 1000)
-//
-//                                if (secs == 0L) {
-//                                    secs = 1L
-//                                }
-//                                timeData.value = secs
-//                            }
-//
-//                            override fun onFinish() {
-//                                viewModel.isResendOTPEnable.value = true
-//                                isResendOTPVisible = !isResendOTPVisible
-//                            }
-//
-//                        }
-//                    DisposableEffect(key1 = "Key") {
-//                        countDownTimer.start()
-//                        onDispose {
-//                            countDownTimer.cancel()
-//                        }
-//                    }
-//                    Text(
-//                        text = stringResource(
-//                            id = R.string.expiry_login_verify_otp,
-//                            timeData.value
-//                        ),
-//                        color = textColorDark,
-//                        fontSize = 14.sp,
-//                        fontFamily = NotoSans,
-//                        fontWeight = FontWeight.SemiBold,
-//                        textAlign = TextAlign.End,
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .background(Color.Transparent)
-//                    )
-//                }
+            AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth(),
+
+                ) {
+                    val countDownTimer =
+                        object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
+                                var secs = (millisUntilFinished / 1000)
+
+                                timeData.value = secs
+                            }
+
+                            override fun onFinish() {
+                                isResendOTPEnable.value = true
+                                isResendOTPVisible = !isResendOTPVisible
+                            }
+
+                        }
+                    DisposableEffect(key1 = !isResendOTPEnable.value) {
+                        countDownTimer.start()
+                        onDispose {
+                            countDownTimer.cancel()
+                        }
+                    }
+                    Text(
+                        text = stringResource(
+                            id = R.string.expiry_login_verify_otp,
+                            timeData.value
+                        ),
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.End,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.Transparent)
+                    )
+                    }
+                }
 
 
                 Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
@@ -163,13 +171,14 @@ fun OtpVerificationScreen(
                         .background(Color.Transparent)
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.height_60dp)),
-                    colors = ButtonDefaults.buttonColors(blueDark),
-                    shape = RoundedCornerShape(6.dp)
+                    colors = if (otpValue.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(buttonBgColor),
+                    shape = RoundedCornerShape(6.dp),
+                    enabled = otpValue.length == OTP_LENGTH
                 ) {
 
                     Text(
                         text = stringResource(id = R.string.submit),
-                        color = Color.White,
+                        color = if (otpValue.length == OTP_LENGTH) white else blueDark,
                         fontSize = 18.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -177,7 +186,6 @@ fun OtpVerificationScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 6.dp)
-                            .background(blueDark)
                     )
 
                 }

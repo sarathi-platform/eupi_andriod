@@ -24,7 +24,6 @@ import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import kotlinx.coroutines.delay
 
-@Preview
 @Composable
 fun SplashScreen(
     navController: NavController,

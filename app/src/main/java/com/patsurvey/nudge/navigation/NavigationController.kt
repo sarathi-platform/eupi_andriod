@@ -133,13 +133,13 @@ fun HomeScreenFlowNavigation(
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen()
+            DidiScreen(modifier = Modifier.then(modifier))
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen()
+            MoreScreen(modifier = Modifier.then(modifier))
         }
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = homeScreenNavController, viewModel = hiltViewModel())
+            VillageSelectionScreen(navController = homeScreenNavController, viewModel = hiltViewModel(), modifier = Modifier.fillMaxSize())
         }
     }
     /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {

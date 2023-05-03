@@ -17,4 +17,7 @@ interface PrefRepo {
    fun getAccessToken(): String?
    fun saveAccessToken(token: String)
 
+   fun setOnlineStatus(isOnline: Boolean)
+
+   fun getOnlinceStatus(): Boolean
 }

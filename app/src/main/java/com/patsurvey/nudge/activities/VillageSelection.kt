@@ -30,8 +30,11 @@ import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
@@ -56,7 +59,7 @@ fun VillageSelectionScreen(
             .padding(horizontal = 16.dp, vertical = 16.dp)
             .then(modifier)
     ) {
-        Text(text = "Select Village & VO", style = largeTextStyle, color = textColorDark)
+        Text(text = stringResource(R.string.seletc_village_screen_text), style = largeTextStyle, color = textColorDark)
         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             itemsIndexed(villages) { index, village ->
                 VillageAndVoBox(
@@ -93,7 +96,7 @@ fun VillageAndVoBox(
                 shape = RoundedCornerShape(6.dp)
             )
             .shadow(
-                elevation = 10.dp,
+                elevation = 16.dp,
                 ambientColor = White,
                 spotColor = Black,
                 shape = RoundedCornerShape(6.dp),
@@ -123,11 +126,13 @@ fun VillageAndVoBox(
                     tint = if (index == selectedIndex) White else textColorDark,
                 )
                 Text(
-                    text = tolaName,
+                    text = " $tolaName",
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = if (index == selectedIndex) White else textColorDark,
-                    style = smallTextStyle
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold
                 )
             }
             Row(
@@ -136,17 +141,21 @@ fun VillageAndVoBox(
                     .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
             ) {
                 Text(
-                    text = "VO:",
+                    text = "VO: ",
                     modifier = Modifier,
                     color = if (index == selectedIndex) White else textColorDark,
-                    style = smallTextStyle
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = voName,
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = if (index == selectedIndex) White else textColorDark,
-                    style = smallTextStyle
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -155,11 +164,11 @@ fun VillageAndVoBox(
 
 @Composable
 fun VillageAndVoBoxForBottomSheet(
+    modifier: Modifier = Modifier,
     tolaName: String = "",
     voName: String = "",
     index: Int,
     selectedIndex: Int,
-    modifier: Modifier = Modifier,
     onVillageSeleted: (Int) -> Unit
 ) {
     Card(
@@ -203,7 +212,9 @@ fun VillageAndVoBoxForBottomSheet(
                 Text(
                     text = " $tolaName",
                     color = textColorDark,
-                    style = smallTextStyle,
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.constrainAs(textRef){
                         top.linkTo(parent.top)
                         start.linkTo(iconRef.end)
@@ -238,14 +249,18 @@ fun VillageAndVoBoxForBottomSheet(
                     text = "VO: ",
                     modifier = Modifier,
                     color = textColorDark,
-                    style = smallTextStyle
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Medium
                 )
                 Text(
                     text = voName,
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = textColorDark,
-                    style = smallTextStyle
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Medium
                 )
             }
         }

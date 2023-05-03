@@ -5,6 +5,7 @@ import android.content.SharedPreferences
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.ONLINE_STATUS
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -62,5 +63,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun saveAccessToken(token: String) {
         prefs.edit().putString(ACCESS_TOKEN, token).apply()
+    }
+
+    override fun setOnlineStatus(isOnline: Boolean) {
+        prefs.edit().putBoolean(ONLINE_STATUS, isOnline).apply()
+    }
+
+    override fun getOnlinceStatus(): Boolean {
+        return prefs.getBoolean(ONLINE_STATUS, false)
     }
 }
