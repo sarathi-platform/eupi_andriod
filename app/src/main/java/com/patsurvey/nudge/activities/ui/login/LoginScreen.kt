@@ -49,8 +49,6 @@ fun LoginScreen(
     ) {
             SarathiLogoTextView()
 
-
-        viewModel.fetchDetails()
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
