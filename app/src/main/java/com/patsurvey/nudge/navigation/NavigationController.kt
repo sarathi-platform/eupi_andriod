@@ -123,7 +123,9 @@ fun HomeScreenFlowNavigation(
                 .then(modifier))
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen()
+            MoreScreen(modifier = Modifier
+                .fillMaxSize()
+                .then(modifier))
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {

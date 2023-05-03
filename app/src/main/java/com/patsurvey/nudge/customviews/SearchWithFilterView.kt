@@ -24,7 +24,8 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 
 @Composable
 fun SearchWithFilterView(
-    placeholderString: String
+    placeholderString: String,
+    modifier: Modifier = Modifier
 ){
     var searchString by remember {
         mutableStateOf(BLANK_STRING)
@@ -32,7 +33,7 @@ fun SearchWithFilterView(
     Column {
         Surface(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth().then(modifier),
             color = Color.White,
         ) {
             Row(modifier = Modifier.fillMaxWidth(),

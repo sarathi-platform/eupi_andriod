@@ -94,7 +94,6 @@ fun BlueButtonWithIcon(
             onClick()
         },
         modifier = Modifier
-            .padding(vertical = 14.dp)
             .background(Color.Transparent)
             .width(160.dp)
             .indication(

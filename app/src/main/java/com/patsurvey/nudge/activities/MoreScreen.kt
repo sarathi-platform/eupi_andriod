@@ -12,7 +12,8 @@ import androidx.compose.ui.graphics.Color
 fun MoreScreen(
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = modifier.fillMaxSize()) {
+    /*Box(modifier = modifier.fillMaxSize()) {
         Text(text = "More Screen", modifier = Modifier.align(Alignment.Center), color = Color.Red)
-    }
+    }*/
+    SocialMappingDidiListScreen(modifier = modifier)
 }
