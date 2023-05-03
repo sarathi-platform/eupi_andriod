@@ -149,4 +149,10 @@ dependencies {
     implementation 'com.github.magneto3572:Magotp:1.0.4'
     implementation 'com.akexorcist:localization:1.2.11'
     implementation "com.github.bumptech.glide:compose:1.0.0-alpha.1"
+
+    //Room
+    implementation "androidx.room:room-runtime:$roomVersion"
+    implementation "androidx.room:room-ktx:$roomVersion"
+    kapt "androidx.room:room-compiler:$roomVersion"
+    androidTestImplementation "androidx.room:room-testing:$roomVersion"
 }

@@ -1,11 +1,21 @@
 package com.patsurvey.nudge.model.response
 
+import android.icu.lang.UCharacter.GraphemeClusterBreak.T
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.network.model.ErrorDataModel
 
-class ApiResponseModel(  val data: Any?,
-                         val code: Int?,
-                         val reqUrl: String?,
-                         val throwable: Throwable?,
-                         val errorMessage: String? = null,
-                         val httpCode: Int = -1,
-                         val mError: ErrorDataModel? = null)
+
+class ApiResponseModel<T>(
+    @SerializedName("status")
+    @Expose val status: String,
+
+    @SerializedName("message")
+    @Expose
+     val message: String,
+
+    @SerializedName("data")
+    @Expose
+     val data: T? = null ){
+
+}

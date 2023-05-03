@@ -27,6 +27,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
+import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
@@ -113,11 +114,19 @@ fun LanguageScreen(
         }
     }
 
+    LaunchedEffect(key1 = Unit){
+        viewModel.languageList.value?.mapIndexed{index, languageEntity ->
+            if(languageEntity.code.equals(viewModel.prefRepo.getAppLanguage(),true)){
+                viewModel.languagePosition.value=index
+            }
+        }
+
+    }
 }
 
 @Composable
 fun LanguageItem(
-    languageModel: LanguageSelectionModel,
+    languageModel: LanguageEntity,
     index: Int,
     selectedIndex: Int,
     onClick: (Int) -> Unit
@@ -140,7 +149,7 @@ fun LanguageItem(
                 }
         ) {
             Text(
-                text = languageModel.language,
+                text = languageModel.name,
                 color = blueDark,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,

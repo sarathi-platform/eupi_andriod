@@ -7,4 +7,6 @@ data class VillageListModal(
     val villageName : String,
     @SerializedName("vo_name")
     val voName : String,
+    @SerializedName("is_complete")
+    val isComplete: Boolean = false
 )
