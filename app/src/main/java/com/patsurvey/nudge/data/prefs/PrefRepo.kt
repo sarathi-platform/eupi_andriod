@@ -20,4 +20,8 @@ interface PrefRepo {
    fun setOnlineStatus(isOnline: Boolean)
 
    fun getOnlinceStatus(): Boolean
+
+   fun saveMobileNumber(mobileNumber: String)
+
+   fun getMobileNumber(): String?
 }

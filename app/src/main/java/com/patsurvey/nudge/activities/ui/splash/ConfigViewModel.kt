@@ -12,11 +12,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
-    prefRepo: PrefRepo,
-    apiInterface: ApiService,
-    languageListDao: LanguageListDao
+    val prefRepo: PrefRepo,
+    val apiInterface: ApiService,
+    private val languageListDao: LanguageListDao
 ):BaseViewModel()  {
 
+    fun isLoggedIn(): Boolean {
+        return prefRepo.getAccessToken()?.isNotEmpty() == true
+    }
     init {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiInterface.configDetails()

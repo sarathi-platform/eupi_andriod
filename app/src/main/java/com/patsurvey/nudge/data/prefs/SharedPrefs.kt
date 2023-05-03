@@ -6,6 +6,7 @@ import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -71,5 +72,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getOnlinceStatus(): Boolean {
         return prefs.getBoolean(ONLINE_STATUS, false)
+    }
+
+    override fun saveMobileNumber(mobileNumber: String) {
+        prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
+    }
+
+    override fun getMobileNumber(): String? {
+        return prefs.getString(PREF_MOBILE_NUMBER, "")
     }
 }
