@@ -16,6 +16,7 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
+import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 
 @Composable
 fun StartFlowNavigation(navController: NavHostController) {
@@ -67,6 +68,7 @@ fun StartFlowNavigation(navController: NavHostController) {
 @Composable
 fun VOHomeScreenFlowNavigation(navController: NavHostController,
                                modifier: Modifier = Modifier){
+    val sharedViewModel : AddDidiViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route
@@ -79,10 +81,23 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen()
+            DidiScreen(navController,
+                modifier = Modifier
+                .fillMaxSize()
+                .then(modifier),
+                didiViewModel = sharedViewModel
+            )
+        }
+        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
+            AddDidiScreen(navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                didiViewModel = sharedViewModel
+            )
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen()
+            MoreScreen(navController)
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
@@ -106,6 +121,7 @@ fun HomeScreenFlowNavigation(
     stepsNavHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
+    val sharedViewModel : AddDidiViewModel = hiltViewModel()
     NavHost(
         navController = homeScreenNavController,
         startDestination = ScreenRoutes.PROGRESS_SCREEN.route
@@ -118,12 +134,25 @@ fun HomeScreenFlowNavigation(
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(modifier = Modifier
+            DidiScreen(homeScreenNavController,
+                modifier = Modifier
+                .fillMaxSize()
+                .then(modifier),
+                didiViewModel = sharedViewModel)
+        }
+        composable(route = ScreenRoutes.MORE_SCREEN.route) {
+            MoreScreen(homeScreenNavController,
+                modifier = Modifier
                 .fillMaxSize()
                 .then(modifier))
         }
-        composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen()
+
+        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
+            AddDidiScreen(homeScreenNavController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                didiViewModel = sharedViewModel)
         }
 
         composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
@@ -132,12 +161,6 @@ fun HomeScreenFlowNavigation(
                     .fillMaxSize()
                     .then(modifier)
             )
-        }
-        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(modifier = Modifier.then(modifier))
-        }
-        composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen(modifier = Modifier.then(modifier))
         }
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
             VillageSelectionScreen(navController = homeScreenNavController, viewModel = hiltViewModel(), modifier = Modifier.fillMaxSize())

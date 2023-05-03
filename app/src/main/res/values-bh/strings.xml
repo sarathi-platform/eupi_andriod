@@ -68,6 +68,12 @@
     <string name="participation_date_wealth_ranking">भागीदारी के तारीख धन रैंकिंग के बा</string>
     <string name="vo_name">वीओ के नाम बा</string>
     <string name="total">कुल</string>
+    <string name="complete_didi_addition">पूरा दीदी जोड़ल</string>
+
+    <plurals name="didis_added">
+        <item quantity="one">दीदी जोड़ली</item>
+        <item quantity="other">दीदियों के जोड़ली</item>
+    </plurals>
 
 
 </resources>
