@@ -31,7 +31,7 @@ fun SplashScreen(
     viewModel: ConfigViewModel
 ) {
 
-    val isLoggedIn = false //check if user is logged in (currently hard coded until APIs are integrated.)
+    val isLoggedIn = viewModel.isLoggedIn() 
     LaunchedEffect(key1 = true) {
         delay(SPLASH_SCREEN_DURATION)
         navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)

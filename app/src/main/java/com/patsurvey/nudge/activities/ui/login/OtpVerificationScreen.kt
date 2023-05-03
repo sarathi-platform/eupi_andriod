@@ -40,7 +40,7 @@ import com.patsurvey.nudge.utils.*
 fun OtpVerificationScreen(
     navController: NavController,
     viewModel: OtpVerificationViewModel,
-    modifier:Modifier=Modifier
+    modifier: Modifier = Modifier
 ) {
     var otpValue by remember {
         mutableStateOf("")
@@ -54,7 +54,7 @@ fun OtpVerificationScreen(
     val timeData = remember {
         mutableStateOf(OTP_RESEND_DURATION)
     }
-    val context= LocalContext.current
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -96,11 +96,14 @@ fun OtpVerificationScreen(
             ) {
                 OtpInputField(otpLength = 6, onOtpChanged = { otp ->
                     otpValue = otp
+                    viewModel.otpNumber.value = otpValue
                 })
             }
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_30)))
-            Row(horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()) {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth()
+            ) {
 
                 Text(
                     text = stringResource(id = R.string.resend_otp),
@@ -111,18 +114,18 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.resendOtp()
+                        viewModel.resendOtp() {
+                            showCustomToast(context = context, "OTP Resend")
+                        }
                         timeData.value = OTP_RESEND_DURATION
                         isResendOTPEnable.value = false
-                        showCustomToast(context = context,"OTP Resend")
                     }
                 )
-            }
-            AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
-                Row(
-                    horizontalArrangement = Arrangement.End,
-                    modifier = Modifier.fillMaxWidth(),
 
+                AnimatedVisibility(
+                    visible = !isResendOTPEnable.value,
+                    exit = fadeOut(),
+                    enter = fadeIn()
                 ) {
                     val countDownTimer =
                         object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
@@ -158,39 +161,43 @@ fun OtpVerificationScreen(
                             .fillMaxWidth()
                             .background(Color.Transparent)
                     )
-                    }
-                }
-
-
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
-                Button(
-                    onClick = {
-                        navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
-                    },
-                    modifier = Modifier
-                        .background(Color.Transparent)
-                        .fillMaxWidth()
-                        .height(dimensionResource(id = R.dimen.height_60dp)),
-                    colors = if (otpValue.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(buttonBgColor),
-                    shape = RoundedCornerShape(6.dp),
-                    enabled = otpValue.length == OTP_LENGTH
-                ) {
-
-                    Text(
-                        text = stringResource(id = R.string.submit),
-                        color = if (otpValue.length == OTP_LENGTH) white else blueDark,
-                        fontSize = 18.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 6.dp)
-                    )
-
                 }
             }
+
+
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
+            Button(
+                onClick = {
+                    viewModel.validateOtp {
+                        navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                    }
+                },
+                modifier = Modifier
+                    .background(Color.Transparent)
+                    .fillMaxWidth()
+                    .height(dimensionResource(id = R.dimen.height_60dp)),
+                colors = if (otpValue.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                    buttonBgColor
+                ),
+                shape = RoundedCornerShape(6.dp),
+                enabled = otpValue.length == OTP_LENGTH
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.submit),
+                    color = if (otpValue.length == OTP_LENGTH) white else blueDark,
+                    fontSize = 18.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                )
+
+            }
         }
+    }
 }
 
 

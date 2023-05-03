@@ -10,7 +10,7 @@ open class BaseViewModel : ViewModel(){
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
         onError("Exception handled: ${throwable.localizedMessage}")
     }
-    fun onError(message: String) {
+    open fun onError(message: String) {
 //        usersLoadError.value = message
 //        loading.value = false
     }

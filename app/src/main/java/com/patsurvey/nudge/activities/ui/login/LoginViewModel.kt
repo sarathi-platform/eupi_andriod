@@ -15,19 +15,20 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val apiInterface: ApiService,
-):BaseViewModel() {
+) : BaseViewModel() {
     val mobileNumber = mutableStateOf(TextFieldValue())
 
-    fun generateOtp(onLoginResponse: ()->Unit){
-        val loginRequest=LoginRequest(mobileNumber ="9602854036" /*mobileNumber.value.text*/)
+    fun generateOtp(onLoginResponse: () -> Unit) {
+        val loginRequest = LoginRequest(mobileNumber = mobileNumber.value.text)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiInterface.generateOtp(loginRequest)
-            withContext(Dispatchers.IO){
-                if(response.status.equals(SUCCESS,true)){
-                    withContext(Dispatchers.Main){
+            withContext(Dispatchers.IO) {
+                if (response.status.equals(SUCCESS, true)) {
+                    withContext(Dispatchers.Main) {
+                        prefRepo.saveMobileNumber(mobileNumber.value.text)
                         onLoginResponse()
                     }
-                }else{
+                } else {
                     onError("Error : ${response.message} ")
                 }
             }
