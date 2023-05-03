@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">The Nudge</string>
     <string name="hindi">हिंदी</string>
     <string name="bangla">হিন্দি</string>
@@ -67,6 +67,12 @@
 
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \n रैंकिंग सर्वेक्षण </string>
     <string name="otp_send_to_mobile_number_message">" %1$s मोबाइल नंबर पर OTP भेजा गया"</string>
+    <string name="complete_didi_addition">पूरा दीदी जोड़े</string>
+    <plurals name="didis_added">
+        <item quantity="one" tools:ignore="ImpliedQuantity">दीदी जुड़ीं</item>
+        <item quantity="other">दीदियों जुड़ीं</item>
+    </plurals>
+
 
 
 </resources>
