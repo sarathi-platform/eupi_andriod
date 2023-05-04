@@ -81,4 +81,44 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun getMobileNumber(): String? {
         return prefs.getString(PREF_MOBILE_NUMBER, "")
     }
+
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Int) {
+        prefs.edit().putInt(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Long) {
+        prefs.edit().putLong(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Float) {
+        prefs.edit().putFloat(key, value).apply()
+    }
+
+    override fun getPref(key: String, defaultValue: Int): Int {
+        return prefs.getInt(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: String): String? {
+        return prefs.getString(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Boolean): Boolean {
+        return prefs.getBoolean(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Long): Long {
+        return prefs.getLong(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Float): Float {
+        return prefs.getFloat(key, defaultValue)
+    }
 }

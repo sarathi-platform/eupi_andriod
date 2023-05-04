@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -123,7 +124,7 @@ fun ProgressScreen(
                                 style = largeTextStyle
                             )
                             Text(
-                                text = "ID: 234567",
+                                text = stringResource(R.string.user_id_text),
                                 color = textColorDark,
                                 modifier = Modifier
                                     .padding(top = 6.dp, bottom = 16.dp)
@@ -193,30 +194,45 @@ fun ProgressScreen(
 
                     }
                 }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .background(Color.White)
-                ) {
-                    itemsIndexed(items = steps) { index, step ->
-                        StepsBox(
-                            boxTitle = step.stepName,
-                            stepNo = step.stepNo,
-                            index = index,
-                            shouldBeActive = (viewModel.stepSelected.value == index)
-                        ) {
-                            viewModel.stepSelected.value = it
-                            when (it) {
-                                0 -> {
-                                    stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                if (viewModel.showLoader.value)
+                    Box(
+                        modifier = Modifier
+                            .size(28.dp)
+                            .padding(top = 30.dp)
+                            .align(Alignment.CenterHorizontally)
+                    ) {
+                        CircularProgressIndicator(
+                            color = blueDark,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .background(Color.White)
+                    ) {
+                        itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
+                            StepsBox(
+                                boxTitle = step.name,
+                                stepNo = step.orderNumber,
+                                index = index,
+                                shouldBeActive = (viewModel.stepSelected.value == index)
+                            ) {
+                                viewModel.stepSelected.value = it
+                                when (it) {
+                                    0 -> {
+                                        stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                                    }
+                                    1 -> {}
+                                    2 -> {}
+                                    3 -> {}
+                                    4 -> {}
+                                    5 -> {}
                                 }
-                                1 -> {}
-                                2 -> {}
-                                3 -> {}
-                                4 -> {}
-                                5 -> {}
-                            }
 
+                            }
                         }
                     }
                 }
@@ -236,6 +252,9 @@ fun StepsBox(
     onclick: (Int) -> Unit
 ) {
     val dividerMargins = 32.dp
+    if (stepNo == 6)
+        Spacer(modifier = Modifier.height(20.dp))
+
     ConstraintLayout(
         modifier = Modifier
             .background(Color.White)
