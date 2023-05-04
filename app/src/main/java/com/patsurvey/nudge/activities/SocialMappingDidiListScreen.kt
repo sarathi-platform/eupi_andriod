@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import android.annotation.SuppressLint
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -15,18 +13,15 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -65,9 +60,13 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
         DidiDetailsModel(4, "didi 4", "sundar pahar4", "sundar pahar4", "Kahar", "15", "Rajesh"),
         DidiDetailsModel(5, "didi 5", "sundar pahar5", "sundar pahar5", "Kahar", "16", "Rajesh")
     )*/
+    val filteredDidiList = didiViewModel.filterMapList
 
     val expandedIds = remember {
         mutableStateListOf<Int>()
+    }
+    var filterSelected by  remember {
+        mutableStateOf(false)
     }
 
     Column(
@@ -99,33 +98,38 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
 
         SearchWithFilterView(
             stringResource(id = R.string.search_didis),
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp)
-        )
-
-        Text(
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = greenOnline,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    append("${didiList.size}")
-                }
-                append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.size)}")
-            },
-            style = TextStyle(
-                color = textColorDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = NotoSans
-            ),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp)
-        )
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp),
+            filterSelected = filterSelected,
+        ) {
+            filterSelected = !it
+            didiViewModel.filterList()
+        }
+        AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = greenOnline,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("${didiList.size}")
+                    }
+                    append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.size)}")
+                },
+                style = TextStyle(
+                    color = textColorDark,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp)
+            )
+        }
 
         LazyColumn(
             modifier = Modifier
@@ -135,12 +139,36 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             contentPadding = PaddingValues(vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            itemsIndexed(didiList) { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier){
-                    if(expandedIds.contains(didi.id)){
-                        expandedIds.remove(didi.id)
-                    } else {
-                        expandedIds.add(didi.id)
+            if (filterSelected) {
+                itemsIndexed(filteredDidiList.keys.toList()) { index, didiKey ->
+                    ShowDidisFromTola(didiKey, filteredDidiList[didiKey]?: emptyList(), modifier, expandedIds) {expand, didiDetailModel ->
+                        if (expandedIds.contains(didiDetailModel.id)) {
+                            expandedIds.remove(didiDetailModel.id)
+                        } else {
+                            expandedIds.add(didiDetailModel.id)
+                        }
+                    }
+
+                    if (index < filteredDidiList.keys.size-1)
+                        Divider(
+                            color = borderGreyLight,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 22.dp,
+                                bottom = 1.dp
+                            )
+                        )
+                }
+            } else {
+                itemsIndexed(didiList) { index, didi ->
+                    DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
+                        if (expandedIds.contains(didiDetailModel.id)) {
+                            expandedIds.remove(didiDetailModel.id)
+                        } else {
+                            expandedIds.add(didiDetailModel.id)
+                        }
                     }
                 }
             }
@@ -161,6 +189,97 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
 
     }
 }
+
+@Composable
+fun ShowFilteredList(
+    filteredDidiList: Map<String, List<DidiDetailsModel>>,
+    expandedIds: List<Int>,
+    modifier: Modifier,
+    onExpendClick: (Boolean, DidiDetailsModel) -> Unit
+) {
+    Log.i("ShowFilteredList", "show tolaa :")
+    filteredDidiList.entries.forEach {
+        Log.i("ShowFilteredList", "show tola : ${it.key}")
+        ShowDidisFromTola(it.key, it.value, modifier, expandedIds, onExpendClick)
+    }
+}
+
+@Composable
+fun ShowDidisFromTola(
+    didiTola: String,
+    didiList: List<DidiDetailsModel>,
+    modifier: Modifier,
+    expandedIds: List<Int>,
+    onExpendClick: (Boolean, DidiDetailsModel) -> Unit
+) {
+    Column(modifier = Modifier) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_icn),
+                contentDescription = "home image",
+                modifier = Modifier
+                    .width(18.dp)
+                    .height(14.dp),
+                colorFilter = ColorFilter.tint(textColorBlueLight)
+            )
+
+            Text(
+                text = didiTola,
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(end = 10.dp)
+            )
+            Text(
+                text = "${didiList.size}",
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .background(yellowBg, shape = CircleShape)
+                    .circleLayout()
+                    .padding(3.dp),
+                textAlign = TextAlign.Start
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            didiList.forEachIndexed { index, didi ->
+                DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
+                    onExpendClick(expand, didiDetailModel)
+                }
+            }
+
+        }
+    }
+}
+
+fun Modifier.circleLayout() =
+    layout { measurable, constraints ->
+        // Measure the composable
+        val placeable = measurable.measure(constraints)
+
+        //get the current max dimension to assign width=height
+        val currentHeight = placeable.height
+        val currentWidth = placeable.width
+        val newDiameter = maxOf(currentHeight, currentWidth)
+
+        //assign the dimension and the center position
+        layout(newDiameter, newDiameter) {
+            // Where the composable gets placed
+            placeable.placeRelative((newDiameter-currentWidth)/2, (newDiameter-currentHeight)/2)
+        }
+    }
 
 private fun decoupledConstraints(): ConstraintSet {
     return ConstraintSet {
@@ -314,7 +433,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 @Composable
-fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean)-> Unit) {
+fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiDetailsModel)-> Unit) {
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -385,7 +504,7 @@ fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, 
                 modifier = Modifier.layoutId("expendArrowImage"),
                 degrees = arrowRotationDegree,
                 iconColor = animateColor,
-                onClick = {onExpendClick(expanded)}
+                onClick = {onExpendClick(expanded, didi)}
             )
 
             DidiDetailExpendableContent(modifier = Modifier.layoutId("didiDetailLayout"), didi, animateInt == 1)

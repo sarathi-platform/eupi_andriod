@@ -50,6 +50,7 @@ val blueLighter = Color(0xFFF0F7FC)
 val yellowBg = Color(0xFFFCF6F0)
 
 val black1 = Color(0xCC271914)
+val black2 = Color(0xFF271424)
 
 val white = Color(0xFFFFFFFF)
 

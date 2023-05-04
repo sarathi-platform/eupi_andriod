@@ -1,9 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
@@ -17,6 +14,9 @@ class AddDidiViewModel @Inject constructor(
     var didiList  =  mutableStateListOf<DidiDetailsModel>()
         private set
 
+    var filterMapList  by mutableStateOf(mapOf<String, List<DidiDetailsModel>>())
+        private set
+
 
     fun addDidi(didiDetailsModel: DidiDetailsModel) {
         didiList.add(didiDetailsModel)
@@ -24,5 +24,18 @@ class AddDidiViewModel @Inject constructor(
 
     fun addDidiFromData(houseNumber: String, didiName: String, dadaName: String, caste: String, tola: String ) {
         didiList.add(DidiDetailsModel(didiList.size, didiName,tola, tola, caste, houseNumber, dadaName))
+    }
+
+    fun filterList(){
+        val map = mutableMapOf<String, MutableList<DidiDetailsModel>>()
+        didiList.forEachIndexed { index, didiDetailsModel ->
+            if(map.containsKey(didiDetailsModel.tola)){
+                map[didiDetailsModel.tola]?.add(didiDetailsModel)
+            } else {
+                map[didiDetailsModel.tola] = mutableListOf(didiDetailsModel)
+            }
+        }
+
+        filterMapList = map
     }
 }
