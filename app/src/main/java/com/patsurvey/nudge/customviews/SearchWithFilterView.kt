@@ -2,6 +2,7 @@ package com.patsurvey.nudge.customviews
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,7 +26,9 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 @Composable
 fun SearchWithFilterView(
     placeholderString: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    filterSelected: Boolean = false,
+    onFilterSelected: (Boolean) -> Unit
 ){
     var searchString by remember {
         mutableStateOf(BLANK_STRING)
@@ -80,7 +83,8 @@ fun SearchWithFilterView(
                     modifier = Modifier
                         .absolutePadding(top = 2.dp)
                         .height(dimensionResource(id = R.dimen.filter_image_height))
-                        .width(dimensionResource(id = R.dimen.filter_image_width)),
+                        .width(dimensionResource(id = R.dimen.filter_image_width))
+                        .clickable { onFilterSelected(filterSelected) },
                     colorFilter = ColorFilter.tint(blueDark)
                 )
                 }
