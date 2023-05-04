@@ -58,9 +58,7 @@ fun SocialMappingScreen(
             .then(modifier)
     ) {
         val (bottomActionBox, mainBox) = createRefs()
-        Box(modifier = Modifier.fillMaxWidth()){
-            NetworkBanner()
-        }
+
         Box(modifier = Modifier
             .constrainAs(mainBox) {
                 start.linkTo(parent.start)
@@ -81,7 +79,9 @@ fun SocialMappingScreen(
                     modifier = Modifier
                         .padding(vertical = dimensionResource(id = R.dimen.dp_6))
                 )
-                SearchWithFilterView(stringResource(id = R.string.search_didis))
+                SearchWithFilterView(stringResource(id = R.string.search_didis)){
+                    //OnFilterSelected Clicked
+                }
 
                 Text(
                     text = stringResource(id = R.string.count_didis_pending,0),

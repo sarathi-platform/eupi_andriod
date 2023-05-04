@@ -33,6 +33,8 @@ class ProgressScreenViewModel @Inject constructor(
 
     val showLoader = mutableStateOf(false)
 
+    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+
     init {
         villageSelected.value = prefRepo.getSelectedVillage() ?: -1
         fetchStepsList()
@@ -51,36 +53,44 @@ class ProgressScreenViewModel @Inject constructor(
     private fun fetchStepsList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiInterface.getStepsList()
-            withContext(Dispatchers.IO){
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        it.stepList.forEach { step ->
-                           /* if (index == 2)
-                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 4, name = step.name, isComplete = false, needToPost = false))
-                            else if (index == 3)
-                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 3, name = step.name, isComplete = false, needToPost = false))
-                            else*/
-                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = false))
+                try {
+                val response = apiInterface.getStepsList()
+                withContext(Dispatchers.IO){
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            it.stepList.forEach { step ->
+                               /* if (index == 2)
+                                    stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 4, name = step.name, isComplete = false, needToPost = false))
+                                else if (index == 3)
+                                    stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 3, name = step.name, isComplete = false, needToPost = false))
+                                else*/
+                                    stepsListDao.insert(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = false))
 
 
+                            }
+                            prefRepo.savePref("progremName", it.programName) //TODO saving this in pref for now will move it to user table after User API is integrated
+                            delay(2000L)
+                            getStepsList()
+                            showLoader.value = false
                         }
-                        prefRepo.savePref("progremName", it.programName) //TODO saving this in pref for now will move it to user table after User API is integrated
-                        delay(2000L)
-                        getStepsList()
-                        showLoader.value = false
+                        if (response.data == null)
+                            showLoader.value = false
+                    } else if (response.status.equals(FAIL, true)){
+                        withContext(Dispatchers.Main) {
+                            showLoader.value = false
+                        }
                     }
-                } else if (response.status.equals(FAIL, true)){
-                    withContext(Dispatchers.Main) {
+                    else {
+                        onError("Error : ${response.message}")
                         showLoader.value = false
                     }
                 }
-                else {
-                    onError("Error : ${response.message}")
+            } catch (ex: Exception) {
+                onError("Exception : ${ex.localizedMessage}")
                     showLoader.value = false
                 }
+
             }
-        }
     }
 
     private fun createVillaeList() {

@@ -28,6 +28,7 @@ val GreyDark = Color(0xFF60626C)
 val greyButtonColor = Color(0xFFF2F4F8)
 val otpBorderColor = Color(0xFFBFBFBF)
 val greenOnline = Color(0xFF439A86)
+val redOffline = Color(0xFFD32505)
 
 val greenActiveIcon = Color(0xFF02B5C6)
 
@@ -50,6 +51,7 @@ val blueLighter = Color(0xFFF0F7FC)
 val yellowBg = Color(0xFFFCF6F0)
 
 val black1 = Color(0xCC271914)
+val black2 = Color(0xFF271424)
 
 val white = Color(0xFFFFFFFF)
 

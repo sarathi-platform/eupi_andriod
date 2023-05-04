@@ -35,7 +35,7 @@ fun HomeScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
 
-) {
+    ) {
     val homeScreenNavController = rememberNavController()
     val stepsNavController = rememberNavController()
 
@@ -79,27 +79,13 @@ fun HomeScreen(
             )
         }
     ) {
-        ConstraintLayout() {
-            val (networkBanner, homeScreen) = createRefs()
-            NetworkBanner(
-                modifier = Modifier
-                    .constrainAs(networkBanner) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-            )
-            HomeScreenFlowNavigation(
-                homeScreenNavController = homeScreenNavController,
-                stepsNavHostController = stepsNavController,
-                modifier = Modifier
-                    .constrainAs(homeScreen) {
-                        top.linkTo(networkBanner.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .padding(top = 24.dp, bottom = it.calculateBottomPadding())
+        HomeScreenFlowNavigation(
+            homeScreenNavController = homeScreenNavController,
+            stepsNavHostController = stepsNavController,
+            modifier = Modifier
+                .padding(top = 24.dp, bottom = it.calculateBottomPadding())
 
-            )
-        }
+        )
 
     }
 }

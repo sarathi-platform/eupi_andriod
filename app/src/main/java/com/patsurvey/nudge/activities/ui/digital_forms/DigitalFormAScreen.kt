@@ -58,9 +58,7 @@ fun DigitalFormAScreen(
                     .fillMaxWidth()
                     .background(Color.White)
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    NetworkBanner()
-                }
+
                 Text(
                     text = "Digital Form A",
                     color = Color.Black,
