@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.redOffline
 
 @Composable
 fun NetworkBanner(
@@ -30,10 +31,10 @@ fun NetworkBanner(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(greenOnline)
+                .background(if (isOnline) greenOnline else redOffline)
         ) {
             Text(
-                text = stringResource(R.string.online_text),
+                text = stringResource(if (isOnline) R.string.online_text else R.string.offline_text),
                 textAlign = TextAlign.Center,
                 fontSize = 12.sp,
                 fontFamily = NotoSans,

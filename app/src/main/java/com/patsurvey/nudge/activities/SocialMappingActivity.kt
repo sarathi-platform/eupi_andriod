@@ -116,10 +116,6 @@ fun SocialMappingScreen(
 ) {
     val context = LocalContext.current
     Column() {
-        NetworkBanner(
-            modifier = Modifier,
-            isOnline = isOnline
-        )
         MainTitle(
             title = stringResource(id = R.string.social_mapping),
             modifier = Modifier.padding(top = 30.dp).align(CenterHorizontally)
