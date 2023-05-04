@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.base
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
@@ -11,8 +12,7 @@ open class BaseViewModel : ViewModel(){
         onError("Exception handled: ${throwable.localizedMessage}")
     }
     open fun onError(message: String) {
-//        usersLoadError.value = message
-//        loading.value = false
+        Log.e("BaseViewModel", message)
     }
     override fun onCleared() {
         super.onCleared()

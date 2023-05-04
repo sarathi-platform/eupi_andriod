@@ -60,9 +60,6 @@
     <string name="get_location_text">Get Location</string>
     <string name="seletc_village_screen_text">VO के चयन करीं</string>
 
-
-
-
     <string name="particaptory_wealth_ranking_survey_text">साझेदारी धन \nरैंकिंग सर्वेक्षण</string>
     <string name="village_text">गांव</string>
     <string name="participation_date_wealth_ranking">भागीदारी के तारीख धन रैंकिंग के बा</string>
@@ -70,6 +67,8 @@
     <string name="total">कुल</string>
     <string name="otp_send_to_mobile_number_message">%1$ के मोबाइल नंबर पर भेजल गइल ओटीपी</string>
     <string name="complete_didi_addition">पूरा दीदी जोड़ल</string>
+
+    <string name="user_id_text">"आईडी के बा: "</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>

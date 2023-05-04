@@ -68,6 +68,19 @@ fun OtpVerificationScreen(
 
     ) {
         SarathiLogoTextView()
+
+        AnimatedVisibility(visible = viewModel.showLoader.value, exit = fadeOut(), enter = fadeIn(), modifier = Modifier.align(
+            Alignment.Center)) {
+            Box(modifier = Modifier
+                .size(28.dp)
+                .padding(top = 30.dp)
+                .align(Alignment.Center)) {
+                CircularProgressIndicator(color = blueDark, modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center))
+            }
+        }
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
@@ -114,7 +127,7 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.resendOtp() {
+                        viewModel.resendOtp { success, message ->
                             showCustomToast(context = context, "OTP Resend")
                         }
                         timeData.value = OTP_RESEND_DURATION
@@ -168,8 +181,11 @@ fun OtpVerificationScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
-                    viewModel.validateOtp {
-                        navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                    viewModel.validateOtp { success, message ->
+                        if (success)
+                            navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                        else
+                            showToast(context, message)
                     }
                 },
                 modifier = Modifier

@@ -23,6 +23,8 @@ class VillageSelectionViewModel @Inject constructor(
 
     val villageSelected = mutableStateOf(-1)
 
+    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+
     init {
         createVillaeList()
     }

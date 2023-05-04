@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities
 
+import android.app.Activity
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -29,6 +31,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.Blue
 import androidx.compose.ui.graphics.Color.Companion.Cyan
 import androidx.compose.ui.graphics.Color.Companion.White
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +54,16 @@ fun VillageSelectionScreen(
 ) {
 
     val villages by viewModel.villageList.collectAsState()
+
+
+    val context = LocalContext.current as? Activity
+
+    BackHandler {
+        if (viewModel.isLoggedIn()) {
+            context?.finish()
+        }
+    }
+
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -198,7 +211,9 @@ fun VillageAndVoBoxForBottomSheet(
                 .background(if (index == selectedIndex) dropDownBg else White)
                 .fillMaxWidth()
         ) {
-            ConstraintLayout(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp).fillMaxWidth()) {
+            ConstraintLayout(modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                .fillMaxWidth()) {
                 val (iconRef, textRef, radioRef) = createRefs()
                 Icon(
                     painter = painterResource(id = R.drawable.home_icn),
@@ -222,10 +237,11 @@ fun VillageAndVoBoxForBottomSheet(
                 )
 
                 Canvas(
-                    modifier = Modifier.constrainAs(radioRef){
-                        top.linkTo(textRef.top)
-                        end.linkTo(parent.end)
-                    }
+                    modifier = Modifier
+                        .constrainAs(radioRef) {
+                            top.linkTo(textRef.top)
+                            end.linkTo(parent.end)
+                        }
                         .size(size = 20.dp)
                         .border(
                             width = 1.dp,

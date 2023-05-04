@@ -24,4 +24,25 @@ interface PrefRepo {
    fun saveMobileNumber(mobileNumber: String)
 
    fun getMobileNumber(): String?
+
+   fun savePref(key: String, value: String)
+
+   fun savePref(key: String, value: Int)
+
+   fun savePref(key: String, value: Boolean)
+
+   fun savePref(key: String, value: Long)
+
+   fun savePref(key: String, value: Float)
+
+   fun getPref(key: String, defaultValue: Int): Int
+
+   fun getPref(key: String, defaultValue: String): String?
+
+   fun getPref(key: String, defaultValue: Boolean): Boolean
+
+   fun getPref(key: String, defaultValue: Long): Long
+
+   fun getPref(key: String, defaultValue: Float): Float
+
 }
