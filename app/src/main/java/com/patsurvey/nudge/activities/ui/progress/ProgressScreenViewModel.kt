@@ -1,35 +1,86 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.model.dataModel.StepsListModal
+import com.patsurvey.nudge.database.StepListEntity
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.VillageListModal
+import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class ProgressScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo
+    val prefRepo: PrefRepo,
+    val apiInterface: ApiService,
+    val stepsListDao: StepsListDao
 ): BaseViewModel() {
 
-    private val _stepsList = MutableStateFlow(listOf<StepsListModal>())
+    private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
     private val _villagList = MutableStateFlow(listOf<VillageListModal>())
-    val stepList: StateFlow<List<StepsListModal>> get() = _stepsList
+    val stepList: StateFlow<List<StepListEntity>> get() = _stepsList
     val villageList: StateFlow<List<VillageListModal>> get() = _villagList
     val stepSelected = mutableStateOf(0)
     val villageSelected = mutableStateOf(-1)
 
+    val showLoader = mutableStateOf(false)
+
     init {
         villageSelected.value = prefRepo.getSelectedVillage() ?: -1
-        createStepsList()
+        fetchStepsList()
         createVillaeList()
+    }
+
+    private fun getStepsList() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllSteps()
+            withContext(Dispatchers.IO) {
+                _stepsList.value = stepList
+            }
+        }
+    }
+
+    private fun fetchStepsList() {
+        showLoader.value = true
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiInterface.getStepsList()
+            withContext(Dispatchers.IO){
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        it.stepList.forEach { step ->
+                           /* if (index == 2)
+                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 4, name = step.name, isComplete = false, needToPost = false))
+                            else if (index == 3)
+                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = 3, name = step.name, isComplete = false, needToPost = false))
+                            else*/
+                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = false))
+
+
+                        }
+                        prefRepo.savePref("progremName", it.programName) //TODO saving this in pref for now will move it to user table after User API is integrated
+                        delay(2000L)
+                        getStepsList()
+                        showLoader.value = false
+                    }
+                } else if (response.status.equals(FAIL, true)){
+                    withContext(Dispatchers.Main) {
+                        showLoader.value = false
+                    }
+                }
+                else {
+                    onError("Error : ${response.message}")
+                    showLoader.value = false
+                }
+            }
+        }
     }
 
     private fun createVillaeList() {
@@ -49,19 +100,22 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun createStepsList() {
+    /*private fun createStepsList() {
         viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                val sampleStepList = arrayListOf<StepsListModal>()
-                sampleStepList.add(StepsListModal(stepName = "Transect Walk", stepNo = 1, isCompleted = false))
-                sampleStepList.add(StepsListModal(stepName = "Social Mapping", stepNo = 2, isCompleted = false))
-                sampleStepList.add(StepsListModal(stepName = "Participatory Wealth Ranking", stepNo = 3, isCompleted = false))
-                sampleStepList.add(StepsListModal(stepName = "Pat Survey", stepNo = 4, isCompleted = false))
-                sampleStepList.add(StepsListModal(stepName = "VO Endorsementk", stepNo = 5, isCompleted = false))
-                sampleStepList.add(StepsListModal(stepName = "BMP Approval", stepNo = 6, isCompleted = false))
+            withContext(Dispatchers.IO) {
+                val sampleStepList = arrayListOf<StepsListWithStatusModel>()
+                sampleStepList.add(StepsListWithStatusModel(id = 1, name = "Transect Walk", orderNumber = 1, isComplete = false))
+                sampleStepList.add(StepsListWithStatusModel(id = 2, name = "Social Mapping", orderNumber = 2, isComplete = false))
+                sampleStepList.add(StepsListWithStatusModel(id = 3, name = "Participatory Wealth Ranking", orderNumber = 3, isComplete = false))
+                sampleStepList.add(StepsListWithStatusModel(id = 4, name = "Pat Survey", orderNumber = 4, isComplete = false))
+                sampleStepList.add(StepsListWithStatusModel(id = 5, name = "VO Endorsementk", orderNumber = 5, isComplete = false))
+                sampleStepList.add(StepsListWithStatusModel(id = 6, name = "BMP Approval", orderNumber = 6, isComplete = false))
                 _stepsList.emit(sampleStepList)
+                stepList.value.sortedBy {
+                    it.orderNumber
+                }
             }
         }
-    }
+    }*/
 
 }

@@ -31,10 +31,12 @@ fun SplashScreen(
     viewModel: ConfigViewModel
 ) {
 
-    val isLoggedIn = viewModel.isLoggedIn() 
+    val isLoggedIn = viewModel.isLoggedIn()/*false*/
     LaunchedEffect(key1 = true) {
-        delay(SPLASH_SCREEN_DURATION)
-        navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)
+        viewModel.fetchLanguageDetails {
+            navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)
+
+        }
     }
 
     ConstraintLayout(

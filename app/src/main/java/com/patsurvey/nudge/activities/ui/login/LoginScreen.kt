@@ -1,6 +1,11 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -20,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
@@ -35,8 +41,13 @@ fun LoginScreen(
     navController: NavController,
     viewModel: LoginViewModel,
     modifier: Modifier
-){
-    val context= LocalContext.current
+) {
+    val context = LocalContext.current
+
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
+
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -49,7 +60,30 @@ fun LoginScreen(
             )
             .then(modifier)
     ) {
-            SarathiLogoTextView()
+        SarathiLogoTextView()
+
+        AnimatedVisibility(
+            visible = viewModel.showLoader.value,
+            exit = fadeOut(),
+            enter = fadeIn(),
+            modifier = Modifier.align(
+                Alignment.Center
+            )
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(top = 30.dp)
+                    .align(Alignment.Center)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark, modifier = Modifier
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
+
 
         Column(
             modifier = Modifier
@@ -66,8 +100,8 @@ fun LoginScreen(
                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_6)))
-            Row(verticalAlignment = Alignment.CenterVertically
-                ,modifier = Modifier
+            Row(
+                verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .fillMaxWidth()
                     .height(dimensionResource(id = R.dimen.height_60dp))
                     .border(
@@ -77,43 +111,47 @@ fun LoginScreen(
                     )
             ) {
 
-                Text(text = "+91 - ",
+                Text(
+                    text = "+91 - ",
                     color = colorResource(id = R.color.placeholder_91_color),
                     fontSize = 18.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.Normal,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp_20)))
-                    TextField(modifier = Modifier
-                            .background(Color.Transparent),
-                        singleLine=true,
-                        value = viewModel.mobileNumber.value,
-                        textStyle = TextStyle(
-                            fontSize = 18.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Medium,
-                            textAlign = TextAlign.Start
-                        ),
-                        onValueChange ={
-                            if(it.text.length<= MOBILE_NUMBER_LENGTH)
-                                     viewModel.mobileNumber.value=it
-                            },
-                        colors =TextFieldDefaults.textFieldColors(backgroundColor = Color.Transparent,
-                            textColor = blueDark,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent,
-                        ),
+                    modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp_20))
+                )
+                TextField(
+                    modifier = Modifier
+                        .background(Color.Transparent),
+                    singleLine = true,
+                    value = viewModel.mobileNumber.value,
+                    textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Start
+                    ),
+                    onValueChange = {
+                        if (it.text.length <= MOBILE_NUMBER_LENGTH)
+                            viewModel.mobileNumber.value = it
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        textColor = blueDark,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
 //                        placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
-                        keyboardOptions = KeyboardOptions(
-                            capitalization = KeyboardCapitalization.None,
-                            autoCorrect = true,
-                            keyboardType = KeyboardType.Number,
-                        ),
-                    )
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
 
 
-                }
+            }
             Text(
                 text = stringResource(id = R.string.otp_will_be_sent_to_this_number),
                 color = blueDark,
@@ -126,25 +164,28 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
-            Button(onClick = {
-                viewModel.generateOtp{
-                    showCustomToast(context,context.getString(R.string.otp_send_to_mobile_number_message,
-                        viewModel.mobileNumber.value.text))
-                    navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
-                }
-                             },
+            Button(
+                onClick = {
+                    viewModel.generateOtp { success, message ->
+                        showCustomToast(context, message)
+                        if (success)
+                            navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent),
-                colors = if(viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
-                    ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(buttonBgColor) ,
+                colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
+                    ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                    buttonBgColor
+                ),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
                 enabled = viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH
             ) {
 
                 Text(
                     text = stringResource(id = R.string.get_otp),
-                    color = if(viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
+                    color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
                         Color.White else blueDark,
                     fontSize = 18.sp,
                     fontFamily = NotoSans,
