@@ -25,13 +25,20 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.navigation.VOHomeScreenFlowNavigation
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
+
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() , OnLocaleChangedListener {
+
     private val localizationDelegate = LocalizationActivityDelegate(this)
+    @Inject
+    lateinit var sharedPrefs: PrefRepo
+
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         localizationDelegate.addOnLocaleChangedListener(this)

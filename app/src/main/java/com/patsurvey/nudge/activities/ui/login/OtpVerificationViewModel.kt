@@ -32,7 +32,7 @@ class OtpVerificationViewModel @Inject constructor(
                 withContext(Dispatchers.IO){
                     if(response.status.equals(SUCCESS,true)){
                         response.data?.let {
-                            prefRepo.saveAccessToken("$AUTH_TOKEN_PREFIX ${it.token}")
+                            prefRepo.saveAccessToken(it.token)
                         }
                         withContext(Dispatchers.Main){
                             onLOtpResponse()

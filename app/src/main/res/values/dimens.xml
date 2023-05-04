@@ -38,6 +38,7 @@
     <dimen name="dp_5">5dp</dimen>
     <dimen name="dp_30">30dp</dimen>
     <dimen name="dp_25">25dp</dimen>
+    <dimen name="dp_65">65dp</dimen>
     <dimen name="dp_50">50dp</dimen>
     <dimen name="dp_15">15dp</dimen>
     <dimen name="dp_24">24dp</dimen>
@@ -46,6 +47,7 @@
     <dimen name="padding_32dp">32dp</dimen>
     <dimen name="height_60dp">60dp</dimen>
     <dimen name="height_50dp">50dp</dimen>
+    <dimen name="height_55dp">55dp</dimen>
     <dimen name="button_height">54dp</dimen>
     <dimen name="text_size_12">12sp</dimen>
     <dimen name="text_size_14">14sp</dimen>

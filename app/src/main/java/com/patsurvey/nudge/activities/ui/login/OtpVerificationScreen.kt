@@ -34,6 +34,8 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -44,6 +46,9 @@ fun OtpVerificationScreen(
 ) {
     var otpValue by remember {
         mutableStateOf("")
+    }
+    val formattedTime = remember {
+        mutableStateOf(SEC_30_STRING)
     }
     var isResendOTPVisible by remember {
         mutableStateOf(true)
@@ -99,9 +104,52 @@ fun OtpVerificationScreen(
                     viewModel.otpNumber.value = otpValue
                 })
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_30)))
+            AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth(),
+
+                    ) {
+                    val countDownTimer =
+                        object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                            override fun onTick(millisUntilFinished: Long) {
+                                var secs = (millisUntilFinished / 1000)
+                                val dateTimeFormat= SimpleDateFormat("00:ss")
+                                formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
+                                timeData.value = secs
+                            }
+
+                            override fun onFinish() {
+                                isResendOTPEnable.value = true
+                                isResendOTPVisible = !isResendOTPVisible
+                            }
+
+                        }
+                    DisposableEffect(key1 = !isResendOTPEnable.value) {
+                        countDownTimer.start()
+                        onDispose {
+                            countDownTimer.cancel()
+                        }
+                    }
+                    Text(
+                        text = stringResource(
+                            id = R.string.expiry_login_verify_otp,
+                            formattedTime.value
+                        ),
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.dp_10))
+                            .background(Color.Transparent)
+                    )
+                }
+            }
             Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
+                horizontalArrangement = Arrangement.Center,
                 modifier = Modifier.fillMaxWidth()
             ) {
 
@@ -121,47 +169,6 @@ fun OtpVerificationScreen(
                         isResendOTPEnable.value = false
                     }
                 )
-
-                AnimatedVisibility(
-                    visible = !isResendOTPEnable.value,
-                    exit = fadeOut(),
-                    enter = fadeIn()
-                ) {
-                    val countDownTimer =
-                        object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
-                            override fun onTick(millisUntilFinished: Long) {
-                                var secs = (millisUntilFinished / 1000)
-
-                                timeData.value = secs
-                            }
-
-                            override fun onFinish() {
-                                isResendOTPEnable.value = true
-                                isResendOTPVisible = !isResendOTPVisible
-                            }
-
-                        }
-                    DisposableEffect(key1 = !isResendOTPEnable.value) {
-                        countDownTimer.start()
-                        onDispose {
-                            countDownTimer.cancel()
-                        }
-                    }
-                    Text(
-                        text = stringResource(
-                            id = R.string.expiry_login_verify_otp,
-                            timeData.value
-                        ),
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.End,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(Color.Transparent)
-                    )
-                }
             }
 
 
