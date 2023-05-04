@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.selectlanguage
 import android.annotation.SuppressLint
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -67,10 +69,10 @@ fun LanguageScreen(
                 modifier=Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_30))
                 )
             Column(modifier = Modifier) {
-                viewModel.languageList?.value?.let {
+                viewModel.languageList?.value?.let { language ->
                     LazyColumn {
 
-                        itemsIndexed(items = it) { index, item ->
+                        itemsIndexed(items = language.sortedBy { it.orderNumber }) { index, item ->
                             LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
                                 viewModel.languagePosition.value = i
                             }
@@ -114,14 +116,13 @@ fun LanguageScreen(
         }
     }
 
-    LaunchedEffect(key1 = Unit){
-        viewModel.languageList.value?.mapIndexed{index, languageEntity ->
-            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
-                viewModel.languagePosition.value=index
-            }
-        }
-
-    }
+//    LaunchedEffect(key1 = Unit){
+//        viewModel.languageList.value?.mapIndexed{index, languageEntity ->
+//            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
+//                viewModel.languagePosition.value=index
+//            }
+//        }
+//    }
 }
 
 @Composable
@@ -132,6 +133,7 @@ fun LanguageItem(
     onClick: (Int) -> Unit
 ) {
 
+    val interactionSource = remember { MutableInteractionSource() }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -147,9 +149,16 @@ fun LanguageItem(
                 .clickable {
                     onClick(index)
                 }
+                .indication(
+                    interactionSource = interactionSource,
+                    indication = rememberRipple(
+                        bounded = true,
+                        color = Color.White
+                    )
+                )
         ) {
             Text(
-                text = languageModel.language,
+                text = if (languageModel.localName.isNullOrEmpty()) languageModel.language else languageModel.localName,
                 color = blueDark,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,

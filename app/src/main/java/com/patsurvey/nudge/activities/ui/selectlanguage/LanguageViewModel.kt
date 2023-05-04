@@ -25,7 +25,7 @@ class LanguageViewModel @Inject constructor(
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageEntity>()
-    val languagePosition= mutableStateOf(0)
+    val languagePosition= mutableStateOf(-1)
     init {
         fetchLanguageList()
     }

@@ -16,4 +16,10 @@ data class LanguageEntity(
 
     @ColumnInfo(name = "langCode")
     val langCode : String?,
+
+    @ColumnInfo(name = "orderNumber")
+    val orderNumber: Int,
+
+    @ColumnInfo(name = "localName")
+    val localName: String
 )
