@@ -16,6 +16,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     companion object {
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val PREF_KEY_LANGUAGE_ID = "language_id"
         const val SELECTED_VILLAGE_ID = "selected_village_id"
     }
 
@@ -120,5 +121,15 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun getPref(key: String, defaultValue: Float): Float {
         return prefs.getFloat(key, defaultValue)
+    }
+
+    override fun getAppLanguageId(): Int? {
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, 1)
+    }
+
+    override fun saveAppLanguageId(languageId: Int?) {
+        languageId?.let {
+            prefs.edit().putInt(PREF_KEY_LANGUAGE_ID, languageId).apply()
+        }
     }
 }

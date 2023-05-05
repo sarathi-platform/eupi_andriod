@@ -56,8 +56,8 @@ fun StartFlowNavigation(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
-        composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+        composable(route = ScreenRoutes.LOGIN_HOME_SCREEN.route) {
+            HomeScreen(navController = navController)
         }
         composable(route = ScreenRoutes.DIGITAL_FORM_A_SCREEN.route) {
             DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
@@ -83,8 +83,8 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             DidiScreen(navController,
                 modifier = Modifier
-                .fillMaxSize()
-                .then(modifier),
+                    .fillMaxSize()
+                    .then(modifier),
                 didiViewModel = sharedViewModel
             )
         }
@@ -136,15 +136,15 @@ fun HomeScreenFlowNavigation(
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
             DidiScreen(homeScreenNavController,
                 modifier = Modifier
-                .fillMaxSize()
-                .then(modifier),
+                    .fillMaxSize()
+                    .then(modifier),
                 didiViewModel = sharedViewModel)
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen(homeScreenNavController,
                 modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
+                    .fillMaxSize()
+                    .then(modifier))
         }
 
         composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {

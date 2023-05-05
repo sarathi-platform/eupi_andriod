@@ -4,9 +4,6 @@ package com.patsurvey.nudge.activities.ui.login
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -19,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -29,10 +26,13 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.HomeScreen
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -47,6 +47,7 @@ fun OtpVerificationScreen(
     var otpValue by remember {
         mutableStateOf("")
     }
+    val navHomeController = rememberNavController()
     val formattedTime = remember {
         mutableStateOf(SEC_30_STRING)
     }
@@ -56,9 +57,6 @@ fun OtpVerificationScreen(
 
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
-    val timeData = remember {
-        mutableStateOf(OTP_RESEND_DURATION)
-    }
     val context = LocalContext.current
 
     Box(
@@ -125,11 +123,11 @@ fun OtpVerificationScreen(
                     ) {
                     val countDownTimer =
                         object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                            @SuppressLint("SimpleDateFormat")
                             override fun onTick(millisUntilFinished: Long) {
-                                var secs = (millisUntilFinished / 1000)
                                 val dateTimeFormat= SimpleDateFormat("00:ss")
                                 formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
-                                timeData.value = secs
+
                             }
 
                             override fun onFinish() {
@@ -175,10 +173,13 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.resendOtp() {
-                            showCustomToast(context = context, "OTP Resend")
+                        viewModel.validateOtp { success, message ->
+                            if (success){
+                                    navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                            }
+                            else
+                                showToast(context, message)
                         }
-                        timeData.value = OTP_RESEND_DURATION
                         isResendOTPEnable.value = false
                     }
                 )
@@ -189,8 +190,10 @@ fun OtpVerificationScreen(
             Button(
                 onClick = {
                     viewModel.validateOtp { success, message ->
-                        if (success)
-                            navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                        if (success){
+                            navController.navigate(ScreenRoutes.LOGIN_HOME_SCREEN.route)
+                        }
+
                         else
                             showToast(context, message)
                     }

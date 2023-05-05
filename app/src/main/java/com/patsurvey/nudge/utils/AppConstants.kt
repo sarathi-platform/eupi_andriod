@@ -32,3 +32,10 @@ const val STEPS_LIST_TABLE = "step_list_table"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
+
+// Pref Constants
+const val PREF_KEY_USER_NAME="key_user_name"
+const val PREF_KEY_NAME="key_name"
+const val PREF_KEY_EMAIL="key_email"
+const val PREF_KEY_IDENTITY_NUMBER="key_identity_number"
+const val PREF_KEY_PROFILE_IMAGE="profile_image"

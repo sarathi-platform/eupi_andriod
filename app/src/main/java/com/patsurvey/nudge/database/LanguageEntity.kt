@@ -11,15 +11,15 @@ data class LanguageEntity(
     @ColumnInfo(name = "id")
     var id: Int,
 
+    @ColumnInfo(name = "orderNumber")
+    var orderNumber: Int,
+
     @ColumnInfo(name = "language")
     var language : String,
 
     @ColumnInfo(name = "langCode")
     val langCode : String?,
 
-    @ColumnInfo(name = "orderNumber")
-    val orderNumber: Int,
-
     @ColumnInfo(name = "localName")
-    val localName: String
+    val localName : String?,
 )

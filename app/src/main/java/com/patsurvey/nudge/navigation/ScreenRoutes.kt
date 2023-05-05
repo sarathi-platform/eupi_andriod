@@ -15,6 +15,7 @@ enum class ScreenRoutes(val route: String) {
     RANKED_DIDI_LIST_SCREEN("ranked_didi_list_screen"),
     DIGITAL_FORM_A_SCREEN("digital_form_a_screen"),
     SOCIAL_MAPPING_SCREEN("social_mapping_screen"),
+    LOGIN_HOME_SCREEN("login_home_screen"),
     VILLAGE_SELECTION_SCREEN("village_selection_screen");
 
 

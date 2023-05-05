@@ -5,9 +5,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.VillageListModal
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -20,52 +22,44 @@ import javax.inject.Inject
 @HiltViewModel
 class VillageSelectionViewModel @Inject constructor(
     val prefRepo: PrefRepo,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val villageListDao: VillageListDao
 ): BaseViewModel() {
 
-    private val _villagList = MutableStateFlow(listOf<VillageListModal>())
-    val villageList: StateFlow<List<VillageListModal>> get() = _villagList
+    private val _villagList = MutableStateFlow(listOf<VillageEntity>())
+    val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
     val villageSelected = mutableStateOf(-1)
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
-        getUserAndVillageList()
+        fetchUserDetails()
     }
 
     fun updateSelectedVillage(){
         prefRepo.saveSelectedVillage(villageSelected.value)
     }
 
-    fun getUserAndVillageList(){
-        job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch{
-            val response=apiService.userAndVillageListAPI()
-            withContext(Dispatchers.IO){
-                if(response.status.equals(SUCCESS,true)){
-                    Log.d("TAG", "getUserAndVillageList:${response.data.toString()} ")
-                }else{
-                    onError("Error : ${response.message} ")
+    fun fetchUserDetails() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId()?:1)
+            withContext(Dispatchers.IO) {
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        prefRepo.savePref(PREF_KEY_USER_NAME,it.username)
+                        prefRepo.savePref(PREF_KEY_NAME,it.name)
+                        prefRepo.savePref(PREF_KEY_EMAIL,it.email)
+                        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER,it.identityNumber)
+                        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE,it.profileImage)
+                        villageListDao.insertAll(it.villageList)
+                        _villagList.emit(it.villageList)
+                    }
                 }
             }
         }
     }
 
-    private fun createVillaeList() {
-        viewModelScope.launch {
-            withContext(Dispatchers.Default) {
-                val sampleVillageList = arrayListOf<VillageListModal>()
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 1", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 2", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 3", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 4", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 5", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 6", voName = "Sundar Pahar Mahila Mandal"))
-                sampleVillageList.add(VillageListModal(villageName = "Sundar Pahar 7", voName = "Sundar Pahar Mahila Mandal"))
-                _villagList.emit(sampleVillageList)
-            }
-        }
-    }
+
 
 }

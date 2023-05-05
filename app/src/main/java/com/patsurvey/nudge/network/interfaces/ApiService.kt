@@ -7,11 +7,9 @@ import com.patsurvey.nudge.model.request.StepsListRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.model.response.OtpVerificationModel
-import com.patsurvey.nudge.utils.HEADER_TYPE_NONE
-import com.patsurvey.nudge.utils.KEY_HEADER_AUTH
+import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
-import org.json.JSONObject
 import retrofit2.http.*
 
 interface ApiService {
@@ -29,7 +27,8 @@ interface ApiService {
     @GET("/read-api/user/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun userAndVillageListAPI(
-    ): ApiResponseModel<JSONObject>
+        @Query("languageId") languageId: Int
+    ): ApiResponseModel<UserDetailsResponse>
 
     @GET("/read-api/config/step/get")
     suspend fun getStepsList(): ApiResponseModel<StepsListRequest>

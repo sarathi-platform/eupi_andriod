@@ -45,4 +45,7 @@ interface PrefRepo {
 
    fun getPref(key: String, defaultValue: Float): Float
 
+   fun getAppLanguageId():Int?
+   fun saveAppLanguageId(languageId: Int?)
+
 }
