@@ -30,10 +30,11 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
-import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("StringFormatInvalid")
 @Composable
@@ -43,7 +44,7 @@ fun LoginScreen(
     modifier: Modifier
 ) {
     val context = LocalContext.current
-
+        val snackState= rememberSnackBarState()
     BackHandler {
         (context as? Activity)?.finish()
     }
@@ -164,13 +165,17 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
             Button(onClick = {
+
                 if(viewModel.mobileNumber.value.text[0].toString().toInt()<6){
-                    showCustomToast(context,context.getString(R.string.invalid_mobile_number))
+                    snackState.addMessage(message = context.getString(R.string.invalid_mobile_number)
+                        , isSuccess = false, isCustomIcon = false)
                 }else {
                     viewModel.generateOtp { success, message ->
-                        showCustomToast(context, message)
-                        if (success)
-                            navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
+                        if (success){
+                            navController.navigate(route = "otp_verification_screen/"+viewModel.mobileNumber.value.text)
+                        }else{
+                            snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
+                        }
                     }
                 }
                              },
@@ -203,4 +208,5 @@ fun LoginScreen(
 
 
     }
+    CustomSnackBarShow(state = snackState)
 }
