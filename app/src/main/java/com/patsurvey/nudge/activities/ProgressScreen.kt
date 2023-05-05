@@ -71,7 +71,7 @@ fun ProgressScreen(
                         .height((screenHeight/2).dp)
                 ) {
                     Text(
-                        text = "Select Village & VO",
+                        text = stringResource(R.string.seletc_village_screen_text),
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
