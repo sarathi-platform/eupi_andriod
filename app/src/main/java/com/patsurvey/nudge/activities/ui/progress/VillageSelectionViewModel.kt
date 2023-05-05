@@ -16,12 +16,9 @@ import com.patsurvey.nudge.model.dataModel.VillageListModal
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -61,7 +58,7 @@ class VillageSelectionViewModel @Inject constructor(
                             prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
                             prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
                             villageListDao.insertAll(it.villageList)
-                            _villagList.emit(it.villageList)
+                            _villagList.emit(villageListDao.getAllVillages())
                         }
                         withContext(Dispatchers.Main) {
                             showLoader.value = false
