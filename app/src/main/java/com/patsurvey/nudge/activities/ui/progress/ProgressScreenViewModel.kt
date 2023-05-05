@@ -56,7 +56,7 @@ class ProgressScreenViewModel @Inject constructor(
     private fun fetchStepsList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                try {
+            try {
                 val response = apiInterface.getStepsList()
                 withContext(Dispatchers.IO){
                     if (response.status.equals(SUCCESS, true)) {
@@ -83,10 +83,9 @@ class ProgressScreenViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onError("Exception : ${ex.localizedMessage}")
-                    showLoader.value = false
-                }
-
+                showLoader.value = false
             }
+        }
     }
 
     private fun getVillaeList(success: () -> Unit) {

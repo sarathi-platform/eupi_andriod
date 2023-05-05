@@ -72,7 +72,9 @@ fun ProgressScreen(
                 ) {
                     Text(
                         text = "Select Village & VO",
-                        style = smallTextStyle,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 16.sp,
                         color = textColorDark,
                         modifier = Modifier.padding(top = 12.dp)
                     )
@@ -92,6 +94,7 @@ fun ProgressScreen(
                                 }
                             }
                         }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
                     }
 
                 }
@@ -102,8 +105,7 @@ fun ProgressScreen(
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
             Scaffold(
-                modifier = Modifier
-                    .padding(bottom = 14.dp),
+                modifier = Modifier,
                 topBar = {
                     ProgressScreenTopBar() {
 
@@ -132,10 +134,9 @@ fun ProgressScreen(
 //                        verticalArrangement = Arrangement.
                     ) {
 
-
                         item {
                             UserDataView(
-                                modifier = Modifier.padding(top = 16.dp),
+                                modifier = Modifier,
                                 name = viewModel.prefRepo.getPref(
                                     PREF_KEY_NAME,
                                     BLANK_STRING
@@ -185,6 +186,7 @@ fun ProgressScreen(
                                 }
                             }
                         }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
                     }
                 }
             }
