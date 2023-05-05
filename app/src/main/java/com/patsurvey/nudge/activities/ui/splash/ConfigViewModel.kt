@@ -27,12 +27,7 @@ class ConfigViewModel @Inject constructor(
     fun fetchLanguageDetails(callBack: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
-                if (isLoggedIn()) {
-                    delay(SPLASH_SCREEN_DURATION)
-                    withContext(Dispatchers.Main) {
-                        callBack()
-                    }
-                } else {
+
                     val response = apiInterface.configDetails()
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
@@ -56,7 +51,7 @@ class ConfigViewModel @Inject constructor(
                             }
                         }
                     }
-                }
+
             } catch (ex: Exception) {
                 onError("Error : ${ex.localizedMessage}")
                 addDefaultLanguage()

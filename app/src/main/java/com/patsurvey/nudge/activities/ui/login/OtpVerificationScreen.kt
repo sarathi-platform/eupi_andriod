@@ -4,9 +4,6 @@ package com.patsurvey.nudge.activities.ui.login
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
@@ -19,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
+
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -29,11 +26,16 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.HomeScreen
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.utils.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -45,15 +47,16 @@ fun OtpVerificationScreen(
     var otpValue by remember {
         mutableStateOf("")
     }
+    val navHomeController = rememberNavController()
+    val formattedTime = remember {
+        mutableStateOf(SEC_30_STRING)
+    }
     var isResendOTPVisible by remember {
         mutableStateOf(true)
     }
 
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
-    val timeData = remember {
-        mutableStateOf(OTP_RESEND_DURATION)
-    }
     val context = LocalContext.current
 
     Box(
@@ -112,40 +115,19 @@ fun OtpVerificationScreen(
                     viewModel.otpNumber.value = otpValue
                 })
             }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_30)))
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    modifier = Modifier.fillMaxWidth(),
 
-                Text(
-                    text = stringResource(id = R.string.resend_otp),
-                    color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.resendOtp { success, message ->
-                            showCustomToast(context = context, "OTP Resend")
-                        }
-                        timeData.value = OTP_RESEND_DURATION
-                        isResendOTPEnable.value = false
-                    }
-                )
-
-                AnimatedVisibility(
-                    visible = !isResendOTPEnable.value,
-                    exit = fadeOut(),
-                    enter = fadeIn()
-                ) {
+                    ) {
                     val countDownTimer =
                         object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                            @SuppressLint("SimpleDateFormat")
                             override fun onTick(millisUntilFinished: Long) {
-                                var secs = (millisUntilFinished / 1000)
+                                val dateTimeFormat= SimpleDateFormat("00:ss")
+                                formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
 
-                                timeData.value = secs
                             }
 
                             override fun onFinish() {
@@ -163,18 +145,44 @@ fun OtpVerificationScreen(
                     Text(
                         text = stringResource(
                             id = R.string.expiry_login_verify_otp,
-                            timeData.value
+                            formattedTime.value
                         ),
                         color = textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.End,
+                        textAlign = TextAlign.Start,
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(horizontal = dimensionResource(id = R.dimen.dp_10))
                             .background(Color.Transparent)
                     )
                 }
+            }
+            Row(
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth()
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.resend_otp),
+                    color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
+                    fontSize = 14.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    textDecoration = TextDecoration.Underline,
+                    modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
+                        viewModel.validateOtp { success, message ->
+                            if (success){
+                                    navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                            }
+                            else
+                                showToast(context, message)
+                        }
+                        isResendOTPEnable.value = false
+                    }
+                )
             }
 
 
@@ -182,8 +190,10 @@ fun OtpVerificationScreen(
             Button(
                 onClick = {
                     viewModel.validateOtp { success, message ->
-                        if (success)
-                            navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
+                        if (success){
+                            navController.navigate(ScreenRoutes.LOGIN_HOME_SCREEN.route)
+                        }
+
                         else
                             showToast(context, message)
                     }

@@ -1,8 +1,8 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import android.annotation.SuppressLint
+
 import androidx.compose.foundation.*
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -10,7 +10,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,10 +67,10 @@ fun LanguageScreen(
                 modifier=Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_30))
                 )
             Column(modifier = Modifier) {
-                viewModel.languageList?.value?.let { language ->
+                viewModel.languageList?.value?.let {
                     LazyColumn {
 
-                        itemsIndexed(items = language) { index, item ->
+                        itemsIndexed(items = it) { index, item ->
                             LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
                                 viewModel.languagePosition.value = i
                             }
@@ -84,7 +83,10 @@ fun LanguageScreen(
 
         Button(
             onClick = {
-                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
+                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let { it ->
+                    it.id?.let { languageId->
+                        viewModel.prefRepo.saveAppLanguageId(languageId)
+                    }
                     it.langCode?.let { code ->
                         viewModel.prefRepo.saveAppLanguage(code)
                         (context as MainActivity).setLanguage(code)
@@ -97,15 +99,12 @@ fun LanguageScreen(
                 .fillMaxWidth()
                 .background(Color.Transparent)
                 .align(Alignment.BottomCenter),
-            colors = if (viewModel.languagePosition.value > -1) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
-                buttonBgColor),
-            shape = RoundedCornerShape(6.dp),
-            enabled = viewModel.languagePosition.value > -1
+            colors = ButtonDefaults.buttonColors(blueDark),
+            shape = RoundedCornerShape(6.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.continue_text),
-                color = if (viewModel.languagePosition.value > -1)
-                    Color.White else blueDark,
+                color = Color.White,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
@@ -118,13 +117,14 @@ fun LanguageScreen(
         }
     }
 
-//    LaunchedEffect(key1 = Unit){
-//        viewModel.languageList.value?.mapIndexed{index, languageEntity ->
-//            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
-//                viewModel.languagePosition.value=index
-//            }
-//        }
-//    }
+    LaunchedEffect(key1 = Unit){
+        viewModel.languageList.value?.mapIndexed{index, languageEntity ->
+            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
+                viewModel.languagePosition.value=index
+            }
+        }
+
+    }
 }
 
 @Composable
@@ -135,7 +135,6 @@ fun LanguageItem(
     onClick: (Int) -> Unit
 ) {
 
-    val interactionSource = remember { MutableInteractionSource() }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -151,16 +150,9 @@ fun LanguageItem(
                 .clickable {
                     onClick(index)
                 }
-                .indication(
-                    interactionSource = interactionSource,
-                    indication = rememberRipple(
-                        bounded = true,
-                        color = Color.White
-                    )
-                )
         ) {
             Text(
-                text = if (languageModel.localName.isNullOrEmpty()) languageModel.language else languageModel.localName,
+                text = languageModel.localName ?: languageModel.language,
                 color = blueDark,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,

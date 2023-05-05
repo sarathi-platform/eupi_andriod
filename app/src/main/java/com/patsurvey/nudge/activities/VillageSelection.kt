@@ -48,16 +48,6 @@ fun VillageSelectionScreen(
 
     val villages by viewModel.villageList.collectAsState()
 
-
-    val context = LocalContext.current as? Activity
-
-    BackHandler {
-        if (viewModel.isLoggedIn()) {
-            context?.finish()
-        }
-    }
-
-
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -69,8 +59,8 @@ fun VillageSelectionScreen(
         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
             itemsIndexed(villages) { index, village ->
                 VillageAndVoBox(
-                    tolaName = village.villageName,
-                    voName = village.voName,
+                    tolaName = village.name,
+                    voName = village.name,
                     index = index,
                     viewModel.villageSelected.value,
                 ) {

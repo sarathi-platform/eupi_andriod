@@ -174,7 +174,7 @@ object NetworkModule {
                if (sharedPref.getLoginStatus()) {
                    requestBuilder.addHeader(
                    KEY_HEADER_AUTH,
-                   "bearer " + (sharedPref.getAccessToken()!!)
+                   "Bearer " + (sharedPref.getAccessToken()!!)
                  )
                }
              }

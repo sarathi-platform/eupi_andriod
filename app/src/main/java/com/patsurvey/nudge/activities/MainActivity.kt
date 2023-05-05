@@ -31,15 +31,20 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.navigation.VOHomeScreenFlowNavigation
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
+    @Inject
+    lateinit var sharedPrefs: PrefRepo
+
 
     private lateinit var connectionLiveData: ConnectionMonitor
 

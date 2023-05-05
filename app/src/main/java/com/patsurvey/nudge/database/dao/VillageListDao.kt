@@ -11,7 +11,7 @@ import com.patsurvey.nudge.database.VillageEntity
 interface VillageListDao {
 
     @Query("SELECT * FROM village_table")
-    fun getAllVillages(): LiveData<List<VillageEntity>>
+    fun getAllVillages(): List<VillageEntity>
 
     @Query("Select * FROM village_table where id = :id")
     fun getVillage(id: Int): VillageEntity

@@ -26,8 +26,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.utils.BlueButton
-import com.patsurvey.nudge.utils.IconButtonForward
+import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -118,24 +117,29 @@ fun ProgressScreen(
                                     start.linkTo(parent.start)
                                 }
                         ) {
-                            Text(
-                                text = "Akhilesh Negi",
-                                color = textColorDark,
-                                modifier = Modifier
-                                    .padding(top = 20.dp)
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Start,
-                                style = largeTextStyle
-                            )
-                            Text(
-                                text = stringResource(R.string.user_id_text)+"234567",
-                                color = textColorDark,
-                                modifier = Modifier
-                                    .padding(top = 6.dp, bottom = 16.dp)
-                                    .fillMaxWidth(),
-                                textAlign = TextAlign.Start,
-                                style = smallTextStyle
-                            )
+                            viewModel.prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING)?.let {
+                                Text(
+                                    text = it,
+                                    color = textColorDark,
+                                    modifier = Modifier
+                                        .padding(top = 20.dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Start,
+                                    style = largeTextStyle
+                                )
+                            }
+                            viewModel.prefRepo.getPref(PREF_KEY_IDENTITY_NUMBER, BLANK_STRING)?.let {
+
+                                Text(
+                                    text = stringResource(R.string.user_id_text) + it,
+                                    color = textColorDark,
+                                    modifier = Modifier
+                                        .padding(top = 6.dp, bottom = 16.dp)
+                                        .fillMaxWidth(),
+                                    textAlign = TextAlign.Start,
+                                    style = smallTextStyle
+                                )
+                            }
                         }
                         Icon(
                             painter = painterResource(id = R.drawable.more_icon),

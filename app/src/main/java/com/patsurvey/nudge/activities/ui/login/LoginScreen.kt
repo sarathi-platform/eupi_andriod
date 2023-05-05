@@ -103,7 +103,7 @@ fun LoginScreen(
             Row(
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.height_60dp))
+                    .height(dimensionResource(id = R.dimen.dp_65))
                     .border(
                         dimensionResource(id = R.dimen.dp_1),
                         blueDark,
@@ -117,7 +117,7 @@ fun LoginScreen(
                     fontSize = 18.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.Normal,
-                    textAlign = TextAlign.Center,
+                    textAlign = TextAlign.Start,
                     modifier = Modifier.padding(start = dimensionResource(id = R.dimen.dp_20))
                 )
                 TextField(
@@ -142,7 +142,6 @@ fun LoginScreen(
                         unfocusedIndicatorColor = Color.Transparent,
                         disabledIndicatorColor = Color.Transparent,
                     ),
-//                        placeholder = { Text(text = stringResource(id = R.string.enter_mobile_number)) },
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
                         autoCorrect = true,
@@ -164,14 +163,17 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
-            Button(
-                onClick = {
+            Button(onClick = {
+                if(viewModel.mobileNumber.value.text[0].toString().toInt()<6){
+                    showCustomToast(context,context.getString(R.string.invalid_mobile_number))
+                }else {
                     viewModel.generateOtp { success, message ->
                         showCustomToast(context, message)
                         if (success)
                             navController.navigate(ScreenRoutes.OTP_VERIFICATION_SCREEN.route)
                     }
-                },
+                }
+                             },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent),
