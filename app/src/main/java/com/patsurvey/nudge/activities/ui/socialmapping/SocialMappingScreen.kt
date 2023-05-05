@@ -58,9 +58,7 @@ fun SocialMappingScreen(
             .then(modifier)
     ) {
         val (bottomActionBox, mainBox) = createRefs()
-        Box(modifier = Modifier.fillMaxWidth()){
-            NetworkBanner()
-        }
+
         Box(modifier = Modifier
             .constrainAs(mainBox) {
                 start.linkTo(parent.start)

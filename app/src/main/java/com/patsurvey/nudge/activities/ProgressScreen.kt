@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -47,6 +48,9 @@ fun ProgressScreen(
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
 
+    val mainActivity = LocalContext.current as? MainActivity
+    mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
+
     Log.d("PROGRESS_SCREEN", "viewModel.villageSelected.value: ${viewModel.villageSelected.value}")
 
 
@@ -62,7 +66,7 @@ fun ProgressScreen(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 26.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                         .height(500.dp)
                 ) {
                     Text(
@@ -97,7 +101,7 @@ fun ProgressScreen(
         ) {
             Column(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
             ) {
 
                 Column(
@@ -124,7 +128,7 @@ fun ProgressScreen(
                                 style = largeTextStyle
                             )
                             Text(
-                                text = stringResource(R.string.user_id_text),
+                                text = stringResource(R.string.user_id_text)+"234567",
                                 color = textColorDark,
                                 modifier = Modifier
                                     .padding(top = 6.dp, bottom = 16.dp)

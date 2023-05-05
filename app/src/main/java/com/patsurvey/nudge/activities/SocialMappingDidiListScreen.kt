@@ -52,7 +52,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 
 @Composable
-fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier, isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
+fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier, didiViewModel: AddDidiViewModel) {
     val didiList = didiViewModel.didiList/*listOf(
         DidiDetailsModel(1, "didi 1", "sundar pahar", "sundar pahar", "Kahar", "12", "Rajesh"),
         DidiDetailsModel(2, "didi 2", "sundar pahar2", "sundar pahar2", "Kahar", "131", "Rajesh"),
@@ -74,10 +74,6 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        NetworkBanner(
-            modifier = Modifier,
-            isOnline = isOnline
-        )
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
@@ -675,5 +671,5 @@ fun CircularDidiImage(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SocialMappingDidiListPreview() {
-    SocialMappingDidiListScreen(navController = rememberNavController(), modifier = Modifier, isOnline = true, didiViewModel = viewModel())
+    SocialMappingDidiListScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel())
 }

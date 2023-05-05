@@ -18,20 +18,35 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import android.Manifest
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.MutableLiveData
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.navigation.VOHomeScreenFlowNavigation
+import com.patsurvey.nudge.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() , OnLocaleChangedListener {
+class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
+
+    private lateinit var connectionLiveData: ConnectionMonitor
+
+    private val mViewModel: MainActivityViewModel by viewModels()
+
+    val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
+
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         localizationDelegate.addOnLocaleChangedListener(this)
@@ -39,6 +54,9 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
         super.onCreate(savedInstanceState)
         setContent {
             Nudge_Theme {
+
+                val onlineStatus = remember { mutableStateOf(false) }
+
                 val permissionsState = rememberMultiplePermissionsState(
                     permissions = listOf(
                         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -52,7 +70,7 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                     key1 = lifecycleOwner,
                     effect = {
                         val observer = LifecycleEventObserver { _, event ->
-                            if(event == Lifecycle.Event.ON_START) {
+                            if (event == Lifecycle.Event.ON_START) {
                                 permissionsState.launchMultiplePermissionRequest()
                             }
                         }
@@ -65,7 +83,7 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                 )
 
                 val navController = rememberNavController()
-                val isLoggedIn = false
+
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
@@ -73,14 +91,53 @@ class MainActivity : ComponentActivity() , OnLocaleChangedListener {
                         .padding(0.dp)
                         .background(blueDark),
                 ) {
-                    if (isLoggedIn)
-                        VOHomeScreenFlowNavigation(navController = navController, modifier = Modifier.fillMaxWidth())
-                    else {
-                        StartFlowNavigation(navController = navController)
+                    ConstraintLayout() {
+                        val (networkBanner, mainContent) = createRefs()
+                        if (mViewModel.isLoggedIn.value) {
+                            NetworkBanner(
+                                modifier = Modifier
+                                    .constrainAs(networkBanner) {
+                                        top.linkTo(parent.top)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                isOnline = onlineStatus.value
+                            )
+                        }
+                        Box(modifier = Modifier.constrainAs(mainContent){
+                            top.linkTo(if (mViewModel.isLoggedIn.value) networkBanner.bottom else parent.top)
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
+                            height = Dimension.fillToConstraints
+                        }) {
+                            if (mViewModel.isLoggedIn())
+                                VOHomeScreenFlowNavigation(
+                                    navController = navController,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            else {
+                                StartFlowNavigation(navController = navController)
+                            }
+                        }
                     }
+
+                }
+                connectionLiveData = ConnectionMonitor(this)
+                connectionLiveData.observe(this) { isNetworkAvailable ->
+                    onlineStatus.value = isNetworkAvailable
+                }
+
+                isLoggedInLive.observe(this) { isLoggedIn ->
+                    mViewModel.isLoggedIn.value = isLoggedIn
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        connectionLiveData.removeObservers(this)
+        super.onDestroy()
     }
 
     override fun onAfterLocaleChanged() {

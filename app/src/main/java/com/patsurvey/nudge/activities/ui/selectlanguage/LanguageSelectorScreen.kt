@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import android.annotation.SuppressLint
-
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -72,7 +71,7 @@ fun LanguageScreen(
                 viewModel.languageList?.value?.let { language ->
                     LazyColumn {
 
-                        itemsIndexed(items = language.sortedBy { it.orderNumber }) { index, item ->
+                        itemsIndexed(items = language) { index, item ->
                             LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
                                 viewModel.languagePosition.value = i
                             }
@@ -98,12 +97,15 @@ fun LanguageScreen(
                 .fillMaxWidth()
                 .background(Color.Transparent)
                 .align(Alignment.BottomCenter),
-            colors = ButtonDefaults.buttonColors(blueDark),
-            shape = RoundedCornerShape(6.dp)
+            colors = if (viewModel.languagePosition.value > -1) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                buttonBgColor),
+            shape = RoundedCornerShape(6.dp),
+            enabled = viewModel.languagePosition.value > -1
         ) {
             Text(
                 text = stringResource(id = R.string.continue_text),
-                color = Color.White,
+                color = if (viewModel.languagePosition.value > -1)
+                    Color.White else blueDark,
                 fontSize = 18.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,

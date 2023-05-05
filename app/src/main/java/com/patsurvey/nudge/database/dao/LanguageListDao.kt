@@ -9,7 +9,7 @@ import com.patsurvey.nudge.utils.LANGUAGE_TABLE_NAME
 
 @Dao
 interface LanguageListDao {
-    @Query("SELECT * FROM $LANGUAGE_TABLE_NAME")
+    @Query("SELECT * FROM $LANGUAGE_TABLE_NAME ORDER BY orderNumber ASC")
     fun getAllLanguages(): List<LanguageEntity>
 
     @Query("Select * FROM $LANGUAGE_TABLE_NAME where id = :id")
