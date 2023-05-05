@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
@@ -52,22 +53,46 @@ fun VillageSelectionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(horizontal = 16.dp, vertical = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
             .then(modifier)
     ) {
-        Text(text = stringResource(R.string.seletc_village_screen_text), style = largeTextStyle, color = textColorDark)
-        LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-            itemsIndexed(villages) { index, village ->
-                VillageAndVoBox(
-                    tolaName = village.name,
-                    voName = village.name,
-                    index = index,
-                    viewModel.villageSelected.value,
-                ) {
-                    viewModel.villageSelected.value = it
-                    viewModel.updateSelectedVillage()
-                    navController.navigate(ScreenRoutes.HOME_SCREEN.route)
+        Text(
+            text = stringResource(R.string.seletc_village_screen_text),
+            fontFamily = NotoSans,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 24.sp, color = textColorDark,
+            modifier = Modifier.padding(top = 12.dp)
+        )
+        if (viewModel.showLoader.value) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(top = 30.dp)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                item { Spacer(modifier = Modifier.height(4.dp)) }
+                itemsIndexed(villages) { index, village ->
+                    VillageAndVoBox(
+                        tolaName = village.name,
+                        voName = village.name,
+                        index = index,
+                        viewModel.villageSelected.value,
+                    ) {
+                        viewModel.villageSelected.value = it
+                        viewModel.updateSelectedVillage()
+                        navController.navigate(ScreenRoutes.HOME_SCREEN.route)
+                    }
                 }
+                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
         }
     }
@@ -194,15 +219,17 @@ fun VillageAndVoBoxForBottomSheet(
                 .background(if (index == selectedIndex) dropDownBg else White)
                 .fillMaxWidth()
         ) {
-            ConstraintLayout(modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                .fillMaxWidth()) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .fillMaxWidth()
+            ) {
                 val (iconRef, textRef, radioRef) = createRefs()
                 Icon(
                     painter = painterResource(id = R.drawable.home_icn),
                     contentDescription = null,
                     tint = textColorDark,
-                    modifier = Modifier.constrainAs(iconRef){
+                    modifier = Modifier.constrainAs(iconRef) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
                     }
@@ -213,7 +240,7 @@ fun VillageAndVoBoxForBottomSheet(
                     fontSize = 14.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.constrainAs(textRef){
+                    modifier = Modifier.constrainAs(textRef) {
                         top.linkTo(parent.top)
                         start.linkTo(iconRef.end)
                     }
