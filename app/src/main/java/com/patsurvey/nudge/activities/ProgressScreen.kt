@@ -13,13 +13,17 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
@@ -41,22 +45,20 @@ fun ProgressScreen(
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
-    val selectedVillage = viewModel.villageSelected.value
-    var selectedText by remember { mutableStateOf(if (selectedVillage == -1) "Select Village" else viewModel.villageList.value[selectedVillage].villageName) }
-
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
 
     val mainActivity = LocalContext.current as? MainActivity
     mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
 
-    Log.d("PROGRESS_SCREEN", "viewModel.villageSelected.value: ${viewModel.villageSelected.value}")
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
 
+    val selectedText = remember { mutableStateOf("Select Village") }
 
     Surface(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 14.dp)
             .then(modifier)
     ) {
         ModalBottomSheetLayout(
@@ -66,24 +68,25 @@ fun ProgressScreen(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp)
-                        .height(500.dp)
+                        .height((screenHeight/2).dp)
                 ) {
                     Text(
                         text = "Select Village & VO",
                         style = smallTextStyle,
                         color = textColorDark,
+                        modifier = Modifier.padding(top = 12.dp)
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 
                         itemsIndexed(villages) { index, village ->
                             VillageAndVoBoxForBottomSheet(
-                                tolaName = village.villageName,
-                                voName = village.voName,
+                                tolaName = village.name,
+                                voName = village.name,
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
                                 viewModel.villageSelected.value = it
-                                selectedText = viewModel.villageList.value[it].villageName
+                                selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
@@ -98,116 +101,21 @@ fun ProgressScreen(
             sheetBackgroundColor = Color.White,
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
-            Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-            ) {
-
-                Column(
-                    Modifier
-                        .background(Color.White)
-                ) {
-
-                    ConstraintLayout() {
-                        val (userDetail, moreMenu) = createRefs()
-                        Column(
-                            modifier = Modifier
-                                .constrainAs(userDetail) {
-                                    top.linkTo(parent.top)
-                                    start.linkTo(parent.start)
-                                }
-                        ) {
-                            viewModel.prefRepo.getPref(PREF_KEY_NAME, BLANK_STRING)?.let {
-                                Text(
-                                    text = it,
-                                    color = textColorDark,
-                                    modifier = Modifier
-                                        .padding(top = 20.dp)
-                                        .fillMaxWidth(),
-                                    textAlign = TextAlign.Start,
-                                    style = largeTextStyle
-                                )
-                            }
-                            viewModel.prefRepo.getPref(PREF_KEY_IDENTITY_NUMBER, BLANK_STRING)?.let {
-
-                                Text(
-                                    text = stringResource(R.string.user_id_text) + it,
-                                    color = textColorDark,
-                                    modifier = Modifier
-                                        .padding(top = 6.dp, bottom = 16.dp)
-                                        .fillMaxWidth(),
-                                    textAlign = TextAlign.Start,
-                                    style = smallTextStyle
-                                )
-                            }
-                        }
-                        Icon(
-                            painter = painterResource(id = R.drawable.more_icon),
-                            contentDescription = "more action button",
-                            tint = blueDark,
-                            modifier = Modifier
-                                .constrainAs(moreMenu) {
-                                    top.linkTo(userDetail.top, margin = 10.dp)
-                                    end.linkTo(parent.end, margin = 10.dp)
-                                }
-                                .padding(20.dp)
-                                .clickable {
-
-                                }
-                        )
-
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .background(dropDownBg)
-                            .clip(RoundedCornerShape(6.dp))
-                            .height(56.dp)
-                            .fillMaxWidth()
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = rememberRipple(
-                                    bounded = true,
-                                    color = Color.Black
-                                )
-                            ) {
-                                scope.launch {
-                                    if (!scaffoldState.isVisible) {
-                                        scaffoldState.show()
-                                    } else {
-                                        scaffoldState.hide()
-                                    }
-                                }
-                            },
-
-                        ) {
-                        Row(
-                            Modifier
-                                .padding(14.dp)
-                                .fillMaxWidth()
-                                .align(Alignment.Center),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = selectedText,
-                                color = blueDark,
-                            )
-                            Icon(
-                                painterResource(id = R.drawable.baseline_keyboard_arrow_down),
-                                contentDescription = "drop down menu icon",
-                                tint = blueDark
-                            )
-                        }
+            Scaffold(
+                modifier = Modifier
+                    .padding(bottom = 14.dp),
+                topBar = {
+                    ProgressScreenTopBar() {
 
                     }
                 }
-                if (viewModel.showLoader.value)
+            ) { it ->
+                if (viewModel.showLoader.value) {
                     Box(
                         modifier = Modifier
-                            .size(28.dp)
-                            .padding(top = 30.dp)
-                            .align(Alignment.CenterHorizontally)
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(top = it.calculateTopPadding() + 30.dp)
                     ) {
                         CircularProgressIndicator(
                             color = blueDark,
@@ -216,30 +124,65 @@ fun ProgressScreen(
                                 .align(Alignment.Center)
                         )
                     }
-                else {
+                } else {
                     LazyColumn(
-                        modifier = Modifier
+                        Modifier
                             .background(Color.White)
+                            .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()),
+//                        verticalArrangement = Arrangement.
                     ) {
-                        itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
-                            StepsBox(
-                                boxTitle = step.name,
-                                stepNo = step.orderNumber,
-                                index = index,
-                                shouldBeActive = (viewModel.stepSelected.value == index)
-                            ) {
-                                viewModel.stepSelected.value = it
-                                when (it) {
-                                    0 -> {
-                                        stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
-                                    }
-                                    1 -> {}
-                                    2 -> {}
-                                    3 -> {}
-                                    4 -> {}
-                                    5 -> {}
-                                }
 
+
+                        item {
+                            UserDataView(
+                                modifier = Modifier.padding(top = 16.dp),
+                                name = viewModel.prefRepo.getPref(
+                                    PREF_KEY_NAME,
+                                    BLANK_STRING
+                                ) ?: "",
+                                identity = viewModel.prefRepo.getPref(
+                                    PREF_KEY_IDENTITY_NUMBER,
+                                    BLANK_STRING
+                                ) ?: ""
+                            )
+                        }
+
+                        item {
+                           selectedText.value = villages[viewModel.villageSelected.value].name
+                            VillageSelectorDropDown(selectedText = selectedText.value) {
+                                scope.launch {
+                                    if (!scaffoldState.isVisible) {
+                                        scaffoldState.show()
+                                    } else {
+                                        scaffoldState.hide()
+                                    }
+                                }
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(16.dp))
+                        }
+                        itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
+                            if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")?: "").equals("CRP Program", true) && index < 5) {
+                                StepsBox(
+                                    boxTitle = step.name,
+                                    stepNo = step.orderNumber,
+                                    index = index,
+                                    shouldBeActive = (viewModel.stepSelected.value == index)
+                                ) { index ->
+                                    viewModel.stepSelected.value = index
+                                    when (index) {
+                                        0 -> {
+                                            stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                                        }
+                                        1 -> {}
+                                        2 -> {}
+                                        3 -> {}
+                                        4 -> {}
+                                        5 -> {}
+                                    }
+
+                                }
                             }
                         }
                     }
@@ -346,17 +289,6 @@ fun StepsBox(
                         onclick(index)
                     }
                 }
-                /*BlueButton(
-                    buttonText = "Start Now",
-                    isArrowRequired = true,
-                    shouldBeActive = shouldBeActive,
-                    modifier = Modifier
-                        .padding(end = 14.dp)
-                        .weight(0.8f),
-                    onClick = {
-                        onclick(index)
-                    }
-                )*/
             }
         }
 
@@ -377,7 +309,7 @@ fun StepsBox(
                 }
         ) {
             Text(
-                text = "Step $stepNo",
+                text = "$stepNo",
                 color = textColorDark,
                 style = smallerTextStyleNormalWeight,
                 modifier = Modifier.padding(vertical = 2.dp, horizontal = 16.dp)
@@ -408,6 +340,140 @@ fun StepsBox(
                         top.linkTo(divider1.bottom)
                     }
                     .padding(vertical = 2.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun UserDataView(
+    modifier: Modifier = Modifier,
+    name: String,
+    identity: String
+) {
+    ConstraintLayout() {
+        val (userDetail, moreMenu) = createRefs()
+        Column(
+            modifier = Modifier
+                .constrainAs(userDetail) {
+                    top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                }
+                .then(modifier)
+        ) {
+            Text(
+                text = name,
+                color = textColorDark,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                style = largeTextStyle
+            )
+
+            Text(
+                text = stringResource(R.string.user_id_text) + identity,
+                color = textColorDark,
+                modifier = Modifier
+                    .padding(top = 6.dp, bottom = 16.dp)
+                    .fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                style = smallTextStyle
+            )
+
+        }
+    }
+}
+
+@Composable
+fun VillageSelectorDropDown(
+    modifier: Modifier = Modifier,
+    selectedText: String,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .background(dropDownBg)
+            .clip(RoundedCornerShape(6.dp))
+            .height(56.dp)
+            .fillMaxWidth()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+            ) {
+                onClick()
+
+            }
+            .then(modifier),
+        ) {
+        Row(
+            Modifier
+                .padding(14.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = selectedText,
+                color = blueDark,
+            )
+            Icon(
+                painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                contentDescription = "drop down menu icon",
+                tint = blueDark
+            )
+        }
+
+    }
+}
+
+@Composable
+fun ProgressScreenTopBar(
+    modifier: Modifier = Modifier,
+    onHamburgerClick: () -> Unit
+) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .then(modifier)
+    ) {
+        ConstraintLayout(
+            Modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxWidth()
+                .height(48.dp)
+                .align(Alignment.Center),
+        ) {
+            val (titleItem, moreMenu) = createRefs()
+            Text(
+                text = "Sarathi",
+                color = textColorDark,
+                fontFamily = NotoSans,
+                fontSize = 18.sp,
+                fontWeight = FontWeight.SemiBold,
+                modifier = Modifier
+                    .constrainAs(titleItem)
+                    {
+                        top.linkTo(parent.top, margin = 8.dp)
+                        start.linkTo(parent.start)
+                    }
+            )
+
+            Icon(
+                painter = painterResource(id = R.drawable.more_icon),
+                contentDescription = "more action button",
+                tint = blueDark,
+                modifier = Modifier
+                    .constrainAs(moreMenu) {
+                        top.linkTo(titleItem.top)
+                        end.linkTo(parent.end)
+                    }
+                    .padding(10.dp)
+                    .clickable {
+                        onHamburgerClick()
+                    }
             )
         }
     }

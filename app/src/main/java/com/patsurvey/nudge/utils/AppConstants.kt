@@ -39,3 +39,5 @@ const val PREF_KEY_NAME="key_name"
 const val PREF_KEY_EMAIL="key_email"
 const val PREF_KEY_IDENTITY_NUMBER="key_identity_number"
 const val PREF_KEY_PROFILE_IMAGE="profile_image"
+
+const val PREF_PROGRAM_NAME = "programName"
