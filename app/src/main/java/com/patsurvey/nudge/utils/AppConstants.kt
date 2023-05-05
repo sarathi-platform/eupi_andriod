@@ -42,3 +42,5 @@ const val PREF_KEY_PROFILE_IMAGE="profile_image"
 const val SNACKBAR_TAG = "snackbar"
 const val SNACKBAR_MESSAGE = "snackbarMessage"
 const val ARG_MOBILE_NUMBER = "mobile"
+
+const val PREF_PROGRAM_NAME = "programName"

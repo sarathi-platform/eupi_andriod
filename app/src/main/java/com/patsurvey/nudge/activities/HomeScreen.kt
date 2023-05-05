@@ -83,7 +83,7 @@ fun HomeScreen(
             homeScreenNavController = homeScreenNavController,
             stepsNavHostController = stepsNavController,
             modifier = Modifier
-                .padding(top = 24.dp, bottom = it.calculateBottomPadding())
+                .padding(bottom = it.calculateBottomPadding())
 
         )
 
