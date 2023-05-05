@@ -78,7 +78,7 @@ fun SnackBarCustom(
         }
     ),
     verticalPadding: Dp = 12.dp,
-    horizontalPadding: Dp = 12.dp
+    horizontalPadding: Dp = 8.dp
 ) {
     Box(
         modifier = modifier
@@ -291,7 +291,8 @@ internal fun SnackBarView(
 ) {
 
     Row(modifier = Modifier.
-    padding(top = 90.dp)) {
+    padding(top = 90.dp)
+        .padding(horizontalPadding)) {
     Row(
         modifier = Modifier
             .border(
@@ -340,8 +341,6 @@ internal fun SnackBarView(
                 text = message ?: "Unknown",
                 color = Color.Black,
                 style = smallTextStyleNormalWeight,
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 1
             )
         }
     }
