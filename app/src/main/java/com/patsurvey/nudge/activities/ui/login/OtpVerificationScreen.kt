@@ -173,13 +173,10 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.validateOtp { success, message ->
-                            if (success){
-                                    navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
-                            }
-                            else
-                                snackState.addMessage(message = message, isSuccess = true,isCustomIcon = false)
+                        viewModel.resendOtp() { success, message ->
+                            snackState.addMessage(message = context.getString(R.string.otp_resend_to_mobile_number_message,mobileNumber), isSuccess = true, isCustomIcon = false)
                         }
+                        formattedTime.value = SEC_30_STRING
                         isResendOTPEnable.value = false
                     }
                 )

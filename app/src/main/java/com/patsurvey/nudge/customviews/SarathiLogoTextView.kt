@@ -22,7 +22,7 @@ fun SarathiLogoTextView() {
 
         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.fillMaxWidth()) {
             Spacer(modifier = Modifier
-                .height(30.dp))
+                .height(12.dp))
             Text(text = "Sarathi", style =mediumTextStyle, color = blueDark)
             Text(text = "To End Ultra Poverty", style = TextStyle(
                 fontFamily = NotoSans,
