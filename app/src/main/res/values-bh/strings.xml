@@ -71,6 +71,8 @@
     <string name="complete_didi_addition">पूरा दीदी जोड़ल</string>
 
     <string name="user_id_text">"आईडी के बा: "</string>
+    <string name="empty_tola_string">कवनो टोला ना जोड़ल गइल</string>
+
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>

@@ -72,6 +72,8 @@
     <string name="complete_didi_addition">দিদি সংযোজন সম্পূর্ণ করুন</string>
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
+    <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
+
 
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>

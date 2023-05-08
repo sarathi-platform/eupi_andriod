@@ -140,12 +140,13 @@ fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(blueDark)
+            .background(if (isActive) blueDark else languageItemActiveBg)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -154,7 +155,7 @@ fun ButtonPositive(
                 )
 
             ) {
-                onClick()
+                if (isActive) onClick()
             }
             .then(modifier),
         contentAlignment = Alignment.Center,
@@ -169,7 +170,7 @@ fun ButtonPositive(
         ) {
             Text(
                 text = buttonTitle,
-                color = Color.White,
+                color = if (isActive) white else greyBorder,
                 style = buttonTextStyle
             )
             if (isArrowRequired) {
