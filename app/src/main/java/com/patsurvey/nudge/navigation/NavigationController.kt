@@ -6,17 +6,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
-import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageViewModel
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 
 @Composable
 fun StartFlowNavigation(navController: NavHostController) {
@@ -39,11 +40,16 @@ fun StartFlowNavigation(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
+        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route,
+        arguments = listOf(navArgument(ARG_MOBILE_NUMBER){
+            type= NavType.StringType
+        })
+        ) {
             OtpVerificationScreen(
                 navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
             )
         }
         composable(route = ScreenRoutes.HOME_SCREEN.route) {

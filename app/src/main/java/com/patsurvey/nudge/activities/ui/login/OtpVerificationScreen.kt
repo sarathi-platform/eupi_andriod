@@ -26,28 +26,28 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.HomeScreen
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.navigation.StartFlowNavigation
 import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
 
-@SuppressLint("StateFlowValueCalledInComposition")
+@SuppressLint("StateFlowValueCalledInComposition", "StringFormatInvalid")
 @Composable
 fun OtpVerificationScreen(
     navController: NavController,
     viewModel: OtpVerificationViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    mobileNumber: String
 ) {
     var otpValue by remember {
         mutableStateOf("")
     }
-    val navHomeController = rememberNavController()
+    val snackState = rememberSnackBarState()
     val formattedTime = remember {
         mutableStateOf(SEC_30_STRING)
     }
@@ -173,13 +173,10 @@ fun OtpVerificationScreen(
                     textAlign = TextAlign.Center,
                     textDecoration = TextDecoration.Underline,
                     modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.validateOtp { success, message ->
-                            if (success){
-                                    navController.navigate(ScreenRoutes.VILLAGE_SELECTION_SCREEN.route)
-                            }
-                            else
-                                showToast(context, message)
+                        viewModel.resendOtp() { success, message ->
+                            snackState.addMessage(message = context.getString(R.string.otp_resend_to_mobile_number_message,mobileNumber), isSuccess = true, isCustomIcon = false)
                         }
+                        formattedTime.value = SEC_30_STRING
                         isResendOTPEnable.value = false
                     }
                 )
@@ -195,7 +192,7 @@ fun OtpVerificationScreen(
                         }
 
                         else
-                            showToast(context, message)
+                            snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
                     }
                 },
                 modifier = Modifier
@@ -224,6 +221,13 @@ fun OtpVerificationScreen(
             }
         }
     }
+
+    LaunchedEffect(key1 = mobileNumber){
+        snackState.addMessage(message=context.getString(R.string.otp_send_to_mobile_number_message,mobileNumber),
+            isSuccess = true, isCustomIcon = false)
+    }
+
+    CustomSnackBarShow(state = snackState)
 }
 
 

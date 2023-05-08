@@ -48,7 +48,7 @@ fun LanguageScreen(
             .padding(
                 horizontal = dimensionResource(id = R.dimen.padding_16dp)
             )
-            .padding(bottom = dimensionResource(id = R.dimen.padding_32dp))
+            .padding(vertical = dimensionResource(id = R.dimen.padding_32dp))
             .then(modifier)
     ) {
         Column(

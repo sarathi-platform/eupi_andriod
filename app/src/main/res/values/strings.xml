@@ -61,6 +61,7 @@
     <string name="add_tola">Add Tola</string>
     <string name="enter_otp_text">Enter OTP</string>
     <string name="otp_send_to_mobile_number_message">OTP sent to %1$s mobile number</string>
+    <string name="otp_resend_to_mobile_number_message">OTP resent to %1$s mobile number</string>
     <string name="delete_tola_text">Delete Tola</string>
     <string name="save_tola_text">Save</string>
 

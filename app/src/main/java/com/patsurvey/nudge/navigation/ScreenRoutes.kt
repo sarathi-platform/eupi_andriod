@@ -1,10 +1,12 @@
 package com.patsurvey.nudge.navigation
 
+import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+
 enum class ScreenRoutes(val route: String) {
     START_SCREEN("start_screen"),
     LANGUAGE_SCREEN("language_screen"),
     LOGIN_SCREEN("login_screen"),
-    OTP_VERIFICATION_SCREEN("otp_verification_screen"),
+    OTP_VERIFICATION_SCREEN("otp_verification_screen/{$ARG_MOBILE_NUMBER}"),
     HOME_SCREEN("home_route"),
     PROFILE_SCREEN("profile_screen"),
     DIDI_SCREEN("didi_screen"),
