@@ -47,7 +47,7 @@ object LocationUtil {
                 "locationProvider: $locationProvider, location: lat-${location?.latitude}, long-${location?.longitude}"
             )
 
-            return LocationCoordinates(location?.latitude?.toInt() ?: 0, location?.longitude?.toInt() ?: 0)
+            return LocationCoordinates(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
 
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -73,7 +73,7 @@ object LocationUtil {
                     "LocationUtil",
                     "location: lat-${location?.latitude}, long-${location?.longitude}"
                 )
-                return LocationCoordinates(location?.latitude?.toInt() ?: 0, location?.longitude?.toInt() ?: 0)
+                return LocationCoordinates(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
             } else {
                 Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
                 return null

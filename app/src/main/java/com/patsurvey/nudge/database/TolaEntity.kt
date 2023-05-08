@@ -15,9 +15,9 @@ data class TolaEntity(
     @ColumnInfo(name = "type")
     var type: String,
     @ColumnInfo(name = "latitude")
-    var latitude: Int,
+    var latitude: Double,
     @ColumnInfo(name = "longitude")
-    var longitude: Int,
+    var longitude: Double,
     @ColumnInfo(name = "villageId")
     var villageId: Int,
     @ColumnInfo(name = "needsToPost")
