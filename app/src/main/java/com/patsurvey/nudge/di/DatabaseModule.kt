@@ -38,6 +38,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideStepsListDao(db: NudgeDatabase) = db.StepsListDao()
+    fun provideStepsListDao(db: NudgeDatabase) = db.stepsListDao()
+
+    @Provides
+    @Singleton
+    fun provideTolaDao(db: NudgeDatabase) = db.tolaDao()
 
 }

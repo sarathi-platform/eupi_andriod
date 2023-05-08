@@ -50,7 +50,7 @@ val tolas = listOf(
     ),
     Tola(
         name = "Sundar Pahar",
-        location = LocationCoordinates(1121.34, 11231.55),
+        location = LocationCoordinates(1121, 11231),
         completed = false
     ),
     Tola(
@@ -60,7 +60,7 @@ val tolas = listOf(
     ),
     Tola(
         name = "Sundar Pahar",
-        location = LocationCoordinates(1121.34, 11231.55),
+        location = LocationCoordinates(1121, 11231),
         completed = true
     )
 
