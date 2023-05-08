@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.layout.Column
@@ -22,22 +23,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
+fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
+                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
     val context = LocalContext.current
-    var houseNumber by remember {
-        mutableStateOf("")
-    }
-    var didiName by remember {
-        mutableStateOf("")
-    }
-    var dadaName by remember {
-        mutableStateOf("")
-    }
-    val castes = listOf("Hindu", "Muslim", "Sikh", "Isai")
     var casteExpanded by remember { mutableStateOf(false) }
     var casteSelectedText by remember { mutableStateOf("") }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
@@ -61,7 +55,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
             modifier = Modifier
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
-                .weight(1f).padding(bottom = 20.dp),
+                .weight(1f)
+                .padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             EditTextWithTitle(
@@ -69,10 +64,10 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
                 modifier = Modifier
                     .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
-                currentString = houseNumber,
+                currentString = didiViewModel.houseNumber.value,
                 isRequiredField = false
             ) {
-                houseNumber = it
+                didiViewModel.houseNumber.value = it
             }
 
             EditTextWithTitle(
@@ -80,10 +75,10 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
-                currentString = didiName,
+                currentString = didiViewModel.didiName.value,
                 isRequiredField = false
             ) {
-                didiName = it
+                didiViewModel.didiName.value = it
             }
 
             EditTextWithTitle(
@@ -91,14 +86,14 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
                 modifier = Modifier
                     .padding(top = 16.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
-                currentString = dadaName,
+                currentString = didiViewModel.dadaName.value,
                 isRequiredField = false
             ) {
-                dadaName = it
+                didiViewModel.dadaName.value = it
             }
             DropDownWithTitle(
                 title = stringResource(id = R.string.caste),
-                items = castes,
+                items = didiViewModel.casteList.value,
                 modifier = Modifier
                     .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                     .fillMaxWidth(),
@@ -117,9 +112,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
                 selectedItem = casteSelectedText
             ) {
                 Log.i("AddDidi", "on item selected state: $it")
-                casteSelectedText = it
+//                casteSelectedText = it.name
                 casteExpanded = false
-                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
             }
 
             DropDownWithTitle(
@@ -156,9 +150,9 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier, isOnline
             negativeButtonRequired = false,
             positiveButtonText = stringResource(id = R.string.add_didi),
             positiveButtonOnClick = {
-                val allData = "$houseNumber, $didiName, $dadaName, $casteSelectedText, $tolaSelectedText"
-                Toast.makeText(context, allData, Toast.LENGTH_SHORT).show()
-                didiViewModel.addDidiFromData(houseNumber, didiName, dadaName, casteSelectedText, tolaSelectedText)
+//                val allData = "$houseNumber, $didiName, $dadaName, $casteSelectedText, $tolaSelectedText"
+//                Toast.makeText(context, allData, Toast.LENGTH_SHORT).show()
+//                didiViewModel.addDidiFromData(houseNumber, didiName, dadaName, casteSelectedText, tolaSelectedText)
                 navController.popBackStack()
             },
             negativeButtonOnClick = {

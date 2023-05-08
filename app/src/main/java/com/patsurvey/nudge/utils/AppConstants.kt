@@ -29,6 +29,7 @@ const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val USER_TABLE_NAME = "user_table"
 const val STEPS_LIST_TABLE = "step_list_table"
+const val CASTE_TABLE = "caste_table"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
