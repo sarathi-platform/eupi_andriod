@@ -39,7 +39,7 @@ class TransectWalkViewModel @Inject constructor(
 
     fun addTola(tola: Tola){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val tolaItem = TolaEntity(id = 0, name = tola.name, type = CohortType.TOLA.type, latitude = tola.location.lat?.toInt() ?: 0, longitude = tola.location.long?.toInt() ?: 0, villageEntity.value?.id ?: 0)
+            val tolaItem = TolaEntity(id = 0, name = tola.name, type = CohortType.TOLA.type, latitude = tola.location.lat ?: 0.0, longitude = tola.location.long ?: 0.0, villageEntity.value?.id ?: 0)
             tolaDao.insert(tolaItem)
             withContext(Dispatchers.Main) {
                 tolaList.add(tolaItem)
