@@ -1,0 +1,41 @@
+package com.patsurvey.nudge.activities.ui.selectlanguage
+
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import javax.inject.Inject
+
+@HiltViewModel
+class LanguageViewModel @Inject constructor(
+  val prefRepo: PrefRepo,
+  val languageListDao: LanguageListDao
+) :BaseViewModel(){
+
+
+    private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
+    val languageList=_languageList.asStateFlow()
+   val list= mutableStateListOf<LanguageEntity>()
+    val languagePosition= mutableStateOf(-1)
+    init {
+        fetchLanguageList()
+    }
+
+    private fun fetchLanguageList() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val list=languageListDao.getAllLanguages()
+            withContext(Dispatchers.IO){
+                _languageList.value=list
+            }
+        }
+    }
+}

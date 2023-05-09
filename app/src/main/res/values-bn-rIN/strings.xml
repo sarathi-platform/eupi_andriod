@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <string name="app_name" translatable="false">The Nudge</string>
+    <string name="english" translatable="false">English</string>
+    <string name="hindi" translatable="false">हिंदी</string>
+    <string name="bangla">হিন্দি</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+
+    <string name="mark_complete_text">সম্পূর্ণ চিহ্নিত করুন</string>
+    <string name="go_back_text">ফিরে যাও</string>
+
+    <string name="progress_item_text">অগ্রগতি</string>
+    <string name="didis_item_text">বড়</string>
+    <string name="more_item_text">আরও</string>
+
+    <string name="online_text">অনলাইন</string>
+    <string name="offline_text">অফলাইন</string>
+    <string name="choose_language">ভাষা নির্বাচন করুন</string>
+    <string name="continue_text">চালিয়ে যান</string>
+    <string name="enter_mobile_number">মোবাইল নম্বর লিখুন</string>
+    <string name="mobile_text">মুঠোফোন</string>
+    <string name="verification_text">প্রতিপাদন</string>
+    <string name="get_otp">Otp পান</string>
+    <string name="transect_wale_title">ট্রানসেক্ট ওয়াক</string>
+    <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
+    <string name="submit">জমা দিন</string>
+    <string name="resend_otp">Otp আবার পাঠান</string>
+    <string name="ranking_text">র‍্যাঙ্কিং:</string>
+    <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
+    <string name="search_didis">Didis অনুসন্ধান</string>
+    <string name="count_didis_pending">%1s দিদি পেন্ডিং</string>
+    <string name="poor_text">দরিদ্র</string>
+    <string name="medium_text">মধ্যম</string>
+    <string name="rich_text">ধনী</string>
+    <string name="social_mapping">সামাজিক ম্যাপিং</string>
+    <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
+    <string name="showing">দেখাচ্ছে</string>
+    <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">যোগ করা হয়নি</string>
+    <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
+    <string name="village_text">গ্রাম</string>
+    <string name="participation_date_wealth_ranking">অংশগ্রহণের তারিখ সম্পদ র‌্যাঙ্কিং</string>
+    <string name="vo_name">VO নাম</string>
+    <string name="total">মোট</string>
+    <string name="add_didi">দিদি যোগ করুন</string>
+    <string name="house_number">বাড়ির নম্বর</string>
+    <string name="didi_name">दीदी नाम</string>
+    <string name="dada_name">दादा नाम</string>
+    <string name="enter">প্রবেশ করুন</string>
+    <string name="caste">জাত</string>
+    <string name="tola">তোলা</string>
+    <string name="select">নির্বাচন করুন</string>
+
+    <string name="add_tola">টোলা যোগ করুন</string>
+
+    <string name="delete_tola_text">টোলা মুছুন</string>
+    <string name="save_tola_text">সংরক্ষণ</string>
+
+    <string name="tola_name_text">টোলা</string>
+    <string name="cancel_tola_text">বাতিল করুন</string>
+    <string name="get_location_text">Get Location</string>
+    <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
+
+    <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
+    <string name="enter_mobile_text">মোবাইলে প্রবেশ করুন</string>
+    <string name="enter_otp_text">OTP লিখুন</string>
+    <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
+    <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
+    <string name="complete_didi_addition">দিদি সংযোজন সম্পূর্ণ করুন</string>
+
+    <string name="user_id_text">"সনাক্ত করা: "</string>
+
+    <plurals name="didis_added">
+        <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
+        <item quantity="other">দিদি যোগ করেছে</item>
+    </plurals>
+
+
+</resources>

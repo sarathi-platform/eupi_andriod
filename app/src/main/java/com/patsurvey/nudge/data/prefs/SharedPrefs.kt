@@ -1,0 +1,135 @@
+package com.patsurvey.nudge.data.prefs
+
+import android.content.Context
+import android.content.SharedPreferences
+import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
+import com.patsurvey.nudge.utils.ACCESS_TOKEN
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
+import dagger.hilt.android.qualifiers.ApplicationContext
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Context) :PrefRepo {
+    companion object {
+        const val PREFS_NAME = "secured_nudge_prefs"
+        const val PREF_KEY_LANGUAGE_CODE = "language_code"
+        const val PREF_KEY_LANGUAGE_ID = "language_id"
+        const val SELECTED_VILLAGE_ID = "selected_village_id"
+    }
+
+    val prefs: SharedPreferences by lazy {
+        permitDiskReads {
+            ctx.getSharedPreferences(
+                PREFS_NAME,
+                Context.MODE_PRIVATE
+            )
+        }
+    }
+    override fun getAppLanguage(): String? {
+        return prefs.getString(PREF_KEY_LANGUAGE_CODE, DEFAULT_LANGUAGE_CODE)
+    }
+
+    override fun saveAppLanguage(code: String?) {
+        prefs.edit().putString(PREF_KEY_LANGUAGE_CODE, code).apply()
+    }
+
+
+    override fun isPermissionGranted(): Boolean {
+        /*TODO("Not yet implemented")*/
+        return false
+    }
+
+    override fun savePermissionGranted(isGranted: Boolean?) {
+        /*TODO("Not yet implemented")*/
+    }
+
+    override fun saveSelectedVillage(id: Int) {
+        prefs.edit().putInt(SELECTED_VILLAGE_ID, id).apply()
+    }
+
+    override fun getSelectedVillage(): Int {
+        return prefs.getInt(SELECTED_VILLAGE_ID, 0)
+    }
+
+    override fun getLoginStatus(): Boolean {
+        return !prefs.getString(ACCESS_TOKEN, null).isNullOrBlank()
+    }
+
+
+    override fun getAccessToken(): String? {
+        return prefs.getString(ACCESS_TOKEN, "")
+    }
+
+    override fun saveAccessToken(token: String) {
+        prefs.edit().putString(ACCESS_TOKEN, token).apply()
+    }
+
+    override fun setOnlineStatus(isOnline: Boolean) {
+        prefs.edit().putBoolean(ONLINE_STATUS, isOnline).apply()
+    }
+
+    override fun getOnlinceStatus(): Boolean {
+        return prefs.getBoolean(ONLINE_STATUS, false)
+    }
+
+    override fun saveMobileNumber(mobileNumber: String) {
+        prefs.edit().putString(PREF_MOBILE_NUMBER, mobileNumber).apply()
+    }
+
+    override fun getMobileNumber(): String? {
+        return prefs.getString(PREF_MOBILE_NUMBER, "")
+    }
+
+    override fun savePref(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Int) {
+        prefs.edit().putInt(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Long) {
+        prefs.edit().putLong(key, value).apply()
+    }
+
+    override fun savePref(key: String, value: Float) {
+        prefs.edit().putFloat(key, value).apply()
+    }
+
+    override fun getPref(key: String, defaultValue: Int): Int {
+        return prefs.getInt(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: String): String? {
+        return prefs.getString(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Boolean): Boolean {
+        return prefs.getBoolean(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Long): Long {
+        return prefs.getLong(key, defaultValue)
+    }
+
+    override fun getPref(key: String, defaultValue: Float): Float {
+        return prefs.getFloat(key, defaultValue)
+    }
+
+    override fun getAppLanguageId(): Int? {
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, 1)
+    }
+
+    override fun saveAppLanguageId(languageId: Int?) {
+        languageId?.let {
+            prefs.edit().putInt(PREF_KEY_LANGUAGE_ID, languageId).apply()
+        }
+    }
+}

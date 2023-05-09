@@ -1,0 +1,81 @@
+<resources>
+    <string name="app_name" translatable="false">The Nudge</string>
+    <string name="english" translatable="false">English</string>
+    <string name="hindi" translatable="false">हिंदी</string>
+    <string name="bangla">হিন্দি</string>
+    <string name="gujrati" translatable="false">હિન્દી</string>
+    <string name="kannada" translatable="false">ಹಿಂದಿ</string>
+
+    <string name="mark_complete_text">Complete Tola Addition</string>
+    <string name="go_back_text">Go Back</string>
+
+    <string name="progress_item_text">Progress</string>
+    <string name="didis_item_text">Didis</string>
+    <string name="more_item_text">More</string>
+
+    <string name="online_text">Online</string>
+    <string name="offline_text">Offline</string>
+    <string name="choose_language">Choose Language</string>
+    <string name="continue_text">Continue</string>
+    <string name="enter_mobile_number">Enter Mobile Number</string>
+    <string name="mobile_text">Mobile</string>
+    <string name="enter_mobile_text">Enter Mobile</string>
+    <string name="verification_text">Verification</string>
+    <string name="get_otp">Get OTP</string>
+    <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
+    <string name="transect_wale_title">Transact Walk</string>
+    <string name="invalid_mobile_number">Invalid Mobile Number</string>
+    <string name="submit">Submit</string>
+    <string name="resend_otp">Resend OTP</string>
+    <string name="ranking_text">Ranking:</string>
+    <string name="poor_text">Poor</string>
+    <string name="medium_text">Medium</string>
+    <string name="rich_text">Rich</string>
+    <string name="search_didis">Search Didis</string>
+    <string name="otp_text" translatable="false">OTP</string>
+    <string name="count_didis_pending">%1s Didis Pending</string>
+    <string name="expiry_login_verify_otp" translatable="false">%s s</string>
+    <string name="social_mapping">Social Mapping</string>
+    <string name="showing_added_tolas">Showing %s added Tolas</string>
+    <string name="showing">Showing</string>
+    <string name="added_tolas">added Tolas</string>
+    <string name="title_activity_social_mapping">SocialMappingActivity</string>
+    <string name="not_added">Not added</string>
+    <string name="mark_as_completed">Mark as completed</string>
+    <string name="village_text">Village</string>
+    <string name="vo_name">VO Name</string>
+    <string name="total">Total</string>
+    <string name="participation_date_wealth_ranking">Participation Date Wealth Ranking</string>
+    <string name="add_didi">Add Didi</string>
+    <string name="house_number">House Number</string>
+    <string name="didi_name">Didi Name</string>
+    <string name="dada_name">Dada Name</string>
+    <string name="enter">Enter</string>
+    <string name="caste">Caste</string>
+    <string name="tola">Tola</string>
+    <string name="select">Select</string>
+
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
+    <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
+
+    <string name="add_tola">Add Tola</string>
+    <string name="enter_otp_text">Enter OTP</string>
+    <string name="otp_send_to_mobile_number_message">OTP sent to %1$s mobile number</string>
+    <string name="otp_resend_to_mobile_number_message">OTP resent to %1$s mobile number</string>
+    <string name="delete_tola_text">Delete Tola</string>
+    <string name="save_tola_text">Save</string>
+
+    <string name="tola_name_text">Tola Name</string>
+    <string name="cancel_tola_text">Cancel</string>
+    <string name="get_location_text">Get Location</string>
+    <string name="seletc_village_screen_text">Select Village &amp; VO</string>
+
+    <string name="complete_didi_addition">Complete Didi Addition</string>
+    <string name="user_id_text">"ID: "</string>
+
+    <plurals name="didis_added">
+        <item quantity="one">Didi Added</item>
+        <item quantity="other">Didis Added</item>
+    </plurals>
+
+</resources>
