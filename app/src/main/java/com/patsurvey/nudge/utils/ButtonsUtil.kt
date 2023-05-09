@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
@@ -445,5 +446,67 @@ fun IconButtonForward(
             .then(modifier)
     ) {
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
+    }
+}
+@Composable
+fun BlueButtonWithDrawableIcon(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    icon: ImageVector,
+    imageIcon:Int,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .background(Color.Transparent)
+            .width(210.dp)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Image(
+                painter = painterResource(id = imageIcon),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(27.dp),
+                colorFilter = ColorFilter.tint(Color.White)
+            )
+
+            Icon(
+                icon,
+                contentDescription = "Forward arrow",
+                tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp)
+                    .padding(start = 10.dp)
+
+            )
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
+        }
     }
 }

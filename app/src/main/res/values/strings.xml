@@ -73,6 +73,7 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
+    <string name="empty_didis_string">No Didis Added</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

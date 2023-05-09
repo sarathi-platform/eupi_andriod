@@ -31,9 +31,10 @@ import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
-import kotlinx.coroutines.flow.StateFlow
+
 
 @Composable
 fun <T : Any> DropDownWithTitle(
@@ -50,7 +51,7 @@ fun <T : Any> DropDownWithTitle(
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
-    onItemSelected: (String) -> Unit
+    onItemSelected: (T) -> Unit
 ) {
     // Up Icon when expanded and down icon when collapsed
     val icon = if (expanded)
@@ -92,7 +93,7 @@ fun <T : Any> DropDownWithTitle(
         OutlinedTextField(
             value = selectedItem,
             onValueChange = {
-                onItemSelected("anas")
+//                onItemSelected()
             },
             interactionSource = remember { MutableInteractionSource() }
                 .also { interactionSource ->
@@ -147,9 +148,10 @@ fun <T : Any> DropDownWithTitle(
                 when(item){
                     is CasteEntity -> title=item.casteName
                     is VillageEntity -> title=item.name
+                    is TolaEntity -> title=item.name
                 }
                 DropdownMenuItem(onClick = {
-                    onItemSelected(title)
+                    onItemSelected(item)
                 }) {
 
                     Text(

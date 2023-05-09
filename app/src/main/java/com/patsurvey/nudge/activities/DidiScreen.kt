@@ -1,22 +1,93 @@
 package com.patsurvey.nudge.activities
-
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
+import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun DidiScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     didiViewModel: AddDidiViewModel
 ) {
-    /*Box(modifier = modifier.fillMaxSize()) {
-        Text(text = "Didi Screen", modifier = Modifier.align(Alignment.Center), color = Color.Red)
-    }*/
-    SocialMappingDidiListScreen(navController, modifier = modifier, didiViewModel = didiViewModel)
+
+    ConstraintLayout(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxSize()
+            .border(
+                width = 0.dp,
+                color = Color.Transparent,
+            )
+    ) {
+
+
+        AnimatedVisibility(visible = didiViewModel.didiList.value.isEmpty()) {
+            Column(modifier=Modifier) {
+            VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = textColorDark,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append(stringResource(R.string.empty_didis_string))
+                            }
+                        },
+                        modifier = Modifier.padding(top = 32.dp)
+                    )
+                    BlueButtonWithDrawableIcon(
+                        buttonText = stringResource(id = R.string.add_tola),
+                        icon = Icons.Default.Add,
+                        imageIcon = R.drawable.didi_icon,
+                        modifier = Modifier.padding(top = 16.dp)
+                    ) {
+                        didiViewModel.resetAllFields()
+                        navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
+                    }
+                }
+            }
+            }
+        }
+    }
+    AnimatedVisibility(visible = didiViewModel.didiList.value.isNotEmpty()) {
+        SocialMappingDidiListScreen(
+            navController,
+            modifier = modifier,
+            didiViewModel = didiViewModel
+        )
+    }
 }

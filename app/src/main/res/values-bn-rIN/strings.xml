@@ -79,6 +79,7 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
         <item quantity="other">দিদি যোগ করেছে</item>
     </plurals>
+    <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
 
 
 </resources>
