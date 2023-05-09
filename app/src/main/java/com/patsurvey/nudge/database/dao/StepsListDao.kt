@@ -12,7 +12,7 @@ import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 @Dao
 interface StepsListDao {
 
-    @Query("SELECT * FROM $STEPS_LIST_TABLE")
+    @Query("SELECT * FROM $STEPS_LIST_TABLE ORDER BY orderNumber ASC")
     fun getAllSteps(): List<StepListEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,4 +21,10 @@ interface StepsListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(step: StepListEntity)
 
+
+    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = true where id = :stepId")
+    fun markStepAsComplete(stepId: Int)
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
+    fun isStepComplete(id: Int): Boolean
 }

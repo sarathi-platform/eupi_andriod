@@ -174,7 +174,8 @@ fun ProgressScreen(
                                     viewModel.stepSelected.value = index
                                     when (index) {
                                         0 -> {
-                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}")
+                                            viewModel.stepList.value[index].id
+                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
                                         }
                                         1 -> {}
                                         2 -> {}

@@ -23,7 +23,7 @@
     <string name="verification_text">सत्यापन के बा</string>
     <string name="get_otp">ओटीपी मिल जाला</string>
     <string name="otp_will_be_sent_to_this_number">एह नंबर पर ओटीपी भेजल जाई</string>
-    <string name="transect_wale_title">ट्रांसेक्ट वॉक के बा</string>
+    <string name="transect_wale_title">गाँव के भ्रमण</string>
     <string name="invalid_mobile_number">अमान्य मोबाइल नंबर बा</string>
     <string name="submit">जमा करीं</string>
     <string name="resend_otp">ओटीपी के फेर से भेजल जाला</string>
@@ -72,6 +72,10 @@
 
     <string name="user_id_text">"आईडी के बा: "</string>
     <string name="empty_tola_string">कवनो टोला ना जोड़ल गइल</string>
+
+    <string name="tola_conirmation_text">कुल 2 टोला \nसफलतापूर्वक जोड़ल गइल बा</string>
+    <string name="complete_transect_walk_text">गाँव के भ्रमण पूरा करे के बा</string>
+    <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर टगाँव के भ्रमण पूरा हो गइल बा</string>
 
 
     <plurals name="didis_added">

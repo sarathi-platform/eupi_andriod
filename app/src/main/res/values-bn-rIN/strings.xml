@@ -73,6 +73,10 @@
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
     <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
+    <string name="tola_conirmation_text">মোট %1$s টোলা \nসফলভাবে যোগ করা হয়েছে</string>
+    <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
+    <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
+
 
 
     <plurals name="didis_added">

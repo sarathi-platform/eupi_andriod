@@ -5,9 +5,13 @@ import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -67,7 +71,9 @@ fun AddTolaBox(
             .then(modifier)
     ) {
         Column(
-            modifier = Modifier,
+            modifier = Modifier
+                .scrollable(rememberScrollState(), orientation = Orientation.Vertical)
+            ,
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -99,9 +105,9 @@ fun AddTolaBox(
                     mTolaName = it
                 },
                 placeholder = {
-                    Text(text = "Enter Name", style = mediumTextStyle, color = placeholderGrey)
+                    Text(text = "Enter Name", style = buttonTextStyle, color = placeholderGrey)
                 },
-                textStyle = mediumTextStyle,
+                textStyle = buttonTextStyle,
                 singleLine = true,
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
@@ -158,7 +164,7 @@ fun AddTolaBox(
                     Text(
                         text = if (locationAdded) "Location Added" else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
-                        style = mediumTextStyle,
+                        style = buttonTextStyle,
                         color = if (locationAdded) greenOnline else blueDark
                     )
                 }
@@ -195,9 +201,10 @@ fun AddTolaBox(
 fun TolaBox(
     modifier: Modifier = Modifier,
     tolaName: String = "khabd",
+    tolaLocation: LocationCoordinates?,
     isLocationAvailable: Boolean = true,
     deleteButtonClicked: () -> Unit,
-    saveButtonClicked: (name: String, location: LocationCoordinates?) -> Unit
+    saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
 ) {
     var showEditView by remember { mutableStateOf(false) }
 
@@ -208,7 +215,7 @@ fun TolaBox(
     var locationAdded by remember {
         mutableStateOf(isLocationAvailable)
     }
-    var location: LocationCoordinates? by remember { mutableStateOf(LocationCoordinates()) }
+    var location: LocationCoordinates? by remember { mutableStateOf(tolaLocation ?: LocationCoordinates()) }
 
     Box(
         modifier = Modifier
@@ -374,7 +381,7 @@ fun TolaBox(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                painter = painterResource(id = R.drawable.icon_get_location),
+                                painter = painterResource(id = if (locationAdded) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
                                 contentDescription = "Get Location",
                                 modifier = Modifier.absolutePadding(top = 4.dp),
                                 tint = blueDark,

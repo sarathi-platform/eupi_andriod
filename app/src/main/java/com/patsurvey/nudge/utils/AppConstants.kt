@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.utils
 
+import nl.dionsegijn.konfetti.core.Party
+
 const val BLANK_STRING=""
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
@@ -45,5 +47,7 @@ const val SNACKBAR_MESSAGE = "snackbarMessage"
 const val ARG_MOBILE_NUMBER = "mobile"
 const val ARG_VILLAGE_NAME = "villageName"
 const val ARG_VILLAGE_ID = "villageId"
+const val ARG_STEP_ID = "stepId"
+const val ARG_COMPLETION_MESSAGE = "completion_message"
 
 const val PREF_PROGRAM_NAME = "programName"

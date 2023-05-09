@@ -15,6 +15,9 @@ interface TolaDao {
     @Query("SELECT * FROM $TOLA_TABLE")
     fun getAllTolas(): List<TolaEntity>
 
+    @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId")
+    fun getAllTolasForVillage(villageId: Int): List<TolaEntity>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(tolas: List<TolaEntity>)
 
@@ -23,4 +26,7 @@ interface TolaDao {
 
     @Query("DELETE from $TOLA_TABLE where id = :id")
     fun removeTola(id: Int)
+
+    @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
+    fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 }
