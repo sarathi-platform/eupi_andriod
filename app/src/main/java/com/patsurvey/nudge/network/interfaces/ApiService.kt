@@ -46,7 +46,7 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<String?>
 
-    @POST("/write-api/cohort/view")
+    @GET("/write-api/cohort/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<GetCohortResponseModel>>
 

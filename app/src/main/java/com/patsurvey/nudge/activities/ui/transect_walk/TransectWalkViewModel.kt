@@ -40,6 +40,8 @@ class TransectWalkViewModel @Inject constructor(
 
     val isTransectWalkComplete = mutableStateOf(false)
 
+    val showLoader = mutableStateOf(false)
+
     init {
 //        fetchTolaList(villageId)
 
@@ -153,34 +155,35 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun fetchTolaList(villageId: Int) {
-            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                val tolaItemList = mutableListOf<TolaEntity>()
-                val response = apiInterface.getCohortFromNetwork(villageId)
-                if (response.status.equals(SUCCESS)) {
-                    if (response.data != null) {
-                        response.data.forEach { it2 ->
-                            tolaList.add(GetCohortResponseModel.convertToTolaEntity(it2))
-                        }
-                        tolaDao.insertAll(tolaList)
-                        tolaDao.getAllTolasForVillage(villageId).forEach { tola->
-                            tolaItemList.add(tola)
-                        }
-                    } else {
-                        tolaDao.getAllTolasForVillage(villageId).forEach { tola->
-                            tolaItemList.add(tola)
-                        }
+        showLoader.value = true
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaItemList = mutableListOf<TolaEntity>()
+            val response = apiInterface.getCohortFromNetwork(villageId)
+            if (response.status.equals(SUCCESS)) {
+                if (response.data != null) {
+                    response.data.forEach { it2 ->
+                        tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
+                    }
+                    tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
+                        tolaItemList.add(tola)
                     }
                 } else {
-                    tolaDao.getAllTolasForVillage(villageId).forEach { tola->
+                    tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
                         tolaItemList.add(tola)
                     }
                 }
-                withContext(Dispatchers.Main) {
-                    tolaItemList.forEach {
-                        tolaList.add(it)
-                    }
+            } else {
+                tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
+                    tolaItemList.add(tola)
                 }
             }
+            withContext(Dispatchers.Main) {
+                tolaItemList.forEach {
+                    tolaList.add(it)
+                }
+                showLoader.value = false
+            }
+        }
     }
 
     fun setVillage(villageId: Int) {

@@ -403,7 +403,7 @@ fun TolaBox(
                                 saveButtonClicked(mTolaName, location)
                                 showEditView = false
                             }
-                            if (isTransectWalkCompleted) {
+                            if (!isTransectWalkCompleted) {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 ButtonOutline(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
