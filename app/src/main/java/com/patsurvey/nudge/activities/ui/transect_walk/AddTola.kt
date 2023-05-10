@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
 import androidx.compose.animation.*
@@ -11,7 +11,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -72,8 +70,7 @@ fun AddTolaBox(
     ) {
         Column(
             modifier = Modifier
-                .scrollable(rememberScrollState(), orientation = Orientation.Vertical)
-            ,
+                .scrollable(rememberScrollState(), orientation = Orientation.Vertical),
         ) {
             Text(
                 text = buildAnnotatedString {
@@ -203,6 +200,7 @@ fun TolaBox(
     tolaName: String = "khabd",
     tolaLocation: LocationCoordinates?,
     isLocationAvailable: Boolean = true,
+    isTransectWalkCompleted: Boolean = false,
     deleteButtonClicked: () -> Unit,
     saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
 ) {
@@ -215,7 +213,11 @@ fun TolaBox(
     var locationAdded by remember {
         mutableStateOf(isLocationAvailable)
     }
-    var location: LocationCoordinates? by remember { mutableStateOf(tolaLocation ?: LocationCoordinates()) }
+    var location: LocationCoordinates? by remember {
+        mutableStateOf(
+            tolaLocation ?: LocationCoordinates()
+        )
+    }
 
     Box(
         modifier = Modifier
@@ -268,161 +270,155 @@ fun TolaBox(
                         )
                     }
                 }
-                    Row(modifier = Modifier
+                TextButtonWithIcon(
+                    modifier = Modifier
                         .constrainAs(showBox) {
                             bottom.linkTo(contentBox.bottom)
                             top.linkTo(contentBox.top)
                             end.linkTo(parent.end)
-                        }
-                        .clickable {
-                            showEditView = true
-                        }
-                    ) {
-                        Text(
-                            text = "Show",
-                            style = smallTextStyleMediumWeight,
-                            color = textColorDark
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = null,
-                            tint = blueDark,
-                            modifier = Modifier.absolutePadding(top = 4.dp, left = 2.dp)
-                        )
-                    }
+                        })
+                {
+                    showEditView = true
                 }
+            }
             Column(modifier = Modifier
                 .constrainAs(editBox) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                 }) {
-            AnimatedVisibility(
-                visible = showEditView,
-            ) {
-                Column(
-                    modifier = Modifier,
+                AnimatedVisibility(
+                    visible = showEditView,
                 ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = textColorDark,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("Tola Name")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = red,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("*")
-                            }
-                        }
-                    )
-                    OutlinedTextField(
-                        value = mTolaName,
-                        onValueChange = {
-                            mTolaName = it
-                        },
-                        placeholder = {
-                            Text(text = "Enter Name", style = mediumTextStyle, color = placeholderGrey)
-                        },
-                        textStyle = mediumTextStyle,
-                        singleLine = true,
-                        maxLines = 1,
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = textColorDark,
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = borderGrey,
-                            unfocusedIndicatorColor = borderGrey,
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 16.dp)
-                    )
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .border(
-                                width = 1.dp,
-                                color = greyBorder,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .clip(RoundedCornerShape(6.dp))
-                            .background(Color.White)
-                            .clickable(
-                                interactionSource = remember { MutableInteractionSource() },
-                                indication = rememberRipple(
-                                    bounded = true,
-                                    color = Color.Black
-                                )
-
-                            ) {
-                                location = LocationUtil
-                                    .getLocation(activity)
-                                    ?.also {
-                                        locationAdded = true
-                                    } ?: LocationCoordinates()
-                            }
+                    Column(
+                        modifier = Modifier,
                     ) {
-                        Row(
+                        Text(
+                            text = buildAnnotatedString {
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = textColorDark,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    )
+                                ) {
+                                    append("Tola Name")
+                                }
+                                withStyle(
+                                    style = SpanStyle(
+                                        color = red,
+                                        fontSize = 16.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    )
+                                ) {
+                                    append("*")
+                                }
+                            }
+                        )
+                        OutlinedTextField(
+                            value = mTolaName,
+                            onValueChange = {
+                                mTolaName = it
+                            },
+                            placeholder = {
+                                Text(
+                                    text = "Enter Name",
+                                    style = mediumTextStyle,
+                                    color = placeholderGrey
+                                )
+                            },
+                            textStyle = mediumTextStyle,
+                            singleLine = true,
+                            maxLines = 1,
+                            colors = TextFieldDefaults.textFieldColors(
+                                textColor = textColorDark,
+                                backgroundColor = Color.White,
+                                focusedIndicatorColor = borderGrey,
+                                unfocusedIndicatorColor = borderGrey,
+                            ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.Center)
-                                .padding(vertical = 14.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                painter = painterResource(id = if (locationAdded) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
-                                contentDescription = "Get Location",
-                                modifier = Modifier.absolutePadding(top = 4.dp),
-                                tint = blueDark,
-
+                                .padding(vertical = 16.dp)
+                        )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .border(
+                                    width = 1.dp,
+                                    color = greyBorder,
+                                    shape = RoundedCornerShape(6.dp)
                                 )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = if (locationAdded) "Location Added" else "Get Location",
-                                textAlign = TextAlign.Center,
-                                style = mediumTextStyle,
-                                color = if (locationAdded) greenOnline else blueDark
-                            )
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 14.dp)
-                    ) {
-                        ButtonPositive(
-                            buttonTitle = stringResource(id = R.string.save_tola_text),
-                            isArrowRequired = false,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            saveButtonClicked(mTolaName, location)
-                            showEditView = false
-                        }
-                        Spacer(modifier = Modifier.height(10.dp))
-                        ButtonOutline(
-                            buttonTitle = stringResource(id = R.string.delete_tola_text),
-                            outlineColor = redDark,
-                            textColor = redDark,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            deleteButtonClicked()
-                            showEditView = false
-                        }
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(Color.White)
+                                .clickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = rememberRipple(
+                                        bounded = true,
+                                        color = Color.Black
+                                    )
 
+                                ) {
+                                    location = LocationUtil
+                                        .getLocation(activity)
+                                        ?.also {
+                                            locationAdded = true
+                                        } ?: LocationCoordinates()
+                                }
+                        ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .align(Alignment.Center)
+                                    .padding(vertical = 14.dp),
+                                horizontalArrangement = Arrangement.Center,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = if (locationAdded) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
+                                    contentDescription = "Get Location",
+                                    modifier = Modifier.absolutePadding(top = 4.dp),
+                                    tint = blueDark,
+
+                                    )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = if (locationAdded) "Location Added" else "Get Location",
+                                    textAlign = TextAlign.Center,
+                                    style = mediumTextStyle,
+                                    color = if (locationAdded) greenOnline else blueDark
+                                )
+                            }
+                        }
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 14.dp)
+                        ) {
+                            ButtonPositive(
+                                buttonTitle = stringResource(id = R.string.save_tola_text),
+                                isArrowRequired = false,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                saveButtonClicked(mTolaName, location)
+                                showEditView = false
+                            }
+                            if (isTransectWalkCompleted) {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                ButtonOutline(
+                                    buttonTitle = stringResource(id = R.string.delete_tola_text),
+                                    outlineColor = redDark,
+                                    textColor = redDark,
+                                    modifier = Modifier.fillMaxWidth()
+                                ) {
+                                    deleteButtonClicked()
+                                    showEditView = false
+                                }
+                            }
+
+                        }
                     }
                 }
-            }
             }
         }
     }

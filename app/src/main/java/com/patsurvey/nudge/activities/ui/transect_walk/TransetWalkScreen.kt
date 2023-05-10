@@ -32,6 +32,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
+import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
 import com.patsurvey.nudge.utils.*
 
@@ -46,6 +48,7 @@ fun TransectWalkScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.fetchTolaList(villageId)
+        viewModel.isTransectWalkComplete(stepId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
     val tolaList = viewModel.tolaList
@@ -99,7 +102,7 @@ fun TransectWalkScreen(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Image(
-                                painter = painterResource(id = R.drawable.icon_check_circle_green),
+                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                 contentDescription = null
                             )
                             Spacer(modifier = Modifier.height(20.dp))
@@ -258,6 +261,7 @@ fun TransectWalkScreen(
                                             tola.longitude
                                         ),
                                         isLocationAvailable = (tola.latitude != null && tola.longitude != null),
+                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
                                             viewModel.removeTola(tola.id)
                                             showAddTolaBox = false
@@ -267,7 +271,7 @@ fun TransectWalkScreen(
                                                 if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude))
                                                     false
                                                 else {
-                                                    viewModel.update(tola.id, newName, newLocation)
+                                                    viewModel.updateTola(tola.id, newName, newLocation)
                                                     false
                                                 }
                                         }
@@ -280,7 +284,7 @@ fun TransectWalkScreen(
             }
         }
 
-        if (tolaList.isNotEmpty() || !viewModel.isTransectWalkComplete.value) {
+        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -300,9 +304,9 @@ fun TransectWalkScreen(
                 positiveButtonOnClick = {
                     if (completeTolaAdditionClicked){
                         //TODO Integrate Api when backend fixes the response.
-//                        ConnectionMonitor(context).isOnline() {
-//                          viewModel.addTolasToNetwork()
-//                        }
+                        if ((context as MainActivity).isOnline.value ?: false) {
+                          viewModel.addTolasToNetwork()
+                        }
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate("step_completion_screen/${context.getString(R.string.transect_walk_completed_message).replace("{VILLAGE_NAME}", viewModel.villageEntity.value?.name ?: "")}")
 

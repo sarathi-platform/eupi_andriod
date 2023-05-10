@@ -51,6 +51,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val mViewModel: MainActivityViewModel by viewModels()
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isOnline = mutableStateOf(false)
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +132,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 connectionLiveData = ConnectionMonitor(this)
                 connectionLiveData.observe(this) { isNetworkAvailable ->
                     onlineStatus.value = isNetworkAvailable
+                    isOnline.value = isNetworkAvailable
                 }
 
                 isLoggedInLive.observe(this) { isLoggedIn ->

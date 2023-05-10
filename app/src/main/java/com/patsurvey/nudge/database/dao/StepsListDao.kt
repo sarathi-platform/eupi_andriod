@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -27,4 +28,7 @@ interface StepsListDao {
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
     fun isStepComplete(id: Int): Boolean
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
+    fun isStepCompleteLive(id: Int) : LiveData<Boolean>
 }

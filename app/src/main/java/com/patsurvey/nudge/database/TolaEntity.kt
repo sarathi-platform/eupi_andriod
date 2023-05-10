@@ -20,6 +20,8 @@ data class TolaEntity(
     var longitude: Double,
     @ColumnInfo(name = "villageId")
     var villageId: Int,
+    @ColumnInfo(name = "status")
+    val status: Int = 1,
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true
 )

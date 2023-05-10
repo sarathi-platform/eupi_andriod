@@ -77,6 +77,7 @@
     <string name="complete_transect_walk_text">गाँव के भ्रमण पूरा करे के बा</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर टगाँव के भ्रमण पूरा हो गइल बा</string>
 
+    <string name="transect_walk_sub_text">%1$s तोलास हो गइल बाा</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>

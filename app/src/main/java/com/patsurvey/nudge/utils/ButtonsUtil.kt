@@ -447,3 +447,36 @@ fun IconButtonForward(
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
     }
 }
+
+@Composable
+fun TextButtonWithIcon(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Row(modifier = Modifier
+        .clickable {
+            onClick()
+        }
+        .indication(
+            interactionSource = interactionSource,
+            indication = rememberRipple(
+                bounded = true,
+                color = Color.White
+            )
+        )
+        .then(modifier)
+    ) {
+        Text(
+            text = "Show",
+            style = smallTextStyleMediumWeight,
+            color = textColorDark,
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = blueDark,
+            modifier = Modifier.absolutePadding(top = 4.dp, left = 2.dp).size(24.dp)
+        )
+    }
+}

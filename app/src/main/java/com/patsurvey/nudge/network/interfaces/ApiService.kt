@@ -36,7 +36,7 @@ interface ApiService {
     //TODO Integrate Api when backend fixes the response.
     @POST("/write-api/cohort/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun addCohort(@Body cohortList: JsonArray): ApiResponseModel<String?>
+    suspend fun addCohort(@Body cohortList: JsonArray): ApiResponseModel<List<TolaApiResponse>>
 
     @POST("/write-api/cohort/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -48,6 +48,6 @@ interface ApiService {
 
     @POST("/write-api/cohort/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<AddCohortRequest>>
+    suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<GetCohortResponseModel>>
 
 }

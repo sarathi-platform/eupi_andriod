@@ -70,6 +70,8 @@
     <string name="complete_transect_walk_text">गाँव की सैर पूर्ण करे</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए गाँव की सैर पूरा हो गया है</string>
 
+    <string name="transect_walk_sub_text">%1$s टोलस हो गया</string>
+
 
 
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \n रैंकिंग सर्वेक्षण </string>
