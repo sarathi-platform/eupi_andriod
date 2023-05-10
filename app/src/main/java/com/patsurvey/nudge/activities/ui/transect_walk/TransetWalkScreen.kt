@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.transect_walk
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility

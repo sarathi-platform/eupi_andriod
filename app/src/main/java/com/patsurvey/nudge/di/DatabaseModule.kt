@@ -44,4 +44,12 @@ object DatabaseModule {
     @Singleton
     fun provideTolaDao(db: NudgeDatabase) = db.tolaDao()
 
+    @Provides
+    @Singleton
+    fun provideCasteListDao(db: NudgeDatabase) = db.casteListDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiDao(db: NudgeDatabase) = db.didiDao()
+
 }

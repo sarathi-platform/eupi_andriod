@@ -41,7 +41,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     fun updateSelectedVillage() {
-        prefRepo.saveSelectedVillage(villageSelected.value)
+        prefRepo.saveSelectedVillage(villageList.value[villageSelected.value])
     }
 
     private fun fetchUserDetails() {

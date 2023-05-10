@@ -78,6 +78,7 @@
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
 
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
+    <string name="empty_didis_string">No Didis Added</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

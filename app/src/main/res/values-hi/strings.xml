@@ -82,7 +82,7 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">दीदी जुड़ीं</item>
         <item quantity="other">दीदियों जुड़ीं</item>
     </plurals>
-
+    <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
 
 
 </resources>

@@ -18,6 +18,7 @@ import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
+import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_STEP_ID
@@ -239,26 +240,4 @@ fun HomeScreenFlowNavigation(
             )
         }
     }
-    /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
-        composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            ProgressScreen(modifier = Modifier
-                .fillMaxSize()
-                .then(modifier), /*stepsNavHostController*/)
-        }
-        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(homeScreenNavController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
-        }
-
-        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
-            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
-        }
-
-        composable(route = ScreenRoutes.SOCIAL_MAPPING_SCREEN.route) {
-            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
-        }
-    }*/
 }

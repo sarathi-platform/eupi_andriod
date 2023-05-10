@@ -3,39 +3,127 @@ package com.patsurvey.nudge.activities
 import androidx.compose.runtime.*
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.utils.BLANK_STRING
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class AddDidiViewModel @Inject constructor(
-    val prefRepo: PrefRepo
+    val prefRepo: PrefRepo,
+    val casteListDao: CasteListDao,
+    val tolaDao: TolaDao,
+    val didiDao: DidiDao
 ): BaseViewModel() {
-    var didiList  =  mutableStateListOf<DidiDetailsModel>()
+    val houseNumber = mutableStateOf(BLANK_STRING)
+    val didiName = mutableStateOf(BLANK_STRING)
+    val dadaName = mutableStateOf(BLANK_STRING)
+    val isDidiValid = mutableStateOf(true)
+    val selectedCast = mutableStateOf(Pair(-1,""))
+    val selectedTola = mutableStateOf(Pair(-1,""))
+    private val _casteList = MutableStateFlow(listOf<CasteEntity>())
+    val casteList: StateFlow<List<CasteEntity>> get() = _casteList
+
+    private val _didiList = MutableStateFlow(listOf<DidiEntity>())
+    val didiList: StateFlow<List<DidiEntity>> get() = _didiList
+
+    private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
+    val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
+
+    var filterMapList  by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
-    var filterMapList  by mutableStateOf(mapOf<String, List<DidiDetailsModel>>())
+    var filterDidiList  by mutableStateOf(listOf<DidiEntity>())
         private set
 
 
-    fun addDidi(didiDetailsModel: DidiDetailsModel) {
-        didiList.add(didiDetailsModel)
+
+init {
+
+    job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+       withContext(Dispatchers.IO){
+           casteListDao.insertCaste(CasteEntity(1,"Hindu"))
+           casteListDao.insertCaste(CasteEntity(2,"Muslim"))
+           casteListDao.insertCaste(CasteEntity(3,"Sikh"))
+           casteListDao.insertCaste(CasteEntity(4,"Isai"))
+
+           for(i in 1..7){
+               tolaDao.insert(TolaEntity(i,"Tola $i","Tola Type $1", latitude = 26.803043, longitude = 79.505524,2,false))
+       }
+           _didiList.emit(didiDao.getAllDidis())
+
+           _casteList.emit(casteListDao.getAllCaste())
+           _tolaList.emit(tolaDao.getAllTolas())
+           filterDidiList=didiList.value
+       }
     }
 
-    fun addDidiFromData(houseNumber: String, didiName: String, dadaName: String, caste: String, tola: String ) {
-        didiList.add(DidiDetailsModel(didiList.size, didiName,tola, tola, caste, houseNumber, dadaName))
+    validateDidiDetails()
+}
+    fun validateDidiDetails(){
+        isDidiValid.value = !(houseNumber.value.isEmpty() || didiName.value.isEmpty() || dadaName.value.isEmpty()
+                || selectedCast.value.first==-1 || selectedTola.value.first==-1)
+    }
+
+    fun saveDidiIntoDatabase(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val newId=didiDao.getAllDidis().size
+            didiDao.insertDidi(DidiEntity(newId+1, name = didiName.value,
+                guardianName =dadaName.value, address = houseNumber.value, castId = selectedCast.value.first,
+                castName = selectedCast.value.second, cohortId = selectedTola.value.first, cohortName = selectedTola.value.second,
+                relationship = BLANK_STRING))
+
+            _didiList.emit(didiDao.getAllDidis())
+            filterDidiList=didiDao.getAllDidis()
+
+        }
+
+
     }
 
     fun filterList(){
-        val map = mutableMapOf<String, MutableList<DidiDetailsModel>>()
-        didiList.forEachIndexed { index, didiDetailsModel ->
-            if(map.containsKey(didiDetailsModel.tola)){
-                map[didiDetailsModel.tola]?.add(didiDetailsModel)
+        val map = mutableMapOf<String, MutableList<DidiEntity>>()
+        didiList.value.forEachIndexed { _, didiDetailsModel ->
+            if(map.containsKey(didiDetailsModel.cohortName)){
+                map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
             } else {
-                map[didiDetailsModel.tola] = mutableListOf(didiDetailsModel)
+                map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
             }
         }
-
         filterMapList = map
     }
+
+   fun performQuery(query: String){
+       filterDidiList = if(query.isNotEmpty()) {
+           val filteredList = ArrayList<DidiEntity>()
+           didiList.value.forEach { didi ->
+               if (didi.name.lowercase().contains(query.lowercase())) {
+                   filteredList.add(didi)
+               }
+           }
+           filteredList
+       }else {
+           didiList.value
+       }
+   }
+
+    fun resetAllFields(){
+        houseNumber.value= BLANK_STRING
+        didiName.value= BLANK_STRING
+        dadaName.value= BLANK_STRING
+        selectedCast.value=Pair(-1, BLANK_STRING)
+
+    }
+
 }

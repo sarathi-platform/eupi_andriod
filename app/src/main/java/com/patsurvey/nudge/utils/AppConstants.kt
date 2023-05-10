@@ -31,6 +31,8 @@ const val VILLAGE_TABLE_NAME = "village_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val USER_TABLE_NAME = "user_table"
 const val STEPS_LIST_TABLE = "step_list_table"
+const val CASTE_TABLE = "caste_table"
+const val DIDI_TABLE = "didi_table"
 const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
 

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -18,7 +19,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layout
@@ -45,22 +45,20 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BlueButtonWithIcon
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 
+
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier, didiViewModel: AddDidiViewModel) {
-    val didiList = didiViewModel.didiList/*listOf(
-        DidiDetailsModel(1, "didi 1", "sundar pahar", "sundar pahar", "Kahar", "12", "Rajesh"),
-        DidiDetailsModel(2, "didi 2", "sundar pahar2", "sundar pahar2", "Kahar", "131", "Rajesh"),
-        DidiDetailsModel(3, "didi 3", "sundar pahar3", "sundar pahar3", "Kahar", "14", "Rajesh"),
-        DidiDetailsModel(4, "didi 4", "sundar pahar4", "sundar pahar4", "Kahar", "15", "Rajesh"),
-        DidiDetailsModel(5, "didi 5", "sundar pahar5", "sundar pahar5", "Kahar", "16", "Rajesh")
-    )*/
+    val didiList = didiViewModel.didiList
     val filteredDidiList = didiViewModel.filterMapList
+    val newFilteredDidiList = didiViewModel.filterDidiList
 
     val expandedIds = remember {
         mutableStateListOf<Int>()
@@ -74,32 +72,39 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceAround,
-            modifier = Modifier.padding(top = 30.dp, start = 16.dp, end = 16.dp)
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
             MainTitle(
                 title = stringResource(id = R.string.social_mapping),
                 modifier = Modifier.weight(0.5f)
             )
             BlueButtonWithIcon(
-                modifier = Modifier.weight(0.5f),
+                modifier = Modifier
+                    .weight(0.5f),
                 buttonText = stringResource(id = R.string.add_didi),
                 icon = Icons.Default.Add
             ) {
+                didiViewModel.resetAllFields()
                 navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
             }
         }
 
-        SearchWithFilterView(
-            stringResource(id = R.string.search_didis),
+        SearchWithFilterView(placeholderString =  stringResource(id = R.string.search_didis),
             modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp),
             filterSelected = filterSelected,
-        ) {
-            filterSelected = !it
-            didiViewModel.filterList()
-        }
+            onFilterSelected = {
+                if(didiList.value.isNotEmpty()) {
+                    filterSelected = !it
+                    didiViewModel.filterList()
+                }
+        }, onSearchValueChange = {
+                didiViewModel.performQuery(it)
+
+        })
         AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
             Text(
                 text = buildAnnotatedString {
@@ -111,9 +116,9 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("${didiList.size}")
+                        append("${didiList.value.size}")
                     }
-                    append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.size)}")
+                    append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.value.size)}")
                 },
                 style = TextStyle(
                     color = textColorDark,
@@ -158,7 +163,8 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                         )
                 }
             } else {
-                itemsIndexed(didiList) { index, didi ->
+
+                itemsIndexed(newFilteredDidiList) { index, didi ->
                     DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
                         if (expandedIds.contains(didiDetailModel.id)) {
                             expandedIds.remove(didiDetailModel.id)
@@ -188,10 +194,10 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
 
 @Composable
 fun ShowFilteredList(
-    filteredDidiList: Map<String, List<DidiDetailsModel>>,
+    filteredDidiList: Map<String, List<DidiEntity>>,
     expandedIds: List<Int>,
     modifier: Modifier,
-    onExpendClick: (Boolean, DidiDetailsModel) -> Unit
+    onExpendClick: (Boolean, DidiEntity) -> Unit
 ) {
     Log.i("ShowFilteredList", "show tolaa :")
     filteredDidiList.entries.forEach {
@@ -203,10 +209,10 @@ fun ShowFilteredList(
 @Composable
 fun ShowDidisFromTola(
     didiTola: String,
-    didiList: List<DidiDetailsModel>,
+    didiList: List<DidiEntity>,
     modifier: Modifier,
     expandedIds: List<Int>,
-    onExpendClick: (Boolean, DidiDetailsModel) -> Unit
+    onExpendClick: (Boolean, DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -251,8 +257,8 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
-                    onExpendClick(expand, didiDetailModel)
+                DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiEntity ->
+                    onExpendClick(expand, didiEntity)
                 }
             }
 
@@ -429,7 +435,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 @Composable
-fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiDetailsModel)-> Unit) {
+fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiEntity)-> Unit) {
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -485,7 +491,7 @@ fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, 
             )
 
             Text(
-                text = didi.tola,
+                text = didi.cohortName,
                 style = TextStyle(
                     color = textColorBlueLight,
                     fontSize = 12.sp,
@@ -510,7 +516,7 @@ fun DidiItemCard(didi: DidiDetailsModel, expanded: Boolean, modifier: Modifier, 
 }
 
 @Composable
-fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expended: Boolean) {
+fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
     val constraintSet = didiDetailConstraints()
     val enterTransition = remember {
         expandVertically(
@@ -553,7 +559,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expe
             )
 
             Text(
-                text = didi.houseNumber,
+                text = didi.address,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("houseNumber")
@@ -567,7 +573,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expe
             )
 
             Text(
-                text = didi.dadaName,
+                text = didi.guardianName,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("dadaName")
@@ -581,7 +587,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expe
             )
 
             Text(
-                text = didi.caste,
+                text = didi.castName,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")
@@ -595,7 +601,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiDetailsModel, expe
             )
 
             Text(
-                text = didi.tola,
+                text = didi.cohortName,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("tola")

@@ -83,6 +83,7 @@
         <item quantity="one">दीदी जोड़ली</item>
         <item quantity="other">दीदियों के जोड़ली</item>
     </plurals>
+    <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
 
 
 </resources>
