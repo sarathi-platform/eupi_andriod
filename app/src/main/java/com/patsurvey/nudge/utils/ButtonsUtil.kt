@@ -249,7 +249,7 @@ fun ButtonOutline(
             .then(modifier)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -508,5 +508,38 @@ fun BlueButtonWithDrawableIcon(
                 style = mediumTextStyle
             )
         }
+    }
+}
+
+@Composable
+fun TextButtonWithIcon(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Row(modifier = Modifier
+        .clickable {
+            onClick()
+        }
+        .indication(
+            interactionSource = interactionSource,
+            indication = rememberRipple(
+                bounded = true,
+                color = Color.White
+            )
+        )
+        .then(modifier)
+    ) {
+        Text(
+            text = "Show",
+            style = smallTextStyleMediumWeight,
+            color = textColorDark,
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = blueDark,
+            modifier = Modifier.absolutePadding(top = 4.dp, left = 2.dp).size(24.dp)
+        )
     }
 }

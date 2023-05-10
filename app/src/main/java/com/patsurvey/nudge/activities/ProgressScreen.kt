@@ -6,10 +6,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -131,7 +135,6 @@ fun ProgressScreen(
                         Modifier
                             .background(Color.White)
                             .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()),
-//                        verticalArrangement = Arrangement.
                     ) {
 
                         item {
@@ -149,7 +152,7 @@ fun ProgressScreen(
                         }
 
                         item {
-                           selectedText.value = villages[viewModel.villageSelected.value].name
+                            selectedText.value = villages[viewModel.villageSelected.value].name
                             VillageSelectorDropDown(selectedText = selectedText.value) {
                                 scope.launch {
                                     if (!scaffoldState.isVisible) {
@@ -164,17 +167,29 @@ fun ProgressScreen(
                             Spacer(modifier = Modifier.height(16.dp))
                         }
                         itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
-                            if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")?: "").equals("CRP Program", true) && index < 5) {
+                            if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")
+                                    ?: "").equals("CRP Program", true) && index < 5
+                            ) {
+                                val isStepCompleted =
+                                    viewModel.isStepComplete(steps[index].id).observeAsState().value
+                                        ?: false
+                                if (isStepCompleted) {
+                                    viewModel.updateSelectedStep(steps[index].id)
+                                }
                                 StepsBox(
                                     boxTitle = step.name,
                                     stepNo = step.orderNumber,
                                     index = index,
-                                    shouldBeActive = (viewModel.stepSelected.value == index)
+                                    iconId = step.orderNumber,
+                                    viewModel = viewModel,
+                                    shouldBeActive = (viewModel.stepSelected.value == index) || isStepCompleted,
+                                    isCompleted = isStepCompleted
                                 ) { index ->
                                     viewModel.stepSelected.value = index
                                     when (index) {
                                         0 -> {
-                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}")
+                                            viewModel.stepList.value[index].id
+                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
                                         }
                                         1 -> {}
                                         2 -> {}
@@ -200,6 +215,8 @@ fun StepsBox(
     boxTitle: String,
     stepNo: Int,
     index: Int,
+    iconId: Int,
+    viewModel: ProgressScreenViewModel,
     isCompleted: Boolean = false,
     shouldBeActive: Boolean = false,
     onclick: (Int) -> Unit
@@ -224,7 +241,7 @@ fun StepsBox(
                 .clip(RoundedCornerShape(6.dp))
                 .border(
                     width = 1.dp,
-                    color = greyBorder,
+                    color = if (isCompleted) greenOnline else greyBorder,
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(Color.White)
@@ -234,89 +251,169 @@ fun StepsBox(
                 }
 
         ) {
-            Row(
+            ConstraintLayout(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(if (isCompleted) green else if (shouldBeActive) stepBoxActiveColor else white)
-                    .padding(top = 14.dp, bottom = 14.dp, end = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .background(if (isCompleted) greenLight else if (shouldBeActive) stepBoxActiveColor else white)
+                    .padding(vertical = 14.dp, horizontal = 16.dp),
             ) {
+                val (textContainer, buttonContainer, iconContainer) = createRefs()
+
+
+                val iconResourceId = when (iconId) {
+                    1 -> R.drawable.transect_walk_icon
+                    2 -> R.drawable.social_maping_icon
+                    3 -> R.drawable.wealth_raking_icon
+                    4 -> R.drawable.pat_icon
+                    5 -> R.drawable.vo_endorsement_icon
+                    else -> null
+                }
+                if (iconResourceId != null) {
+                    Icon(
+                        painter = painterResource(id = iconResourceId),
+                        contentDescription = null,
+                        tint = if (shouldBeActive) stepIconEnableColor else if (isCompleted) stepIconCompleted else stepIconDisableColor,
+                        modifier = Modifier.constrainAs(iconContainer) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            bottom.linkTo(parent.bottom)
+                        }
+                    )
+                }
 
                 Column(
                     modifier = Modifier
-                        .absolutePadding(left = 10.dp)
-                        .weight(1.2f)
+                        .padding(horizontal = 14.dp)
+                        .constrainAs(textContainer) {
+                            top.linkTo(iconContainer.top)
+                            start.linkTo(iconContainer.end)
+                            bottom.linkTo(iconContainer.bottom)
+                        }
+                        .fillMaxWidth()
                 ) {
                     Text(
                         text = boxTitle/* "Transect Walk"*/,
-                        color = textColorDark,
+                        color = if (isCompleted) greenOnline else textColorDark,
                         modifier = Modifier
-                            .padding(start = 16.dp, top = 16.dp, end = 48.dp, bottom = 16.dp),
+                            .padding(top = 16.dp, bottom = if (isCompleted) 0.dp else 16.dp)
+                            .fillMaxWidth(),
                         softWrap = true,
+                        textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
                         style = mediumTextStyle
                     )
-//                    Row(
-//                        modifier = Modifier
-//                            .padding(horizontal = 16.dp),
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Canvas(
-//                            modifier = Modifier
-//                                .size(size = 10.dp)
-//                        ) {
-//                            drawCircle(
-//                                color = if (isCompleted) greenDark else greyIndicator,
-//                            )
-//                        }
-//                        Text(
-//                            text = if (isCompleted) "Completed" else "Not Started",
-//                            color = if (isCompleted) greenDark else textColorDark,
-//                            style = smallerTextStyle,
-//                            modifier = Modifier.padding(start = 6.dp, bottom = 4.dp)
-//
-//                        )
-//                    }
-                    if (isCompleted)
-                        Spacer(modifier = Modifier.height(20.dp))
+                    if (isCompleted) {
+//                        Spacer(modifier = Modifier.height(4.dp))
+                        //TODO add string for other steps when steps is complete.
+                        val subText = when(stepNo) {
+                            1 -> stringResource(id = R.string.transect_walk_sub_text, viewModel.getTolaCount())
+                            2 -> ""
+                            3 -> ""
+                            4 -> ""
+                            5 -> ""
+                            else -> ""
+                        }
+                        Text(
+                            text = subText,
+                            color = if (isCompleted) greenOnline else textColorDark,
+                            modifier = Modifier
+                                .padding(bottom = 16.dp)
+                                .fillMaxWidth(),
+                            softWrap = true,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 1,
+                            style = smallerTextStyle
+                        )
+                    }
                 }
 
                 if (shouldBeActive) {
-                    IconButtonForward(
-                        modifier = Modifier
-                            .aspectRatio(1f)
-                            .weight(0.2f)
-                    ) {
-                        onclick(index)
+                    if (isCompleted) {
+                        TextButtonWithIcon(modifier = Modifier
+                            .constrainAs(buttonContainer) {
+                                bottom.linkTo(textContainer.bottom)
+                                top.linkTo(textContainer.top)
+                                end.linkTo(parent.end)
+                            }
+
+                        )
+                        {
+                            onclick(index)
+                        }
+                    } else {
+                        IconButtonForward(
+                            modifier = Modifier
+                                .constrainAs(buttonContainer) {
+                                    bottom.linkTo(textContainer.bottom)
+                                    top.linkTo(textContainer.top)
+                                    end.linkTo(parent.end)
+                                }
+                                .size(48.dp)
+                        ) {
+                            onclick(index)
+                        }
                     }
+                } else {
+                    Spacer(modifier = Modifier
+                        .width(48.dp)
+                        .constrainAs(buttonContainer) {
+                            bottom.linkTo(textContainer.bottom)
+                            top.linkTo(textContainer.top)
+                            end.linkTo(parent.end)
+                        }
+                    )
                 }
             }
         }
 
 
-        Box(
-            modifier = Modifier
-                .clip(RoundedCornerShape(6.dp))
-                .border(
-                    width = 1.dp,
-                    color = greyBorder,
-                    shape = RoundedCornerShape(100.dp)
-                )
-                .background(Color.White)
-                .padding(6.dp)
-                .constrainAs(step_no) {
-                    start.linkTo(parent.start, margin = 16.dp)
-                    top.linkTo(parent.top)
-                }
-        ) {
-            Text(
-                text = "$stepNo",
-                color = textColorDark,
-                style = smallerTextStyleNormalWeight,
-                modifier = Modifier.padding(vertical = 2.dp, horizontal = 16.dp)
 
+
+        if (isCompleted) {
+            Image(
+                painter = painterResource(id = R.drawable.icon_check_circle_green),
+                contentDescription = null,
+                modifier = modifier
+                    .border(
+                        width = 2.dp,
+                        color = Color.Transparent,
+                        shape = CircleShape
+
+                    )
+                    .clip(CircleShape)
+                    .background(Color.Transparent)
+                    .constrainAs(step_no) {
+                        start.linkTo(parent.start, margin = 16.dp)
+                        top.linkTo(parent.top)
+                    }
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .clip(RoundedCornerShape(6.dp))
+                    .border(
+                        width = 1.dp,
+                        color = greyBorder,
+                        shape = RoundedCornerShape(100.dp)
+                    )
+                    .background(Color.White, shape = RoundedCornerShape(100.dp))
+                    .padding(6.dp)
+                    .constrainAs(step_no) {
+                        start.linkTo(parent.start, margin = 16.dp)
+                        top.linkTo(parent.top)
+                    }
+            ) {
+                Text(
+                    text = "$stepNo",
+                    color = textColorDark,
+                    style = smallerTextStyleNormalWeight,
+                    modifier = Modifier.padding(vertical = 2.dp, horizontal = 10.dp)
+
+                )
+            }
+
         }
 
         if (stepNo < 5) {
@@ -409,7 +506,7 @@ fun VillageSelectorDropDown(
 
             }
             .then(modifier),
-        ) {
+    ) {
         Row(
             Modifier
                 .padding(14.dp)
@@ -437,9 +534,10 @@ fun ProgressScreenTopBar(
     modifier: Modifier = Modifier,
     onHamburgerClick: () -> Unit
 ) {
-    Box(modifier = Modifier
-        .fillMaxWidth()
-        .then(modifier)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
     ) {
         ConstraintLayout(
             Modifier

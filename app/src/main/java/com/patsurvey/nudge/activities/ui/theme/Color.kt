@@ -61,3 +61,7 @@ val lightGrayColor = Color(0xFFEAEAEA)
 val greyRadioButton = Color(0xFFDEDEDE)
 
 val stepBoxActiveColor = Color(0xFFFFF4E3)
+
+val stepIconDisableColor = Color(0xFF938c89)
+val stepIconEnableColor = Color(0xFF52453d)
+val stepIconCompleted = Color(0xFF439A86)

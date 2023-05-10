@@ -1,17 +1,19 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.dataModel.StepsListModal
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.TOLA_COUNT
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,11 +60,16 @@ class ProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val response = apiInterface.getStepsList()
+                val localStepsList = stepsListDao.getAllSteps()
                 withContext(Dispatchers.IO){
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            it.stepList.forEach { step ->
-                                stepsListDao.insert(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = false))
+                            if (localStepsList.isEmpty() && !StepListEntity.same(localStepsList, StepListEntity.convertFromModelToEntity(it.stepList))){
+                                it.stepList.forEach { step ->
+                                    stepsListDao.insert(
+                                        StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = true)
+                                    )
+                                }
                             }
                             prefRepo.savePref(PREF_PROGRAM_NAME, it.programName) //TODO saving this in pref for now will move it to user table after User API is integrated
                             delay(2000L)
@@ -108,5 +115,24 @@ class ProgressScreenViewModel @Inject constructor(
 
         }
     }
+
+    fun isStepComplete(stepId: Int): LiveData<Boolean> {
+        return stepsListDao.isStepCompleteLive(stepId)
+    }
+
+    fun updateSelectedStep(stepId: Int) {
+        val currentStepIndex = stepList.value.map { it.id }.indexOf(stepId)
+        stepSelected.value = when (currentStepIndex) {
+            in 0..4 -> currentStepIndex + 1
+            5 -> {
+                currentStepIndex
+            }
+            else -> {
+                0
+            }
+        }
+    }
+
+    fun getTolaCount() = prefRepo.getPref(TOLA_COUNT, 0)
 
 }

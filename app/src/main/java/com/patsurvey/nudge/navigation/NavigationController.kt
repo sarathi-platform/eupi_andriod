@@ -15,10 +15,13 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 
 @Composable
@@ -125,6 +128,8 @@ fun VOHomeScreenFlowNavigation(
             route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
                 type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntArrayType
             })
         ) {
             TransectWalkScreen(
@@ -133,9 +138,20 @@ fun VOHomeScreenFlowNavigation(
                     .fillMaxSize()
                     .then(modifier),
                 viewModel = hiltViewModel(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
             )
         }
+
+        composable(
+            route = ScreenRoutes.STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+        }
+
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
             VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
         }
@@ -188,8 +204,11 @@ fun HomeScreenFlowNavigation(
             )
         }
 
-        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
+        composable(
+            route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
             })
         ) {
@@ -199,9 +218,20 @@ fun HomeScreenFlowNavigation(
                     .fillMaxSize()
                     .then(modifier),
                 viewModel = hiltViewModel(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
             )
         }
+
+        composable(
+            route = ScreenRoutes.STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(navController = homeScreenNavController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+        }
+
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
             VillageSelectionScreen(
                 navController = homeScreenNavController,

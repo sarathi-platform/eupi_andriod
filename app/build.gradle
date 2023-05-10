@@ -125,6 +125,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-common-java8:2.6.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.6.1"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1"
+    implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
@@ -155,4 +156,7 @@ dependencies {
     implementation "androidx.room:room-ktx:$roomVersion"
     kapt "androidx.room:room-compiler:$roomVersion"
     androidTestImplementation "androidx.room:room-testing:$roomVersion"
+
+//  confetti animation
+    implementation 'nl.dionsegijn:konfetti-compose:2.0.2'
 }
