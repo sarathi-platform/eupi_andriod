@@ -96,7 +96,7 @@ class ProgressScreenViewModel @Inject constructor(
                 withContext(Dispatchers.IO){
                     _villagList.value = villageList
                     withContext(Dispatchers.Main) {
-                        villageSelected.value = prefRepo.getSelectedVillage() ?: -1
+                        villageSelected.value = villageList.indexOf(prefRepo.getSelectedVillage()) ?: -1
                         showLoader.value = false
                     }
                     success()

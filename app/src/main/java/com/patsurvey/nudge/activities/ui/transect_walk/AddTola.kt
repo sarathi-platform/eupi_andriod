@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
 import androidx.compose.animation.*
@@ -159,7 +159,7 @@ fun AddTolaBox(
                         text = if (locationAdded) "Location Added" else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
                         style = mediumTextStyle,
-                        color = blueDark
+                        color = if (locationAdded) greenOnline else blueDark
                     )
                 }
             }
@@ -171,6 +171,7 @@ fun AddTolaBox(
                 ButtonPositive(
                     buttonTitle = stringResource(id = R.string.save_tola_text),
                     isArrowRequired = false,
+                    isActive = mTolaName.isNotEmpty(),
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     onSaveClicked(mTolaName, location)

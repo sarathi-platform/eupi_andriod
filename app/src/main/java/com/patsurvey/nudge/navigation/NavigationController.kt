@@ -17,14 +17,18 @@ import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
+import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 
 @Composable
 fun StartFlowNavigation(navController: NavHostController) {
     NavHost(navController = navController, startDestination = ScreenRoutes.START_SCREEN.route) {
         composable(route = ScreenRoutes.START_SCREEN.route) {
-            SplashScreen(navController = navController, modifier = Modifier.fillMaxSize(),
-                hiltViewModel())
+            SplashScreen(
+                navController = navController, modifier = Modifier.fillMaxSize(),
+                hiltViewModel()
+            )
         }
         composable(route = ScreenRoutes.LANGUAGE_SCREEN.route) {
             LanguageScreen(
@@ -40,10 +44,11 @@ fun StartFlowNavigation(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
         }
-        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route,
-        arguments = listOf(navArgument(ARG_MOBILE_NUMBER){
-            type= NavType.StringType
-        })
+        composable(
+            route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_MOBILE_NUMBER) {
+                type = NavType.StringType
+            })
         ) {
             OtpVerificationScreen(
                 navController,
@@ -66,15 +71,21 @@ fun StartFlowNavigation(navController: NavHostController) {
             HomeScreen(navController = navController)
         }
         composable(route = ScreenRoutes.DIGITAL_FORM_A_SCREEN.route) {
-            DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxWidth())
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
 
 @Composable
-fun VOHomeScreenFlowNavigation(navController: NavHostController,
-                               modifier: Modifier = Modifier){
-    val sharedViewModel : AddDidiViewModel = hiltViewModel()
+fun VOHomeScreenFlowNavigation(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    val sharedViewModel: AddDidiViewModel = hiltViewModel()
     NavHost(
         navController = navController,
         startDestination = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route
@@ -87,7 +98,8 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(navController,
+            DidiScreen(
+                navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier),
@@ -95,7 +107,8 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
             )
         }
         composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
-            AddDidiScreen(navController,
+            AddDidiScreen(
+                navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier),
@@ -108,11 +121,19 @@ fun VOHomeScreenFlowNavigation(navController: NavHostController,
         composable(route = ScreenRoutes.HOME_SCREEN.route) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
         }
-        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
+        composable(
+            route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            })
+        ) {
             TransectWalkScreen(
-                navController = navController, modifier = Modifier
+                navController = navController,
+                modifier = Modifier
                     .fillMaxSize()
-                    .then(modifier)
+                    .then(modifier),
+                viewModel = hiltViewModel(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0
             )
         }
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
@@ -127,7 +148,7 @@ fun HomeScreenFlowNavigation(
     stepsNavHostController: NavHostController,
     modifier: Modifier = Modifier
 ) {
-    val sharedViewModel : AddDidiViewModel = hiltViewModel()
+    val sharedViewModel: AddDidiViewModel = hiltViewModel()
     NavHost(
         navController = homeScreenNavController,
         startDestination = ScreenRoutes.PROGRESS_SCREEN.route
@@ -140,58 +161,53 @@ fun HomeScreenFlowNavigation(
             )
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(homeScreenNavController,
+            DidiScreen(
+                homeScreenNavController,
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier),
-                didiViewModel = sharedViewModel)
+                didiViewModel = sharedViewModel
+            )
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
-            MoreScreen(homeScreenNavController,
+            MoreScreen(
+                homeScreenNavController,
                 modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier))
-        }
-
-        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
-            AddDidiScreen(homeScreenNavController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                didiViewModel = sharedViewModel)
-        }
-
-        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
-            TransectWalkScreen(
-                navController = homeScreenNavController, modifier = Modifier
                     .fillMaxSize()
                     .then(modifier)
             )
         }
+
+        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
+            AddDidiScreen(
+                homeScreenNavController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                didiViewModel = sharedViewModel
+            )
+        }
+
+        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            TransectWalkScreen(
+                navController = homeScreenNavController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                viewModel = hiltViewModel(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0
+            )
+        }
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = homeScreenNavController, viewModel = hiltViewModel(), modifier = Modifier.fillMaxSize())
+            VillageSelectionScreen(
+                navController = homeScreenNavController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
-    /*NavHost(navController = stepsNavHostController, startDestination = ScreenRoutes.PROGRESS_SCREEN.route) {
-        composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            ProgressScreen(modifier = Modifier
-                .fillMaxSize()
-                .then(modifier), /*stepsNavHostController*/)
-        }
-        composable(route = ScreenRoutes.OTP_VERIFICATION_SCREEN.route) {
-            OtpVerificationScreen(homeScreenNavController, viewModel = hiltViewModel(),modifier = Modifier.fillMaxSize())
-        }
-
-        composable(route = ScreenRoutes.TRANSECT_WALK_SCREEN.route) {
-            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
-        }
-
-        composable(route = ScreenRoutes.SOCIAL_MAPPING_SCREEN.route) {
-            TransectWalkScreen(navController = stepsNavHostController, modifier = Modifier
-                .fillMaxSize()
-                .then(modifier))
-        }
-    }*/
 }

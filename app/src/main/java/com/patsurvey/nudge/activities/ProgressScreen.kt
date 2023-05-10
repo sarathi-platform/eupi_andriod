@@ -68,7 +68,7 @@ fun ProgressScreen(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp)
-                        .height((screenHeight/2).dp)
+                        .height((screenHeight / 2).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.seletc_village_screen_text),
@@ -174,7 +174,7 @@ fun ProgressScreen(
                                     viewModel.stepSelected.value = index
                                     when (index) {
                                         0 -> {
-                                            stepsNavHostController.navigate(ScreenRoutes.TRANSECT_WALK_SCREEN.route)
+                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}")
                                         }
                                         1 -> {}
                                         2 -> {}

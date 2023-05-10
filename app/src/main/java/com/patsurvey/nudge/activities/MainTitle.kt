@@ -2,8 +2,8 @@ package com.patsurvey.nudge.activities
 
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
@@ -16,6 +16,7 @@ fun MainTitle(title: String, modifier: Modifier) {
         color = black100Percent,
         modifier = modifier,
         maxLines = 1,
+        textAlign=TextAlign.Start,
         overflow = TextOverflow.Ellipsis,
     )
 }

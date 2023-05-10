@@ -1,11 +1,10 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.transect_walk
 
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -23,7 +22,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -35,11 +33,14 @@ import com.patsurvey.nudge.utils.*
 @Composable
 fun TransectWalkScreen(
     modifier: Modifier = Modifier,
-    navController: NavController
+    navController: NavController,
+    viewModel: TransectWalkViewModel,
+    villageId: Int,
+
 ) {
 
     var showAddTolaBox by remember { mutableStateOf(false) }
-    val tolaList = remember { mutableStateListOf<Tola>() }
+    val tolaList = viewModel.tolaList
     var tolaToBeEdited: Tola by remember { mutableStateOf(Tola()) }
 
     val localDensity = LocalDensity.current
@@ -53,6 +54,7 @@ fun TransectWalkScreen(
             .background(Color.White)
             .then(modifier)
     ) {
+        viewModel.setVillage(villageId)
         val (bottomActionBox, mainBox) = createRefs()
 
         Box(modifier = Modifier
@@ -68,14 +70,14 @@ fun TransectWalkScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 if (tolaList.isNotEmpty() || showAddTolaBox) {
-                    Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+                    Row(modifier = Modifier.padding(end = 16.dp, top = 16.dp)) {
                         Icon(
                             painter = painterResource(id = R.drawable.home_icn),
                             contentDescription = null,
                             tint = textColorDark,
                         )
                         Text(
-                            text = "Sundar Pahar",
+                            text = " ${viewModel.villageEntity.value?.name}",
                             modifier = Modifier
                                 .fillMaxWidth(),
                             color = textColorDark,
@@ -85,16 +87,16 @@ fun TransectWalkScreen(
                     Row(
                         modifier = Modifier
                             .absolutePadding(left = 4.dp)
-                            .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                            .padding(end = 16.dp, bottom = 16.dp)
                     ) {
                         Text(
-                            text = "VO:",
+                            text = "VO: ",
                             modifier = Modifier,
                             color = textColorDark,
                             style = smallTextStyle
                         )
                         Text(
-                            text = "Sundar Pahar Mahila Mandal",
+                            text = viewModel.villageEntity.value?.name ?: "",
                             modifier = Modifier
                                 .fillMaxWidth(),
                             color = textColorDark,
@@ -177,7 +179,7 @@ fun TransectWalkScreen(
                             tolaName = tolaToBeEdited.name,
                             isLocationAvailable = (tolaToBeEdited.location.lat != null && tolaToBeEdited.location.long != null),
                             onSaveClicked = { name, location ->
-                                tolaList.add(Tola(name, location ?: LocationCoordinates()))
+                                viewModel.addTola(Tola(name, location ?: LocationCoordinates()))
                                 showAddTolaBox = false
                             },
                             onCancelClicked = {
@@ -210,7 +212,7 @@ fun TransectWalkScreen(
                                                 fontFamily = NotoSans
                                             )
                                         ) {
-                                            append("No Tolas Added")
+                                            append(stringResource(R.string.empty_tola_string))
                                         }
                                     },
                                     modifier = Modifier.padding(top = 32.dp)
@@ -230,30 +232,29 @@ fun TransectWalkScreen(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(bottom = bottomPadding),
-                            contentPadding = PaddingValues(10.dp)
                         ) {
-                            items(tolaList) { tola ->
+                            itemsIndexed(tolaList) { index, tola ->
                                 Box(modifier = Modifier.padding(vertical = 10.dp)) {
 
                                     TolaBox(
                                         tolaName = tola.name,
-                                        isLocationAvailable = (tola.location.lat != null && tola.location.long != null),
+                                        isLocationAvailable = (tola.latitude != null && tola.longitude != null),
                                         deleteButtonClicked = {
-                                            tolaList.remove(tola)
+                                            viewModel.removeTola(tola.id)
+//                                            tolaList.remove(tola) //TODO implement delete tola method
                                             showAddTolaBox = false
                                         },
                                         saveButtonClicked = { name, location ->
-                                            showAddTolaBox = if (name == tola.name && (location?.lat == tola.location.lat && location?.long == tola.location.long))
+                                            showAddTolaBox = if (name == tola.name && (location?.lat == tola.latitude && location?.long == tola.longitude))
                                                 false
                                             else {
-                                                val index = tolaList.indexOf(tola)
-                                                tolaList.remove(tola)
-                                                tolaList.add(
-                                                    index, Tola(
-                                                        name,
-                                                        location ?: LocationCoordinates()
-                                                    )
-                                                )
+//                                                tolaList.remove(tola) //TODO implement update tola method
+//                                                tolaList.add(
+//                                                    index, Tola(
+//                                                        name,
+//                                                        location ?: LocationCoordinates()
+//                                                    )
+//                                                )
                                                 false
                                             }
                                         }
