@@ -78,22 +78,10 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
+        selectedTola.value= prefRepo.getLastSelectedTola() as Pair<Int, String>
         villageId = prefRepo.getSelectedVillage().id
     }
 
-    fun validateDidiDetails() {
-        isDidiValid.value =
-            !(houseNumber.value.isEmpty() || didiName.value.isEmpty() || dadaName.value.isEmpty()
-                    || selectedCast.value.first == -1 || selectedTola.value.first == -1)
-                for(i in 1..7){
-                    tolaDao.insert(TolaEntity(i,"Tola $i","Tola Type $1", latitude = 26.803043, longitude = 79.505524,2, needsToPost = false))
-                }
-                _casteList.emit(casteListDao.getAllCaste())
-                _tolaList.emit(tolaDao.getAllTolas())
-            }
-        }
-    validateDidiDetails()
-}
     fun fetchDidisFrommDB(){
         showLoader.value = true
         job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

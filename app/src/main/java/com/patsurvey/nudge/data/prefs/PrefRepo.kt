@@ -53,5 +53,6 @@ interface PrefRepo {
    fun getFromPage():String
    fun saveFromPage(pageFrom:String)
 
-
+   fun saveLastSelectedTola(tola: Pair<Int,String>)
+   fun getLastSelectedTola():Pair<Int, String?>
 }
