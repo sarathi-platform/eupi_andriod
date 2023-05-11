@@ -34,6 +34,11 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
+import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
+import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
+import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
 
 @Composable
@@ -153,11 +158,13 @@ fun TransectWalkScreen(
                         }
                         if (tolaList.isNotEmpty()) {
                             Spacer(modifier = Modifier.padding(14.dp))
-                            ButtonOutline(
-                                modifier = Modifier.weight(0.9f),
-                            ) {
-                                if (!showAddTolaBox)
-                                    showAddTolaBox = true
+                            if (!tolaList.contains(TolaEntity.createEmptyTolaForVillageId(villageId))) {
+                                ButtonOutline(
+                                    modifier = Modifier.weight(0.9f),
+                                ) {
+                                    if (!showAddTolaBox)
+                                        showAddTolaBox = true
+                                }
                             }
                         }
                     }
@@ -257,6 +264,25 @@ fun TransectWalkScreen(
                                         if (!showAddTolaBox)
                                             showAddTolaBox = true
                                     }
+                                    //TODO fix empty tola functionality
+                                    /*Spacer(modifier = Modifier.height(10.dp))
+                                    Text(text = "Or", style = smallTextStyle, color = textColorDark)
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                    ButtonPositive(buttonTitle = "No Tola Required", modifier = Modifier.width(width = 160.dp), isArrowRequired = false) {
+                                        viewModel.addEmptyTola()
+                                        if ((context as MainActivity).isOnline.value ?: false) {
+                                            viewModel.addTolasToNetwork()
+                                        }
+                                        viewModel.markTransectWalkComplete(villageId, stepId)
+                                        navController.navigate(
+                                            "step_completion_screen/${
+                                                context.getString(R.string.transect_walk_completed_message).replace(
+                                                    "{VILLAGE_NAME}",
+                                                    viewModel.villageEntity.value?.name ?: ""
+                                                )
+                                            }/transect_walk_screen"
+                                        )
+                                    }*/
                                 }
                             }
                         } else {

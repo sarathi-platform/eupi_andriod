@@ -33,6 +33,9 @@ const val CASTE_TABLE = "caste_table"
 const val DIDI_TABLE = "didi_table"
 const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
+const val DIDI_COUNT = "didi_count"
+
+const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
@@ -54,5 +57,6 @@ const val ARG_VILLAGE_ID = "villageId"
 const val ARG_STEP_ID = "stepId"
 const val ARG_STEP_INDEX = "step_index"
 const val ARG_COMPLETION_MESSAGE = "completion_message"
+const val ARG_FROM_SCREEN = "fromScreen"
 
 const val PREF_PROGRAM_NAME = "programName"

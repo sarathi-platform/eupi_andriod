@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -115,7 +116,7 @@ fun BlueButtonWithIcon(
                 .width(160.dp)
                 .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 icon,
@@ -123,7 +124,6 @@ fun BlueButtonWithIcon(
                 tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier
                     .absolutePadding(top = 4.dp)
-                    .padding(start = 10.dp)
 
             )
             Text(
@@ -172,7 +172,8 @@ fun ButtonPositive(
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
-                style = buttonTextStyle
+                style = buttonTextStyle,
+                textAlign = TextAlign.Center
             )
             if (isArrowRequired) {
                 Icon(

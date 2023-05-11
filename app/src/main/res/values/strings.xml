@@ -76,8 +76,15 @@
     <string name="tola_conirmation_text">Total %1$s Tolas have \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
+    <string name="complete_social_walk_text">Complete Social Mapping</string>
+
+    <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
+    <string name="didi_conirmation_text">Total %1$s Didis have \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
+
+    <string name="social_mapping_sub_text">%1$s Didis Identified</string>
+
     <string name="empty_didis_string">No Didis Added</string>
 
     <plurals name="didis_added">
