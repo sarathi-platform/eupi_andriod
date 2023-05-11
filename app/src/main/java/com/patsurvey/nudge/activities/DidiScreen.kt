@@ -8,6 +8,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,6 +35,10 @@ fun DidiScreen(
     modifier: Modifier = Modifier,
     didiViewModel: AddDidiViewModel
 ) {
+
+    LaunchedEffect(key1 = true) {
+        didiViewModel.isSocialMappingComplete(didiViewModel.stepId)
+    }
 
     ConstraintLayout(
         modifier = Modifier

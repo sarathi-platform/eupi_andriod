@@ -35,5 +35,11 @@ data class DidiEntity(
     var cohortId : Int,
 
     @ColumnInfo(name = "cohortName")
-    var cohortName : String
+    var cohortName : String,
+
+    @ColumnInfo(name = "villageId")
+    var villageId: Int,
+
+    @ColumnInfo(name = "needsToPost")
+    var needsToPost: Boolean = true
 )

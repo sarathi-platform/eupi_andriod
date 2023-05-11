@@ -29,7 +29,8 @@ import java.util.concurrent.TimeUnit
 fun StepCompletionScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    message: String
+    message: String,
+    fromScreen: String
 ) {
 
     val animationOver = remember {
@@ -68,7 +69,17 @@ fun StepCompletionScreen(
             ) {
                 LaunchedEffect(key1 = true) {
                     delay(SPLASH_SCREEN_DURATION)
-                    navController.popBackStack(ScreenRoutes.TRANSECT_WALK_SCREEN.route, inclusive = true, saveState = true)
+                    navController.popBackStack(
+                        when (fromScreen) {
+                            "transect_walk_screen" -> ScreenRoutes.TRANSECT_WALK_SCREEN.route
+                            "didi_screen" -> ScreenRoutes.DIDI_SCREEN.route
+                            else -> {
+                                ScreenRoutes.TRANSECT_WALK_SCREEN.route
+                            }
+                        },
+                        inclusive = true,
+                        saveState = true
+                    )
                 }
                 Text(text = "🎉", fontSize = 50.sp)
                 Text(
