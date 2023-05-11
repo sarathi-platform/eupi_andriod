@@ -29,6 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
@@ -191,7 +192,10 @@ fun ProgressScreen(
                                             viewModel.stepList.value[index].id
                                             stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
                                         }
-                                        1 -> {}
+                                        1 -> {
+                                            viewModel.stepList.value[index].id
+                                            stepsNavHostController.navigate(route = "didi_screen")
+                                        }
                                         2 -> {}
                                         3 -> {}
                                         4 -> {}
@@ -288,6 +292,8 @@ fun StepsBox(
                             top.linkTo(iconContainer.top)
                             start.linkTo(iconContainer.end)
                             bottom.linkTo(iconContainer.bottom)
+                            end.linkTo(buttonContainer.start)
+                            width = Dimension.fillToConstraints
                         }
                         .fillMaxWidth()
                 ) {
@@ -295,7 +301,11 @@ fun StepsBox(
                         text = boxTitle/* "Transect Walk"*/,
                         color = if (isCompleted) greenOnline else textColorDark,
                         modifier = Modifier
-                            .padding(top = 16.dp, bottom = if (isCompleted) 0.dp else 16.dp)
+                            .padding(
+                                top = 16.dp,
+                                bottom = if (isCompleted) 0.dp else 16.dp,
+                                end = 10.dp
+                            )
                             .fillMaxWidth(),
                         softWrap = true,
                         textAlign = TextAlign.Start,
@@ -308,7 +318,7 @@ fun StepsBox(
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
                             1 -> stringResource(id = R.string.transect_walk_sub_text, viewModel.getTolaCount())
-                            2 -> ""
+                            2 -> stringResource(id = R.string.social_mapping_sub_text, viewModel.getDidiCount())
                             3 -> ""
                             4 -> ""
                             5 -> ""

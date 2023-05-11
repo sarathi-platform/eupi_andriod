@@ -26,6 +26,9 @@ import com.patsurvey.nudge.utils.ButtonPositive
 @Composable
 fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                   isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
+
+    didiViewModel.checkAndUpdateTolaList()
+
     var casteExpanded by remember { mutableStateOf(false) }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -35,10 +38,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        NetworkBanner(
-            modifier = Modifier,
-            isOnline = isOnline
-        )
         VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
         MainTitle(
             title = stringResource(id = R.string.add_didi),

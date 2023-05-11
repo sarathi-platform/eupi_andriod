@@ -60,6 +60,21 @@ class TransectWalkViewModel @Inject constructor(
             tolaDao.insert(tolaItem)
             withContext(Dispatchers.Main) {
                 tolaList.add(tolaItem)
+                prefRepo.savePref(TOLA_COUNT, tolaList.size)
+                if (isTransectWalkComplete.value) {
+                    isTransectWalkComplete.value = false
+                }
+            }
+        }
+    }
+
+    fun addEmptyTola() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
+            tolaDao.insert(tolaItem)
+            withContext(Dispatchers.Main) {
+                tolaList.add(tolaItem)
+                prefRepo.savePref(TOLA_COUNT, tolaList.size)
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
                 }
@@ -71,26 +86,30 @@ class TransectWalkViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
             val filteredTolaList = tolaList.filter { it.needsToPost }
-            for (tola in filteredTolaList) {
-                jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
-            }
-            Log.d("TransectWalkViewModel", "$jsonTola")
+            if (filteredTolaList.isNotEmpty()) {
+                for (tola in filteredTolaList) {
+                    jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
+                }
+                Log.d("TransectWalkViewModel", "$jsonTola")
 
-            val response = apiInterface.addCohort(jsonTola)
-            if (response.status.equals(SUCCESS, true)) {
-                response.data?.let {
-                    response.data.forEach { it2 ->
-                        tolaList.forEach { tola ->
-                            if (TextUtils.equals(it2.name, tola.name)) {
-                                tola.id = it2.id
+                val response = apiInterface.addCohort(jsonTola)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        response.data.forEach { it2 ->
+                            tolaList.forEach { tola ->
+                                if (TextUtils.equals(it2.name, tola.name)) {
+                                    tola.id = it2.id
+                                }
                             }
                         }
+                        updateTolaListWithIds(tolaList)
+                        tolaDao.setNeedToPost(
+                            tolaList.filter { it.needsToPost }.map { it.id },
+                            false
+                        )
                     }
-                    updateTolaListWithIds(tolaList)
-                    tolaDao.setNeedToPost(tolaList.filter { it.needsToPost }.map { it.id }, false)
                 }
             }
-            prefRepo.savePref(TOLA_COUNT, tolaList.size)
         }
     }
 
@@ -156,64 +175,84 @@ class TransectWalkViewModel @Inject constructor(
 
     fun fetchTolaList(villageId: Int) {
         showLoader.value = true
+
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val tolaItemList = mutableListOf<TolaEntity>()
-            val response = apiInterface.getCohortFromNetwork(villageId)
-            if (response.status.equals(SUCCESS)) {
-                if (response.data != null) {
-                    response.data.forEach { it2 ->
-                        tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
-                    }
-                    tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                        tolaItemList.add(tola)
+            try {
+                val tolaItemList = mutableListOf<TolaEntity>()
+                val response = apiInterface.getCohortFromNetwork(villageId)
+                if (response.status.equals(SUCCESS)) {
+                    if (response.data != null) {
+                        response.data.forEach { it2 ->
+                            tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
+                        }
+                        tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
+                            tolaItemList.add(tola)
+                        }
+                    } else {
+                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
+                        if (tolaListFromDb.isNotEmpty()) {
+                            tolaListFromDb.forEach { tola ->
+                                tolaItemList.add(tola)
+                            }
+                        }
+                        withContext(Dispatchers.Main) {
+                            showLoader.value = false
+                        }
                     }
                 } else {
-                    tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                        tolaItemList.add(tola)
+                    val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
+                    if (tolaListFromDb.isNotEmpty()) {
+                        tolaListFromDb.forEach { tola ->
+                            tolaItemList.add(tola)
+                        }
+                    }
+                    withContext(Dispatchers.Main) {
+                        showLoader.value = false
                     }
                 }
-            } else {
-                tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                    tolaItemList.add(tola)
+                withContext(Dispatchers.Main) {
+                    tolaItemList.forEach {
+                        tolaList.add(it)
+                    }
+                    showLoader.value = false
                 }
-            }
-            withContext(Dispatchers.Main) {
-                tolaItemList.forEach {
-                    tolaList.add(it)
-                }
+            } catch (ex: Exception) {
+                onError("Exception: ${ex.localizedMessage}")
+
                 showLoader.value = false
+
             }
         }
     }
 
-    fun setVillage(villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val village = villageListDao.getVillage(villageId)
-            withContext(Dispatchers.Main) {
-                villageEntity.value = village
-            }
+fun setVillage(villageId: Int) {
+    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        val village = villageListDao.getVillage(villageId)
+        withContext(Dispatchers.Main) {
+            villageEntity.value = village
         }
     }
+}
 
-    private fun getIndexOfTola(id: Int): Int {
-        return tolaList.map { it.id }.indexOf(id)
+private fun getIndexOfTola(id: Int): Int {
+    return tolaList.map { it.id }.indexOf(id)
+}
+
+fun markTransectWalkComplete(villageId: Int, stepId: Int) {
+    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        villageListDao.updateLastCompleteStep(villageId, listOf(stepId))
+        stepsListDao.markStepAsComplete(stepId)
     }
+}
 
-    fun markTransectWalkComplete(villageId: Int, stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            villageListDao.updateLastCompleteStep(villageId, listOf(stepId))
-            stepsListDao.markStepAsComplete(stepId)
+fun isTransectWalkComplete(stepId: Int) {
+    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        val isComplete = stepsListDao.isStepComplete(stepId)
+        withContext(Dispatchers.Main) {
+            isTransectWalkComplete.value = isComplete
         }
-    }
 
-    fun isTransectWalkComplete(stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val isComplete = stepsListDao.isStepComplete(stepId)
-            withContext(Dispatchers.Main) {
-                isTransectWalkComplete.value = isComplete
-            }
-
-        }
     }
+}
 
 }

@@ -19,10 +19,7 @@ import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
-import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
-import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
-import com.patsurvey.nudge.utils.ARG_STEP_ID
-import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
+import com.patsurvey.nudge.utils.*
 
 @Composable
 fun StartFlowNavigation(navController: NavHostController) {
@@ -147,9 +144,15 @@ fun VOHomeScreenFlowNavigation(
             route = ScreenRoutes.STEP_COMPLETION_SCREEN.route,
             arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
                 type = NavType.StringType
-            })
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
         ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+            StepCompletionScreen(navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "",
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: ScreenRoutes.TRANSECT_WALK_SCREEN.route)
         }
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
@@ -227,9 +230,15 @@ fun HomeScreenFlowNavigation(
             route = ScreenRoutes.STEP_COMPLETION_SCREEN.route,
             arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
                 type = NavType.StringType
-            })
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
         ) {
-            StepCompletionScreen(navController = homeScreenNavController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+            StepCompletionScreen(navController = homeScreenNavController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "",
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: ScreenRoutes.TRANSECT_WALK_SCREEN.route)
         }
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
