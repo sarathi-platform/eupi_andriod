@@ -57,6 +57,7 @@ val white = Color(0xFFFFFFFF)
 
 val black100Percent = Color(0xFF271914)
 val lightGrayColor = Color(0xFFEAEAEA)
+val lightGray2 = Color(0xFFB1B1B1)
 
 val greyRadioButton = Color(0xFFDEDEDE)
 

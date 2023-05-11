@@ -43,9 +43,9 @@ fun CircularProgressBar(
         mutableStateOf(Offset.Zero)
     }
 
-    val positionValue by remember {
-        mutableStateOf(initialPosition)
-    }
+//    val positionValue by remember {
+//        mutableStateOf(initialPosition)
+//    }
 
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -72,7 +72,7 @@ fun CircularProgressBar(
             drawArc(
                 color = progressColor,
                 startAngle = -90f,
-                sweepAngle = (360f / maxProgress) * positionValue.toFloat(),
+                sweepAngle = (360f / maxProgress) * initialPosition.toFloat(),
                 style = Stroke(
                     width = circleThickness.value,
                     cap = StrokeCap.Butt
@@ -116,7 +116,7 @@ fun Preview() {
         modifier = Modifier
             .size(250.dp),
         circleRadius = LocalDensity.current.run { 120.dp.toPx() },
-        initialPosition = 5,
+        initialPosition = 3,
         borderThickness = 10.dp,
         centerTextSize = 15.sp
     )

@@ -96,6 +96,9 @@
     <string name="didi_has_been_successfully_updated">Didi has been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>
+    <string name="pat_survey">PAT Survey</string>
+    <string name="didi">Didi</string>
+    <string name="section_number">Section %d</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
