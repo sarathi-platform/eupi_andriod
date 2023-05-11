@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -20,11 +21,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.HomeScreenFlowNavigation
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BottomNavItem
 
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navController: NavHostController,
@@ -53,35 +56,25 @@ fun HomeScreen(
                 items = listOf(
                     BottomNavItem(
                         stringResource(R.string.progress_item_text),
-                        ScreenRoutes.PROGRESS_SCREEN.route,
+                        HomeScreens.PROGRESS_SCREEN.route,
                         painterResource(R.drawable.progress_icon)
                     ),
                     BottomNavItem(
                         stringResource(R.string.didis_item_text),
-                        ScreenRoutes.DIDI_SCREEN.route,
+                        HomeScreens.DIDI_SCREEN.route,
                         painterResource(R.drawable.didi_icon)
                     ),
-//                    BottomNavItem(
-//                        stringResource(R.string.more_item_text),
-//                        ScreenRoutes.MORE_SCREEN.route,
-//                        painterResource(R.drawable.more_icon)
-//                    )
                 ),
                 navController = homeScreenNavController,
                 onItemClick = {
-                    homeScreenNavController.navigate(it.route)
+                    if(it.route.equals(ScreenRoutes.DIDI_SCREEN.route,true)){
+                        homeScreenNavController.navigate("didi_screen/$ARG_FROM_HOME")
+                    }else homeScreenNavController.navigate(it.route)
                 }
             )
         }
     ) {
-        HomeScreenFlowNavigation(
-            homeScreenNavController = homeScreenNavController,
-            stepsNavHostController = stepsNavController,
-            modifier = Modifier
-                .padding(bottom = it.calculateBottomPadding())
-
-        )
-
+//       HomeNavGraph(homeScreenNavController = homeScreenNavController, modifier = Modifier)
     }
 }
 
@@ -96,7 +89,7 @@ fun BottomNavigationBar(
     BottomNavigation(
         modifier = modifier,
         backgroundColor = Color.White,
-        elevation = 5.dp
+        elevation = 5.dp,
     ) {
         items.forEach { item ->
             val selected = item.route == backStackEntry.value?.destination?.route
@@ -106,7 +99,8 @@ fun BottomNavigationBar(
                 alwaysShowLabel = true,
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
-
+                        Spacer(modifier = Modifier.height(16.dp)
+                            .background( blueDark))
                         Icon(
                             painter = item.icon,
                             contentDescription = item.name,

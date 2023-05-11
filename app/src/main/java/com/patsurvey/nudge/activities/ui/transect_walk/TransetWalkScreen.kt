@@ -32,10 +32,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
 import com.patsurvey.nudge.utils.*
 
 @Composable

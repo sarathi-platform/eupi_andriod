@@ -50,4 +50,8 @@ interface PrefRepo {
    fun getAppLanguageId():Int?
    fun saveAppLanguageId(languageId: Int?)
 
+   fun getFromPage():String
+   fun saveFromPage(pageFrom:String)
+
+
 }

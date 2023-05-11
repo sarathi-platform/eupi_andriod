@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.*
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -41,36 +42,46 @@ class AddDidiViewModel @Inject constructor(
     private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
     val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
 
-    var filterMapList  by mutableStateOf(mapOf<String, List<DidiEntity>>())
+    var tolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
+        private set
+
+    var filterTolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
     var filterDidiList  by mutableStateOf(listOf<DidiEntity>())
         private set
 
+    val showLoader = mutableStateOf(false)
 
 
-init {
 
-    job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-       withContext(Dispatchers.IO){
-           casteListDao.insertCaste(CasteEntity(1,"Hindu"))
-           casteListDao.insertCaste(CasteEntity(2,"Muslim"))
-           casteListDao.insertCaste(CasteEntity(3,"Sikh"))
-           casteListDao.insertCaste(CasteEntity(4,"Isai"))
+    init {
+        job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                casteListDao.insertCaste(CasteEntity(1,"Hindu"))
+                casteListDao.insertCaste(CasteEntity(2,"Muslim"))
+                casteListDao.insertCaste(CasteEntity(3,"Sikh"))
+                casteListDao.insertCaste(CasteEntity(4,"Isai"))
 
-           for(i in 1..7){
-               tolaDao.insert(TolaEntity(i,"Tola $i","Tola Type $1", latitude = 26.803043, longitude = 79.505524,2,false))
-       }
-           _didiList.emit(didiDao.getAllDidis())
-
-           _casteList.emit(casteListDao.getAllCaste())
-           _tolaList.emit(tolaDao.getAllTolas())
-           filterDidiList=didiList.value
-       }
-    }
-
+                for(i in 1..7){
+                    tolaDao.insert(TolaEntity(i,"Tola $i","Tola Type $1", latitude = 26.803043, longitude = 79.505524,2, needsToPost = false))
+                }
+                _casteList.emit(casteListDao.getAllCaste())
+                _tolaList.emit(tolaDao.getAllTolas())
+            }
+        }
     validateDidiDetails()
 }
+    fun fetchDidisFrommDB(){
+        showLoader.value = true
+        job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                _didiList.emit(didiDao.getAllDidis())
+                filterDidiList=didiList.value
+                showLoader.value = false
+            }
+        }
+    }
     fun validateDidiDetails(){
         isDidiValid.value = !(houseNumber.value.isEmpty() || didiName.value.isEmpty() || dadaName.value.isEmpty()
                 || selectedCast.value.first==-1 || selectedTola.value.first==-1)
@@ -101,10 +112,13 @@ init {
                 map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
             }
         }
-        filterMapList = map
+        tolaMapList = map
+        filterTolaMapList=map
     }
 
-   fun performQuery(query: String){
+   @SuppressLint("SuspiciousIndentation")
+   fun performQuery(query: String, isTolaFilterSelected:Boolean){
+       if(!isTolaFilterSelected){
        filterDidiList = if(query.isNotEmpty()) {
            val filteredList = ArrayList<DidiEntity>()
            didiList.value.forEach { didi ->
@@ -115,6 +129,25 @@ init {
            filteredList
        }else {
            didiList.value
+        }
+       }else{
+           if(query.isNotEmpty()){
+               val fList= mutableMapOf<String, MutableList<DidiEntity>>()
+               tolaMapList.keys.forEach { key->
+                val newDidiList= ArrayList<DidiEntity>()
+                   tolaMapList[key]?.forEach { didi->
+                       if (didi.name.lowercase().contains(query.lowercase())) {
+                          newDidiList.add(didi)
+                       }
+                   }
+                   if(newDidiList.isNotEmpty())
+                        fList[key]=newDidiList
+               }
+               filterTolaMapList=fList
+           }else{
+               filterTolaMapList=tolaMapList
+           }
+
        }
    }
 

@@ -10,10 +10,6 @@ import javax.inject.Inject
 class MainActivityViewModel @Inject constructor(
     val prefRepo: PrefRepo
 ): BaseViewModel() {
-
     val isLoggedIn = mutableStateOf(false)
-
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
-
-
 }

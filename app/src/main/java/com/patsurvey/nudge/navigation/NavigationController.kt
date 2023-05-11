@@ -1,15 +1,14 @@
 package com.patsurvey.nudge.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.NavType
+import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
@@ -19,8 +18,10 @@ import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 
@@ -94,29 +95,11 @@ fun VOHomeScreenFlowNavigation(
         startDestination = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route
     ) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            ProgressScreen(
+            /*ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier), viewModel = hiltViewModel(), navController
-            )
-        }
-        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(
-                navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                didiViewModel = sharedViewModel
-            )
-        }
-        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
-            AddDidiScreen(
-                navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                didiViewModel = sharedViewModel
-            )
+            )*/
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen(navController)
@@ -132,15 +115,15 @@ fun VOHomeScreenFlowNavigation(
                 type = NavType.IntArrayType
             })
         ) {
-            TransectWalkScreen(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                viewModel = hiltViewModel(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            )
+//            TransectWalkScreen(
+//                navController = navController,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .then(modifier),
+//                viewModel = hiltViewModel(),
+//                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+//                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+//            )
         }
 
         composable(
@@ -149,11 +132,11 @@ fun VOHomeScreenFlowNavigation(
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+//            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
         }
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+//            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
         }
     }
 }
@@ -170,20 +153,24 @@ fun HomeScreenFlowNavigation(
         startDestination = ScreenRoutes.PROGRESS_SCREEN.route
     ) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            ProgressScreen(
+            /*ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier), viewModel = hiltViewModel(), homeScreenNavController
-            )
+            )*/
         }
-        composable(route = ScreenRoutes.DIDI_SCREEN.route) {
-            DidiScreen(
-                homeScreenNavController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                didiViewModel = sharedViewModel
-            )
+        composable(route = ScreenRoutes.DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM){
+               type= NavType.StringType
+            })){
+//            DidiScreen(
+//                homeScreenNavController,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .then(modifier),
+//                didiViewModel = sharedViewModel,
+//                from =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
+//            )
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen(
@@ -193,17 +180,6 @@ fun HomeScreenFlowNavigation(
                     .then(modifier)
             )
         }
-
-        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route) {
-            AddDidiScreen(
-                homeScreenNavController,
-                modifier = Modifier
-                    .fillMaxSize()
-                    .then(modifier),
-                didiViewModel = sharedViewModel
-            )
-        }
-
         composable(
             route = ScreenRoutes.TRANSECT_WALK_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
@@ -212,7 +188,7 @@ fun HomeScreenFlowNavigation(
                 type = NavType.IntType
             })
         ) {
-            TransectWalkScreen(
+            /*TransectWalkScreen(
                 navController = homeScreenNavController,
                 modifier = Modifier
                     .fillMaxSize()
@@ -220,7 +196,7 @@ fun HomeScreenFlowNavigation(
                 viewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
                 stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            )
+            )*/
         }
 
         composable(
@@ -229,15 +205,74 @@ fun HomeScreenFlowNavigation(
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(navController = homeScreenNavController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+//            StepCompletionScreen(navController = homeScreenNavController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
         }
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(
+            /*VillageSelectionScreen(
                 navController = homeScreenNavController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize()
-            )
+            )*/
+        }
+        detailsNavGraph(navController = homeScreenNavController,modifier)
+    }
+}
+
+fun NavGraphBuilder.detailsNavGraph(navController: NavHostController,modifier: Modifier){
+    navigation(route = ScreenRoutes.DIDI_SCREEN.route,
+    startDestination = ScreenRoutes.ADD_DIDI_SCREEN.route){
+        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM){
+                type= NavType.StringType
+            })){
+            /*AddDidiScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                didiViewModel = hiltViewModel(),
+                navigateFrom =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
+            )*/
+        }
+    }
+}
+
+@Composable
+fun BasicPageFlowWithoutBottomNav(
+    navController: NavHostController,
+    modifier: Modifier = Modifier,
+    fromPage:String
+){
+    NavHost(navController = navController,
+        startDestination =  ScreenRoutes.DIDI_SCREEN.route){
+
+        composable(route = ScreenRoutes.DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM){
+                type= NavType.StringType
+            })){
+//            DidiScreen(
+//                navController,
+//                modifier = Modifier
+//                    .fillMaxSize()
+//                    .then(modifier),
+//                didiViewModel = hiltViewModel(),
+//                from =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
+//            )
+        }
+
+        composable(route = ScreenRoutes.ADD_DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM){
+                type= NavType.StringType
+            })){
+           /* AddDidiScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                didiViewModel = hiltViewModel(),
+                navigateFrom =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
+            )*/
         }
     }
 }

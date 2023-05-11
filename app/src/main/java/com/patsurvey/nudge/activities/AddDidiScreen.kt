@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,21 +12,21 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ButtonPositive
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
-                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel) {
+                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel,navigateFrom:String,onNavigation:()->Unit) {
     var casteExpanded by remember { mutableStateOf(false) }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
 
@@ -35,14 +36,17 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        NetworkBanner(
-            modifier = Modifier,
-            isOnline = isOnline
-        )
+        AnimatedVisibility(visible = !navigateFrom.equals(ARG_FROM_HOME,true)) {
+            NetworkBanner(
+                modifier = Modifier,
+                isOnline = isOnline
+            )
+        }
         VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
         MainTitle(
             title = stringResource(id = R.string.add_didi),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(start = 16.dp)
         )
         Column(
@@ -143,6 +147,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
+                .padding(bottom = dimensionResource(id = R.dimen.dp_20))
         ) {
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.add_didi),
@@ -152,7 +157,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                     .fillMaxWidth()
             ) {
                 didiViewModel.saveDidiIntoDatabase()
-                navController.popBackStack()
+                onNavigation()
             }
         }
 
@@ -164,5 +169,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 @Preview(showBackground = true)
 @Composable
 fun AddDidiPreview() {
-    AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel())
+    /*AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel(),
+        navigateFrom = ARG_FROM_HOME
+    )*/
 }

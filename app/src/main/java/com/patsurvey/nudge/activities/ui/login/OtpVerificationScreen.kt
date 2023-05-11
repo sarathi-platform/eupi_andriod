@@ -31,7 +31,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
@@ -188,9 +188,8 @@ fun OtpVerificationScreen(
                 onClick = {
                     viewModel.validateOtp { success, message ->
                         if (success){
-                            navController.navigate(ScreenRoutes.LOGIN_HOME_SCREEN.route)
+                            navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route)
                         }
-
                         else
                             snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
                     }

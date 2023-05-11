@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import kotlinx.coroutines.delay
 import nl.dionsegijn.konfetti.compose.KonfettiView
@@ -29,7 +28,8 @@ import java.util.concurrent.TimeUnit
 fun StepCompletionScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
-    message: String
+    message: String,
+    onNavigateBack:()->Unit
 ) {
 
     val animationOver = remember {
@@ -68,7 +68,7 @@ fun StepCompletionScreen(
             ) {
                 LaunchedEffect(key1 = true) {
                     delay(SPLASH_SCREEN_DURATION)
-                    navController.popBackStack(ScreenRoutes.TRANSECT_WALK_SCREEN.route, inclusive = true, saveState = true)
+                    onNavigateBack()
                 }
                 Text(text = "🎉", fontSize = 50.sp)
                 Text(

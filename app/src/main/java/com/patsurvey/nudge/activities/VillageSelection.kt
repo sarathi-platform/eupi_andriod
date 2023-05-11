@@ -27,7 +27,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -38,7 +37,7 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.navgraph.Graph
 
 @Composable
 fun VillageSelectionScreen(
@@ -46,7 +45,6 @@ fun VillageSelectionScreen(
     navController: NavController,
     viewModel: VillageSelectionViewModel
 ) {
-
     val villages by viewModel.villageList.collectAsState()
 
     Column(
@@ -89,7 +87,8 @@ fun VillageSelectionScreen(
                     ) {
                         viewModel.villageSelected.value = it
                         viewModel.updateSelectedVillage()
-                        navController.navigate(ScreenRoutes.HOME_SCREEN.route)
+                        navController.popBackStack()
+                        navController.navigate(Graph.HOME)
                     }
                 }
                 item { Spacer(modifier = Modifier.height(16.dp)) }

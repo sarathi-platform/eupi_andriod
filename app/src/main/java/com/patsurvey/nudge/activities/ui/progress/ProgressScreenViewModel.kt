@@ -8,7 +8,6 @@ import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.model.dataModel.StepsListModal
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
@@ -34,17 +33,11 @@ class ProgressScreenViewModel @Inject constructor(
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
     val stepSelected = mutableStateOf(0)
     val villageSelected = mutableStateOf(-1)
-
+    val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
-
-    init {
-        getVillaeList() {
-            fetchStepsList()
-        }
-    }
 
     private fun getStepsList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -55,7 +48,7 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun fetchStepsList() {
+    fun fetchStepsList() {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -95,7 +88,7 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getVillaeList(success: () -> Unit) {
+    fun getVillaeList(success: () -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -103,7 +96,8 @@ class ProgressScreenViewModel @Inject constructor(
                 withContext(Dispatchers.IO){
                     _villagList.value = villageList
                     withContext(Dispatchers.Main) {
-                        villageSelected.value = villageList.indexOf(prefRepo.getSelectedVillage()) ?: -1
+                        villageSelected.value = villageList.indexOf(prefRepo.getSelectedVillage()) ?: 0
+                        selectedText.value = prefRepo.getSelectedVillage().name
                         showLoader.value = false
                     }
                     success()

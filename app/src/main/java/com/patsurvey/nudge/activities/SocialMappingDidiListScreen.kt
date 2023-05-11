@@ -47,7 +47,8 @@ import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BlueButtonWithIcon
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
@@ -55,18 +56,18 @@ import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier, didiViewModel: AddDidiViewModel) {
+fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier,
+                                didiViewModel: AddDidiViewModel) {
     val didiList = didiViewModel.didiList
-    val filteredDidiList = didiViewModel.filterMapList
     val newFilteredDidiList = didiViewModel.filterDidiList
+    val newFilteredTolaDidiList = didiViewModel.filterTolaMapList
 
     val expandedIds = remember {
         mutableStateListOf<Int>()
     }
-    var filterSelected by  remember {
+    var filterSelected by remember {
         mutableStateOf(false)
     }
-
     Column(
         modifier = modifier
             .fillMaxSize(),
@@ -89,7 +90,9 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                 icon = Icons.Default.Add
             ) {
                 didiViewModel.resetAllFields()
-                navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
+                navController.navigate(Graph.ADD_DIDI){
+                        launchSingleTop = true
+                }
             }
         }
 
@@ -102,7 +105,7 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                     didiViewModel.filterList()
                 }
         }, onSearchValueChange = {
-                didiViewModel.performQuery(it)
+                didiViewModel.performQuery(it,filterSelected)
 
         })
         AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
@@ -141,8 +144,9 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (filterSelected) {
-                itemsIndexed(filteredDidiList.keys.toList()) { index, didiKey ->
-                    ShowDidisFromTola(didiKey, filteredDidiList[didiKey]?: emptyList(), modifier, expandedIds) {expand, didiDetailModel ->
+                itemsIndexed(newFilteredTolaDidiList.keys.toList()) { index, didiKey ->
+                    ShowDidisFromTola(didiKey, newFilteredTolaDidiList[didiKey]?: emptyList(),
+                        modifier, expandedIds) {expand, didiDetailModel ->
                         if (expandedIds.contains(didiDetailModel.id)) {
                             expandedIds.remove(didiDetailModel.id)
                         } else {
@@ -150,7 +154,7 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                         }
                     }
 
-                    if (index < filteredDidiList.keys.size-1)
+                    if (index < newFilteredTolaDidiList.keys.size-1)
                         Divider(
                             color = borderGreyLight,
                             thickness = 1.dp,
@@ -177,6 +181,8 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
 
         }
 
+        AnimatedVisibility(visible = !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) {
+
         DoubleButtonBox(
             modifier = Modifier.shadow(10.dp),
             negativeButtonRequired = false,
@@ -187,7 +193,9 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             negativeButtonOnClick = {
 
             }
-        )
+         )
+        }
+
 
     }
 }
