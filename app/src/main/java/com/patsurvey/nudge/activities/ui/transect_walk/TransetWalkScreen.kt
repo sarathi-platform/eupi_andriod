@@ -96,7 +96,7 @@ fun TransectWalkScreen(
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
             }
-            .padding(top = 24.dp)
+            .padding(top = 14.dp)
         ) {
             Column(
                 modifier = Modifier
@@ -107,40 +107,13 @@ fun TransectWalkScreen(
                     villageName = viewModel.villageEntity.value?.name ?: "",
                     voName = viewModel.villageEntity.value?.name ?: ""
                 )
-
-//                AnimatedVisibility(visible = completeTolaAdditionClicked) {
-//                    Box(modifier = Modifier.fillMaxSize()) {
-//                        Column(
-//                            modifier = Modifier
-//                                .align(Alignment.TopCenter)
-//                                .padding(top = (screenHeight / 4).dp),
-//                            horizontalAlignment = Alignment.CenterHorizontally
-//                        ) {
-//                            Image(
-//                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
-//                                contentDescription = null
-//                            )
-//                            Spacer(modifier = Modifier.height(20.dp))
-//                            Text(
-//                                text = stringResource(
-//                                    R.string.tola_conirmation_text,
-//                                    /*tolaList.filter { it.needsToPost }.size*/tolaList.size
-//                                ),
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .padding(horizontal = 16.dp),
-//                                color = textColorDark,
-//                                style = largeTextStyle,
-//                                textAlign = TextAlign.Center
-//                            )
-//                        }
-//                    }
-//                }
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
                         R.string.tola_conirmation_text,
                         tolaList.filter { it.needsToPost }.size
-                    ) )
+                    ),
+                    Modifier.padding(vertical = (screenHeight/4).dp)
+                )
 
                 LazyColumn(modifier = Modifier.padding(bottom = bottomPadding)) {
 
@@ -289,29 +262,12 @@ fun TransectWalkScreen(
                                                 showAddTolaBox = true
                                         }
                                         //TODO fix empty tola functionality
-                                        /*Spacer(modifier = Modifier.height(10.dp))
-                                        Text(text = "Or", style = smallTextStyle, color = textColorDark)
-                                        Spacer(modifier = Modifier.height(10.dp))
-                                        ButtonPositive(buttonTitle = "No Tola Required", modifier = Modifier.width(width = 160.dp), isArrowRequired = false) {
-                                            viewModel.addEmptyTola()
-                                            if ((context as MainActivity).isOnline.value ?: false) {
-                                                viewModel.addTolasToNetwork()
-                                            }
-                                            viewModel.markTransectWalkComplete(villageId, stepId)
-                                            navController.navigate(
-                                                "step_completion_screen/${
-                                                    context.getString(R.string.transect_walk_completed_message).replace(
-                                                        "{VILLAGE_NAME}",
-                                                        viewModel.villageEntity.value?.name ?: ""
-                                                    )
-                                                }/transect_walk_screen"
-                                            )
-                                        }*/
+                                        /*EnptyTolaButton */
                                     }
                                 }
                             }
                         } else {
-                            itemsIndexed(tolaList) { index, tola ->
+                            itemsIndexed(tolaList.asReversed()) { index, tola ->
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -324,15 +280,17 @@ fun TransectWalkScreen(
                                             tola.longitude
                                         ),
                                         isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
-                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value || !tola.needsToPost),
+                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
                                             viewModel.removeTola(tola.id)
+                                            viewModel.markTransectWalkIncomplete(stepId)
                                             showAddTolaBox = false
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                             showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
                                             else {
                                                 viewModel.updateTola(tola.id, newName, newLocation)
+                                                viewModel.markTransectWalkIncomplete(stepId)
                                                 false
                                             }
                                         }
@@ -345,7 +303,7 @@ fun TransectWalkScreen(
             }
         }
 
-        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
+        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value && tolaList.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

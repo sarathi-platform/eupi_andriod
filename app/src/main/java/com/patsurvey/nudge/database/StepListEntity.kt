@@ -7,6 +7,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.patsurvey.nudge.model.dataModel.StepsListModal
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
+import com.patsurvey.nudge.utils.StepStatus
 
 @Entity(tableName = STEPS_LIST_TABLE)
 data class StepListEntity(
@@ -21,7 +22,7 @@ data class StepListEntity(
     val name: String,
 
     @ColumnInfo(name = "isComplete")
-    var isComplete: Boolean = false,
+    var isComplete: Int = 0,
 
     @ColumnInfo(name = "needToPost")
     var needToPost: Boolean = true
@@ -54,7 +55,7 @@ data class StepListEntity(
         fun convertFromModelToEntity(stepList: List<StepsListModal>): List<StepListEntity> {
             val stepListEntity = mutableListOf<StepListEntity>()
             stepList.forEach {step ->
-                stepListEntity.add(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = false, needToPost = true))
+                stepListEntity.add(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = StepStatus.NOT_STARTED.ordinal, needToPost = true))
             }
             return stepListEntity
         }

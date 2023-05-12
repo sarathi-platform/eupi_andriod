@@ -178,8 +178,8 @@ fun ProgressScreen(
                             ) {
                                 val isStepCompleted =
                                     viewModel.isStepComplete(steps[index].id).observeAsState().value
-                                        ?: false
-                                if (isStepCompleted) {
+                                        ?: 0
+                                if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                     viewModel.updateSelectedStep(steps[index].id)
                                 }
                                 StepsBox(
@@ -188,8 +188,8 @@ fun ProgressScreen(
                                     index = index,
                                     iconId = step.orderNumber,
                                     viewModel = viewModel,
-                                    shouldBeActive = (viewModel.stepSelected.value == index) || isStepCompleted,
-                                    isCompleted = isStepCompleted
+                                    shouldBeActive = (viewModel.stepSelected.value == index) || isStepCompleted == StepStatus.IN_PROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
+                                    isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
                                     val stepId=viewModel.stepList.value[index].id

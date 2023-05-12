@@ -40,10 +40,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-            NetworkBanner(
-                modifier = Modifier,
-                isOnline = isOnline
-            )
 
         VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
         MainTitle(

@@ -48,7 +48,7 @@ class ProgressScreenViewModel @Inject constructor(
             val villageId = prefRepo.getSelectedVillage().id
             val updatedCompletedStepList = mutableListOf<Int>()
             stepList.value.forEach {
-                if (it.isComplete) {
+                if (it.isComplete == StepStatus.COMPLETED.ordinal) {
                     updatedCompletedStepList.add(it.id)
                 }
             }
@@ -85,7 +85,7 @@ class ProgressScreenViewModel @Inject constructor(
                                             id = step.id,
                                             orderNumber = step.orderNumber,
                                             name = step.name,
-                                            isComplete = false,
+                                            isComplete = StepStatus.NOT_STARTED.ordinal,
                                             needToPost = true
                                         )
                                     )
@@ -144,7 +144,7 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    fun isStepComplete(stepId: Int): LiveData<Boolean> {
+    fun isStepComplete(stepId: Int): LiveData<Int> {
         return stepsListDao.isStepCompleteLive(stepId)
     }
 

@@ -73,7 +73,7 @@
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
     <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
-    <string name="tola_conirmation_text">মোট %1$s টোলা \nসফলভাবে যোগ করা হয়েছে</string>
+    <string name="tola_conirmation_text">মোট %1$s নতুন টোলা \nসফলভাবে যোগ করা হয়েছে</string>
     <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
 
@@ -82,7 +82,7 @@
     <string name="complete_social_walk_text">সম্পূর্ণ সামাজিক ম্যাপিংे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
-    <string name="didi_conirmation_text">कुल %1$s दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text">कुल %1$s নতুন दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 

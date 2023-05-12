@@ -66,7 +66,7 @@
 
     <string name="user_id_text">"पहचान: "</string>
     <string name="empty_tola_string">कोई टोल नहीं जोड़ा गया</string>
-    <string name="tola_conirmation_text">कुल %1$s टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">गाँव की सैर पूर्ण करे</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए गाँव की सैर पूरा हो गया है</string>
 
@@ -74,7 +74,7 @@
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूर्ण करे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
-    <string name="didi_conirmation_text">कुल %1$s दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 

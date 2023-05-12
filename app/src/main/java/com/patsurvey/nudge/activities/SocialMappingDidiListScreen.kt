@@ -27,6 +27,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -82,6 +83,10 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -115,7 +120,9 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                     message = stringResource(
                         R.string.didi_conirmation_text,
                         didiList.value.size
-                    ) )
+                    ),
+                    modifier = Modifier.padding(vertical = (screenHeight/4).dp)
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.SpaceAround,
@@ -187,15 +194,15 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                         .fillMaxWidth()
                         .background(color = white)
                         .weight(1f).
-                        padding(bottom = if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) 0.dp else 50.dp),
+                        padding(bottom = if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) bottomPadding else bottomPadding),
                     contentPadding = PaddingValues(vertical = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     if (filterSelected) {
-                        itemsIndexed(newFilteredTolaDidiList.keys.toList()) { index, didiKey ->
+                        itemsIndexed(newFilteredTolaDidiList.keys.toList().reversed()) { index, didiKey ->
                             ShowDidisFromTola(
                                 didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey]?: emptyList(),
+                                didiList = newFilteredTolaDidiList[didiKey]?.reversed() ?: emptyList(),
                                 modifier = modifier,
                                 expandedIds = expandedIds,
                                 onExpendClick = {expand, didiDetailModel ->
@@ -226,7 +233,7 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                         }
                     } else {
 
-                        itemsIndexed(newFilteredDidiList) { index, didi ->
+                        itemsIndexed(newFilteredDidiList.reversed()) { index, didi ->
                             DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {

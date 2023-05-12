@@ -68,7 +68,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun addEmptyTola() {
+    /*fun addEmptyTola() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
             tolaDao.insert(tolaItem)
@@ -80,7 +80,7 @@ class TransectWalkViewModel @Inject constructor(
                 }
             }
         }
-    }
+    }*/
 
     fun addTolasToNetwork() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -172,6 +172,8 @@ class TransectWalkViewModel @Inject constructor(
 //            if (response.status.equals(SUCCESS)) {
 //                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
 //            }
+            if (isTransectWalkComplete.value)
+                isTransectWalkComplete.value = false
             withContext(Dispatchers.Main) {
                 tolaList.set(getIndexOfTola(id), updatedTola)
             }
@@ -254,23 +256,24 @@ class TransectWalkViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsComplete(stepId)
+            stepsListDao.markStepAsComplete(stepId, StepStatus.COMPLETED.ordinal)
         }
     }
 
     fun markTransectWalkIncomplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            stepsListDao.markStepAsComplete(stepId, false)
+            stepsListDao.markStepAsComplete(stepId, StepStatus.IN_PROGRESS.ordinal)
         }
     }
 
     fun isTransectWalkComplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageEntity = villageListDao.getVillage(prefRepo.getSelectedVillage().id)
-            val isComplete =
-                villageEntity.steps_completed?.contains(stepId) ?: stepsListDao.isStepComplete(
-                    stepId
-                )
+//            val villageEntity = villageListDao.getVillage(prefRepo.getSelectedVillage().id)
+            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
+//                villageEntity.steps_completed?.contains(stepId) ?: stepsListDao.isStepComplete(
+//                    stepId
+//                )
+
             withContext(Dispatchers.Main) {
                 isTransectWalkComplete.value = isComplete
             }

@@ -16,11 +16,11 @@ import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 
 @Composable
-fun ModuleAddedSuccessView(completeAdditionClicked:Boolean,message:String){
+fun ModuleAddedSuccessView(completeAdditionClicked:Boolean,message:String, modifier: Modifier = Modifier){
     AnimatedVisibility(visible = completeAdditionClicked) {
         Box(modifier = Modifier.fillMaxSize()) {
             Column(
-                modifier = Modifier.align(Alignment.Center),
+                modifier = Modifier.then(modifier),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(

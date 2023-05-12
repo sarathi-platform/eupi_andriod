@@ -15,6 +15,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DIDI_COUNT
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -124,6 +125,7 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.emit(didiDao.getAllDidisForVillage(villageId))
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
+            stepsListDao.markStepAsComplete(stepId, StepStatus.IN_PROGRESS.ordinal)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -151,6 +153,7 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.emit(didiDao.getAllDidisForVillage(villageId))
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
+            stepsListDao.markStepAsComplete(stepId, StepStatus.IN_PROGRESS.ordinal)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -238,7 +241,7 @@ class AddDidiViewModel @Inject constructor(
                 stepId
             } else
                 stepId
-            stepsListDao.markStepAsComplete(mStepId)
+            stepsListDao.markStepAsComplete(mStepId, StepStatus.COMPLETED.ordinal)
             val existingList = villageListDao.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
             if (!existingList.isNullOrEmpty()) {
@@ -262,7 +265,7 @@ class AddDidiViewModel @Inject constructor(
 
     fun isSocialMappingComplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val isComplete = stepsListDao.isStepComplete(stepId)
+            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isSocialMappingComplete.value = isComplete
             }
