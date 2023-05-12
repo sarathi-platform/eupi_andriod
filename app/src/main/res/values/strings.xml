@@ -87,6 +87,9 @@
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
 
     <string name="empty_didis_string">No Didis Added</string>
+    <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
+    <string name="didi_has_been_successfully_updated">Didi has been successfully updated.</string>
+    <string name="didi_already_exist">Didi already exist.</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

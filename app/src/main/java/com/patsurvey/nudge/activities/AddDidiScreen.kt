@@ -11,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -21,11 +22,15 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -36,7 +41,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     var editDidiId by remember { mutableStateOf(-1) }
     var tolaExpended by remember { mutableStateOf(false) }
     var tolaTextFieldSize by remember { mutableStateOf(Size.Zero) }
-
+    val snackState= rememberSnackBarState()
+    val context = LocalContext.current
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
@@ -157,12 +163,23 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true))
-                    didiViewModel.saveDidiIntoDatabase()
+                if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) {
+                   didiViewModel.saveDidiIntoDatabase(object :LocalDbListener{
+                       override fun onInsertionSuccess() {
+                           onNavigation()
+                           showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added))
+                       }
+                       override fun onInsertionFailed() {
+                           showCustomToast(context,context.getString(R.string.didi_already_exist))
+                       }
+                   })
+                }
                 else{
                     didiViewModel.updateDidiIntoDatabase(editDidiId)
+                    showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
+                    onNavigation()
                 }
-                onNavigation()
+
             }
         }
 
@@ -181,6 +198,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             didiViewModel.selectedCast.value=Pair(editDidiDetails.castId,editDidiDetails.castName)
         }
     }
+    CustomSnackBarShow(state = snackState)
 }
 
 @Preview(showBackground = true)
