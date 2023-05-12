@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.*
 

@@ -40,6 +40,7 @@ import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
 import com.patsurvey.nudge.customviews.CustomProgressBar
+import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.utils.*
 
@@ -107,34 +108,40 @@ fun TransectWalkScreen(
                     voName = viewModel.villageEntity.value?.name ?: ""
                 )
 
-                AnimatedVisibility(visible = completeTolaAdditionClicked) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .padding(top = (screenHeight / 4).dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                text = stringResource(
-                                    R.string.tola_conirmation_text,
-                                    /*tolaList.filter { it.needsToPost }.size*/tolaList.size
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                color = textColorDark,
-                                style = largeTextStyle,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
+//                AnimatedVisibility(visible = completeTolaAdditionClicked) {
+//                    Box(modifier = Modifier.fillMaxSize()) {
+//                        Column(
+//                            modifier = Modifier
+//                                .align(Alignment.TopCenter)
+//                                .padding(top = (screenHeight / 4).dp),
+//                            horizontalAlignment = Alignment.CenterHorizontally
+//                        ) {
+//                            Image(
+//                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
+//                                contentDescription = null
+//                            )
+//                            Spacer(modifier = Modifier.height(20.dp))
+//                            Text(
+//                                text = stringResource(
+//                                    R.string.tola_conirmation_text,
+//                                    /*tolaList.filter { it.needsToPost }.size*/tolaList.size
+//                                ),
+//                                modifier = Modifier
+//                                    .fillMaxWidth()
+//                                    .padding(horizontal = 16.dp),
+//                                color = textColorDark,
+//                                style = largeTextStyle,
+//                                textAlign = TextAlign.Center
+//                            )
+//                        }
+//                    }
+//                }
+                ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
+                    message = stringResource(
+                        R.string.tola_conirmation_text,
+                        tolaList.filter { it.needsToPost }.size
+                    ) )
+
                 LazyColumn(modifier = Modifier.padding(bottom = bottomPadding)) {
 
                     if (viewModel.showLoader.value) {
@@ -317,7 +324,7 @@ fun TransectWalkScreen(
                                             tola.longitude
                                         ),
                                         isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
-                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
+                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value || !tola.needsToPost),
                                         deleteButtonClicked = {
                                             viewModel.removeTola(tola.id)
                                             showAddTolaBox = false
