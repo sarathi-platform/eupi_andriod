@@ -173,27 +173,15 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                            onNavigation()
                            showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added))
                        }
-
                        override fun onInsertionFailed() {
                            showCustomToast(context,context.getString(R.string.didi_already_exist))
                        }
-
                    })
-//                    snackState.addMessage(
-//                        message = context.getString(R.string.didi_has_been_successfully_added),
-//                        isSuccess = true,
-//                        isCustomIcon = false
-//                    )
                 }
                 else{
                     didiViewModel.updateDidiIntoDatabase(editDidiId)
                     showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
                     onNavigation()
-//                    snackState.addMessage(
-//                        message = context.getString(R.string.didi_has_been_successfully_updated),
-//                        isSuccess = false,
-//                        isCustomIcon = false
-//                    )
                 }
 
             }
