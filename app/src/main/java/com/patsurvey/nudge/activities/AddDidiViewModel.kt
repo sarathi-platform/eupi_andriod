@@ -10,6 +10,7 @@ import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -105,31 +106,39 @@ class AddDidiViewModel @Inject constructor(
                 || selectedCast.value.first==-1 || selectedTola.value.first==-1)
     }
 
-    fun saveDidiIntoDatabase() {
+    fun saveDidiIntoDatabase(localDbListener: LocalDbListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val newId = didiDao.getAllDidis().size
-            didiDao.insertDidi(
-                DidiEntity(
-                    newId + 1,
-                    name = didiName.value,
-                    guardianName = dadaName.value,
-                    address = houseNumber.value,
-                    castId = selectedCast.value.first,
-                    castName = selectedCast.value.second,
-                    cohortId = selectedTola.value.first,
-                    cohortName = selectedTola.value.second,
-                    relationship = HUSBAND_STRING,
-                    villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId
+
+            val ifDidiExist=didiDao.getDidiExist(didiName.value,houseNumber.value,dadaName.value,selectedTola.value.first)
+            if(ifDidiExist==0) {
+                val newId = didiDao.getAllDidis().size
+                didiDao.insertDidi(
+                    DidiEntity(
+                        newId + 1,
+                        name = didiName.value,
+                        guardianName = dadaName.value,
+                        address = houseNumber.value,
+                        castId = selectedCast.value.first,
+                        castName = selectedCast.value.second,
+                        cohortId = selectedTola.value.first,
+                        cohortName = selectedTola.value.second,
+                        relationship = HUSBAND_STRING,
+                        villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId
+                    )
                 )
-            )
 
-            _didiList.emit(didiDao.getAllDidisForVillage(villageId))
-            filterDidiList = didiDao.getAllDidisForVillage(villageId)
-            withContext(Dispatchers.Main) {
-                prefRepo.savePref(DIDI_COUNT, didiList.value.size)
+                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                filterDidiList = didiDao.getAllDidisForVillage(villageId)
+                withContext(Dispatchers.Main) {
+                    prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
+                    localDbListener.onInsertionSuccess()
+                }
+            }else{
+                withContext(Dispatchers.Main) {
+                    localDbListener.onInsertionFailed()
+                }
             }
-
         }
     }
 

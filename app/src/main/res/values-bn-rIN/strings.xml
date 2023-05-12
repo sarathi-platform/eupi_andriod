@@ -93,6 +93,9 @@
     </plurals>
     <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
     <string name="update_didi">আপডেট দিদি</string>
+    <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে</string>
+    <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
+    <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
 
 
 </resources>
