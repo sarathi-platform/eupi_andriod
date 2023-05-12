@@ -62,8 +62,10 @@ import kotlinx.coroutines.flow.filter
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier,
-                                didiViewModel: AddDidiViewModel,villageId:Int,stepId:Int) {
+fun SocialMappingDidiListScreen(
+    navController: NavHostController, modifier: Modifier,
+    didiViewModel: AddDidiViewModel, villageId: Int, stepId: Int
+) {
     val didiList = didiViewModel.didiList
     val newFilteredDidiList = didiViewModel.filterDidiList
     val newFilteredTolaDidiList = didiViewModel.filterTolaMapList
@@ -106,7 +108,7 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
             }
-            .padding(top = 24.dp)
+            .padding(top = 14.dp)
         ) {
             Column(
                 modifier = modifier
@@ -114,98 +116,138 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
-                VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
+                VOAndVillageBoxView(
+                    prefRepo = didiViewModel.prefRepo,
+                    modifier = Modifier.fillMaxWidth()
+                )
 
-                ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
+                ModuleAddedSuccessView(
+                    completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
                         R.string.didi_conirmation_text,
                         didiList.value.size
                     ),
-                    modifier = Modifier.padding(vertical = (screenHeight/4).dp)
+                    modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-                ) {
-                    MainTitle(
-                        title = if (!didiViewModel.prefRepo.getFromPage()
-                                .equals(ARG_FROM_HOME, true)
-                        ) stringResource(id = R.string.social_mapping)
-                        else stringResource(id = R.string.didis_item_text),
-                        modifier = Modifier.weight(0.5f)
-                    )
-                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)){
-                        BlueButtonWithIcon(
-                            modifier = Modifier
-                                .weight(0.5f),
-                            buttonText = stringResource(id = R.string.add_didi),
-                            icon = Icons.Default.Add
-                        ) {
-                            didiViewModel.resetAllFields()
-                            navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
-                                launchSingleTop = true
-                            }
-                        }
-                    }
-                }
-
-                SearchWithFilterView(placeholderString =  stringResource(id = R.string.search_didis),
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp),
-                    filterSelected = filterSelected,
-                    onFilterSelected = {
-                        if(didiList.value.isNotEmpty()) {
-                            filterSelected = !it
-                            didiViewModel.filterList()
-                        }
-                    }, onSearchValueChange = {
-                        didiViewModel.performQuery(it,filterSelected)
-
-                    })
-                AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = greenOnline,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("${didiList.value.size}")
-                            }
-                            append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.value.size)}")
-                        },
-                        style = TextStyle(
-                            color = textColorDark,
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        ),
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 16.dp)
-                    )
-                }
-
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = white)
-                        .weight(1f).
-                        padding(bottom = if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) bottomPadding else bottomPadding),
+                        .weight(1f)
+                        .padding(
+                            bottom =
+                            if (!didiViewModel.prefRepo
+                                    .getFromPage()
+                                    .equals(ARG_FROM_HOME, true)
+                            ) {
+                                if (!didiViewModel.isSocialMappingComplete.value)
+                                    bottomPadding
+                                else
+                                    0.dp
+                            } else {
+                                50.dp
+                            }
+                        ),
                     contentPadding = PaddingValues(vertical = 10.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
+                    item {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                        ) {
+                            MainTitle(
+                                title = if (!didiViewModel.prefRepo.getFromPage()
+                                        .equals(ARG_FROM_HOME, true)
+                                ) stringResource(id = R.string.social_mapping)
+                                else stringResource(id = R.string.didis_item_text),
+                                modifier = Modifier.weight(0.5f)
+                            )
+                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
+                                BlueButtonWithIcon(
+                                    modifier = Modifier
+                                        .weight(0.5f),
+                                    buttonText = stringResource(id = R.string.add_didi),
+                                    icon = Icons.Default.Add
+                                ) {
+                                    didiViewModel.resetAllFields()
+                                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                                        launchSingleTop = true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    item {
+                        SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 20.dp,
+                                bottom = 20.dp
+                            ),
+                            filterSelected = filterSelected,
+                            onFilterSelected = {
+                                if (didiList.value.isNotEmpty()) {
+                                    filterSelected = !it
+                                    didiViewModel.filterList()
+                                }
+                            }, onSearchValueChange = {
+                                didiViewModel.performQuery(it, filterSelected)
+
+                            })
+                    }
+
+                    item {
+                        AnimatedVisibility(
+                            visible = !filterSelected,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = greenOnline,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("${didiList.value.size}")
+                                    }
+                                    append(
+                                        " ${
+                                            pluralStringResource(
+                                                id = R.plurals.didis_added,
+                                                didiList.value.size
+                                            )
+                                        }"
+                                    )
+                                },
+                                style = TextStyle(
+                                    color = textColorDark,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                ),
+                                modifier = Modifier
+                                    .align(Alignment.Start)
+                                    .padding(start = 16.dp)
+                            )
+                        }
+                    }
                     if (filterSelected) {
-                        itemsIndexed(newFilteredTolaDidiList.keys.toList().reversed()) { index, didiKey ->
+                        itemsIndexed(
+                            newFilteredTolaDidiList.keys.toList().reversed()
+                        ) { index, didiKey ->
                             ShowDidisFromTola(
                                 didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey]?.reversed() ?: emptyList(),
+                                didiList = newFilteredTolaDidiList[didiKey]?.reversed()
+                                    ?: emptyList(),
                                 modifier = modifier,
                                 expandedIds = expandedIds,
-                                onExpendClick = {expand, didiDetailModel ->
+                                onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {
                                         expandedIds.remove(didiDetailModel.id)
                                     } else {
@@ -213,13 +255,13 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                                     }
                                 },
                                 onNavigate = {
-                                    navController.navigate("add_didi_graph/$it"){
+                                    navController.navigate("add_didi_graph/$it") {
                                         launchSingleTop = true
                                     }
                                 }
                             )
 
-                            if (index < newFilteredTolaDidiList.keys.size-1)
+                            if (index < newFilteredTolaDidiList.keys.size - 1) {
                                 Divider(
                                     color = borderGreyLight,
                                     thickness = 1.dp,
@@ -230,6 +272,7 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                                         bottom = 1.dp
                                     )
                                 )
+                            }
                         }
                     } else {
 
@@ -242,13 +285,14 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
                                         expandedIds.add(didiDetailModel.id)
                                     }
                                 },
-                                onItemClick = { didi->
-                                    val jsonDidi=Gson().toJson(didi)
-                                    navController.navigate("add_didi_graph/$jsonDidi"){
+                                onItemClick = { didi ->
+                                    val jsonDidi = Gson().toJson(didi)
+                                    navController.navigate("add_didi_graph/$jsonDidi") {
                                         launchSingleTop = true
                                     }
 
-                                })
+                                }
+                            )
                         }
                     }
 
@@ -256,14 +300,15 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             }
         }
 
-        if(didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
+        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
                 DoubleButtonBox(
-                    modifier = Modifier.shadow(10.dp)
-                            .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
+                    modifier = Modifier
+                        .shadow(10.dp)
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        }
                         .onGloballyPositioned { coordinates ->
                             bottomPadding = with(localDensity) {
                                 coordinates.size.height.toDp()
@@ -326,7 +371,7 @@ fun ShowDidisFromTola(
     modifier: Modifier,
     expandedIds: List<Int>,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onNavigate:(String)->Unit
+    onNavigate: (String) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -375,8 +420,8 @@ fun ShowDidisFromTola(
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
-                    onItemClick = { didi->
-                        val jsonDidi=Gson().toJson(didi)
+                    onItemClick = { didi ->
+                        val jsonDidi = Gson().toJson(didi)
                         onNavigate(jsonDidi)
                     })
             }
@@ -398,7 +443,10 @@ fun Modifier.circleLayout() =
         //assign the dimension and the center position
         layout(newDiameter, newDiameter) {
             // Where the composable gets placed
-            placeable.placeRelative((newDiameter-currentWidth)/2, (newDiameter-currentHeight)/2)
+            placeable.placeRelative(
+                (newDiameter - currentWidth) / 2,
+                (newDiameter - currentHeight) / 2
+            )
         }
     }
 
@@ -554,20 +602,30 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 @Composable
-fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiEntity)-> Unit,onItemClick:(DidiEntity)-> Unit) {
+fun DidiItemCard(
+    didi: DidiEntity,
+    expanded: Boolean,
+    modifier: Modifier,
+    onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onItemClick: (DidiEntity) -> Unit
+) {
 
     val transition = updateTransition(expanded, label = "transition")
 
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "animate color") {
-        if (it) { greenOnline} else {textColorDark}
+        if (it) {
+            greenOnline
+        } else {
+            textColorDark
+        }
     }
 
     val animateInt by transition.animateInt({
         tween(durationMillis = 10)
     }, label = "animate float") {
-        if(it) 1 else 0
+        if (it) 1 else 0
     }
 
     val arrowRotationDegree by transition.animateFloat({
@@ -585,55 +643,59 @@ fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpe
                 onItemClick(didi)
             }
     ) {
-    BoxWithConstraints {
-        val constraintSet = decoupledConstraints()
-        ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
-            CircularDidiImage(
-                modifier = Modifier.layoutId("didiImage")
-            )
-            Text(
-                text = didi.name,
-                style = TextStyle(
-                    color = animateColor,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
-                modifier = Modifier.layoutId("didiName")
-            )
+        BoxWithConstraints {
+            val constraintSet = decoupledConstraints()
+            ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                CircularDidiImage(
+                    modifier = Modifier.layoutId("didiImage")
+                )
+                Text(
+                    text = didi.name,
+                    style = TextStyle(
+                        color = animateColor,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    modifier = Modifier.layoutId("didiName")
+                )
 
-            Image(
-                painter = painterResource(id = R.drawable.home_icn),
-                contentDescription = "home image",
-                modifier = Modifier
-                    .width(18.dp)
-                    .height(14.dp)
-                    .layoutId("homeImage"),
-                colorFilter = ColorFilter.tint(textColorBlueLight)
-            )
+                Image(
+                    painter = painterResource(id = R.drawable.home_icn),
+                    contentDescription = "home image",
+                    modifier = Modifier
+                        .width(18.dp)
+                        .height(14.dp)
+                        .layoutId("homeImage"),
+                    colorFilter = ColorFilter.tint(textColorBlueLight)
+                )
 
-            Text(
-                text = didi.cohortName,
-                style = TextStyle(
-                    color = textColorBlueLight,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
-                textAlign = TextAlign.Start,
-                modifier = Modifier.layoutId("village")
-            )
+                Text(
+                    text = didi.cohortName,
+                    style = TextStyle(
+                        color = textColorBlueLight,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.layoutId("village")
+                )
 
-            CardArrow(
-                modifier = Modifier.layoutId("expendArrowImage"),
-                degrees = arrowRotationDegree,
-                iconColor = animateColor,
-                onClick = {onExpendClick(expanded, didi)}
-            )
+                CardArrow(
+                    modifier = Modifier.layoutId("expendArrowImage"),
+                    degrees = arrowRotationDegree,
+                    iconColor = animateColor,
+                    onClick = { onExpendClick(expanded, didi) }
+                )
 
-            DidiDetailExpendableContent(modifier = Modifier.layoutId("didiDetailLayout"), didi, animateInt == 1)
+                DidiDetailExpendableContent(
+                    modifier = Modifier.layoutId("didiDetailLayout"),
+                    didi,
+                    animateInt == 1
+                )
+            }
         }
-    }
     }
 }
 
@@ -742,10 +804,12 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
             )
-            
-            Spacer(modifier = Modifier
-                .layoutId("bottomPadding")
-                .height(30.dp))
+
+            Spacer(
+                modifier = Modifier
+                    .layoutId("bottomPadding")
+                    .height(30.dp)
+            )
         }
     }
 }
@@ -778,12 +842,13 @@ fun TolaWithImage(toal: String, modifier: Modifier) {
 
 @Composable
 fun CircularDidiImage(modifier: Modifier) {
-    Box(modifier = modifier
-        .then(modifier)
-        .clip(CircleShape)
-        .width(44.dp)
-        .height(44.dp)
-        .background(color = yellowBg),
+    Box(
+        modifier = modifier
+            .then(modifier)
+            .clip(CircleShape)
+            .width(44.dp)
+            .height(44.dp)
+            .background(color = yellowBg),
     ) {
         Image(
             painter = painterResource(id = R.drawable.didi_icon),
@@ -799,5 +864,11 @@ fun CircularDidiImage(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SocialMappingDidiListPreview() {
-    SocialMappingDidiListScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel(),-1,-1)
+    SocialMappingDidiListScreen(
+        navController = rememberNavController(),
+        modifier = Modifier,
+        didiViewModel = viewModel(),
+        -1,
+        -1
+    )
 }
