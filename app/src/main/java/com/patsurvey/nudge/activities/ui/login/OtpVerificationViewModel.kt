@@ -51,7 +51,7 @@ class OtpVerificationViewModel @Inject constructor(
                         onOtpResponse(false, response.message)
                     }
                 } else {
-                    onError("Error : ${response.message}")
+                    onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
                     withContext(Dispatchers.Main) {
                         showLoader.value = false
                         onOtpResponse(false, response.message)
@@ -76,7 +76,7 @@ class OtpVerificationViewModel @Inject constructor(
                         onResendOtpResponse(false, response.message)
                     }
                 } else {
-                    onError("Error : ${response.message}")
+                    onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
                     withContext(Dispatchers.Main) {
                         showLoader.value = false
                         onResendOtpResponse(false, response.message)

@@ -135,16 +135,21 @@ class TransectWalkViewModel @Inject constructor(
 
     fun removeTola(tolaId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val jsonTola = JsonArray()
-            jsonTola.add(DeleteTolaRequest(tolaId).toJson())
-            val response = apiInterface.deleteCohort(jsonTola)
-            if (response.status.equals(SUCCESS)) {
-                tolaDao.removeTola(tolaId)
-            } else {
-                tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
-            }
-            withContext(Dispatchers.Main) {
-                tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
+            try {
+//                val jsonTola = JsonArray()
+//                jsonTola.add(DeleteTolaRequest(tolaId).toJson())
+//                val response = apiInterface.deleteCohort(jsonTola)
+//                if (response.status.equals(SUCCESS)) {
+//                    tolaDao.removeTola(tolaId)
+//                } else {
+                    tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
+                    tolaDao.setNeedToPost(listOf(tolaId), true)
+//                }
+                withContext(Dispatchers.Main) {
+                    tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
+                }
+            } catch (ex: Exception) {
+                onError("TransectWalkViewModel", "${ex.message}: \n${ex.stackTraceToString()}")
             }
         }
     }
@@ -161,12 +166,12 @@ class TransectWalkViewModel @Inject constructor(
                 needsToPost = true
             )
             tolaDao.insert(updatedTola)
-            val jsonTola = JsonArray()
-            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
-            val response = apiInterface.editCohort(jsonTola)
-            if (response.status.equals(SUCCESS)) {
-                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
-            }
+//            val jsonTola = JsonArray()
+//            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
+//            val response = apiInterface.editCohort(jsonTola)
+//            if (response.status.equals(SUCCESS)) {
+//                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
+//            }
             withContext(Dispatchers.Main) {
                 tolaList.set(getIndexOfTola(id), updatedTola)
             }
@@ -214,45 +219,62 @@ class TransectWalkViewModel @Inject constructor(
                     tolaItemList.forEach {
                         tolaList.add(it)
                     }
+                    prefRepo.savePref(TOLA_COUNT, tolaList.size)
                     showLoader.value = false
                 }
             } catch (ex: Exception) {
-                onError("Exception: ${ex.localizedMessage}")
-
+                onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
                 showLoader.value = false
 
             }
         }
     }
 
-fun setVillage(villageId: Int) {
-    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-        val village = villageListDao.getVillage(villageId)
-        withContext(Dispatchers.Main) {
-            villageEntity.value = village
+    fun setVillage(villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val village = villageListDao.getVillage(villageId)
+            withContext(Dispatchers.Main) {
+                villageEntity.value = village
+            }
         }
     }
-}
 
-private fun getIndexOfTola(id: Int): Int {
-    return tolaList.map { it.id }.indexOf(id)
-}
-
-fun markTransectWalkComplete(villageId: Int, stepId: Int) {
-    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-        villageListDao.updateLastCompleteStep(villageId, listOf(stepId))
-        stepsListDao.markStepAsComplete(stepId)
+    private fun getIndexOfTola(id: Int): Int {
+        return tolaList.map { it.id }.indexOf(id)
     }
-}
 
-fun isTransectWalkComplete(stepId: Int) {
-    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-        val isComplete = stepsListDao.isStepComplete(stepId)
-        withContext(Dispatchers.Main) {
-            isTransectWalkComplete.value = isComplete
+    fun markTransectWalkComplete(villageId: Int, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val updatedCompletedStepsList = mutableListOf<Int>()
+            if (!existingList.isNullOrEmpty()) {
+                existingList.forEach {
+                    updatedCompletedStepsList.add(it)
+                }
+            }
+            updatedCompletedStepsList.add(stepId)
+            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
+            stepsListDao.markStepAsComplete(stepId)
         }
-
     }
-}
+
+    fun markTransectWalkIncomplete(stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            stepsListDao.markStepAsComplete(stepId, false)
+        }
+    }
+
+    fun isTransectWalkComplete(stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val villageEntity = villageListDao.getVillage(prefRepo.getSelectedVillage().id)
+            val isComplete =
+                villageEntity.steps_completed?.contains(stepId) ?: stepsListDao.isStepComplete(
+                    stepId
+                )
+            withContext(Dispatchers.Main) {
+                isTransectWalkComplete.value = isComplete
+            }
+        }
+    }
 
 }

@@ -70,12 +70,12 @@ class VillageSelectionViewModel @Inject constructor(
                             showLoader.value = false
                         }
                     } else {
-                        onError("Error : ${response.message}")
+                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
                         showLoader.value = false
                     }
                 }
             } catch (ex: Exception) {
-                onError("Exception : ${ex.localizedMessage}")
+                onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
             }
         }

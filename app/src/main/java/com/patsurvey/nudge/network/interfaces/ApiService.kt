@@ -42,7 +42,7 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun editCohort(@Body updatedCohort: JsonArray): ApiResponseModel<String?>
 
-    @POST("/write-api/cohort/deletet")
+    @POST("/write-api/cohort/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<String?>
 

@@ -235,7 +235,15 @@ class AddDidiViewModel @Inject constructor(
             } else
                 stepId
             stepsListDao.markStepAsComplete(mStepId)
-            villageListDao.updateLastCompleteStep(villageId, listOf(mStepId))
+            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val updatedCompletedStepsList = mutableListOf<Int>()
+            if (!existingList.isNullOrEmpty()) {
+                existingList.forEach {
+                    updatedCompletedStepsList.add(it)
+                }
+            }
+            updatedCompletedStepsList.add(stepId)
+            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
         }
     }
 

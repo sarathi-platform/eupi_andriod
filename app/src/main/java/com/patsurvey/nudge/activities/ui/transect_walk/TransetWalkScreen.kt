@@ -17,8 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -37,6 +39,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
+import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
@@ -55,12 +58,18 @@ fun TransectWalkScreen(
         viewModel.isTransectWalkComplete(stepId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
-    val tolaList = viewModel.tolaList
+    val tolaList = viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }
     val tolaToBeEdited: Tola by remember { mutableStateOf(Tola()) }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
 
     val context = LocalContext.current
     val localDensity = LocalDensity.current
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+
+    val focusManager = LocalFocusManager.current
+
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -102,7 +111,9 @@ fun TransectWalkScreen(
                 AnimatedVisibility(visible = completeTolaAdditionClicked) {
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier
+                                .align(Alignment.TopCenter)
+                                .padding(top = (screenHeight / 4).dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Image(
@@ -113,7 +124,7 @@ fun TransectWalkScreen(
                             Text(
                                 text = stringResource(
                                     R.string.tola_conirmation_text,
-                                    tolaList.filter { it.needsToPost }.size
+                                    /*tolaList.filter { it.needsToPost }.size*/tolaList.size
                                 ),
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -125,122 +136,55 @@ fun TransectWalkScreen(
                         }
                     }
                 }
+                LazyColumn(modifier = Modifier.padding(bottom = bottomPadding)) {
 
-                if (viewModel.showLoader.value) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(top = 30.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = blueDark,
-                            modifier = Modifier
-                                .size(28.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        if (tolaList.isNotEmpty() || showAddTolaBox) {
-                            Text(
-                                text = stringResource(id = R.string.transect_wale_title),
-                                style = largeTextStyle,
-                                color = blueDark,
-                                modifier = Modifier.weight(1f),
-                                maxLines = 2,
-                                overflow = TextOverflow.Ellipsis,
-                            )
-                        }
-                        if (tolaList.isNotEmpty()) {
-                            Spacer(modifier = Modifier.padding(14.dp))
-                            if (!tolaList.contains(TolaEntity.createEmptyTolaForVillageId(villageId))) {
-                                ButtonOutline(
-                                    modifier = Modifier.weight(0.9f),
-                                ) {
-                                    if (!showAddTolaBox)
-                                        showAddTolaBox = true
-                                }
-                            }
-                        }
-                    }
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(top = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalAlignment = Alignment.Start
-                    ) {
-
-                        if (tolaList.isNotEmpty()) {
-                            Text(
-                                text = buildAnnotatedString {
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            fontFamily = NotoSans
-                                        )
-                                    ) {
-                                        append("Showing")
-                                    }
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontFamily = NotoSans
-                                        )
-                                    ) {
-                                        append(" ${tolaList.size}")
-                                    }
-                                    withStyle(
-                                        style = SpanStyle(
-                                            color = textColorDark,
-                                            fontSize = 16.sp,
-                                            fontWeight = FontWeight.Normal,
-                                            fontFamily = NotoSans
-                                        )
-                                    ) {
-                                        append(" added Tolas")
-                                    }
-                                }
-                            )
-                        }
-
-                        AnimatedVisibility(visible = showAddTolaBox) {
-                            AddTolaBox(
-                                tolaName = tolaToBeEdited.name,
-                                isLocationAvailable = (tolaToBeEdited.location.lat != null && tolaToBeEdited.location.long != null),
-                                onSaveClicked = { name, location ->
-                                    viewModel.addTola(Tola(name, location ?: LocationCoordinates()))
-                                    showAddTolaBox = false
-                                },
-                                onCancelClicked = {
-                                    showAddTolaBox = false
-                                }
-                            )
-                        }
-
-                        if (tolaList.isEmpty() && !showAddTolaBox) {
-                            Box(modifier = Modifier.fillMaxSize()) {
-                                Column(
-                                    modifier = Modifier.align(Alignment.Center),
-                                    horizontalAlignment = Alignment.CenterHorizontally
-                                ) {
+                    if (viewModel.showLoader.value) {
+                        item { CustomProgressBar(modifier = Modifier) }
+                    } else {
+                        item {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                if (tolaList.isNotEmpty() || showAddTolaBox) {
                                     Text(
                                         text = stringResource(id = R.string.transect_wale_title),
                                         style = largeTextStyle,
                                         color = blueDark,
-                                        modifier = Modifier,
+                                        modifier = Modifier.weight(1f),
                                         maxLines = 2,
                                         overflow = TextOverflow.Ellipsis,
                                     )
+                                }
+                                if (tolaList.isNotEmpty()) {
+                                    Spacer(modifier = Modifier.padding(14.dp))
+                                    if (!tolaList.contains(
+                                            TolaEntity.createEmptyTolaForVillageId(
+                                                villageId
+                                            )
+                                        )
+                                    ) {
+                                        ButtonOutline(
+                                            modifier = Modifier.weight(0.9f),
+                                        ) {
+                                            if (!showAddTolaBox)
+                                                showAddTolaBox = true
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(top = 16.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp),
+                                horizontalAlignment = Alignment.Start
+                            ) {
+
+                                if (tolaList.isNotEmpty()) {
                                     Text(
                                         text = buildAnnotatedString {
                                             withStyle(
@@ -251,76 +195,142 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append(stringResource(R.string.empty_tola_string))
+                                                append("Showing")
                                             }
-                                        },
-                                        modifier = Modifier.padding(top = 32.dp)
-                                    )
-                                    BlueButtonWithIcon(
-                                        buttonText = stringResource(id = R.string.add_tola),
-                                        icon = Icons.Default.Add,
-                                        modifier = Modifier.padding(top = 16.dp)
-                                    ) {
-                                        if (!showAddTolaBox)
-                                            showAddTolaBox = true
-                                    }
-                                    //TODO fix empty tola functionality
-                                    /*Spacer(modifier = Modifier.height(10.dp))
-                                    Text(text = "Or", style = smallTextStyle, color = textColorDark)
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                    ButtonPositive(buttonTitle = "No Tola Required", modifier = Modifier.width(width = 160.dp), isArrowRequired = false) {
-                                        viewModel.addEmptyTola()
-                                        if ((context as MainActivity).isOnline.value ?: false) {
-                                            viewModel.addTolasToNetwork()
-                                        }
-                                        viewModel.markTransectWalkComplete(villageId, stepId)
-                                        navController.navigate(
-                                            "step_completion_screen/${
-                                                context.getString(R.string.transect_walk_completed_message).replace(
-                                                    "{VILLAGE_NAME}",
-                                                    viewModel.villageEntity.value?.name ?: ""
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = textColorDark,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.SemiBold,
+                                                    fontFamily = NotoSans
                                                 )
-                                            }/transect_walk_screen"
+                                            ) {
+                                                append(" ${tolaList.size}")
+                                            }
+                                            withStyle(
+                                                style = SpanStyle(
+                                                    color = textColorDark,
+                                                    fontSize = 16.sp,
+                                                    fontWeight = FontWeight.Normal,
+                                                    fontFamily = NotoSans
+                                                )
+                                            ) {
+                                                append(" added Tolas")
+                                            }
+                                        }
+                                    )
+                                }
+
+                                AnimatedVisibility(visible = showAddTolaBox) {
+                                    AddTolaBox(
+                                        tolaName = tolaToBeEdited.name,
+                                        isLocationAvailable = (tolaToBeEdited.location.lat != null && tolaToBeEdited.location.long != null),
+                                        onSaveClicked = { name, location ->
+                                            viewModel.addTola(
+                                                Tola(
+                                                    name,
+                                                    location ?: LocationCoordinates()
+                                                )
+                                            )
+                                            viewModel.markTransectWalkIncomplete(stepId)
+                                            showAddTolaBox = false
+                                            focusManager.clearFocus()
+                                        },
+                                        onCancelClicked = {
+                                            showAddTolaBox = false
+                                        }
+                                    )
+                                }
+                            }
+                        }
+
+                        if (tolaList.isEmpty() && !showAddTolaBox) {
+                            item {
+                                Box(modifier = Modifier.fillMaxSize()) {
+                                    Column(
+                                        modifier = Modifier.align(Alignment.Center),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.transect_wale_title),
+                                            style = largeTextStyle,
+                                            color = blueDark,
+                                            modifier = Modifier,
+                                            maxLines = 2,
+                                            overflow = TextOverflow.Ellipsis,
                                         )
-                                    }*/
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    )
+                                                ) {
+                                                    append(stringResource(R.string.empty_tola_string))
+                                                }
+                                            },
+                                            modifier = Modifier.padding(top = 32.dp)
+                                        )
+                                        BlueButtonWithIcon(
+                                            buttonText = stringResource(id = R.string.add_tola),
+                                            icon = Icons.Default.Add,
+                                            modifier = Modifier.padding(top = 16.dp)
+                                        ) {
+                                            if (!showAddTolaBox)
+                                                showAddTolaBox = true
+                                        }
+                                        //TODO fix empty tola functionality
+                                        /*Spacer(modifier = Modifier.height(10.dp))
+                                        Text(text = "Or", style = smallTextStyle, color = textColorDark)
+                                        Spacer(modifier = Modifier.height(10.dp))
+                                        ButtonPositive(buttonTitle = "No Tola Required", modifier = Modifier.width(width = 160.dp), isArrowRequired = false) {
+                                            viewModel.addEmptyTola()
+                                            if ((context as MainActivity).isOnline.value ?: false) {
+                                                viewModel.addTolasToNetwork()
+                                            }
+                                            viewModel.markTransectWalkComplete(villageId, stepId)
+                                            navController.navigate(
+                                                "step_completion_screen/${
+                                                    context.getString(R.string.transect_walk_completed_message).replace(
+                                                        "{VILLAGE_NAME}",
+                                                        viewModel.villageEntity.value?.name ?: ""
+                                                    )
+                                                }/transect_walk_screen"
+                                            )
+                                        }*/
+                                    }
                                 }
                             }
                         } else {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(bottom = bottomPadding),
-                            ) {
-                                itemsIndexed(tolaList) { index, tola ->
-                                    Box(modifier = Modifier.padding(vertical = 10.dp)) {
-
-                                        TolaBox(
-                                            tolaName = tola.name,
-                                            tolaLocation = LocationCoordinates(
-                                                tola.latitude,
-                                                tola.longitude
-                                            ),
-                                            isLocationAvailable = (tola.latitude != null && tola.longitude != null),
-                                            isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
-                                            deleteButtonClicked = {
-                                                viewModel.removeTola(tola.id)
-                                                showAddTolaBox = false
-                                            },
-                                            saveButtonClicked = { newName, newLocation ->
-                                                showAddTolaBox =
-                                                    if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude))
-                                                        false
-                                                    else {
-                                                        viewModel.updateTola(
-                                                            tola.id,
-                                                            newName,
-                                                            newLocation
-                                                        )
-                                                        false
-                                                    }
+                            itemsIndexed(tolaList) { index, tola ->
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = 10.dp)
+                                ) {
+                                    TolaBox(
+                                        tolaName = tola.name,
+                                        tolaLocation = LocationCoordinates(
+                                            tola.latitude,
+                                            tola.longitude
+                                        ),
+                                        isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
+                                        isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
+                                        deleteButtonClicked = {
+                                            viewModel.removeTola(tola.id)
+                                            showAddTolaBox = false
+                                        },
+                                        saveButtonClicked = { newName, newLocation ->
+                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
+                                            else {
+                                                viewModel.updateTola(tola.id, newName, newLocation)
+                                                false
                                             }
-                                        )
-                                    }
+                                        }
+                                    )
                                 }
                             }
                         }

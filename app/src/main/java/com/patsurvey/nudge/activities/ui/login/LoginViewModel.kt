@@ -40,7 +40,7 @@ class LoginViewModel @Inject constructor(
                     }
                 }
                 else {
-                    onError("Error : ${response.message}")
+                    onError(tag = "LoginViewModel", "Error : ${response.message}")
                     withContext(Dispatchers.Main) {
                         showLoader.value = false
                         onLoginResponse(false, response.message)
