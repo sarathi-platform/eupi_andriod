@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -51,6 +52,9 @@ fun ProgressScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
+
+    val mainActivity = LocalContext.current as? MainActivity
+    mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
 
     viewModel.getVillaeList() {
         viewModel.fetchStepsList()
