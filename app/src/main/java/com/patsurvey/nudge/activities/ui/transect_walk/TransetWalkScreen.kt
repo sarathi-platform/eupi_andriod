@@ -41,7 +41,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
 
 @Composable

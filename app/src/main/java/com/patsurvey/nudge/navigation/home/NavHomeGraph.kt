@@ -33,7 +33,7 @@ fun NavHomeGraph(navController: NavHostController) {
             ){ villageId,stepId,index->
                 when(index){
                     0->navController.navigate("details_graph/$villageId/$stepId/$index")
-                    1->navController.navigate(Graph.SOCIAL_MAPPING)
+                    1->navController.navigate("social_mapping_graph/$villageId/$stepId")
                 }
             }
         }
@@ -43,8 +43,10 @@ fun NavHomeGraph(navController: NavHostController) {
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
-                didiViewModel = hiltViewModel()){
-                navController.navigate(Graph.ADD_DIDI)
+                didiViewModel = hiltViewModel(),-1,-1){
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                    launchSingleTop = true
+                }
             }
         }
         detailsNavGraph(navController = navController)
@@ -141,15 +143,44 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
 fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.SOCIAL_MAPPING,
-        startDestination = SocialMappingScreen.SM_DIDI_SCREEN.route
+        startDestination = SocialMappingScreen.SM_DIDI_SCREEN.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
     ) {
-        composable(route = SocialMappingScreen.SM_DIDI_SCREEN.route){
+        composable(route = SocialMappingScreen.SM_DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })){
             DidiScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
-                didiViewModel = hiltViewModel()){
-                navController.navigate(Graph.ADD_DIDI)
+                didiViewModel = hiltViewModel(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1){
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                    launchSingleTop = true
+                }
+            }
+        }
+
+        composable(
+            route = SocialMappingScreen.SM_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
+                navController.navigate(Graph.HOME){
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
+                        inclusive = true
+                    }
+                }
             }
         }
     }
@@ -157,5 +188,6 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
 
 
 sealed class SocialMappingScreen(val route: String) {
-    object SM_DIDI_SCREEN : DetailsScreen(route = "sm_didi_screen")
+    object SM_DIDI_SCREEN : SocialMappingScreen(route = "sm_didi_screen")
+    object SM_STEP_COMPLETION_SCREEN: SocialMappingScreen(route ="sm_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }

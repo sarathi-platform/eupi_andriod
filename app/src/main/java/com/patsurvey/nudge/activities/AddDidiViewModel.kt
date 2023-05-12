@@ -1,15 +1,20 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import android.text.TextUtils
 import androidx.compose.runtime.*
+import com.google.gson.JsonArray
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.model.request.AddDidiRequest
+import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DIDI_COUNT
+import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -26,7 +31,8 @@ class AddDidiViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
     val stepsListDao: StepsListDao,
-    val villageListDao: VillageListDao
+    val villageListDao: VillageListDao,
+    val apiService: ApiService
 ) : BaseViewModel() {
     val houseNumber = mutableStateOf(BLANK_STRING)
     val didiName = mutableStateOf(BLANK_STRING)
@@ -78,6 +84,7 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
+
         selectedTola.value= prefRepo.getLastSelectedTola() as Pair<Int, String>
         villageId = prefRepo.getSelectedVillage().id
     }
@@ -119,9 +126,7 @@ class AddDidiViewModel @Inject constructor(
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
-                if (isSocialMappingComplete.value) {
                     isSocialMappingComplete.value = false
-                }
             }
 
         }
@@ -148,9 +153,8 @@ class AddDidiViewModel @Inject constructor(
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
-                if (isSocialMappingComplete.value) {
                     isSocialMappingComplete.value = false
-                }
+
             }
 
         }
@@ -264,6 +268,59 @@ class AddDidiViewModel @Inject constructor(
             }
 
         }
+    }
+
+
+    fun addDidisToNetwork() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val jsonDidi = JsonArray()
+            val filteredDidiList = didiList.value.filter { it.needsToPost }
+            if (filteredDidiList.isNotEmpty()) {
+                for (didi in filteredDidiList) {
+                    jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
+                }
+                val response = apiService.addDidis(jsonDidi)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        response.data.forEach { it2 ->
+                            didiList.value.forEach { didi->
+                                if (TextUtils.equals(it2.name, didi.name)) {
+                                    didi.id = it2.id
+                                }
+                            }
+
+                        }
+                        updateTolaListWithIds(didiList)
+                        didiDao.setNeedToPost(
+                            didiList.value.filter { it.needsToPost }.map { it.id },
+                            false
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>) {
+        didiDao.deleteDidiTable()
+        val didis = mutableListOf<DidiEntity>()
+        newDidiList.value.forEach {
+            didis.add(
+                DidiEntity(
+                    id = it.id,
+                    name = it.name,
+                    address = it.address,
+                    guardianName = it.guardianName,
+                relationship = it.relationship,
+                castId = it.castId,
+                castName = it.castName,
+                cohortId = it.cohortId,
+                cohortName = it.cohortName,
+                villageId=villageId,
+                needsToPost = true)
+            )
+        }
+        didiDao.insertAll(didis)
     }
 
 }

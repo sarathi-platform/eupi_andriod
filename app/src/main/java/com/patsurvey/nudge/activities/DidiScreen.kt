@@ -34,6 +34,8 @@ fun DidiScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
     didiViewModel: AddDidiViewModel,
+    villageId:Int,
+    stepId:Int,
     onNavigateToAddDidi:()-> Unit
 ) {
     
@@ -95,7 +97,9 @@ fun DidiScreen(
             SocialMappingDidiListScreen(
                 navController,
                 modifier = modifier,
-                didiViewModel = didiViewModel
+                didiViewModel = didiViewModel,
+                villageId=villageId,
+                stepId=stepId
             )
         }
     }

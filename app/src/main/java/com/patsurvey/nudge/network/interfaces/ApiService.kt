@@ -50,4 +50,8 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<GetCohortResponseModel>>
 
+    @POST("/write-api/beneficiary/add")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun addDidis(@Body didiList: JsonArray): ApiResponseModel<List<DidiApiResponse>>
+
 }
