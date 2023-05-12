@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.authNavGraph
 import com.patsurvey.nudge.navigation.home.HomeNavScreen
+import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS
 import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_STEP_INDEX
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
@@ -30,5 +31,6 @@ object Graph {
     const val AUTHENTICATION = "auth_graph"
     const val HOME = "home_graph"
     const val DETAILS = "details_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_STEP_INDEX}"
-    const val ADD_DIDI = "add_didi_graph"
+    const val ADD_DIDI = "add_didi_graph/{$ARG_DIDI_DETAILS}"
+    const val SOCIAL_MAPPING = "social_mapping_graph"
 }

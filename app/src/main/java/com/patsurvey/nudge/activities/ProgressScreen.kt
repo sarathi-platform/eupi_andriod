@@ -9,18 +9,14 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,7 +30,6 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -57,12 +52,9 @@ fun ProgressScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
-    LaunchedEffect(key1 = Unit){
-       viewModel.getVillaeList() {
-           viewModel.fetchStepsList()
-        }
+    viewModel.getVillaeList() {
+        viewModel.fetchStepsList()
     }
-
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -195,16 +187,15 @@ fun ProgressScreen(
                                     isCompleted = isStepCompleted
                                 ) { index ->
                                     viewModel.stepSelected.value = index
+                                    val stepId=viewModel.stepList.value[index].id
+                                    val villageId=villages[viewModel.villageSelected.value].id
+                                    viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
                                     when (index) {
                                         0 -> {
-                                            viewModel.stepList.value[index].id
-                                            viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
-                                            onNavigateToTransWalk(villages[viewModel.villageSelected.value].id,steps[index].id,index)
-//                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
+                                            onNavigateToTransWalk(villageId,stepId,index)
                                         }
                                         1 -> {
-                                            viewModel.stepList.value[index].id
-                                            stepsNavHostController.navigate(route = "didi_screen")
+                                            onNavigateToTransWalk(villageId,stepId,index)
                                         }
                                         2 -> {}
                                         3 -> {}

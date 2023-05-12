@@ -29,7 +29,7 @@ class ProgressScreenViewModel @Inject constructor(
     val stepList: StateFlow<List<StepListEntity>> get() = _stepsList
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
     val stepSelected = mutableStateOf(0)
-    val villageSelected = mutableStateOf(-1)
+    val villageSelected = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -126,8 +126,11 @@ class ProgressScreenViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     _villagList.value = villageList
                     withContext(Dispatchers.Main) {
-                        villageSelected.value =
-                            villageList.indexOf(prefRepo.getSelectedVillage()) ?: 0
+                        villageList.mapIndexed { index, villageEntity ->
+                            if(prefRepo.getSelectedVillage().id==villageEntity.id){
+                                villageSelected.value=index
+                            }
+                        }
                         selectedText.value = prefRepo.getSelectedVillage().name
                         showLoader.value = false
                     }

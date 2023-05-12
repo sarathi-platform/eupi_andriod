@@ -54,10 +54,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getSelectedVillage(): VillageEntity {
-        val villageDetails=prefs.getString(PREF_KEY_SELECTED_VILLAGE, BLANK_STRING)
-        return if(villageDetails.isNullOrEmpty()){
-            VillageEntity(-1, name = BLANK_STRING, emptyList())
-        }else Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, BLANK_STRING), VillageEntity::class.java)
+        return Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, "{}"), VillageEntity::class.java)
     }
 
 

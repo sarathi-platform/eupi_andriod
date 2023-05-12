@@ -125,8 +125,35 @@ class AddDidiViewModel @Inject constructor(
             }
 
         }
+    }
 
+    fun updateDidiIntoDatabase(didiId:Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateDidi(
+                DidiEntity(
+                    didiId,
+                    name = didiName.value,
+                    guardianName = dadaName.value,
+                    address = houseNumber.value,
+                    castId = selectedCast.value.first,
+                    castName = selectedCast.value.second,
+                    cohortId = selectedTola.value.first,
+                    cohortName = selectedTola.value.second,
+                    relationship = BLANK_STRING,
+                    villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId
+                )
+            )
 
+            _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+            filterDidiList = didiDao.getAllDidisForVillage(villageId)
+            withContext(Dispatchers.Main) {
+                prefRepo.savePref(DIDI_COUNT, didiList.value.size)
+                if (isSocialMappingComplete.value) {
+                    isSocialMappingComplete.value = false
+                }
+            }
+
+        }
     }
 
     fun checkAndUpdateTolaList() {
@@ -155,6 +182,7 @@ class AddDidiViewModel @Inject constructor(
         }
         tolaMapList = map
         filterTolaMapList=map
+
     }
 
    @SuppressLint("SuspiciousIndentation")

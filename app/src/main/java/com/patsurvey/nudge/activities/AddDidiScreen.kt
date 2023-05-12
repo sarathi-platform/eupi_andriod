@@ -17,31 +17,35 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
-                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel,navigateFrom:String,onNavigation:()->Unit) {
+                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel,didiDetails:String,onNavigation:()->Unit) {
     var casteExpanded by remember { mutableStateOf(false) }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
-
-
+    var editDidiId by remember { mutableStateOf(-1) }
     var tolaExpended by remember { mutableStateOf(false) }
     var tolaTextFieldSize by remember { mutableStateOf(Size.Zero) }
+
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
-        AnimatedVisibility(visible = !navigateFrom.equals(ARG_FROM_HOME,true)) {
             NetworkBanner(
                 modifier = Modifier,
                 isOnline = isOnline
             )
-        }
+
         VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
         MainTitle(
             title = stringResource(id = R.string.add_didi),
@@ -151,13 +155,18 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 .padding(bottom = dimensionResource(id = R.dimen.dp_20))
         ) {
             ButtonPositive(
-                buttonTitle = stringResource(id = R.string.add_didi),
+                buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
+                else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
-                isActive = didiViewModel.isDidiValid.value,
+                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel.isDidiValid.value else true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                didiViewModel.saveDidiIntoDatabase()
+                if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true))
+                    didiViewModel.saveDidiIntoDatabase()
+                else{
+                    didiViewModel.updateDidiIntoDatabase(editDidiId)
+                }
                 onNavigation()
             }
         }
@@ -165,12 +174,24 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 
     }
 
+    LaunchedEffect(key1 = Unit){
+        if(!didiDetails.equals(ADD_DIDI_BLANK_STRING,true)){
+            // TODO: Need to improve after using Parcable or Serializable
+            val editDidiDetails=Gson().fromJson(didiDetails,DidiEntity::class.java)
+            editDidiId=editDidiDetails.id
+            didiViewModel.didiName.value=editDidiDetails.name
+            didiViewModel.dadaName.value=editDidiDetails.guardianName
+            didiViewModel.houseNumber.value=editDidiDetails.address
+            didiViewModel.selectedTola.value=Pair(editDidiDetails.cohortId,editDidiDetails.cohortName)
+            didiViewModel.selectedCast.value=Pair(editDidiDetails.castId,editDidiDetails.castName)
+        }
+    }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun AddDidiPreview() {
-    /*AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel(),
-        navigateFrom = ARG_FROM_HOME
-    )*/
+    AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel(),
+        isOnline = true, didiDetails = BLANK_STRING){
+    }
 }

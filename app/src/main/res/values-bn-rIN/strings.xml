@@ -92,6 +92,7 @@
         <item quantity="other">দিদি যোগ করেছে</item>
     </plurals>
     <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
+    <string name="update_didi">আপডেট দিদি</string>
 
 
 </resources>
