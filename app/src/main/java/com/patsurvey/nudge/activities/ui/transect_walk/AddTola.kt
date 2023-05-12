@@ -140,11 +140,8 @@ fun AddTolaBox(
                         )
 
                     ) {
-                        location = LocationUtil
-                            .getLocation(activity)
-                            ?.also {
-                                locationAdded = true
-                            } ?: LocationCoordinates()
+                        location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                        if (location!!.lat != null && location!!.long != null) locationAdded = true
                         focusManager.clearFocus()
                     }
             ) {
@@ -165,7 +162,7 @@ fun AddTolaBox(
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (locationAdded) "Location Added" else stringResource(R.string.get_location_text),
+                        text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
                         style = buttonTextStyle,
                         color = if (locationAdded) greenOnline else blueDark
@@ -273,7 +270,7 @@ fun TolaBox(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (isLocationAvailable) "Location Added" else "Not Added",
+                            text = if (isLocationAvailable) stringResource(id = R.string.location_added_text) else stringResource(id = R.string.not_added),
                             style = smallTextStyleNormalWeight,
                             color = textColorDark
                         )
@@ -311,7 +308,7 @@ fun TolaBox(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append("Tola Name")
+                                    append(stringResource(id = R.string.tola_name_text))
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -368,11 +365,9 @@ fun TolaBox(
                                     )
 
                                 ) {
-                                    location = LocationUtil
-                                        .getLocation(activity)
-                                        ?.also {
-                                            locationAdded = true
-                                        } ?: LocationCoordinates()
+                                    location =
+                                        LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                                    if (location!!.lat != null && location!!.long != null) locationAdded = true
                                     focusManager.clearFocus()
                                 }
                         ) {
@@ -393,7 +388,7 @@ fun TolaBox(
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if (locationAdded) "Location Added" else "Get Location",
+                                    text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
                                     style = mediumTextStyle,
                                     color = if (locationAdded) greenOnline else blueDark

@@ -147,6 +147,8 @@ class TransectWalkViewModel @Inject constructor(
 //                }
                 withContext(Dispatchers.Main) {
                     tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
+                    if (isTransectWalkComplete.value)
+                        isTransectWalkComplete.value = false
                 }
             } catch (ex: Exception) {
                 onError("TransectWalkViewModel", "${ex.message}: \n${ex.stackTraceToString()}")

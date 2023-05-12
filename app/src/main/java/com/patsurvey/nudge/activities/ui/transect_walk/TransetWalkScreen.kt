@@ -110,7 +110,7 @@ fun TransectWalkScreen(
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
                         R.string.tola_conirmation_text,
-                        tolaList.filter { it.needsToPost }.size
+                        tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
@@ -228,7 +228,7 @@ fun TransectWalkScreen(
                             item {
                                 Box(modifier = Modifier.fillMaxSize()) {
                                     Column(
-                                        modifier = Modifier.align(Alignment.Center),
+                                        modifier = Modifier.align(Alignment.Center).padding(vertical = (screenHeight/4).dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
@@ -268,7 +268,8 @@ fun TransectWalkScreen(
                                 }
                             }
                         } else {
-                            itemsIndexed(tolaList.asReversed()) { index, tola ->
+                            val reverseTolaList = tolaList.asReversed()
+                            itemsIndexed(reverseTolaList) { index, tola ->
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -306,7 +307,7 @@ fun TransectWalkScreen(
             }
         }
 
-        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value && tolaList.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
+        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value && viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

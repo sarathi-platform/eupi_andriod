@@ -48,12 +48,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
-        MainTitle(
-            title = stringResource(id = R.string.add_didi),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp)
-        )
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -62,6 +57,13 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 .padding(bottom = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
+            MainTitle(
+                title = stringResource(id = R.string.add_didi),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp)
+            )
+
             EditTextWithTitle(
                 stringResource(id = R.string.house_number),
                 modifier = Modifier

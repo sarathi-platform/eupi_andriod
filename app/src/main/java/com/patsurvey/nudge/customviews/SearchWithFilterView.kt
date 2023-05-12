@@ -12,6 +12,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -33,6 +34,9 @@ fun SearchWithFilterView(
     var searchString by remember {
         mutableStateOf(BLANK_STRING)
     }
+
+    val focusManager = LocalFocusManager.current
+
     Column {
         Surface(
             modifier = Modifier
@@ -83,6 +87,7 @@ fun SearchWithFilterView(
                         color = (if(!filterSelected) Color.LightGray else blueDark),
                         shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
                     ).clickable {
+                        focusManager.clearFocus()
                         onFilterSelected(filterSelected)
                     }){
                     AppImageView(resource = if(!filterSelected)R.drawable.ic_search_filter_unselected

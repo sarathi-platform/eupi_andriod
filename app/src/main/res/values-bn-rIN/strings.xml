@@ -62,6 +62,10 @@
     <string name="tola_name_text">টোলা</string>
     <string name="cancel_tola_text">বাতিল করুন</string>
     <string name="get_location_text">Get Location</string>
+    <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
+    <string name="location_added_text">स्थान जोड़ा गया</string>
+
+
     <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
     <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>

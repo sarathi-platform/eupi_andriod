@@ -62,6 +62,10 @@
     <string name="tola_name_text">टोला</string>
     <string name="cancel_tola_text">रद्द करना</string>
     <string name="get_location_text">स्थान प्राप्त करें</string>
+    <string name="location_added_text">स्थान जोड़ा गया</string>
+
+    <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
+
     <string name="seletc_village_screen_text">VO चुनें</string>
 
     <string name="user_id_text">"पहचान: "</string>

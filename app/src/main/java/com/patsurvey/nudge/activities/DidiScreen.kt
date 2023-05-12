@@ -11,6 +11,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -38,6 +39,9 @@ fun DidiScreen(
     stepId:Int,
     onNavigateToAddDidi:()-> Unit
 ) {
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
     
     if(didiViewModel.showLoader.value){
         CustomProgressBar(modifier = Modifier)
@@ -59,7 +63,8 @@ fun DidiScreen(
                     )
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.padding(vertical = (screenHeight/4).dp).align(
+                                Alignment.TopCenter),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
