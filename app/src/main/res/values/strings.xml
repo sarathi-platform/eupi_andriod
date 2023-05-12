@@ -88,6 +88,9 @@
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
+    <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
+    <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
+    <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
     <string name="didi_has_been_successfully_updated">Didi has been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
 

@@ -82,6 +82,10 @@
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूरा करे के बा</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} खातिर सामाजिक मानचित्रण पूरा हो गइल बा</string>
     <string name="didi_conirmation_text">कुल %1$s गो नया टोला दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
+    <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
+    <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
+
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 

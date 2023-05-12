@@ -214,6 +214,7 @@ fun TransectWalkScreen(
                                             viewModel.markTransectWalkIncomplete(stepId)
                                             showAddTolaBox = false
                                             focusManager.clearFocus()
+                                            showCustomToast(context,context.getString(R.string.tola_successfully_added).replace("{TOLA_NAME}", name))
                                         },
                                         onCancelClicked = {
                                             showAddTolaBox = false
@@ -282,6 +283,7 @@ fun TransectWalkScreen(
                                         isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
                                         isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
+                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                             viewModel.removeTola(tola.id)
                                             viewModel.markTransectWalkIncomplete(stepId)
                                             showAddTolaBox = false
@@ -291,6 +293,7 @@ fun TransectWalkScreen(
                                             else {
                                                 viewModel.updateTola(tola.id, newName, newLocation)
                                                 viewModel.markTransectWalkIncomplete(stepId)
+                                                showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
                                                 false
                                             }
                                         }
