@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -24,7 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -34,11 +32,8 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
+import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
 
 @Composable
@@ -99,32 +94,11 @@ fun TransectWalkScreen(
                     voName = viewModel.villageEntity.value?.name ?: ""
                 )
 
-                AnimatedVisibility(visible = completeTolaAdditionClicked) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                text = stringResource(
-                                    R.string.tola_conirmation_text,
-                                    tolaList.filter { it.needsToPost }.size
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                color = textColorDark,
-                                style = largeTextStyle,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
-                }
+                ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
+                    message = stringResource(
+                    R.string.tola_conirmation_text,
+                    tolaList.filter { it.needsToPost }.size
+                ) )
 
                 if (viewModel.showLoader.value) {
                     Box(
