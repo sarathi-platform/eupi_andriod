@@ -62,3 +62,4 @@ const val ARG_COMPLETION_MESSAGE = "completion_message"
 const val ARG_FROM_SCREEN = "fromScreen"
 
 const val PREF_PROGRAM_NAME = "programName"
+const val HUSBAND_STRING = "Husband"

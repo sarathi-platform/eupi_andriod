@@ -14,6 +14,7 @@ import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DIDI_COUNT
+import com.patsurvey.nudge.utils.HUSBAND_STRING
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -117,7 +118,7 @@ class AddDidiViewModel @Inject constructor(
                     castName = selectedCast.value.second,
                     cohortId = selectedTola.value.first,
                     cohortName = selectedTola.value.second,
-                    relationship = BLANK_STRING,
+                    relationship = HUSBAND_STRING,
                     villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId
                 )
             )
@@ -144,7 +145,7 @@ class AddDidiViewModel @Inject constructor(
                     castName = selectedCast.value.second,
                     cohortId = selectedTola.value.first,
                     cohortName = selectedTola.value.second,
-                    relationship = BLANK_STRING,
+                    relationship = HUSBAND_STRING,
                     villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId
                 )
             )
