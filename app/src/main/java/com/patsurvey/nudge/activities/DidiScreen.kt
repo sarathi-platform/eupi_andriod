@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -26,6 +25,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -75,14 +75,16 @@ fun DidiScreen(
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
-                            BlueButtonWithDrawableIcon(
-                                buttonText = stringResource(id = R.string.add_didi),
-                                icon = Icons.Default.Add,
-                                imageIcon = R.drawable.didi_icon,
-                                modifier = Modifier.padding(top = 16.dp)
-                            ) {
-                                didiViewModel.resetAllFields()
-                                onNavigateToAddDidi()
+                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)){
+                                BlueButtonWithDrawableIcon(
+                                    buttonText = stringResource(id = R.string.add_didi),
+                                    icon = Icons.Default.Add,
+                                    imageIcon = R.drawable.didi_icon,
+                                    modifier = Modifier.padding(top = 16.dp)
+                                ) {
+                                    didiViewModel.resetAllFields()
+                                    onNavigateToAddDidi()
+                                }
                             }
                         }
                     }

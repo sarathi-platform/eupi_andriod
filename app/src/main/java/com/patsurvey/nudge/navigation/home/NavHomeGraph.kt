@@ -31,7 +31,10 @@ fun NavHomeGraph(navController: NavHostController) {
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth()
             ){ villageId,stepId,index->
-                navController.navigate("details_graph/$villageId/$stepId/$index")
+                when(index){
+                    0->navController.navigate("details_graph/$villageId/$stepId/$index")
+                    1->navController.navigate(Graph.SOCIAL_MAPPING)
+                }
             }
         }
 
@@ -46,7 +49,7 @@ fun NavHomeGraph(navController: NavHostController) {
         }
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
-
+        socialMappingNavGraph(navController=navController)
     }
 }
 sealed class HomeScreens(val route: String) {
@@ -110,19 +113,49 @@ sealed class DetailsScreen(val route: String) {
 fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.ADD_DIDI,
-        startDestination = DetailsScreen.ADD_DIDI_SCREEN.route
+        startDestination = DetailsScreen.ADD_DIDI_SCREEN.route,
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+            type = NavType.StringType
+            nullable=true
+        })
     ) {
-        composable(route = DetailsScreen.ADD_DIDI_SCREEN.route){
+        composable(route = DetailsScreen.ADD_DIDI_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.StringType
+                nullable=true
+                defaultValue = null
+            })){
             AddDidiScreen(
                 navController=navController,
                 modifier = Modifier
                     .fillMaxSize(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
                 didiViewModel = hiltViewModel(),
-                navigateFrom = ARG_FROM_HOME
             ){
                 navController.popBackStack()
             }
         }
-
     }
+}
+
+fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.SOCIAL_MAPPING,
+        startDestination = SocialMappingScreen.SM_DIDI_SCREEN.route
+    ) {
+        composable(route = SocialMappingScreen.SM_DIDI_SCREEN.route){
+            DidiScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiViewModel = hiltViewModel()){
+                navController.navigate(Graph.ADD_DIDI)
+            }
+        }
+    }
+}
+
+
+sealed class SocialMappingScreen(val route: String) {
+    object SM_DIDI_SCREEN : DetailsScreen(route = "sm_didi_screen")
 }

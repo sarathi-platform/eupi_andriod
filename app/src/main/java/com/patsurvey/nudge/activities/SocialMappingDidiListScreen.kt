@@ -6,6 +6,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -41,17 +42,14 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
-import com.patsurvey.nudge.utils.BlueButtonWithIcon
-import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.*
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -80,20 +78,25 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
         ) {
             MainTitle(
-                title = stringResource(id = R.string.social_mapping),
+                title = if (!didiViewModel.prefRepo.getFromPage()
+                        .equals(ARG_FROM_HOME, true)
+                ) stringResource(id = R.string.social_mapping)
+                else stringResource(id = R.string.didis_item_text),
                 modifier = Modifier.weight(0.5f)
             )
-            BlueButtonWithIcon(
-                modifier = Modifier
-                    .weight(0.5f),
-                buttonText = stringResource(id = R.string.add_didi),
-                icon = Icons.Default.Add
-            ) {
-                didiViewModel.resetAllFields()
-                navController.navigate(Graph.ADD_DIDI){
+            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)){
+                BlueButtonWithIcon(
+                    modifier = Modifier
+                        .weight(0.5f),
+                    buttonText = stringResource(id = R.string.add_didi),
+                    icon = Icons.Default.Add
+                ) {
+                    didiViewModel.resetAllFields()
+                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
                         launchSingleTop = true
+                    }
                 }
-            }
+           }
         }
 
         SearchWithFilterView(placeholderString =  stringResource(id = R.string.search_didis),
@@ -139,20 +142,31 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = white)
-                .weight(1f),
+                .weight(1f).
+            padding(bottom = if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) 0.dp else 50.dp),
             contentPadding = PaddingValues(vertical = 10.dp),
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
             if (filterSelected) {
                 itemsIndexed(newFilteredTolaDidiList.keys.toList()) { index, didiKey ->
-                    ShowDidisFromTola(didiKey, newFilteredTolaDidiList[didiKey]?: emptyList(),
-                        modifier, expandedIds) {expand, didiDetailModel ->
-                        if (expandedIds.contains(didiDetailModel.id)) {
-                            expandedIds.remove(didiDetailModel.id)
-                        } else {
-                            expandedIds.add(didiDetailModel.id)
+                    ShowDidisFromTola(
+                        didiTola = didiKey,
+                        didiList = newFilteredTolaDidiList[didiKey]?: emptyList(),
+                        modifier = modifier,
+                        expandedIds = expandedIds,
+                        onExpendClick = {expand, didiDetailModel ->
+                            if (expandedIds.contains(didiDetailModel.id)) {
+                                expandedIds.remove(didiDetailModel.id)
+                            } else {
+                                expandedIds.add(didiDetailModel.id)
+                            }
+                        },
+                        onNavigate = {
+                            navController.navigate("add_didi_graph/$it"){
+                                launchSingleTop = true
+                            }
                         }
-                    }
+                    )
 
                     if (index < newFilteredTolaDidiList.keys.size-1)
                         Divider(
@@ -169,13 +183,21 @@ fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modi
             } else {
 
                 itemsIndexed(newFilteredDidiList) { index, didi ->
-                    DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
+                    DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                    onExpendClick = { expand, didiDetailModel ->
                         if (expandedIds.contains(didiDetailModel.id)) {
                             expandedIds.remove(didiDetailModel.id)
                         } else {
                             expandedIds.add(didiDetailModel.id)
                         }
-                    }
+                    },
+                    onItemClick = { didi->
+                        val jsonDidi=Gson().toJson(didi)
+                         navController.navigate("add_didi_graph/$jsonDidi"){
+                             launchSingleTop = true
+                         }
+
+                    })
                 }
             }
 
@@ -210,7 +232,7 @@ fun ShowFilteredList(
     Log.i("ShowFilteredList", "show tolaa :")
     filteredDidiList.entries.forEach {
         Log.i("ShowFilteredList", "show tola : ${it.key}")
-        ShowDidisFromTola(it.key, it.value, modifier, expandedIds, onExpendClick)
+//        ShowDidisFromTola(it.key, it.value, modifier, expandedIds, onExpendClick)
     }
 }
 
@@ -220,7 +242,8 @@ fun ShowDidisFromTola(
     didiList: List<DidiEntity>,
     modifier: Modifier,
     expandedIds: List<Int>,
-    onExpendClick: (Boolean, DidiEntity) -> Unit
+    onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onNavigate:(String)->Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -265,9 +288,14 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiEntity ->
-                    onExpendClick(expand, didiEntity)
-                }
+                DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                    onExpendClick = { expand, didiDetailModel ->
+                        onExpendClick(expand, didiDetailModel)
+                    },
+                    onItemClick = { didi->
+                        val jsonDidi=Gson().toJson(didi)
+                        onNavigate(jsonDidi)
+                    })
             }
 
         }
@@ -443,7 +471,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 @Composable
-fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiEntity)-> Unit) {
+fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiEntity)-> Unit,onItemClick:(DidiEntity)-> Unit) {
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -470,6 +498,9 @@ fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpe
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
+            .clickable {
+                onItemClick(didi)
+            }
     ) {
     BoxWithConstraints {
         val constraintSet = decoupledConstraints()
