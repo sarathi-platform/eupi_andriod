@@ -50,4 +50,9 @@ interface PrefRepo {
    fun getAppLanguageId():Int?
    fun saveAppLanguageId(languageId: Int?)
 
+   fun getFromPage():String
+   fun saveFromPage(pageFrom:String)
+
+   fun saveLastSelectedTola(tola: Pair<Int,String>)
+   fun getLastSelectedTola():Pair<Int, String?>
 }

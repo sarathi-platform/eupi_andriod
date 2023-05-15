@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -21,13 +20,9 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -52,7 +47,8 @@ import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BlueButtonWithIcon
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
@@ -60,14 +56,11 @@ import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun SocialMappingDidiListScreen(
-    navController: NavHostController,
-    modifier: Modifier,
-    didiViewModel: AddDidiViewModel
-) {
+fun SocialMappingDidiListScreen(navController: NavHostController, modifier: Modifier,
+                                didiViewModel: AddDidiViewModel) {
     val didiList = didiViewModel.didiList
-    val filteredDidiList = didiViewModel.filterMapList
     val newFilteredDidiList = didiViewModel.filterDidiList
+    val newFilteredTolaDidiList = didiViewModel.filterTolaMapList
 
     val expandedIds = remember {
         mutableStateListOf<Int>()
@@ -75,240 +68,135 @@ fun SocialMappingDidiListScreen(
     var filterSelected by remember {
         mutableStateOf(false)
     }
-
-    val context = LocalContext.current
-    val localDensity = LocalDensity.current
-    var bottomPadding by remember {
-        mutableStateOf(0.dp)
-    }
-
-    var completeDidAdditionClicked by remember { mutableStateOf(false) }
-
-    BackHandler() {
-        if (completeDidAdditionClicked)
-            completeDidAdditionClicked = false
-        else {
-            navController.popBackStack()
-        }
-    }
-
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)
-        .then(modifier)) {
-        val (bottomActionBox, mainBox) = createRefs()
-        Box(modifier = Modifier
-            .constrainAs(mainBox) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-            }
-            .padding(0.dp)) {
-            Column(
-                modifier = modifier
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally
+    Column(
+        modifier = modifier
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceAround,
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+        ) {
+            MainTitle(
+                title = stringResource(id = R.string.social_mapping),
+                modifier = Modifier.weight(0.5f)
+            )
+            BlueButtonWithIcon(
+                modifier = Modifier
+                    .weight(0.5f),
+                buttonText = stringResource(id = R.string.add_didi),
+                icon = Icons.Default.Add
             ) {
-                VOAndVillageBoxView(
-                    prefRepo = didiViewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                AnimatedVisibility(visible = completeDidAdditionClicked) {
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        Column(
-                            modifier = Modifier.align(Alignment.Center),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                contentDescription = null
-                            )
-                            Spacer(modifier = Modifier.height(20.dp))
-                            Text(
-                                text = stringResource(
-                                    R.string.didi_conirmation_text,
-                                    didiList.value.filter { it.needsToPost }.size
-                                ),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 16.dp),
-                                color = textColorDark,
-                                style = largeTextStyle,
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                    }
+                didiViewModel.resetAllFields()
+                navController.navigate(Graph.ADD_DIDI){
+                        launchSingleTop = true
                 }
+            }
+        }
 
-                Row(
-                    verticalAlignment = CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-                ) {
-                    MainTitle(
-                        title = stringResource(id = R.string.social_mapping),
-                        modifier = Modifier.weight(0.5f)
-                    )
-                    BlueButtonWithIcon(
-                        modifier = Modifier
-                            .weight(0.5f),
-                        buttonText = stringResource(id = R.string.add_didi),
-                        icon = Icons.Default.Add
-                    ) {
-                        didiViewModel.resetAllFields()
-                        navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
-                    }
+        SearchWithFilterView(placeholderString =  stringResource(id = R.string.search_didis),
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 20.dp),
+            filterSelected = filterSelected,
+            onFilterSelected = {
+                if(didiList.value.isNotEmpty()) {
+                    filterSelected = !it
+                    didiViewModel.filterList()
                 }
+        }, onSearchValueChange = {
+                didiViewModel.performQuery(it,filterSelected)
 
-                SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                    modifier = Modifier.padding(
-                        start = 16.dp,
-                        end = 16.dp,
-                        top = 20.dp,
-                        bottom = 20.dp
-                    ),
-                    filterSelected = filterSelected,
-                    onFilterSelected = {
-                        if (didiList.value.isNotEmpty()) {
-                            filterSelected = !it
-                            didiViewModel.filterList()
-                        }
-                    }, onSearchValueChange = {
-                        didiViewModel.performQuery(it)
-
-                    })
-                AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = greenOnline,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("${didiList.value.size}")
-                            }
-                            append(
-                                " ${
-                                    pluralStringResource(
-                                        id = R.plurals.didis_added,
-                                        didiList.value.size
-                                    )
-                                }"
-                            )
-                        },
-                        style = TextStyle(
-                            color = textColorDark,
+        })
+        AnimatedVisibility(visible = !filterSelected, modifier = Modifier.fillMaxWidth()) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = greenOnline,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
-                        ),
-                        modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = 16.dp)
-                    )
-                }
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = white)
-                        .weight(1f),
-                    contentPadding = PaddingValues(vertical = 10.dp),
-                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    if (filterSelected) {
-                        itemsIndexed(filteredDidiList.keys.toList()) { index, didiKey ->
-                            ShowDidisFromTola(
-                                didiKey,
-                                filteredDidiList[didiKey] ?: emptyList(),
-                                modifier,
-                                expandedIds
-                            ) { expand, didiDetailModel ->
-                                if (expandedIds.contains(didiDetailModel.id)) {
-                                    expandedIds.remove(didiDetailModel.id)
-                                } else {
-                                    expandedIds.add(didiDetailModel.id)
-                                }
-                            }
-
-                            if (index < filteredDidiList.keys.size - 1)
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        top = 22.dp,
-                                        bottom = 1.dp
-                                    )
-                                )
-                        }
-                    } else {
-
-                        itemsIndexed(newFilteredDidiList) { index, didi ->
-                            DidiItemCard(
-                                didi,
-                                expandedIds.contains(didi.id),
-                                modifier
-                            ) { expand, didiDetailModel ->
-                                if (expandedIds.contains(didiDetailModel.id)) {
-                                    expandedIds.remove(didiDetailModel.id)
-                                } else {
-                                    expandedIds.add(didiDetailModel.id)
-                                }
-                            }
-                        }
-                    }
-
-                }
-            }
-        }
-        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
-            DoubleButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
-                        }
-                    }.shadow(10.dp),
-                negativeButtonRequired = false,
-                positiveButtonText = if (completeDidAdditionClicked) stringResource(id = R.string.complete_social_walk_text) else stringResource(
-                    id = R.string.complete_didi_addition
-                ),
-                positiveButtonOnClick = {
-                    if (completeDidAdditionClicked) {
-                        if ((context as MainActivity).isOnline.value ?: false) {
-                            //TODO add api to save data online
-                        }
-                        didiViewModel.markSocialMappingComplete(
-                            villageId = didiViewModel.villageId,
-                            stepId = didiViewModel.stepId
                         )
-                        navController.navigate(
-                            "step_completion_screen/${
-                                context.getString(R.string.social_mapping_completed_message).replace(
-                                    "{VILLAGE_NAME}",
-                                    didiViewModel.prefRepo.getSelectedVillage().name
-                                )
-                            }/didi_screen"
-                        )
-                    } else {
-                        completeDidAdditionClicked = true
+                    ) {
+                        append("${didiList.value.size}")
                     }
+                    append(" ${pluralStringResource(id = R.plurals.didis_added, didiList.value.size)}")
                 },
-                negativeButtonOnClick = {
-
-                }
+                style = TextStyle(
+                    color = textColorDark,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp)
             )
         }
-        
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = white)
+                .weight(1f),
+            contentPadding = PaddingValues(vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+            if (filterSelected) {
+                itemsIndexed(newFilteredTolaDidiList.keys.toList()) { index, didiKey ->
+                    ShowDidisFromTola(didiKey, newFilteredTolaDidiList[didiKey]?: emptyList(),
+                        modifier, expandedIds) {expand, didiDetailModel ->
+                        if (expandedIds.contains(didiDetailModel.id)) {
+                            expandedIds.remove(didiDetailModel.id)
+                        } else {
+                            expandedIds.add(didiDetailModel.id)
+                        }
+                    }
+
+                    if (index < newFilteredTolaDidiList.keys.size-1)
+                        Divider(
+                            color = borderGreyLight,
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = 22.dp,
+                                bottom = 1.dp
+                            )
+                        )
+                }
+            } else {
+
+                itemsIndexed(newFilteredDidiList) { index, didi ->
+                    DidiItemCard(didi, expandedIds.contains(didi.id), modifier) { expand, didiDetailModel ->
+                        if (expandedIds.contains(didiDetailModel.id)) {
+                            expandedIds.remove(didiDetailModel.id)
+                        } else {
+                            expandedIds.add(didiDetailModel.id)
+                        }
+                    }
+                }
+            }
+
+        }
+
+        AnimatedVisibility(visible = !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME,true)) {
+
+        DoubleButtonBox(
+            modifier = Modifier.shadow(10.dp),
+            negativeButtonRequired = false,
+            positiveButtonText = stringResource(id = R.string.complete_didi_addition),
+            positiveButtonOnClick = {
+
+            },
+            negativeButtonOnClick = {
+
+            }
+         )
+        }
+
+
     }
 }
 
@@ -399,10 +287,7 @@ fun Modifier.circleLayout() =
         //assign the dimension and the center position
         layout(newDiameter, newDiameter) {
             // Where the composable gets placed
-            placeable.placeRelative(
-                (newDiameter - currentWidth) / 2,
-                (newDiameter - currentHeight) / 2
-            )
+            placeable.placeRelative((newDiameter-currentWidth)/2, (newDiameter-currentHeight)/2)
         }
     }
 
@@ -558,29 +443,20 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 @Composable
-fun DidiItemCard(
-    didi: DidiEntity,
-    expanded: Boolean,
-    modifier: Modifier,
-    onExpendClick: (Boolean, DidiEntity) -> Unit
-) {
+fun DidiItemCard(didi: DidiEntity, expanded: Boolean, modifier: Modifier, onExpendClick: (Boolean, DidiEntity)-> Unit) {
 
     val transition = updateTransition(expanded, label = "transition")
 
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "animate color") {
-        if (it) {
-            greenOnline
-        } else {
-            textColorDark
-        }
+        if (it) { greenOnline} else {textColorDark}
     }
 
     val animateInt by transition.animateInt({
         tween(durationMillis = 10)
     }, label = "animate float") {
-        if (it) 1 else 0
+        if(it) 1 else 0
     }
 
     val arrowRotationDegree by transition.animateFloat({
@@ -595,59 +471,55 @@ fun DidiItemCard(
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)
     ) {
-        BoxWithConstraints {
-            val constraintSet = decoupledConstraints()
-            ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
-                CircularDidiImage(
-                    modifier = Modifier.layoutId("didiImage")
-                )
-                Text(
-                    text = didi.name,
-                    style = TextStyle(
-                        color = animateColor,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    modifier = Modifier.layoutId("didiName")
-                )
+    BoxWithConstraints {
+        val constraintSet = decoupledConstraints()
+        ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+            CircularDidiImage(
+                modifier = Modifier.layoutId("didiImage")
+            )
+            Text(
+                text = didi.name,
+                style = TextStyle(
+                    color = animateColor,
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier.layoutId("didiName")
+            )
 
-                Image(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    modifier = Modifier
-                        .width(18.dp)
-                        .height(14.dp)
-                        .layoutId("homeImage"),
-                    colorFilter = ColorFilter.tint(textColorBlueLight)
-                )
+            Image(
+                painter = painterResource(id = R.drawable.home_icn),
+                contentDescription = "home image",
+                modifier = Modifier
+                    .width(18.dp)
+                    .height(14.dp)
+                    .layoutId("homeImage"),
+                colorFilter = ColorFilter.tint(textColorBlueLight)
+            )
 
-                Text(
-                    text = didi.cohortName,
-                    style = TextStyle(
-                        color = textColorBlueLight,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.layoutId("village")
-                )
+            Text(
+                text = didi.cohortName,
+                style = TextStyle(
+                    color = textColorBlueLight,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.layoutId("village")
+            )
 
-                CardArrow(
-                    modifier = Modifier.layoutId("expendArrowImage"),
-                    degrees = arrowRotationDegree,
-                    iconColor = animateColor,
-                    onClick = { onExpendClick(expanded, didi) }
-                )
+            CardArrow(
+                modifier = Modifier.layoutId("expendArrowImage"),
+                degrees = arrowRotationDegree,
+                iconColor = animateColor,
+                onClick = {onExpendClick(expanded, didi)}
+            )
 
-                DidiDetailExpendableContent(
-                    modifier = Modifier.layoutId("didiDetailLayout"),
-                    didi,
-                    animateInt == 1
-                )
-            }
+            DidiDetailExpendableContent(modifier = Modifier.layoutId("didiDetailLayout"), didi, animateInt == 1)
         }
+    }
     }
 }
 
@@ -756,12 +628,10 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
             )
-
-            Spacer(
-                modifier = Modifier
-                    .layoutId("bottomPadding")
-                    .height(30.dp)
-            )
+            
+            Spacer(modifier = Modifier
+                .layoutId("bottomPadding")
+                .height(30.dp))
         }
     }
 }
@@ -794,13 +664,12 @@ fun TolaWithImage(toal: String, modifier: Modifier) {
 
 @Composable
 fun CircularDidiImage(modifier: Modifier) {
-    Box(
-        modifier = modifier
-            .then(modifier)
-            .clip(CircleShape)
-            .width(44.dp)
-            .height(44.dp)
-            .background(color = yellowBg),
+    Box(modifier = modifier
+        .then(modifier)
+        .clip(CircleShape)
+        .width(44.dp)
+        .height(44.dp)
+        .background(color = yellowBg),
     ) {
         Image(
             painter = painterResource(id = R.drawable.didi_icon),
@@ -816,9 +685,5 @@ fun CircularDidiImage(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SocialMappingDidiListPreview() {
-    SocialMappingDidiListScreen(
-        navController = rememberNavController(),
-        modifier = Modifier,
-        didiViewModel = viewModel()
-    )
+    SocialMappingDidiListScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel())
 }

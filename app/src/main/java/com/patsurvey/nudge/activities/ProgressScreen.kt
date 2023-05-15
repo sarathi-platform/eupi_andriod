@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
+
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -44,6 +44,7 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
+    onNavigateToTransWalk:(Int,Int,Int) ->Unit
 ) {
 
     val scaffoldState =
@@ -53,13 +54,14 @@ fun ProgressScreen(
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
 
-    val mainActivity = LocalContext.current as? MainActivity
-    mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
-
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
-    val selectedText = remember { mutableStateOf("Select Village") }
+    LaunchedEffect(key1 = Unit){
+       viewModel.getVillaeList() {
+           viewModel.fetchStepsList()
+        }
+    }
 
     Surface(
         modifier = Modifier
@@ -93,7 +95,7 @@ fun ProgressScreen(
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
                                 viewModel.villageSelected.value = it
-                                selectedText.value = viewModel.villageList.value[it].name
+                                viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
@@ -132,10 +134,17 @@ fun ProgressScreen(
                         )
                     }
                 } else {
+                    Column(modifier = Modifier) {
+
                     LazyColumn(
                         Modifier
                             .background(Color.White)
-                            .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()),
+                            .padding(
+                                start = 16.dp,
+                                end = 16.dp,
+                                top = it.calculateTopPadding(),
+                                bottom = 50.dp
+                            ),
                     ) {
 
                         item {
@@ -153,8 +162,7 @@ fun ProgressScreen(
                         }
 
                         item {
-                            selectedText.value = villages[viewModel.villageSelected.value].name
-                            VillageSelectorDropDown(selectedText = selectedText.value) {
+                            VillageSelectorDropDown(selectedText = viewModel.selectedText.value) {
                                 scope.launch {
                                     if (!scaffoldState.isVisible) {
                                         scaffoldState.show()
@@ -190,7 +198,9 @@ fun ProgressScreen(
                                     when (index) {
                                         0 -> {
                                             viewModel.stepList.value[index].id
-                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
+                                            viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
+                                            onNavigateToTransWalk(villages[viewModel.villageSelected.value].id,steps[index].id,index)
+//                                            stepsNavHostController.navigate(route = "transect_walk_screen/${villages[viewModel.villageSelected.value].id}/${steps[index].id}")
                                         }
                                         1 -> {
                                             viewModel.stepList.value[index].id
@@ -206,6 +216,10 @@ fun ProgressScreen(
                             }
                         }
                         item { Spacer(modifier = Modifier.height(16.dp)) }
+                    }
+                        Spacer(modifier = Modifier
+                            .height(100.dp)
+                            .fillMaxWidth())
                     }
                 }
             }
@@ -298,7 +312,7 @@ fun StepsBox(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = boxTitle/* "Transect Walk"*/,
+                        text = boxTitle,
                         color = if (isCompleted) greenOnline else textColorDark,
                         modifier = Modifier
                             .padding(

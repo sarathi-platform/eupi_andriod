@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.*
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -42,7 +43,10 @@ class AddDidiViewModel @Inject constructor(
     private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
     val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
 
-    var filterMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
+    var tolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
+        private set
+
+    var filterTolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
@@ -52,16 +56,17 @@ class AddDidiViewModel @Inject constructor(
     var stepId: Int = -1
 
     val isSocialMappingComplete = mutableStateOf(false)
+    val showLoader = mutableStateOf(false)
+
 
 
     init {
-
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
-                casteListDao.insertCaste(CasteEntity(1, "Hindu"))
-                casteListDao.insertCaste(CasteEntity(2, "Muslim"))
-                casteListDao.insertCaste(CasteEntity(3, "Sikh"))
-                casteListDao.insertCaste(CasteEntity(4, "Christian"))
+        job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                casteListDao.insertCaste(CasteEntity(1,"Hindu"))
+                casteListDao.insertCaste(CasteEntity(2,"Muslim"))
+                casteListDao.insertCaste(CasteEntity(3,"Sikh"))
+                casteListDao.insertCaste(CasteEntity(4,"Christian"))
 
                 _didiList.emit(didiDao.getAllDidisForVillage(villageId))
 
@@ -73,13 +78,23 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
+        selectedTola.value= prefRepo.getLastSelectedTola() as Pair<Int, String>
         villageId = prefRepo.getSelectedVillage().id
     }
 
-    fun validateDidiDetails() {
-        isDidiValid.value =
-            !(houseNumber.value.isEmpty() || didiName.value.isEmpty() || dadaName.value.isEmpty()
-                    || selectedCast.value.first == -1 || selectedTola.value.first == -1)
+    fun fetchDidisFrommDB(){
+        showLoader.value = true
+        job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                _didiList.emit(didiDao.getAllDidis())
+                filterDidiList=didiList.value
+                showLoader.value = false
+            }
+        }
+    }
+    fun validateDidiDetails(){
+        isDidiValid.value = !(houseNumber.value.isEmpty() || didiName.value.isEmpty() || dadaName.value.isEmpty()
+                || selectedCast.value.first==-1 || selectedTola.value.first==-1)
     }
 
     fun saveDidiIntoDatabase() {
@@ -138,22 +153,44 @@ class AddDidiViewModel @Inject constructor(
                 map[didiDetailsModel.cohortName] = mutableListOf(didiDetailsModel)
             }
         }
-        filterMapList = map
+        tolaMapList = map
+        filterTolaMapList=map
     }
 
-    fun performQuery(query: String) {
-        filterDidiList = if (query.isNotEmpty()) {
-            val filteredList = ArrayList<DidiEntity>()
-            didiList.value.forEach { didi ->
-                if (didi.name.lowercase().contains(query.lowercase())) {
-                    filteredList.add(didi)
-                }
-            }
-            filteredList
-        } else {
-            didiList.value
+   @SuppressLint("SuspiciousIndentation")
+   fun performQuery(query: String, isTolaFilterSelected:Boolean){
+       if(!isTolaFilterSelected){
+       filterDidiList = if(query.isNotEmpty()) {
+           val filteredList = ArrayList<DidiEntity>()
+           didiList.value.forEach { didi ->
+               if (didi.name.lowercase().contains(query.lowercase())) {
+                   filteredList.add(didi)
+               }
+           }
+           filteredList
+       }else {
+           didiList.value
         }
-    }
+       }else{
+           if(query.isNotEmpty()){
+               val fList= mutableMapOf<String, MutableList<DidiEntity>>()
+               tolaMapList.keys.forEach { key->
+                val newDidiList= ArrayList<DidiEntity>()
+                   tolaMapList[key]?.forEach { didi->
+                       if (didi.name.lowercase().contains(query.lowercase())) {
+                          newDidiList.add(didi)
+                       }
+                   }
+                   if(newDidiList.isNotEmpty())
+                        fList[key]=newDidiList
+               }
+               filterTolaMapList=fList
+           }else{
+               filterTolaMapList=tolaMapList
+           }
+
+       }
+   }
 
     fun resetAllFields() {
         houseNumber.value = BLANK_STRING

@@ -24,8 +24,8 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -33,66 +33,71 @@ import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
 fun DidiScreen(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    didiViewModel: AddDidiViewModel
+    didiViewModel: AddDidiViewModel,
+    onNavigateToAddDidi:()-> Unit
 ) {
-
-    LaunchedEffect(key1 = true) {
-        didiViewModel.isSocialMappingComplete(didiViewModel.stepId)
-    }
-
-    ConstraintLayout(
-        modifier = Modifier
-            .background(Color.White)
-            .fillMaxSize()
-            .border(
-                width = 0.dp,
-                color = Color.Transparent,
-            )
-    ) {
-
-
-        AnimatedVisibility(visible = didiViewModel.didiList.value.isEmpty()) {
-            Column(modifier=Modifier) {
-            VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
-            Box(modifier = Modifier.fillMaxSize()) {
-                Column(
-                    modifier = Modifier.align(Alignment.Center),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = textColorDark,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append(stringResource(R.string.empty_didis_string))
-                            }
-                        },
-                        modifier = Modifier.padding(top = 32.dp)
+    
+    if(didiViewModel.showLoader.value){
+        CustomProgressBar(modifier = Modifier)
+    }else {
+        if (didiViewModel.didiList.value.isEmpty()) {
+            ConstraintLayout(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxSize()
+                    .border(
+                        width = 0.dp,
+                        color = Color.Transparent,
                     )
-                    BlueButtonWithDrawableIcon(
-                        buttonText = stringResource(id = R.string.add_tola),
-                        icon = Icons.Default.Add,
-                        imageIcon = R.drawable.didi_icon,
-                        modifier = Modifier.padding(top = 16.dp)
-                    ) {
-                        didiViewModel.resetAllFields()
-                        navController.navigate(ScreenRoutes.ADD_DIDI_SCREEN.route)
+            ) {
+                Column(modifier = Modifier) {
+                    VOAndVillageBoxView(
+                        prefRepo = didiViewModel.prefRepo,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        Column(
+                            modifier = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(stringResource(R.string.empty_didis_string))
+                                    }
+                                },
+                                modifier = Modifier.padding(top = 32.dp)
+                            )
+                            BlueButtonWithDrawableIcon(
+                                buttonText = stringResource(id = R.string.add_didi),
+                                icon = Icons.Default.Add,
+                                imageIcon = R.drawable.didi_icon,
+                                modifier = Modifier.padding(top = 16.dp)
+                            ) {
+                                didiViewModel.resetAllFields()
+                                onNavigateToAddDidi()
+                            }
+                        }
                     }
                 }
             }
-            }
+        }
+        if (didiViewModel.didiList.value.isNotEmpty()) {
+            SocialMappingDidiListScreen(
+                navController,
+                modifier = modifier,
+                didiViewModel = didiViewModel
+            )
         }
     }
-    AnimatedVisibility(visible = didiViewModel.didiList.value.isNotEmpty()) {
-        SocialMappingDidiListScreen(
-            navController,
-            modifier = modifier,
-            didiViewModel = didiViewModel
-        )
+    LaunchedEffect(key1 = Unit){
+        didiViewModel.fetchDidisFrommDB()
     }
 }

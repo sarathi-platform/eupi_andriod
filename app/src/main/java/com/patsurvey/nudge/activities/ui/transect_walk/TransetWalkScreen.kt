@@ -359,7 +359,7 @@ fun TransectWalkScreen(
                                     "{VILLAGE_NAME}",
                                     viewModel.villageEntity.value?.name ?: ""
                                 )
-                            }/transect_walk_screen"
+                            }"
                         )
 
                     } else {

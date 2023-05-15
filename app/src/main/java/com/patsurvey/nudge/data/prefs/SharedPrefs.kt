@@ -16,6 +16,9 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
         const val PREF_KEY_LANGUAGE_ID = "language_id"
+        const val PREF_KEY_PAGE_FROM = "page_from"
+        const val PREF_KEY_LAST_TOLA_ID = "last_tola_id"
+        const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
         const val SELECTED_VILLAGE_ID = "selected_village_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
     }
@@ -51,7 +54,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getSelectedVillage(): VillageEntity {
-        return Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, BLANK_STRING), VillageEntity::class.java)
+        val villageDetails=prefs.getString(PREF_KEY_SELECTED_VILLAGE, BLANK_STRING)
+        return if(villageDetails.isNullOrEmpty()){
+            VillageEntity(-1, name = BLANK_STRING, emptyList())
+        }else Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, BLANK_STRING), VillageEntity::class.java)
     }
 
 
@@ -132,5 +138,23 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         languageId?.let {
             prefs.edit().putInt(PREF_KEY_LANGUAGE_ID, languageId).apply()
         }
+    }
+
+    override fun getFromPage(): String {
+        return prefs.getString(PREF_KEY_PAGE_FROM, ARG_FROM_HOME) ?: ARG_PAGE_FROM
+    }
+
+    override fun saveFromPage(pageFrom: String) {
+        prefs.edit().putString(PREF_KEY_PAGE_FROM,pageFrom).apply()
+    }
+
+    override fun saveLastSelectedTola(tola: Pair<Int, String>) {
+        prefs.edit().putInt(PREF_KEY_LAST_TOLA_ID, tola.first).apply()
+        prefs.edit().putString(PREF_KEY_LAST_TOLA_NAME, tola.second).apply()
+    }
+
+    override fun getLastSelectedTola(): Pair<Int, String?> {
+        return Pair(prefs.getInt(PREF_KEY_LAST_TOLA_ID,-1),prefs.getString(PREF_KEY_LAST_TOLA_NAME,
+            BLANK_STRING))
     }
 }

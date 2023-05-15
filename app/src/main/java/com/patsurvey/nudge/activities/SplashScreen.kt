@@ -20,10 +20,7 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
-import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
-import kotlinx.coroutines.delay
-
+import com.patsurvey.nudge.navigation.AuthScreen
 @Composable
 fun SplashScreen(
     navController: NavController,
@@ -34,8 +31,8 @@ fun SplashScreen(
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
     LaunchedEffect(key1 = true) {
         viewModel.fetchLanguageDetails {
-            navController.navigate(if (isLoggedIn) ScreenRoutes.VILLAGE_SELECTION_SCREEN.route else ScreenRoutes.LANGUAGE_SCREEN.route)
-
+            navController.navigate(if(isLoggedIn) AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                      else AuthScreen.LANGUAGE_SCREEN.route)
         }
     }
 
