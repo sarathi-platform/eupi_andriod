@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.data.prefs
 
+import com.patsurvey.nudge.database.VillageEntity
+
 
 interface PrefRepo {
    fun getAppLanguage():String?
@@ -8,9 +10,9 @@ interface PrefRepo {
    fun isPermissionGranted():Boolean?
    fun savePermissionGranted(isGranted: Boolean?)
 
-   fun saveSelectedVillage(id: Int)
+   fun saveSelectedVillage(village: VillageEntity)
 
-   fun getSelectedVillage(): Int?
+   fun getSelectedVillage():VillageEntity
 
    fun getLoginStatus(): Boolean
 
@@ -48,4 +50,9 @@ interface PrefRepo {
    fun getAppLanguageId():Int?
    fun saveAppLanguageId(languageId: Int?)
 
+   fun getFromPage():String
+   fun saveFromPage(pageFrom:String)
+
+   fun saveLastSelectedTola(tola: Pair<Int,String>)
+   fun getLastSelectedTola():Pair<Int, String?>
 }

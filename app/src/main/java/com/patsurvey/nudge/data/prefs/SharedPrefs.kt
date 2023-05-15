@@ -2,11 +2,10 @@ package com.patsurvey.nudge.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
-import com.patsurvey.nudge.utils.ACCESS_TOKEN
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
-import com.patsurvey.nudge.utils.ONLINE_STATUS
-import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
+import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -17,7 +16,11 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREFS_NAME = "secured_nudge_prefs"
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
         const val PREF_KEY_LANGUAGE_ID = "language_id"
+        const val PREF_KEY_PAGE_FROM = "page_from"
+        const val PREF_KEY_LAST_TOLA_ID = "last_tola_id"
+        const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
         const val SELECTED_VILLAGE_ID = "selected_village_id"
+        const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -46,13 +49,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         /*TODO("Not yet implemented")*/
     }
 
-    override fun saveSelectedVillage(id: Int) {
-        prefs.edit().putInt(SELECTED_VILLAGE_ID, id).apply()
+    override fun saveSelectedVillage(village: VillageEntity) {
+        prefs.edit().putString(PREF_KEY_SELECTED_VILLAGE, Gson().toJson(village)).apply()
     }
 
-    override fun getSelectedVillage(): Int {
-        return prefs.getInt(SELECTED_VILLAGE_ID, 0)
+    override fun getSelectedVillage(): VillageEntity {
+        return Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, "{}"), VillageEntity::class.java)
     }
+
 
     override fun getLoginStatus(): Boolean {
         return !prefs.getString(ACCESS_TOKEN, null).isNullOrBlank()
@@ -131,5 +135,23 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         languageId?.let {
             prefs.edit().putInt(PREF_KEY_LANGUAGE_ID, languageId).apply()
         }
+    }
+
+    override fun getFromPage(): String {
+        return prefs.getString(PREF_KEY_PAGE_FROM, ARG_FROM_HOME) ?: ARG_PAGE_FROM
+    }
+
+    override fun saveFromPage(pageFrom: String) {
+        prefs.edit().putString(PREF_KEY_PAGE_FROM,pageFrom).apply()
+    }
+
+    override fun saveLastSelectedTola(tola: Pair<Int, String>) {
+        prefs.edit().putInt(PREF_KEY_LAST_TOLA_ID, tola.first).apply()
+        prefs.edit().putString(PREF_KEY_LAST_TOLA_NAME, tola.second).apply()
+    }
+
+    override fun getLastSelectedTola(): Pair<Int, String?> {
+        return Pair(prefs.getInt(PREF_KEY_LAST_TOLA_ID,-1),prefs.getString(PREF_KEY_LAST_TOLA_NAME,
+            BLANK_STRING))
     }
 }

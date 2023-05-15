@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -12,7 +13,7 @@ import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 @Dao
 interface StepsListDao {
 
-    @Query("SELECT * FROM $STEPS_LIST_TABLE")
+    @Query("SELECT * FROM $STEPS_LIST_TABLE ORDER BY orderNumber ASC")
     fun getAllSteps(): List<StepListEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -21,4 +22,13 @@ interface StepsListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(step: StepListEntity)
 
+
+    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :isComplete where id = :stepId")
+    fun markStepAsComplete(stepId: Int, isComplete: Int = 0)
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
+    fun isStepComplete(id: Int): Int
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
+    fun isStepCompleteLive(id: Int) : LiveData<Int>
 }

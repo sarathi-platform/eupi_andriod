@@ -30,12 +30,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.utils.BLANK_STRING
+
 
 @Composable
-fun DropDownWithTitle(
+fun <T : Any> DropDownWithTitle(
     title: String,
     hintText: String = stringResource(id = R.string.select),
-    items: List<String>,
+    items: List<T>,
     modifier: Modifier,
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
@@ -46,7 +51,7 @@ fun DropDownWithTitle(
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
-    onItemSelected: (String) -> Unit
+    onItemSelected: (T) -> Unit
 ) {
     // Up Icon when expanded and down icon when collapsed
     val icon = if (expanded)
@@ -88,7 +93,7 @@ fun DropDownWithTitle(
         OutlinedTextField(
             value = selectedItem,
             onValueChange = {
-                onItemSelected(it)
+//                onItemSelected()
             },
             interactionSource = remember { MutableInteractionSource() }
                 .also { interactionSource ->
@@ -137,18 +142,27 @@ fun DropDownWithTitle(
             onDismissRequest = { onDismissRequest() },
             modifier = Modifier.width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
         ) {
-            items.forEach { item ->
+
+            items.mapIndexed { index, item ->
+                var title= BLANK_STRING
+                when(item){
+                    is CasteEntity -> title=item.casteName
+                    is VillageEntity -> title=item.name
+                    is TolaEntity -> title=item.name
+                }
                 DropdownMenuItem(onClick = {
                     onItemSelected(item)
                 }) {
+
                     Text(
-                        text = item,
+                        text = title,
                         color = blueDark,
                         modifier = Modifier.fillMaxWidth(),
                         style = smallTextStyle
                     )
                 }
             }
+
         }
     }
 

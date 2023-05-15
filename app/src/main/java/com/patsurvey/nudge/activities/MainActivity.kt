@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
 import androidx.compose.ui.Modifier
@@ -32,8 +31,7 @@ import androidx.lifecycle.MutableLiveData
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.StartFlowNavigation
-import com.patsurvey.nudge.navigation.VOHomeScreenFlowNavigation
+import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -51,6 +49,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val mViewModel: MainActivityViewModel by viewModels()
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isOnline = mutableStateOf(false)
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,9 +85,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                         }
                     }
                 )
-
-                val navController = rememberNavController()
-
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
@@ -116,14 +112,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints
                         }) {
-                            if (mViewModel.isLoggedIn())
-                                VOHomeScreenFlowNavigation(
-                                    navController = navController,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            else {
-                                StartFlowNavigation(navController = navController)
-                            }
+                           RootNavigationGraph(navController = rememberNavController(),sharedPrefs)
                         }
                     }
 
@@ -131,6 +120,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 connectionLiveData = ConnectionMonitor(this)
                 connectionLiveData.observe(this) { isNetworkAvailable ->
                     onlineStatus.value = isNetworkAvailable
+                    isOnline.value = isNetworkAvailable
                 }
 
                 isLoggedInLive.observe(this) { isLoggedIn ->

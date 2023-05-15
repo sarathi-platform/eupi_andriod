@@ -44,7 +44,7 @@ class ConfigViewModel @Inject constructor(
                                 callBack()
                             }
                         } else {
-                            onError("Error : ${response.message} ")
+                            onError(tag = "ConfigViewModel", "Error : ${response.message} ")
                             addDefaultLanguage()
                             withContext(Dispatchers.Main) {
                                 callBack()
@@ -53,7 +53,7 @@ class ConfigViewModel @Inject constructor(
                     }
 
             } catch (ex: Exception) {
-                onError("Error : ${ex.localizedMessage}")
+                onError(tag = "ConfigViewModel", "Error : ${ex.localizedMessage}")
                 addDefaultLanguage()
                 withContext(Dispatchers.Main) {
                     callBack()

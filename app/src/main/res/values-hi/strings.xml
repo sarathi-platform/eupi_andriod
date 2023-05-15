@@ -56,15 +56,31 @@
 
     <string name="add_tola">टोला जोड़ें</string>
 
-    <string name="delete_tola_text">तोला मिटा दें</string>
+    <string name="delete_tola_text">टोला मिटा दें</string>
     <string name="save_tola_text">जमा करें</string>
 
-    <string name="tola_name_text">तोला</string>
+    <string name="tola_name_text">टोला</string>
     <string name="cancel_tola_text">रद्द करना</string>
     <string name="get_location_text">स्थान प्राप्त करें</string>
+    <string name="location_added_text">स्थान जोड़ा गया</string>
+
+    <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
+
     <string name="seletc_village_screen_text">VO चुनें</string>
 
     <string name="user_id_text">"पहचान: "</string>
+    <string name="empty_tola_string">कोई टोला नहीं जोड़ा गया</string>
+    <string name="tola_conirmation_text">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="complete_transect_walk_text">गाँव की सैर पूर्ण करे</string>
+    <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए गाँव की सैर पूरा हो गया है</string>
+
+    <string name="transect_walk_sub_text">%1$s टोलस हो गया</string>
+
+    <string name="complete_social_walk_text">सामाजिक मानचित्रण पूर्ण करे</string>
+    <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
+    <string name="didi_conirmation_text">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+
+    <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 
 
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \n रैंकिंग सर्वेक्षण </string>
@@ -75,7 +91,14 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">दीदी जुड़ीं</item>
         <item quantity="other">दीदियों जुड़ीं</item>
     </plurals>
-
+    <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
+    <string name="update_didi">अपडेट दीदी</string>
+    <string name="didi_has_been_successfully_added">दीदी को सफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
+    <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
+    <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
+    <string name="didi_has_been_successfully_updated">दीदी को सफलतापूर्वक अपडेट कर दिया गया है</string>
+    <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
 
 
 </resources>

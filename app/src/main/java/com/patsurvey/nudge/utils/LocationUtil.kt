@@ -2,17 +2,16 @@ package com.patsurvey.nudge.utils
 
 import android.Manifest
 import android.app.Activity
-import android.app.LocaleManager
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.LocationManager
-import android.location.LocationProvider
 import android.os.BatteryManager
+import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import com.patsurvey.nudge.MyApplication
 
 object LocationUtil {
 
@@ -41,13 +40,25 @@ object LocationUtil {
                         Criteria.ACCURACY_COARSE
                 ), true
             )
-            val location = locationProvider?.let { mLocationManager.getLastKnownLocation(it) }
-            Log.d(
-                "LocationUtil",
-                "locationProvider: $locationProvider, location: lat-${location?.latitude}, long-${location?.longitude}"
-            )
 
-            return LocationCoordinates(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
+            if (isLocationEnabled(context, mLocationManager)) {
+                val location = locationProvider?.let { mLocationManager.getLastKnownLocation(it) }
+
+                Log.d(
+                    "LocationUtil",
+                    "locationProvider: $locationProvider, location: lat-${location?.latitude}, long-${location?.longitude}"
+                )
+
+                return if (location != null)
+                    LocationCoordinates(location.latitude, location.longitude)
+                else {
+                    Toast.makeText(context, "Location not Available", Toast.LENGTH_LONG).show()
+                    LocationCoordinates(0.0, 0.0)
+                }
+            } else {
+                Toast.makeText(context, "Location not Enabled", Toast.LENGTH_LONG).show()
+                return null
+            }
 
         } else {
             if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -78,6 +89,16 @@ object LocationUtil {
                 Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
                 return null
             }
+        }
+
+    }
+
+    private fun isLocationEnabled(context: Activity, mLocationManager: LocationManager): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            mLocationManager.isLocationEnabled
+        } else {
+            val mode = Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE, Settings.Secure.LOCATION_MODE_OFF)
+            (mode != Settings.Secure.LOCATION_MODE_OFF)
         }
 
     }

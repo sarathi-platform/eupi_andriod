@@ -19,7 +19,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -114,7 +116,7 @@ fun BlueButtonWithIcon(
                 .width(160.dp)
                 .padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(6.dp)
+            horizontalArrangement = Arrangement.Center
         ) {
             Icon(
                 icon,
@@ -122,7 +124,6 @@ fun BlueButtonWithIcon(
                 tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier
                     .absolutePadding(top = 4.dp)
-                    .padding(start = 10.dp)
 
             )
             Text(
@@ -140,12 +141,13 @@ fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
     onClick: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
-            .background(blueDark)
+            .background(if (isActive) blueDark else languageItemActiveBg)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -154,7 +156,7 @@ fun ButtonPositive(
                 )
 
             ) {
-                onClick()
+                if (isActive) onClick()
             }
             .then(modifier),
         contentAlignment = Alignment.Center,
@@ -169,8 +171,9 @@ fun ButtonPositive(
         ) {
             Text(
                 text = buttonTitle,
-                color = Color.White,
-                style = buttonTextStyle
+                color = if (isActive) white else greyBorder,
+                style = buttonTextStyle,
+                textAlign = TextAlign.Center
             )
             if (isArrowRequired) {
                 Icon(
@@ -247,7 +250,7 @@ fun ButtonOutline(
             .then(modifier)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 6.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -444,5 +447,100 @@ fun IconButtonForward(
             .then(modifier)
     ) {
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
+    }
+}
+@Composable
+fun BlueButtonWithDrawableIcon(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    icon: ImageVector,
+    imageIcon:Int,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .background(Color.Transparent)
+            .width(210.dp)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            Image(
+                painter = painterResource(id = imageIcon),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(27.dp),
+                colorFilter = ColorFilter.tint(Color.White)
+            )
+
+            Icon(
+                icon,
+                contentDescription = "Forward arrow",
+                tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp)
+                    .padding(start = 10.dp)
+
+            )
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
+        }
+    }
+}
+
+@Composable
+fun TextButtonWithIcon(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Row(modifier = Modifier
+        .clickable {
+            onClick()
+        }
+        .indication(
+            interactionSource = interactionSource,
+            indication = rememberRipple(
+                bounded = true,
+                color = Color.White
+            )
+        )
+        .then(modifier)
+    ) {
+        Text(
+            text = "Show",
+            style = smallTextStyleMediumWeight,
+            color = textColorDark,
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = blueDark,
+            modifier = Modifier.absolutePadding(top = 4.dp, left = 2.dp).size(24.dp)
+        )
     }
 }

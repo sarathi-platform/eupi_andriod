@@ -110,4 +110,6 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
+    fun isOnline() = connectionStatus
+
 }

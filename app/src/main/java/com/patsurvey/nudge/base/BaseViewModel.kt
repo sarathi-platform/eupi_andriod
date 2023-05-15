@@ -9,10 +9,10 @@ open class BaseViewModel : ViewModel(){
     var job: Job? = null
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, throwable ->
-        onError("Exception handled: ${throwable.localizedMessage}")
+        onError(message = "Exception handled: ${throwable.localizedMessage}")
     }
-    open fun onError(message: String) {
-        Log.e("BaseViewModel", message)
+    open fun onError(tag: String = "BaseViewModel", message: String) {
+        Log.e(tag, message)
     }
     override fun onCleared() {
         super.onCleared()

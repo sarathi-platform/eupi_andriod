@@ -62,6 +62,10 @@
     <string name="tola_name_text">টোলা</string>
     <string name="cancel_tola_text">বাতিল করুন</string>
     <string name="get_location_text">Get Location</string>
+    <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
+    <string name="location_added_text">स्थान जोड़ा गया</string>
+
+
     <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
     <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
@@ -72,11 +76,34 @@
     <string name="complete_didi_addition">দিদি সংযোজন সম্পূর্ণ করুন</string>
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
+    <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
+    <string name="tola_conirmation_text">মোট %1$s নতুন টোলা \nসফলভাবে যোগ করা হয়েছে</string>
+    <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
+    <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
+
+    <string name="transect_walk_sub_text">%1$s টোলাস ডন</string>
+
+    <string name="complete_social_walk_text">সম্পূর্ণ সামাজিক ম্যাপিংे</string>
+    <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
+
+    <string name="didi_conirmation_text">कुल %1$s নতুন दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
+    <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
+    <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
+
+
+    <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
+
 
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
         <item quantity="other">দিদি যোগ করেছে</item>
     </plurals>
+    <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
+    <string name="update_didi">আপডেট দিদি</string>
+    <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে</string>
+    <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
+    <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
 
 
 </resources>
