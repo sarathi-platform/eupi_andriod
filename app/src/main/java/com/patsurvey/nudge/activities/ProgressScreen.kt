@@ -56,9 +56,9 @@ fun ProgressScreen(
     val mainActivity = LocalContext.current as? MainActivity
     mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
 
-    viewModel.getVillaeList() {
-        viewModel.fetchStepsList()
-    }
+//    viewModel.getVillaeList() {
+//        viewModel.fetchStepsList(it)
+//    }
     Surface(
         modifier = Modifier
             .fillMaxSize()
