@@ -87,6 +87,7 @@ fun ProgressScreen(
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
                                 viewModel.villageSelected.value = it
+                                viewModel.updateSelectedVillage(village)
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()

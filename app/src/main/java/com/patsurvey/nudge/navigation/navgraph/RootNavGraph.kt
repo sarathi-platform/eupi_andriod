@@ -32,5 +32,5 @@ object Graph {
     const val HOME = "home_graph"
     const val DETAILS = "details_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_STEP_INDEX}"
     const val ADD_DIDI = "add_didi_graph/{$ARG_DIDI_DETAILS}"
-    const val SOCIAL_MAPPING = "social_mapping_graph"
+    const val SOCIAL_MAPPING = "social_mapping_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
 }

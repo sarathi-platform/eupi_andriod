@@ -24,4 +24,11 @@ interface DidiDao {
 
     @Update
     fun updateDidi(didi: DidiEntity)
-  }
+
+    @Query("DELETE from $DIDI_TABLE")
+    fun deleteDidiTable()
+
+    @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
+    fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
+
+}

@@ -23,8 +23,8 @@ interface StepsListDao {
     fun insert(step: StepListEntity)
 
 
-    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = true where id = :stepId")
-    fun markStepAsComplete(stepId: Int)
+    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :isComplete where id = :stepId")
+    fun markStepAsComplete(stepId: Int, isComplete: Boolean = true)
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
     fun isStepComplete(id: Int): Boolean

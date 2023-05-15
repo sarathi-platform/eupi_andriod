@@ -107,12 +107,12 @@ class ProgressScreenViewModel @Inject constructor(
                         }
                     }
                     else {
-                        onError("Error : ${response.message}")
+                        onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         showLoader.value = false
                     }
                 }
             } catch (ex: Exception) {
-                onError("Exception : ${ex.localizedMessage}")
+                onError(tag = "ProgressScreenViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
             }
         }
@@ -137,7 +137,7 @@ class ProgressScreenViewModel @Inject constructor(
                     success()
                 }
             } catch (ex: Exception) {
-                onError("Exception : ${ex.localizedMessage}")
+                onError(tag = "ProgressScreenViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
             }
 
@@ -161,6 +161,9 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
+        prefRepo.saveSelectedVillage(selectedVillageEntity)
+    }
     fun getTolaCount() = prefRepo.getPref(TOLA_COUNT, 0)
     fun getDidiCount() = prefRepo.getPref(DIDI_COUNT, 0)
 
