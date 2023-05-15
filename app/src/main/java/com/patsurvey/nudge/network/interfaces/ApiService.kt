@@ -31,7 +31,7 @@ interface ApiService {
     ): ApiResponseModel<UserDetailsResponse>
 
     @GET("/read-api/config/step/get")
-    suspend fun getStepsList(): ApiResponseModel<StepsListRequest>
+    suspend fun getStepsList(@Query("villageId") villageId: Int): ApiResponseModel<StepsListRequest>
 
     //TODO Integrate Api when backend fixes the response.
     @POST("/write-api/cohort/add")

@@ -38,7 +38,7 @@ class ProgressScreenViewModel @Inject constructor(
 
     init {
         getVillaeList() {
-            fetchStepsList()
+            fetchStepsList(it)
         }
 //        checkAndUpdateCompletedStepsForVillage()
     }
@@ -65,11 +65,11 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    fun fetchStepsList() {
+    private fun fetchStepsList(villageId:Int) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiInterface.getStepsList()
+                val response = apiInterface.getStepsList(villageId)
                 val localStepsList = stepsListDao.getAllSteps()
                 withContext(Dispatchers.IO) {
                     if (response.status.equals(SUCCESS, true)) {
@@ -112,13 +112,14 @@ class ProgressScreenViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onError(tag = "ProgressScreenViewModel", "Exception : ${ex.localizedMessage}")
+                ex.printStackTrace()
+                onError(tag = "ProgressScreenViewModel", "Exception 1 : ${ex.localizedMessage}")
                 showLoader.value = false
             }
         }
     }
 
-    fun getVillaeList(success: () -> Unit) {
+    fun getVillaeList(success: (Int) -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -134,10 +135,10 @@ class ProgressScreenViewModel @Inject constructor(
                         selectedText.value = prefRepo.getSelectedVillage().name
                         showLoader.value = false
                     }
-                    success()
+                    success(villageSelected.value)
                 }
             } catch (ex: Exception) {
-                onError(tag = "ProgressScreenViewModel", "Exception : ${ex.localizedMessage}")
+                onError(tag = "ProgressScreenViewModel", "Exception 2 : ${ex.localizedMessage}")
                 showLoader.value = false
             }
 
