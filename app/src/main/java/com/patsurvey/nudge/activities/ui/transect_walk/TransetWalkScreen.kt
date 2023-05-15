@@ -1,13 +1,13 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
@@ -36,13 +35,13 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.activities.ui.transect_walk.AddTolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TolaBox
-import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkViewModel
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun TransectWalkScreen(
@@ -105,7 +104,8 @@ fun TransectWalkScreen(
             ) {
                 VillageDetailView(
                     villageName = viewModel.villageEntity.value?.name ?: "",
-                    voName = viewModel.villageEntity.value?.name ?: ""
+                    voName = viewModel.villageEntity.value?.name ?: "",
+                    modifier = Modifier
                 )
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
@@ -129,7 +129,7 @@ fun TransectWalkScreen(
                                 if (tolaList.isNotEmpty() || showAddTolaBox) {
                                     Text(
                                         text = stringResource(id = R.string.transect_wale_title),
-                                        style = largeTextStyle,
+                                        style = mediumTextStyle,
                                         color = blueDark,
                                         modifier = Modifier.weight(1f),
                                         maxLines = 2,
@@ -145,7 +145,7 @@ fun TransectWalkScreen(
                                         )
                                     ) {
                                         ButtonOutline(
-                                            modifier = Modifier.weight(0.9f),
+                                            modifier = Modifier.weight(0.9f).height(50.dp),
                                         ) {
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
@@ -158,18 +158,17 @@ fun TransectWalkScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 16.dp),
+                                    .padding(top = 10.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 horizontalAlignment = Alignment.Start
                             ) {
-
                                 if (tolaList.isNotEmpty()) {
                                     Text(
                                         text = buildAnnotatedString {
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 14.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     fontFamily = NotoSans
                                                 )
@@ -179,7 +178,7 @@ fun TransectWalkScreen(
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 14.sp,
                                                     fontWeight = FontWeight.SemiBold,
                                                     fontFamily = NotoSans
                                                 )
@@ -189,7 +188,7 @@ fun TransectWalkScreen(
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 16.sp,
+                                                    fontSize = 14.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     fontFamily = NotoSans
                                                 )
@@ -228,7 +227,9 @@ fun TransectWalkScreen(
                             item {
                                 Box(modifier = Modifier.fillMaxSize()) {
                                     Column(
-                                        modifier = Modifier.align(Alignment.Center).padding(vertical = (screenHeight/4).dp),
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .padding(vertical = (screenHeight / 4).dp),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         Text(
@@ -268,12 +269,11 @@ fun TransectWalkScreen(
                                 }
                             }
                         } else {
-                            val reverseTolaList = tolaList.asReversed()
-                            itemsIndexed(reverseTolaList) { index, tola ->
+                            itemsIndexed(tolaList) { index, tola ->
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(vertical = 10.dp)
+                                        .padding(vertical = 4.dp)
                                 ) {
                                     TolaBox(
                                         tolaName = tola.name,
@@ -357,7 +357,7 @@ fun VillageDetailView(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        Row(modifier = Modifier.padding(end = 16.dp, top = 16.dp)) {
+        Row(modifier = Modifier.padding(end = 16.dp)) {
             Icon(
                 painter = painterResource(id = R.drawable.home_icn),
                 contentDescription = null,
@@ -374,7 +374,7 @@ fun VillageDetailView(
         Row(
             modifier = Modifier
                 .absolutePadding(left = 4.dp)
-                .padding(end = 16.dp, bottom = 16.dp)
+                .padding(end = 16.dp, bottom = 10.dp)
         ) {
             Text(
                 text = "VO: ",

@@ -97,7 +97,7 @@
     <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
     <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
     <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
-    <string name="didi_has_been_successfully_updated">दीदी को सफलतापूर्वक अपडेट कर दिया गया है</string>
+    <string name="didi_has_been_successfully_updated">दीदी का विवरण सफलतापूर्वक अपडेट कर दिया गया है</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
 
 

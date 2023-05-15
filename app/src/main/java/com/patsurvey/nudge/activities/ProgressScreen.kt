@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities
 
 
+import android.os.Build
+import android.view.WindowManager
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -15,6 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -56,9 +59,8 @@ fun ProgressScreen(
     val mainActivity = LocalContext.current as? MainActivity
     mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
 
-//    viewModel.getVillaeList() {
-//        viewModel.fetchStepsList(it)
-//    }
+    setKeyboardToPan(mainActivity!!)
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -170,7 +172,7 @@ fun ProgressScreen(
                             }
                         }
                         item {
-                            Spacer(modifier = Modifier.height(16.dp))
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                         itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
                             if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")
@@ -269,7 +271,7 @@ fun StepsBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (isCompleted) greenLight else if (shouldBeActive) stepBoxActiveColor else white)
-                    .padding(vertical = 14.dp, horizontal = 16.dp),
+                    .padding(vertical = if (isCompleted)10.dp else 14.dp, horizontal = 16.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
 
@@ -292,6 +294,7 @@ fun StepsBox(
                             top.linkTo(parent.top)
                             bottom.linkTo(parent.bottom)
                         }
+                            .padding(start = 4.dp)
                     )
                 }
 
@@ -308,12 +311,12 @@ fun StepsBox(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = boxTitle,
+                        text = if (boxTitle.contains("pat ", true)) boxTitle.replace("pat ", "PAT ", true) else boxTitle,
                         color = if (isCompleted) greenOnline else textColorDark,
                         modifier = Modifier
                             .padding(
-                                top = 16.dp,
-                                bottom = if (isCompleted) 0.dp else 16.dp,
+                                top = 10.dp,
+                                bottom = if (isCompleted) 0.dp else 10.dp,
                                 end = 10.dp
                             )
                             .fillMaxWidth(),
@@ -321,7 +324,7 @@ fun StepsBox(
                         textAlign = TextAlign.Start,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = mediumTextStyle
+                        style = buttonTextStyle
                     )
                     if (isCompleted) {
 //                        Spacer(modifier = Modifier.height(4.dp))
@@ -338,7 +341,7 @@ fun StepsBox(
                             text = subText,
                             color = if (isCompleted) greenOnline else textColorDark,
                             modifier = Modifier
-                                .padding(bottom = 16.dp)
+                                .padding(bottom = 10.dp)
                                 .fillMaxWidth(),
                             softWrap = true,
                             textAlign = TextAlign.Start,
@@ -370,7 +373,7 @@ fun StepsBox(
                                     top.linkTo(textContainer.top)
                                     end.linkTo(parent.end)
                                 }
-                                .size(48.dp)
+                                .size(40.dp)
                         ) {
                             onclick(index)
                         }
@@ -440,7 +443,7 @@ fun StepsBox(
             Divider(
                 color = greyBorder,
                 modifier = Modifier
-                    .height(10.dp)  //fill the max height
+                    .height(8.dp)  //fill the max height
                     .width(1.dp)
                     .constrainAs(divider1) {
                         start.linkTo(parent.start, margin = dividerMargins)
@@ -452,7 +455,7 @@ fun StepsBox(
             Divider(
                 color = greyBorder,
                 modifier = Modifier
-                    .height(10.dp)  //fill the max height
+                    .height(8.dp)  //fill the max height
                     .width(1.dp)
                     .constrainAs(divider2) {
                         start.linkTo(parent.start, margin = dividerMargins)
@@ -513,7 +516,7 @@ fun VillageSelectorDropDown(
         modifier = Modifier
             .background(dropDownBg)
             .clip(RoundedCornerShape(6.dp))
-            .height(56.dp)
+            .height(46.dp)
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -529,7 +532,7 @@ fun VillageSelectorDropDown(
     ) {
         Row(
             Modifier
-                .padding(14.dp)
+                .padding(horizontal = 14.dp)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically,
@@ -563,7 +566,7 @@ fun ProgressScreenTopBar(
             Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
-                .height(48.dp)
+                .height(40.dp)
                 .align(Alignment.Center),
         ) {
             val (titleItem, moreMenu) = createRefs()

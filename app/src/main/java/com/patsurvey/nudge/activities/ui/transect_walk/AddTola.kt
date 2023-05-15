@@ -16,7 +16,10 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -28,6 +31,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,6 +40,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -70,7 +75,7 @@ fun AddTolaBox(
             )
             .clip(RoundedCornerShape(6.dp))
             .background(Color.White)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 10.dp)
             .then(modifier)
     ) {
         Column(
@@ -107,9 +112,17 @@ fun AddTolaBox(
                     mTolaName = it
                 },
                 placeholder = {
-                    Text(text = "Enter Name", style = buttonTextStyle, color = placeholderGrey)
+                    Text(text = "Enter Name", style = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    ), color = placeholderGrey)
                 },
-                textStyle = buttonTextStyle,
+                textStyle = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
                 singleLine = true,
                 maxLines = 1,
                 colors = TextFieldDefaults.textFieldColors(
@@ -120,7 +133,7 @@ fun AddTolaBox(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 16.dp)
+                    .padding(vertical = 10.dp)
             )
             Box(
                 modifier = Modifier
@@ -149,14 +162,14 @@ fun AddTolaBox(
                     modifier = Modifier
                         .fillMaxWidth()
                         .align(Alignment.Center)
-                        .padding(vertical = 14.dp),
+                        .padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.icon_get_location),
                         contentDescription = "Get Location",
-                        modifier = Modifier.absolutePadding(top = 4.dp),
+                        modifier = Modifier.absolutePadding(top = 2.dp),
                         tint = blueDark,
 
                         )
@@ -164,7 +177,7 @@ fun AddTolaBox(
                     Text(
                         text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
-                        style = buttonTextStyle,
+                        style = smallTextStyle,
                         color = if (locationAdded) greenOnline else blueDark
                     )
                 }
@@ -172,22 +185,22 @@ fun AddTolaBox(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 14.dp)
+                    .padding(vertical = 6.dp)
             ) {
                 ButtonPositive(
                     buttonTitle = stringResource(id = R.string.save_tola_text),
                     isArrowRequired = false,
                     isActive = mTolaName.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) {
                     onSaveClicked(mTolaName, location)
                 }
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(6.dp))
                 ButtonOutline(
                     buttonTitle = stringResource(R.string.cancel_tola_text),
                     outlineColor = redDark,
                     textColor = redDark,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().height(50.dp)
                 ) {
                     onCancelClicked()
                 }
@@ -235,7 +248,7 @@ fun TolaBox(
             )
             .clip(RoundedCornerShape(6.dp))
             .background(bgGreyLight)
-            .padding(16.dp)
+            .padding(horizontal = 16.dp, vertical = 6.dp)
             .then(modifier),
     ) {
         ConstraintLayout {
@@ -245,13 +258,12 @@ fun TolaBox(
                     .constrainAs(contentBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)
+                        width = Dimension.fillToConstraints
                     }) {
-
-
                     Text(
                         text = tolaName,
                         modifier = Modifier.fillMaxWidth(),
-                        style = largeTextStyle,
+                        style = buttonTextStyle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
                         color = textColorDark
@@ -259,7 +271,7 @@ fun TolaBox(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 10.dp)
+                            .padding(vertical = 4.dp)
                     )
                     {
                         Icon(
@@ -298,30 +310,35 @@ fun TolaBox(
                     Column(
                         modifier = Modifier,
                     ) {
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = textColorDark,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    )
-                                ) {
-                                    append(stringResource(id = R.string.tola_name_text))
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(stringResource(id = R.string.tola_name_text))
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = red,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("*")
+                                    }
                                 }
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = red,
-                                        fontSize = 16.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    )
-                                ) {
-                                    append("*")
-                                }
-                            }
-                        )
+                            )
+                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier.absolutePadding(top = 2.dp).clickable {
+                                showEditView = false
+                            })
+                        }
                         OutlinedTextField(
                             value = mTolaName,
                             onValueChange = {
@@ -330,11 +347,19 @@ fun TolaBox(
                             placeholder = {
                                 Text(
                                     text = "Enter Name",
-                                    style = mediumTextStyle,
+                                    style = TextStyle(
+                                        fontFamily = NotoSans,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp
+                                    ),
                                     color = placeholderGrey
                                 )
                             },
-                            textStyle = mediumTextStyle,
+                            textStyle = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            ),
                             singleLine = true,
                             maxLines = 1,
                             colors = TextFieldDefaults.textFieldColors(
@@ -345,7 +370,7 @@ fun TolaBox(
                             ),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 16.dp)
+                                .padding(vertical = 10.dp)
                         )
                         Box(
                             modifier = Modifier
@@ -367,7 +392,8 @@ fun TolaBox(
                                 ) {
                                     location =
                                         LocationUtil.getLocation(activity) ?: LocationCoordinates()
-                                    if (location!!.lat != null && location!!.long != null) locationAdded = true
+                                    if (location!!.lat != null && location!!.long != null) locationAdded =
+                                        true
                                     focusManager.clearFocus()
                                 }
                         ) {
@@ -375,14 +401,14 @@ fun TolaBox(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .align(Alignment.Center)
-                                    .padding(vertical = 14.dp),
+                                    .padding(vertical = 12.dp),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
                                     painter = painterResource(id = if (locationAdded) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
                                     contentDescription = "Get Location",
-                                    modifier = Modifier.absolutePadding(top = 4.dp),
+                                    modifier = Modifier.absolutePadding(top = 2.dp),
                                     tint = blueDark,
 
                                     )
@@ -390,7 +416,7 @@ fun TolaBox(
                                 Text(
                                     text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
-                                    style = mediumTextStyle,
+                                    style = smallTextStyle,
                                     color = if (locationAdded) greenOnline else blueDark
                                 )
                             }
@@ -398,23 +424,23 @@ fun TolaBox(
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 14.dp)
+                                .padding(vertical = 6.dp)
                         ) {
                             ButtonPositive(
                                 buttonTitle = stringResource(id = R.string.save_tola_text),
                                 isArrowRequired = false,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().height(50.dp)
                             ) {
                                 saveButtonClicked(mTolaName, location)
                                 showEditView = false
                             }
                             if (!isTransectWalkCompleted) {
-                                Spacer(modifier = Modifier.height(10.dp))
+                                Spacer(modifier = Modifier.height(6.dp))
                                 ButtonOutline(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
                                     outlineColor = redDark,
                                     textColor = redDark,
-                                    modifier = Modifier.fillMaxWidth()
+                                    modifier = Modifier.fillMaxWidth().height(50.dp)
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false

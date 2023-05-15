@@ -51,7 +51,7 @@ fun VillageSelectionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 12.dp)
             .then(modifier)
     ) {
         Text(
@@ -59,7 +59,7 @@ fun VillageSelectionScreen(
             fontFamily = NotoSans,
             fontWeight = FontWeight.SemiBold,
             fontSize = 24.sp, color = textColorDark,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier
         )
         if (viewModel.showLoader.value) {
             Box(
@@ -77,7 +77,7 @@ fun VillageSelectionScreen(
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                item { Spacer(modifier = Modifier.height(4.dp)) }
+//                item { Spacer(modifier = Modifier.height(4.dp)) }
                 itemsIndexed(villages) { index, village ->
                     VillageAndVoBox(
                         tolaName = village.name,
