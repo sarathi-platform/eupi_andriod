@@ -69,18 +69,20 @@
     <string name="tola_name_text">Tola Name</string>
     <string name="cancel_tola_text">Cancel</string>
     <string name="get_location_text">Get Location</string>
+    <string name="location_unavailable">Location not available</string>
+
     <string name="seletc_village_screen_text">Select Village &amp; VO</string>
 
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text">Total %1$s Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
     <string name="complete_social_walk_text">Complete Social Mapping</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
-    <string name="didi_conirmation_text">Total %1$s Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text">Total %1$s new Didis have \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
 
@@ -88,8 +90,12 @@
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
+    <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
+    <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
+    <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
     <string name="didi_has_been_successfully_updated">Didi has been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
+    <string name="location_added_text">Location Added</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

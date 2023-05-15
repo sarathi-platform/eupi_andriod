@@ -24,11 +24,11 @@ interface StepsListDao {
 
 
     @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :isComplete where id = :stepId")
-    fun markStepAsComplete(stepId: Int, isComplete: Boolean = true)
+    fun markStepAsComplete(stepId: Int, isComplete: Int = 0)
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
-    fun isStepComplete(id: Int): Boolean
+    fun isStepComplete(id: Int): Int
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
-    fun isStepCompleteLive(id: Int) : LiveData<Boolean>
+    fun isStepCompleteLive(id: Int) : LiveData<Int>
 }

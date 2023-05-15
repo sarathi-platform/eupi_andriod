@@ -24,6 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -49,6 +50,9 @@ fun AddTolaBox(
     onCancelClicked: () -> Unit
 ) {
     val activity = LocalContext.current as Activity
+
+    val focusManager = LocalFocusManager.current
+
     var mTolaName by remember {
         mutableStateOf(tolaName)
     }
@@ -136,11 +140,9 @@ fun AddTolaBox(
                         )
 
                     ) {
-                        location = LocationUtil
-                            .getLocation(activity)
-                            ?.also {
-                                locationAdded = true
-                            } ?: LocationCoordinates()
+                        location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                        if (location!!.lat != null && location!!.long != null) locationAdded = true
+                        focusManager.clearFocus()
                     }
             ) {
                 Row(
@@ -160,7 +162,7 @@ fun AddTolaBox(
                         )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = if (locationAdded) "Location Added" else stringResource(R.string.get_location_text),
+                        text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
                         style = buttonTextStyle,
                         color = if (locationAdded) greenOnline else blueDark
@@ -208,6 +210,9 @@ fun TolaBox(
     var showEditView by remember { mutableStateOf(false) }
 
     val activity = LocalContext.current as Activity
+
+    val focusManager = LocalFocusManager.current
+
     var mTolaName by remember {
         mutableStateOf(tolaName)
     }
@@ -265,7 +270,7 @@ fun TolaBox(
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = if (isLocationAvailable) "Location Added" else "Not Added",
+                            text = if (isLocationAvailable) stringResource(id = R.string.location_added_text) else stringResource(id = R.string.not_added),
                             style = smallTextStyleNormalWeight,
                             color = textColorDark
                         )
@@ -303,7 +308,7 @@ fun TolaBox(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append("Tola Name")
+                                    append(stringResource(id = R.string.tola_name_text))
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -360,11 +365,10 @@ fun TolaBox(
                                     )
 
                                 ) {
-                                    location = LocationUtil
-                                        .getLocation(activity)
-                                        ?.also {
-                                            locationAdded = true
-                                        } ?: LocationCoordinates()
+                                    location =
+                                        LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                                    if (location!!.lat != null && location!!.long != null) locationAdded = true
+                                    focusManager.clearFocus()
                                 }
                         ) {
                             Row(
@@ -384,7 +388,7 @@ fun TolaBox(
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if (locationAdded) "Location Added" else "Get Location",
+                                    text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
                                     style = mediumTextStyle,
                                     color = if (locationAdded) greenOnline else blueDark
