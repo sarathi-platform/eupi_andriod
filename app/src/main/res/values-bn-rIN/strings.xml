@@ -94,6 +94,9 @@
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 
+    <string name="pat_survey">PAT জরিপ</string>
+    <string name="didi">দিদি</string>
+    <string name="section_number">বিভাগ %d</string>
 
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>

@@ -22,7 +22,8 @@ enum class ScreenRoutes(val route: String) {
     SOCIAL_MAPPING_SCREEN("social_mapping_screen"),
     LOGIN_HOME_SCREEN("login_home_screen"),
     VILLAGE_SELECTION_SCREEN("village_selection_screen"),
-    STEP_COMPLETION_SCREEN("step_completion_screen/{$ARG_COMPLETION_MESSAGE}");
+    STEP_COMPLETION_SCREEN("step_completion_screen/{$ARG_COMPLETION_MESSAGE}"),
+    PAT_SURVEY_YES_NO_SCREEN("pat_survey_yes_no_screen");
 
 
     override fun toString(): String {
