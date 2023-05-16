@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -29,12 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
+import com.patsurvey.nudge.utils.setKeyboardToReadjust
 
 @SuppressLint("StringFormatInvalid")
 @Composable
@@ -44,7 +46,14 @@ fun LoginScreen(
     modifier: Modifier
 ) {
     val context = LocalContext.current
-        val snackState= rememberSnackBarState()
+    val snackState = rememberSnackBarState()
+
+    val activity = context as MainActivity
+
+    val focusManager = LocalFocusManager.current
+
+    setKeyboardToReadjust(activity)
+
     BackHandler {
         (context as? Activity)?.finish()
     }
@@ -164,21 +173,29 @@ fun LoginScreen(
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
 
-            Button(onClick = {
-
-                if(viewModel.mobileNumber.value.text[0].toString().toInt()<6){
-                    snackState.addMessage(message = context.getString(R.string.invalid_mobile_number)
-                        , isSuccess = false, isCustomIcon = false)
-                }else {
-                    viewModel.generateOtp { success, message ->
-                        if (success){
-                            navController.navigate(route = "otp_verification_screen/"+viewModel.mobileNumber.value.text)
-                        }else{
-                            snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
+            Button(
+                onClick = {
+                    focusManager.clearFocus()
+                    if (viewModel.mobileNumber.value.text[0].toString().toInt() < 6) {
+                        snackState.addMessage(
+                            message = context.getString(R.string.invalid_mobile_number),
+                            isSuccess = false,
+                            isCustomIcon = false
+                        )
+                    } else {
+                        viewModel.generateOtp { success, message ->
+                            if (success) {
+                                navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                            } else {
+                                snackState.addMessage(
+                                    message = message,
+                                    isSuccess = false,
+                                    isCustomIcon = false
+                                )
+                            }
                         }
                     }
-                }
-                             },
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.Transparent),
