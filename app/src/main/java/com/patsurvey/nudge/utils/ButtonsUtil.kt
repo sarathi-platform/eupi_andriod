@@ -23,7 +23,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
@@ -461,6 +463,11 @@ fun IconButtonForward(
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun IconButtonForwardPreview(){
+    IconButtonForward(modifier = Modifier, onClick = {})
+}
 @Composable
 fun BlueButtonWithDrawableIcon(
     modifier: Modifier = Modifier,
@@ -524,6 +531,15 @@ fun BlueButtonWithDrawableIcon(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun BlueButtonWithDrawableIconView(){
+    BlueButtonWithDrawableIcon(buttonText = stringResource(id = R.string.add_didi), icon = Icons.Default.Add,
+        imageIcon = R.drawable.didi_icon) {
+
+    }
+}
+
 @Composable
 fun TextButtonWithIcon(
     modifier: Modifier = Modifier,
@@ -552,7 +568,15 @@ fun TextButtonWithIcon(
             imageVector = Icons.Default.ArrowForward,
             contentDescription = null,
             tint = blueDark,
-            modifier = Modifier.absolutePadding(top = 4.dp, left = 2.dp).size(24.dp)
+            modifier = Modifier
+                .absolutePadding(top = 4.dp, left = 2.dp)
+                .size(24.dp)
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun TextButtonWithIconPreview(){
+    TextButtonWithIcon(modifier = Modifier, onClick = {})
 }

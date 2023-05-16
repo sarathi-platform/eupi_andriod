@@ -11,7 +11,10 @@ import com.patsurvey.nudge.utils.StepStatus
 
 @Entity(tableName = STEPS_LIST_TABLE)
 data class StepListEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "stepId")
+    var stepId: Int,
+
     @ColumnInfo(name = "id")
     var id: Int,
 
@@ -21,11 +24,17 @@ data class StepListEntity(
     @ColumnInfo(name = "name")
     val name: String,
 
+    @ColumnInfo(name = "status")
+    val status: String,
+
     @ColumnInfo(name = "isComplete")
     var isComplete: Int = 0,
 
     @ColumnInfo(name = "needToPost")
-    var needToPost: Boolean = true
+    var needToPost: Boolean = true,
+
+    @ColumnInfo(name = "villageId")
+    var villageId: Int = 0,
 ) {
 
     fun compare(other: StepListEntity, ignoreIds: Boolean = false): Boolean {
@@ -55,7 +64,8 @@ data class StepListEntity(
         fun convertFromModelToEntity(stepList: List<StepsListModal>): List<StepListEntity> {
             val stepListEntity = mutableListOf<StepListEntity>()
             stepList.forEach {step ->
-                stepListEntity.add(StepListEntity(id = step.id, orderNumber = step.orderNumber, name = step.name, isComplete = StepStatus.NOT_STARTED.ordinal, needToPost = true))
+                stepListEntity.add(StepListEntity(id = step.id, orderNumber = step.orderNumber,
+                    name = step.name, isComplete = StepStatus.NOT_STARTED.ordinal, needToPost = true, villageId = step.villageId, status = "", stepId = 0))
             }
             return stepListEntity
         }

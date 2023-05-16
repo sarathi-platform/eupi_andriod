@@ -210,7 +210,7 @@ fun TransectWalkScreen(
                                                     location ?: LocationCoordinates()
                                                 )
                                             )
-                                            viewModel.markTransectWalkIncomplete(stepId)
+                                            viewModel.markTransectWalkIncomplete(stepId,villageId)
                                             showAddTolaBox = false
                                             focusManager.clearFocus()
                                             showCustomToast(context,context.getString(R.string.tola_successfully_added).replace("{TOLA_NAME}", name))
@@ -286,14 +286,14 @@ fun TransectWalkScreen(
                                         deleteButtonClicked = {
                                             showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                             viewModel.removeTola(tola.id)
-                                            viewModel.markTransectWalkIncomplete(stepId)
+                                            viewModel.markTransectWalkIncomplete(stepId,villageId)
                                             showAddTolaBox = false
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                             showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
                                             else {
                                                 viewModel.updateTola(tola.id, newName, newLocation)
-                                                viewModel.markTransectWalkIncomplete(stepId)
+                                                viewModel.markTransectWalkIncomplete(stepId,villageId)
                                                 showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
                                                 false
                                             }

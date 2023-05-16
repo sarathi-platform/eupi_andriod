@@ -26,6 +26,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -93,6 +94,7 @@ fun ProgressScreen(
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
                                 viewModel.villageSelected.value = it
+                                viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
@@ -178,11 +180,15 @@ fun ProgressScreen(
                             if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")
                                     ?: "").equals("CRP Program", true) && index < 5
                             ) {
-                                val isStepCompleted =
-                                    viewModel.isStepComplete(steps[index].id).observeAsState().value
+                                val villageId=villages[viewModel.villageSelected.value].id
+                                var isStepCompleted =
+                                    viewModel.isStepComplete(steps[index].id,villageId).observeAsState().value
                                         ?: 0
+                                if(steps[index].orderNumber==1 && isStepCompleted==0){
+                                    isStepCompleted=StepStatus.IN_PROGRESS.ordinal
+                                }
                                 if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
-                                    viewModel.updateSelectedStep(steps[index].id)
+                                    viewModel.updateSelectedStep(steps[index].stepId)
                                 }
                                 StepsBox(
                                     boxTitle = step.name,
@@ -190,12 +196,11 @@ fun ProgressScreen(
                                     index = index,
                                     iconId = step.orderNumber,
                                     viewModel = viewModel,
-                                    shouldBeActive = (viewModel.stepSelected.value == index) || isStepCompleted == StepStatus.IN_PROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
+                                    shouldBeActive = isStepCompleted == StepStatus.IN_PROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
                                     val stepId=viewModel.stepList.value[index].id
-                                    val villageId=villages[viewModel.villageSelected.value].id
                                     viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
                                     when (index) {
                                         0 -> {
@@ -232,7 +237,7 @@ fun StepsBox(
     stepNo: Int,
     index: Int,
     iconId: Int,
-    viewModel: ProgressScreenViewModel,
+    viewModel: ProgressScreenViewModel?=null,
     isCompleted: Boolean = false,
     shouldBeActive: Boolean = false,
     onclick: (Int) -> Unit
@@ -274,8 +279,6 @@ fun StepsBox(
                     .padding(vertical = if (isCompleted)10.dp else 14.dp, horizontal = 16.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
-
-
                 val iconResourceId = when (iconId) {
                     1 -> R.drawable.transect_walk_icon
                     2 -> R.drawable.social_maping_icon
@@ -330,25 +333,29 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> stringResource(id = R.string.transect_walk_sub_text, viewModel.getTolaCount())
-                            2 -> stringResource(id = R.string.social_mapping_sub_text, viewModel.getDidiCount())
+                            1 -> viewModel?.getTolaCount()
+                                ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
+                            2 -> viewModel?.getDidiCount()
+                                ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> ""
                             4 -> ""
                             5 -> ""
                             else -> ""
                         }
-                        Text(
-                            text = subText,
-                            color = if (isCompleted) greenOnline else textColorDark,
-                            modifier = Modifier
-                                .padding(bottom = 10.dp)
-                                .fillMaxWidth(),
-                            softWrap = true,
-                            textAlign = TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis,
-                            maxLines = 1,
-                            style = smallerTextStyle
-                        )
+                        if (subText != null) {
+                            Text(
+                                text = subText,
+                                color = if (isCompleted) greenOnline else textColorDark,
+                                modifier = Modifier
+                                    .padding(bottom = 10.dp)
+                                    .fillMaxWidth(),
+                                softWrap = true,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis,
+                                maxLines = 1,
+                                style = smallerTextStyle
+                            )
+                        }
                     }
                 }
 
@@ -465,6 +472,12 @@ fun StepsBox(
             )
         }
     }
+}
+@Preview(showBackground = true)
+@Composable
+fun StepBoxPreview(){
+
+    StepsBox(boxTitle = "TransectBox", stepNo = 1, index = 1, iconId = 1, onclick = {})
 }
 
 @Composable

@@ -52,4 +52,8 @@ object DatabaseModule {
     @Singleton
     fun provideDidiDao(db: NudgeDatabase) = db.didiDao()
 
+    @Provides
+    @Singleton
+    fun provideLastSelectedTolaDao(db: NudgeDatabase) = db.lastSelectedTola()
+
 }

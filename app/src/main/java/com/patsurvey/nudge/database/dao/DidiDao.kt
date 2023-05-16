@@ -16,8 +16,8 @@ interface DidiDao {
     @Query("Select * FROM $DIDI_TABLE where id = :id")
     fun getDidi(id: Int): DidiEntity
 
-    @Query("Select COUNT(*) FROM $DIDI_TABLE where name = :name AND address=:address AND guardianName=:guardianName AND cohortId=:tolaId ")
-    fun getDidiExist(name:String,address:String,guardianName:String,tolaId:Int):Int
+    @Query("Select COUNT(*) FROM $DIDI_TABLE where name = :name AND address=:address AND guardianName=:guardianName AND cohortId=:tolaId AND villageId= :villageId")
+    fun getDidiExist(name:String,address:String,guardianName:String,tolaId:Int,villageId:Int):Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertDidi(didi: DidiEntity)

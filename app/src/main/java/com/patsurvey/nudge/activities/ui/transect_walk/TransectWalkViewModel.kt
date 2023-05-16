@@ -265,13 +265,17 @@ class TransectWalkViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsComplete(stepId, StepStatus.COMPLETED.ordinal)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
+            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
+                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.IN_PROGRESS.ordinal,villageId)
+            }
         }
     }
 
-    fun markTransectWalkIncomplete(stepId: Int) {
+    fun markTransectWalkIncomplete(stepId: Int,villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            stepsListDao.markStepAsComplete(stepId, StepStatus.IN_PROGRESS.ordinal)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.IN_PROGRESS.ordinal,villageId)
         }
     }
 
