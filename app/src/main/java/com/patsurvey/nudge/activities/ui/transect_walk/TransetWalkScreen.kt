@@ -54,7 +54,7 @@ fun TransectWalkScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.fetchTolaList(villageId)
-        viewModel.isTransectWalkComplete(stepId)
+        viewModel.isTransectWalkComplete(stepId,villageId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
     val tolaList = viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }

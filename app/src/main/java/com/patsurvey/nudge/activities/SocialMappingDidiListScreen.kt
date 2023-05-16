@@ -184,8 +184,8 @@ fun SocialMappingDidiListScreen(
                             modifier = Modifier.padding(
                                 start = 16.dp,
                                 end = 16.dp,
-                                top = 20.dp,
-                                bottom = 20.dp
+                                top = 10.dp,
+                                bottom = 10.dp
                             ),
                             filterSelected = filterSelected,
                             onFilterSelected = {
@@ -299,6 +299,8 @@ fun SocialMappingDidiListScreen(
                 }
             }
         }
+
+        Log.d(TAG, "SocialMappingDidiListScreen: ${didiList.value.isNotEmpty()}  :: ${didiViewModel.isSocialMappingComplete.value} :: ${didiViewModel.prefRepo.getFromPage()}")
 
         if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {

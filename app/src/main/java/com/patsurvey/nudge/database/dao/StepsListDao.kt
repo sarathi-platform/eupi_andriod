@@ -27,8 +27,8 @@ interface StepsListDao {
     @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :inProgress where orderNumber = :orderNumber AND villageId = :villageId")
     fun markStepAsInProgress(orderNumber: Int, inProgress: Int = 1,villageId:Int)
 
-    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
-    fun isStepComplete(id: Int): Int
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId =:villageId")
+    fun isStepComplete(id: Int,villageId: Int): Int
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
     fun isStepCompleteLive(id: Int,villageId: Int) : LiveData<Int>

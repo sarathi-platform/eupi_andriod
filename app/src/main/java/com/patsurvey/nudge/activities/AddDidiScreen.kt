@@ -17,7 +17,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
@@ -35,19 +34,22 @@ import com.patsurvey.nudge.utils.showCustomToast
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
-                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel,didiDetails:String,onNavigation:()->Unit) {
+                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel?=null,didiDetails:String,onNavigation:()->Unit) {
     var casteExpanded by remember { mutableStateOf(false) }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
     var editDidiId by remember { mutableStateOf(-1) }
     var tolaExpended by remember { mutableStateOf(false) }
     var tolaTextFieldSize by remember { mutableStateOf(Size.Zero) }
+    var topPadding by remember { mutableStateOf(5.dp) }
+    var startPadding by remember { mutableStateOf(16.dp) }
+    var endPadding by remember { mutableStateOf(16.dp) }
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
     Column(modifier = modifier
         .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        VOAndVillageBoxView(prefRepo = didiViewModel.prefRepo,modifier=Modifier.fillMaxWidth())
+        didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth()) }
 
         Column(
             modifier = Modifier
@@ -67,43 +69,43 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.house_number),
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                    .padding(top=topPadding,start = startPadding, end = endPadding)
                     .fillMaxWidth(),
-                currentString = didiViewModel.houseNumber.value,
+                currentString = didiViewModel?.houseNumber?.value ?: BLANK_STRING,
                 isRequiredField = false
             ) {
-                didiViewModel.houseNumber.value = it
-                didiViewModel.validateDidiDetails()
+                didiViewModel?.houseNumber?.value = it
+                didiViewModel?.validateDidiDetails()
             }
 
             EditTextWithTitle(
                 stringResource(id = R.string.didi_name),
                 modifier = Modifier
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top=topPadding,start = startPadding, end = endPadding)
                     .fillMaxWidth(),
-                currentString = didiViewModel.didiName.value,
+                currentString = didiViewModel?.didiName?.value?: BLANK_STRING,
                 isRequiredField = false
             ) {
-                didiViewModel.didiName.value = it
-                didiViewModel.validateDidiDetails()
+                didiViewModel?.didiName?.value = it
+                didiViewModel?.validateDidiDetails()
             }
 
             EditTextWithTitle(
                 stringResource(id = R.string.dada_name),
                 modifier = Modifier
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
+                    .padding(top=topPadding,start = startPadding, end = endPadding)
                     .fillMaxWidth(),
-                currentString = didiViewModel.dadaName.value,
+                currentString = didiViewModel?.dadaName?.value ?: BLANK_STRING,
                 isRequiredField = false
             ) {
-                didiViewModel.dadaName.value = it
-                didiViewModel.validateDidiDetails()
+                didiViewModel?.dadaName?.value = it
+                didiViewModel?.validateDidiDetails()
             }
             DropDownWithTitle(
                 title = stringResource(id = R.string.caste),
-                items = didiViewModel.casteList.value,
+                items = didiViewModel?.casteList?.value?: emptyList(),
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                    .padding(top=topPadding,start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = casteExpanded,
                 onExpandedChange = {
@@ -116,18 +118,18 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 onGlobalPositioned = { coordinates ->
                     casteTextFieldSize = coordinates.size.toSize()
                 },
-                selectedItem = didiViewModel.selectedCast.value.second
+                selectedItem = didiViewModel?.selectedCast?.value?.second ?: BLANK_STRING
             ) {
-                didiViewModel.selectedCast.value=Pair(it.id,it.casteName)
-                didiViewModel.validateDidiDetails()
+                didiViewModel?.selectedCast?.value=Pair(it.id,it.casteName)
+                didiViewModel?.validateDidiDetails()
                 casteExpanded = false
             }
 
             DropDownWithTitle(
                 title = stringResource(id = R.string.tola),
-                items = didiViewModel.tolaList.value,
+                items = didiViewModel?.tolaList?.value ?: emptyList(),
                 modifier = Modifier
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                    .padding(top=topPadding,start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = tolaExpended,
                 onExpandedChange = {
@@ -140,11 +142,11 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 onGlobalPositioned = { coordinates ->
                     tolaTextFieldSize = coordinates.size.toSize()
                 },
-                selectedItem = didiViewModel.selectedTola.value.second
+                selectedItem = didiViewModel?.selectedTola?.value?.second ?: BLANK_STRING
             ) {
-                didiViewModel.selectedTola.value=Pair(it.id,it.name)
-                didiViewModel.saveLastSelectedTolaForVillage(it.id,it.name)
-                didiViewModel.validateDidiDetails()
+                didiViewModel?.selectedTola?.value=Pair(it.id,it.name)
+                didiViewModel?.saveLastSelectedTolaForVillage(it.id,it.name)
+                didiViewModel?.validateDidiDetails()
                 tolaExpended = false
 
             }
@@ -161,12 +163,12 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
-                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel.isDidiValid.value else true,
+                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel?.isDidiValid?.value ?: true else true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
                 if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) {
-                   didiViewModel.saveDidiIntoDatabase(object :LocalDbListener{
+                   didiViewModel?.saveDidiIntoDatabase(object :LocalDbListener{
                        override fun onInsertionSuccess() {
                            onNavigation()
                            showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added))
@@ -177,7 +179,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                    })
                 }
                 else{
-                    didiViewModel.updateDidiIntoDatabase(editDidiId)
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId)
                     showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
                     onNavigation()
                 }
@@ -193,11 +195,11 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             // TODO: Need to improve after using Parcable or Serializable
             val editDidiDetails=Gson().fromJson(didiDetails,DidiEntity::class.java)
             editDidiId=editDidiDetails.id
-            didiViewModel.didiName.value=editDidiDetails.name
-            didiViewModel.dadaName.value=editDidiDetails.guardianName
-            didiViewModel.houseNumber.value=editDidiDetails.address
-            didiViewModel.selectedTola.value=Pair(editDidiDetails.cohortId,editDidiDetails.cohortName)
-            didiViewModel.selectedCast.value=Pair(editDidiDetails.castId,editDidiDetails.castName)
+            didiViewModel?.didiName?.value=editDidiDetails.name
+            didiViewModel?.dadaName?.value=editDidiDetails.guardianName
+            didiViewModel?.houseNumber?.value=editDidiDetails.address
+            didiViewModel?.selectedTola?.value=Pair(editDidiDetails.cohortId,editDidiDetails.cohortName)
+            didiViewModel?.selectedCast?.value=Pair(editDidiDetails.castId,editDidiDetails.castName)
         }
     }
     CustomSnackBarShow(state = snackState)
@@ -206,7 +208,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 @Preview(showBackground = true)
 @Composable
 fun AddDidiPreview() {
-    AddDidiScreen(navController = rememberNavController(), modifier = Modifier, didiViewModel = viewModel(),
-        isOnline = true, didiDetails = BLANK_STRING){
-    }
+    AddDidiScreen(navController = rememberNavController(), modifier = Modifier,
+        isOnline = true, didiDetails = BLANK_STRING, onNavigation = {})
 }

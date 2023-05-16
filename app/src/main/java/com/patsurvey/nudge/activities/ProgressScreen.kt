@@ -333,9 +333,9 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> viewModel?.getTolaCount()
+                            1 -> viewModel?.tolaCount?.value
                                 ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
-                            2 -> viewModel?.getDidiCount()
+                            2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> ""
                             4 -> ""

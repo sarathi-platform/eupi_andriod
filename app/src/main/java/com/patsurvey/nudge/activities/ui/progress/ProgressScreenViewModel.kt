@@ -7,9 +7,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +22,9 @@ class ProgressScreenViewModel @Inject constructor(
     val apiInterface: ApiService,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val tolaDao: TolaDao,
+    val didiDao: DidiDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -33,6 +33,8 @@ class ProgressScreenViewModel @Inject constructor(
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
     val stepSelected = mutableStateOf(0)
     val villageSelected = mutableStateOf(0)
+    val tolaCount = mutableStateOf(0)
+    val didiCount = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -60,9 +62,12 @@ class ProgressScreenViewModel @Inject constructor(
      fun getStepsList(villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
+            val didiList = didiDao.getAllDidisForVillage(villageId)
+            val tolaList = tolaDao.getAllTolasForVillage(villageId)
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                
+                tolaCount.value=tolaList.size
+                didiCount.value=didiList.size
             }
         }
     }
@@ -126,7 +131,4 @@ class ProgressScreenViewModel @Inject constructor(
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
         prefRepo.saveSelectedVillage(selectedVillageEntity)
     }
-    fun getTolaCount() = prefRepo.getPref(TOLA_COUNT, 0)
-    fun getDidiCount() = prefRepo.getPref(DIDI_COUNT, 0)
-
 }

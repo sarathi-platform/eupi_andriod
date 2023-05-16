@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -38,7 +39,7 @@ fun EditTextWithTitle(
                 withStyle(
                     style = SpanStyle(
                         color = textColorDark,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = NotoSans
                     )
@@ -49,7 +50,7 @@ fun EditTextWithTitle(
                     withStyle(
                         style = SpanStyle(
                             color = red,
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -65,9 +66,17 @@ fun EditTextWithTitle(
                 onValueChange(it)
             },
             placeholder = {
-                Text(text = hint, style = mediumTextStyle, color = placeholderGrey)
+                Text(text = hint, style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ), color = placeholderGrey)
             },
-            textStyle = mediumTextStyle,
+            textStyle = TextStyle(
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+            ),
             singleLine = true,
             maxLines = 1,
             colors = TextFieldDefaults.textFieldColors(
