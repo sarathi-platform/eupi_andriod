@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.utils
 
+import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,8 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -22,9 +25,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun BlueButton(
@@ -136,12 +143,24 @@ fun BlueButtonWithIcon(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun BlueButtonWithIconPreview() {
+    BlueButtonWithIcon(
+        modifier = Modifier,
+        buttonText = stringResource(id = R.string.add_didi),
+        icon = Icons.Default.Add
+    ){}
+}
+
 @Composable
 fun ButtonPositive(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     isArrowRequired: Boolean = true,
     isActive: Boolean = true,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
     onClick: () -> Unit
 ) {
     Box(
@@ -171,7 +190,7 @@ fun ButtonPositive(
         ) {
             Text(
                 text = buttonTitle,
-                color = if (isActive) white else greyBorder,
+                color = if (isActive) textColor else greyBorder,
                 style = buttonTextStyle,
                 textAlign = TextAlign.Center
             )
@@ -179,7 +198,7 @@ fun ButtonPositive(
                 Icon(
                     Icons.Default.ArrowForward,
                     contentDescription = "Positive Button",
-                    tint = Color.White,
+                    tint = iconTintColor,
                     modifier = Modifier
                         .absolutePadding(top = 4.dp, left = 2.dp)
                 )
@@ -188,10 +207,21 @@ fun ButtonPositive(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ButtonPositivePreview() {
+    ButtonPositive(
+        buttonTitle = stringResource(id = R.string.save_tola_text),
+        isArrowRequired = true,
+        modifier = Modifier.fillMaxWidth()
+    ) {}
+}
+
 @Composable
 fun ButtonNegative(
     modifier: Modifier = Modifier,
     buttonTitle: String,
+    horizontalPadding : Dp = 10.dp,
     onClick: () -> Unit
 ) {
     Box(
@@ -208,7 +238,7 @@ fun ButtonNegative(
             ) {
                 onClick()
             }
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = horizontalPadding)
             .then(modifier),
         contentAlignment = Alignment.Center,
     ) {
@@ -230,6 +260,15 @@ fun ButtonNegative(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonNegativePreview() {
+    ButtonNegative(
+        buttonTitle = stringResource(id = R.string.save_tola_text),
+        modifier = Modifier.fillMaxWidth()
+    ) {}
 }
 
 
@@ -268,6 +307,13 @@ fun ButtonOutline(
         }
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun ButtonOutlinePreview() {
+    ButtonOutline(
+        modifier = Modifier.fillMaxWidth(),
+    ) {}
+}
 
 @Composable
 fun ButtonOutline(
@@ -298,6 +344,17 @@ fun ButtonOutline(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonOutline2Preview() {
+    ButtonOutline(
+        buttonTitle = stringResource(id = R.string.delete_tola_text),
+        outlineColor = redDark,
+        textColor = redDark,
+        modifier = Modifier.fillMaxWidth()
+    ) {}
 }
 
 @Composable
@@ -341,6 +398,19 @@ fun DoubleButtonBox(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DoubleButtonBoxPreview() {
+    DoubleButtonBox(
+        modifier = Modifier.shadow(10.dp),
+        negativeButtonRequired = true,
+        positiveButtonText = stringResource(id = R.string.add_didi),
+        negativeButtonText = "Back",
+        positiveButtonOnClick = {},
+        negativeButtonOnClick = {}
+    )
 }
 
 @Composable
@@ -423,6 +493,17 @@ fun SimpleActionButton(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun SimpleActionButtonPreview() {
+    SimpleActionButton(
+        buttonTitle = stringResource(id = R.string.mark_as_completed),
+        textColor = white,
+        backgroundColor = greenOnline,
+        modifier = Modifier.fillMaxWidth()
+    ) {}
+}
+
 @Composable
 fun IconButtonForward(
     modifier: Modifier = Modifier,
@@ -449,6 +530,15 @@ fun IconButtonForward(
         Icon(Icons.Default.ArrowForward, contentDescription = null, tint = Color.White)
     }
 }
+@Preview(showBackground = true)
+@Composable
+fun IconButtonForwardPreview() {
+    IconButtonForward(
+        modifier = Modifier
+            .size(80.dp)
+    ) {}
+}
+
 @Composable
 fun BlueButtonWithDrawableIcon(
     modifier: Modifier = Modifier,
@@ -510,6 +600,57 @@ fun BlueButtonWithDrawableIcon(
             )
         }
     }
+}
+
+@Composable
+fun ButtonOutlineWithTopIcon(
+    modifier: Modifier = Modifier,
+    buttonTitle: String = "Yes",
+    textColor: Color,
+    iconTintColor: Color,
+    buttonBackgroundColor: Color = white,
+    buttonBorderColor: Color = lightGray2,
+    icon: ImageVector = Icons.Default.Check,
+    onClick: () -> Unit
+) {
+    OutlinedButton(
+        onClick = {
+            onClick()
+        },
+        border = BorderStroke(1.dp, buttonBorderColor),
+        shape = RoundedCornerShape(6.dp),
+        modifier = modifier,
+        colors = ButtonDefaults.buttonColors(backgroundColor = buttonBackgroundColor)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = "Button Icon",
+                tint = iconTintColor,
+                modifier = Modifier.padding(bottom = 18.dp)
+            )
+            Text(
+                text = buttonTitle,
+                color = textColor,
+                style = mediumTextStyle,
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonOutlineWithTopIconPreview() {
+    ButtonOutlineWithTopIcon(
+        modifier = Modifier.size(155.dp, 110.dp),
+        buttonTitle = "Yes",
+        textColor = textColorDark,
+        iconTintColor = greenActiveIcon,
+        icon = Icons.Default.Close
+    ) {}
 }
 
 @Composable
