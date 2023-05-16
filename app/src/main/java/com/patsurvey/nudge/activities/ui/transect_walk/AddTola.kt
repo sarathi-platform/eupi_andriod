@@ -157,6 +157,7 @@ fun AddTolaBox(
                         if (location!!.lat != null && location!!.long != null) locationAdded = true
                         focusManager.clearFocus()
                     }
+                    .height(45.dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -182,28 +183,31 @@ fun AddTolaBox(
                     )
                 }
             }
-            Column(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 6.dp)
             ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(id = R.string.save_tola_text),
-                    isArrowRequired = false,
-                    isActive = mTolaName.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth().height(50.dp)
-                ) {
-                    onSaveClicked(mTolaName, location)
-                }
-                Spacer(modifier = Modifier.height(6.dp))
                 ButtonOutline(
                     buttonTitle = stringResource(R.string.cancel_tola_text),
                     outlineColor = redDark,
                     textColor = redDark,
-                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
                 ) {
                     onCancelClicked()
                 }
+
+                Spacer(modifier = Modifier.width(6.dp))
+
+                ButtonPositive(
+                    buttonTitle = stringResource(id = R.string.save_tola_text),
+                    isArrowRequired = false,
+                    isActive = mTolaName.isNotEmpty(),
+                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                ) {
+                    onSaveClicked(mTolaName, location)
+                }
+
 
             }
         }
@@ -396,6 +400,7 @@ fun TolaBox(
                                         true
                                     focusManager.clearFocus()
                                 }
+                                .height(45.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -421,31 +426,34 @@ fun TolaBox(
                                 )
                             }
                         }
-                        Column(
+
+                        Row(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(vertical = 6.dp)
+                                .padding(vertical = 6.dp),
+//                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            ButtonPositive(
-                                buttonTitle = stringResource(id = R.string.save_tola_text),
-                                isArrowRequired = false,
-                                modifier = Modifier.fillMaxWidth().height(50.dp)
-                            ) {
-                                saveButtonClicked(mTolaName, location)
-                                showEditView = false
-                            }
                             if (!isTransectWalkCompleted) {
-                                Spacer(modifier = Modifier.height(6.dp))
                                 ButtonOutline(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
                                     outlineColor = redDark,
                                     textColor = redDark,
-                                    modifier = Modifier.fillMaxWidth().height(50.dp)
+                                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false
                                 }
+                                Spacer(modifier = Modifier.width(6.dp))
                             }
+                            ButtonPositive(
+                                buttonTitle = stringResource(id = R.string.save_tola_text),
+                                isArrowRequired = false,
+                                modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                            ) {
+                                saveButtonClicked(mTolaName, location)
+                                showEditView = false
+                            }
+
 
                         }
                     }

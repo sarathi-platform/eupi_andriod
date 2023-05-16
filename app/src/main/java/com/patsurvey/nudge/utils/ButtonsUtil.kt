@@ -256,11 +256,11 @@ fun ButtonOutline(
         border = BorderStroke(1.dp, greyBorder),
         modifier = Modifier
             .fillMaxWidth()
-//            .height()
+            .padding(vertical = 0.dp)
             .then(modifier)
     ) {
         Row(
-            modifier = Modifier/*.padding(vertical = 6.dp)*/,
+            modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically)/*.padding(vertical = 6.dp)*/,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -268,12 +268,13 @@ fun ButtonOutline(
                 icon,
                 contentDescription = "Add Button",
                 tint = blueDark,
-                modifier = Modifier.absolutePadding(top = 2.dp, right = 2.dp)
+                modifier = Modifier.absolutePadding(top = 4.dp, right = 2.dp).size(22.dp)
             )
             Text(
                 text = buttonTitle,
                 color = blueDark,
                 style = mediumTextStyle,
+                textAlign = TextAlign.Center,
             )
         }
     }

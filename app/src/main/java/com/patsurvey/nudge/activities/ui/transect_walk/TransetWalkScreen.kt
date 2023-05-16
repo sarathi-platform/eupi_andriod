@@ -145,7 +145,7 @@ fun TransectWalkScreen(
                                         )
                                     ) {
                                         ButtonOutline(
-                                            modifier = Modifier.weight(0.9f).height(50.dp),
+                                            modifier = Modifier.weight(0.9f).height(45.dp),
                                         ) {
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
@@ -158,7 +158,7 @@ fun TransectWalkScreen(
                             Column(
                                 modifier = Modifier
                                     .fillMaxSize()
-                                    .padding(top = 10.dp),
+                                    .padding(top = 0.dp),
                                 verticalArrangement = Arrangement.spacedBy(10.dp),
                                 horizontalAlignment = Alignment.Start
                             ) {
@@ -168,7 +168,7 @@ fun TransectWalkScreen(
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 14.sp,
+                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     fontFamily = NotoSans
                                                 )
@@ -178,7 +178,7 @@ fun TransectWalkScreen(
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 14.sp,
+                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.SemiBold,
                                                     fontFamily = NotoSans
                                                 )
@@ -188,7 +188,7 @@ fun TransectWalkScreen(
                                             withStyle(
                                                 style = SpanStyle(
                                                     color = textColorDark,
-                                                    fontSize = 14.sp,
+                                                    fontSize = 12.sp,
                                                     fontWeight = FontWeight.Normal,
                                                     fontFamily = NotoSans
                                                 )
@@ -307,7 +307,8 @@ fun TransectWalkScreen(
             }
         }
 
-        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value && viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
+        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value
+            && viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -374,7 +375,7 @@ fun VillageDetailView(
         Row(
             modifier = Modifier
                 .absolutePadding(left = 4.dp)
-                .padding(end = 16.dp, bottom = 10.dp)
+                .padding(end = 16.dp)
         ) {
             Text(
                 text = "VO: ",

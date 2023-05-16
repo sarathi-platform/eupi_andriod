@@ -70,7 +70,7 @@ fun ProgressScreen(
         ModalBottomSheetLayout(
             sheetContent = {
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp)
@@ -84,7 +84,7 @@ fun ProgressScreen(
                         color = textColorDark,
                         modifier = Modifier.padding(top = 12.dp)
                     )
-                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
                         itemsIndexed(villages) { index, village ->
                             VillageAndVoBoxForBottomSheet(
@@ -276,7 +276,7 @@ fun StepsBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (isCompleted) greenLight else if (shouldBeActive) stepBoxActiveColor else white)
-                    .padding(vertical = if (isCompleted)10.dp else 14.dp, horizontal = 16.dp),
+                    .padding(vertical = if (isCompleted) 10.dp else 14.dp, horizontal = 16.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 val iconResourceId = when (iconId) {
@@ -292,11 +292,12 @@ fun StepsBox(
                         painter = painterResource(id = iconResourceId),
                         contentDescription = null,
                         tint = if (shouldBeActive) stepIconEnableColor else if (isCompleted) stepIconCompleted else stepIconDisableColor,
-                        modifier = Modifier.constrainAs(iconContainer) {
-                            start.linkTo(parent.start)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                        }
+                        modifier = Modifier
+                            .constrainAs(iconContainer) {
+                                start.linkTo(parent.start)
+                                top.linkTo(parent.top)
+                                bottom.linkTo(parent.bottom)
+                            }
                             .padding(start = 4.dp)
                     )
                 }
@@ -509,7 +510,7 @@ fun UserDataView(
                 text = stringResource(R.string.user_id_text) + identity,
                 color = textColorDark,
                 modifier = Modifier
-                    .padding(top = 6.dp, bottom = 16.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth(),
                 textAlign = TextAlign.Start,
                 style = smallTextStyle
@@ -529,7 +530,7 @@ fun VillageSelectorDropDown(
         modifier = Modifier
             .background(dropDownBg)
             .clip(RoundedCornerShape(6.dp))
-            .height(46.dp)
+            .height(40.dp)
             .fillMaxWidth()
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
