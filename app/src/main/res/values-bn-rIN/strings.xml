@@ -69,6 +69,7 @@
     <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
     <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
+    <string name="particaptory_wealth_ranking_text">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
     <string name="enter_mobile_text">মোবাইলে প্রবেশ করুন</string>
     <string name="enter_otp_text">OTP লিখুন</string>
     <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>

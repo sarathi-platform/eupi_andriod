@@ -1,9 +1,10 @@
 package com.patsurvey.nudge.utils
 
 enum class WealthRank(val rank: String) {
-    RICH("rich"),
-    MEDIUM("medium"),
-    POOR("poor"),
+    NOT_RANKED("NOT RANKED"),
+    RICH("RICH"),
+    MEDIUM("MEDIUM"),
+    POOR("POOR"),
 //    ULTRA_POOR("ultra_poor")
 
 }

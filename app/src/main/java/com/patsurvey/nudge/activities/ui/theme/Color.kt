@@ -65,3 +65,8 @@ val stepBoxActiveColor = Color(0xFFFFF4E3)
 val stepIconDisableColor = Color(0xFF938c89)
 val stepIconEnableColor = Color(0xFF52453d)
 val stepIconCompleted = Color(0xFF439A86)
+
+val rankItemBorder = Color(0xFF888888)
+val mediumRankColor = Color(0xFFE08B00)
+val poorRankColor = Color(0xFF439A86)
+val richRankColor = Color(0xFFD12222)

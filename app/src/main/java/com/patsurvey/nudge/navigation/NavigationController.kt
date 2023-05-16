@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.navigation
-
-import android.util.Log
+/*
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -14,11 +13,8 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
-import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
-import com.patsurvey.nudge.activities.ui.socialmapping.SocialMappingScreen
-import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
@@ -65,7 +61,7 @@ fun StartFlowNavigation(navController: NavHostController) {
             HomeScreen(navController = navController, modifier = Modifier.fillMaxWidth())
         }
         composable(route = ScreenRoutes.RANKED_DIDI_LIST_SCREEN.route) {
-            SocialMappingScreen(
+            WealthRankingScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth()
@@ -95,11 +91,13 @@ fun VOHomeScreenFlowNavigation(
         startDestination = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route
     ) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            /*ProgressScreen(
+            */
+/*ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier), viewModel = hiltViewModel(), navController
-            )*/
+            )*//*
+
         }
         composable(route = ScreenRoutes.MORE_SCREEN.route) {
             MoreScreen(navController)
@@ -153,11 +151,13 @@ fun HomeScreenFlowNavigation(
         startDestination = ScreenRoutes.PROGRESS_SCREEN.route
     ) {
         composable(route = ScreenRoutes.PROGRESS_SCREEN.route) {
-            /*ProgressScreen(
+            */
+/*ProgressScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier), viewModel = hiltViewModel(), homeScreenNavController
-            )*/
+            )*//*
+
         }
         composable(route = ScreenRoutes.DIDI_SCREEN.route,
             arguments = listOf(navArgument(ARG_PAGE_FROM){
@@ -188,7 +188,8 @@ fun HomeScreenFlowNavigation(
                 type = NavType.IntType
             })
         ) {
-            /*TransectWalkScreen(
+            */
+/*TransectWalkScreen(
                 navController = homeScreenNavController,
                 modifier = Modifier
                     .fillMaxSize()
@@ -196,7 +197,8 @@ fun HomeScreenFlowNavigation(
                 viewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
                 stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            )*/
+            )*//*
+
         }
 
         composable(
@@ -209,11 +211,13 @@ fun HomeScreenFlowNavigation(
         }
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
-            /*VillageSelectionScreen(
+            */
+/*VillageSelectionScreen(
                 navController = homeScreenNavController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize()
-            )*/
+            )*//*
+
         }
         detailsNavGraph(navController = homeScreenNavController,modifier)
     }
@@ -226,14 +230,16 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController,modifier: M
             arguments = listOf(navArgument(ARG_PAGE_FROM){
                 type= NavType.StringType
             })){
-            /*AddDidiScreen(
+            */
+/*AddDidiScreen(
                 navController=navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier),
                 didiViewModel = hiltViewModel(),
                 navigateFrom =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
-            )*/
+            )*//*
+
         }
     }
 }
@@ -265,14 +271,16 @@ fun BasicPageFlowWithoutBottomNav(
             arguments = listOf(navArgument(ARG_PAGE_FROM){
                 type= NavType.StringType
             })){
-           /* AddDidiScreen(
+           */
+/* AddDidiScreen(
                 navController=navController,
                 modifier = Modifier
                     .fillMaxSize()
                     .then(modifier),
                 didiViewModel = hiltViewModel(),
                 navigateFrom =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
-            )*/
+            )*//*
+
         }
     }
-}
+}*/

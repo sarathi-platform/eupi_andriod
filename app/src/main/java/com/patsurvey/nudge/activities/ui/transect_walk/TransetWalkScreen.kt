@@ -115,7 +115,9 @@ fun TransectWalkScreen(
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
 
-                LazyColumn(modifier = Modifier.padding(bottom = bottomPadding)) {
+                LazyColumn(
+                    modifier =
+                    Modifier.padding(bottom = bottomPadding)) {
 
                     if (viewModel.showLoader.value) {
                         item { CustomProgressBar(modifier = Modifier) }
@@ -308,7 +310,7 @@ fun TransectWalkScreen(
         }
 
         if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value
-            && viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
+            /*&& viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }*/) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

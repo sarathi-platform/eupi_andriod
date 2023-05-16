@@ -29,13 +29,16 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
-@Preview
 @Composable
 fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
-//    navController: NavController
+    navController: NavController,
+    viewModel: WealthRankingViewModel,
+    villageId:Int,
+    stepId:Int,
 ) {
 
     val localDensity = LocalDensity.current
@@ -138,11 +141,13 @@ fun WealthRankingBox(
         WealthRank.RICH -> brownLoght
         WealthRank.MEDIUM -> yellowLight
         WealthRank.POOR -> blueLighter
+        else -> {Color.Transparent}
     }
     val boxTitle = when (wealthRank) {
         WealthRank.RICH -> "Rich"
         WealthRank.MEDIUM -> "Medium"
         WealthRank.POOR -> "Poor"
+        else -> {""}
     }
 
     Box(

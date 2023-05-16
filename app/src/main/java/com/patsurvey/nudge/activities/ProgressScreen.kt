@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities
 
 
-import android.os.Build
-import android.view.WindowManager
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,7 +15,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -44,7 +41,7 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
-    onNavigateToTransWalk:(Int,Int,Int) ->Unit
+    onNavigateToStep:(Int, Int, Int) ->Unit
 ) {
 
     val scaffoldState =
@@ -204,12 +201,14 @@ fun ProgressScreen(
                                     viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
                                     when (index) {
                                         0 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
+                                            onNavigateToStep(villageId,stepId,index)
                                         }
                                         1 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
+                                            onNavigateToStep(villageId,stepId,index)
                                         }
-                                        2 -> {}
+                                        2 -> {
+                                            onNavigateToStep(villageId, stepId, index)
+                                        }
                                         3 -> {}
                                         4 -> {}
                                         5 -> {}
