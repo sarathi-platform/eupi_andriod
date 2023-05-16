@@ -22,9 +22,12 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 
@@ -165,7 +168,7 @@ fun ButtonPositive(
     ) {
         Row(
             Modifier
-                .padding(14.dp)
+                .padding(10.dp)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically,
@@ -174,7 +177,11 @@ fun ButtonPositive(
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
-                style = buttonTextStyle,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
                 textAlign = TextAlign.Center
             )
             if (isArrowRequired) {
@@ -183,7 +190,7 @@ fun ButtonPositive(
                     contentDescription = "Positive Button",
                     tint = Color.White,
                     modifier = Modifier
-                        .absolutePadding(top = 4.dp, left = 2.dp)
+                        .absolutePadding(top = 2.dp, left = 2.dp)
                 )
             }
         }
@@ -249,10 +256,11 @@ fun ButtonOutline(
         border = BorderStroke(1.dp, greyBorder),
         modifier = Modifier
             .fillMaxWidth()
+//            .height()
             .then(modifier)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = Modifier/*.padding(vertical = 6.dp)*/,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -260,7 +268,7 @@ fun ButtonOutline(
                 icon,
                 contentDescription = "Add Button",
                 tint = blueDark,
-                modifier = Modifier.absolutePadding(top = 4.dp, right = 2.dp)
+                modifier = Modifier.absolutePadding(top = 2.dp, right = 2.dp)
             )
             Text(
                 text = buttonTitle,
@@ -289,14 +297,18 @@ fun ButtonOutline(
             .then(modifier)
     ) {
         Row(
-            modifier = Modifier.padding(vertical = 8.dp),
+            modifier = Modifier.padding(vertical = 0.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
                 text = buttonTitle,
                 color = textColor,
-                style = mediumTextStyle,
+                style = /*mediumTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
             )
         }
     }

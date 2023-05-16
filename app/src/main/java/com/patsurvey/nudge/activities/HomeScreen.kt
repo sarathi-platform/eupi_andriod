@@ -99,7 +99,7 @@ fun BottomNavigationBar(
                 alwaysShowLabel = true,
                 icon = {
                     Column(horizontalAlignment = CenterHorizontally) {
-                        Spacer(modifier = Modifier.height(16.dp)
+                        Spacer(modifier = Modifier.height(26.dp)
                             .background( blueDark))
                         Icon(
                             painter = item.icon,

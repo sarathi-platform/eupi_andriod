@@ -29,12 +29,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
+import com.patsurvey.nudge.utils.setKeyboardToReadjust
 
 @SuppressLint("StringFormatInvalid")
 @Composable
@@ -45,6 +46,10 @@ fun LoginScreen(
 ) {
     val context = LocalContext.current
         val snackState= rememberSnackBarState()
+
+    val activity = context as MainActivity
+    setKeyboardToReadjust(activity)
+
     BackHandler {
         (context as? Activity)?.finish()
     }
