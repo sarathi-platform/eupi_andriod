@@ -5,9 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.utils.LANGUAGE_TABLE_NAME
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 
 @Dao
@@ -23,12 +21,24 @@ interface StepsListDao {
     fun insert(step: StepListEntity)
 
 
-    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :isComplete where id = :stepId")
-    fun markStepAsComplete(stepId: Int, isComplete: Int = 0)
+    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :isComplete where id = :stepId AND villageId = :villageId")
+    fun markStepAsCompleteOrInProgress(stepId: Int, isComplete: Int = 0,villageId:Int)
+
+    @Query("UPDATE $STEPS_LIST_TABLE SET isComplete = :inProgress where orderNumber = :orderNumber AND villageId = :villageId")
+    fun markStepAsInProgress(orderNumber: Int, inProgress: Int = 1,villageId:Int)
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
     fun isStepComplete(id: Int): Int
 
-    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id")
-    fun isStepCompleteLive(id: Int) : LiveData<Int>
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
+    fun isStepCompleteLive(id: Int,villageId: Int) : LiveData<Int>
+
+    @Query("DELETE from $STEPS_LIST_TABLE")
+    fun deleteAllStepsFromDB()
+
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
+    fun getAllStepsForVillage(villageId: Int): List<StepListEntity>
+
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId AND id = :stepId")
+    fun getStepForVillage(villageId: Int,stepId: Int): StepListEntity
 }

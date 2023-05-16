@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import com.patsurvey.nudge.database.dao.*
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
-    TolaEntity::class, DidiEntity::class], version = 1, exportSchema = false)
+    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class], version = 1, exportSchema = false)
 @TypeConverters(IntConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
@@ -18,5 +18,6 @@ abstract class NudgeDatabase: RoomDatabase()  {
     abstract fun tolaDao(): TolaDao
     abstract fun casteListDao(): CasteListDao
     abstract fun didiDao(): DidiDao
+    abstract fun lastSelectedTola(): LastSelectedTolaDao
 
 }
