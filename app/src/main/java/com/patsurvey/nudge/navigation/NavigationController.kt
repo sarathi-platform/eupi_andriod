@@ -3,6 +3,7 @@ package com.patsurvey.nudge.navigation
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.*
@@ -13,6 +14,9 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.survey.YesNoQuestionScreen
+import com.patsurvey.nudge.activities.survey.YesNoQuestionViewModel
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
@@ -77,6 +81,22 @@ fun StartFlowNavigation(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth()
             )
         }
+        composable(route = ScreenRoutes.PAT_SURVEY_YES_NO_SCREEN.route) {
+            val viewModel : YesNoQuestionViewModel = hiltViewModel()
+            val surveyUiState = viewModel.surveyHeaderUiState.collectAsState().value
+            val questionAnswerUiState = viewModel.questionAnswerUiState.collectAsState().value
+            val nextPreviousUiState = viewModel.nextPreviousUiState.collectAsState().value
+            YesNoQuestionScreen(
+                navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                surveyUiState,
+                questionAnswerUiState,
+                nextPreviousUiState,
+                viewModel::OnEvent
+            )
+        }
+
     }
 }
 
@@ -135,6 +155,23 @@ fun VOHomeScreenFlowNavigation(
 
         composable(route = ScreenRoutes.VILLAGE_SELECTION_SCREEN.route) {
 //            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(route = ScreenRoutes.PAT_SURVEY_YES_NO_SCREEN.route) {
+            val viewModel : YesNoQuestionViewModel = hiltViewModel()
+            val surveyUiState = viewModel.surveyHeaderUiState.collectAsState().value
+            val questionAnswerUiState = viewModel.questionAnswerUiState.collectAsState().value
+            val nextPreviousUiState = viewModel.nextPreviousUiState.collectAsState().value
+            YesNoQuestionScreen(
+                navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                surveyUiState,
+                questionAnswerUiState,
+                nextPreviousUiState,
+                viewModel::OnEvent
+            )
         }
     }
 }
@@ -240,6 +277,23 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController,modifier: M
                 navigateFrom =  it.arguments?.getString(ARG_PAGE_FROM) ?: ARG_FROM_HOME
             )*//*
 
+        }
+
+        composable(route = ScreenRoutes.PAT_SURVEY_YES_NO_SCREEN.route) {
+            val viewModel : YesNoQuestionViewModel = hiltViewModel()
+            val surveyUiState = viewModel.surveyHeaderUiState.collectAsState().value
+            val questionAnswerUiState = viewModel.questionAnswerUiState.collectAsState().value
+            val nextPreviousUiState = viewModel.nextPreviousUiState.collectAsState().value
+            YesNoQuestionScreen(
+                navController,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(modifier),
+                surveyUiState,
+                questionAnswerUiState,
+                nextPreviousUiState,
+                viewModel::OnEvent
+            )
         }
     }
 }

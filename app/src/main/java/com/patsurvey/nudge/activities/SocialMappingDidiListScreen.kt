@@ -338,15 +338,12 @@ fun SocialMappingDidiListScreen(
                         } else {
                             completeTolaAdditionClicked = true
                         }
-
                     },
-                    negativeButtonOnClick = {
-
-                    }
+                    negativeButtonOnClick = {}
                 )
             }
-        }
 
+        }
     }
 }
 
