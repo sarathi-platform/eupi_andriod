@@ -7,7 +7,7 @@ plugins {
     id 'kotlin-kapt'
 
 }
-def version = "0.0.8"
+def version = "0.0.10"
 android {
     compileSdk 33
 
