@@ -143,7 +143,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 selectedItem = didiViewModel.selectedTola.value.second
             ) {
                 didiViewModel.selectedTola.value=Pair(it.id,it.name)
-                didiViewModel.prefRepo.saveLastSelectedTola(Pair(it.id,it.name))
+                didiViewModel.saveLastSelectedTolaForVillage(it.id,it.name)
                 didiViewModel.validateDidiDetails()
                 tolaExpended = false
 

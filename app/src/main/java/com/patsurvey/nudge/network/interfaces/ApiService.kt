@@ -2,8 +2,7 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
-import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.model.request.StepsListRequest
@@ -53,5 +52,9 @@ interface ApiService {
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun addDidis(@Body didiList: JsonArray): ApiResponseModel<List<DidiApiResponse>>
+
+    // Get CasteList
+    @GET("/read-api/config/caste/get")
+    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
 
 }

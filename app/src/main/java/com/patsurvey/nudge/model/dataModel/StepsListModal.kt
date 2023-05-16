@@ -8,5 +8,7 @@ data class StepsListModal(
     @SerializedName("orderNumber")
     val orderNumber: Int,
     @SerializedName("name")
-    var name: String
+    var name: String,
+    @SerializedName("villageId")
+    var villageId: Int
 )

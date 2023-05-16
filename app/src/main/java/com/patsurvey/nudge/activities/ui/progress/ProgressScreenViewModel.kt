@@ -2,10 +2,12 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -21,7 +23,8 @@ class ProgressScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val apiInterface: ApiService,
     val stepsListDao: StepsListDao,
-    val villageListDao: VillageListDao
+    val villageListDao: VillageListDao,
+    val casteListDao: CasteListDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -37,10 +40,8 @@ class ProgressScreenViewModel @Inject constructor(
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
-        getVillaeList() {
-            fetchStepsList(it)
-        }
-//        checkAndUpdateCompletedStepsForVillage()
+        fetchVillageList()
+        fetchCasteList()
     }
 
     private fun checkAndUpdateCompletedStepsForVillage() {
@@ -56,101 +57,61 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getStepsList() {
+     fun getStepsList(villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllSteps()
+            val stepList = stepsListDao.getAllStepsForVillage(villageId)
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
+                
             }
         }
     }
 
-    private fun fetchStepsList(villageId:Int) {
-        showLoader.value = true
+    private fun fetchCasteList(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiInterface.getStepsList(villageId)
-                val localStepsList = stepsListDao.getAllSteps()
-                withContext(Dispatchers.IO) {
+                val response = apiInterface.getCasteList(prefRepo.getAppLanguageId()?:0)
+                withContext(Dispatchers.IO){
                     if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
-                            if (localStepsList.isEmpty() && !StepListEntity.same(
-                                    localStepsList,
-                                    StepListEntity.convertFromModelToEntity(it.stepList)
-                                )
-                            ) {
-                                it.stepList.forEach { step ->
-                                    stepsListDao.insert(
-                                        StepListEntity(
-                                            id = step.id,
-                                            orderNumber = step.orderNumber,
-                                            name = step.name,
-                                            isComplete = StepStatus.NOT_STARTED.ordinal,
-                                            needToPost = true
-                                        )
-                                    )
-                                }
-                            }
-                            prefRepo.savePref(
-                                PREF_PROGRAM_NAME,
-                                it.programName
-                            ) //TODO saving this in pref for now will move it to user table after User API is integrated
-                            delay(2000L)
-                            getStepsList()
-                            showLoader.value = false
-                        }
-                        if (response.data == null)
-                            showLoader.value = false
-                    } else if (response.status.equals(FAIL, true)) {
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
-                        }
-                    }
-                    else {
+                        response.data?.let { casteListDao.insertAll(it) }
+                    }else{
                         onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
-                        showLoader.value = false
                     }
                 }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                onError(tag = "ProgressScreenViewModel", "Exception 1 : ${ex.localizedMessage}")
-                showLoader.value = false
+            }catch (ex:Exception){
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
 
-    fun getVillaeList(success: (Int) -> Unit) {
+
+
+    fun fetchVillageList(){
         showLoader.value = true
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val villageList = villageListDao.getAllVillages()
-                withContext(Dispatchers.IO) {
-                    _villagList.value = villageList
-                    withContext(Dispatchers.Main) {
-                        villageList.mapIndexed { index, villageEntity ->
-                            if(prefRepo.getSelectedVillage().id==villageEntity.id){
-                                villageSelected.value=index
-                            }
+        job=viewModelScope.launch {
+            withContext(Dispatchers.IO){
+                val villageList=villageListDao.getAllVillages()
+                _villagList.value = villageList
+                withContext(Dispatchers.Main){
+                    villageList.mapIndexed { index, villageEntity ->
+                        if(prefRepo.getSelectedVillage().id==villageEntity.id){
+                            villageSelected.value=index
                         }
-                        selectedText.value = prefRepo.getSelectedVillage().name
-                        showLoader.value = false
                     }
-                    success(villageSelected.value)
+                    selectedText.value = prefRepo.getSelectedVillage().name
+                    getStepsList(prefRepo.getSelectedVillage().id)
+                    showLoader.value = false
                 }
-            } catch (ex: Exception) {
-                onError(tag = "ProgressScreenViewModel", "Exception 2 : ${ex.localizedMessage}")
-                showLoader.value = false
             }
-
         }
     }
 
-    fun isStepComplete(stepId: Int): LiveData<Int> {
-        return stepsListDao.isStepCompleteLive(stepId)
+    fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
+        return stepsListDao.isStepCompleteLive(stepId,villageId)
     }
 
     fun updateSelectedStep(stepId: Int) {
-        val currentStepIndex = stepList.value.map { it.id }.indexOf(stepId)
+        val currentStepIndex = stepList.value.map { it.stepId }.indexOf(stepId)
         stepSelected.value = when (currentStepIndex) {
             in 0..4 -> currentStepIndex + 1
             5 -> {

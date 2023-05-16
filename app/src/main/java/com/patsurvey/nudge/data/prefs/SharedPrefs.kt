@@ -144,14 +144,4 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun saveFromPage(pageFrom: String) {
         prefs.edit().putString(PREF_KEY_PAGE_FROM,pageFrom).apply()
     }
-
-    override fun saveLastSelectedTola(tola: Pair<Int, String>) {
-        prefs.edit().putInt(PREF_KEY_LAST_TOLA_ID, tola.first).apply()
-        prefs.edit().putString(PREF_KEY_LAST_TOLA_NAME, tola.second).apply()
-    }
-
-    override fun getLastSelectedTola(): Pair<Int, String?> {
-        return Pair(prefs.getInt(PREF_KEY_LAST_TOLA_ID,-1),prefs.getString(PREF_KEY_LAST_TOLA_NAME,
-            BLANK_STRING))
-    }
 }
