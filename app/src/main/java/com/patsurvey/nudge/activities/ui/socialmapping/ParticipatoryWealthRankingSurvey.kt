@@ -14,10 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Icon
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
@@ -37,15 +34,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.*
 import com.patsurvey.nudge.activities.ui.socialmapping.ExpandableCard
@@ -53,24 +51,32 @@ import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.*
 
 @Composable
 fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: WealthRankingSurveyViewModel
+    viewModel: WealthRankingSurveyViewModel,
+    stepId: Int
 ) {
 
     val didids = viewModel.didiList.collectAsState()
     var showDidiListForRank by remember { mutableStateOf(Pair(false, WealthRank.NOT_RANKED)) }
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
 
+    val context = LocalContext.current
+
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.stepId = stepId
+    }
+    
+    val showDialog = remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -80,6 +86,24 @@ fun ParticipatoryWealthRankingSurvey(
     ) {
         val (bottomActionBox, mainBox) = createRefs()
 
+        if (showDialog.value){
+            ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
+                showDialog.value = it
+            }) {
+                if ((context as MainActivity).isOnline.value ?: false) {
+                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
+//                    viewModel.updateWealthRankingToNetwork()
+                }
+                viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                viewModel.saveWealthRankingCompletionDate()
+                navController.navigate("wr_step_completion_screen/${context.getString(R.string.transect_walk_completed_message).replace(
+                            "{VILLAGE_NAME}",
+                            viewModel.selectedVillage?.name ?: "")}"
+                )
+//                navController.navigate()
+            }
+        }
+        
         Box(
             modifier = Modifier
                 .constrainAs(mainBox) {
@@ -93,7 +117,7 @@ fun ParticipatoryWealthRankingSurvey(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 16.dp),
             ) {
 
                 VillageDetailView(
@@ -142,10 +166,12 @@ fun ParticipatoryWealthRankingSurvey(
                     Box(modifier = Modifier
                         .fillMaxSize()
                         .padding(vertical = 8.dp)) {
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                            contentPadding = PaddingValues(bottom = 10.dp),
+                        modifier = Modifier.padding(bottom = 10.dp)) {
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
-                                DidiItemCard(didi, expandedCardIds.contains(didi.id), modifier,
+                                DidiItemCard(didi, expandedCardIds.contains(didi.id), Modifier.padding(horizontal = 0.dp),
                                     onExpendClick = { expand, didiDetailModel ->
                                         viewModel.onCardArrowClicked(didiDetailModel.id)
                                     },
@@ -184,8 +210,8 @@ fun ParticipatoryWealthRankingSurvey(
                 }
             }
         }
-
-        DoubleButtonBox(
+        
+        BottomButtonBox(
             modifier = Modifier
                 .constrainAs(bottomActionBox) {
                     bottom.linkTo(parent.bottom)
@@ -199,16 +225,57 @@ fun ParticipatoryWealthRankingSurvey(
             positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
                 id = R.string.complete_wealth_ranking_btn_text
             ),
-            negativeButtonRequired = false,
+            isArrowRequired = !showDidiListForRank.first,
             positiveButtonOnClick = {
                 if (showDidiListForRank.first)
                     showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
                 else {
-                    //TODO Show Dialog
+                    showDialog.value = true
                 }
-            },
-            negativeButtonOnClick = { /*No Back Button*/ }
+            }
         )
+    }
+}
+
+@Composable
+fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit, positiveButtonClicked: () -> Unit) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Start,
+                        style = buttonTextStyle,
+                        maxLines = 1,
+                        color = textColorDark,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = message,
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyleMediumWeight,
+                        maxLines = 2,
+                        color = textColorDark,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonNegative(buttonTitle = stringResource(id = R.string.cancel_tola_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                            setShowDialog(false)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ButtonPositive(buttonTitle = stringResource(id = R.string.yes_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                            positiveButtonClicked()
+                            setShowDialog(false)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 

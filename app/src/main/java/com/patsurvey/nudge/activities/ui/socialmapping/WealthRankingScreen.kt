@@ -199,49 +199,30 @@ fun WealthRankingScreen(
             }
         }
 
-//        if () {
-        DoubleButtonBox(
-            modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+//        if (viewModel.shouldShowBottomButton.value) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+
+                positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
+                negativeButtonRequired = false,
+                positiveButtonOnClick = {
+                    navController.navigate("wealth_ranking_survey/$stepId")
                 },
-
-            positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
-            negativeButtonRequired = false,
-            positiveButtonOnClick = {
-                navController.navigate("wealth_ranking_survey")
-                /*if (completeStepAdditionClicked) {
-                    //TODO Integrate Api when backend fixes the response.
-                    if ((context as MainActivity).isOnline.value ?: false) {
-                        viewModel.addTolasToNetwork()
-                    }
-                    viewModel.markTransectWalkComplete(villageId, stepId)
-                    navController.navigate(
-                        "step_completion_screen/${
-                            context.getString(R.string.transect_walk_completed_message).replace(
-                                "{VILLAGE_NAME}",
-                                viewModel.villageEntity.value?.name ?: ""
-                            )
-                        }"
-                    )
-
-                } else {
-                    completeStepAdditionClicked = true
-                }*/
-            },
-            negativeButtonOnClick = {/*Nothing to do here*/ }
-        )
+                negativeButtonOnClick = {/*Nothing to do here*/ }
+            )
 //        }
     }
 }
 
-@OptIn(ExperimentalGlideComposeApi::class)
 @SuppressLint("UnusedTransitionTargetStateParameter")
 @Composable
 fun ExpandableCard(

@@ -3,6 +3,7 @@ package com.patsurvey.nudge.database.dao
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
 interface DidiDao {
@@ -36,5 +37,9 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET wealth_ranking = :rank WHERE id = :didiId")
     fun updateDidiRank(didiId: Int, rank: String)
+    @Query("SELECT COUNT(id) from $DIDI_TABLE where wealth_ranking = :unRankedStatus and villageId = :villageId")
+    fun getUnrankedDidiCount(villageId: Int, unRankedStatus: String = WealthRank.NOT_RANKED.rank): Int
 
+    @Query("SELECT * FROM $DIDI_TABLE where wealth_ranking = :rank and villageId = :villageId")
+    fun getAllPoorDidisForVillage(villageId: Int, rank: String = WealthRank.POOR.rank): List<DidiEntity>
 }

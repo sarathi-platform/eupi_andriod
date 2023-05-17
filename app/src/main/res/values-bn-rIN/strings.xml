@@ -112,5 +112,10 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
 
     <string name="done_text">पूर्ण </string>
+    <string name="yes_text">हाँ</string>
+    <string name="share_button_text">शेयर करें</string>
+    <string name="download_button_text">डाउनलोड करें</string>
+
+
 
 </resources>

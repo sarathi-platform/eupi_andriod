@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +33,8 @@ class WealthRankingViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
+
+    val shouldShowBottomButton = mutableStateOf(false)
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
@@ -123,8 +126,13 @@ class WealthRankingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val updatedDidiList = didiList.value
             didiDao.updateDidiRank(id, rank)
+            val remainingDidi = didiDao.getUnrankedDidiCount(villageId)
             updatedDidiList[id].wealth_ranking = rank
             _didiList.emit(updatedDidiList)
+            withContext(Dispatchers.Main) {
+                shouldShowBottomButton.value = remainingDidi == 0
+            }
+            onError("WealthRankingViewModel", "here is error")
         }
     }
 

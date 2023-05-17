@@ -414,7 +414,7 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                DidiItemCard(didi, expandedIds.contains(didi.id), modifier.padding(horizontal = 16.dp),
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
@@ -636,10 +636,10 @@ fun DidiItemCard(
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
             .clickable {
                 onItemClick(didi)
             }
+            .then(modifier)
     ) {
         BoxWithConstraints {
             val constraintSet = decoupledConstraints()

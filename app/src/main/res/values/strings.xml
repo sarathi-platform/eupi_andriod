@@ -45,7 +45,7 @@
     <string name="village_text">Village</string>
     <string name="vo_name">VO Name</string>
     <string name="total">Total</string>
-    <string name="participation_date_wealth_ranking">Participation Date Wealth Ranking</string>
+    <string name="participation_date_wealth_ranking">Participation Wealth Ranking Date</string>
     <string name="add_didi">Add Didi</string>
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
@@ -102,6 +102,9 @@
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
     <string name="done_text">Done</string>
+    <string name="yes_text">Yes</string>
+    <string name="share_button_text">Share</string>
+    <string name="download_button_text">Download</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

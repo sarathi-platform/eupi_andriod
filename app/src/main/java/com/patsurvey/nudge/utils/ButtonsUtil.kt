@@ -229,6 +229,7 @@ fun ButtonNegative(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     horizontalPadding : Dp = 10.dp,
+    isArrowRequired: Boolean = true,
     onClick: () -> Unit
 ) {
     Box(
@@ -250,16 +251,18 @@ fun ButtonNegative(
         contentAlignment = Alignment.Center,
     ) {
         Row(
-            Modifier.padding(14.dp),
+            Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.baseline_arrow_back),
-                contentDescription = "Negative Button",
-                modifier = Modifier
-                    .absolutePadding(top = 2.dp),
-                colorFilter = ColorFilter.tint(blueDark)
-            )
+            if (isArrowRequired) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back),
+                    contentDescription = "Negative Button",
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp),
+                    colorFilter = ColorFilter.tint(blueDark)
+                )
+            }
             Text(
                 text = buttonTitle,
                 color = blueDark,
@@ -305,7 +308,9 @@ fun ButtonOutline(
                 icon,
                 contentDescription = "Add Button",
                 tint = blueDark,
-                modifier = Modifier.absolutePadding(top = 4.dp, right = 2.dp).size(22.dp)
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp, right = 2.dp)
+                    .size(22.dp)
             )
             Text(
                 text = buttonTitle,
@@ -405,6 +410,39 @@ fun DoubleButtonBox(
                 ButtonPositive(
                     modifier = Modifier.weight(1.25f),
                     buttonTitle = positiveButtonText
+                ) {
+                    positiveButtonOnClick()
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun BottomButtonBox(
+    modifier: Modifier = Modifier,
+    positiveButtonText: String,
+    isArrowRequired: Boolean = true,
+    positiveButtonOnClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .padding(0.dp)
+            .fillMaxWidth()
+            .background(Color.White)
+            .shadow(20.dp, shape = RectangleShape, clip = true)
+            .then(modifier)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                ButtonPositive(
+                    modifier = Modifier.weight(1.25f),
+                    buttonTitle = positiveButtonText,
+                    isArrowRequired = isArrowRequired
                 ) {
                     positiveButtonOnClick()
                 }
@@ -715,3 +753,51 @@ fun TextButtonWithIcon(
 fun TextButtonWithIconPreview(){
     TextButtonWithIcon(modifier = Modifier, onClick = {})
 }
+
+@Composable
+fun OutlineButtonCustom(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    horizontalPadding : Dp = 10.dp,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(white, shape = RoundedCornerShape(6.dp))
+            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp) )
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+
+            ) {
+                onClick()
+            }
+            .padding(horizontal = horizontalPadding)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = buttonTitle,
+                color = blueDark,
+                style = buttonTextStyle
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun OutlineButtonCustomPreview(){
+    OutlineButtonCustom(buttonTitle = "Download") {
+
+    }
+}
+
