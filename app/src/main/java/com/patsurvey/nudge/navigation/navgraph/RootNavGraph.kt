@@ -34,4 +34,5 @@ object Graph {
     const val ADD_DIDI = "add_didi_graph/{$ARG_DIDI_DETAILS}"
     const val SOCIAL_MAPPING = "social_mapping_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val WEALTH_RANKING = "wealth_ranking/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
+    const val PAT_SCREENS = "pat_screens/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
 }

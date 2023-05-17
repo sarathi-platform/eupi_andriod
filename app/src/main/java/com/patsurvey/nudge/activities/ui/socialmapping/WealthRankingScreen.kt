@@ -204,7 +204,8 @@ fun WealthRankingScreen(
                 ),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                                        navController.navigate(WealthRankingScreens.WEALTH_RANKING_SURVEY.route)
+                                        navController.navigate("pat_image_preview_screen")
+//                                        navController.navigate(WealthRankingScreens.WEALTH_RANKING_SURVEY.route)
                     /*if (completeStepAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
