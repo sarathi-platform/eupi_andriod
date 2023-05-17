@@ -122,7 +122,7 @@ fun BlueButtonWithIcon(
         Row(
             modifier = Modifier
                 .width(160.dp)
-                .padding(vertical = 6.dp),
+                .padding(vertical = 1.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -138,9 +138,17 @@ fun BlueButtonWithIcon(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier,
-                style = mediumTextStyle
+                style = newMediumTextStyle
             )
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BlueButtonWithIconPreview(){
+    BlueButtonWithIcon(buttonText = "ADD DIDI", icon = Icons.Default.Add) {
+
     }
 }
 

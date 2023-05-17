@@ -294,14 +294,9 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun isTransectWalkComplete(stepId: Int) {
+    fun isTransectWalkComplete(stepId: Int,villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val villageEntity = villageListDao.getVillage(prefRepo.getSelectedVillage().id)
-            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
-//                villageEntity.steps_completed?.contains(stepId) ?: stepsListDao.isStepComplete(
-//                    stepId
-//                )
-
+            val isComplete = stepsListDao.isStepComplete(stepId, villageId = villageId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isTransectWalkComplete.value = isComplete
             }

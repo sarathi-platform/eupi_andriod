@@ -11,6 +11,7 @@ import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -27,7 +28,8 @@ class ProgressScreenViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val tolaDao: TolaDao,
-    val didiDao: DidiDao
+    val didiDao: DidiDao,
+    val casteListDao: CasteListDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -40,6 +42,8 @@ class ProgressScreenViewModel @Inject constructor(
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
     val stepSelected = mutableStateOf(0)
     val villageSelected = mutableStateOf(0)
+    val tolaCount = mutableStateOf(0)
+    val didiCount = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -66,9 +70,12 @@ class ProgressScreenViewModel @Inject constructor(
      fun getStepsList(villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
+            val didiList = didiDao.getAllDidisForVillage(villageId)
+            val tolaList = tolaDao.getAllTolasForVillage(villageId)
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                
+                tolaCount.value=tolaList.size
+                didiCount.value=didiList.size
             }
         }
     }

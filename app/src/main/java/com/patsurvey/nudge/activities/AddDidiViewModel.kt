@@ -287,7 +287,7 @@ class AddDidiViewModel @Inject constructor(
 
     fun isSocialMappingComplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
+            val isComplete = stepsListDao.isStepComplete(stepId,villageId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isSocialMappingComplete.value = isComplete
             }

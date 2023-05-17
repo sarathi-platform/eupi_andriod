@@ -6,13 +6,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
-import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 
 @Composable
 fun MainTitle(title: String, modifier: Modifier) {
     Text(
         text = title,
-        style = largeTextStyle,
+        style = mediumTextStyle,
         color = black100Percent,
         modifier = modifier,
         maxLines = 1,
