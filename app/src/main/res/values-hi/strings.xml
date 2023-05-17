@@ -33,6 +33,7 @@
     <string name="medium_text">मध्यम</string>
     <string name="rich_text">अमीर</string>
     <string name="social_mapping">सामाजिक मानचित्रण</string>
+    <string name="pat_survey_title">PAT Survey</string>
     <string name="showing_added_tolas">जोड़े गए %s टोला दिखा रहा है</string>
     <string name="showing">दिखा रहा है</string>
     <string name="added_tolas">जोड़े गए टोला</string>

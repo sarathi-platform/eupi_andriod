@@ -91,6 +91,61 @@ fun BlueButton(
 }
 
 @Composable
+fun BlueButtonWithRightArrow(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    isArrowRequired: Boolean = false,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+//            .padding(vertical = 14.dp)
+            .background(Color.Transparent)
+            .width(160.dp)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .width(160.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Forward arrow",
+                    tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                    modifier = Modifier.absolutePadding(top = 4.dp)
+
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun BlueButtonWithIcon(
     modifier: Modifier = Modifier,
     buttonText: String,

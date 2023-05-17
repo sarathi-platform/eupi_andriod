@@ -32,7 +32,6 @@ fun NavHomeGraph(navController: NavHostController) {
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth()
             ){ villageId,stepId,index->
-                Log.e("index",""+index)
                 when(index){
                     0->navController.navigate("details_graph/$villageId/$stepId/$index")
                     1->navController.navigate("social_mapping_graph/$villageId/$stepId")

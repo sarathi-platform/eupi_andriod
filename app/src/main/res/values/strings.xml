@@ -55,6 +55,7 @@
     <string name="caste">Caste</string>
     <string name="tola">Tola</string>
     <string name="select">Select</string>
+    <string name="pat_survey">Pet Survey</string>
 
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
@@ -98,7 +99,7 @@
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>
-    <string name="pat_survey">PAT Survey</string>
+    <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
 

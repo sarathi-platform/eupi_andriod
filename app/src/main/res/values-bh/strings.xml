@@ -97,6 +97,7 @@
     <string name="pat_survey">PAT सर्वेक्षण</string>
     <string name="didi">दीदी</string>
     <string name="section_number">खंड %d</string>
+    <string name="pat_survey_title">PAT Survey</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>

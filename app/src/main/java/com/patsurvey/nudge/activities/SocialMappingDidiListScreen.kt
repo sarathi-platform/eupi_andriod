@@ -57,7 +57,6 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.flow.filter
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -157,14 +156,18 @@ fun SocialMappingDidiListScreen(
                             horizontalArrangement = Arrangement.SpaceAround,
                             modifier = Modifier.padding(start = 16.dp, end = 16.dp)
                         ) {
-                            MainTitle(
-                                title = if (!didiViewModel.prefRepo.getFromPage()
-                                        .equals(ARG_FROM_HOME, true)
-                                ) stringResource(id = R.string.social_mapping)
-                                else stringResource(id = R.string.didis_item_text),
-                                modifier = Modifier.weight(0.5f)
-                            )
-                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
+                            val title = if (didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_PAT_SURVEY, true))
+                                stringResource(R.string.pat_survey_title)
+                            else if (!didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_HOME, true))
+                                stringResource(R.string.social_mapping)
+                            else
+                                stringResource(R.string.didis_item_text)
+                            Log.e("title -",title)
+                            MainTitle(title,Modifier.weight(0.5f))
+                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
+                                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                                 BlueButtonWithIcon(
                                     modifier = Modifier
                                         .weight(0.5f),
@@ -241,7 +244,7 @@ fun SocialMappingDidiListScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            ShowDidisFromTola(
+                            ShowDidisFromTola(didiViewModel,
                                 didiTola = didiKey,
                                 didiList = newFilteredTolaDidiList[didiKey]?.reversed()
                                     ?: emptyList(),
@@ -277,7 +280,7 @@ fun SocialMappingDidiListScreen(
                     } else {
 
                         itemsIndexed(newFilteredDidiList.reversed()) { index, didi ->
-                            DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                            DidiItemCard(didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {
                                         expandedIds.remove(didiDetailModel.id)
@@ -302,7 +305,8 @@ fun SocialMappingDidiListScreen(
 
 
         if (didiList.value.isNotEmpty() /*&& !didiViewModel.isSocialMappingComplete.value*/) {
-            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
+            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
+                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 DoubleButtonBox(
                     modifier = Modifier
                         .shadow(10.dp)
@@ -365,6 +369,7 @@ fun ShowFilteredList(
 
 @Composable
 fun ShowDidisFromTola(
+    didiViewModel: AddDidiViewModel,
     didiTola: String,
     didiList: List<DidiEntity>,
     modifier: Modifier,
@@ -414,7 +419,7 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                DidiItemCard(didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
@@ -601,6 +606,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 
 @Composable
 fun DidiItemCard(
+    didiViewModel: AddDidiViewModel,
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
@@ -679,19 +685,33 @@ fun DidiItemCard(
                     textAlign = TextAlign.Start,
                     modifier = Modifier.layoutId("village")
                 )
+                if (!didiViewModel.prefRepo.getFromPage()
+                        .equals(ARG_FROM_PAT_SURVEY, true)
+                ) {
+                    CardArrow(
+                        modifier = Modifier.layoutId("expendArrowImage"),
+                        degrees = arrowRotationDegree,
+                        iconColor = animateColor,
+                        onClick = { onExpendClick(expanded, didi) }
+                    )
 
-                CardArrow(
-                    modifier = Modifier.layoutId("expendArrowImage"),
-                    degrees = arrowRotationDegree,
-                    iconColor = animateColor,
-                    onClick = { onExpendClick(expanded, didi) }
-                )
+                    DidiDetailExpendableContent(
+                        modifier = Modifier.layoutId("didiDetailLayout"),
+                        didi,
+                        animateInt == 1
+                    )
+                } else{
+                    /*BlueButtonWithRightArrow(
+                        Modifier
+                            .height(50.dp)
+                            .width(50.dp),
+                        "Start Pat",
+                        true,
+                        true,
+                    ) {
 
-                DidiDetailExpendableContent(
-                    modifier = Modifier.layoutId("didiDetailLayout"),
-                    didi,
-                    animateInt == 1
-                )
+                    }*/
+                }
             }
         }
     }
