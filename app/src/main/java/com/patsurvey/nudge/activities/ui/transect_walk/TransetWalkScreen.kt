@@ -54,7 +54,7 @@ fun TransectWalkScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.fetchTolaList(villageId)
-        viewModel.isTransectWalkComplete(stepId)
+        viewModel.isTransectWalkComplete(stepId,villageId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
     val tolaList = viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }
@@ -331,6 +331,7 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
+                            viewModel.callWorkFlowAPI(villageId, stepId)
                             viewModel.addTolasToNetwork()
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)

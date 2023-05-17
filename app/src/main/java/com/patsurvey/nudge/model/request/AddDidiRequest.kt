@@ -3,6 +3,7 @@ package com.patsurvey.nudge.model.request
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 data class AddDidiRequest(
     @SerializedName("address") var address: String,
@@ -21,7 +22,7 @@ data class AddDidiRequest(
                 guardianName=didi.guardianName,
                 name=didi.name,
                 relationship=didi.relationship,
-                castName=didi.castName,
+                castName=didi.castName?: BLANK_STRING,
                 castId=didi.castId,
                 cohortId=didi.cohortId
             )

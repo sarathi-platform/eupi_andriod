@@ -69,7 +69,7 @@ fun <T : Any> DropDownWithTitle(
                 withStyle(
                     style = SpanStyle(
                         color = textColorDark,
-                        fontSize = 16.sp,
+                        fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = NotoSans
                     )
@@ -80,7 +80,7 @@ fun <T : Any> DropDownWithTitle(
                     withStyle(
                         style = SpanStyle(
                             color = red,
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -109,7 +109,6 @@ fun <T : Any> DropDownWithTitle(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 6.dp)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to
@@ -117,11 +116,11 @@ fun <T : Any> DropDownWithTitle(
                     onGlobalPositioned(coordinates)
 //                    mTextFieldSize = coordinates.size.toSize()
                 },
-            textStyle = mediumTextStyle,
+            textStyle = newMediumTextStyle,
             singleLine = true,
             maxLines = 1,
             placeholder = {
-                Text(text = hintText, style = mediumTextStyle, color = placeholderGrey)
+                Text(text = hintText, style = newMediumTextStyle, color = placeholderGrey)
             },
             colors = TextFieldDefaults.textFieldColors(
                 textColor = textColorDark,

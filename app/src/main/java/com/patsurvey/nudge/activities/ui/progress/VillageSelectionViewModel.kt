@@ -1,12 +1,14 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +22,10 @@ class VillageSelectionViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val apiService: ApiService,
     val villageListDao: VillageListDao,
-    val stepsListDao: StepsListDao
+    val stepsListDao: StepsListDao,
+    val tolaDao: TolaDao,
+    val didiDao: DidiDao,
+    val casteListDao: CasteListDao
 ) : BaseViewModel() {
 
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -32,28 +37,37 @@ class VillageSelectionViewModel @Inject constructor(
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
-        fetchUserDetails(){
+        showLoader.value=true
+        fetchCasteList()
+        fetchUserDetails{
             fetchVillageList()
         }
     }
-    fun fetchVillageList(){
+    private fun fetchVillageList(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
                     val villageList=villageListDao.getAllVillages()
                     val localStepsList = stepsListDao.getAllSteps()
+                    val localTolaList = stepsListDao.getAllSteps()
                     if(localStepsList.isNotEmpty()){
                         stepsListDao.deleteAllStepsFromDB()
+                    }
+                    if(localTolaList.isNotEmpty()){
+                        tolaDao.deleteTolaTable()
                     }
                     villageList.forEach { village->
                         launch {
 
                             val response=apiService.getStepsList(village.id)
+                            val cohortResponse=apiService.getCohortFromNetwork(villageId = village.id)
+                            val didiResponse=apiService.getDidisFromNetwork(villageId = village.id)
                             if(response.status.equals(SUCCESS,true)){
                                 response.data?.let {
                                     
                                     it.stepList.forEach { steps->
                                         steps.villageId=village.id
+                                        steps.isComplete= findCompleteValue(steps.status).ordinal
                                     }
                                     stepsListDao.insertAll(it.stepList)
                                     prefRepo.savePref(
@@ -66,8 +80,51 @@ class VillageSelectionViewModel @Inject constructor(
 
 
                             }
+
+                            if(cohortResponse.status.equals(SUCCESS,true)){
+                                cohortResponse.data?.let {
+                                    tolaDao.insertAll(it)
+                                }
+                            }
+                            if(didiResponse.status.equals(SUCCESS,true)){
+                                didiResponse.data?.let {
+                                    try {
+
+                                       it.didiList.forEach { didi->
+                                           var tolaName= BLANK_STRING
+                                           var casteName= BLANK_STRING
+                                           val singleTola=tolaDao.fetchSingleTola(didi.cohortId)
+                                           val singleCaste=casteListDao.getCaste(didi.castId)
+                                           singleTola?.let {
+                                               tolaName=it.name
+                                           }
+                                           singleCaste?.let {
+                                               casteName=it.casteName
+                                           }
+                                           didiDao.insertDidi(DidiEntity(id = didi.id,
+                                               name = didi.name,
+                                               address = didi.address,
+                                               guardianName = didi.guardianName,
+                                               relationship = didi.relationship,
+                                               castId = didi.castId,
+                                               castName =casteName,
+                                               cohortId = didi.cohortId, villageId = village.id,
+                                               cohortName = tolaName,
+                                               needsToPost = false,
+                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus))
+                                       }
+                                    }catch (ex:Exception){
+                                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                                        showLoader.value=false
+                                    }
+                                }
+                                withContext(Dispatchers.Main) {
+                                    showLoader.value = false
+                                }
+                            }
                             else {
-                                onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                                onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                                showLoader.value=false
                             }
 
                         }
@@ -86,7 +143,6 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchUserDetails(apiSuccess:()->Unit) {
-        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 1)
@@ -102,9 +158,7 @@ class VillageSelectionViewModel @Inject constructor(
                             _villagList.emit(villageListDao.getAllVillages())
                             apiSuccess()
                         }
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
-                        }
+
                         if (response.data == null)
                             showLoader.value = false
                     } else if (response.status.equals(FAIL, true)) {
@@ -119,6 +173,23 @@ class VillageSelectionViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
+            }
+        }
+    }
+
+    private fun fetchCasteList(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val response = apiService.getCasteList(prefRepo.getAppLanguageId()?:0)
+                withContext(Dispatchers.IO){
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let { casteListDao.insertAll(it) }
+                    }else{
+                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                    }
+                }
+            }catch (ex:Exception){
+                onError(tag = "VillageSelectionViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }

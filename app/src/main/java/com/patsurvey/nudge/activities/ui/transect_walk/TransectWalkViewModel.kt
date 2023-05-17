@@ -14,6 +14,8 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -181,62 +183,15 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun fetchTolaList(villageId: Int) {
+    fun fetchTolaList(villageId: Int){
         showLoader.value = true
-
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val tolaItemList = mutableListOf<TolaEntity>()
-                val response = apiInterface.getCohortFromNetwork(villageId)
-                if (response.status.equals(SUCCESS)) {
-                    if (response.data != null) {
-                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                        if (tolaListFromDb.isEmpty() && !TolaEntity.same(tolaListFromDb, response.data)) {
-                            response.data.forEach { it2 ->
-                                tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
-                            }
-                            tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                                tolaItemList.add(tola)
-                            }
-                        } else {
-                            tolaListFromDb.forEach {
-                                tolaItemList.add(it)
-                            }
-                        }
-
-                    } else {
-                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                        if (tolaListFromDb.isNotEmpty()) {
-                            tolaListFromDb.forEach { tola ->
-                                tolaItemList.add(tola)
-                            }
-                        }
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
-                        }
-                    }
-                } else {
-                    val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                    if (tolaListFromDb.isNotEmpty()) {
-                        tolaListFromDb.forEach { tola ->
-                            tolaItemList.add(tola)
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    tolaItemList.forEach {
-                        tolaList.add(it)
-                    }
-                    prefRepo.savePref(TOLA_COUNT, tolaList.size)
-                    showLoader.value = false
-                }
-            } catch (ex: Exception) {
+                tolaList.addAll(tolaDao.getAllTolasForVillage(villageId))
+                showLoader.value = false
+            }catch (ex:Exception){
                 onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
                 showLoader.value = false
-
             }
         }
     }
@@ -268,29 +223,51 @@ class TransectWalkViewModel @Inject constructor(
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.IN_PROGRESS.ordinal,villageId)
+                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
     }
 
     fun markTransectWalkIncomplete(stepId: Int,villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.IN_PROGRESS.ordinal,villageId)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
         }
     }
 
-    fun isTransectWalkComplete(stepId: Int) {
+    fun isTransectWalkComplete(stepId: Int,villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val villageEntity = villageListDao.getVillage(prefRepo.getSelectedVillage().id)
-            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
-//                villageEntity.steps_completed?.contains(stepId) ?: stepsListDao.isStepComplete(
-//                    stepId
-//                )
-
+            val isComplete = stepsListDao.isStepComplete(stepId, villageId = villageId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isTransectWalkComplete.value = isComplete
             }
         }
     }
+
+    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                if(dbResponse.workFlowId>0){
+                    val response = apiInterface.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                            }
+                        }else{
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
+    }
+
 
 }

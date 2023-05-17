@@ -2,12 +2,10 @@ package com.patsurvey.nudge.di
 
 import android.app.Application
 import android.content.Context
-import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.network.BaseNetworkConstants
 import com.patsurvey.nudge.network.ErrorInterceptor
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -23,8 +21,6 @@ import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 import javax.net.ssl.HostnameVerifier
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLSession
 
 /**
  * created by anil on 18/05/22
@@ -68,6 +64,7 @@ object NetworkModule {
     val timeout = 60.toLong()
     val clientBuilder =
       OkHttpClient.Builder()
+        .hostnameVerifier(HostnameVerifier { hostname, session -> true })
         .connectTimeout(timeout, TimeUnit.SECONDS)
         .readTimeout(timeout, TimeUnit.SECONDS)
         .cache(cache)

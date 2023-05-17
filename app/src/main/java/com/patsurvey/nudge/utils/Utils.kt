@@ -25,3 +25,12 @@ fun dpToPx(iContext: Context, dp: Int): Int {
     )
         .toInt()
 }
+
+fun findCompleteValue(status:String): StepStatus {
+    return when(status){
+        BLANK_STRING->StepStatus.NOT_STARTED
+        INPROGRESS_STRING->StepStatus.INPROGRESS
+        COMPLETED_STRING->StepStatus.COMPLETED
+        else -> {StepStatus.NOT_STARTED}
+    }
+}

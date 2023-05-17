@@ -4,11 +4,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverter
 import androidx.room.TypeConverters
+import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.dao.*
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
     TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class], version = 1, exportSchema = false)
-@TypeConverters(IntConverter::class)
+@TypeConverters(IntConverter::class, BeneficiaryStepConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao

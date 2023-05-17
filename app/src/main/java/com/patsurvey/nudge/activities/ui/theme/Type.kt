@@ -45,6 +45,12 @@ val mediumTextStyle = TextStyle(
     fontSize = 18.sp
 )
 
+val newMediumTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+
 val buttonTextStyle = TextStyle(
     fontFamily = NotoSans,
     fontWeight = FontWeight.SemiBold,
