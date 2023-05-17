@@ -24,6 +24,9 @@ interface TolaDao {
     @Query("DELETE from $TOLA_TABLE where id = :id")
     fun removeTola(id: Int)
 
+    @Query("SELECT * from $TOLA_TABLE where id = :id")
+    fun fetchSingleTola(id: Int): TolaEntity
+
     @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 

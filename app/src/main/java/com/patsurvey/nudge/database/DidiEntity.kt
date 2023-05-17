@@ -3,8 +3,13 @@ package com.patsurvey.nudge.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
+import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.WealthRank
 
 
 @Entity(tableName = DIDI_TABLE)
@@ -40,6 +45,13 @@ data class DidiEntity(
     @ColumnInfo(name = "villageId")
     var villageId: Int,
 
+    @ColumnInfo(name = "wealth_ranking")
+    var wealth_ranking: String = WealthRank.NOT_RANKED.rank,
+
     @ColumnInfo(name = "needsToPost")
-    var needsToPost: Boolean = true
+    var needsToPost: Boolean = true,
+
+    @TypeConverters(BeneficiaryStepConverter::class)
+    @ColumnInfo(name = "beneficiaryProcessStatus")
+    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList()
 )

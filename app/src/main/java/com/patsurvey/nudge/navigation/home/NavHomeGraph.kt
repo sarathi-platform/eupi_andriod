@@ -10,10 +10,8 @@ import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import com.patsurvey.nudge.activities.AddDidiScreen
-import com.patsurvey.nudge.activities.DidiScreen
-import com.patsurvey.nudge.activities.ProgressScreen
-import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -34,6 +32,7 @@ fun NavHomeGraph(navController: NavHostController) {
                 when(index){
                     0->navController.navigate("details_graph/$villageId/$stepId/$index")
                     1->navController.navigate("social_mapping_graph/$villageId/$stepId")
+                    2->navController.navigate("wealth_ranking/$villageId/$stepId")
                 }
             }
         }
@@ -52,6 +51,7 @@ fun NavHomeGraph(navController: NavHostController) {
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
         socialMappingNavGraph(navController=navController)
+        wealthRankingNavGraph(navController = navController)
     }
 }
 sealed class HomeScreens(val route: String) {
@@ -190,4 +190,72 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
 sealed class SocialMappingScreen(val route: String) {
     object SM_DIDI_SCREEN : SocialMappingScreen(route = "sm_didi_screen")
     object SM_STEP_COMPLETION_SCREEN: SocialMappingScreen(route ="sm_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+}
+
+
+fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.WEALTH_RANKING,
+        startDestination = WealthRankingScreens.WEALTH_RANKING_SCREEN.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ) {
+        composable(
+            route = WealthRankingScreens.WEALTH_RANKING_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            WealthRankingScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            )
+        }
+
+        composable(
+            route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            ParticipatoryWealthRankingSurvey(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            )
+        }
+
+        composable(
+            route = WealthRankingScreens.STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
+                navController.navigate(Graph.HOME){
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
+                        inclusive = true
+                    }
+                }
+            }
+        }
+    }
+}
+
+sealed class WealthRankingScreens(val route: String) {
+    object WEALTH_RANKING_SCREEN : WealthRankingScreens(route = "wealth_ranking")
+    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey")
+    object STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }

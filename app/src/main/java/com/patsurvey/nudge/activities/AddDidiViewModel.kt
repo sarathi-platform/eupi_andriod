@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.model.request.AddDidiRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DIDI_COUNT
@@ -148,7 +149,7 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.emit(didiDao.getAllDidisForVillage(villageId))
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.IN_PROGRESS.ordinal,villageId)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -181,7 +182,7 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.emit(didiDao.getAllDidisForVillage(villageId))
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.IN_PROGRESS.ordinal,villageId)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -270,7 +271,7 @@ class AddDidiViewModel @Inject constructor(
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.IN_PROGRESS.ordinal,villageId)
+                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
     }
@@ -286,7 +287,7 @@ class AddDidiViewModel @Inject constructor(
 
     fun isSocialMappingComplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val isComplete = stepsListDao.isStepComplete(stepId) == StepStatus.COMPLETED.ordinal
+            val isComplete = stepsListDao.isStepComplete(stepId,villageId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isSocialMappingComplete.value = isComplete
             }
@@ -341,10 +342,38 @@ class AddDidiViewModel @Inject constructor(
                 cohortId = it.cohortId,
                 cohortName = it.cohortName,
                 villageId=villageId,
-                needsToPost = true)
+                needsToPost = true
+                )
             )
         }
         didiDao.insertAll(didis)
     }
+
+    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                if(dbResponse.workFlowId>0){
+                    val response = apiService.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                            }
+                        }else{
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
+    }
+
 
 }

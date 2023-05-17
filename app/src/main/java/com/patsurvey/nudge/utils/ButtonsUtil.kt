@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.widget.Toast
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -24,19 +23,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
-import org.intellij.lang.annotations.JdkConstants.HorizontalAlignment
 
 @Composable
 fun BlueButton(
@@ -126,7 +122,7 @@ fun BlueButtonWithIcon(
         Row(
             modifier = Modifier
                 .width(160.dp)
-                .padding(vertical = 6.dp),
+                .padding(vertical = 1.dp),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
@@ -142,11 +138,13 @@ fun BlueButtonWithIcon(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier,
-                style = mediumTextStyle
+                style = newMediumTextStyle
             )
         }
     }
 }
+
+
 
 @Preview(showBackground = true)
 @Composable

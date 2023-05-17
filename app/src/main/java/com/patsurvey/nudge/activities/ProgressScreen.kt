@@ -1,8 +1,7 @@
 package com.patsurvey.nudge.activities
 
 
-import android.os.Build
-import android.view.WindowManager
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,7 +16,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -35,6 +33,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.di.NetworkModule
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -44,7 +43,7 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
-    onNavigateToTransWalk:(Int,Int,Int) ->Unit
+    onNavigateToStep:(Int, Int, Int) ->Unit
 ) {
 
     val scaffoldState =
@@ -96,6 +95,7 @@ fun ProgressScreen(
                                 viewModel.villageSelected.value = it
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
+                                viewModel.findInProgressStep(villageId = village.id)
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
@@ -185,7 +185,7 @@ fun ProgressScreen(
                                     viewModel.isStepComplete(steps[index].id,villageId).observeAsState().value
                                         ?: 0
                                 if(steps[index].orderNumber==1 && isStepCompleted==0){
-                                    isStepCompleted=StepStatus.IN_PROGRESS.ordinal
+                                    isStepCompleted=StepStatus.INPROGRESS.ordinal
                                 }
                                 if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                     viewModel.updateSelectedStep(steps[index].stepId)
@@ -196,24 +196,28 @@ fun ProgressScreen(
                                     index = index,
                                     iconId = step.orderNumber,
                                     viewModel = viewModel,
-                                    shouldBeActive = isStepCompleted == StepStatus.IN_PROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
+                                    shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
-                                    val stepId=viewModel.stepList.value[index].id
+                                    val step=viewModel.stepList.value[index]
                                     viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
-                                    when (index) {
-                                        0 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        1 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        2 -> {}
-                                        3 -> {}
-                                        4 -> {}
-                                        5 -> {}
+                                    if (mainActivity?.isOnline?.value == true) {
+                                       viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    onNavigateToStep(villageId,step.id,index)
+//                                    when (index) {
+//                                        0 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+//                                        }
+//                                        1 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+//                                        }
+//                                        2 -> {}
+//                                        3 -> {}
+//                                        4 -> {}
+//                                        5 -> {}
+//                                    }
 
                                 }
                             }
@@ -334,9 +338,9 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> viewModel?.getTolaCount()
+                            1 -> viewModel?.tolaCount?.value
                                 ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
-                            2 -> viewModel?.getDidiCount()
+                            2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> ""
                             4 -> ""

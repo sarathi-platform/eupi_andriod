@@ -184,8 +184,8 @@ fun SocialMappingDidiListScreen(
                             modifier = Modifier.padding(
                                 start = 16.dp,
                                 end = 16.dp,
-                                top = 20.dp,
-                                bottom = 20.dp
+                                top = 10.dp,
+                                bottom = 10.dp
                             ),
                             filterSelected = filterSelected,
                             onFilterSelected = {
@@ -300,7 +300,8 @@ fun SocialMappingDidiListScreen(
             }
         }
 
-        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
+
+        if (didiList.value.isNotEmpty() /*&& !didiViewModel.isSocialMappingComplete.value*/) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
                 DoubleButtonBox(
                     modifier = Modifier
@@ -322,6 +323,7 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
+                                didiViewModel.callWorkFlowAPI(villageId, stepId)
                                 didiViewModel.addDidisToNetwork()
                             }
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
@@ -379,8 +381,7 @@ fun ShowDidisFromTola(
                 painter = painterResource(id = R.drawable.home_icn),
                 contentDescription = "home image",
                 modifier = Modifier
-                    .width(18.dp)
-                    .height(14.dp),
+                    .size(18.dp),
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 
@@ -768,7 +769,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = didi.castName,
+                text = didi.castName?: BLANK_STRING,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")
