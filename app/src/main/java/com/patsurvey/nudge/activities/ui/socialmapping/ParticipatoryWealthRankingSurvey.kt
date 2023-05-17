@@ -36,12 +36,12 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: WealthRankingViewModel,
+    viewModel: WealthRankingSurveyViewModel,
     villageId:Int,
     stepId:Int,
 ) {
 
-    val didids = viewModel.didiList.collectAsState()
+//    val didids = viewModel.didiList.collectAsState()
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
@@ -95,17 +95,17 @@ fun ParticipatoryWealthRankingSurvey(
             }
 
             WealthRankingBox(
-                count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
+                count = /*didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size*/10,
                 wealthRank = WealthRank.POOR,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
+                count = /*didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size*/20,
                 wealthRank = WealthRank.MEDIUM,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
+                count = /*didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size*/4,
                 wealthRank = WealthRank.RICH,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )

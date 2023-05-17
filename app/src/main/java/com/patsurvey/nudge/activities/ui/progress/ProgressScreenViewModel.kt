@@ -71,6 +71,13 @@ class ProgressScreenViewModel @Inject constructor(
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val didiList = didiDao.getAllDidisForVillage(villageId)
             val tolaList = tolaDao.getAllTolasForVillage(villageId)
+            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
+            if(dbInProgressStep!=null){
+                if(stepList.size>dbInProgressStep.orderNumber)
+                    stepsListDao.markStepAsInProgress((dbInProgressStep.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+            }else{
+                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
+            }
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
                 tolaCount.value=tolaList.size
@@ -103,7 +110,7 @@ class ProgressScreenViewModel @Inject constructor(
                     showLoader.value = false
                 }
 
-                findInProgressStep(prefRepo.getSelectedVillage().id)
+
             }
         }
     }
@@ -152,7 +159,7 @@ class ProgressScreenViewModel @Inject constructor(
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,it[0].programsProcessId,villageId,it[0].status)
+                                stepsListDao.updateWorkflowId(stepId,it[0].id,villageId,it[0].status)
                             }
                         }else{
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
