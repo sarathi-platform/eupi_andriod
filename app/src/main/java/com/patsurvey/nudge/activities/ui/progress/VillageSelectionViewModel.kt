@@ -1,9 +1,8 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
-import android.util.Log
+
 import androidx.compose.runtime.mutableStateOf
-import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -62,6 +61,8 @@ class VillageSelectionViewModel @Inject constructor(
                             val response=apiService.getStepsList(village.id)
                             val cohortResponse=apiService.getCohortFromNetwork(villageId = village.id)
                             val didiResponse=apiService.getDidisFromNetwork(villageId = village.id)
+//                            val didiRankingResponse=apiService.getDidisWithRankingFromNetwork(villageId = village.id,"Category",
+//                            StepResultTypeRequest(StepType.WEALTH_RANKING.name,ResultType.ALL.name))
                             if(response.status.equals(SUCCESS,true)){
                                 response.data?.let {
                                     
@@ -122,6 +123,9 @@ class VillageSelectionViewModel @Inject constructor(
                                     showLoader.value = false
                                 }
                             }
+//                            if(didiRankingResponse.status.equals(SUCCESS,true)){
+//                                Log.d("TAG", "fetchVillageListRanking Data: ${response.data}")
+//                            }
                             else {
                                 onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
                                 showLoader.value=false

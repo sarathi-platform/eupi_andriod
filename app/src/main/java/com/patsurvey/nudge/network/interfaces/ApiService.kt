@@ -50,9 +50,15 @@ interface ApiService {
     suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<TolaEntity>>
 
     //Get Didi List
-    @GET("/write-api/beneficiary/view")
+    @POST("/write-api/beneficiary/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @POST("write-api/beneficiary/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getDidisWithRankingFromNetwork(@Query("villageId") villageId: Int,
+                                                @Query("type") type:String,
+                                               @Body stepResultTypeRequest: StepResultTypeRequest): ApiResponseModel<BeneficiaryApiResponse>
 
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
