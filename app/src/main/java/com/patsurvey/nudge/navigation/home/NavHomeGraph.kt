@@ -225,25 +225,12 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
         }
 
         composable(
-            route = WealthRankingScreens.PAT_IMAGE_PREVIEW_SCREEN.route
-        ) {
-            PatImagePreviewScreen(viewModal = hiltViewModel())
-        }
-
-        composable(
-            route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
-            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
-                type = NavType.IntType
-            }, navArgument(ARG_STEP_ID) {
-                type = NavType.IntType
-            })
+            route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route
         ) {
             ParticipatoryWealthRankingSurvey(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+                modifier = Modifier.fillMaxSize()
             )
         }
 
@@ -268,8 +255,6 @@ sealed class WealthRankingScreens(val route: String) {
     object WEALTH_RANKING_SCREEN : WealthRankingScreens(route = "wealth_ranking")
     object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey")
     object STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
-
-    object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
 }
 
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
@@ -293,37 +278,6 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
 
         }
 
-        composable(
-            route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
-            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
-                type = NavType.IntType
-            }, navArgument(ARG_STEP_ID) {
-                type = NavType.IntType
-            })
-        ) {
-            ParticipatoryWealthRankingSurvey(
-                navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            )
-        }
-
-        composable(
-            route = WealthRankingScreens.STEP_COMPLETION_SCREEN.route,
-            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
-                type = NavType.StringType
-            })
-        ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(Graph.HOME){
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
-                        inclusive = true
-                    }
-                }
-            }
-        }
     }
 }
 

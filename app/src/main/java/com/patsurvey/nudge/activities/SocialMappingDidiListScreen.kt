@@ -795,7 +795,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = "Wealth Ranking Not started",
+                text = if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) "Wealth Ranking Not started" else "Wealth Ranking Completed",
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
