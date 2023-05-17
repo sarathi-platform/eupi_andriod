@@ -414,7 +414,7 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                DidiItemCard(didi, expandedIds.contains(didi.id), modifier.padding(horizontal = 16.dp),
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
@@ -636,10 +636,10 @@ fun DidiItemCard(
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
             .clickable {
                 onItemClick(didi)
             }
+            .then(modifier)
     ) {
         BoxWithConstraints {
             val constraintSet = decoupledConstraints()
@@ -797,7 +797,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = "Wealth Ranking Not started",
+                text = if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) "Wealth Ranking Not started" else "Wealth Ranking Completed",
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
