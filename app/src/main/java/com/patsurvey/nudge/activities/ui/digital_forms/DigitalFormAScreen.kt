@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -74,6 +72,7 @@ fun DigitalFormAScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
+                    .verticalScroll(rememberScrollState())
             ) {
 
                 Text(
@@ -99,13 +98,8 @@ fun DigitalFormAScreen(
                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.dp_16)
-                        )
-                        .padding(
-                            top = dimensionResource(id = R.dimen.dp_10),
-                            bottom = dimensionResource(id = R.dimen.dp_10)
-                        )
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_16))
+                        .padding(bottom = dimensionResource(id = R.dimen.dp_10))
 
                 ) {
                     Column(
