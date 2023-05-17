@@ -50,7 +50,7 @@ interface ApiService {
     suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<TolaEntity>>
 
     //Get Didi List
-    @GET("https://non-prod-eupi-alb-891926970.ap-south-1.elb.amazonaws.com/write-api/beneficiary/view")
+    @GET("/write-api/beneficiary/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
 

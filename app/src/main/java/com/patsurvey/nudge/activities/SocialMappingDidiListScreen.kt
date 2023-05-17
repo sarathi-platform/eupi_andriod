@@ -300,9 +300,8 @@ fun SocialMappingDidiListScreen(
             }
         }
 
-        Log.d(TAG, "SocialMappingDidiListScreen: ${didiList.value.isNotEmpty()}  :: ${didiViewModel.isSocialMappingComplete.value} :: ${didiViewModel.prefRepo.getFromPage()}")
 
-        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
+        if (didiList.value.isNotEmpty() /*&& !didiViewModel.isSocialMappingComplete.value*/) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
                 DoubleButtonBox(
                     modifier = Modifier

@@ -11,7 +11,6 @@ import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
-import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -103,6 +102,8 @@ class ProgressScreenViewModel @Inject constructor(
                     getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
+
+                findInProgressStep(prefRepo.getSelectedVillage().id)
             }
         }
     }
@@ -127,14 +128,23 @@ class ProgressScreenViewModel @Inject constructor(
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
         prefRepo.saveSelectedVillage(selectedVillageEntity)
     }
-    fun getTolaCount() = tolaList.value.size
-    fun getDidiCount() = didiList.value.size
+    fun findInProgressStep(villageId: Int){
+        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
+            if(dbInProgressStep!=null){
+                if(stepList.value.size>dbInProgressStep.orderNumber)
+                    stepsListDao.markStepAsInProgress((dbInProgressStep.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+            }else{
+                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
+            }
+        }
+
+    }
 
      fun callWorkFlowAPI(villageId: Int,stepId: Int,programId:Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                Log.d(TAG, "callWorkFlowAPI: ${dbResponse.toString()}")
                 if(dbResponse.workFlowId==0){
                     val response = apiInterface.addWorkFlow(
                         listOf(AddWorkFlowRequest(StepStatus.INPROGRESS.name,villageId,

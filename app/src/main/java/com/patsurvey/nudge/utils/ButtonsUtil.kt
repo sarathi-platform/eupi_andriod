@@ -144,13 +144,7 @@ fun BlueButtonWithIcon(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun BlueButtonWithIconPreview(){
-    BlueButtonWithIcon(buttonText = "ADD DIDI", icon = Icons.Default.Add) {
 
-    }
-}
 
 @Preview(showBackground = true)
 @Composable

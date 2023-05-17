@@ -187,8 +187,7 @@ class TransectWalkViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val tolaItemList = mutableListOf<TolaEntity>()
-                tolaItemList.addAll(tolaDao.getAllTolasForVillage(villageId))
+                tolaList.addAll(tolaDao.getAllTolasForVillage(villageId))
                 showLoader.value = false
             }catch (ex:Exception){
                 onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
@@ -196,65 +195,6 @@ class TransectWalkViewModel @Inject constructor(
             }
         }
     }
-    /*fun fetchTolaList1(villageId: Int) {
-        showLoader.value = true
-
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val tolaItemList = mutableListOf<TolaEntity>()
-                val response = apiInterface.getCohortFromNetwork(villageId)
-                if (response.status.equals(SUCCESS)) {
-                    if (response.data != null) {
-                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                        if (tolaListFromDb.isEmpty() && !TolaEntity.same(tolaListFromDb, response.data)) {
-                            response.data.forEach { it2 ->
-                                tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
-                            }
-                            tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                                tolaItemList.add(tola)
-                            }
-                        } else {
-                            tolaListFromDb.forEach {
-                                tolaItemList.add(it)
-                            }
-                        }
-
-                    } else {
-                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                        if (tolaListFromDb.isNotEmpty()) {
-                            tolaListFromDb.forEach { tola ->
-                                tolaItemList.add(tola)
-                            }
-                        }
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
-                        }
-                    }
-                } else {
-                    val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
-                    if (tolaListFromDb.isNotEmpty()) {
-                        tolaListFromDb.forEach { tola ->
-                            tolaItemList.add(tola)
-                        }
-                    }
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                    }
-                }
-                withContext(Dispatchers.Main) {
-                    tolaItemList.forEach {
-                        tolaList.add(it)
-                    }
-                    prefRepo.savePref(TOLA_COUNT, tolaList.size)
-                    showLoader.value = false
-                }
-            } catch (ex: Exception) {
-                onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
-                showLoader.value = false
-
-            }
-        }
-    }*/
 
     fun setVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

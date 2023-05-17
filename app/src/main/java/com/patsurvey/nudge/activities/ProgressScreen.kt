@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -94,6 +95,7 @@ fun ProgressScreen(
                                 viewModel.villageSelected.value = it
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
+                                viewModel.findInProgressStep(villageId = village.id)
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
@@ -203,7 +205,7 @@ fun ProgressScreen(
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
-                                    onNavigateToTransWalk(villageId,step.id,index)
+                                    onNavigateToStep(villageId,step.id,index)
 //                                    when (index) {
 //                                        0 -> {
 //                                            onNavigateToTransWalk(villageId,stepId,index)
