@@ -64,7 +64,7 @@ object NetworkModule {
     val timeout = 60.toLong()
     val clientBuilder =
       OkHttpClient.Builder()
-        .hostnameVerifier(HostnameVerifier { hostname, session -> true })
+        /*.hostnameVerifier(HostnameVerifier { hostname, session -> true })*/
         .connectTimeout(timeout, TimeUnit.SECONDS)
         .readTimeout(timeout, TimeUnit.SECONDS)
         .cache(cache)
