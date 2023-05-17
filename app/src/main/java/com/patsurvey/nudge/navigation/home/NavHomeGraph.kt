@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.navigation.home
 
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
@@ -31,10 +32,12 @@ fun NavHomeGraph(navController: NavHostController) {
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth()
             ){ villageId,stepId,index->
+                Log.e("index",""+index)
                 when(index){
                     0->navController.navigate("details_graph/$villageId/$stepId/$index")
                     1->navController.navigate("social_mapping_graph/$villageId/$stepId")
                     2->navController.navigate("wealth_ranking/$villageId/$stepId")
+                    3->navController.navigate("pat_screens/$villageId/$stepId")
                 }
             }
         }
@@ -275,7 +278,7 @@ sealed class WealthRankingScreens(val route: String) {
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.PAT_SCREENS,
-        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route ,
+        startDestination = PatScreens.PAT_LIST_SCREEN.route ,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
@@ -283,44 +286,22 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         })
     ) {
         composable(
-            route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            route = PatScreens.PAT_LIST_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
                 type = NavType.IntType
             }, navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
             })
         ) {
-
-        }
-
-        composable(
-            route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
-            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
-                type = NavType.IntType
-            }, navArgument(ARG_STEP_ID) {
-                type = NavType.IntType
-            })
-        ) {
-            ParticipatoryWealthRankingSurvey(
+            DidiScreen(
                 navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiViewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            )
-        }
-
-        composable(
-            route = WealthRankingScreens.STEP_COMPLETION_SCREEN.route,
-            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
-                type = NavType.StringType
-            })
-        ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(Graph.HOME){
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
-                        inclusive = true
-                    }
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1){
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                    launchSingleTop = true
                 }
             }
         }

@@ -205,6 +205,7 @@ fun ProgressScreen(
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    Log.e("index",""+index)
                                     onNavigateToStep(villageId,step.id,index)
 //                                    when (index) {
 //                                        0 -> {
