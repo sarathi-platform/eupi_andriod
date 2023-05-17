@@ -69,6 +69,9 @@
     <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
     <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
+
+    <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
+    <string name="particaptory_wealth_ranking_text">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
     <string name="enter_mobile_text">মোবাইলে প্রবেশ করুন</string>
     <string name="enter_otp_text">OTP লিখুন</string>
     <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
@@ -94,6 +97,9 @@
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
 
+    <string name="pat_survey">PAT জরিপ</string>
+    <string name="didi">দিদি</string>
+    <string name="section_number">বিভাগ %d</string>
 
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>

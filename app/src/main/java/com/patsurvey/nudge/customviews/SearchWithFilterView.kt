@@ -73,6 +73,7 @@ fun SearchWithFilterView(
                     textStyle = TextStyle(
                         color = blueDark
                     ),
+                    maxLines = 1,
                     placeholder = { Text(text = placeholderString) },
                 )
                 }

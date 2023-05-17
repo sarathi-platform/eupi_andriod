@@ -36,7 +36,7 @@ fun VOAndVillageBoxView(
             modifier = Modifier
                 .background(Color.White)
         ) {
-            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
+            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
                 Icon(
                     painter = painterResource(id = R.drawable.home_icn),
                     contentDescription = null,

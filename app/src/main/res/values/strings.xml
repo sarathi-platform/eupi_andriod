@@ -57,6 +57,7 @@
     <string name="select">Select</string>
 
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
+    <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
     <string name="add_tola">Add Tola</string>
@@ -80,6 +81,7 @@
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
     <string name="complete_social_walk_text">Complete Social Mapping</string>
+    <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
     <string name="didi_conirmation_text">Total %1$s new Didis have \nbeen added successfully</string>
@@ -93,9 +95,12 @@
     <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
     <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
     <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
-    <string name="didi_has_been_successfully_updated">Didi has been successfully updated.</string>
+    <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>
+    <string name="pat_survey">PAT Survey</string>
+    <string name="didi">Didi</string>
+    <string name="section_number">Section %d</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

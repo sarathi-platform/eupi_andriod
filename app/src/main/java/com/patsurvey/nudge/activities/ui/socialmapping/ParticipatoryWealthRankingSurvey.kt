@@ -29,14 +29,19 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
-@Preview
 @Composable
 fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
-//    navController: NavController
+    navController: NavController,
+    viewModel: WealthRankingViewModel,
+    villageId:Int,
+    stepId:Int,
 ) {
+
+    val didids = viewModel.didiList.collectAsState()
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
@@ -90,17 +95,17 @@ fun ParticipatoryWealthRankingSurvey(
             }
 
             WealthRankingBox(
-                count = 40,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
                 wealthRank = WealthRank.POOR,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = 5,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
                 wealthRank = WealthRank.MEDIUM,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = 54,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
                 wealthRank = WealthRank.RICH,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
@@ -138,11 +143,13 @@ fun WealthRankingBox(
         WealthRank.RICH -> brownLoght
         WealthRank.MEDIUM -> yellowLight
         WealthRank.POOR -> blueLighter
+        else -> {Color.Transparent}
     }
     val boxTitle = when (wealthRank) {
         WealthRank.RICH -> "Rich"
         WealthRank.MEDIUM -> "Medium"
         WealthRank.POOR -> "Poor"
+        else -> {""}
     }
 
     Box(

@@ -339,15 +339,12 @@ fun SocialMappingDidiListScreen(
                         } else {
                             completeTolaAdditionClicked = true
                         }
-
                     },
-                    negativeButtonOnClick = {
-
-                    }
+                    negativeButtonOnClick = {}
                 )
             }
-        }
 
+        }
     }
 }
 
@@ -383,8 +380,7 @@ fun ShowDidisFromTola(
                 painter = painterResource(id = R.drawable.home_icn),
                 contentDescription = "home image",
                 modifier = Modifier
-                    .width(18.dp)
-                    .height(14.dp),
+                    .size(18.dp),
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 

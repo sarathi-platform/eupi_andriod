@@ -28,9 +28,11 @@ import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
@@ -49,7 +51,7 @@ fun VillageSelectionScreen(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
-            .padding(start = 16.dp, end = 16.dp, top = 24.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 12.dp)
             .then(modifier)
     ) {
         Text(
@@ -57,7 +59,7 @@ fun VillageSelectionScreen(
             fontFamily = NotoSans,
             fontWeight = FontWeight.SemiBold,
             fontSize = 24.sp, color = textColorDark,
-            modifier = Modifier.padding(top = 12.dp)
+            modifier = Modifier
         )
         if (viewModel.showLoader.value) {
             Box(
@@ -75,7 +77,7 @@ fun VillageSelectionScreen(
             }
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-                item { Spacer(modifier = Modifier.height(4.dp)) }
+//                item { Spacer(modifier = Modifier.height(4.dp)) }
                 itemsIndexed(villages) { index, village ->
                     VillageAndVoBox(
                         tolaName = village.name,
@@ -208,6 +210,7 @@ fun VillageAndVoBoxForBottomSheet(
                 onVillageSeleted(index)
             }
             .background(if (index == selectedIndex) dropDownBg else White)
+            .padding(vertical = 4.dp)
             .then(modifier),
         elevation = 10.dp
     ) {
@@ -218,7 +221,7 @@ fun VillageAndVoBoxForBottomSheet(
         ) {
             ConstraintLayout(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 10.dp)
                     .fillMaxWidth()
             ) {
                 val (iconRef, textRef, radioRef) = createRefs()
@@ -237,9 +240,12 @@ fun VillageAndVoBoxForBottomSheet(
                     fontSize = 14.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.constrainAs(textRef) {
                         top.linkTo(parent.top)
                         start.linkTo(iconRef.end)
+                        width = Dimension.fillToConstraints
                     }
                 )
 
@@ -248,6 +254,7 @@ fun VillageAndVoBoxForBottomSheet(
                         .constrainAs(radioRef) {
                             top.linkTo(textRef.top)
                             end.linkTo(parent.end)
+                            bottom.linkTo(textRef.bottom)
                         }
                         .size(size = 20.dp)
                         .border(
@@ -266,7 +273,7 @@ fun VillageAndVoBoxForBottomSheet(
             Row(
                 modifier = Modifier
                     .absolutePadding(left = 4.dp)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
             ) {
                 Text(
                     text = "VO: ",

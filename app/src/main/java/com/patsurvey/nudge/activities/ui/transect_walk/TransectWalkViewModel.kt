@@ -60,6 +60,7 @@ class TransectWalkViewModel @Inject constructor(
             tolaDao.insert(tolaItem)
             withContext(Dispatchers.Main) {
                 tolaList.add(tolaItem)
+                tolaList.sortByDescending { it.date_created }
                 prefRepo.savePref(TOLA_COUNT, tolaList.size)
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
@@ -204,12 +205,20 @@ class TransectWalkViewModel @Inject constructor(
                 val response = apiInterface.getCohortFromNetwork(villageId)
                 if (response.status.equals(SUCCESS)) {
                     if (response.data != null) {
-                        response.data.forEach { it2 ->
-                            tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
+                        val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
+                        if (tolaListFromDb.isEmpty() && !TolaEntity.same(tolaListFromDb, response.data)) {
+                            response.data.forEach { it2 ->
+                                tolaDao.insert(GetCohortResponseModel.convertToTolaEntity(it2))
+                            }
+                            tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
+                                tolaItemList.add(tola)
+                            }
+                        } else {
+                            tolaListFromDb.forEach {
+                                tolaItemList.add(it)
+                            }
                         }
-                        tolaDao.getAllTolasForVillage(villageId).forEach { tola ->
-                            tolaItemList.add(tola)
-                        }
+
                     } else {
                         val tolaListFromDb = tolaDao.getAllTolasForVillage(villageId)
                         if (tolaListFromDb.isNotEmpty()) {
