@@ -44,6 +44,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
+import com.patsurvey.nudge.navigation.home.WealthRankingScreens
 import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -185,8 +186,7 @@ fun WealthRankingScreen(
             }
         }
 
-        if (didis.any { it.wealth_ranking != WealthRank.NOT_RANKED.rank }) {
-
+//        if () {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -199,11 +199,12 @@ fun WealthRankingScreen(
                         }
                     },
 
-                positiveButtonText = if (completeStepAdditionClicked) stringResource(id = R.string.complete_transect_walk_text) else stringResource(
+                positiveButtonText = if (completeStepAdditionClicked) stringResource(id = R.string.review_wealth_ranking) else stringResource(
                     id = R.string.mark_complete_text
                 ),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
+                                        navController.navigate(WealthRankingScreens.WEALTH_RANKING_SURVEY.route)
                     /*if (completeStepAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
@@ -225,7 +226,7 @@ fun WealthRankingScreen(
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
-        }
+//        }
     }
 }
 

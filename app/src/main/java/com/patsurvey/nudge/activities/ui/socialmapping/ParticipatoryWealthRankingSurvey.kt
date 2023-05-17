@@ -41,6 +41,8 @@ fun ParticipatoryWealthRankingSurvey(
     stepId:Int,
 ) {
 
+    val didids = viewModel.didiList.collectAsState()
+
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
         mutableStateOf(0.dp)
@@ -93,17 +95,17 @@ fun ParticipatoryWealthRankingSurvey(
             }
 
             WealthRankingBox(
-                count = 40,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
                 wealthRank = WealthRank.POOR,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = 5,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
                 wealthRank = WealthRank.MEDIUM,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
             WealthRankingBox(
-                count = 54,
+                count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
                 wealthRank = WealthRank.RICH,
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
             )
