@@ -64,3 +64,5 @@ const val ARG_FROM_SCREEN = "fromScreen"
 
 const val PREF_PROGRAM_NAME = "programName"
 const val HUSBAND_STRING = "Husband"
+const val INPROGRESS_STRING = "INPROGRESS"
+const val COMPLETED_STRING = "COMPLETED"

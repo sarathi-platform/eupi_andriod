@@ -196,8 +196,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             didiViewModel.didiName.value=editDidiDetails.name
             didiViewModel.dadaName.value=editDidiDetails.guardianName
             didiViewModel.houseNumber.value=editDidiDetails.address
-            didiViewModel.selectedTola.value=Pair(editDidiDetails.cohortId,editDidiDetails.cohortName)
-            didiViewModel.selectedCast.value=Pair(editDidiDetails.castId,editDidiDetails.castName)
+            didiViewModel.selectedTola.value= Pair(editDidiDetails.cohortId,editDidiDetails.cohortName) as Pair<Int, String>
+            didiViewModel.selectedCast.value= Pair(editDidiDetails.castId,editDidiDetails.castName) as Pair<Int, String>
         }
     }
     CustomSnackBarShow(state = snackState)

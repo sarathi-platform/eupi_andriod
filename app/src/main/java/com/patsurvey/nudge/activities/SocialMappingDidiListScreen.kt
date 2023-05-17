@@ -322,6 +322,7 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
+                                didiViewModel.callWorkFlowAPI(villageId, stepId)
                                 didiViewModel.addDidisToNetwork()
                             }
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
@@ -771,7 +772,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = didi.castName,
+                text = didi.castName?: BLANK_STRING,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")

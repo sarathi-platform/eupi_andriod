@@ -35,6 +35,10 @@ data class StepListEntity(
 
     @ColumnInfo(name = "villageId")
     var villageId: Int = 0,
+    @ColumnInfo(name = "programId")
+    var programId: Int = 0,
+    @ColumnInfo(name = "workFlowId")
+    var workFlowId: Int = 0,
 ) {
 
     fun compare(other: StepListEntity, ignoreIds: Boolean = false): Boolean {

@@ -1,15 +1,17 @@
 package com.patsurvey.nudge.activities.ui.progress
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
+import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,11 +26,16 @@ class ProgressScreenViewModel @Inject constructor(
     val apiInterface: ApiService,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
-    val casteListDao: CasteListDao
+    val tolaDao: TolaDao,
+    val didiDao: DidiDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
+    private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
+    val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
+    private val _didiList = MutableStateFlow(listOf<DidiEntity>())
+    val didiList: StateFlow<List<DidiEntity>> get() = _didiList
     val stepList: StateFlow<List<StepListEntity>> get() = _stepsList
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
     val stepSelected = mutableStateOf(0)
@@ -41,7 +48,6 @@ class ProgressScreenViewModel @Inject constructor(
 
     init {
         fetchVillageList()
-        fetchCasteList()
     }
 
     private fun checkAndUpdateCompletedStepsForVillage() {
@@ -67,22 +73,7 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCasteList(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val response = apiInterface.getCasteList(prefRepo.getAppLanguageId()?:0)
-                withContext(Dispatchers.IO){
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let { casteListDao.insertAll(it) }
-                    }else{
-                        onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
-                    }
-                }
-            }catch (ex:Exception){
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
-            }
-        }
-    }
+
 
 
 
@@ -91,7 +82,10 @@ class ProgressScreenViewModel @Inject constructor(
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
                 val villageList=villageListDao.getAllVillages()
+                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
+                _tolaList.emit(tolaDBList)
+                _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 withContext(Dispatchers.Main){
                     villageList.mapIndexed { index, villageEntity ->
                         if(prefRepo.getSelectedVillage().id==villageEntity.id){
@@ -126,7 +120,33 @@ class ProgressScreenViewModel @Inject constructor(
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
         prefRepo.saveSelectedVillage(selectedVillageEntity)
     }
-    fun getTolaCount() = prefRepo.getPref(TOLA_COUNT, 0)
-    fun getDidiCount() = prefRepo.getPref(DIDI_COUNT, 0)
+    fun getTolaCount() = tolaList.value.size
+    fun getDidiCount() = didiList.value.size
+
+     fun callWorkFlowAPI(villageId: Int,stepId: Int,programId:Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                Log.d(TAG, "callWorkFlowAPI: ${dbResponse.toString()}")
+                if(dbResponse.workFlowId==0){
+                    val response = apiInterface.addWorkFlow(
+                        listOf(AddWorkFlowRequest(StepStatus.INPROGRESS.name,villageId,
+                            programId,stepId)) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,it[0].programsProcessId,villageId,it[0].status)
+                            }
+                        }else{
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
+    }
 
 }

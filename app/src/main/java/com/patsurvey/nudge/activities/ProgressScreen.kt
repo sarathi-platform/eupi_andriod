@@ -32,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.di.NetworkModule
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -180,7 +181,7 @@ fun ProgressScreen(
                                     viewModel.isStepComplete(steps[index].id,villageId).observeAsState().value
                                         ?: 0
                                 if(steps[index].orderNumber==1 && isStepCompleted==0){
-                                    isStepCompleted=StepStatus.IN_PROGRESS.ordinal
+                                    isStepCompleted=StepStatus.INPROGRESS.ordinal
                                 }
                                 if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                     viewModel.updateSelectedStep(steps[index].stepId)
@@ -191,24 +192,28 @@ fun ProgressScreen(
                                     index = index,
                                     iconId = step.orderNumber,
                                     viewModel = viewModel,
-                                    shouldBeActive = isStepCompleted == StepStatus.IN_PROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
+                                    shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
                                 ) { index ->
                                     viewModel.stepSelected.value = index
-                                    val stepId=viewModel.stepList.value[index].id
+                                    val step=viewModel.stepList.value[index]
                                     viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
-                                    when (index) {
-                                        0 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        1 -> {
-                                            onNavigateToTransWalk(villageId,stepId,index)
-                                        }
-                                        2 -> {}
-                                        3 -> {}
-                                        4 -> {}
-                                        5 -> {}
+                                    if (mainActivity?.isOnline?.value == true) {
+                                       viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    onNavigateToTransWalk(villageId,step.id,index)
+//                                    when (index) {
+//                                        0 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+//                                        }
+//                                        1 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+//                                        }
+//                                        2 -> {}
+//                                        3 -> {}
+//                                        4 -> {}
+//                                        5 -> {}
+//                                    }
 
                                 }
                             }

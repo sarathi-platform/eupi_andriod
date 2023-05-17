@@ -3,9 +3,9 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.database.CasteEntity
-import com.patsurvey.nudge.model.request.LoginRequest
-import com.patsurvey.nudge.model.request.OtpRequest
-import com.patsurvey.nudge.model.request.StepsListRequest
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.*
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
@@ -47,7 +47,12 @@ interface ApiService {
 
     @GET("/write-api/cohort/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<GetCohortResponseModel>>
+    suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<TolaEntity>>
+
+    //Get Didi List
+    @GET("https://non-prod-eupi-alb-891926970.ap-south-1.elb.amazonaws.com/write-api/beneficiary/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getDidisFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
 
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -57,4 +62,13 @@ interface ApiService {
     @GET("/read-api/config/caste/get")
     suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
 
+    // Add WorkFlow
+    @POST("/write-api/workflow/add")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun addWorkFlow(@Body addWorkFlowRequest: List<AddWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+
+    // Edit WorkFlow
+    @POST("/write-api/workflow/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
 }

@@ -322,6 +322,7 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
+                            viewModel.callWorkFlowAPI(villageId, stepId)
                             viewModel.addTolasToNetwork()
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)

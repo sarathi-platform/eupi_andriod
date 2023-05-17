@@ -33,9 +33,7 @@ import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.NetworkBanner
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.model.dataModel.DidiRankedModel
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.MEDIUM_STRING
