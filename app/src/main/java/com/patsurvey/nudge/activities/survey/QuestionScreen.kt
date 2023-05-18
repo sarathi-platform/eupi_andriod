@@ -1,9 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.widget.GridLayout.Alignment
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -14,27 +12,19 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ButtonNegative
-import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.TYPE_RADIO_BUTTON
-import com.patsurvey.nudge.utils.visible
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun YesNoQuestionScreen(
+fun QuestionScreen(
     navController: NavHostController,
     modifier: Modifier,
-    viewModel: YesNoQuestionViewModel,
+    viewModel: QuestionScreenViewModel,
     didiId: Int = 106
 ) {
 

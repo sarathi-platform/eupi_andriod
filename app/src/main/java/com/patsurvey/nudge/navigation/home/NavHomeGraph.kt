@@ -6,20 +6,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
-import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.activities.*
-import com.patsurvey.nudge.activities.survey.YesNoQuestionScreen
-import com.patsurvey.nudge.activities.survey.YesNoQuestionViewModel
+import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
-import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
@@ -295,7 +290,7 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         composable(
             route = PatScreens.YES_NO_QUESTION_SCREEN.route,
         ) {
-            YesNoQuestionScreen(
+            QuestionScreen(
                 navController = navController,
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel()

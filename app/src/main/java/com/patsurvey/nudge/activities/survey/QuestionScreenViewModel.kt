@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import javax.inject.Inject
 
 @HiltViewModel
-class YesNoQuestionViewModel @Inject constructor(
+class QuestionScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val villageListDao: VillageListDao,
