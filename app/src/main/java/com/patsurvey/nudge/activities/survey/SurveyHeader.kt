@@ -19,13 +19,14 @@ import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CircularProgressBar
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 
 @Composable
 fun SurveyHeader(
     modifier: Modifier,
-    didiDetailsModel: DidiDetailsModel,
-    surveyTitle: String,
+    didiName: String,
+    villageEntity: VillageEntity,
     questionCount: Int,
     answeredCount: Int,
     partNumber : Int
@@ -43,7 +44,7 @@ fun SurveyHeader(
                 colorFilter = ColorFilter.tint(textColorDark)
             )
             Text(
-                text = didiDetailsModel.tola,
+                text = villageEntity.name,
                 modifier = Modifier
                     .fillMaxWidth()
                     .layoutId("villageText"),
@@ -53,7 +54,7 @@ fun SurveyHeader(
 
 
             Text(
-                text = "VO: Sundar Pahar Mahila Mandal",
+                text = "VO: ${villageEntity.name} Mahila Mandal",
                 modifier = Modifier
                     .fillMaxWidth()
                     .layoutId("voText"),
@@ -62,7 +63,7 @@ fun SurveyHeader(
             )
 
             Text(
-                text = surveyTitle,//stringResource(id = R.string.pat_survey),
+                text = stringResource(id = R.string.pat_survey),
                 modifier = Modifier
                     .fillMaxWidth()
                     .layoutId("surveyText"),
@@ -71,7 +72,7 @@ fun SurveyHeader(
             )
 
             Text(
-                text = "${stringResource(id = R.string.didi)}: ${didiDetailsModel.name}",
+                text = "${stringResource(id = R.string.didi)}: ${didiName}",
                 modifier = Modifier
                     .fillMaxWidth()
                     .layoutId("didiNameText"),
@@ -180,8 +181,8 @@ fun Preview() {
     SurveyHeader(
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
-        didiDetailsModel = DidiDetailsModel(1, "Urmila Devi", "Sundar Pahar", "Sundar Pahar", "Kahar", "112","Rajesh"),
-        surveyTitle = stringResource(id = R.string.pat_survey),
+        didiName = "Urmila Devi",
+        villageEntity = VillageEntity(1, "Sundar Pahar", listOf()),
         questionCount = 6,
         answeredCount = 2,
         partNumber = 1

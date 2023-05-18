@@ -35,6 +35,7 @@ const val DIDI_TABLE = "didi_table"
 const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
+const val QUESTION_TABLE = "question_table"
 
 const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
@@ -67,3 +68,7 @@ const val PREF_WEALTH_RANKING_COMPLETION_DATE = "wealth_ranking_completion_date"
 const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
+const val PAT_SURVEY_CONSTANT = "PAT SURVEY"
+
+const val TYPE_EXCLUSION = "EXCLUSION"
+const val TYPE_RADIO_BUTTON = "RadioButton"
