@@ -80,7 +80,7 @@ class AddDidiViewModel @Inject constructor(
         job=CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(villageId))
-                _casteList.emit(casteListDao.getAllCaste())
+                _casteList.emit(casteListDao.getAllCasteForLanguage(prefRepo.getAppLanguageId()?:0))
                 _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
                 if(lastSelectedTolaDao.getTolaCountForVillage(villageId = villageId)>0){
                     val selectedDBTola=lastSelectedTolaDao.getTolaForVillage(villageId)

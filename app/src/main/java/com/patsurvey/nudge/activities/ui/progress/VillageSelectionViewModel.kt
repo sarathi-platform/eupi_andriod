@@ -38,7 +38,6 @@ class VillageSelectionViewModel @Inject constructor(
 
     init {
         showLoader.value=true
-        fetchCasteList()
         fetchUserDetails{
             fetchVillageList()
         }
@@ -49,7 +48,7 @@ class VillageSelectionViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     val villageList=villageListDao.getAllVillages()
                     val localStepsList = stepsListDao.getAllSteps()
-                    val localTolaList = stepsListDao.getAllSteps()
+                    val localTolaList = tolaDao.getAllTolas()
                     if(localStepsList.isNotEmpty()){
                         stepsListDao.deleteAllStepsFromDB()
                     }
@@ -197,23 +196,6 @@ class VillageSelectionViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
-            }
-        }
-    }
-
-    private fun fetchCasteList(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val response = apiService.getCasteList(prefRepo.getAppLanguageId()?:0)
-                withContext(Dispatchers.IO){
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let { casteListDao.insertAll(it) }
-                    }else{
-                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
-                    }
-                }
-            }catch (ex:Exception){
-                onError(tag = "VillageSelectionViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
