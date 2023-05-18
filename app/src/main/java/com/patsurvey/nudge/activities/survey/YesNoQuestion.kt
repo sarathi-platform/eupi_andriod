@@ -95,6 +95,7 @@ fun YesNoQuestion(
                 icon = Icons.Default.Close
             ) {
                 onNoClicked()
+                isNoSelected(true, false)
             }
 
             ButtonOutlineWithTopIcon(
@@ -123,6 +124,7 @@ fun YesNoQuestion(
                 icon = Icons.Default.Check
             ) {
                 onYesClicked()
+                isYesSelected(true, true)
             }
 
         }

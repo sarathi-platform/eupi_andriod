@@ -69,3 +69,6 @@ const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
 const val PAT_SURVEY_CONSTANT = "PAT SURVEY"
+
+const val TYPE_EXCLUSION = "EXCLUSION"
+const val TYPE_RADIO_BUTTON = "RadioButton"

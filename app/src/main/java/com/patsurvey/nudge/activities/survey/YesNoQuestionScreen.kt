@@ -1,12 +1,18 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.widget.GridLayout.Alignment
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -15,21 +21,38 @@ import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.TYPE_RADIO_BUTTON
 import com.patsurvey.nudge.utils.visible
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun YesNoQuestionScreen(
     navController: NavHostController,
     modifier: Modifier,
-    surveyHeaderUiState: YesNoQuestionViewModel.SurveyHeaderUiState,
-    questionAnswerUiState: YesNoQuestionViewModel.QuestionAnswerUiState = YesNoQuestionViewModel.QuestionAnswerUiState(),
-    nextPreviousUiState: YesNoQuestionViewModel.NextPreviousUiState,
-    onEvent: (YesNoQuestionViewModel.MainEvent) -> Unit
+    viewModel: YesNoQuestionViewModel,
+    didiId: Int = 106
 ) {
+
+    LaunchedEffect(key1 = true) {
+        viewModel.setDidiDetails(didiId)
+    }
+
+    val questionList by viewModel.questionList.collectAsState()
+
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
+
+    val answeredQuestion = remember {
+        mutableStateOf(0)
+    }
+
     Column(
-        modifier = modifier,
+        modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         Column(
@@ -39,16 +62,54 @@ fun YesNoQuestionScreen(
                 .weight(1f)
         ) {
             SurveyHeader(
-                modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
-                didiDetailsModel = surveyHeaderUiState.didiDetailsModel,
-                surveyTitle = surveyHeaderUiState.surveyTitle,
-                questionCount = surveyHeaderUiState.questionCount,
-                answeredCount = surveyHeaderUiState.answeredCount,
-                partNumber = surveyHeaderUiState.partNumber
+                modifier = Modifier,
+                didiName = viewModel.didiName.value,
+                villageEntity = viewModel.prefRepo.getSelectedVillage(),
+                questionCount = questionList.size,
+                answeredCount = answeredQuestion.value,
+                partNumber = 1
             )
-            YesNoQuestion(
-                modifier = Modifier.fillMaxWidth().padding(16.dp),
+
+            HorizontalPager(pageCount = questionList.size, state = pagerState, userScrollEnabled = false) {
+                Box(modifier = Modifier.fillMaxWidth()) {
+                    if (questionList[it].type == TYPE_RADIO_BUTTON)
+                    YesNoQuestion(
+                        modifier = Modifier.fillMaxWidth(),
+                        questionNumber = it,
+                        question = questionList[it].questionDisplay ?: "",
+                        onYesClicked = {
+                            if (answeredQuestion.value < questionList.size) {
+                                answeredQuestion.value = answeredQuestion.value + 1
+                                val nextPageIndex = pagerState.currentPage + 1
+                                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                            } else if (answeredQuestion.value == questionList.size) {
+                                navController.navigate(Graph.HOME) {
+                                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        },
+                        onNoClicked = {
+                            if (answeredQuestion.value < questionList.size) {
+                                answeredQuestion.value = answeredQuestion.value + 1
+                                val nextPageIndex = pagerState.currentPage + 1
+                                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                            } else if (answeredQuestion.value == questionList.size) {
+                                navController.navigate(Graph.HOME) {
+                                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                        inclusive = true
+                                    }
+                                }
+                            }
+                        }
+                    )
+                }
+            }
+            /*YesNoQuestion(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
                 questionNumber = questionAnswerUiState.questionNumber,
                 question = questionAnswerUiState.question,
                 answer = questionAnswerUiState.answer,
@@ -59,46 +120,54 @@ fun YesNoQuestionScreen(
                 onNoClicked = {
                     onEvent(YesNoQuestionViewModel.MainEvent.OnButtonClicked(isYes = false))
                 }
-            )
+            )*/
         }
 
-        if(nextPreviousUiState.nextVisible || nextPreviousUiState.previousVisible) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 5.dp, bottom = 25.dp),
-            ) {
-                if(nextPreviousUiState.previousVisible) {
-                    ButtonNegative(
-                        buttonTitle = nextPreviousUiState.previousText,
-                        horizontalPadding = 0.dp,
-                        modifier = Modifier
-                            .background(color = languageItemActiveBg)
-                            .width(100.dp)
-                            .align(androidx.compose.ui.Alignment.CenterStart)
-                    ) {
-                        onEvent(YesNoQuestionViewModel.MainEvent.OnPreviousClicked)
-                    }
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            val prevButtonVisible = remember {
+                derivedStateOf {
+                    pagerState.currentPage > 0
                 }
-                if(nextPreviousUiState.nextVisible) {
-                    ButtonPositive(
-                        buttonTitle = nextPreviousUiState.nextText,
-                        isArrowRequired = true,
-                        textColor = textColorDark,
-                        iconTintColor = textColorDark,
-                        modifier = Modifier
-                            .background(color = languageItemActiveBg)
-                            .width(100.dp)
-                            .align(androidx.compose.ui.Alignment.CenterEnd)
-                    ) {
-                        onEvent(YesNoQuestionViewModel.MainEvent.OnNextClicked)
-                    }
+            }
+
+            val nextButtonVisible = remember {
+                derivedStateOf {
+                    pagerState.currentPage < questionList.size-1 // total pages are 5
+                }
+            }
+
+            AnimatedVisibility (prevButtonVisible.value) {
+                Button(
+                    enabled = prevButtonVisible.value,
+                    onClick = {
+                        val prevPageIndex = pagerState.currentPage - 1
+                        coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                    },
+                ) {
+                    Text(text = "Q${questionList[pagerState.currentPage].questionId}")
+                }
+            }
+            Spacer(modifier = Modifier.width(if (prevButtonVisible.value) 0.dp else ButtonDefaults.MinWidth))
+            AnimatedVisibility (nextButtonVisible.value) {
+                Button(
+                    enabled = nextButtonVisible.value,
+                    onClick = {
+                        val nextPageIndex = pagerState.currentPage + 1
+                        coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                    },
+                ) {
+                    Text(text = "Q${questionList[pagerState.currentPage].questionId}")
                 }
             }
         }
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun YesNoQuestionScreenPreview() {
@@ -144,4 +213,4 @@ fun YesNoQuestionScreenPreview() {
         onEvent = {}
 
     )
-}
+}*/
