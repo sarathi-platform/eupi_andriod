@@ -57,6 +57,7 @@ fun NavHomeGraph(navController: NavHostController) {
         socialMappingNavGraph(navController=navController)
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
+        didiPatSurveyNavGraph(navController = navController)
     }
 }
 sealed class HomeScreens(val route: String) {
@@ -138,6 +139,34 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
                 didiViewModel = hiltViewModel(),
+            ){
+                navController.popBackStack()
+            }
+        }
+    }
+}
+
+fun NavGraphBuilder.didiPatSurveyNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.DIDI_PAT_SUMMARY,
+        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+            type = NavType.StringType
+            nullable=true
+        })
+    ) {
+        composable(route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.StringType
+                nullable=true
+                defaultValue = null
+            })){
+            DidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
+                patDidiSummaryViewModel = hiltViewModel(),
             ){
                 navController.popBackStack()
             }

@@ -8,6 +8,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -16,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -164,7 +166,6 @@ fun SocialMappingDidiListScreen(
                                 stringResource(R.string.social_mapping)
                             else
                                 stringResource(R.string.didis_item_text)
-                            Log.e("title -",title)
                             MainTitle(title,Modifier.weight(0.5f))
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                                 && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
@@ -244,7 +245,7 @@ fun SocialMappingDidiListScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            ShowDidisFromTola(didiViewModel,
+                            ShowDidisFromTola(navController,didiViewModel,
                                 didiTola = didiKey,
                                 didiList = newFilteredTolaDidiList[didiKey]?.reversed()
                                     ?: emptyList(),
@@ -258,8 +259,10 @@ fun SocialMappingDidiListScreen(
                                     }
                                 },
                                 onNavigate = {
-                                    navController.navigate("add_didi_graph/$it") {
-                                        launchSingleTop = true
+                                    if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                                        navController.navigate("add_didi_graph/$it") {
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
                             )
@@ -280,7 +283,7 @@ fun SocialMappingDidiListScreen(
                     } else {
 
                         itemsIndexed(newFilteredDidiList.reversed()) { index, didi ->
-                            DidiItemCard(didiViewModel,didi, expandedIds.contains(didi.id), modifier,
+                            DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {
                                         expandedIds.remove(didiDetailModel.id)
@@ -289,16 +292,17 @@ fun SocialMappingDidiListScreen(
                                     }
                                 },
                                 onItemClick = { didi ->
-                                    val jsonDidi = Gson().toJson(didi)
-                                    navController.navigate("add_didi_graph/$jsonDidi") {
-                                        launchSingleTop = true
+                                    if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                                        val jsonDidi = Gson().toJson(didi)
+                                        navController.navigate("add_didi_graph/$jsonDidi") {
+                                            launchSingleTop = true
+                                        }
                                     }
 
                                 }
                             )
                         }
                     }
-
                 }
             }
         }
@@ -369,6 +373,7 @@ fun ShowFilteredList(
 
 @Composable
 fun ShowDidisFromTola(
+    navController:NavHostController,
     didiViewModel: AddDidiViewModel,
     didiTola: String,
     didiList: List<DidiEntity>,
@@ -419,7 +424,7 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didiViewModel,didi, expandedIds.contains(didi.id), modifier,
+                DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
@@ -606,6 +611,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 
 @Composable
 fun DidiItemCard(
+    navController:NavHostController,
     didiViewModel: AddDidiViewModel,
     didi: DidiEntity,
     expanded: Boolean,
@@ -647,70 +653,97 @@ fun DidiItemCard(
                 onItemClick(didi)
             }
     ) {
-        BoxWithConstraints {
-            val constraintSet = decoupledConstraints()
-            ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
-                CircularDidiImage(
-                    modifier = Modifier.layoutId("didiImage")
-                )
-                Text(
-                    text = didi.name,
-                    style = TextStyle(
-                        color = animateColor,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    modifier = Modifier.layoutId("didiName")
-                )
-
-                Image(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    modifier = Modifier
-                        .width(18.dp)
-                        .height(14.dp)
-                        .layoutId("homeImage"),
-                    colorFilter = ColorFilter.tint(textColorBlueLight)
-                )
-
-                Text(
-                    text = didi.cohortName,
-                    style = TextStyle(
-                        color = textColorBlueLight,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.layoutId("village")
-                )
-                if (!didiViewModel.prefRepo.getFromPage()
-                        .equals(ARG_FROM_PAT_SURVEY, true)
-                ) {
-                    CardArrow(
-                        modifier = Modifier.layoutId("expendArrowImage"),
-                        degrees = arrowRotationDegree,
-                        iconColor = animateColor,
-                        onClick = { onExpendClick(expanded, didi) }
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BoxWithConstraints {
+                val constraintSet = decoupledConstraints()
+                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                    CircularDidiImage(
+                        modifier = Modifier.layoutId("didiImage")
+                    )
+                    Text(
+                        text = didi.name,
+                        style = TextStyle(
+                            color = animateColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        modifier = Modifier.layoutId("didiName")
                     )
 
-                    DidiDetailExpendableContent(
-                        modifier = Modifier.layoutId("didiDetailLayout"),
-                        didi,
-                        animateInt == 1
+                    Image(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(14.dp)
+                            .layoutId("homeImage"),
+                        colorFilter = ColorFilter.tint(textColorBlueLight)
                     )
-                } else{
-                    /*BlueButtonWithRightArrow(
-                        Modifier
-                            .height(50.dp)
-                            .width(50.dp),
-                        "Start Pat",
+
+                    Text(
+                        text = didi.cohortName,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("village")
+                    )
+                    if (!didiViewModel.prefRepo.getFromPage()
+                            .equals(ARG_FROM_PAT_SURVEY, true)
+                    ) {
+                        CardArrow(
+                            modifier = Modifier.layoutId("expendArrowImage"),
+                            degrees = arrowRotationDegree,
+                            iconColor = animateColor,
+                            onClick = { onExpendClick(expanded, didi) }
+                        )
+
+                        DidiDetailExpendableContent(
+                            modifier = Modifier.layoutId("didiDetailLayout"),
+                            didi,
+                            animateInt == 1
+                        )
+                    }
+                }
+            }
+            if (didiViewModel.prefRepo.getFromPage()
+                    .equals(ARG_FROM_PAT_SURVEY, true)
+            ) {
+                Row(verticalAlignment = CenterVertically, modifier = modifier.padding(top = 3.dp)) {
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.not_avaliable),
+                        isArrowRequired = false,
+                        isActive =  false,
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(5.dp,1.dp,5.dp,10.dp)
+                    ){
+
+                    }
+                    Spacer(
+                        modifier = Modifier
+                            .layoutId("midMargin")
+                            .width(20.dp)
+                    )
+                    BlueButtonWithRightArrow(
+                        Modifier.weight(1f),
+                        stringResource(id = R.string.start_pat),
                         true,
                         true,
                     ) {
-
-                    }*/
+                        val jsonDidi = Gson().toJson(didi)
+                        navController.navigate("didi_pat_summary/$jsonDidi") {
+                            launchSingleTop = true
+                        }
+                    }
                 }
             }
         }

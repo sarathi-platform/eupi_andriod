@@ -50,6 +50,7 @@
     <string name="house_number">घर का नंबर</string>
     <string name="didi_name">दीदी नाम</string>
     <string name="dada_name">दादा नाम</string>
+    <string name="dada">दादा</string>
     <string name="enter">दर्ज करें</string>
     <string name="caste">जाति</string>
     <string name="tola">टोला</string>
@@ -107,6 +108,7 @@
     <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
     <string name="didi_has_been_successfully_updated">दीदी का विवरण सफलतापूर्वक अपडेट कर दिया गया है</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
-
+    <string name="not_avaliable">उपलब्ध नहीं है</string>
+    <string name="start_pat">Start Pat</string>
 
 </resources>
