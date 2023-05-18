@@ -1,54 +1,104 @@
 package com.patsurvey.nudge.activities
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.net.Uri
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Divider
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.TextButton
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.ConstraintSet
-import androidx.constraintlayout.compose.Dimension
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.google.gson.Gson
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
-import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
-import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.*
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun DidiSummaryScreen(navController: NavHostController, modifier: Modifier,
-                      isOnline: Boolean = true, patDidiSummaryViewModel: PatDidiSummaryViewModel, didiDetails:String, onNavigation:()->Unit){
+fun DidiSummaryScreen(
+    navController: NavHostController,
+    modifier: Modifier,
+    isOnline: Boolean = true,
+    patDidiSummaryViewModel: PatDidiSummaryViewModel,
+    didiDetails: String,
+    onNavigation: () -> Unit
+) {
 
-    val didi= Gson().fromJson(didiDetails, DidiEntity::class.java)
+    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
+
+    val localContext = LocalContext.current
+
+    val localDensity = LocalDensity.current
+    var bottomPadding by remember {
+        mutableStateOf(0.dp)
+    }
+
+    LaunchedEffect(key1 = localContext) {
+        patDidiSummaryViewModel.setUpOutputDirectory(localContext as MainActivity)
+        requestCameraPermission(localContext as Activity, patDidiSummaryViewModel)
+    }
 
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
             .then(modifier)
-        ) {
+    ) {
         val (bottomActionBox, mainBox) = createRefs()
         Box(modifier = Modifier
             .constrainAs(mainBox) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
             }
-            .padding(top = 14.dp)
+            .padding(horizontal = 16.dp)
         ) {
 
+            AnimatedVisibility (patDidiSummaryViewModel.shouldShowCamera.value) {
+                CameraView(
+                    modifier = Modifier.fillMaxSize(),
+                    outputDirectory = patDidiSummaryViewModel.outputDirectory,
+                    didiEntity = didi,
+                    executor = patDidiSummaryViewModel.cameraExecutor,
+                    onImageCaptured = { uri, photoPath ->
+                        handleImageCapture(uri = uri, photoPath, didi, patDidiSummaryViewModel)
+                    },
+                    onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
+                )
+            }
+            AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {
                 Column(
                     modifier = modifier
                         .fillMaxSize(),
@@ -59,96 +109,281 @@ fun DidiSummaryScreen(navController: NavHostController, modifier: Modifier,
                         prefRepo = patDidiSummaryViewModel.prefRepo,
                         modifier = Modifier.fillMaxWidth()
                     )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceAround,
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp)
-                ) {
-                    MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
-                }
-                ConstraintLayout(patDidiDetailConstraints(), modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = stringResource(id = R.string.house_number) + ":",
-                        style = didiDetailLabelStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("houseNumberLabel")
-                    )
-
-                    Text(
-                        text = didi.address,
-                        style = didiDetailItemStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("houseNumber")
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.didi) + ":",
-                        style = didiDetailLabelStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("latestStatusLabel")
-                    )
-
-                    Text(
-                        text = didi.name,
-                        style = didiDetailItemStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("latestStatus")
-                    )
-                    Text(
-                        text = stringResource(id = R.string.dada) + ":",
-                        style = didiDetailLabelStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("dadaNameLabel")
-                    )
-
-                    Text(
-                        text = didi.guardianName,
-                        style = didiDetailItemStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("dadaName")
-                    )
-                    Text(
-                        text = stringResource(id = R.string.tola) + ":",
-                        style = didiDetailLabelStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("tolaLabel")
-                    )
-
-                    Text(
-                        text = didi.cohortName,
-                        style = didiDetailItemStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("tola")
-                    )
-
-                    Text(
-                        text = stringResource(id = R.string.caste) + ":",
-                        style = didiDetailLabelStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("casteLabel")
-                    )
-
-                    Text(
-                        text = didi.castName ?: BLANK_STRING,
-                        style = didiDetailItemStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("caste")
-                    )
-
-
-                    Spacer(
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier
-                            .layoutId("bottomPadding")
-                            .height(30.dp)
-                    )
-                }
+                    ) {
+                        MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
+                    }
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Row() {
 
+                            Text(
+                                text = stringResource(id = R.string.house_number) + ":",
+                                style = didiDetailLabelStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                            Text(
+                                text = didi.address,
+                                style = didiDetailItemStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                        }
+                        Row() {
+
+
+                            Text(
+                                text = stringResource(id = R.string.didi) + ":",
+                                style = didiDetailLabelStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+
+                            Text(
+                                text = didi.name,
+                                style = didiDetailItemStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                        }
+                        Row {
+                            Text(
+                                text = stringResource(id = R.string.dada) + ":",
+                                style = didiDetailLabelStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+
+                            Text(
+                                text = didi.guardianName,
+                                style = didiDetailItemStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                        }
+                        Row() {
+                            Text(
+                                text = stringResource(id = R.string.tola) + ":",
+                                style = didiDetailLabelStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+
+                            Text(
+                                text = didi.cohortName,
+                                style = didiDetailItemStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                        }
+                        Row() {
+                            Text(
+                                text = stringResource(id = R.string.caste) + ":",
+                                style = didiDetailLabelStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+
+                            Text(
+                                text = didi.castName ?: BLANK_STRING,
+                                style = didiDetailItemStyle,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = "Is Didi part of SHG?",
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                fontSize = 14.sp,
+                                color = textColorDark80
+                            )
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .border(
+                                        1.dp,
+                                        color = languageItemActiveBg,
+                                        RoundedCornerShape(6.dp)
+                                    )
+                                    .background(white, shape = RoundedCornerShape(6.dp))
+                            ) {
+                                Row() {
+
+                                    TextButton(
+                                        onClick = {
+
+                                        }, modifier = Modifier
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 6.dp,
+                                                    bottomStart = 6.dp
+                                                )
+                                            )
+                                            .background(
+                                                Color.Transparent,
+                                                RoundedCornerShape(
+                                                    topStart = 6.dp,
+                                                    bottomStart = 6.dp
+                                                )
+                                            )
+                                    ) {
+                                        Text(text = "Yes")
+                                    }
+                                    Spacer(
+                                        modifier = Modifier
+                                            .width(2.dp)
+                                            .background(languageItemActiveBg)
+                                    )
+                                    TextButton(
+                                        onClick = {
+
+                                        }, modifier = Modifier
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topEnd = 6.dp,
+                                                    bottomEnd = 6.dp
+                                                )
+                                            )
+                                            .background(
+                                                Color.Transparent,
+                                                RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                                            )
+                                    ) {
+                                        Text(text = "No")
+                                    }
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (patDidiSummaryViewModel.shouldShowPhoto.value) {
+                            Image(painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .height(180.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(
+                                        languageItemActiveBg,
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                contentScale = ContentScale.FillWidth
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier
+                                    .height(180.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(
+                                        languageItemActiveBg,
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
+                            ) {
+                                Column(
+                                    modifier = Modifier.align(Alignment.Center),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.photo_camera_icon),
+                                        contentDescription = null
+                                    )
+                                    Spacer(modifier = Modifier.height(6.dp))
+                                    Text(
+                                        text = stringResource(R.string.no_photo_available_text),
+                                        style = smallTextStyle,
+                                        color = textColorDark50
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(16.dp))
+                        if (patDidiSummaryViewModel.shouldShowPhoto.value) {
+                            ButtonOutline(
+                                modifier = Modifier.fillMaxWidth(),
+                                buttonTitle = "Retake Photo"
+                            ) {
+                                patDidiSummaryViewModel.shouldShowCamera.value = true
+                            }
+                        } else {
+                            BlueButtonWithIcon(
+                                buttonText = "Take Photo",
+                                icon = Icons.Default.Add,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                patDidiSummaryViewModel.shouldShowCamera.value = true
+                            }
+                        }
+                    }
                 }
+            }
+
+        }
+
+        if (patDidiSummaryViewModel.shouldShowPhoto.value) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .shadow(10.dp)
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                negativeButtonRequired = false,
+                positiveButtonText = "Next",
+                positiveButtonOnClick = {
+
+                },
+                negativeButtonOnClick = {}
+            )
+
         }
     }
-
 }
 
+fun handleImageCapture(uri: Uri, photoPath: String, didiEntity: DidiEntity, viewModal: PatDidiSummaryViewModel) {
+    viewModal.shouldShowCamera.value = false
+    viewModal.photoUri = uri
+    viewModal.shouldShowPhoto.value = true
+    viewModal.cameraExecutor.shutdown()
+    viewModal.saveFilePathInDb(photoPath, didiEntity = didiEntity)
+}
+
+fun requestCameraPermission(context: Activity, viewModal: PatDidiSummaryViewModel) {
+    when {
+        ContextCompat.checkSelfPermission(
+            context,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED -> {
+            Log.i("PatImagePreviewScreen", "Permission previously granted")
+//            viewModal.shouldShowCamera.value = true
+        }
+        ActivityCompat.shouldShowRequestPermissionRationale(
+            context,
+            Manifest.permission.CAMERA
+        ) -> {
+            Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
+//            viewModal.shouldShowCamera.value = true
+        }
+
+        else -> viewModal.shouldShowCamera.value = false
+    }
+}
+
+/*
 private fun patDidiDetailConstraints(): ConstraintSet {
     return ConstraintSet {
         val divider = createRefFor("divider")
@@ -250,4 +485,4 @@ private fun patDidiDetailConstraints(): ConstraintSet {
             top.linkTo(latestStatus.bottom)
         }
     }
-}
+}*/

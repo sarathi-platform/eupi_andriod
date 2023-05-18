@@ -81,7 +81,7 @@ fun VillageSelectionScreen(
                 itemsIndexed(villages) { index, village ->
                     VillageAndVoBox(
                         tolaName = village.name,
-                        voName = village.name,
+                        voName = village.federationName,
                         index = index,
                         viewModel.villageSelected.value,
                     ) {

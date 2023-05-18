@@ -8,7 +8,6 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -17,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -48,7 +46,6 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.gson.Gson
@@ -150,14 +147,14 @@ fun SocialMappingDidiListScreen(
                                 50.dp
                             }
                         ),
-                    contentPadding = PaddingValues(vertical = 10.dp),
+                    contentPadding = PaddingValues(vertical = 10.dp, horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     item {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                            modifier = Modifier
                         ) {
                             val title = if (didiViewModel.prefRepo.getFromPage()
                                     .equals(ARG_FROM_PAT_SURVEY, true))
@@ -167,10 +164,10 @@ fun SocialMappingDidiListScreen(
                                 stringResource(R.string.social_mapping)
                             else
                                 stringResource(R.string.didis_item_text)
-                            MainTitle(title,Modifier.weight(0.5f))
+                            MainTitle(title, Modifier.weight(0.5f))
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                                 && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                                BlueButtonWithIcon(
+                                BlueButtonWithIconWithFixedWidth(
                                     modifier = Modifier
                                         .weight(0.5f),
                                     buttonText = stringResource(id = R.string.add_didi),
@@ -186,12 +183,9 @@ fun SocialMappingDidiListScreen(
                     }
                     item {
                         SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 10.dp,
-                                bottom = 10.dp
-                            ),
+                            modifier = Modifier
+                                .padding(vertical = 10.dp)
+                            ,
                             filterSelected = filterSelected,
                             onFilterSelected = {
                                 if (didiList.value.isNotEmpty()) {
@@ -238,7 +232,6 @@ fun SocialMappingDidiListScreen(
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.Start)
-                                    .padding(start = 16.dp)
                             )
                         }
                     }
@@ -282,7 +275,6 @@ fun SocialMappingDidiListScreen(
                             }
                         }
                     } else {
-
                         itemsIndexed(newFilteredDidiList.reversed()) { index, didi ->
                             DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
@@ -309,7 +301,7 @@ fun SocialMappingDidiListScreen(
         }
 
 
-        if (didiList.value.isNotEmpty() /*&& !didiViewModel.isSocialMappingComplete.value*/) {
+        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                 && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 DoubleButtonBox(
@@ -718,27 +710,23 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
-                Row(verticalAlignment = CenterVertically, modifier = modifier.padding(top = 3.dp)) {
-                    ButtonPositive(
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 16.dp)
+                ) {
+                    ButtonNegative(
                         buttonTitle = stringResource(id = R.string.not_avaliable),
                         isArrowRequired = false,
-                        isActive =  false,
-                        modifier = Modifier
-                            .weight(1f)
-                            .padding(5.dp,1.dp,5.dp,10.dp)
+                        modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
                     ){
 
                     }
-                    Spacer(
-                        modifier = Modifier
-                            .layoutId("midMargin")
-                            .width(20.dp)
-                    )
-                    BlueButtonWithRightArrow(
-                        Modifier.weight(1f),
+                    Spacer(modifier = Modifier.width(6.dp))
+                    ButtonPositive(
+                        modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f),
                         stringResource(id = R.string.start_pat),
-                        true,
-                        true,
+                        true
                     ) {
                         val jsonDidi = Gson().toJson(didi)
                         navController.navigate("didi_pat_summary/$jsonDidi") {

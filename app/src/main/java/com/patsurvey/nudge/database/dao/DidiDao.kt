@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.database.dao
 
+import android.net.Uri
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.DIDI_TABLE
@@ -42,4 +43,7 @@ interface DidiDao {
 
     @Query("SELECT * FROM $DIDI_TABLE where wealth_ranking = :rank and villageId = :villageId")
     fun getAllPoorDidisForVillage(villageId: Int, rank: String = WealthRank.POOR.rank): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET localPath = :path WHERE id = :didiId")
+    fun saveLocalImagePath(path: String, didiId: Int)
 }

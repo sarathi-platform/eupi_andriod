@@ -110,6 +110,7 @@
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
     <string name="download_button_text">Download</string>
+    <string name="no_photo_available_text">No Photo Available</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

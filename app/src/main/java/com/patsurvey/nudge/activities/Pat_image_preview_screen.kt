@@ -30,14 +30,14 @@ fun PatImagePreviewScreen(
     }
 
     if (viewModal.shouldShowCamera.value) {
-        CameraView(
-            outputDirectory = viewModal.outputDirectory,
-            executor = viewModal.cameraExecutor,
-            onImageCaptured = {
-                handleImageCapture(it, viewModal)
-            },
-            onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
-        )
+//        CameraView(
+//            outputDirectory = viewModal.outputDirectory,
+//            executor = viewModal.cameraExecutor,
+//            onImageCaptured = {
+//                handleImageCapture(it, viewModal)
+//            },
+//            onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
+//        )
     }
 
     if (viewModal.shouldShowPhoto.value) {
@@ -48,7 +48,7 @@ fun PatImagePreviewScreen(
 
 }
 
-fun handleImageCapture(uri: Uri, viewModal: PatImagePreviewViewModal) {
+fun handleImageCapture(uri: Uri,  viewModal: PatImagePreviewViewModal) {
     viewModal.shouldShowCamera.value = false
     viewModal.photoUri = uri
     viewModal.shouldShowPhoto.value = true

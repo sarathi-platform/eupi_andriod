@@ -1,10 +1,16 @@
 package com.patsurvey.nudge.utils
 
+import android.app.Activity
 import android.content.Context
+import android.os.Build
+import android.os.Environment
 import android.util.TypedValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Constraints
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
+import java.io.File
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
 private object Invisible : LayoutModifier {
