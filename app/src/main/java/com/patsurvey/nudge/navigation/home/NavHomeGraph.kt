@@ -6,15 +6,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
-import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -36,6 +35,7 @@ fun NavHomeGraph(navController: NavHostController) {
                     0->navController.navigate("details_graph/$villageId/$stepId/$index")
                     1->navController.navigate("social_mapping_graph/$villageId/$stepId")
                     2->navController.navigate("wealth_ranking/$villageId/$stepId")
+                    3->navController.navigate("pat_screens/$villageId/$stepId")
                 }
             }
         }
@@ -252,6 +252,7 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
         ) {
             StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
                 navController.navigate(WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route)
+
             }
         }
 
@@ -273,7 +274,7 @@ sealed class WealthRankingScreens(val route: String) {
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.PAT_SCREENS,
-        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route ,
+        startDestination = PatScreens.YES_NO_QUESTION_SCREEN.route ,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
@@ -291,6 +292,16 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
 
         }
 
+        composable(
+            route = PatScreens.YES_NO_QUESTION_SCREEN.route,
+        ) {
+            QuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel()
+            )
+        }
+
     }
 }
 
@@ -298,5 +309,7 @@ sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
     object PAT_IMAGE_CAPTURE_SCREEN : PatScreens(route ="pat_image_capture_screen")
+
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen")
     object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }

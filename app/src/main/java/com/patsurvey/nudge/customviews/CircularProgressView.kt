@@ -1,6 +1,9 @@
 package com.patsurvey.nudge.customviews
 
 import android.graphics.Paint
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,9 +46,18 @@ fun CircularProgressBar(
         mutableStateOf(Offset.Zero)
     }
 
-//    val positionValue by remember {
-//        mutableStateOf(initialPosition)
-//    }
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+    
+    val curPercentage = animateFloatAsState(
+        targetValue = if (animationPlayed) initialPosition.toFloat() else 0f,
+        animationSpec = tween()
+    )
+
+    LaunchedEffect(key1 = initialPosition) {
+        animationPlayed = true
+    }
 
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -72,7 +84,7 @@ fun CircularProgressBar(
             drawArc(
                 color = progressColor,
                 startAngle = -90f,
-                sweepAngle = (360f / maxProgress) * initialPosition.toFloat(),
+                sweepAngle = (360f / maxProgress) * curPercentage.value,
                 style = Stroke(
                     width = circleThickness.value,
                     cap = StrokeCap.Butt
@@ -116,7 +128,7 @@ fun Preview() {
         modifier = Modifier
             .size(250.dp),
         circleRadius = LocalDensity.current.run { 120.dp.toPx() },
-        initialPosition = 3,
+        initialPosition = 4,
         borderThickness = 10.dp,
         centerTextSize = 15.sp
     )

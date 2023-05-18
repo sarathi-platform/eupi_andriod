@@ -7,9 +7,13 @@ import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = CASTE_TABLE)
 data class CasteEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "casteId")
+    val casteId: Int?=1,
     @ColumnInfo(name = "id")
     var id: Int,
     @ColumnInfo(name = "casteName")
-    var casteName : String
+    var casteName : String,
+    @ColumnInfo(name = "languageId")
+    var languageId : Int
 )
