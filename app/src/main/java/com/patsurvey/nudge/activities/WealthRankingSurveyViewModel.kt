@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -39,6 +40,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
 
+    val showBottomButton = mutableStateOf(true)
 
     var villageId: Int = -1
     var stepId: Int = -1
@@ -123,6 +125,19 @@ class WealthRankingSurveyViewModel @Inject constructor(
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
         val date = dateFormat.format(currentTime)
         prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE, date)
+    }
+
+    fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean)->Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepStatus = stepsListDao.isStepComplete(stepId, prefRepo.getSelectedVillage().id)
+            withContext(Dispatchers.Main) {
+                if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    callBack(true)
+                } else {
+                    callBack(false)
+                }
+            }
+        }
     }
 
 }

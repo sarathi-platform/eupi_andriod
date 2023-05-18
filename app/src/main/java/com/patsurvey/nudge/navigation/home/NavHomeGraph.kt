@@ -229,13 +229,18 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
             route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
             arguments = listOf(navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
-            })
+            },
+            navArgument(ARG_IS_STEP_COMPLETE) {
+                type = NavType.BoolType
+            }
+            )
         ) {
             ParticipatoryWealthRankingSurvey(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
             )
         }
 
@@ -247,11 +252,6 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
         ) {
             StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
                 navController.navigate(WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route)
-//                navController.navigate(Graph.HOME){
-//                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
-//                        inclusive = true
-//                    }
-//                }
             }
         }
 
@@ -265,7 +265,7 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
 
 sealed class WealthRankingScreens(val route: String) {
     object WEALTH_RANKING_SCREEN : WealthRankingScreens(route = "wealth_ranking")
-    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey/{$ARG_STEP_ID}")
+    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
     object WR_STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="wr_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object DIFITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
 }

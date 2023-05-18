@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -32,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -61,12 +63,17 @@ fun WealthRankingScreen(
     val didis by viewModel.didiList.collectAsState()
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
 
-    var completeStepAdditionClicked by remember { mutableStateOf(false) }
-
     val newFilteredTolaDidiList = viewModel.filterTolaMapList
     val newFilteredDidiList = viewModel.filterDidiList
 
     val localDensity = LocalDensity.current
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getWealthRankingStepStatus(stepId) {
+            if (it)
+                navController.navigate("wealth_ranking_survey/$stepId/$it")
+        }
+    }
 
     var bottomPadding by remember {
         mutableStateOf(0.dp)
@@ -88,6 +95,8 @@ fun WealthRankingScreen(
             .constrainAs(mainBox) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
+                bottom.linkTo(bottomActionBox.top)
+                height = Dimension.fillToConstraints
             }
             .padding(top = 14.dp)
             .padding(horizontal = 16.dp)
@@ -184,9 +193,11 @@ fun WealthRankingScreen(
                                             val nextIndex = index + 1
                                             if (nextIndex < didis.size) {
                                                 viewModel.onCardArrowClicked(didis[nextIndex].id)
-                                            } else {
+                                            } else if (nextIndex == didis.size){
                                                 viewModel.onCardArrowClicked(didi.id)
                                             }
+                                            if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
+                                                viewModel.shouldShowBottomButton.value = true
                                         }
                                     },
                                     expanded = expandedCardIds.contains(didi.id),
@@ -199,7 +210,7 @@ fun WealthRankingScreen(
             }
         }
 
-//        if (viewModel.shouldShowBottomButton.value) {
+        if (viewModel.shouldShowBottomButton.value) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -215,11 +226,12 @@ fun WealthRankingScreen(
                 positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    navController.navigate("wealth_ranking_survey/$stepId")
+                    val stepStatus = false
+                    navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
-//        }
+        }
     }
 }
 
@@ -684,9 +696,11 @@ fun ShowDidisFromTola(
                                 val nextIndex = index + 1
                                 if (nextIndex < didiList.size) {
                                     viewModel.onCardArrowClicked(didiList[nextIndex].id)
-                                } else {
+                                } else if (nextIndex == didiList.size){
                                     viewModel.onCardArrowClicked(didi.id)
+                                    Log.d("ANUPAM", "nextIndex: $nextIndex")
                                 }
+                                Log.d("ANUPAM", "remainingItem: ${(didiList.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }).size}")
                             }
                         },
                         expanded = expandedIds.contains(didi.id),

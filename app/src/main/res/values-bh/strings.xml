@@ -94,6 +94,8 @@
 
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
+    <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
+
     <string name="pat_survey">PAT सर्वेक्षण</string>
     <string name="didi">दीदी</string>
     <string name="section_number">खंड %d</string>

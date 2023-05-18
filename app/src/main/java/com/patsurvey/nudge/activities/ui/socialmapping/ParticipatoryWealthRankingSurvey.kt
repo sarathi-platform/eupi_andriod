@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.*
@@ -51,6 +52,8 @@ import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
 @Composable
@@ -58,7 +61,8 @@ fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: WealthRankingSurveyViewModel,
-    stepId: Int
+    stepId: Int,
+    isStepComplete: Boolean
 ) {
 
     val didids = viewModel.didiList.collectAsState()
@@ -74,6 +78,20 @@ fun ParticipatoryWealthRankingSurvey(
 
     LaunchedEffect(key1 = true) {
         viewModel.stepId = stepId
+        viewModel.getWealthRankingStepStatus(stepId) {
+            viewModel.showBottomButton.value = !it
+        }
+    }
+    BackHandler() {
+        if (isStepComplete) {
+            navController.navigate(Graph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        } else {
+            navController.popBackStack()
+        }
     }
     
     val showDialog = remember { mutableStateOf(false) }
@@ -100,7 +118,6 @@ fun ParticipatoryWealthRankingSurvey(
                             "{VILLAGE_NAME}",
                             viewModel.selectedVillage?.name ?: "")}"
                 )
-//                navController.navigate()
             }
         }
         
@@ -210,30 +227,33 @@ fun ParticipatoryWealthRankingSurvey(
                 }
             }
         }
-        
-        BottomButtonBox(
-            modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+
+        if (viewModel.showBottomButton.value) {
+            BottomButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
-                },
-            positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
-                id = R.string.complete_wealth_ranking_btn_text
-            ),
-            isArrowRequired = !showDidiListForRank.first,
-            positiveButtonOnClick = {
-                if (showDidiListForRank.first)
-                    showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
-                else {
-                    showDialog.value = true
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
+                    id = R.string.complete_wealth_ranking_btn_text
+                ),
+                isArrowRequired = !showDidiListForRank.first,
+                positiveButtonOnClick = {
+                    if (showDidiListForRank.first)
+                        showDidiListForRank =
+                            Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+                    else {
+                        showDialog.value = true
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 
