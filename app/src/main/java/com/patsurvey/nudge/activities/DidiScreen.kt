@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -27,6 +28,8 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -42,7 +45,7 @@ fun DidiScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    
+    val fromPage = didiViewModel.prefRepo.getFromPage()
     if(didiViewModel.showLoader.value){
         CustomProgressBar(modifier = Modifier)
     }else {
@@ -82,7 +85,9 @@ fun DidiScreen(
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
-                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)){
+                            Log.e("arg",didiViewModel.prefRepo.getFromPage())
+                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
+                                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
                                 BlueButtonWithDrawableIcon(
                                     buttonText = stringResource(id = R.string.add_didi),
                                     icon = Icons.Default.Add,
@@ -103,8 +108,8 @@ fun DidiScreen(
                 navController,
                 modifier = modifier,
                 didiViewModel = didiViewModel,
-                villageId=villageId,
-                stepId=stepId
+                villageId = villageId,
+                stepId = stepId
             )
         }
     }

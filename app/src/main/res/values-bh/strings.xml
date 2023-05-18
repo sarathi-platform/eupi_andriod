@@ -46,6 +46,7 @@
     <string name="house_number">घर के नंबर</string>
     <string name="didi_name">दीदी नाम</string>
     <string name="dada_name">दादा नाम</string>
+    <string name="dada">दादा</string>
     <string name="enter">दर्ज करें</string>
     <string name="caste">जाति</string>
     <string name="tola">टोला</string>
@@ -99,6 +100,7 @@
     <string name="pat_survey">PAT सर्वेक्षण</string>
     <string name="didi">दीदी</string>
     <string name="section_number">खंड %d</string>
+    <string name="pat_survey_title">PAT Survey</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>
@@ -109,6 +111,8 @@
     <string name="didi_has_been_successfully_added">दीदी के सफलतापूर्वक जोड़ल गइल बा</string>
     <string name="didi_has_been_successfully_updated">दीदी के सफलतापूर्वक अपडेट हो गइल बा</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
+    <string name="not_avaliable">उपलब्ध नहीं है</string>
+    <string name="start_pat">Start Pat</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>

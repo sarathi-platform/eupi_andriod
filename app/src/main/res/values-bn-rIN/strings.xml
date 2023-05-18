@@ -35,6 +35,7 @@
     <string name="medium_text">মধ্যম</string>
     <string name="rich_text">ধনী</string>
     <string name="social_mapping">সামাজিক ম্যাপিং</string>
+    <string name="pat_survey_title">PAT Survey</string>
     <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
     <string name="showing">দেখাচ্ছে</string>
     <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
@@ -49,6 +50,7 @@
     <string name="house_number">বাড়ির নম্বর</string>
     <string name="didi_name">दीदी नाम</string>
     <string name="dada_name">दादा नाम</string>
+    <string name="dada">दादा</string>
     <string name="enter">প্রবেশ করুন</string>
     <string name="caste">জাত</string>
     <string name="tola">তোলা</string>
@@ -112,6 +114,8 @@
     <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে</string>
     <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
+    <string name="not_avaliable">उपलब्ध नहीं है</string>
+    <string name="start_pat">Start Pat</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>

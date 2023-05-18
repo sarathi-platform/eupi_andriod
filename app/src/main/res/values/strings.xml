@@ -51,10 +51,12 @@
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
     <string name="dada_name">Dada Name</string>
+    <string name="dada">Dada</string>
     <string name="enter">Enter</string>
     <string name="caste">Caste</string>
     <string name="tola">Tola</string>
     <string name="select">Select</string>
+    <string name="pat_survey">Pet Survey</string>
 
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Survey</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
@@ -99,9 +101,11 @@
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>
-    <string name="pat_survey">PAT Survey</string>
+    <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
+    <string name="not_avaliable">उपलब्ध नहीं है</string>
+    <string name="start_pat">Start Pat</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>

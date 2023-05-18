@@ -56,6 +56,7 @@ fun NavHomeGraph(navController: NavHostController) {
         socialMappingNavGraph(navController=navController)
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
+        didiPatSurveyNavGraph(navController = navController)
     }
 }
 sealed class HomeScreens(val route: String) {
@@ -137,6 +138,34 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
                 didiViewModel = hiltViewModel(),
+            ){
+                navController.popBackStack()
+            }
+        }
+    }
+}
+
+fun NavGraphBuilder.didiPatSurveyNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.DIDI_PAT_SUMMARY,
+        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+            type = NavType.StringType
+            nullable=true
+        })
+    ) {
+        composable(route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.StringType
+                nullable=true
+                defaultValue = null
+            })){
+            DidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
+                patDidiSummaryViewModel = hiltViewModel(),
             ){
                 navController.popBackStack()
             }
@@ -274,7 +303,7 @@ sealed class WealthRankingScreens(val route: String) {
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.PAT_SCREENS,
-        startDestination = PatScreens.YES_NO_QUESTION_SCREEN.route ,
+        startDestination = PatScreens.PAT_LIST_SCREEN.route ,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
@@ -282,14 +311,24 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         })
     ) {
         composable(
-            route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            route = PatScreens.PAT_LIST_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
                 type = NavType.IntType
             }, navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
             })
         ) {
-
+            DidiScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiViewModel = hiltViewModel(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1){
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                    launchSingleTop = true
+                }
+            }
         }
 
         composable(
@@ -301,7 +340,6 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 viewModel = hiltViewModel()
             )
         }
-
     }
 }
 

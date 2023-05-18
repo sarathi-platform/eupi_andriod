@@ -205,19 +205,21 @@ fun ProgressScreen(
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
+                                    when (index) {
+                                        0 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+                                        }
+                                        1 -> {
+//                                            onNavigateToTransWalk(villageId,stepId,index)
+                                        }
+                                        2 -> {}
+                                        3 -> {
+                                            viewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
+                                        }
+                                        4 -> {}
+                                        5 -> {}
+                                    }
                                     onNavigateToStep(villageId,step.id,index)
-//                                    when (index) {
-//                                        0 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-//                                        }
-//                                        1 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-//                                        }
-//                                        2 -> {}
-//                                        3 -> {}
-//                                        4 -> {}
-//                                        5 -> {}
-//                                    }
 
                                 }
                             }
