@@ -3,7 +3,6 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.database.CasteEntity
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.*
@@ -50,9 +49,15 @@ interface ApiService {
     suspend fun getCohortFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<TolaEntity>>
 
     //Get Didi List
-    @GET("/write-api/beneficiary/view")
+    @POST("/write-api/beneficiary/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
+    @POST("write-api/beneficiary/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getDidisWithRankingFromNetwork(@Query("villageId") villageId: Int,
+                                                @Query("type") type:String,
+                                               @Body stepResultTypeRequest: StepResultTypeRequest): DidiWealthRankingResponse
 
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

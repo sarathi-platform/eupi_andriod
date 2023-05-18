@@ -1,14 +1,14 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
-import android.util.Log
+
 import androidx.compose.runtime.mutableStateOf
-import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,6 +62,9 @@ class VillageSelectionViewModel @Inject constructor(
                             val response=apiService.getStepsList(village.id)
                             val cohortResponse=apiService.getCohortFromNetwork(villageId = village.id)
                             val didiResponse=apiService.getDidisFromNetwork(villageId = village.id)
+                            val didiRankingResponse=apiService.getDidisWithRankingFromNetwork(villageId = village.id,"Category",
+                            StepResultTypeRequest(StepType.WEALTH_RANKING.name,ResultType.ALL.name)
+                            )
                             if(response.status.equals(SUCCESS,true)){
                                 response.data?.let {
                                     
@@ -120,6 +123,27 @@ class VillageSelectionViewModel @Inject constructor(
                                 }
                                 withContext(Dispatchers.Main) {
                                     showLoader.value = false
+                                }
+                            }
+                            if(didiRankingResponse.status.equals(SUCCESS,true)){
+                                didiRankingResponse.data?.let { didiRank->
+                                    didiRank.beneficiaryData?.richDidi?.forEach { richDidi->
+                                        richDidi?.id?.let { didiId->
+                                            didiDao.updateDidiRank(didiId,WealthRank.RICH.rank)
+                                        }
+                                    }
+                                    didiRank.beneficiaryData?.mediumDidi?.forEach {mediumDidi->
+                                        mediumDidi?.id?.let { didiId->
+                                            didiDao.updateDidiRank(didiId,WealthRank.MEDIUM.rank)
+                                        }
+                                    }
+                                    didiRank.beneficiaryData?.poorDidi?.forEach { poorDidi->
+                                        poorDidi?.id?.let { didiId->
+                                            didiDao.updateDidiRank(didiId,WealthRank.POOR.rank)
+                                        }
+
+                                    }
+
                                 }
                             }
                             else {
