@@ -1,0 +1,27 @@
+package com.patsurvey.nudge.database.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.utils.QUESTION_TABLE
+
+@Dao
+interface QuestionListDao {
+
+    @Query("SELECT * FROM $QUESTION_TABLE")
+    fun getAllQuestions(): List<QuestionEntity>
+
+    @Query("Select * FROM $QUESTION_TABLE where id = :id")
+    fun getQuestion(id: Int): QuestionEntity
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertQuestion(question: QuestionEntity)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    fun insertAll(questionList: List<QuestionEntity>)
+
+    @Query("DELETE from $QUESTION_TABLE")
+    fun deleteQuestionTable()
+}

@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -25,7 +27,9 @@ class VillageSelectionViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val languageListDao: LanguageListDao,
+    val questionListDao: QuestionListDao
 ) : BaseViewModel() {
 
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -49,6 +53,7 @@ class VillageSelectionViewModel @Inject constructor(
                     val villageList=villageListDao.getAllVillages()
                     val localStepsList = stepsListDao.getAllSteps()
                     val localTolaList = tolaDao.getAllTolas()
+                    val localLanguageList = languageListDao.getAllLanguages()
                     if(localStepsList.isNotEmpty()){
                         stepsListDao.deleteAllStepsFromDB()
                     }
@@ -150,6 +155,31 @@ class VillageSelectionViewModel @Inject constructor(
                                 showLoader.value=false
                             }
 
+                        }
+                    }
+                    localLanguageList?.let {
+                        localLanguageList.forEach { languageEntity ->
+                            val quesListResponse = apiService.fetchQuestionListFromServer(
+                                GetQuestionListRequest(languageEntity.id,1, PAT_SURVEY_CONSTANT)
+                            )
+                            // Fetch QuestionList from Server
+                            if(quesListResponse.status.equals(SUCCESS,true)){
+                                val localQuestionList=questionListDao.getAllQuestions()
+                                if(localQuestionList.isNotEmpty()){
+                                    questionListDao.deleteQuestionTable()
+                                }
+                               quesListResponse.data?.let { questionList ->
+                                   questionList.listOfQuestionSectionList?.forEach { list ->
+                                        list?.questionList?.forEach { question->
+                                            question?.sectionOrderNumber= list.orderNumber
+                                            question?.actionType= list.actionType
+                                        }
+                                       list?.questionList?.let {
+                                           questionListDao.insertAll(it as List<QuestionEntity>)
+                                       }
+                                   }
+                               }
+                            }
                         }
                     }
                 }

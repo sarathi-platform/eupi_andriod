@@ -76,4 +76,10 @@ interface ApiService {
     @POST("/write-api/workflow/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+
+    // Get Questions List
+    @POST("/pat-api/pat/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchQuestionListFromServer(@Body getQuestionListRequest: GetQuestionListRequest):ApiResponseModel<QuestionListResponse>
+
 }

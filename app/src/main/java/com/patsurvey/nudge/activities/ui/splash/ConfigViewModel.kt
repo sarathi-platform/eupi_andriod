@@ -77,7 +77,6 @@ class ConfigViewModel @Inject constructor(
 
             } catch (ex: Exception) {
                 onError(tag = "ConfigViewModel", "Error : ${ex.localizedMessage}")
-                addDefaultLanguage()
                 withContext(Dispatchers.Main) {
                     callBack()
                 }
@@ -95,23 +94,6 @@ class ConfigViewModel @Inject constructor(
                 localName = "English"
             )
         )
-    }
-
-    private fun fetchCasteList(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val response = apiInterface.getCasteList(prefRepo.getAppLanguageId()?:0)
-                withContext(Dispatchers.IO){
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let { casteListDao.insertAll(it) }
-                    }else{
-                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
-                    }
-                }
-            }catch (ex:Exception){
-                onError(tag = "VillageSelectionViewModel", "Error : ${ex.localizedMessage}")
-            }
-        }
     }
 
 }
