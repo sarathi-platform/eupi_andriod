@@ -72,3 +72,5 @@ val rankItemBorder = Color(0xFF888888)
 val mediumRankColor = Color(0xFFE08B00)
 val poorRankColor = Color(0xFF439A86)
 val richRankColor = Color(0xFFD12222)
+
+val borderGreyShare = Color(0xFFE8E8E8)

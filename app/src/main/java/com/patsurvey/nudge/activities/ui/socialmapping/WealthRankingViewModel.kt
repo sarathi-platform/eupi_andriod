@@ -7,8 +7,8 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.*
-import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -32,6 +32,8 @@ class WealthRankingViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
+
+    val shouldShowBottomButton = mutableStateOf(false)
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
@@ -65,7 +67,9 @@ class WealthRankingViewModel @Inject constructor(
 
     fun onCardArrowClicked(cardId: Int) {
         _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
-            if (list.contains(cardId)) list.remove(cardId) else {
+            if (list.contains(cardId))
+                list.remove(cardId)
+            else {
                 list.clear()
                 list.add(cardId)
             }
@@ -125,6 +129,20 @@ class WealthRankingViewModel @Inject constructor(
             didiDao.updateDidiRank(id, rank)
             updatedDidiList[id].wealth_ranking = rank
             _didiList.emit(updatedDidiList)
+            onError("WealthRankingViewModel", "here is error")
+        }
+    }
+
+    fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean)->Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            withContext(Dispatchers.Main) {
+                if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    callBack(true)
+                } else {
+                    callBack(false)
+                }
+            }
         }
     }
 

@@ -70,7 +70,7 @@
 
     <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
 
-    <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ \nর্যাঙ্কিং জরিপ</string>
+    <string name="particaptory_wealth_ranking_survey_text">অংশীদারিত্ব সম্পদ র্যাঙ্কিং জরিপ</string>
 
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
     <string name="particaptory_wealth_ranking_text">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
@@ -98,6 +98,8 @@
 
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
+    <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
+
 
     <string name="pat_survey">PAT জরিপ</string>
     <string name="didi">দিদি</string>
@@ -114,5 +116,12 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">Start Pat</string>
+
+    <string name="done_text">पूर्ण </string>
+    <string name="yes_text">हाँ</string>
+    <string name="share_button_text">शेयर करें</string>
+    <string name="download_button_text">डाउनलोड करें</string>
+
+
 
 </resources>

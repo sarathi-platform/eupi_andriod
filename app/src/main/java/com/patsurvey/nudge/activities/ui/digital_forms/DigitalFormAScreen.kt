@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -10,53 +9,70 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.NetworkBanner
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ButtonNegative
+import com.patsurvey.nudge.utils.ButtonOutline
+import com.patsurvey.nudge.utils.OutlineButtonCustom
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 
 
 @Composable
 fun DigitalFormAScreen(
     navController: NavController,
-    viewModel:DigitalFormAViewModel,
-    modifier:Modifier= Modifier
-){
+    viewModel: DigitalFormAViewModel,
+    modifier: Modifier = Modifier
+) {
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
 
-    ConstraintLayout(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)
-        .then(modifier)) {
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .then(modifier)
+    ) {
         val (mainCard, buttonCard) = createRefs()
         Box(modifier = Modifier
             .constrainAs(mainCard) {
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
+                bottom.linkTo(buttonCard.top)
+                height = Dimension.fillToConstraints
             }
-            .padding(top = 24.dp)
         ) {
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(Color.White)
+                    .verticalScroll(rememberScrollState())
             ) {
 
                 Text(
@@ -82,13 +98,8 @@ fun DigitalFormAScreen(
                     shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(
-                            horizontal = dimensionResource(id = R.dimen.dp_16)
-                        )
-                        .padding(
-                            top = dimensionResource(id = R.dimen.dp_10),
-                            bottom = dimensionResource(id = R.dimen.dp_10)
-                        )
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_16))
+                        .padding(bottom = dimensionResource(id = R.dimen.dp_10))
 
                 ) {
                     Column(
@@ -110,7 +121,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_10))
                             )
                             Text(
-                                text = "Ghaghara",
+                                text = viewModel.prefRepo.getSelectedVillage().name,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -136,7 +147,10 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = "Ghaghara",
+                                text = viewModel.prefRepo.getPref(
+                                    PREF_WEALTH_RANKING_COMPLETION_DATE,
+                                    ""
+                                ) ?: "",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -162,7 +176,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = "Ghaghara",
+                                text = viewModel.prefRepo.getSelectedVillage().name + " Mandal",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -188,7 +202,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = "Ghaghara",
+                                text = didiList.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -222,19 +236,43 @@ fun DigitalFormAScreen(
                         .padding(
                             horizontal = dimensionResource(id = R.dimen.dp_16),
                         )
-                        .padding(bottom = 70.dp)
+                        .padding(bottom = 14.dp)
+                        .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList, DidiDetailsModel::id) { card ->
+                        items(didiList) { card ->
                             DidiVillageItem(card)
                         }
                     }
                 }
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+//                    .padding(bottom = 70.dp)
+                ) {
+                    ButtonNegative(buttonTitle = stringResource(id = R.string.share_button_text), modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                        isArrowRequired = false
+                    ) {
+                        //TODO Add Create PDF and Share Functionality when pdf format available.
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                    OutlineButtonCustom(
+                        modifier = Modifier
+                            .background(white)
+                            .weight(1f),
+                        buttonTitle = stringResource(R.string.download_button_text),
+                    ) {
+                        //TODO Add Create PDF and Download Functionality when pdf format available.
+                    }
+                }
 
             }
         }
@@ -246,9 +284,14 @@ fun DigitalFormAScreen(
                 start.linkTo(parent.start)
                 bottom.linkTo(parent.bottom)
             }
-           ) {
+        ) {
             Button(
                 onClick = {
+                    navController.navigate(Graph.HOME) {
+                        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                            inclusive = true
+                        }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()
@@ -258,7 +301,6 @@ fun DigitalFormAScreen(
                 colors = ButtonDefaults.buttonColors(blueDark),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
             ) {
-
                 Text(
                     text = stringResource(id = R.string.continue_text),
                     color = Color.White,
@@ -270,71 +312,69 @@ fun DigitalFormAScreen(
                         .fillMaxWidth()
                         .padding(vertical = dimensionResource(id = R.dimen.dp_6))
                 )
-
             }
-
-
         }
     }
 }
 
 @Composable
-fun DidiVillageItem(didiDetailsModel: DidiDetailsModel){
-        Column(
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = dimensionResource(id = R.dimen.dp_20))
-                .padding(end = dimensionResource(id = R.dimen.dp_15))
-                .padding(vertical = dimensionResource(id = R.dimen.dp_5))
-        ) {
+fun DidiVillageItem(didiDetailsModel: DidiEntity) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = dimensionResource(id = R.dimen.dp_20))
+            .padding(end = dimensionResource(id = R.dimen.dp_15))
+            .padding(vertical = dimensionResource(id = R.dimen.dp_5))
+    ) {
 
-            Column{
-                Row(horizontalArrangement = Arrangement.SpaceBetween
-                    ,verticalAlignment = Alignment.CenterVertically,
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
-                    .fillMaxWidth()) {
-                    Text(
-                        text = didiDetailsModel.name,
-                        color = colorResource(id = R.color.text_didi_name_color),
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .padding(top = dimensionResource(id = R.dimen.dp_5))
-                    )
-                    Image(
-                        painter = painterResource(R.drawable.ic_completed_tick),
-                        contentDescription = "completed",
-                        modifier = Modifier
-                            .padding(top = dimensionResource(id = R.dimen.dp_5))
-                    )
-                }
-                Row(
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = didiDetailsModel.name,
+                    color = colorResource(id = R.color.text_didi_name_color),
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Start,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_baseline_home_24),
-                        contentDescription = "Get Location",
-                        modifier = Modifier,
-                        tint = blueDark,
-
-                        )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = didiDetailsModel.village,
-                        textAlign = TextAlign.Center,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 12.sp,
-                        color = blueDark
-                    )
-                }
+                )
+                Image(
+                    painter = painterResource(R.drawable.ic_completed_tick),
+                    contentDescription = "completed",
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.dp_5))
+                )
             }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_home_24),
+                    contentDescription = "Get Location",
+                    modifier = Modifier,
+                    tint = blueDark,
+
+                    )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = didiDetailsModel.cohortName,
+                    textAlign = TextAlign.Center,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp,
+                    color = blueDark
+                )
+            }
+        }
     }
 }

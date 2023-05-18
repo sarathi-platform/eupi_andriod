@@ -19,7 +19,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
         route = Graph.ROOT,
         startDestination = Graph.AUTHENTICATION
     ){
-        authNavGraph(navController,prefRepo)
+        authNavGraph(navController)
         composable(route = Graph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }

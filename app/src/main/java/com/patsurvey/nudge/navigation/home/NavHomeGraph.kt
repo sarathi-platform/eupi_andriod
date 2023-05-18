@@ -1,20 +1,19 @@
 package com.patsurvey.nudge.navigation.home
 
 
-import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.survey.QuestionScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
-import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -256,51 +255,49 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
         }
 
         composable(
-            route = WealthRankingScreens.PAT_IMAGE_PREVIEW_SCREEN.route
-        ) {
-            PatImagePreviewScreen(viewModal = hiltViewModel())
-        }
-
-        composable(
             route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
-            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            arguments = listOf(navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
-            }, navArgument(ARG_STEP_ID) {
-                type = NavType.IntType
-            })
+            },
+            navArgument(ARG_IS_STEP_COMPLETE) {
+                type = NavType.BoolType
+            }
+            )
         ) {
             ParticipatoryWealthRankingSurvey(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
-                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
             )
         }
 
         composable(
-            route = WealthRankingScreens.STEP_COMPLETION_SCREEN.route,
+            route = WealthRankingScreens.WR_STEP_COMPLETION_SCREEN.route,
             arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
                 type = NavType.StringType
             })
         ) {
             StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(Graph.HOME){
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
-                        inclusive = true
-                    }
-                }
+                navController.navigate(WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route)
+
             }
+        }
+
+        composable(
+            route = WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route
+        ) {
+            DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(), modifier = Modifier.fillMaxSize())
         }
     }
 }
 
 sealed class WealthRankingScreens(val route: String) {
     object WEALTH_RANKING_SCREEN : WealthRankingScreens(route = "wealth_ranking")
-    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey")
-    object STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
-
-    object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
+    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+    object WR_STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="wr_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object DIFITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
 }
 
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
@@ -333,6 +330,16 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 }
             }
         }
+
+        composable(
+            route = PatScreens.YES_NO_QUESTION_SCREEN.route,
+        ) {
+            QuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel()
+            )
+        }
     }
 }
 
@@ -340,5 +347,7 @@ sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
     object PAT_IMAGE_CAPTURE_SCREEN : PatScreens(route ="pat_image_capture_screen")
+
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen")
     object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }

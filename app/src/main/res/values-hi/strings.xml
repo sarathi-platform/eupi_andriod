@@ -83,9 +83,10 @@
     <string name="didi_conirmation_text">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
+    <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
 
 
-    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन \nरैंकिंग सर्वेक्षण </string>
+    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सर्वेक्षण </string>
     <string name="particaptory_wealth_ranking_text">भागीदारी धन रैंकिंग </string>
 
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
@@ -110,5 +111,11 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">Start Pat</string>
+
+    <string name="done_text">पूर्ण </string>
+    <string name="yes_text">हाँ</string>
+    <string name="share_button_text">शेयर करें</string>
+    <string name="download_button_text">डाउनलोड करें</string>
+
 
 </resources>

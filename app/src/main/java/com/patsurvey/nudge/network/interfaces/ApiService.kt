@@ -3,7 +3,6 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.database.CasteEntity
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.*
@@ -58,7 +57,7 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getDidisWithRankingFromNetwork(@Query("villageId") villageId: Int,
                                                 @Query("type") type:String,
-                                               @Body stepResultTypeRequest: StepResultTypeRequest): ApiResponseModel<BeneficiaryApiResponse>
+                                               @Body stepResultTypeRequest: StepResultTypeRequest): DidiWealthRankingResponse
 
     @POST("/write-api/beneficiary/add")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -77,4 +76,10 @@ interface ApiService {
     @POST("/write-api/workflow/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+
+    // Get Questions List
+    @POST("/pat-api/pat/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchQuestionListFromServer(@Body getQuestionListRequest: GetQuestionListRequest):ApiResponseModel<QuestionListResponse>
+
 }

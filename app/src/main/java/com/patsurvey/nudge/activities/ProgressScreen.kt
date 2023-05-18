@@ -344,7 +344,7 @@ fun StepsBox(
                                 ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
                             2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
-                            3 -> ""
+                            3 -> viewModel?.poorDidiCount?.value?.let { stringResource(id = R.string.wealth_ranking_sub_text, it) }
                             4 -> ""
                             5 -> ""
                             else -> ""

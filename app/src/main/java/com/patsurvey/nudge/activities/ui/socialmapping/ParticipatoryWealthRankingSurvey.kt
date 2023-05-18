@@ -1,15 +1,24 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateColor
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,36 +26,75 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
-import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.activities.ui.socialmapping.*
+import com.patsurvey.nudge.activities.ui.socialmapping.ExpandableCard
+import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
+import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.*
 
 @Composable
 fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: WealthRankingSurveyViewModel,
-    villageId:Int,
-    stepId:Int,
+    stepId: Int,
+    isStepComplete: Boolean
 ) {
 
-//    val didids = viewModel.didiList.collectAsState()
+    val didids = viewModel.didiList.collectAsState()
+    var showDidiListForRank by remember { mutableStateOf(Pair(false, WealthRank.NOT_RANKED)) }
+    val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
+
+    val context = LocalContext.current
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.stepId = stepId
+        viewModel.getWealthRankingStepStatus(stepId) {
+            viewModel.showBottomButton.value = !it
+        }
+    }
+    BackHandler() {
+        if (isStepComplete) {
+            navController.navigate(Graph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        } else {
+            navController.popBackStack()
+        }
+    }
+    
+    val showDialog = remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -56,79 +104,198 @@ fun ParticipatoryWealthRankingSurvey(
     ) {
         val (bottomActionBox, mainBox) = createRefs()
 
-        Column(
+        if (showDialog.value){
+            ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
+                showDialog.value = it
+            }) {
+                if ((context as MainActivity).isOnline.value ?: false) {
+                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
+//                    viewModel.updateWealthRankingToNetwork()
+                }
+                viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                viewModel.saveWealthRankingCompletionDate()
+                navController.navigate("wr_step_completion_screen/${context.getString(R.string.transect_walk_completed_message).replace(
+                            "{VILLAGE_NAME}",
+                            viewModel.selectedVillage?.name ?: "")}"
+                )
+            }
+        }
+        
+        Box(
             modifier = Modifier
                 .constrainAs(mainBox) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                 }
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+                .padding(top = 14.dp)
                 .then(modifier),
-            verticalArrangement = Arrangement.spacedBy(14.dp)
         ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(horizontal = 16.dp),
+            ) {
 
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
+                VillageDetailView(
+                    villageName = viewModel.selectedVillage?.name ?: "",
+                    voName = (viewModel.selectedVillage?.name + " Mandal") ?: "",
                     modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth()
-                        .padding(top = 28.dp),
-                    style = largeTextStyle,
-                    color = textColorDark,
-                    textAlign = TextAlign.Center
                 )
-            }
-            Box(modifier = Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(id = R.string.didis_item_text),
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .fillMaxWidth()
-                        .padding(top = 20.dp, start = 16.dp),
-                    style = mediumTextStyle,
-                    fontSize = 16.sp,
-                    color = textColorDark80,
-                    textAlign = TextAlign.Start
-                )
-            }
 
-            WealthRankingBox(
-                count = /*didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size*/10,
-                wealthRank = WealthRank.POOR,
-                modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
-            )
-            WealthRankingBox(
-                count = /*didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size*/20,
-                wealthRank = WealthRank.MEDIUM,
-                modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
-            )
-            WealthRankingBox(
-                count = /*didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size*/4,
-                wealthRank = WealthRank.RICH,
-                modifier = Modifier.padding(vertical = 12.dp, horizontal = 20.dp)
-            )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth(),
+                        style = mediumTextStyle,
+                        color = textColorDark,
+                        textAlign = TextAlign.Start
+                    )
+                }
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 2.dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.didis_item_text),
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .fillMaxWidth(),
+                        style = TextStyle(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = NotoSans
+                        ),
+                        color = textColorDark80,
+                        textAlign = TextAlign.Start
+                    )
+                }
+
+                AnimatedVisibility(visible = showDidiListForRank.first) {
+
+                    Box(modifier = Modifier
+                        .fillMaxSize()
+                        .padding(vertical = 8.dp)) {
+                        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                            contentPadding = PaddingValues(bottom = 10.dp),
+                        modifier = Modifier.padding(bottom = 10.dp)) {
+                            item { Spacer(modifier = Modifier.height(4.dp)) }
+                            itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
+                                DidiItemCard(didi, expandedCardIds.contains(didi.id), Modifier.padding(horizontal = 0.dp),
+                                    onExpendClick = { expand, didiDetailModel ->
+                                        viewModel.onCardArrowClicked(didiDetailModel.id)
+                                    },
+                                    onItemClick = {}
+                                )
+                            }
+                            item { Spacer(modifier = Modifier.height(6.dp)) }
+                        }
+                    }
+                }
+
+                Column(
+                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                ) {
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
+                        wealthRank = WealthRank.POOR,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.POOR)
+                    }
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
+                        wealthRank = WealthRank.MEDIUM,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.MEDIUM)
+                    }
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
+                        wealthRank = WealthRank.RICH,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.RICH)
+                    }
+                }
+            }
         }
 
-        DoubleButtonBox(
-            modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+        if (viewModel.showBottomButton.value) {
+            BottomButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
-                },
-            positiveButtonText = stringResource(id = R.string.complete_wealth_ranking_btn_text),
-            negativeButtonRequired = false,
-            positiveButtonOnClick = {
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
+                    id = R.string.complete_wealth_ranking_btn_text
+                ),
+                isArrowRequired = !showDidiListForRank.first,
+                positiveButtonOnClick = {
+                    if (showDidiListForRank.first)
+                        showDidiListForRank =
+                            Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+                    else {
+                        showDialog.value = true
+                    }
+                }
+            )
+        }
+    }
+}
 
-            },
-            negativeButtonOnClick = { /*No Back Button*/ }
-        )
+@Composable
+fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit, positiveButtonClicked: () -> Unit) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Start,
+                        style = buttonTextStyle,
+                        maxLines = 1,
+                        color = textColorDark,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = message,
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyleMediumWeight,
+                        maxLines = 2,
+                        color = textColorDark,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonNegative(buttonTitle = stringResource(id = R.string.cancel_tola_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                            setShowDialog(false)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ButtonPositive(buttonTitle = stringResource(id = R.string.yes_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                            positiveButtonClicked()
+                            setShowDialog(false)
+                        }
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -137,19 +304,24 @@ fun ParticipatoryWealthRankingSurvey(
 fun WealthRankingBox(
     modifier: Modifier = Modifier,
     count: Int,
-    wealthRank: WealthRank
+    wealthRank: WealthRank,
+    onWealthRankingBoxClicked: (wealthRank: WealthRank) -> Unit
 ) {
     val boxColor = when (wealthRank) {
         WealthRank.RICH -> brownLoght
         WealthRank.MEDIUM -> yellowLight
         WealthRank.POOR -> blueLighter
-        else -> {Color.Transparent}
+        else -> {
+            Color.Transparent
+        }
     }
     val boxTitle = when (wealthRank) {
         WealthRank.RICH -> "Rich"
         WealthRank.MEDIUM -> "Medium"
         WealthRank.POOR -> "Poor"
-        else -> {""}
+        else -> {
+            ""
+        }
     }
 
     Box(
@@ -157,6 +329,15 @@ fun WealthRankingBox(
             .fillMaxWidth()
             .background(boxColor, shape = RoundedCornerShape(6.dp))
             .clip(RoundedCornerShape(6.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            ) {
+                onWealthRankingBoxClicked(wealthRank)
+            }
             .then(modifier)
     ) {
         Row(
@@ -208,7 +389,8 @@ fun WealthRankingBox(
             }
         }
         Row(
-            modifier = Modifier.align(Alignment.CenterEnd),
+            modifier = Modifier
+                .align(Alignment.CenterEnd),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

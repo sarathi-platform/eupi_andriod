@@ -13,9 +13,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.model.request.AddCohortRequest
-import com.patsurvey.nudge.model.request.AddWorkFlowRequest
-import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -137,15 +135,15 @@ class TransectWalkViewModel @Inject constructor(
     fun removeTola(tolaId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-//                val jsonTola = JsonArray()
-//                jsonTola.add(DeleteTolaRequest(tolaId).toJson())
-//                val response = apiInterface.deleteCohort(jsonTola)
-//                if (response.status.equals(SUCCESS)) {
-//                    tolaDao.removeTola(tolaId)
-//                } else {
+                val jsonTola = JsonArray()
+                jsonTola.add(DeleteTolaRequest(tolaId).toJson())
+                val response = apiInterface.deleteCohort(jsonTola)
+                if (response.status.equals(SUCCESS)) {
+                    tolaDao.removeTola(tolaId)
+                } else {
                     tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
                     tolaDao.setNeedToPost(listOf(tolaId), true)
-//                }
+                }
                 withContext(Dispatchers.Main) {
                     tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
                     if (isTransectWalkComplete.value)
@@ -169,12 +167,12 @@ class TransectWalkViewModel @Inject constructor(
                 needsToPost = true
             )
             tolaDao.insert(updatedTola)
-//            val jsonTola = JsonArray()
-//            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
-//            val response = apiInterface.editCohort(jsonTola)
-//            if (response.status.equals(SUCCESS)) {
-//                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
-//            }
+            val jsonTola = JsonArray()
+            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
+            val response = apiInterface.editCohort(jsonTola)
+            if (response.status.equals(SUCCESS)) {
+                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
+            }
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false
             withContext(Dispatchers.Main) {

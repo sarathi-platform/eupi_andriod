@@ -45,7 +45,7 @@
     <string name="village_text">Village</string>
     <string name="vo_name">VO Name</string>
     <string name="total">Total</string>
-    <string name="participation_date_wealth_ranking">Participation Date Wealth Ranking</string>
+    <string name="participation_date_wealth_ranking">Participation Wealth Ranking Date</string>
     <string name="add_didi">Add Didi</string>
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
@@ -58,7 +58,7 @@
     <string name="select">Select</string>
     <string name="pat_survey">Pet Survey</string>
 
-    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth \nRanking Survey</string>
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Survey</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
@@ -91,6 +91,7 @@
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
 
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
@@ -105,6 +106,11 @@
     <string name="section_number">Section %d</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">Start Pat</string>
+    <string name="done_text">Done</string>
+    <string name="yes_text">Yes</string>
+    <string name="share_button_text">Share</string>
+    <string name="download_button_text">Download</string>
+
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>

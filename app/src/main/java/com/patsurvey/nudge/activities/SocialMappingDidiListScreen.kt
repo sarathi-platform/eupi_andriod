@@ -648,10 +648,10 @@ fun DidiItemCard(
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp)
             .clickable {
                 onItemClick(didi)
             }
+            .then(modifier)
     ) {
         Column(
             modifier = Modifier
@@ -850,7 +850,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = "Wealth Ranking Not started",
+                text = if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) "Wealth Ranking Not started" else "Wealth Ranking Completed",
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
