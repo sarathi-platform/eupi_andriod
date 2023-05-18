@@ -43,6 +43,7 @@ class ProgressScreenViewModel @Inject constructor(
     val villageSelected = mutableStateOf(0)
     val tolaCount = mutableStateOf(0)
     val didiCount = mutableStateOf(0)
+    val poorDidiCount = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -82,6 +83,7 @@ class ProgressScreenViewModel @Inject constructor(
                 _stepsList.value = stepList
                 tolaCount.value=tolaList.size
                 didiCount.value=didiList.size
+                poorDidiCount.value = didiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
             }
         }
     }

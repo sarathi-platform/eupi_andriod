@@ -89,6 +89,7 @@
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
 
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
