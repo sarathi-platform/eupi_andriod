@@ -12,6 +12,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
@@ -22,7 +23,8 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 @Composable
 fun VOAndVillageBoxView(
  prefRepo: PrefRepo,
- modifier: Modifier
+ modifier: Modifier,
+ startPadding: Dp?=16.dp
 ){
     Card(
         modifier = Modifier
@@ -36,7 +38,7 @@ fun VOAndVillageBoxView(
             modifier = Modifier
                 .background(Color.White)
         ) {
-            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp)) {
+            Row(modifier = Modifier.padding(start = startPadding?:16.dp, end = 16.dp)) {
                 Icon(
                     painter = painterResource(id = R.drawable.home_icn),
                     contentDescription = null,
@@ -55,7 +57,7 @@ fun VOAndVillageBoxView(
             Row(
                 modifier = Modifier
                     .absolutePadding(left = 4.dp)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(start = startPadding?:16.dp, end = 16.dp, bottom = 16.dp)
             ) {
                 Text(
                     text = "VO: ",

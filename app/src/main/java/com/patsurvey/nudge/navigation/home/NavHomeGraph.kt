@@ -13,6 +13,7 @@ import androidx.navigation.compose.navigation
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -333,11 +334,15 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
 
         composable(
             route = PatScreens.YES_NO_QUESTION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID){
+                type=NavType.IntType
+            })
         ) {
             QuestionScreen(
                 navController = navController,
                 modifier = Modifier.fillMaxSize(),
-                viewModel = hiltViewModel()
+                viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
             )
         }
     }
@@ -348,6 +353,6 @@ sealed class PatScreens(val route: String) {
     object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
     object PAT_IMAGE_CAPTURE_SCREEN : PatScreens(route ="pat_image_capture_screen")
 
-    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen")
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}")
     object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }
