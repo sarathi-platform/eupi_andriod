@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -40,7 +42,9 @@ fun LanguageScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
     Box(
         modifier = Modifier
             .background(color = Color.White)

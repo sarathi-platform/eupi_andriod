@@ -2,9 +2,11 @@ package com.patsurvey.nudge.utils
 
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.os.Build
 import android.os.Environment
 import android.util.TypedValue
+import androidx.activity.ComponentActivity
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.unit.Constraints
@@ -39,4 +41,9 @@ fun findCompleteValue(status:String): StepStatus {
         COMPLETED_STRING->StepStatus.COMPLETED
         else -> {StepStatus.NOT_STARTED}
     }
+}
+fun Context.findActivity(): ComponentActivity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
 }

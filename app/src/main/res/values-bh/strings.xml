@@ -121,7 +121,8 @@
     <string name="option_yes">हाँ</string>
     <string name="option_no">नहीं</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
-
+    <string name="enter_name_text">नाम दर्ज करें</string>
+    <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
 
 
 </resources>

@@ -113,6 +113,8 @@
     <string name="option_yes">Yes</string>
     <string name="option_no">No</string>
     <string name="no_photo_available_text">No Photo Available</string>
+    <string name="enter_name_text">Enter Name</string>
+    <string name="enter_tola_name_message">Enter Tola Name</string>
 
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>

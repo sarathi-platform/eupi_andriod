@@ -6,6 +6,8 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,9 +20,9 @@ class LoginViewModel @Inject constructor(
     val apiInterface: ApiService,
 ) : BaseViewModel() {
     val mobileNumber = mutableStateOf(TextFieldValue())
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
 
     val showLoader = mutableStateOf(false)
-
     fun generateOtp(onLoginResponse: (success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val loginRequest = LoginRequest(mobileNumber = mobileNumber.value.text)
@@ -40,13 +42,18 @@ class LoginViewModel @Inject constructor(
                     }
                 }
                 else {
-                    onError(tag = "LoginViewModel", "Error : ${response.message}")
                     withContext(Dispatchers.Main) {
                         showLoader.value = false
                         onLoginResponse(false, response.message)
                     }
+
                 }
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        showLoader.value = false
+        networkErrorMessage.value= error?.title.toString()
     }
 }
