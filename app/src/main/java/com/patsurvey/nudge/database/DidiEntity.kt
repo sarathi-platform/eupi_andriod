@@ -51,6 +51,12 @@ data class DidiEntity(
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
 
+    @ColumnInfo(name = "localPath")
+    var localPath: String = BLANK_STRING,
+
+    @ColumnInfo(name = "needsToPostRanking")
+    var needsToPostRanking: Boolean = true,
+
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")
     var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList()
