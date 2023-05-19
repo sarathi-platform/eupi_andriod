@@ -110,7 +110,8 @@
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
     <string name="download_button_text">Download</string>
-
+    <string name="pat_survey_section_1">Pet Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>

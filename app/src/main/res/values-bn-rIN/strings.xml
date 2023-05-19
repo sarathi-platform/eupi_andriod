@@ -104,7 +104,8 @@
     <string name="pat_survey">PAT জরিপ</string>
     <string name="didi">দিদি</string>
     <string name="section_number">বিভাগ %d</string>
-
+    <string name="pat_survey_section_1">Pet Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
         <item quantity="other">দিদি যোগ করেছে</item>

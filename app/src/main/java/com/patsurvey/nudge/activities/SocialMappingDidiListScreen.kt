@@ -727,7 +727,10 @@ fun DidiItemCard(
                             .weight(1f)
                             .padding(5.dp,1.dp,5.dp,10.dp)
                     ){
-
+                        /*val jsonDidi = Gson().toJson(didi)
+                        navController.navigate("pat_section_one_summary_screen/$jsonDidi") {
+                            launchSingleTop = true
+                        }*/
                     }
                     Spacer(
                         modifier = Modifier

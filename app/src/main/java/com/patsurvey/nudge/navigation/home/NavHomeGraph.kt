@@ -57,6 +57,7 @@ fun NavHomeGraph(navController: NavHostController) {
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
         didiPatSurveyNavGraph(navController = navController)
+//        patSectionOneSummaryNavGraph(navController = navController)
     }
 }
 sealed class HomeScreens(val route: String) {
@@ -340,8 +341,48 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 viewModel = hiltViewModel()
             )
         }
+        composable(
+            route = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
+        ) {
+            PatSurvaySectionOneSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patDidiSummaryViewModel = hiltViewModel(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING)
+
+        }
     }
 }
+
+fun NavGraphBuilder.patSectionOneSummaryNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.PAT_SCREENS,
+        startDestination = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route ,
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ){
+        composable(
+            route = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        )  {
+            PatSurvaySectionOneSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patDidiSummaryViewModel = hiltViewModel(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING)
+
+            }
+        }
+    }
 
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
@@ -350,4 +391,5 @@ sealed class PatScreens(val route: String) {
 
     object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen")
     object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object PAT_SECTION_ONE_SUMMARY_SCREEN : PatScreens(route ="pat_section_one_summary_screen/{$ARG_COMPLETION_MESSAGE}")
 }
