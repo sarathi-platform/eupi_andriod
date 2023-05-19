@@ -21,8 +21,13 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun PatSurvaySectionOneSummaryScreen(navController: NavHostController, modifier: Modifier,
-                      isOnline: Boolean = true, patDidiSummaryViewModel: PatDidiSummaryViewModel, didiDetails:String) {
+fun PatSurvaySectionOneSummaryScreen(
+    navController: NavHostController,
+    modifier: Modifier,
+    isOnline: Boolean = true,
+    patDidiSummaryViewModel: PatDidiSummaryViewModel,
+    didiDetails:String
+) {
 
     ConstraintLayout(
         modifier = Modifier

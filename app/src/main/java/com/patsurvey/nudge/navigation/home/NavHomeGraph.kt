@@ -332,6 +332,23 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
             }
         }
 
+        composable(route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.StringType
+                nullable=true
+                defaultValue = null
+            })){
+            DidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
+                patDidiSummaryViewModel = hiltViewModel(),
+            ){
+                navController.popBackStack()
+            }
+        }
+
         composable(
             route = PatScreens.YES_NO_QUESTION_SCREEN.route,
         ) {
@@ -387,9 +404,8 @@ fun NavGraphBuilder.patSectionOneSummaryNavGraph(navController: NavHostControlle
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
-    object PAT_IMAGE_CAPTURE_SCREEN : PatScreens(route ="pat_image_capture_screen")
 
     object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen")
     object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
-    object PAT_SECTION_ONE_SUMMARY_SCREEN : PatScreens(route ="pat_section_one_summary_screen/{$ARG_COMPLETION_MESSAGE}")
+    object PAT_SECTION_ONE_SUMMARY_SCREEN : PatScreens(route ="pat_section_one_summary_screen")
 }
