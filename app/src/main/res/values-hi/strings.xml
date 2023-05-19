@@ -111,8 +111,11 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">Start Pat</string>
-    <string name="pat_survey_section_1">Pet Survey section 1</string>
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
     <string name="result_summary">सारांश परिणाम</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="summary_text">सारांश</string>
+
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>
     <string name="share_button_text">शेयर करें</string>

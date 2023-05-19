@@ -4,6 +4,7 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
+import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.*
 

@@ -115,7 +115,9 @@
     <string name="no_photo_available_text">No Photo Available</string>
 
     <string name="pat_survey_section_1">PAT Survey section 1</string>
-    <string name="result_summary">सारांश परिणाम</string>
+    <string name="result_summary">Summary Result</string>
+    <string name="summary_text">Summary</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>

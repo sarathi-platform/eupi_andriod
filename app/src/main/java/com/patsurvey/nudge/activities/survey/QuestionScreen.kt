@@ -21,9 +21,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.AnswerOptionType
@@ -86,7 +88,7 @@ fun QuestionScreen(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Image(
-                            painter = painterResource(id = R.drawable.home_icn),
+                            painter = painterResource(id = R.drawable.pat_sample_icon),
                             contentDescription = "home image",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -116,9 +118,9 @@ fun QuestionScreen(
                                                 viewModel.isAnswered.value=false
                                                 viewModel.updateAnswerOptions(it+1,didiId)
                                             } else if (answeredQuestion.value == (questionList.size-1)) {
-                                                navigateToSummeryPage(navController)
+                                                navigateToSummeryPage(navController, didiId)
                                             }else{
-                                                navigateToSummeryPage(navController)
+                                                navigateToSummeryPage(navController, didiId)
                                             }
                                         },500)
 
@@ -141,9 +143,9 @@ fun QuestionScreen(
                                                 viewModel.isAnswered.value=false
                                                 viewModel.updateAnswerOptions(it+1,didiId)
                                             } else if (answeredQuestion.value == (questionList.size-1)) {
-                                                navigateToSummeryPage(navController)
+                                                navigateToSummeryPage(navController, didiId)
                                             }else{
-                                                navigateToSummeryPage(navController)
+                                                navigateToSummeryPage(navController, didiId)
                                             }
                                         },500)
                                     }
@@ -200,12 +202,14 @@ fun QuestionScreen(
     }
 }
 
-fun navigateToSummeryPage(navController: NavHostController) {
-    navController.navigate(Graph.HOME) {
-        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-            inclusive = true
-        }
-    }
+fun navigateToSummeryPage(navController: NavHostController, didiId: Int) {
+
+    navController.navigate("pat_section_one_summary_screen/$didiId")
+//    navController.navigate(Graph.HOME) {
+//        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+//            inclusive = true
+//        }
+//    }
 }
 
 /*
