@@ -8,6 +8,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -144,6 +145,10 @@ class WealthRankingViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
     }
 
 }

@@ -35,6 +35,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.setKeyboardToReadjust
 
@@ -53,11 +54,18 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
 
     setKeyboardToReadjust(activity)
-
+   val networkErrorMessage = viewModel.networkErrorMessage.value
     BackHandler {
         (context as? Activity)?.finish()
     }
-
+    if(networkErrorMessage.isNotEmpty()){
+        snackState.addMessage(
+            message = networkErrorMessage,
+            isSuccess = false,
+            isCustomIcon = false
+        )
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     Box(
         modifier = Modifier
             .background(color = Color.White)

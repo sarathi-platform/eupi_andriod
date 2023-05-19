@@ -188,7 +188,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(R.string.cancel_tola_text),
                     outlineColor = redDark,
                     textColor = redDark,
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onCancelClicked()
                 }
@@ -199,7 +202,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(id = R.string.save_tola_text),
                     isArrowRequired = false,
                     isActive = mTolaName.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onSaveClicked(mTolaName, location)
                 }
@@ -237,7 +243,6 @@ fun TolaBox(
             tolaLocation ?: LocationCoordinates()
         )
     }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -346,7 +351,7 @@ fun TolaBox(
                             },
                             placeholder = {
                                 Text(
-                                    text = "Enter Name",
+                                    text = stringResource(id = R.string.enter_name_text),
                                     style = TextStyle(
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -434,7 +439,10 @@ fun TolaBox(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
                                     outlineColor = redDark,
                                     textColor = redDark,
-                                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(45.dp)
+                                        .weight(1f)
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false
@@ -444,7 +452,10 @@ fun TolaBox(
                             ButtonPositive(
                                 buttonTitle = stringResource(id = R.string.save_tola_text),
                                 isArrowRequired = false,
-                                modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(45.dp)
+                                    .weight(1f)
                             ) {
                                 saveButtonClicked(mTolaName, location)
                                 showEditView = false

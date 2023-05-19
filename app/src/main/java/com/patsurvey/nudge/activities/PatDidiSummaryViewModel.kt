@@ -9,6 +9,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -65,5 +66,7 @@ class PatDidiSummaryViewModel @Inject constructor(
             didiDao.saveLocalImagePath(path = photoPath, didiId = didiEntity.id)
         }
     }
-
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
 }

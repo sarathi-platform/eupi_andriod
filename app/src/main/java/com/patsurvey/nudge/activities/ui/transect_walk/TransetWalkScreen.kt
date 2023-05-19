@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -55,6 +56,8 @@ fun TransectWalkScreen(
     val tolaList = viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }
     val tolaToBeEdited: Tola by remember { mutableStateOf(Tola()) }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
+    var isTolaEdit = remember { mutableStateOf(false) }
+    var mEditedTola:TolaEntity?=null
 
     val context = LocalContext.current
     val localDensity = LocalDensity.current
@@ -142,7 +145,9 @@ fun TransectWalkScreen(
                                         )
                                     ) {
                                         ButtonOutline(
-                                            modifier = Modifier.weight(0.9f).height(45.dp),
+                                            modifier = Modifier
+                                                .weight(0.9f)
+                                                .height(45.dp),
                                         ) {
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
@@ -257,6 +262,7 @@ fun TransectWalkScreen(
                                             icon = Icons.Default.Add,
                                             modifier = Modifier.padding(top = 16.dp)
                                         ) {
+                                            isTolaEdit.value=false
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
                                         }
@@ -287,13 +293,17 @@ fun TransectWalkScreen(
                                             showAddTolaBox = false
                                         },
                                         saveButtonClicked = { newName, newLocation ->
-                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
-                                            else {
-                                                viewModel.updateTola(tola.id, newName, newLocation)
-                                                viewModel.markTransectWalkIncomplete(stepId,villageId)
-                                                showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
-                                                false
-                                            }
+                                           if(newName.isNotEmpty()){
+                                               showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
+                                               else {
+                                                   viewModel.updateTola(tola.id, newName, newLocation)
+                                                   viewModel.markTransectWalkIncomplete(stepId,villageId)
+                                                   showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
+                                                   false
+                                               }
+                                           }else{
+                                               showCustomToast(context,context.getString(R.string.enter_tola_name_message))
+                                           }
                                         }
                                     )
                                 }

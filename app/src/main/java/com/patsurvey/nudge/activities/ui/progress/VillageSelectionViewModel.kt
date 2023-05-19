@@ -1,6 +1,10 @@
 package com.patsurvey.nudge.activities.ui.progress
 
+
+
+import android.app.Activity
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.LocalContext
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -10,6 +14,7 @@ import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -227,4 +232,8 @@ class VillageSelectionViewModel @Inject constructor(
             }
         }
     }
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
+
 }
