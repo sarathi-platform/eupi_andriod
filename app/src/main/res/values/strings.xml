@@ -104,7 +104,7 @@
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
-    <string name="not_avaliable">Not Available</string>
+    <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">Start Pat</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
@@ -116,6 +116,10 @@
     <string name="enter_name_text">Enter Name</string>
     <string name="enter_tola_name_message">Enter Tola Name</string>
 
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">Summary Result</string>
+    <string name="summary_text">Summary</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>

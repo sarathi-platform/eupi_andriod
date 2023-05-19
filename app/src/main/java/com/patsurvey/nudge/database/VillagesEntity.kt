@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.database
 
 import androidx.room.*
+import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Entity(tableName = VILLAGE_TABLE_NAME)

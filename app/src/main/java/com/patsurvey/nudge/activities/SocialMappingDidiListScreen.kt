@@ -720,7 +720,7 @@ fun DidiItemCard(
                         isArrowRequired = false,
                         modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
                     ){
-
+//                        navController.navigate("pat_section_one_summary_screen/${didi.id}")
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     ButtonPositive(
@@ -728,11 +728,7 @@ fun DidiItemCard(
                         stringResource(id = R.string.start_pat),
                         true
                     ) {
-                        navController.navigate("yes_no_question_screen/${didi.id}")
-//                        val jsonDidi = Gson().toJson(didi)
-//                        navController.navigate("didi_pat_summary/$jsonDidi") {
-//                            launchSingleTop = true
-//                        }
+                        navController.navigate("didi_pat_summary/${didi.id}")
                     }
                 }
             }

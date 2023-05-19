@@ -73,12 +73,11 @@ class QuestionScreenViewModel @Inject constructor(
             _answerList.emit(localAnswerList)
             withContext(Dispatchers.IO) {
                 if(questionList.value.size>questionIndex){
-                    val alreadyAnsweredModel= answerDao.isAlreadyAnswered(
-                        questionList.value[questionIndex].questionId?:0,
-                            TYPE_EXCLUSION)
+                    val alreadyAnsweredModel= answerDao.isAlreadyAnswered(didiId = didiId,
+                        questionId =  questionList.value[questionIndex].questionId?:0, actionType = TYPE_EXCLUSION)
 
                     if(alreadyAnsweredModel!=null){
-                        answerDao.updateAnswer(questionId = questionList.value[questionIndex].questionId?:0,
+                        answerDao.updateAnswer(didiId = didiId, questionId = questionList.value[questionIndex].questionId?:0,
                             actionType = TYPE_EXCLUSION,
                         answerValue = answerValue,
                         answerOption = answerOption)
@@ -86,14 +85,13 @@ class QuestionScreenViewModel @Inject constructor(
                             onAnswerSave()
                         }
                     }else{
-                        answerDao.insertAnswer(SectionAnswerEntity((localAnswerList.size+1),
-                         didiId = mDidiId.value,
-                        id = (localAnswerList.size+1),
-                        answerOption = answerOption,
-                        answerValue = answerValue,
-                        questionId = questionList.value[questionIndex].questionId?:0,
-                        actionType = TYPE_EXCLUSION,
-                        type = QuestionType.RadioButton.name))
+                        answerDao.insertAnswer(SectionAnswerEntity(id = 0, answerId = (localAnswerList.size+1),
+                            didiId = didiId,
+                            answerOption = answerOption,
+                            answerValue = answerValue,
+                            questionId = questionList.value[questionIndex].questionId?:0,
+                            actionType = TYPE_EXCLUSION,
+                            type = QuestionType.RadioButton.name))
                         withContext(Dispatchers.Main){
                             onAnswerSave()
                         }
@@ -111,7 +109,8 @@ class QuestionScreenViewModel @Inject constructor(
                 if(questionList.value.size>questionIndex){
                     val alreadyAnsweredModel= questionList.value[questionIndex].questionId?.let {
                         answerDao.isAlreadyAnswered(
-                            it,
+                            didiId = didiId,
+                            questionId = it,
                             TYPE_EXCLUSION)
                     }
 

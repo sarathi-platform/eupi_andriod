@@ -75,3 +75,7 @@ val poorRankColor = Color(0xFF439A86)
 val richRankColor = Color(0xFFD12222)
 
 val borderGreyShare = Color(0xFFE8E8E8)
+
+val redNoAnswer = Color(0xFFD32517)
+
+val brownDark = Color(0xFF693D30)

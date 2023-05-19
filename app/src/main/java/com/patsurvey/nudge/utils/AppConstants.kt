@@ -76,6 +76,9 @@ const val PAT_SURVEY_CONSTANT = "PAT SURVEY"
 const val TYPE_EXCLUSION = "EXCLUSION"
 const val TYPE_RADIO_BUTTON = "RadioButton"
 
+const val ANSWER_TYPE_YES = "OPTION_A"
+const val ANSWER_TYPE_NO = "OPTION_B"
+
 
 const val RESPONSE_CODE_SUCCESS = 200        // Success
 const val CODE_SUCCESS = 0        // Success

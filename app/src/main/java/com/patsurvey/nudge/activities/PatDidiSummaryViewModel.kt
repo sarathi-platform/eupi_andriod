@@ -8,11 +8,16 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.model.dataModel.DidiPhotoModel
+import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.concurrent.ExecutorService
@@ -34,7 +39,25 @@ class PatDidiSummaryViewModel @Inject constructor(
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
 
+    private val _didiEntity = MutableStateFlow(DidiEntity(
+        id = 0,
+        name = "",
+        address = "",
+        guardianName = "",
+        relationship = "",
+        castId = 0,
+        castName = "",
+        cohortId = 0,
+        cohortName = "",
+        villageId = 0,)
+    )
+    val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
+
     init {
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    fun setCameraExecutor() {
         cameraExecutor = Executors.newSingleThreadExecutor()
     }
 
@@ -61,9 +84,16 @@ class PatDidiSummaryViewModel @Inject constructor(
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
     }
 
-    fun saveFilePathInDb(photoPath: String, didiEntity: DidiEntity) {
+    fun saveFilePathInDb(photoPath: String, locationCoordinates: LocationCoordinates, didiEntity: DidiEntity) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            didiDao.saveLocalImagePath(path = photoPath, didiId = didiEntity.id)
+            val finalPathWithCoordinates = "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+            didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
+        }
+    }
+
+    fun getDidiDetails(didiId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            _didiEntity.emit(didiDao.getDidi(didiId))
         }
     }
     override fun onServerError(error: ErrorModel?) {

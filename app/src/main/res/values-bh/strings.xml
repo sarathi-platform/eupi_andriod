@@ -101,6 +101,10 @@
     <string name="didi">दीदी</string>
     <string name="section_number">खंड %d</string>
     <string name="pat_survey_title">PAT Survey</string>
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="summary_text">सारांश</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>
