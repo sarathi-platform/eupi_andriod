@@ -80,7 +80,10 @@
     <string name="user_id_text">"आईडी के बा: "</string>
     <string name="empty_tola_string">कवनो टोला ना जोड़ल गइल</string>
 
-    <string name="tola_conirmation_text">कुल 2 गो नया टोला \nसफलतापूर्वक जोड़ल गइल बा</string>
+    <plurals name="tola_conirmation_text">
+        <item quantity="one">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</item>
+        <item quantity="other">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</item>
+    </plurals>
     <string name="complete_transect_walk_text">गाँव के भ्रमण पूरा करे के बा</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर गाँव के भ्रमण पूरा हो गइल बा</string>
 
