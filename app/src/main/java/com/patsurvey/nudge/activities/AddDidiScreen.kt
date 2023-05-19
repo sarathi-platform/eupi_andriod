@@ -163,7 +163,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
-                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel?.isDidiValid?.value ?: true else true,
+                isActive = didiViewModel?.isDidiValid?.value == true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -185,6 +185,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 }
 
             }
+            didiViewModel?.validateDidiDetails()
         }
 
 
