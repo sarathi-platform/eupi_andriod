@@ -1,10 +1,7 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.socialmapping
 
-import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,30 +25,23 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.socialmapping.*
-import com.patsurvey.nudge.activities.ui.socialmapping.ExpandableCard
+import com.patsurvey.nudge.activities.DidiItemCard
+import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
-import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -110,7 +100,7 @@ fun ParticipatoryWealthRankingSurvey(
             }) {
                 if ((context as MainActivity).isOnline.value ?: false) {
                     viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
-//                    viewModel.updateWealthRankingToNetwork()
+                    viewModel.updateWealthRankingToNetwork()
                 }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()

@@ -117,7 +117,7 @@ fun SocialMappingDidiListScreen(
 
                 VOAndVillageBoxView(
                     prefRepo = didiViewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
                 ModuleAddedSuccessView(
@@ -728,10 +728,11 @@ fun DidiItemCard(
                         stringResource(id = R.string.start_pat),
                         true
                     ) {
-                        val jsonDidi = Gson().toJson(didi)
-                        navController.navigate("didi_pat_summary/$jsonDidi") {
-                            launchSingleTop = true
-                        }
+                        navController.navigate("yes_no_question_screen/${didi.id}")
+//                        val jsonDidi = Gson().toJson(didi)
+//                        navController.navigate("didi_pat_summary/$jsonDidi") {
+//                            launchSingleTop = true
+//                        }
                     }
                 }
             }

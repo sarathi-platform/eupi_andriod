@@ -21,10 +21,10 @@ data class DidiWealthRankingResponse(
 
 data class Data(
     @SerializedName("beneficiaryCount") val beneficiaryCount: BeneficiaryCount? = null,
-    @SerializedName("beneficiaryData") val beneficiaryData: BeneficiaryData? = null
+    @SerializedName("beneficiaryList") val beneficiaryList: BeneficiaryList? = null
 )
 
-data class BeneficiaryData(
+data class BeneficiaryList(
     @SerializedName("MEDIUM") val mediumDidi: List<MEDIUMDidi?>? = null,
     @SerializedName("RICH") val richDidi: List<RICHDidi?>? = null,
     @SerializedName("POOR") val poorDidi: List<POORDidi?>? = null

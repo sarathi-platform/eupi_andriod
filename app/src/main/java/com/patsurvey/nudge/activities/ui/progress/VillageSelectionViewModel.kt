@@ -134,17 +134,17 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             if(didiRankingResponse.status.equals(SUCCESS,true)){
                                 didiRankingResponse.data?.let { didiRank->
-                                    didiRank.beneficiaryData?.richDidi?.forEach { richDidi->
+                                    didiRank.beneficiaryList?.richDidi?.forEach { richDidi->
                                         richDidi?.id?.let { didiId->
                                             didiDao.updateDidiRank(didiId,WealthRank.RICH.rank)
                                         }
                                     }
-                                    didiRank.beneficiaryData?.mediumDidi?.forEach {mediumDidi->
+                                    didiRank.beneficiaryList?.mediumDidi?.forEach {mediumDidi->
                                         mediumDidi?.id?.let { didiId->
                                             didiDao.updateDidiRank(didiId,WealthRank.MEDIUM.rank)
                                         }
                                     }
-                                    didiRank.beneficiaryData?.poorDidi?.forEach { poorDidi->
+                                    didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi->
                                         poorDidi?.id?.let { didiId->
                                             didiDao.updateDidiRank(didiId,WealthRank.POOR.rank)
                                         }
