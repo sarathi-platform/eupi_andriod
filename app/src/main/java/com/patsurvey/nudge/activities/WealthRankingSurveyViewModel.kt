@@ -1,18 +1,15 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -97,9 +94,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-    fun updateWealthRankingToNetwork() {
 
-    }
 
     fun markWealthRakningComplete(villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -140,4 +135,27 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
+    fun updateWealthRankingToNetwork(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true,prefRepo.getSelectedVillage().id)
+                if(needToPostDidiList.isNotEmpty()){
+                    needToPostDidiList.forEach { didi->
+                        launch {
+                            didi.wealth_ranking?.let {
+                                val updateWealthRankResponse=apiService.updateDidiRanking(
+                                    listOf(
+                                    EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking)))
+
+                                if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                   didiDao.setNeedToPostRanking(didi.id,false)
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
