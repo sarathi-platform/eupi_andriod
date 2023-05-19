@@ -12,6 +12,7 @@ import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.DidiPhotoModel
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -95,5 +96,7 @@ class PatDidiSummaryViewModel @Inject constructor(
             _didiEntity.emit(didiDao.getDidi(didiId))
         }
     }
-
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
 }

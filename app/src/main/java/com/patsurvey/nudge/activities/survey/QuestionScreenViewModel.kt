@@ -11,6 +11,7 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -129,5 +130,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     }
 
-
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
 }

@@ -126,6 +126,8 @@
     <string name="share_button_text">शेयर करें</string>
     <string name="download_button_text">डाउनलोड करें</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
+    <string name="enter_name_text">নাম লিখুন</string>
+    <string name="enter_tola_name_message">Tola নাম লিখুন</string>
     <string name="option_yes">अत्यंत</string>
     <string name="option_no">না</string>
 

@@ -16,6 +16,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -265,6 +266,10 @@ class TransectWalkViewModel @Inject constructor(
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
     }
 
 

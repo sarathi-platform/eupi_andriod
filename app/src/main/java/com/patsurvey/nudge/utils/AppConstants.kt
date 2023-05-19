@@ -9,7 +9,6 @@ var EXPANSTION_TRANSITION_DURATION: Int = 450
 const val POOR_STRING="Poor"
 const val MEDIUM_STRING="Medium"
 const val RICH_STRING="Rich"
-const val RESPONSE_CODE_UNAUTHORIZED = 401
 const val KEY_HEADER_AUTH = "authorization"
 const val AUTH_TOKEN_PREFIX = "Bearer"
 const val KEY_HEADER_TYPE = "header_type"
@@ -79,3 +78,46 @@ const val TYPE_RADIO_BUTTON = "RadioButton"
 
 const val ANSWER_TYPE_YES = "OPTION_A"
 const val ANSWER_TYPE_NO = "OPTION_B"
+
+
+const val RESPONSE_CODE_SUCCESS = 200        // Success
+const val CODE_SUCCESS = 0        // Success
+const val RESPONSE_CODE_DUNNING_RECHARGE = 40033        // Success
+const val RESPONSE_CODE_INVALID_EMAIL = 700006
+const val RESPONSE_CODE_INVALID_FIRST_NAME = 20109
+const val RESPONSE_CODE_UNEXPECTED = 444    // No Response
+const val RESPONSE_CODE_SERVER_ERROR = 500 // Unknown Error
+const val RESPONSE_CODE_UNAUTHORIZED = 401 // Unauthorized
+const val RESPONSE_CODE_NETWORK_ERROR = 99
+const val RESPONSE_CODE_DEACTIVATED = 403  // Forbidden
+const val RESPONSE_CODE_NOT_FOUND = 404
+const val RESPONSE_CODE_TIMEOUT = 408
+const val RESPONSE_CODE_UN_PROCESSABLE_ENTITY = 429
+const val RESPONSE_CODE_UNPROCESSABLE_ENTITY = 422 // Unprocessable Entity
+const val RESPONSE_CODE_BAD_REQUEST = 400 // Bad Request
+const val RESPONSE_CODE_CONFLICT = 409 // Conflict
+const val RESPONSE_CODE_500 = 500
+const val RESPONSE_CODE_BAD_GATEWAY = 502
+const val RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE = 503
+const val RESPONSE_CODE_NO_DATA = 101 // Locally defined : No data
+const val RESPONSE_CODE_DOWNGRADE_ERROR = 40019
+const val RESPONSE_CODE_DOWNGRADE_ERROR2 = 100014
+const val RESPONSE_CODE_DOWNGRADE_ERROR3 = 3007
+const val RESPONSE_CODE_PASSWORD_ERROR = 6034
+const val RESPONSE_CODE_LOW_BALANCE_ERROR = 100030
+const val RESPONSE_CODE_OTP_ERROR = 100014
+const val RESPONSE_CODE_RATE_LIMIT = 429
+const val ERROR_CODE_CONCURRENCY = 130401
+const val ERROR_CODE_SUBSCRIBER_NOT_FOUND = 20022
+
+val UNREACHABLE_ERROR_MSG =
+    "There seems to be a problem accessing details on this screen. Please try again."
+val GENERIC_ERROR_MSG =
+    "Oops! An error has occurred on our server. Please check internet connection and try to playback again!"
+const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on, then try again."
+const val COMMON_ERROR_MSG = "The operation couldn’t be completed."
+const val COMMON_ERROR_TITLE = "Something Went Wrong"
+const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
+val UNAUTHORISED_MESSAGE = "401 Unauthorized"
+
+

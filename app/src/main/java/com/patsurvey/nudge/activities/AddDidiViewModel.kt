@@ -15,6 +15,7 @@ import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DIDI_COUNT
 import com.patsurvey.nudge.utils.HUSBAND_STRING
@@ -373,6 +374,10 @@ class AddDidiViewModel @Inject constructor(
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
     }
 
 

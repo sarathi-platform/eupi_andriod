@@ -23,7 +23,7 @@
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get OTP</string>
     <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
-    <string name="transect_wale_title">Transact Walk</string>
+    <string name="transect_wale_title">Transect Walk</string>
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
     <string name="submit">Submit</string>
     <string name="resend_otp">Resend OTP</string>
@@ -113,6 +113,8 @@
     <string name="option_yes">Yes</string>
     <string name="option_no">No</string>
     <string name="no_photo_available_text">No Photo Available</string>
+    <string name="enter_name_text">Enter Name</string>
+    <string name="enter_tola_name_message">Enter Tola Name</string>
 
     <string name="pat_survey_section_1">PAT Survey section 1</string>
     <string name="result_summary">Summary Result</string>
