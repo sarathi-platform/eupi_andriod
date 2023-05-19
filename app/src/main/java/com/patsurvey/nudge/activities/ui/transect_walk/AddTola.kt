@@ -16,10 +16,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.*
 
@@ -192,7 +188,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(R.string.cancel_tola_text),
                     outlineColor = redDark,
                     textColor = redDark,
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onCancelClicked()
                 }
@@ -203,7 +202,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(id = R.string.save_tola_text),
                     isArrowRequired = false,
                     isActive = mTolaName.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onSaveClicked(mTolaName, location)
                 }
@@ -241,7 +243,6 @@ fun TolaBox(
             tolaLocation ?: LocationCoordinates()
         )
     }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -350,7 +351,7 @@ fun TolaBox(
                             },
                             placeholder = {
                                 Text(
-                                    text = "Enter Name",
+                                    text = stringResource(id = R.string.enter_name_text),
                                     style = TextStyle(
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -438,7 +439,10 @@ fun TolaBox(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
                                     outlineColor = redDark,
                                     textColor = redDark,
-                                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(45.dp)
+                                        .weight(1f)
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false
@@ -448,7 +452,10 @@ fun TolaBox(
                             ButtonPositive(
                                 buttonTitle = stringResource(id = R.string.save_tola_text),
                                 isArrowRequired = false,
-                                modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(45.dp)
+                                    .weight(1f)
                             ) {
                                 saveButtonClicked(mTolaName, location)
                                 showEditView = false

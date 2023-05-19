@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 import com.patsurvey.nudge.utils.SUCCESS
@@ -139,5 +140,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
             }
         }
     }
-
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
 }

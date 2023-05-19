@@ -130,6 +130,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
+
+
+    }
+    fun exitApplication(){
+        this.finish()
     }
 
     override fun onDestroy() {
