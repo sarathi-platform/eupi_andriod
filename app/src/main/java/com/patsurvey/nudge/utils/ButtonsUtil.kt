@@ -146,7 +146,7 @@ fun BlueButtonWithRightArrow(
 }
 
 @Composable
-fun BlueButtonWithIcon(
+fun BlueButtonWithIconWithFixedWidth(
     modifier: Modifier = Modifier,
     buttonText: String,
     icon: ImageVector,
@@ -199,12 +199,63 @@ fun BlueButtonWithIcon(
     }
 }
 
+@Composable
+fun BlueButtonWithIcon(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    icon: ImageVector,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .background(Color.Transparent)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 1.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = "Button Icon",
+                tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp)
+
+            )
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = newMediumTextStyle
+            )
+        }
+    }
+}
 
 
 @Preview(showBackground = true)
 @Composable
 fun BlueButtonWithIconPreview() {
-    BlueButtonWithIcon(
+    BlueButtonWithIconWithFixedWidth(
         modifier = Modifier,
         buttonText = stringResource(id = R.string.add_didi),
         icon = Icons.Default.Add

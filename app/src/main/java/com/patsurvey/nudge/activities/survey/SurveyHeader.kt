@@ -182,7 +182,7 @@ fun Preview() {
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 16.dp),
         didiName = "Urmila Devi",
-        villageEntity = VillageEntity(1, "Sundar Pahar", listOf()),
+        villageEntity = VillageEntity(1, "Sundar Pahar", "Sundar Pahar Mahila Mandal", 2, listOf()),
         questionCount = 6,
         answeredCount = 2,
         partNumber = 1

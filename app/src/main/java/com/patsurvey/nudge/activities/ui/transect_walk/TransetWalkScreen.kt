@@ -1,13 +1,11 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -39,9 +37,6 @@ import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun TransectWalkScreen(
@@ -257,7 +252,7 @@ fun TransectWalkScreen(
                                             },
                                             modifier = Modifier.padding(top = 32.dp)
                                         )
-                                        BlueButtonWithIcon(
+                                        BlueButtonWithIconWithFixedWidth(
                                             buttonText = stringResource(id = R.string.add_tola),
                                             icon = Icons.Default.Add,
                                             modifier = Modifier.padding(top = 16.dp)

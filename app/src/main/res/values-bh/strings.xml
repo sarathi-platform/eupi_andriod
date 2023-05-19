@@ -118,6 +118,8 @@
     <string name="yes_text">हाँ</string>
     <string name="share_button_text">शेयर करें</string>
     <string name="download_button_text">डाउनलोड करें</string>
+    <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
+
 
 
 </resources>
