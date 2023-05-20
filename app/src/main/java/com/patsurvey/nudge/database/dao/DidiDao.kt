@@ -3,6 +3,7 @@ package com.patsurvey.nudge.database.dao
 import android.net.Uri
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
@@ -56,4 +57,7 @@ interface DidiDao {
 
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
+
+    @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
+    fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
 }

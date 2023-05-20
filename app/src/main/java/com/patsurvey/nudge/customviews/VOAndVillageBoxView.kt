@@ -68,7 +68,7 @@ fun VOAndVillageBoxView(
                     fontWeight = FontWeight.Medium
                 )
                 Text(
-                    text = prefRepo.getSelectedVillage().name +" Mandal",
+                    text = prefRepo.getSelectedVillage().federationName,
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = textColorDark,

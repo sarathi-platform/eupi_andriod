@@ -21,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,9 +59,6 @@ fun TransectWalkScreen(
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     var isTolaEdit = remember { mutableStateOf(false) }
     var mEditedTola:TolaEntity?=null
-
-    val scope = rememberCoroutineScope()
-    val scrollState = rememberLazyListState()
 
     val context = LocalContext.current
     val localDensity = LocalDensity.current
@@ -105,12 +103,12 @@ fun TransectWalkScreen(
             ) {
                 VillageDetailView(
                     villageName = viewModel.villageEntity.value?.name ?: "",
-                    voName = viewModel.villageEntity.value?.name ?: "",
+                    voName = viewModel.villageEntity.value?.federationName ?: "",
                     modifier = Modifier
                 )
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = stringResource(
-                        R.string.tola_conirmation_text,
+                    message = pluralStringResource(
+                        R.plurals.tola_conirmation_text,
                         tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)

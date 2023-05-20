@@ -11,6 +11,9 @@
 
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text">Didis</string>
+    <string name="poor_didi_item_text">Poor Didi</string>
+    <string name="medium_didi_item_text">Medium Didi</string>
+    <string name="rich_didi_item_text">Rich Didi</string>
     <string name="more_item_text">More</string>
 
     <string name="online_text">Online</string>
@@ -79,9 +82,10 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>
+<!--    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>-->
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
+    <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
     <string name="complete_social_walk_text">Complete Social Mapping</string>
     <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
@@ -105,7 +109,7 @@
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
     <string name="not_avaliable">Not Available</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">Start PAT</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
@@ -123,6 +127,10 @@
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>
+    </plurals>
+    <plurals name="poor_didis_added">
+        <item quantity="one">Poor Didi Pending</item>
+        <item quantity="other">Poor Didis Pending</item>
     </plurals>
 
     <plurals name="tola_conirmation_text">

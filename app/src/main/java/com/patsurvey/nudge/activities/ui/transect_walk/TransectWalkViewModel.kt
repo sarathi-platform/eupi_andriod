@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.base.BaseViewModel
@@ -185,14 +186,13 @@ class TransectWalkViewModel @Inject constructor(
             tolaDao.insert(updatedTola)
             val jsonTola = JsonArray()
             jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
-            val response = apiInterface.editCohort(jsonTola)
-//            if (response.status.equals(SUCCESS))
-            tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = true)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
+            _tolaList.value = updatedTolaList
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false
+            apiInterface.editCohort(jsonTola)
             withContext(Dispatchers.Main) {
-                _tolaList.emit(updatedTolaList)
+                _tolaList.value = updatedTolaList
             }
         }
     }

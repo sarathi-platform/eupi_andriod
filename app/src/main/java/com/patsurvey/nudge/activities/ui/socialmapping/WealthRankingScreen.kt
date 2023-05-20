@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -36,19 +35,12 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.DidiItemCard
 import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
-import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.customviews.SearchWithFilterView
-import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.intefaces.LocalDbListener
-import com.patsurvey.nudge.navigation.home.WealthRankingScreens
 import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -64,7 +56,7 @@ fun WealthRankingScreen(
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
 
     val newFilteredTolaDidiList = viewModel.filterTolaMapList
-    val newFilteredDidiList = viewModel.filterDidiList
+    val newFilteredDidiList = viewModel.filterDidiList.collectAsState()
 
     val localDensity = LocalDensity.current
 
@@ -107,7 +99,7 @@ fun WealthRankingScreen(
             ) {
                 VillageDetailView(
                     villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
-                    voName = (viewModel.prefRepo.getSelectedVillage().name + " Mandal") ?: "",
+                    voName = (viewModel.prefRepo.getSelectedVillage().federationName) ?: "",
                     modifier = Modifier
                 )
 
@@ -136,7 +128,7 @@ fun WealthRankingScreen(
                     }
                     item {
                         SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                            modifier = Modifier.padding(vertical = 10.dp),
+                            modifier = Modifier,
                             filterSelected = filterSelected,
                             onFilterSelected = {
                                 if (didis.isNotEmpty()) {
@@ -152,7 +144,7 @@ fun WealthRankingScreen(
                         Text(
                             text = stringResource(
                                 id = R.string.count_didis_pending,
-                                didis.filter { it.wealth_ranking != WealthRank.NOT_RANKED.rank }.size
+                                newFilteredDidiList.value.filter { it.wealth_ranking != WealthRank.NOT_RANKED.rank }.size
                             ),
                             color = Color.Black,
                             fontSize = 12.sp,
@@ -176,7 +168,7 @@ fun WealthRankingScreen(
                             )
                         }
                     } else {
-                        itemsIndexed(didis) { index, didi ->
+                        itemsIndexed(newFilteredDidiList.value) { index, didi ->
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -194,7 +186,8 @@ fun WealthRankingScreen(
                                             if (nextIndex < didis.size) {
                                                 viewModel.onCardArrowClicked(didis[nextIndex].id)
                                             } else if (nextIndex == didis.size){
-                                                viewModel.onCardArrowClicked(didi.id)
+                                                viewModel.closeLastCard(didi.id)
+//                                                viewModel.onCardArrowClicked(didi.id)
                                             }
                                             if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
                                                 viewModel.shouldShowBottomButton.value = true
@@ -697,10 +690,11 @@ fun ShowDidisFromTola(
                                 if (nextIndex < didiList.size) {
                                     viewModel.onCardArrowClicked(didiList[nextIndex].id)
                                 } else if (nextIndex == didiList.size){
-                                    viewModel.onCardArrowClicked(didi.id)
-                                    Log.d("ANUPAM", "nextIndex: $nextIndex")
+                                    viewModel.closeLastCard(didi.id)
+//                                    viewModel.onCardArrowClicked(didi.id)
                                 }
-                                Log.d("ANUPAM", "remainingItem: ${(didiList.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }).size}")
+                                if (!didiList.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
+                                    viewModel.shouldShowBottomButton.value = true
                             }
                         },
                         expanded = expandedIds.contains(didi.id),
