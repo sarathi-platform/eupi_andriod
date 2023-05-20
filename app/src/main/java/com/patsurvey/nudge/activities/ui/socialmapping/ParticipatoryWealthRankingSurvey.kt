@@ -99,8 +99,8 @@ fun ParticipatoryWealthRankingSurvey(
                 showDialog.value = it
             }) {
                 if ((context as MainActivity).isOnline.value ?: false) {
-                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
                     viewModel.updateWealthRankingToNetwork()
+                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
                 }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()

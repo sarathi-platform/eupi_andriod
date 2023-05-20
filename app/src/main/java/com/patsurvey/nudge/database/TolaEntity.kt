@@ -27,7 +27,7 @@ data class TolaEntity(
     @ColumnInfo(name = "villageId")
     var villageId: Int,
     @ColumnInfo(name = "status")
-    val status: Int = 1,
+    val status: Int,
     @ColumnInfo(name = "createdDate")
     var createdDate: Long,
     @ColumnInfo(name = "modifiedDate")
@@ -52,6 +52,7 @@ data class TolaEntity(
                 latitude = 0.0,
                 longitude = 0.0,
                 villageId = villageId,
+                status = 1,
                 createdDate = System.currentTimeMillis(),
                 modifiedDate = System.currentTimeMillis()
             )

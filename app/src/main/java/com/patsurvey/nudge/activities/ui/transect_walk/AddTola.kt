@@ -302,6 +302,7 @@ fun TolaBox(
                             end.linkTo(parent.end)
                         })
                 {
+                    mTolaName = tolaName
                     showEditView = true
                 }
             }

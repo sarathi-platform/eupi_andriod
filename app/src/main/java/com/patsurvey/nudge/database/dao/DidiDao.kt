@@ -53,4 +53,7 @@ interface DidiDao {
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking AND villageId = :villageId")
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean,villageId: Int): List<DidiEntity>
+
+    @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
+    fun deleteDidisForTola(tolaId: Int)
 }
