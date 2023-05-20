@@ -7,9 +7,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -102,13 +100,17 @@ fun PatDidiSummaryScreen(
                     onImageCaptured = { uri, photoPath ->
                         handleImageCapture(uri = uri, photoPath, context = localContext as Activity, didi.value, patDidiSummaryViewModel)
                     },
+                    onCloseButtonClicked = {
+                                           patDidiSummaryViewModel.shouldShowCamera.value = false
+                    },
                     onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
                 )
             }
             AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {
                 Column(
                     modifier = modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
@@ -117,17 +119,20 @@ fun PatDidiSummaryScreen(
                         modifier = Modifier.fillMaxWidth(),
                         startPadding = 0.dp
                     )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier
-                    ) {
-                        MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
-                    }
                     Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = bottomPadding),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                        ) {
+                            MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
+                        }
                         Row() {
 
                             Text(
@@ -205,8 +210,8 @@ fun PatDidiSummaryScreen(
                                 modifier = Modifier
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = "Is Didi part of SHG?",
                                 fontFamily = NotoSans,
@@ -272,7 +277,7 @@ fun PatDidiSummaryScreen(
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             Image(painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
                                 contentDescription = null,
@@ -314,7 +319,7 @@ fun PatDidiSummaryScreen(
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(
                                 modifier = Modifier.fillMaxWidth(),
@@ -323,7 +328,9 @@ fun PatDidiSummaryScreen(
                                 patDidiSummaryViewModel.setCameraExecutor()
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
-                        } else {
+                        }
+                        else
+                        {
                             BlueButtonWithIcon(
                                 buttonText = "Take Photo",
                                 icon = Icons.Default.Add,

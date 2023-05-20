@@ -2,20 +2,16 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.*
-import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
@@ -59,7 +55,9 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = tola.location.lat ?: 0.0,
                 longitude = tola.location.long ?: 0.0,
-                villageEntity.value?.id ?: 0
+                villageEntity.value?.id ?: 0,
+                createdDate = System.currentTimeMillis(),
+                modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(tolaItem)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
@@ -87,7 +85,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }*/
 
-    fun addTolasToNetwork() {
+    fun addTolasToNetwork(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
             val filteredTolaList = tolaList.value.filter { it.needsToPost }
@@ -100,14 +98,16 @@ class TransectWalkViewModel @Inject constructor(
                 val response = apiInterface.addCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        response.data.forEach { it2 ->
+                        response.data.forEach { tolaDataFromNetwork ->
                             tolaList.value.forEach { tola ->
-                                if (TextUtils.equals(it2.name, tola.name)) {
-                                    tola.id = it2.id
+                                if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
+                                    tola.id = tolaDataFromNetwork.id
+                                    tola.createdDate = tolaDataFromNetwork.createdDate
+                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                 }
                             }
                         }
-                        updateTolaListWithIds(tolaList.value)
+                        updateTolaListWithIds(tolaList.value, villageId)
                         tolaDao.setNeedToPost(
                             tolaList.value.filter { it.needsToPost }.map { it.id },
                             false
@@ -118,8 +118,8 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    private fun updateTolaListWithIds(tolaList: List<TolaEntity>) {
-        tolaDao.deleteTolaTable()
+    private fun updateTolaListWithIds(tolaList: List<TolaEntity>, villageId: Int) {
+        tolaDao.deleteTolaTable(villageId)
         val tolas = mutableListOf<TolaEntity>()
         tolaList.forEach {
             tolas.add(
@@ -131,7 +131,9 @@ class TransectWalkViewModel @Inject constructor(
                     longitude = it.longitude,
                     villageId = it.villageId,
                     needsToPost = true,
-                    status = it.status
+                    status = it.status,
+                    createdDate = it.createdDate,
+                    modifiedDate = it.modifiedDate
                 )
             )
         }
@@ -171,15 +173,16 @@ class TransectWalkViewModel @Inject constructor(
                 latitude = newLocation?.lat ?: 0.0,
                 longitude = newLocation?.long ?: 0.0,
                 villageId = tolaList.value[getIndexOfTola(id)].villageId,
-                needsToPost = true
+                needsToPost = true,
+                createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
+                modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
             val jsonTola = JsonArray()
             jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
             val response = apiInterface.editCohort(jsonTola)
-            if (response.status.equals(SUCCESS)) {
-                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
-            }
+//            if (response.status.equals(SUCCESS))
+            tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = true)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false

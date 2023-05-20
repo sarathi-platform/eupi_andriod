@@ -54,6 +54,12 @@ data class DidiEntity(
     @ColumnInfo(name = "localPath")
     var localPath: String = BLANK_STRING,
 
+    @ColumnInfo(name = "createdDate")
+    var createdDate: Long,
+
+    @ColumnInfo(name = "modifiedDate")
+    var modifiedDate: Long,
+
     @ColumnInfo(name = "needsToPostRanking")
     var needsToPostRanking: Boolean = true,
 

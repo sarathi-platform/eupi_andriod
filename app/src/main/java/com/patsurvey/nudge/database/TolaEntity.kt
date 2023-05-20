@@ -28,8 +28,10 @@ data class TolaEntity(
     var villageId: Int,
     @ColumnInfo(name = "status")
     val status: Int = 1,
-    @ColumnInfo(name = "date_created")
-    val date_created: Long = System.currentTimeMillis() / 1000L,
+    @ColumnInfo(name = "createdDate")
+    var createdDate: Long,
+    @ColumnInfo(name = "modifiedDate")
+    var modifiedDate: Long,
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true
 ) {
@@ -49,7 +51,9 @@ data class TolaEntity(
                 type = CohortType.TOLA.type,
                 latitude = 0.0,
                 longitude = 0.0,
-                villageId = villageId
+                villageId = villageId,
+                createdDate = System.currentTimeMillis(),
+                modifiedDate = System.currentTimeMillis()
             )
         }
 

@@ -39,17 +39,21 @@ class PatDidiSummaryViewModel @Inject constructor(
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
 
-    private val _didiEntity = MutableStateFlow(DidiEntity(
-        id = 0,
-        name = "",
-        address = "",
-        guardianName = "",
-        relationship = "",
-        castId = 0,
-        castName = "",
-        cohortId = 0,
-        cohortName = "",
-        villageId = 0,)
+    private val _didiEntity = MutableStateFlow(
+        DidiEntity(
+            id = 0,
+            name = "",
+            address = "",
+            guardianName = "",
+            relationship = "",
+            castId = 0,
+            castName = "",
+            cohortId = 0,
+            cohortName = "",
+            villageId = 0,
+            createdDate = System.currentTimeMillis(),
+            modifiedDate = System.currentTimeMillis()
+        )
     )
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
 
@@ -84,9 +88,14 @@ class PatDidiSummaryViewModel @Inject constructor(
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
     }
 
-    fun saveFilePathInDb(photoPath: String, locationCoordinates: LocationCoordinates, didiEntity: DidiEntity) {
+    fun saveFilePathInDb(
+        photoPath: String,
+        locationCoordinates: LocationCoordinates,
+        didiEntity: DidiEntity
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val finalPathWithCoordinates = "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+            val finalPathWithCoordinates =
+                "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
             didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
         }
     }
@@ -96,6 +105,7 @@ class PatDidiSummaryViewModel @Inject constructor(
             _didiEntity.emit(didiDao.getDidi(didiId))
         }
     }
+
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
     }

@@ -72,8 +72,8 @@ fun ProgressScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp)
-                        .height((screenHeight / 2).dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 50.dp)
+                        .height(((2*screenHeight)/3).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.seletc_village_screen_text),
@@ -92,6 +92,7 @@ fun ProgressScreen(
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
+                                viewModel.showLoader.value = true
                                 viewModel.villageSelected.value = it
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
@@ -340,8 +341,7 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> viewModel?.tolaCount?.value
-                                ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
+                            1 -> viewModel?.tolaCount?.value?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
                             2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> viewModel?.poorDidiCount?.value?.let { stringResource(id = R.string.wealth_ranking_sub_text, it) }
