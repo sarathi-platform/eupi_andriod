@@ -13,6 +13,9 @@
 
     <string name="progress_item_text">অগ্রগতি</string>
     <string name="didis_item_text">বড়</string>
+    <string name="poor_didi_item_text">गरीब दीदी</string>
+    <string name="medium_didi_item_text">माध्यम दीदी</string>
+    <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="more_item_text">আরও</string>
 
     <string name="online_text">অনলাইন</string>
@@ -88,6 +91,7 @@
     </plurals>
     <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
     <string name="transect_walk_sub_text">%1$s টোলাস ডন</string>
 
@@ -116,13 +120,17 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
         <item quantity="other">দিদি যোগ করেছে</item>
     </plurals>
+    <plurals name="poor_didis_added">
+        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
+        <item quantity="other">गरीब दीदीया पेंडिंग</item>
+    </plurals>
     <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
     <string name="update_didi">আপডেট দিদি</string>
     <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে</string>
     <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">PAT शुरू करें</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>

@@ -124,7 +124,7 @@ fun SocialMappingDidiListScreen(
                     completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
                         R.string.didi_conirmation_text,
-                        didiList.value.size
+                        didiList.value.filter { it.needsToPost }.size
                     ),
                     modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                 )
@@ -214,10 +214,14 @@ fun SocialMappingDidiListScreen(
                                     }
                                     append(
                                         " ${
+                                            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
                                             pluralStringResource(
                                                 id = R.plurals.didis_added,
-                                                didiList.value.size
-                                            )
+                                                newFilteredDidiList.size
+                                            ) 
+                                            else
+                                            pluralStringResource(id =  R.plurals.poor_didis_added, count = newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size)
+                                            
                                         }"
                                     )
                                 },
@@ -234,13 +238,13 @@ fun SocialMappingDidiListScreen(
                     }
                     if (filterSelected) {
                         itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
+                            newFilteredTolaDidiList.keys.toList()
                         ) { index, didiKey ->
                             ShowDidisFromTola(navController,didiViewModel,
                                 didiTola = didiKey,
                                 didiList = if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
-                                    newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }?.reversed() ?: emptyList()
-                                else  newFilteredTolaDidiList[didiKey]?.reversed() ?: emptyList(),
+                                    newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList()
+                                else  newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                 modifier = modifier,
                                 expandedIds = expandedIds,
                                 onExpendClick = { expand, didiDetailModel ->
@@ -273,7 +277,7 @@ fun SocialMappingDidiListScreen(
                             }
                         }
                     } else {
-                        itemsIndexed(if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.reversed() else newFilteredDidiList.reversed()) { index, didi ->
+                        itemsIndexed(if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
                             DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {

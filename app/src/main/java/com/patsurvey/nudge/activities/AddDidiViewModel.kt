@@ -342,10 +342,12 @@ class AddDidiViewModel @Inject constructor(
                 val response = apiService.addDidis(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        response.data.forEach { it2 ->
+                        response.data.forEach { didiFromNetwork ->
                             didiList.value.forEach { didi ->
-                                if (TextUtils.equals(it2.name, didi.name)) {
-                                    didi.id = it2.id
+                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
+                                    didi.id = didiFromNetwork.id
+                                    didi.createdDate = didiFromNetwork.createdDate
+                                    didi.modifiedDate = didiFromNetwork.modifiedDate
                                 }
                             }
 

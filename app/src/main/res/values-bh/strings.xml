@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">The Nudge</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
@@ -12,6 +12,9 @@
 
     <string name="progress_item_text">आगे बढ़ल</string>
     <string name="didis_item_text">बड़हन</string>
+    <string name="poor_didi_item_text">गरीब दीदी</string>
+    <string name="medium_didi_item_text">माध्यम दीदी</string>
+    <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="more_item_text">अधिका</string>
 
     <string name="online_text">ऑनलाइन</string>
@@ -86,6 +89,7 @@
     </plurals>
     <string name="complete_transect_walk_text">गाँव के भ्रमण पूरा करे के बा</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर गाँव के भ्रमण पूरा हो गइल बा</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
     <string name="transect_walk_sub_text">%1$s तोलास हो गइल बाा</string>
 
@@ -113,13 +117,17 @@
         <item quantity="one">दीदी जोड़ली</item>
         <item quantity="other">दीदियों के जोड़ली</item>
     </plurals>
+    <plurals name="poor_didis_added">
+        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
+        <item quantity="other">गरीब दीदीया पेंडिंग</item>
+    </plurals>
     <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
     <string name="update_didi">अपडेट दीदी</string>
     <string name="didi_has_been_successfully_added">दीदी के सफलतापूर्वक जोड़ल गइल बा</string>
     <string name="didi_has_been_successfully_updated">दीदी के सफलतापूर्वक अपडेट हो गइल बा</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">PAT शुरू करें</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>

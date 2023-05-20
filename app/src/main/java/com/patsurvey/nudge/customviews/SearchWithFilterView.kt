@@ -22,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.borderGrey
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.BLANK_STRING
 
 @Composable
@@ -49,15 +51,15 @@ fun SearchWithFilterView(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround
             ) {
-                Card(
-                    modifier = Modifier
-                        .weight(1f)
-                        .border(
-                            dimensionResource(id = R.dimen.dp_1),
-                            Color.LightGray,
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                        )
-                ) {
+//                Card(
+//                    modifier = Modifier
+//                        .weight(1f)
+//                        .border(
+//                            dimensionResource(id = R.dimen.dp_1),
+//                            Color.LightGray,
+//                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+//                        )
+//                ) {
                     CustomOutlineTextField(
                         value = searchString,
                         onValueChange = {
@@ -65,11 +67,10 @@ fun SearchWithFilterView(
                             onSearchValueChange(it)
                         },
                         colors = TextFieldDefaults.textFieldColors(
-                            textColor = Color.Black,
+                            textColor = textColorDark,
                             backgroundColor = Color.White,
-                            focusedIndicatorColor = Color.Transparent,
-                            unfocusedIndicatorColor = Color.Transparent,
-                            disabledIndicatorColor = Color.Transparent
+                            focusedIndicatorColor = borderGrey,
+                            unfocusedIndicatorColor = borderGrey,
                         ),
                         keyboardOptions = KeyboardOptions(
                             keyboardType = KeyboardType.Text,
@@ -81,7 +82,7 @@ fun SearchWithFilterView(
                         maxLines = 1,
                         placeholder = { Text(text = placeholderString) },
                     )
-                }
+//                }
 
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_20)))
                 Card(modifier = Modifier

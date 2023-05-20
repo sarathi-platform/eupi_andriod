@@ -104,7 +104,7 @@ fun ParticipatoryWealthRankingSurvey(
                 }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
-                navController.navigate("wr_step_completion_screen/${context.getString(R.string.transect_walk_completed_message).replace(
+                navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
                             "{VILLAGE_NAME}",
                             viewModel.selectedVillage?.name ?: "")}"
                 )
@@ -129,7 +129,7 @@ fun ParticipatoryWealthRankingSurvey(
 
                 VillageDetailView(
                     villageName = viewModel.selectedVillage?.name ?: "",
-                    voName = (viewModel.selectedVillage?.name + " Mandal") ?: "",
+                    voName = (viewModel.selectedVillage?.federationName) ?: "",
                     modifier = Modifier
                 )
 
@@ -154,7 +154,13 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.didis_item_text),
+                        text = stringResource(id = if (showDidiListForRank.first) {
+                            when (showDidiListForRank.second) {
+                                WealthRank.POOR -> R.string.poor_didi_item_text
+                                WealthRank.MEDIUM -> R.string.medium_didi_item_text
+                                else -> R.string.rich_didi_item_text
+                            }
+                        } else R.string.didis_item_text),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),

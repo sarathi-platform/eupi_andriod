@@ -57,3 +57,51 @@ fun Context.findActivity(): ComponentActivity? = when (this) {
     is ContextWrapper -> baseContext.findActivity()
     else -> null
 }
+
+fun Modifier.debounceClickable(
+    enabled: Boolean = true,
+    onClickLabel: String? = null,
+    role: Role? = null,
+    clickDebounceWindow: Long = 1_000L,
+    onClick: () -> Unit,
+) = composed(
+    inspectorInfo = debugInspectorInfo {
+        name = "clickable"
+        properties["enabled"] = enabled
+        properties["onClickLabel"] = onClickLabel
+        properties["role"] = role
+        properties["onClick"] = onClick
+    }
+) {
+    val debounceClickState = remember {
+        MutableSharedFlow<() -> Unit>(
+            extraBufferCapacity = 1,
+            onBufferOverflow = BufferOverflow.DROP_OLDEST,
+        )
+    }
+
+    var lastEventTime by remember { mutableStateOf(0L) }
+
+    LaunchedEffect(Unit) {
+        debounceClickState.transform {
+            // Only emit click events if the clickDebounce
+            // millis have passed since the last click event
+            val now = System.currentTimeMillis()
+            if (now - lastEventTime > clickDebounceWindow) {
+                emit(it)
+                lastEventTime = now
+            }
+        }.collect { clickEvent ->
+            clickEvent.invoke()
+        }
+    }
+
+    Modifier.clickable(
+        enabled = enabled,
+        onClickLabel = onClickLabel,
+        onClick = { debounceClickState.tryEmit(onClick) },
+        role = role,
+        indication = LocalIndication.current,
+        interactionSource = remember { MutableInteractionSource() }
+    )
+}
