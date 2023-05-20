@@ -452,6 +452,7 @@ fun TolaBox(
                             ButtonPositive(
                                 buttonTitle = stringResource(id = R.string.save_tola_text),
                                 isArrowRequired = false,
+                                isActive = mTolaName.isNotEmpty(),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(45.dp)
