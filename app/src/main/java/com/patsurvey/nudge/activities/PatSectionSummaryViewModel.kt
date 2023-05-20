@@ -28,25 +28,29 @@ class PatSectionSummaryViewModel @Inject constructor(
     val answerDao: AnswerDao
 ) : BaseViewModel() {
 
-    private val _didiEntity = MutableStateFlow(DidiEntity(
-        id = 0,
-        name = "",
-        address = "",
-        guardianName = "",
-        relationship = "",
-        castId = 0,
-        castName = "",
-        cohortId = 0,
-        cohortName = "",
-        villageId = 0,)
+    private val _didiEntity = MutableStateFlow(
+        DidiEntity(
+            id = 0,
+            name = "",
+            address = "",
+            guardianName = "",
+            relationship = "",
+            castId = 0,
+            castName = "",
+            cohortId = 0,
+            cohortName = "",
+            villageId = 0,
+            createdDate = System.currentTimeMillis(),
+            modifiedDate = System.currentTimeMillis()
+        )
     )
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
 
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
-    val questionList : StateFlow<List<QuestionEntity>> get() = _questionList
+    val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
 
     private val _answerList = MutableStateFlow(listOf<SectionAnswerEntity>())
-    val answerList : StateFlow<List<SectionAnswerEntity>> get() = _answerList
+    val answerList: StateFlow<List<SectionAnswerEntity>> get() = _answerList
 
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -62,7 +66,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                 try {
                     _questionList.emit(questionList)
                     _answerList.emit(localAnswerList)
-                }catch (ex:Exception){
+                } catch (ex: Exception) {
                     ex.printStackTrace()
                 }
 

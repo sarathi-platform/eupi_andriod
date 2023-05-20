@@ -12,7 +12,7 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE ORDER BY id DESC")
     fun getAllDidis(): List<DidiEntity>
 
-    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId")
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId ORDER BY createdDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
     @Query("Select * FROM $DIDI_TABLE where id = :id")

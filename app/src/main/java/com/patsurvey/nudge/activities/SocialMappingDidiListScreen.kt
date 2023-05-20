@@ -139,10 +139,7 @@ fun SocialMappingDidiListScreen(
                                     .getFromPage()
                                     .equals(ARG_FROM_HOME, true)
                             ) {
-                                if (!didiViewModel.isSocialMappingComplete.value)
-                                    bottomPadding
-                                else
-                                    0.dp
+                                0.dp
                             } else {
                                 50.dp
                             }
@@ -296,6 +293,8 @@ fun SocialMappingDidiListScreen(
                                 }
                             )
                         }
+                        if (!didiViewModel.isSocialMappingComplete.value)
+                            item { Spacer(modifier = Modifier.height(bottomPadding)) }
                     }
                 }
             }
@@ -325,8 +324,8 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                didiViewModel.callWorkFlowAPI(villageId, stepId)
                                 didiViewModel.addDidisToNetwork()
+                                didiViewModel.callWorkFlowAPI(villageId, stepId)
                             }
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
@@ -719,13 +718,19 @@ fun DidiItemCard(
                     ButtonNegative(
                         buttonTitle = stringResource(id = R.string.not_avaliable),
                         isArrowRequired = false,
-                        modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
                     ){
 //                        navController.navigate("pat_section_one_summary_screen/${didi.id}")
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     ButtonPositive(
-                        modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f),
                         stringResource(id = R.string.start_pat),
                         true
                     ) {

@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +54,7 @@ fun CameraView(
     didiEntity: DidiEntity,
     executor: Executor,
     onImageCaptured: (Uri, String) -> Unit,
+    onCloseButtonClicked: () -> Unit,
     onError: (ImageCaptureException) -> Unit
 ) {
     val lensFacing = CameraSelector.LENS_FACING_BACK
@@ -78,15 +80,35 @@ fun CameraView(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = "close camera",
+            tint = white,
+            modifier = Modifier
+                .align(
+                    Alignment.TopStart
+                )
+                .padding(start = 10.dp, top = 10.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(
+                        bounded = true,
+                        color = Color.Black
+                    )
+                ) {
+                    onCloseButtonClicked()
+                }
+        )
         Box(
             modifier = Modifier
                 .padding(bottom = 20.dp)
                 .clip(CircleShape)
                 .background(Color.Transparent, shape = CircleShape)
                 .size(size = 50.dp)
+                .align(Alignment.BottomCenter)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
                     indication = rememberRipple(

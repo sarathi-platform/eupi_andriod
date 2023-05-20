@@ -1,12 +1,12 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -58,6 +58,9 @@ fun TransectWalkScreen(
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     var isTolaEdit = remember { mutableStateOf(false) }
     var mEditedTola:TolaEntity?=null
+
+    val scope = rememberCoroutineScope()
+    val scrollState = rememberLazyListState()
 
     val context = LocalContext.current
     val localDensity = LocalDensity.current
@@ -114,8 +117,7 @@ fun TransectWalkScreen(
                 )
 
                 LazyColumn(
-                    modifier =
-                    Modifier.padding(bottom = bottomPadding)) {
+                    modifier = Modifier.padding(bottom = bottomPadding)) {
 
                     if (viewModel.showLoader.value) {
                         item { CustomProgressBar(modifier = Modifier) }
@@ -293,16 +295,12 @@ fun TransectWalkScreen(
                                             showAddTolaBox = false
                                         },
                                         saveButtonClicked = { newName, newLocation ->
-                                           if(newName.isNotEmpty()){
-                                               showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
-                                               else {
-                                                   viewModel.updateTola(tola.id, newName, newLocation)
-                                                   viewModel.markTransectWalkIncomplete(stepId,villageId)
-                                                   showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
-                                                   false
-                                               }
-                                           }else{
-                                               showCustomToast(context,context.getString(R.string.enter_tola_name_message))
+                                           showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
+                                           else {
+                                               viewModel.updateTola(tola.id, newName, newLocation)
+                                               viewModel.markTransectWalkIncomplete(stepId,villageId)
+                                               showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
+                                               false
                                            }
                                         }
                                     )
@@ -335,8 +333,8 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
+                            viewModel.addTolasToNetwork(villageId)
                             viewModel.callWorkFlowAPI(villageId, stepId)
-                            viewModel.addTolasToNetwork()
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(

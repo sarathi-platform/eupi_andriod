@@ -12,7 +12,7 @@ interface TolaDao {
     @Query("SELECT * FROM $TOLA_TABLE where status = 1")
     fun getAllTolas(): List<TolaEntity>
 
-    @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId and status = 1 ORDER BY date_created DESC")
+    @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId and status = 1 ORDER BY createdDate DESC")
     fun getAllTolasForVillage(villageId: Int): List<TolaEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -30,8 +30,8 @@ interface TolaDao {
     @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 
-    @Query("DELETE from $TOLA_TABLE")
-    fun deleteTolaTable()
+    @Query("DELETE from $TOLA_TABLE where villageId = :villageId")
+    fun deleteTolaTable(villageId: Int)
 
     @Query("UPDATE $TOLA_TABLE SET status = :status, needsToPost = true WHERE id = :id")
     fun deleteTolaOffline(id: Int, status: Int)

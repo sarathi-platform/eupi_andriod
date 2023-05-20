@@ -153,9 +153,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
                         launch {
                             didi.wealth_ranking?.let {
                                 val updateWealthRankResponse=apiService.updateDidiRanking(
-                                    listOf(
-                                    EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking)))
-
+                                    listOf(EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking),
+                                        EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                                    )
+                                )
                                 if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                                    didiDao.setNeedToPostRanking(didi.id,false)
                                 }

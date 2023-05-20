@@ -150,7 +150,7 @@ fun AddTolaBox(
 
                     ) {
                         location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
-                        if (location!!.lat != null && location!!.long != null) locationAdded = true
+                        if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) locationAdded = true
                         focusManager.clearFocus()
                     }
                     .height(45.dp)
@@ -228,7 +228,8 @@ fun TolaBox(
 ) {
     var showEditView by remember { mutableStateOf(false) }
 
-    val activity = LocalContext.current as Activity
+    val context = LocalContext.current
+    val activity = context as Activity
 
     val focusManager = LocalFocusManager.current
 
@@ -340,9 +341,11 @@ fun TolaBox(
                                     }
                                 }
                             )
-                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier.absolutePadding(top = 2.dp).clickable {
-                                showEditView = false
-                            })
+                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier
+                                .absolutePadding(top = 2.dp)
+                                .clickable {
+                                    showEditView = false
+                                })
                         }
                         OutlinedTextField(
                             value = mTolaName,
@@ -457,11 +460,13 @@ fun TolaBox(
                                     .height(45.dp)
                                     .weight(1f)
                             ) {
-                                saveButtonClicked(mTolaName, location)
-                                showEditView = false
+                                if (mTolaName.isNotEmpty()) {
+                                    saveButtonClicked(mTolaName, location)
+                                    showEditView = false
+                                } else {
+                                    showCustomToast(context, context.getString(R.string.enter_tola_name_message))
+                                }
                             }
-
-
                         }
                     }
                 }

@@ -104,7 +104,7 @@
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
-    <string name="not_avaliable">उपलब्ध नहीं है</string>
+    <string name="not_avaliable">Not Available</string>
     <string name="start_pat">Start Pat</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
