@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -67,5 +68,9 @@ class PatSectionSummaryViewModel @Inject constructor(
 
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+
     }
 }

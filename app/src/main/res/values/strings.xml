@@ -125,4 +125,8 @@
         <item quantity="other">Didis Added</item>
     </plurals>
 
+    <plurals name="tola_conirmation_text">
+        <item quantity="one">Total %1$s new Tola has \nbeen added successfully</item>
+        <item quantity="other">Total %1$s new Tolas have \nbeen added successfully</item>
+    </plurals>
 </resources>

@@ -8,6 +8,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -21,6 +22,8 @@ import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -34,7 +37,9 @@ class TransectWalkViewModel @Inject constructor(
     val villageListDao: VillageListDao
 ) : BaseViewModel() {
 
-    val tolaList = mutableStateListOf<TolaEntity>()
+    private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
+    val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
+
     val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     val isTransectWalkComplete = mutableStateOf(false)
@@ -57,10 +62,10 @@ class TransectWalkViewModel @Inject constructor(
                 villageEntity.value?.id ?: 0
             )
             tolaDao.insert(tolaItem)
+            val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
-                tolaList.add(tolaItem)
-                tolaList.sortByDescending { it.date_created }
-                prefRepo.savePref(TOLA_COUNT, tolaList.size)
+                _tolaList.emit(updatedTolaList)
+                prefRepo.savePref(TOLA_COUNT, _tolaList.value.size)
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
                 }
@@ -85,7 +90,7 @@ class TransectWalkViewModel @Inject constructor(
     fun addTolasToNetwork() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
-            val filteredTolaList = tolaList.filter { it.needsToPost }
+            val filteredTolaList = tolaList.value.filter { it.needsToPost }
             if (filteredTolaList.isNotEmpty()) {
                 for (tola in filteredTolaList) {
                     jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
@@ -96,15 +101,15 @@ class TransectWalkViewModel @Inject constructor(
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         response.data.forEach { it2 ->
-                            tolaList.forEach { tola ->
+                            tolaList.value.forEach { tola ->
                                 if (TextUtils.equals(it2.name, tola.name)) {
                                     tola.id = it2.id
                                 }
                             }
                         }
-                        updateTolaListWithIds(tolaList)
+                        updateTolaListWithIds(tolaList.value)
                         tolaDao.setNeedToPost(
-                            tolaList.filter { it.needsToPost }.map { it.id },
+                            tolaList.value.filter { it.needsToPost }.map { it.id },
                             false
                         )
                     }
@@ -113,7 +118,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    private fun updateTolaListWithIds(tolaList: SnapshotStateList<TolaEntity>) {
+    private fun updateTolaListWithIds(tolaList: List<TolaEntity>) {
         tolaDao.deleteTolaTable()
         val tolas = mutableListOf<TolaEntity>()
         tolaList.forEach {
@@ -142,11 +147,12 @@ class TransectWalkViewModel @Inject constructor(
                 if (response.status.equals(SUCCESS)) {
                     tolaDao.removeTola(tolaId)
                 } else {
-                    tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
                     tolaDao.setNeedToPost(listOf(tolaId), true)
                 }
+                tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
+                val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
-                    tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
+                    _tolaList.emit(updatedTolaList)
                     if (isTransectWalkComplete.value)
                         isTransectWalkComplete.value = false
                 }
@@ -164,7 +170,7 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = newLocation?.lat ?: 0.0,
                 longitude = newLocation?.long ?: 0.0,
-                villageId = tolaList[getIndexOfTola(id)].villageId,
+                villageId = tolaList.value[getIndexOfTola(id)].villageId,
                 needsToPost = true
             )
             tolaDao.insert(updatedTola)
@@ -174,10 +180,11 @@ class TransectWalkViewModel @Inject constructor(
             if (response.status.equals(SUCCESS)) {
                 tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
             }
+            val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false
             withContext(Dispatchers.Main) {
-                tolaList.set(getIndexOfTola(id), updatedTola)
+                _tolaList.emit(updatedTolaList)
             }
         }
     }
@@ -186,7 +193,7 @@ class TransectWalkViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                tolaList.addAll(tolaDao.getAllTolasForVillage(villageId))
+                _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
                 showLoader.value = false
             }catch (ex:Exception){
                 onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
@@ -205,7 +212,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun getIndexOfTola(id: Int): Int {
-        return tolaList.map { it.id }.indexOf(id)
+        return tolaList.value.map { it.id }.indexOf(id)
     }
 
     fun markTransectWalkComplete(villageId: Int, stepId: Int) {

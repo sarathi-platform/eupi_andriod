@@ -46,7 +46,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
     Column(modifier = modifier
-        .fillMaxSize(),
+        .fillMaxSize()
+        .padding(top = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth()) }
