@@ -293,6 +293,7 @@ fun TransectWalkScreen(
                                             viewModel.removeTola(tola.id)
                                             viewModel.markTransectWalkIncomplete(stepId,villageId)
                                             showAddTolaBox = false
+                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false

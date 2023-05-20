@@ -4,10 +4,12 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -30,6 +32,7 @@ class TransectWalkViewModel @Inject constructor(
     val apiInterface: ApiService,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
+    val didiDao: DidiDao,
     val villageListDao: VillageListDao
 ) : BaseViewModel() {
 
@@ -56,6 +59,7 @@ class TransectWalkViewModel @Inject constructor(
                 latitude = tola.location.lat ?: 0.0,
                 longitude = tola.location.long ?: 0.0,
                 villageEntity.value?.id ?: 0,
+                status = 1,
                 createdDate = System.currentTimeMillis(),
                 modifiedDate = System.currentTimeMillis()
             )
@@ -143,9 +147,9 @@ class TransectWalkViewModel @Inject constructor(
     fun removeTola(tolaId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val jsonTola = JsonArray()
-                jsonTola.add(DeleteTolaRequest(tolaId).toJson())
-                val response = apiInterface.deleteCohort(jsonTola)
+                val jsonArray = JsonArray()
+                jsonArray.add(DeleteTolaRequest(tolaId).toJson())
+                val response = apiInterface.deleteCohort(jsonArray)
                 if (response.status.equals(SUCCESS)) {
                     tolaDao.removeTola(tolaId)
                 } else {
@@ -174,6 +178,7 @@ class TransectWalkViewModel @Inject constructor(
                 longitude = newLocation?.long ?: 0.0,
                 villageId = tolaList.value[getIndexOfTola(id)].villageId,
                 needsToPost = true,
+                status = tolaList.value[getIndexOfTola(id)].status,
                 createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
                 modifiedDate = System.currentTimeMillis()
             )
