@@ -376,7 +376,7 @@ fun SocialMappingDidiListScreen(
                                 didiViewModel.addDidisToNetwork()
                                 didiViewModel.callWorkFlowAPI(villageId, stepId)
                             }*/
-                            didiViewModel.addDidisToNetwork()
+                            didiViewModel.updateDidisNeedTOPostList(villageId)
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${
@@ -795,13 +795,15 @@ fun DidiItemCard(
                                     )
                                 ) languageItemActiveBg else blueDark
                             ),
-                        stringResource(id = R.string.start_pat),
+                        buttonTitle = if(didi.patSurveyProgress==0) stringResource(id = R.string.start_pat) else stringResource(id = R.string.continue_text),
                         true,
                         color = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
                         textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
                         iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
                     ) {
-                        navController.navigate("didi_pat_summary/${didi.id}")
+                        if(didi.patSurveyProgress==0) {
+                            navController.navigate("didi_pat_summary/${didi.id}")
+                        }
                     }
                 }
             }

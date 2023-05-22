@@ -67,6 +67,6 @@ data class DidiEntity(
     @ColumnInfo(name = "beneficiaryProcessStatus")
     var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
 
-    @ColumnInfo(name = "progress")
-    var progress: Int=0,
+    @ColumnInfo(name = "patSurveyProgress")
+    var patSurveyProgress: Int=0,
     )

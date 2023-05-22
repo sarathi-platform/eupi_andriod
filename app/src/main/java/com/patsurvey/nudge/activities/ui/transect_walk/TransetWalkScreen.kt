@@ -397,7 +397,7 @@ fun TransectWalkScreen(
                                 }
                             })
                         }
-                        viewModel.addTolasToNetwork(villageId)
+                        viewModel.updateTolaNeedTOPostList(villageId)
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(
                             "step_completion_screen/${

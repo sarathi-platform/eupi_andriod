@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.base.BaseViewModel
@@ -23,7 +24,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -98,6 +98,7 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
 
+                Log.d(TAG, "_didiList: ${updatedList.toString()}")
                 _didiList.value = updatedList
                 _casteList.emit(
                     casteListDao.getAllCasteForLanguage(
@@ -387,35 +388,40 @@ class AddDidiViewModel @Inject constructor(
                 for (didi in filteredDidiList) {
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
                 }
-//                val response = apiService.addDidis(jsonDidi)
-//                if (response.status.equals(SUCCESS, true)) {
-//                    response.data?.let {
-//                        response.data.forEach { didiFromNetwork ->
-//                            didiList.value.forEach { didi ->
-//                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-//                                    didi.id = didiFromNetwork.id
-//                                    didi.createdDate = didiFromNetwork.createdDate
-//                                    didi.modifiedDate = didiFromNetwork.modifiedDate
-//                                }
-//                            }
-//
-//                        }
-                        updateTolaListWithIds(didiList)
-                        didiList.value.forEach {
-                            didiDao.updateNeedToPost(it.id,false)
+                val response = apiService.addDidis(jsonDidi)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        networkCallbackListener.onSuccess()
+                        response.data.forEach { didiFromNetwork ->
+                            didiList.value.forEach { didi ->
+                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
+                                    didi.id = didiFromNetwork.id
+                                    didi.createdDate = didiFromNetwork.createdDate
+                                    didi.modifiedDate = didiFromNetwork.modifiedDate
+                                }
+                            }
+
                         }
-//                        didiDao.setNeedToPost(
-//                            didiList.value.filter { it.needsToPost }.map { it.id },
-//                            false
-//                        )
-//                    }
-//                } else {
+                    }
+                } else {
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
                 }
             }
         }
+    }
+    fun updateDidisNeedTOPostList(villageId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateTolaListWithIds(didiList)
+            didiList.value.forEach {
+                didiDao.updateNeedToPost(it.id, false)
+            }
+        }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
     }
 
     private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>) {
@@ -518,11 +524,6 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    override fun onServerError(error: ErrorModel?) {
-//        showLoader.value = false
-//        networkErrorMessage.value = error?.title.toString()
-    }
-
     fun setDidiAsUnavailable(didiId: Int) {
         prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
         _markedNotAvailable.value = _markedNotAvailable.value.also {
@@ -538,5 +539,4 @@ class AddDidiViewModel @Inject constructor(
             }
         }
     }
-
 }
