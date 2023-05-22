@@ -85,6 +85,9 @@
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूर्ण करे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
+    <string name="didi_conirmation_text_plural">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
+
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सर्वेक्षण </string>

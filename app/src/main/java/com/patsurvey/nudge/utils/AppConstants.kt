@@ -123,4 +123,8 @@ val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
 
+const val SYNC_FAILED = "Online Sync Failed"
+
+const val PREF_DIDI_UNAVAILABLE = "pref_didi_unavailable"
+
 

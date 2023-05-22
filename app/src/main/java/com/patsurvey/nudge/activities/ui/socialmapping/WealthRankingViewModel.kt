@@ -8,9 +8,11 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.WealthRank
@@ -38,7 +40,7 @@ class WealthRankingViewModel @Inject constructor(
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
-    val shouldShowBottomButton = mutableStateOf(!didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
+    val shouldShowBottomButton = mutableStateOf(didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
 
     private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
     val filterDidiList: StateFlow<List<DidiEntity>> get() = _filterDidiList
@@ -129,7 +131,7 @@ class WealthRankingViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiRankInDb(id: Int, rank: String) {
+    fun updateDidiRankInDb(id: Int, rank: String, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val updatedDidiList = didiList.value
@@ -150,7 +152,20 @@ class WealthRankingViewModel @Inject constructor(
                 updatedDidiList[updatedDidiList.map { it.id }.indexOf(id)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
+                withContext(Dispatchers.IO) {
+                    val updateWealthRankResponse=apiService.updateDidiRanking(
+                        listOf(EditDidiWealthRankingRequest(id, StepType.WEALTH_RANKING.name, rank),
+                            EditDidiWealthRankingRequest(id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                        )
+                    )
+                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                        didiDao.setNeedToPostRanking(id,false)
+                    } else {
+                        networkCallbackListener.onFailed()
+                    }
+                }
             } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
                 onError("WealthRankingViewModel", "here is error: ${ex.message} \n${ex.stackTrace}")
             }
         }

@@ -9,10 +9,12 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.DidiPhotoModel
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,7 +29,8 @@ import javax.inject.Inject
 @HiltViewModel
 class PatDidiSummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
-    val didiDao: DidiDao
+    val didiDao: DidiDao,
+    val answerDao: AnswerDao
 ) :
     BaseViewModel() {
 
@@ -108,5 +111,16 @@ class PatDidiSummaryViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    fun isPatStarted(didiId: Int, callBack:(Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val answers = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
+            if (!answers.isNullOrEmpty()){
+                callBack(true)
+            } else {
+                callBack(false)
+            }
+        }
     }
 }

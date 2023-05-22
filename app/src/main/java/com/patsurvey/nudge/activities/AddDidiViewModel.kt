@@ -12,15 +12,12 @@ import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DIDI_COUNT
-import com.patsurvey.nudge.utils.HUSBAND_STRING
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -72,6 +69,11 @@ class AddDidiViewModel @Inject constructor(
     val isSocialMappingComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
 
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
+
+    private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
+    val markedNotAvailable: StateFlow<List<Int>> get() = _markedNotAvailable
+
 
     init {
         villageId = prefRepo.getSelectedVillage().id
@@ -111,6 +113,9 @@ class AddDidiViewModel @Inject constructor(
 
                 }
                 filterDidiList = didiList.value
+                filterDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEach {
+                    getDidiAvailabilityStatus(it.id)
+                }
             }
         }
 
@@ -167,7 +172,7 @@ class AddDidiViewModel @Inject constructor(
                     || selectedCast.value.first == -1 || selectedTola.value.first == -1)
     }
 
-    fun saveDidiIntoDatabase(localDbListener: LocalDbListener) {
+    fun saveDidiIntoDatabase(localDbListener: LocalDbListener, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             val ifDidiExist = didiDao.getDidiExist(
@@ -195,12 +200,15 @@ class AddDidiViewModel @Inject constructor(
 
                 _didiList.value = didiDao.getAllDidisForVillage(villageId)
                 filterDidiList = didiDao.getAllDidisForVillage(villageId)
-                stepsListDao.markStepAsCompleteOrInProgress(
-                    stepId,
-                    StepStatus.INPROGRESS.ordinal,
-                    villageId
-                )
-                setSocialMappingINProgress(stepId, villageId)
+                setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener{
+                    override fun onSuccess() {
+
+                    }
+
+                    override fun onFailed() {
+                        networkCallbackListener.onFailed()
+                    }
+                })
                 withContext(Dispatchers.Main) {
                     prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -214,7 +222,7 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiIntoDatabase(didiId: Int) {
+    fun updateDidiIntoDatabase(didiId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
             didiList.value
@@ -238,12 +246,17 @@ class AddDidiViewModel @Inject constructor(
 
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
-            stepsListDao.markStepAsCompleteOrInProgress(
-                stepId,
-                StepStatus.INPROGRESS.ordinal,
-                villageId
-            )
-            setSocialMappingINProgress(stepId, villageId)
+
+            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener{
+                override fun onSuccess() {
+
+                }
+
+                override fun onFailed() {
+                    networkCallbackListener.onFailed()
+                }
+
+            })
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                 isSocialMappingComplete.value = false
@@ -366,7 +379,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
 
-    fun addDidisToNetwork() {
+    fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonDidi = JsonArray()
             val filteredDidiList = didiList.value.filter { it.needsToPost }
@@ -396,7 +409,11 @@ class AddDidiViewModel @Inject constructor(
 //                            false
 //                        )
 //                    }
-//                }
+//                } else {
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
+                }
             }
         }
     }
@@ -416,17 +433,19 @@ class AddDidiViewModel @Inject constructor(
                     castName = it.castName,
                     cohortId = it.cohortId,
                     cohortName = it.cohortName,
+                    wealth_ranking = it.beneficiaryProcessStatus?.find { it.name == StepType.WEALTH_RANKING.name }?.status ?: WealthRank.NOT_RANKED.rank,
                     villageId = villageId,
-                    needsToPost = true,
+                    needsToPost = false,
                     createdDate = it.createdDate,
-                    modifiedDate = System.currentTimeMillis()
+                    modifiedDate = System.currentTimeMillis(),
+                    beneficiaryProcessStatus = it.beneficiaryProcessStatus
                 )
             )
         }
         didiDao.insertAll(didis)
     }
 
-    fun callWorkFlowAPI(villageId: Int, stepId: Int) {
+    fun callWorkFlowAPI(villageId: Int, stepId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
@@ -447,18 +466,20 @@ class AddDidiViewModel @Inject constructor(
                                 )
                             }
                         } else {
+                            networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
 
             } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
 
-    fun setSocialMappingINProgress(stepId: Int,villageId: Int){
+    fun setSocialMappingINProgress(stepId: Int,villageId: Int, networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val step=stepsListDao.getStepForVillage(villageId, stepId)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
@@ -470,13 +491,52 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
             }
-
+            completeStepList?.let {
+                val apiRequest = mutableListOf<EditWorkFlowRequest>()
+                it.forEach { newStep ->
+                    if (newStep.orderNumber > step.orderNumber) {
+                        if (newStep.workFlowId>0) {
+                            apiRequest.add(EditWorkFlowRequest(newStep.workFlowId, StepStatus.INPROGRESS.name))
+                        }
+                    }
+                }
+                if (apiRequest.isNotEmpty()) {
+                    launch {
+                        val response = apiService.editWorkFlow(apiRequest)
+                        if (response.status.equals(SUCCESS)) {
+                            response.data?.let { response->
+                                response.forEach { it ->
+                                    stepsListDao.updateWorkflowId(stepId, it.id, villageId, it.status)
+                                }
+                            }
+                        }else {
+                            networkCallbackListener.onFailed()
+                        }
+                    }
+                }
+            }
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+//        showLoader.value = false
+//        networkErrorMessage.value = error?.title.toString()
     }
 
+    fun setDidiAsUnavailable(didiId: Int) {
+        prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
+        _markedNotAvailable.value = _markedNotAvailable.value.also {
+            it.add(didiId)
+        }
+    }
+
+    fun getDidiAvailabilityStatus(didiId: Int) {
+        val prefValue = prefRepo.getPref("${PREF_DIDI_UNAVAILABLE}_$didiId", false)
+        if (prefValue) {
+            _markedNotAvailable.value = _markedNotAvailable.value.also {
+                it.add(didiId)
+            }
+        }
+    }
 
 }
