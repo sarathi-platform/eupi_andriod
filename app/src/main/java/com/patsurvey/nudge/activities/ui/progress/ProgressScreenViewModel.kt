@@ -179,6 +179,6 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        showLoader.value = false
     }
 }

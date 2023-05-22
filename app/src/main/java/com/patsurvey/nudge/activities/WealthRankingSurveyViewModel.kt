@@ -7,6 +7,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -74,7 +75,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
@@ -89,12 +90,14 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
                         }else{
+                            networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
 
             }catch (ex:Exception){
+                networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
@@ -144,27 +147,34 @@ class WealthRankingSurveyViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
-    fun updateWealthRankingToNetwork(){
+    fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
-                val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true,prefRepo.getSelectedVillage().id)
-                if(needToPostDidiList.isNotEmpty()){
-                    needToPostDidiList.forEach { didi->
-                        launch {
-                            didi.wealth_ranking?.let {
-                                val updateWealthRankResponse=apiService.updateDidiRanking(
-                                    listOf(EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking),
-                                        EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+            try {
+                withContext(Dispatchers.IO){
+                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true,prefRepo.getSelectedVillage().id)
+                    if(needToPostDidiList.isNotEmpty()){
+                        needToPostDidiList.forEach { didi->
+                            launch {
+                                didi.wealth_ranking?.let {
+                                    val updateWealthRankResponse=apiService.updateDidiRanking(
+                                        listOf(EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking),
+                                            EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                                        )
                                     )
-                                )
-                                if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                   didiDao.setNeedToPostRanking(didi.id,false)
+                                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                        didiDao.setNeedToPostRanking(didi.id,false)
+                                    } else {
+                                        networkCallbackListener.onFailed()
+                                    }
                                 }
-                            }
 
+                            }
                         }
                     }
                 }
+            } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+                onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
             }
         }
     }

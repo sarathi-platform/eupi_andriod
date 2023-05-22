@@ -283,7 +283,8 @@ fun StepsBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (isCompleted) greenLight else if (shouldBeActive) stepBoxActiveColor else white)
-                    .padding(vertical = if (isCompleted) 10.dp else 14.dp, horizontal = 16.dp),
+                    .padding(vertical = /*if (isCompleted) 10.dp else */14.dp)
+                    .padding(end = 16.dp, start = 8.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 val iconResourceId = when (iconId) {
@@ -306,7 +307,7 @@ fun StepsBox(
                                 bottom.linkTo(parent.bottom)
                             }
                             .size(48.dp)
-                            .padding(start = 4.dp)
+//                            .padding(start = 4.dp)
                     )
                 }
 
@@ -430,13 +431,13 @@ fun StepsBox(
         } else {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(CircleShape)
                     .border(
                         width = 1.dp,
                         color = greyBorder,
-                        shape = RoundedCornerShape(100.dp)
+                        shape = CircleShape
                     )
-                    .background(Color.White, shape = RoundedCornerShape(100.dp))
+                    .background(Color.White, shape = CircleShape)
                     .padding(6.dp)
                     .constrainAs(step_no) {
                         start.linkTo(parent.start, margin = 16.dp)

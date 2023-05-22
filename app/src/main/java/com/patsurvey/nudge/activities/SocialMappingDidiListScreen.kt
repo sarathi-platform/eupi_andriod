@@ -60,6 +60,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 
 
@@ -350,10 +351,24 @@ fun SocialMappingDidiListScreen(
                     positiveButtonOnClick = {
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
-                            /*if ((context as MainActivity).isOnline.value ?: false) {
-                                didiViewModel.addDidisToNetwork()
-                                didiViewModel.callWorkFlowAPI(villageId, stepId)
-                            }*/
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                didiViewModel.addDidisToNetwork( object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                                didiViewModel.callWorkFlowAPI(villageId, stepId,  object : NetworkCallbackListener{
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                            }
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${

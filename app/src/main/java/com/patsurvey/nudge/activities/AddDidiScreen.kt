@@ -26,10 +26,8 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
-import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -177,10 +175,26 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                        override fun onInsertionFailed() {
                            showCustomToast(context,context.getString(R.string.didi_already_exist))
                        }
+                   }, object : NetworkCallbackListener{
+                       override fun onSuccess() {
+                       }
+
+                       override fun onFailed() {
+                           showCustomToast(context, SYNC_FAILED)
+                       }
+
                    })
                 }
                 else{
-                    didiViewModel?.updateDidiIntoDatabase(editDidiId)
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId, object : NetworkCallbackListener{
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+
+                    })
                     showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
                     onNavigation()
                 }

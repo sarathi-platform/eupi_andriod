@@ -41,6 +41,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -387,7 +388,15 @@ fun ExpandableCard(
                 }
                 ExpandableContent(visible = expanded, didiEntity = didiEntity) {
                     didiEntity.wealth_ranking = it.rank
-                    viewModel.updateDidiRankInDb(didiEntity.id, it.rank)
+                    viewModel.updateDidiRankInDb(didiEntity.id, it.rank, object : NetworkCallbackListener{
+                            override fun onSuccess() {
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
                     onCardArrowClick(false)
                 }
             }

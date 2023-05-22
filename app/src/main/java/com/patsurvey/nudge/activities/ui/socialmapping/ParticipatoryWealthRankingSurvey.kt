@@ -42,6 +42,7 @@ import com.patsurvey.nudge.activities.DidiItemCard
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -102,10 +103,26 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
                 showDialog.value = it
             }) {
-                /*if ((context as MainActivity).isOnline.value ?: false) {
-                    viewModel.updateWealthRankingToNetwork()
-                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
-                }*/
+                if ((context as MainActivity).isOnline.value ?: false) {
+                    viewModel.updateWealthRankingToNetwork(object :
+                        NetworkCallbackListener {
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+                    })
+                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
+                        NetworkCallbackListener {
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+                    })
+                }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
                 navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
@@ -184,7 +201,7 @@ fun ParticipatoryWealthRankingSurvey(
                         .fillMaxSize()
                         .padding(vertical = 8.dp)) {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
-                            contentPadding = PaddingValues(bottom = 10.dp),
+                            contentPadding = PaddingValues(bottom = bottomPadding),
                         modifier = Modifier.padding(bottom = 10.dp)) {
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
@@ -228,7 +245,7 @@ fun ParticipatoryWealthRankingSurvey(
             }
         }
 
-        if (viewModel.showBottomButton.value) {
+        if (viewModel.showBottomButton.value || showDidiListForRank.first) {
             BottomButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -253,6 +270,8 @@ fun ParticipatoryWealthRankingSurvey(
                     }
                 }
             )
+        } else {
+            bottomPadding = 0.dp
         }
     }
 }
