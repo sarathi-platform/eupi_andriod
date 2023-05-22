@@ -307,7 +307,7 @@ fun StepsBox(
                                 bottom.linkTo(parent.bottom)
                             }
                             .size(48.dp)
-//                            .padding(start = 4.dp)
+                            .padding(top = if (isCompleted) 0.dp else 6.dp, start = if (isCompleted) 0.dp else 4.dp)
                     )
                 }
 

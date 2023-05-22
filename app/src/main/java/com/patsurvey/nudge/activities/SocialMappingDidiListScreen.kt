@@ -95,6 +95,8 @@ fun SocialMappingDidiListScreen(
 
     val focusManager = LocalFocusManager.current
 
+    val markedUnabailableList = didiViewModel.markedNotAvailable.collectAsState()
+
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -107,7 +109,7 @@ fun SocialMappingDidiListScreen(
             .fillMaxSize()
             .background(Color.White)
             .pointerInput(true) {
-                detectTapGestures (onTap = {
+                detectTapGestures(onTap = {
                     focusManager.clearFocus()
                 })
             }
@@ -132,10 +134,11 @@ fun SocialMappingDidiListScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
+                val count = didiList.value.filter { it.needsToPost }.size
                 ModuleAddedSuccessView(
                     completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
-                        R.string.didi_conirmation_text,
+                        if (count < 2) R.string.tola_conirmation_text_singular else R.string.didi_conirmation_text_plural,
                         didiList.value.filter { it.needsToPost }.size
                     ),
                     modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
@@ -299,7 +302,7 @@ fun SocialMappingDidiListScreen(
                         }
                     } else {
                         itemsIndexed(if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
-                            DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
+                            DidiItemCard(navController, didiViewModel, didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {
                                         expandedIds.remove(didiDetailModel.id)
@@ -757,24 +760,41 @@ fun DidiItemCard(
                         .fillMaxWidth()
                         .padding(vertical = 10.dp, horizontal = 16.dp)
                 ) {
-                    ButtonNegative(
+                    ButtonNegativeForPAT(
                         buttonTitle = stringResource(id = R.string.not_avaliable),
                         isArrowRequired = false,
+                        color = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
+                        textColor = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(45.dp)
                             .weight(1f)
+                            .background(
+                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
+                                        didi.id
+                                    )
+                                ) blueDark else languageItemActiveBg
+                            )
                     ){
-//                        navController.navigate("pat_section_one_summary_screen/${didi.id}")
+                        didiViewModel.setDidiAsUnavailable(didi.id)
                     }
                     Spacer(modifier = Modifier.width(6.dp))
-                    ButtonPositive(
+                    ButtonPositiveForPAT(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(45.dp)
-                            .weight(1f),
+                            .weight(1f)
+                            .background(
+                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
+                                        didi.id
+                                    )
+                                ) languageItemActiveBg else blueDark
+                            ),
                         stringResource(id = R.string.start_pat),
-                        true
+                        true,
+                        color = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
+                        textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
+                        iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
                     ) {
                         navController.navigate("didi_pat_summary/${didi.id}")
                     }

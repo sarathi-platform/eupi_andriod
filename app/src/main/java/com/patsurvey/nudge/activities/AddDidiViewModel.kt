@@ -71,6 +71,10 @@ class AddDidiViewModel @Inject constructor(
 
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
 
+    private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
+    val markedNotAvailable: StateFlow<List<Int>> get() = _markedNotAvailable
+
+
     init {
         villageId = prefRepo.getSelectedVillage().id
         if (didiList.value.isNotEmpty()) {
@@ -109,6 +113,9 @@ class AddDidiViewModel @Inject constructor(
 
                 }
                 filterDidiList = didiList.value
+                filterDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEach {
+                    getDidiAvailabilityStatus(it.id)
+                }
             }
         }
 
@@ -512,5 +519,20 @@ class AddDidiViewModel @Inject constructor(
 //        networkErrorMessage.value = error?.title.toString()
     }
 
+    fun setDidiAsUnavailable(didiId: Int) {
+        prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
+        _markedNotAvailable.value = _markedNotAvailable.value.also {
+            it.add(didiId)
+        }
+    }
+
+    fun getDidiAvailabilityStatus(didiId: Int) {
+        val prefValue = prefRepo.getPref("${PREF_DIDI_UNAVAILABLE}_$didiId", false)
+        if (prefValue) {
+            _markedNotAvailable.value = _markedNotAvailable.value.also {
+                it.add(didiId)
+            }
+        }
+    }
 
 }
