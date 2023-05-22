@@ -13,6 +13,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,7 +38,7 @@ class WealthRankingViewModel @Inject constructor(
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
-    val shouldShowBottomButton = mutableStateOf(false)
+    val shouldShowBottomButton = mutableStateOf(!didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
 
     private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
     val filterDidiList: StateFlow<List<DidiEntity>> get() = _filterDidiList
@@ -130,24 +131,28 @@ class WealthRankingViewModel @Inject constructor(
 
     fun updateDidiRankInDb(id: Int, rank: String) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val updatedDidiList = didiList.value
-            didiDao.updateDidiRank(id, rank)
-            didiDao.updateBeneficiaryProcessStatus(
-                id, listOf(
-                    BeneficiaryProcessStatusModel(
-                        StepType.TRANSECT_WALK.name,
-                        StepStatus.COMPLETED.name
-                    ),
-                    BeneficiaryProcessStatusModel(
-                        StepType.SOCIAL_MAPPING.name,
-                        StepStatus.COMPLETED.name
-                    ),
-                    BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+            try {
+                val updatedDidiList = didiList.value
+                didiDao.updateDidiRank(id, rank)
+                didiDao.updateBeneficiaryProcessStatus(
+                    id, listOf(
+                        BeneficiaryProcessStatusModel(
+                            StepType.TRANSECT_WALK.name,
+                            StepStatus.COMPLETED.name
+                        ),
+                        BeneficiaryProcessStatusModel(
+                            StepType.SOCIAL_MAPPING.name,
+                            StepStatus.COMPLETED.name
+                        ),
+                        BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+                    )
                 )
-            )
-            updatedDidiList[updatedDidiList.map { it.id }.indexOf(id)].wealth_ranking = rank
-            _didiList.value = updatedDidiList
-            onError("WealthRankingViewModel", "here is error")
+                updatedDidiList[updatedDidiList.map { it.id }.indexOf(id)].wealth_ranking = rank
+                _didiList.value = updatedDidiList
+//                onError("WealthRankingViewModel", "here is error")
+            } catch (ex: Exception) {
+                onError("WealthRankingViewModel", "here is error: ${ex.message} \n${ex.stackTrace}")
+            }
         }
     }
 

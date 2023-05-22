@@ -26,6 +26,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -79,7 +80,23 @@ class AddDidiViewModel @Inject constructor(
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                val localDidList = didiDao.getAllDidisForVillage(villageId)
+                val updatedList = mutableListOf<DidiEntity>()
+                localDidList.forEach {
+                    if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
+                        val tola = tolaDao.fetchSingleTola(it.cohortId)
+                        if (tola != null) {
+                            it.cohortName = tola.name
+                            updatedList.add(it)
+                        } else {
+                            didiDao.deleteDidisForTola(it.cohortId)
+                        }
+                    } else {
+                        updatedList.add(it)
+                    }
+                }
+
+                _didiList.value = updatedList
                 _casteList.emit(
                     casteListDao.getAllCasteForLanguage(
                         prefRepo.getAppLanguageId() ?: 0
@@ -124,7 +141,20 @@ class AddDidiViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                val localDidList = didiDao.getAllDidisForVillage(villageId)
+                val updatedList = mutableListOf<DidiEntity>()
+                localDidList.forEach {
+                    if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
+                        val tola = tolaDao.fetchSingleTola(it.cohortId)
+                        if (tola != null) {
+                            it.cohortName = tola.name
+                            updatedList.add(it)
+                        }
+                    } else {
+                        updatedList.add(it)
+                    }
+                }
+                _didiList.value = updatedList
                 filterDidiList = didiList.value
                 showLoader.value = false
             }
@@ -163,13 +193,14 @@ class AddDidiViewModel @Inject constructor(
                     )
                 )
 
-                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                _didiList.value = didiDao.getAllDidisForVillage(villageId)
                 filterDidiList = didiDao.getAllDidisForVillage(villageId)
                 stepsListDao.markStepAsCompleteOrInProgress(
                     stepId,
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                setSocialMappingINProgress(stepId, villageId)
                 withContext(Dispatchers.Main) {
                     prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
@@ -185,30 +216,34 @@ class AddDidiViewModel @Inject constructor(
 
     fun updateDidiIntoDatabase(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            didiDao.updateDidi(
-                DidiEntity(
-                    didiId,
-                    name = didiName.value,
-                    guardianName = dadaName.value,
-                    address = houseNumber.value,
-                    castId = selectedCast.value.first,
-                    castName = selectedCast.value.second,
-                    cohortId = selectedTola.value.first,
-                    cohortName = selectedTola.value.second,
-                    relationship = HUSBAND_STRING,
-                    villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
-                    createdDate = _didiList.value.get(didiId).createdDate,
-                    modifiedDate = System.currentTimeMillis()
-                )
+            _didiList.value
+            didiList.value
+            filterDidiList
+            val updatedDidi =  DidiEntity(
+                id = didiId,
+                name = didiName.value,
+                guardianName = dadaName.value,
+                address = houseNumber.value,
+                castId = selectedCast.value.first,
+                castName = selectedCast.value.second,
+                cohortId = selectedTola.value.first,
+                cohortName = selectedTola.value.second,
+                relationship = HUSBAND_STRING,
+                villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
+                createdDate = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).createdDate,
+                modifiedDate = System.currentTimeMillis()
             )
+            updatedDidi.guardianName
+            didiDao.insertDidi(updatedDidi)
 
-            _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+            _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
             stepsListDao.markStepAsCompleteOrInProgress(
                 stepId,
                 StepStatus.INPROGRESS.ordinal,
                 villageId
             )
+            setSocialMappingINProgress(stepId, villageId)
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                 isSocialMappingComplete.value = false
@@ -417,6 +452,22 @@ class AddDidiViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
+        }
+    }
+
+    fun setSocialMappingINProgress(stepId: Int,villageId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val step=stepsListDao.getStepForVillage(villageId, stepId)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
+            val completeStepList=stepsListDao.getAllCompleteStepsForVillage(villageId)
+            completeStepList?.let {
+                it.forEach { newStep->
+                    if(newStep.orderNumber>step.orderNumber){
+                        stepsListDao.markStepAsCompleteOrInProgress(newStep.id, StepStatus.INPROGRESS.ordinal,villageId)
+                    }
+                }
+            }
+
         }
     }
 

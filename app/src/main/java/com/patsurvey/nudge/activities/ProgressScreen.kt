@@ -73,7 +73,7 @@ fun ProgressScreen(
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
                         .padding(start = 16.dp, end = 16.dp, bottom = 50.dp)
-                        .height(((2*screenHeight)/3).dp)
+                        .height(((2 * screenHeight) / 3).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.seletc_village_screen_text),
@@ -298,13 +298,14 @@ fun StepsBox(
                     Icon(
                         painter = painterResource(id = iconResourceId),
                         contentDescription = null,
-                        tint = if (shouldBeActive) stepIconEnableColor else if (isCompleted) stepIconCompleted else stepIconDisableColor,
+                        tint = if (shouldBeActive) { if (isCompleted) stepIconCompleted else stepIconEnableColor } else stepIconDisableColor,
                         modifier = Modifier
                             .constrainAs(iconContainer) {
                                 start.linkTo(parent.start)
                                 top.linkTo(parent.top)
                                 bottom.linkTo(parent.bottom)
                             }
+                            .size(48.dp)
                             .padding(start = 4.dp)
                     )
                 }

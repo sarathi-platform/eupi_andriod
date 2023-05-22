@@ -12,6 +12,9 @@ interface TolaDao {
     @Query("SELECT * FROM $TOLA_TABLE where status = 1")
     fun getAllTolas(): List<TolaEntity>
 
+    @Query("SELECT * FROM $TOLA_TABLE where id = :id AND status = 1")
+    fun getTola(id: Int): TolaEntity
+
     @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId and status = 1 ORDER BY createdDate DESC")
     fun getAllTolasForVillage(villageId: Int): List<TolaEntity>
 
@@ -25,7 +28,7 @@ interface TolaDao {
     fun removeTola(id: Int)
 
     @Query("SELECT * from $TOLA_TABLE where id = :id")
-    fun fetchSingleTola(id: Int): TolaEntity
+    fun fetchSingleTola(id: Int): TolaEntity?
 
     @Query("UPDATE $TOLA_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
@@ -33,6 +36,6 @@ interface TolaDao {
     @Query("DELETE from $TOLA_TABLE where villageId = :villageId")
     fun deleteTolaTable(villageId: Int)
 
-    @Query("UPDATE $TOLA_TABLE SET status = :status, needsToPost = true WHERE id = :id")
+    @Query("UPDATE $TOLA_TABLE SET status = :status, needsToPost = 1 WHERE id = :id")
     fun deleteTolaOffline(id: Int, status: Int)
 }

@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -15,6 +16,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
@@ -84,6 +86,11 @@ fun TransectWalkScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .pointerInput(true) {
+                detectTapGestures (onTap = {
+                   focusManager.clearFocus()
+                })
+            }
             .then(modifier)
     ) {
         viewModel.setVillage(villageId)
@@ -106,10 +113,11 @@ fun TransectWalkScreen(
                     voName = viewModel.villageEntity.value?.federationName ?: "",
                     modifier = Modifier
                 )
+                val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = pluralStringResource(
-                        R.plurals.tola_conirmation_text,
-                        tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                    message = stringResource( if (tolaCount < 2)
+                        R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
+                        tolaCount
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
@@ -331,10 +339,10 @@ fun TransectWalkScreen(
                 positiveButtonOnClick = {
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
-                        if ((context as MainActivity).isOnline.value ?: false) {
-                            viewModel.addTolasToNetwork(villageId)
-                            viewModel.callWorkFlowAPI(villageId, stepId)
-                        }
+//                        if ((context as MainActivity).isOnline.value ?: false) {
+//                            viewModel.addTolasToNetwork(villageId)
+//                            viewModel.callWorkFlowAPI(villageId, stepId)
+//                        }
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(
                             "step_completion_screen/${
@@ -351,6 +359,8 @@ fun TransectWalkScreen(
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
+        } else {
+            bottomPadding = 0.dp
         }
     }
 }

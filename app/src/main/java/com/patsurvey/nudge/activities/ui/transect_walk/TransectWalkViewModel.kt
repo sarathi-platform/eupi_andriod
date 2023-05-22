@@ -67,7 +67,7 @@ class TransectWalkViewModel @Inject constructor(
             tolaDao.insert(tolaItem)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
-                _tolaList.emit(updatedTolaList)
+                _tolaList.value = updatedTolaList
                 prefRepo.savePref(TOLA_COUNT, _tolaList.value.size)
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
@@ -148,18 +148,18 @@ class TransectWalkViewModel @Inject constructor(
     fun removeTola(tolaId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val jsonArray = JsonArray()
-                jsonArray.add(DeleteTolaRequest(tolaId).toJson())
-                val response = apiInterface.deleteCohort(jsonArray)
-                if (response.status.equals(SUCCESS)) {
-                    tolaDao.removeTola(tolaId)
-                } else {
-                    tolaDao.setNeedToPost(listOf(tolaId), true)
-                }
+//                val jsonArray = JsonArray()
+//                jsonArray.add(DeleteTolaRequest(tolaId).toJson())
+//                val response = apiInterface.deleteCohort(jsonArray)
+//                if (response.status.equals(SUCCESS)) {
+//                    tolaDao.removeTola(tolaId)
+//                } else {
+//                    tolaDao.setNeedToPost(listOf(tolaId), true)
+//                }
                 tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
                 val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
-                    _tolaList.emit(updatedTolaList)
+                    _tolaList.value = updatedTolaList
                     if (isTransectWalkComplete.value)
                         isTransectWalkComplete.value = false
                 }
@@ -184,13 +184,13 @@ class TransectWalkViewModel @Inject constructor(
                 modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
-            val jsonTola = JsonArray()
-            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
+//            val jsonTola = JsonArray()
+//            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             _tolaList.value = updatedTolaList
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false
-            apiInterface.editCohort(jsonTola)
+//            apiInterface.editCohort(jsonTola)
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList
             }
@@ -244,7 +244,17 @@ class TransectWalkViewModel @Inject constructor(
 
     fun markTransectWalkIncomplete(stepId: Int,villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val step=stepsListDao.getStepForVillage(villageId, stepId)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
+            val completeStepList=stepsListDao.getAllCompleteStepsForVillage(villageId)
+            completeStepList?.let {
+                it.forEach { newStep->
+                    if(newStep.orderNumber>step.orderNumber){
+                        stepsListDao.markStepAsCompleteOrInProgress(newStep.id, StepStatus.INPROGRESS.ordinal,villageId)
+                    }
+                }
+            }
+
         }
     }
 

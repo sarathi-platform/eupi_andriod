@@ -82,7 +82,8 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-<!--    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>-->
+    <string name="tola_conirmation_text_plural">Total %1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">Total %1$s new Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
     <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
@@ -128,13 +129,9 @@
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>
     </plurals>
-    <plurals name="poor_didis_added">
+    <plurals name="poor_didis_pending_text">
         <item quantity="one">Poor Didi Pending</item>
         <item quantity="other">Poor Didis Pending</item>
     </plurals>
 
-    <plurals name="tola_conirmation_text">
-        <item quantity="one">Total %1$s new Tola has \nbeen added successfully</item>
-        <item quantity="other">Total %1$s new Tolas have \nbeen added successfully</item>
-    </plurals>
 </resources>

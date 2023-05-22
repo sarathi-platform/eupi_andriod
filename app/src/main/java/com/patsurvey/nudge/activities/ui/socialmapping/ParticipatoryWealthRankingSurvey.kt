@@ -73,14 +73,18 @@ fun ParticipatoryWealthRankingSurvey(
         }
     }
     BackHandler() {
-        if (isStepComplete) {
-            navController.navigate(Graph.HOME) {
-                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                    inclusive = true
-                }
-            }
+        if (showDidiListForRank.first){
+            showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
-            navController.popBackStack()
+            if (isStepComplete) {
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                navController.popBackStack()
+            }
         }
     }
     
@@ -98,10 +102,10 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
                 showDialog.value = it
             }) {
-                if ((context as MainActivity).isOnline.value ?: false) {
+                /*if ((context as MainActivity).isOnline.value ?: false) {
                     viewModel.updateWealthRankingToNetwork()
                     viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
-                }
+                }*/
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
                 navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(

@@ -121,4 +121,6 @@ const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
+const val LAST_UPDATE_TIME = "last_updated_time"
+
 
