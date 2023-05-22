@@ -65,5 +65,8 @@ data class DidiEntity(
 
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")
-    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList()
-)
+    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
+
+    @ColumnInfo(name = "progress")
+    var progress: Int=0,
+    )

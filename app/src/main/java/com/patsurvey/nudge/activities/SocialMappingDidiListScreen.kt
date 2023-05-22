@@ -354,6 +354,7 @@ fun SocialMappingDidiListScreen(
                                 didiViewModel.addDidisToNetwork()
                                 didiViewModel.callWorkFlowAPI(villageId, stepId)
                             }*/
+                            didiViewModel.addDidisToNetwork()
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${

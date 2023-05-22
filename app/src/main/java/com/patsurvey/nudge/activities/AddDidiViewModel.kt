@@ -374,26 +374,29 @@ class AddDidiViewModel @Inject constructor(
                 for (didi in filteredDidiList) {
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
                 }
-                val response = apiService.addDidis(jsonDidi)
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        response.data.forEach { didiFromNetwork ->
-                            didiList.value.forEach { didi ->
-                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-                                    didi.id = didiFromNetwork.id
-                                    didi.createdDate = didiFromNetwork.createdDate
-                                    didi.modifiedDate = didiFromNetwork.modifiedDate
-                                }
-                            }
-
-                        }
+//                val response = apiService.addDidis(jsonDidi)
+//                if (response.status.equals(SUCCESS, true)) {
+//                    response.data?.let {
+//                        response.data.forEach { didiFromNetwork ->
+//                            didiList.value.forEach { didi ->
+//                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
+//                                    didi.id = didiFromNetwork.id
+//                                    didi.createdDate = didiFromNetwork.createdDate
+//                                    didi.modifiedDate = didiFromNetwork.modifiedDate
+//                                }
+//                            }
+//
+//                        }
                         updateTolaListWithIds(didiList)
-                        didiDao.setNeedToPost(
-                            didiList.value.filter { it.needsToPost }.map { it.id },
-                            false
-                        )
-                    }
-                }
+                        didiList.value.forEach {
+                            didiDao.updateNeedToPost(it.id,false)
+                        }
+//                        didiDao.setNeedToPost(
+//                            didiList.value.filter { it.needsToPost }.map { it.id },
+//                            false
+//                        )
+//                    }
+//                }
             }
         }
     }

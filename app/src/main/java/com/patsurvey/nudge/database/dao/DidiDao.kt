@@ -37,6 +37,8 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 
+    @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id =:id")
+    fun updateNeedToPost(id:Int, needsToPost: Boolean)
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :id")
     fun setNeedToPostRanking(id:Int, needsToPostRanking: Boolean)
 

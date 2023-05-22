@@ -100,25 +100,29 @@ class TransectWalkViewModel @Inject constructor(
                 }
                 Log.d("TransectWalkViewModel", "$jsonTola")
 
-                val response = apiInterface.addCohort(jsonTola)
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        response.data.forEach { tolaDataFromNetwork ->
-                            tolaList.value.forEach { tola ->
-                                if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
-                                    tola.id = tolaDataFromNetwork.id
-                                    tola.createdDate = tolaDataFromNetwork.createdDate
-                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
-                                }
-                            }
-                        }
+//                val response = apiInterface.addCohort(jsonTola)
+//                if (response.status.equals(SUCCESS, true)) {
+//                    response.data?.let {
+//                        response.data.forEach { tolaDataFromNetwork ->
+//                            tolaList.value.forEach { tola ->
+//                                if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
+//                                    tola.id = tolaDataFromNetwork.id
+//                                    tola.createdDate = tolaDataFromNetwork.createdDate
+//                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
+//                                }
+//                            }
+//                        }
                         updateTolaListWithIds(tolaList.value, villageId)
-                        tolaDao.setNeedToPost(
-                            tolaList.value.filter { it.needsToPost }.map { it.id },
-                            false
-                        )
-                    }
+
+                tolaList.value.forEach{
+                    tolaDao.updateNeedToPost(it.id,false)
                 }
+//                tolaDao.setNeedToPost(
+//                            tolaList.value.filter { it.needsToPost }.map { it.id },
+//                            false
+//                        )
+//                    }
+//                }
             }
         }
     }

@@ -69,6 +69,10 @@ fun WealthRankingScreen(
             if (it)
                 navController.navigate("wealth_ranking_survey/$stepId/$it")
         }
+
+        if(didis.isNotEmpty()) {
+            viewModel.onCardArrowClicked(didis[0].id)
+        }
     }
 
     var bottomPadding by remember {
