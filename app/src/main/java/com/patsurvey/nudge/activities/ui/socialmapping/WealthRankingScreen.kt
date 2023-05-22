@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
@@ -59,9 +60,11 @@ fun WealthRankingScreen(
     val newFilteredTolaDidiList = viewModel.filterTolaMapList
     val newFilteredDidiList = viewModel.filterDidiList.collectAsState()
 
-    val pendingDidiCount = remember {
+    val _pendingDidiCount = remember {
         mutableStateOf(newFilteredDidiList.value.size)
     }
+    val pendingCount: State<Int> = _pendingDidiCount
+
 
     val localDensity = LocalDensity.current
 
@@ -150,6 +153,10 @@ fun WealthRankingScreen(
                         )
                     }
                     item {
+                        Log.d(
+                            "WealthRankingScreen",
+                            "pendingDidiCount.value: ${_pendingDidiCount.value}"
+                        )
                         Text(
                             text = stringResource(
                                 id = R.string.count_didis_pending, newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.size
@@ -197,9 +204,13 @@ fun WealthRankingScreen(
                                                 viewModel.closeLastCard(didi.id)
 //                                                viewModel.onCardArrowClicked(didi.id)
                                             }
-                                            pendingDidiCount.value = pendingDidiCount.value - 1
+                                            _pendingDidiCount.value = newFilteredDidiList.value.size - index
                                             if (!didis.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
                                                 viewModel.shouldShowBottomButton.value = true
+                                            Log.d(
+                                                "WealthRankingScreen",
+                                                "pendingDidiCount.value: ${_pendingDidiCount.value}"
+                                            )
                                         }
                                     },
                                     expanded = expandedCardIds.contains(didi.id),
@@ -394,6 +405,7 @@ fun ExpandableCard(
                     didiEntity.wealth_ranking = it.rank
                     viewModel.updateDidiRankInDb(didiEntity.id, it.rank, object : NetworkCallbackListener{
                             override fun onSuccess() {
+
                             }
 
                             override fun onFailed() {

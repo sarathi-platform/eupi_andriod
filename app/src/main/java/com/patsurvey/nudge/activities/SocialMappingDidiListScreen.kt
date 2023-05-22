@@ -138,7 +138,7 @@ fun SocialMappingDidiListScreen(
                 ModuleAddedSuccessView(
                     completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
-                        if (count < 2) R.string.tola_conirmation_text_singular else R.string.didi_conirmation_text_plural,
+                        if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
                         didiList.value.filter { it.needsToPost }.size
                     ),
                     modifier = Modifier.padding(vertical = (screenHeight / 4).dp)

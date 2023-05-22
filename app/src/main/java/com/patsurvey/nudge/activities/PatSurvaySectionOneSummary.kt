@@ -44,6 +44,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ANSWER_TYPE_YES
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -191,11 +192,7 @@ fun PatSurvaySectionSummaryScreen(
             positiveButtonText = stringResource(id = R.string.complete_section_1_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.navigate(Graph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                        inclusive = true
-                    }
-                }
+                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
