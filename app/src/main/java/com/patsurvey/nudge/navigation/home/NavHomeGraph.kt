@@ -302,13 +302,13 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route)
+                navController.navigate(WealthRankingScreens.DIGITAL_FORM_A_SCREEN.route)
 
             }
         }
 
         composable(
-            route = WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route
+            route = WealthRankingScreens.DIGITAL_FORM_A_SCREEN.route
         ) {
             DigitalFormAScreen(
                 navController = navController,
@@ -327,7 +327,7 @@ sealed class WealthRankingScreens(val route: String) {
     object WR_STEP_COMPLETION_SCREEN :
         WealthRankingScreens(route = "wr_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
-    object DIFITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
+    object DIGITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
 }
 
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {

@@ -75,10 +75,8 @@
 
     <string name="user_id_text">"पहचान: "</string>
     <string name="empty_tola_string">कोई टोला नहीं जोड़ा गया</string>
-    <plurals name="tola_conirmation_text">
-        <item quantity="one">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</item>
-        <item quantity="other">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</item>
-    </plurals>
+    <string name="tola_conirmation_text_singular">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_plural">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">गाँव की सैर पूर्ण करे</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए गाँव की सैर पूरा हो गया है</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
@@ -87,7 +85,8 @@
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूर्ण करे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
-    <string name="didi_conirmation_text">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_plural">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
@@ -108,7 +107,7 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">दीदी जुड़ीं</item>
         <item quantity="other">दीदियों जुड़ीं</item>
     </plurals>
-    <plurals name="poor_didis_added">
+    <plurals name="poor_didis_pending_text">
         <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
         <item quantity="other">गरीब दीदीया पेंडिंग</item>
     </plurals>

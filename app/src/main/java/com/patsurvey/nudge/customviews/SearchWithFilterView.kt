@@ -22,8 +22,6 @@ import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.borderGrey
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.BLANK_STRING
 
 @Composable
@@ -47,42 +45,39 @@ fun SearchWithFilterView(
                 .then(modifier),
             color = Color.White,
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-//                Card(
-//                    modifier = Modifier
-//                        .weight(1f)
-//                        .border(
-//                            dimensionResource(id = R.dimen.dp_1),
-//                            Color.LightGray,
-//                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-//                        )
-//                ) {
-                    CustomOutlineTextField(
-                        value = searchString,
-                        onValueChange = {
-                            searchString = it
-                            onSearchValueChange(it)
-                        },
-                        colors = TextFieldDefaults.textFieldColors(
-                            textColor = textColorDark,
-                            backgroundColor = Color.White,
-                            focusedIndicatorColor = borderGrey,
-                            unfocusedIndicatorColor = borderGrey,
-                        ),
-                        keyboardOptions = KeyboardOptions(
-                            keyboardType = KeyboardType.Text,
-                            imeAction = ImeAction.Done,
-                        ),
-                        textStyle = TextStyle(
-                            color = blueDark
-                        ),
-                        maxLines = 1,
-                        placeholder = { Text(text = placeholderString) },
-                    )
-//                }
+            Row(modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceAround) {
+                Card(modifier = Modifier
+                    .weight(1f)
+                    .border(
+                        dimensionResource(id = R.dimen.dp_1),
+                        Color.LightGray,
+                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                    )) {
+
+                TextField(
+                    value = searchString, onValueChange ={
+                        searchString=it
+                        onSearchValueChange(it)
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = Color.Black,
+                        backgroundColor = Color.White,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Done,
+                    ),
+                    textStyle = TextStyle(
+                        color = blueDark
+                    ),
+                    maxLines = 1,
+                    placeholder = { Text(text = placeholderString) },
+                )
+                }
 
                 Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_20)))
                 Card(modifier = Modifier

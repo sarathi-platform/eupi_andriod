@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.ui.progress
 
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
 import com.patsurvey.nudge.base.BaseViewModel
@@ -19,6 +20,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,11 +47,22 @@ class VillageSelectionViewModel @Inject constructor(
     init {
         showLoader.value = true
         fetchUserDetails {
-            fetchVillageList()
+            if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
+                if ((System.currentTimeMillis() - prefRepo.getPref(
+                        LAST_UPDATE_TIME,
+                        0L
+                    )) > TimeUnit.DAYS.toMillis(5)
+                )
+                    fetchVillageList()
+                else
+                    showLoader.value = false
+            } else
+                fetchVillageList()
         }
     }
 
     private fun fetchVillageList() {
+        Log.d("VllageSelectionViewModel", "fetchVillageList method called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
@@ -60,9 +73,6 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localStepsList.isNotEmpty()) {
                         stepsListDao.deleteAllStepsFromDB()
                     }
-//                    if(localTolaList.isNotEmpty()){
-////                        tolaDao.deleteTolaTable()
-//                    }
                     villageList.forEach { village ->
                         launch {
 
@@ -117,24 +127,26 @@ class VillageSelectionViewModel @Inject constructor(
                                             singleCaste?.let {
                                                 casteName = it.casteName
                                             }
-                                            didiDao.insertDidi(
-                                                DidiEntity(
-                                                    id = didi.id,
-                                                    name = didi.name,
-                                                    address = didi.address,
-                                                    guardianName = didi.guardianName,
-                                                    relationship = didi.relationship,
-                                                    castId = didi.castId,
-                                                    castName = casteName,
-                                                    cohortId = didi.cohortId,
-                                                    villageId = village.id,
-                                                    cohortName = tolaName,
-                                                    needsToPost = false,
-                                                    createdDate = didi.createdDate,
-                                                    modifiedDate = didi.modifiedDate,
-                                                    beneficiaryProcessStatus = didi.beneficiaryProcessStatus
+                                            if (singleTola != null) {
+                                                didiDao.insertDidi(
+                                                    DidiEntity(
+                                                        id = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = village.id,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus
+                                                    )
                                                 )
-                                            )
+                                            }
                                         }
                                     } catch (ex: Exception) {
                                         onError(
@@ -204,8 +216,13 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                     }
                 }
+
             } catch (ex: Exception) {
                 onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
+                showLoader.value = false
+            }
+            finally {
+                prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 showLoader.value = false
             }
         }
@@ -252,7 +269,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        showLoader.value = false
     }
 
 }

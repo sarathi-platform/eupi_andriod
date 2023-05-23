@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -59,6 +60,14 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
     val context = LocalContext.current
+
+    BackHandler() {
+        navController.navigate(Graph.HOME) {
+            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                inclusive = true
+            }
+        }
+    }
 
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
