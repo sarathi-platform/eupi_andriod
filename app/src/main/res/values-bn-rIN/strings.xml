@@ -13,6 +13,9 @@
 
     <string name="progress_item_text">অগ্রগতি</string>
     <string name="didis_item_text">বড়</string>
+    <string name="poor_didi_item_text">गरीब दीदी</string>
+    <string name="medium_didi_item_text">माध्यम दीदी</string>
+    <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="more_item_text">আরও</string>
 
     <string name="online_text">অনলাইন</string>
@@ -43,7 +46,7 @@
     <string name="not_added">যোগ করা হয়নি</string>
     <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
-    <string name="participation_date_wealth_ranking">অংশগ্রহণের তারিখ সম্পদ র‌্যাঙ্কিং</string>
+    <string name="participation_date_wealth_ranking">তারিখ </string>
     <string name="vo_name">VO নাম</string>
     <string name="total">মোট</string>
     <string name="add_didi">দিদি যোগ করুন</string>
@@ -82,16 +85,19 @@
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
     <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
-    <string name="tola_conirmation_text">মোট %1$s নতুন টোলা \nসফলভাবে যোগ করা হয়েছে</string>
+    <string name="tola_conirmation_text_singular">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_plural">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
     <string name="transect_walk_sub_text">%1$s টোলাস ডন</string>
 
     <string name="complete_social_walk_text">সম্পূর্ণ সামাজিক ম্যাপিংे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
-    <string name="didi_conirmation_text">कुल %1$s নতুন दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_plural">कुल %1$s নতুন दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
     <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
     <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
@@ -104,10 +110,18 @@
     <string name="pat_survey">PAT জরিপ</string>
     <string name="didi">দিদি</string>
     <string name="section_number">বিভাগ %d</string>
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="summary_text">सारांश</string>
 
     <plurals name="didis_added">
         <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
         <item quantity="other">দিদি যোগ করেছে</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
+        <item quantity="other">गरीब दीदीया पेंडिंग</item>
     </plurals>
     <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
     <string name="update_didi">আপডেট দিদি</string>
@@ -115,13 +129,15 @@
     <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">PAT शुरू करें</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>
     <string name="share_button_text">शेयर करें</string>
     <string name="download_button_text">डाउनलोड करें</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
+    <string name="enter_name_text">নাম লিখুন</string>
+    <string name="enter_tola_name_message">Tola নাম লিখুন</string>
     <string name="option_yes">अत्यंत</string>
     <string name="option_no">না</string>
 

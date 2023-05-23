@@ -54,7 +54,15 @@ fun OtpVerificationScreen(
     var isResendOTPVisible by remember {
         mutableStateOf(true)
     }
-
+    val networkErrorMessage = viewModel.networkErrorMessage.value
+    if(networkErrorMessage.isNotEmpty()){
+        snackState.addMessage(
+            message = networkErrorMessage,
+            isSuccess = false,
+            isCustomIcon = false
+        )
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
@@ -188,7 +196,12 @@ fun OtpVerificationScreen(
                 onClick = {
                     viewModel.validateOtp { success, message ->
                         if (success){
-                            navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route)
+                            navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route){
+                                launchSingleTop=true
+                                popUpTo(AuthScreen.START_SCREEN.route){
+                                    inclusive=true
+                                }
+                            }
                         }
                         else
                             snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)

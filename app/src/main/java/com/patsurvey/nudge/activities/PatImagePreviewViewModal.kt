@@ -8,6 +8,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.File
 import java.util.concurrent.Executor
@@ -49,5 +50,7 @@ class PatImagePreviewViewModal @Inject constructor(
 
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
     }
-
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
 }

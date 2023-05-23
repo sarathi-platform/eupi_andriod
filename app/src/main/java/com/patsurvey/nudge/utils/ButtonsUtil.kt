@@ -320,6 +320,65 @@ fun ButtonPositive(
     }
 }
 
+@Composable
+fun ButtonPositiveForPAT(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
+    color: Color = languageItemActiveBg,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                if (isActive) onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                color = textColor,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Positive Button",
+                    tint = iconTintColor,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp)
+                )
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ButtonPositivePreview() {
@@ -372,6 +431,57 @@ fun ButtonNegative(
             Text(
                 text = buttonTitle,
                 color = blueDark,
+                style = buttonTextStyle
+            )
+        }
+    }
+}
+
+
+@Composable
+fun ButtonNegativeForPAT(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    color: Color = languageItemActiveBg,
+    textColor: Color = blueDark,
+    horizontalPadding : Dp = 10.dp,
+    isArrowRequired: Boolean = true,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+
+            ) {
+                onClick()
+            }
+            .padding(horizontal = horizontalPadding)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isArrowRequired) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back),
+                    contentDescription = "Negative Button",
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp),
+                    colorFilter = ColorFilter.tint(blueDark)
+                )
+            }
+            Text(
+                text = buttonTitle,
+                color = textColor,
                 style = buttonTextStyle
             )
         }

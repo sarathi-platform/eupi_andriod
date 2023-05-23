@@ -20,6 +20,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.utils.BLANK_STRING
 
@@ -30,7 +31,7 @@ fun SearchWithFilterView(
     filterSelected: Boolean = false,
     onFilterSelected: (Boolean) -> Unit,
     onSearchValueChange: (String) -> Unit
-){
+) {
     var searchString by remember {
         mutableStateOf(BLANK_STRING)
     }
@@ -85,19 +86,23 @@ fun SearchWithFilterView(
                     .background(color = Color.White)
                     .border(
                         dimensionResource(id = R.dimen.dp_1),
-                        color = (if(!filterSelected) Color.LightGray else blueDark),
+                        color = (if (!filterSelected) Color.LightGray else blueDark),
                         shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                    ).clickable {
+                    )
+                    .clickable {
                         focusManager.clearFocus()
                         onFilterSelected(filterSelected)
-                    }){
-                    AppImageView(resource = if(!filterSelected)R.drawable.ic_search_filter_unselected
-                    else R.drawable.ic_search_filter_selected,
-                        modifier =Modifier.background(
-                        if(!filterSelected) Color.White else blueDark).
-                        padding(horizontal = 15.dp)
-                        .padding( vertical = 15.dp)
-                       )
+                    }) {
+                    AppImageView(
+                        resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
+                        else R.drawable.ic_search_filter_selected,
+                        modifier = Modifier
+                            .background(
+                                if (!filterSelected) Color.White else blueDark
+                            )
+                            .padding(horizontal = 15.dp)
+                            .padding(vertical = 15.dp)
+                    )
                 }
             }
         }
@@ -107,9 +112,9 @@ fun SearchWithFilterView(
 @Preview(showBackground = true)
 @Composable
 fun SearchWithFilterPreview() {
-    SearchWithFilterView(placeholderString = "Search Didi", onFilterSelected ={
+    SearchWithFilterView(placeholderString = "Search Didi", onFilterSelected = {
 
-    } , onSearchValueChange = {
+    }, onSearchValueChange = {
 
     })
 }

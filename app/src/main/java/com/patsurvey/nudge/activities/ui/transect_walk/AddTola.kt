@@ -16,10 +16,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -42,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.tolas
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.*
 
@@ -154,7 +150,7 @@ fun AddTolaBox(
 
                     ) {
                         location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
-                        if (location!!.lat != null && location!!.long != null) locationAdded = true
+                        if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) locationAdded = true
                         focusManager.clearFocus()
                     }
                     .height(45.dp)
@@ -192,7 +188,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(R.string.cancel_tola_text),
                     outlineColor = redDark,
                     textColor = redDark,
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onCancelClicked()
                 }
@@ -203,7 +202,10 @@ fun AddTolaBox(
                     buttonTitle = stringResource(id = R.string.save_tola_text),
                     isArrowRequired = false,
                     isActive = mTolaName.isNotEmpty(),
-                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(45.dp)
+                        .weight(1f)
                 ) {
                     onSaveClicked(mTolaName, location)
                 }
@@ -226,7 +228,8 @@ fun TolaBox(
 ) {
     var showEditView by remember { mutableStateOf(false) }
 
-    val activity = LocalContext.current as Activity
+    val context = LocalContext.current
+    val activity = context as Activity
 
     val focusManager = LocalFocusManager.current
 
@@ -241,7 +244,6 @@ fun TolaBox(
             tolaLocation ?: LocationCoordinates()
         )
     }
-
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -300,6 +302,7 @@ fun TolaBox(
                             end.linkTo(parent.end)
                         })
                 {
+                    mTolaName = tolaName
                     showEditView = true
                 }
             }
@@ -339,9 +342,11 @@ fun TolaBox(
                                     }
                                 }
                             )
-                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier.absolutePadding(top = 2.dp).clickable {
-                                showEditView = false
-                            })
+                            Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier
+                                .absolutePadding(top = 2.dp)
+                                .clickable {
+                                    showEditView = false
+                                })
                         }
                         OutlinedTextField(
                             value = mTolaName,
@@ -350,7 +355,7 @@ fun TolaBox(
                             },
                             placeholder = {
                                 Text(
-                                    text = "Enter Name",
+                                    text = stringResource(id = R.string.enter_name_text),
                                     style = TextStyle(
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -438,7 +443,10 @@ fun TolaBox(
                                     buttonTitle = stringResource(id = R.string.delete_tola_text),
                                     outlineColor = redDark,
                                     textColor = redDark,
-                                    modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(45.dp)
+                                        .weight(1f)
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false
@@ -448,13 +456,19 @@ fun TolaBox(
                             ButtonPositive(
                                 buttonTitle = stringResource(id = R.string.save_tola_text),
                                 isArrowRequired = false,
-                                modifier = Modifier.fillMaxWidth().height(45.dp).weight(1f)
+                                isActive = mTolaName.isNotEmpty(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(45.dp)
+                                    .weight(1f)
                             ) {
-                                saveButtonClicked(mTolaName, location)
-                                showEditView = false
+                                if (mTolaName.isNotEmpty()) {
+                                    saveButtonClicked(mTolaName, location)
+                                    showEditView = false
+                                } else {
+                                    showCustomToast(context, context.getString(R.string.enter_tola_name_message))
+                                }
                             }
-
-
                         }
                     }
                 }

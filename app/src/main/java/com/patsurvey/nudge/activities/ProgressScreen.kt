@@ -72,8 +72,8 @@ fun ProgressScreen(
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.Start,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp)
-                        .height((screenHeight / 2).dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 50.dp)
+                        .height(((2 * screenHeight) / 3).dp)
                 ) {
                     Text(
                         text = stringResource(R.string.seletc_village_screen_text),
@@ -92,6 +92,7 @@ fun ProgressScreen(
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
+                                viewModel.showLoader.value = true
                                 viewModel.villageSelected.value = it
                                 viewModel.getStepsList(village.id)
                                 viewModel.updateSelectedVillage(village)
@@ -282,7 +283,8 @@ fun StepsBox(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(if (isCompleted) greenLight else if (shouldBeActive) stepBoxActiveColor else white)
-                    .padding(vertical = if (isCompleted) 10.dp else 14.dp, horizontal = 16.dp),
+                    .padding(vertical = /*if (isCompleted) 10.dp else */14.dp)
+                    .padding(end = 16.dp, start = 8.dp),
             ) {
                 val (textContainer, buttonContainer, iconContainer) = createRefs()
                 val iconResourceId = when (iconId) {
@@ -297,14 +299,15 @@ fun StepsBox(
                     Icon(
                         painter = painterResource(id = iconResourceId),
                         contentDescription = null,
-                        tint = if (shouldBeActive) stepIconEnableColor else if (isCompleted) stepIconCompleted else stepIconDisableColor,
+                        tint = if (shouldBeActive) { if (isCompleted) stepIconCompleted else stepIconEnableColor } else stepIconDisableColor,
                         modifier = Modifier
                             .constrainAs(iconContainer) {
                                 start.linkTo(parent.start)
                                 top.linkTo(parent.top)
                                 bottom.linkTo(parent.bottom)
                             }
-                            .padding(start = 4.dp)
+                            .size(48.dp)
+                            .padding(top = if (isCompleted) 0.dp else 6.dp, start = if (isCompleted) 0.dp else 4.dp)
                     )
                 }
 
@@ -340,8 +343,7 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> viewModel?.tolaCount?.value
-                                ?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
+                            1 -> viewModel?.tolaCount?.value?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
                             2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> viewModel?.poorDidiCount?.value?.let { stringResource(id = R.string.wealth_ranking_sub_text, it) }
@@ -429,13 +431,13 @@ fun StepsBox(
         } else {
             Box(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(6.dp))
+                    .clip(CircleShape)
                     .border(
                         width = 1.dp,
                         color = greyBorder,
-                        shape = RoundedCornerShape(100.dp)
+                        shape = CircleShape
                     )
-                    .background(Color.White, shape = RoundedCornerShape(100.dp))
+                    .background(Color.White, shape = CircleShape)
                     .padding(6.dp)
                     .constrainAs(step_no) {
                         start.linkTo(parent.start, margin = 16.dp)

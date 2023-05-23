@@ -2,24 +2,28 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import com.google.gson.Gson
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.*
-import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -30,16 +34,20 @@ class TransectWalkViewModel @Inject constructor(
     val apiInterface: ApiService,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
+    val didiDao: DidiDao,
     val villageListDao: VillageListDao
 ) : BaseViewModel() {
 
-    val tolaList = mutableStateListOf<TolaEntity>()
+    private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
+    val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
+
     val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     val isTransectWalkComplete = mutableStateOf(false)
 
     val showLoader = mutableStateOf(false)
 
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     init {
 //        fetchTolaList(villageId)
 
@@ -53,13 +61,16 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = tola.location.lat ?: 0.0,
                 longitude = tola.location.long ?: 0.0,
-                villageEntity.value?.id ?: 0
+                villageEntity.value?.id ?: 0,
+                status = 1,
+                createdDate = System.currentTimeMillis(),
+                modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(tolaItem)
+            val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
-                tolaList.add(tolaItem)
-                tolaList.sortByDescending { it.date_created }
-                prefRepo.savePref(TOLA_COUNT, tolaList.size)
+                _tolaList.value = updatedTolaList
+                prefRepo.savePref(TOLA_COUNT, _tolaList.value.size)
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
                 }
@@ -81,10 +92,10 @@ class TransectWalkViewModel @Inject constructor(
         }
     }*/
 
-    fun addTolasToNetwork() {
+    fun addTolasToNetwork(villageId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
-            val filteredTolaList = tolaList.filter { it.needsToPost }
+            val filteredTolaList = tolaList.value.filter { it.needsToPost }
             if (filteredTolaList.isNotEmpty()) {
                 for (tola in filteredTolaList) {
                     jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
@@ -94,26 +105,36 @@ class TransectWalkViewModel @Inject constructor(
                 val response = apiInterface.addCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        response.data.forEach { it2 ->
-                            tolaList.forEach { tola ->
-                                if (TextUtils.equals(it2.name, tola.name)) {
-                                    tola.id = it2.id
+                        networkCallbackListener.onSuccess()
+                        response.data.forEach { tolaDataFromNetwork ->
+                            tolaList.value.forEach { tola ->
+                                if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
+                                    tola.id = tolaDataFromNetwork.id
+                                    tola.createdDate = tolaDataFromNetwork.createdDate
+                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                 }
                             }
                         }
-                        updateTolaListWithIds(tolaList)
-                        tolaDao.setNeedToPost(
-                            tolaList.filter { it.needsToPost }.map { it.id },
-                            false
-                        )
+                } }
+                else {
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
                     }
                 }
             }
         }
     }
+    fun updateTolaNeedTOPostList(villageId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateTolaListWithIds(tolaList.value, villageId)
+            tolaList.value.forEach {
+                tolaDao.updateNeedToPost(it.id, false)
+            }
+        }
+    }
 
-    private fun updateTolaListWithIds(tolaList: SnapshotStateList<TolaEntity>) {
-        tolaDao.deleteTolaTable()
+    private fun updateTolaListWithIds(tolaList: List<TolaEntity>, villageId: Int) {
+        tolaDao.deleteTolaTable(villageId)
         val tolas = mutableListOf<TolaEntity>()
         tolaList.forEach {
             tolas.add(
@@ -125,29 +146,35 @@ class TransectWalkViewModel @Inject constructor(
                     longitude = it.longitude,
                     villageId = it.villageId,
                     needsToPost = true,
-                    status = it.status
+                    status = it.status,
+                    createdDate = it.createdDate,
+                    modifiedDate = it.modifiedDate
                 )
             )
         }
         tolaDao.insertAll(tolas)
     }
 
-    fun removeTola(tolaId: Int) {
+    fun removeTola(tolaId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val jsonTola = JsonArray()
-                jsonTola.add(DeleteTolaRequest(tolaId).toJson())
-                val response = apiInterface.deleteCohort(jsonTola)
-                if (response.status.equals(SUCCESS)) {
-                    tolaDao.removeTola(tolaId)
-                } else {
-                    tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
-                    tolaDao.setNeedToPost(listOf(tolaId), true)
-                }
+                tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
+                val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
-                    tolaList.removeAt(tolaList.map { it.id }.indexOf(tolaId))
+                    _tolaList.value = updatedTolaList
                     if (isTransectWalkComplete.value)
                         isTransectWalkComplete.value = false
+                }
+                withContext(Dispatchers.IO){
+                    val jsonArray = JsonArray()
+                    jsonArray.add(DeleteTolaRequest(tolaId).toJson())
+                    val response = apiInterface.deleteCohort(jsonArray)
+                    if (response.status.equals(SUCCESS)) {
+                        tolaDao.removeTola(tolaId)
+                    } else {
+                        tolaDao.setNeedToPost(listOf(tolaId), true)
+                        networkCallbackListener.onFailed()
+                    }
                 }
             } catch (ex: Exception) {
                 onError("TransectWalkViewModel", "${ex.message}: \n${ex.stackTraceToString()}")
@@ -155,7 +182,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun updateTola(id: Int, newName: String, newLocation: LocationCoordinates?) {
+    fun updateTola(id: Int, newName: String, newLocation: LocationCoordinates?, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val updatedTola = TolaEntity(
                 id = id,
@@ -163,20 +190,31 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = newLocation?.lat ?: 0.0,
                 longitude = newLocation?.long ?: 0.0,
-                villageId = tolaList[getIndexOfTola(id)].villageId,
-                needsToPost = true
+                villageId = tolaList.value[getIndexOfTola(id)].villageId,
+                needsToPost = true,
+                status = tolaList.value[getIndexOfTola(id)].status,
+                createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
+                modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
-            val jsonTola = JsonArray()
-            jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
-            val response = apiInterface.editCohort(jsonTola)
-            if (response.status.equals(SUCCESS)) {
-                tolaDao.setNeedToPost(listOf(updatedTola.id), needsToPost = false)
-            }
+            val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
+            _tolaList.value = updatedTolaList
             if (isTransectWalkComplete.value)
                 isTransectWalkComplete.value = false
+
             withContext(Dispatchers.Main) {
-                tolaList.set(getIndexOfTola(id), updatedTola)
+                _tolaList.value = updatedTolaList
+            }
+            withContext(Dispatchers.IO){
+                val jsonTola = JsonArray()
+                jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
+                val response = apiInterface.editCohort(jsonTola)
+                if (response.status.equals(SUCCESS)){
+
+                }else{
+                    tolaDao.setNeedToPost(listOf(updatedTola.id), true)
+                    networkCallbackListener.onFailed()
+                }
             }
         }
     }
@@ -185,7 +223,7 @@ class TransectWalkViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                tolaList.addAll(tolaDao.getAllTolasForVillage(villageId))
+                _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
                 showLoader.value = false
             }catch (ex:Exception){
                 onError(tag = "TransectWalkViewModel", "Exception: ${ex.localizedMessage}")
@@ -204,7 +242,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun getIndexOfTola(id: Int): Int {
-        return tolaList.map { it.id }.indexOf(id)
+        return tolaList.value.map { it.id }.indexOf(id)
     }
 
     fun markTransectWalkComplete(villageId: Int, stepId: Int) {
@@ -226,9 +264,42 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun markTransectWalkIncomplete(stepId: Int,villageId:Int) {
+    fun markTransectWalkIncomplete(stepId: Int,villageId:Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val step=stepsListDao.getStepForVillage(villageId, stepId)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
+            val completeStepList=stepsListDao.getAllCompleteStepsForVillage(villageId)
+            completeStepList?.let {
+                it.forEach { newStep->
+                    if(newStep.orderNumber>step.orderNumber){
+                        stepsListDao.markStepAsCompleteOrInProgress(newStep.id, StepStatus.INPROGRESS.ordinal,villageId)
+                    }
+                }
+            }
+            completeStepList?.let {
+                val apiRequest = mutableListOf<EditWorkFlowRequest>()
+                it.forEach { newStep ->
+                    if (newStep.orderNumber > step.orderNumber) {
+                        if (newStep.workFlowId>0) {
+                            apiRequest.add(EditWorkFlowRequest(newStep.workFlowId, StepStatus.INPROGRESS.name))
+                        }
+                    }
+                }
+                if (apiRequest.isNotEmpty()) {
+                    launch {
+                        val response = apiInterface.editWorkFlow(apiRequest)
+                        if (response.status.equals(SUCCESS)) {
+                            response.data?.let { response->
+                                response.forEach { it ->
+                                    stepsListDao.updateWorkflowId(stepId, it.id, villageId, it.status)
+                                }
+                            }
+                        }else {
+                            networkCallbackListener.onFailed()
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -241,7 +312,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
@@ -256,15 +327,22 @@ class TransectWalkViewModel @Inject constructor(
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
                         }else{
+                            networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
 
             }catch (ex:Exception){
+                networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        showLoader.value = false
+        networkErrorMessage.value = error?.title.toString()
     }
 
 

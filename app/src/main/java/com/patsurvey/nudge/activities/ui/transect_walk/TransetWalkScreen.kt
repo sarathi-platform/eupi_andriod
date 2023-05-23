@@ -3,9 +3,11 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -14,12 +16,14 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -36,6 +40,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 
 @Composable
@@ -52,9 +57,12 @@ fun TransectWalkScreen(
         viewModel.isTransectWalkComplete(stepId,villageId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
-    val tolaList = viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }
+    val tolaList by viewModel.tolaList.collectAsState()
     val tolaToBeEdited: Tola by remember { mutableStateOf(Tola()) }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
+    var isTolaEdit = remember { mutableStateOf(false) }
+    var mEditedTola:TolaEntity?=null
+    val networkError = viewModel.networkErrorMessage.value
 
     val context = LocalContext.current
     val localDensity = LocalDensity.current
@@ -80,9 +88,16 @@ fun TransectWalkScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .pointerInput(true) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .then(modifier)
     ) {
         viewModel.setVillage(villageId)
+        if (networkError.isNotEmpty())
+            showCustomToast(context, SYNC_FAILED)
         val (bottomActionBox, mainBox) = createRefs()
 
         Box(modifier = Modifier
@@ -99,20 +114,20 @@ fun TransectWalkScreen(
             ) {
                 VillageDetailView(
                     villageName = viewModel.villageEntity.value?.name ?: "",
-                    voName = viewModel.villageEntity.value?.name ?: "",
+                    voName = viewModel.villageEntity.value?.federationName ?: "",
                     modifier = Modifier
                 )
+                val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = stringResource(
-                        R.string.tola_conirmation_text,
-                        tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                    message = stringResource( if (tolaCount < 2)
+                        R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
+                        tolaCount
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
 
                 LazyColumn(
-                    modifier =
-                    Modifier.padding(bottom = bottomPadding)) {
+                    modifier = Modifier.padding(bottom = bottomPadding)) {
 
                     if (viewModel.showLoader.value) {
                         item { CustomProgressBar(modifier = Modifier) }
@@ -142,7 +157,9 @@ fun TransectWalkScreen(
                                         )
                                     ) {
                                         ButtonOutline(
-                                            modifier = Modifier.weight(0.9f).height(45.dp),
+                                            modifier = Modifier
+                                                .weight(0.9f)
+                                                .height(45.dp),
                                         ) {
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
@@ -207,7 +224,14 @@ fun TransectWalkScreen(
                                                     location ?: LocationCoordinates()
                                                 )
                                             )
-                                            viewModel.markTransectWalkIncomplete(stepId,villageId)
+                                            viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
+                                                override fun onSuccess() {
+                                                }
+
+                                                override fun onFailed() {
+                                                    showCustomToast(context, SYNC_FAILED)
+                                                }
+                                            })
                                             showAddTolaBox = false
                                             focusManager.clearFocus()
                                             showCustomToast(context,context.getString(R.string.tola_successfully_added).replace("{TOLA_NAME}", name))
@@ -257,6 +281,7 @@ fun TransectWalkScreen(
                                             icon = Icons.Default.Add,
                                             modifier = Modifier.padding(top = 16.dp)
                                         ) {
+                                            isTolaEdit.value=false
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
                                         }
@@ -282,18 +307,47 @@ fun TransectWalkScreen(
                                         isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
                                             showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
-                                            viewModel.removeTola(tola.id)
-                                            viewModel.markTransectWalkIncomplete(stepId,villageId)
+                                            viewModel.removeTola(tola.id,  object : NetworkCallbackListener{
+                                                override fun onSuccess() {
+                                                }
+
+                                                override fun onFailed() {
+                                                    showCustomToast(context, SYNC_FAILED)
+                                                }
+                                            })
+                                            viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
+                                                override fun onSuccess() {
+                                                }
+
+                                                override fun onFailed() {
+                                                    showCustomToast(context, SYNC_FAILED)
+                                                }
+                                            })
                                             showAddTolaBox = false
+                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },
                                         saveButtonClicked = { newName, newLocation ->
-                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
-                                            else {
-                                                viewModel.updateTola(tola.id, newName, newLocation)
-                                                viewModel.markTransectWalkIncomplete(stepId,villageId)
-                                                showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
-                                                false
-                                            }
+                                           showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
+                                           else {
+                                               viewModel.updateTola(tola.id, newName, newLocation,  object : NetworkCallbackListener{
+                                                   override fun onSuccess() {
+                                                   }
+
+                                                   override fun onFailed() {
+                                                       showCustomToast(context, SYNC_FAILED)
+                                                   }
+                                               })
+                                               viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
+                                                   override fun onSuccess() {
+                                                   }
+
+                                                   override fun onFailed() {
+                                                       showCustomToast(context, SYNC_FAILED)
+                                                   }
+                                               })
+                                               showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
+                                               false
+                                           }
                                         }
                                     )
                                 }
@@ -304,8 +358,7 @@ fun TransectWalkScreen(
             }
         }
 
-        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value
-            /*&& viewModel.tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.any { it.needsToPost }*/) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
+        if (tolaList.isNotEmpty() && !viewModel.isTransectWalkComplete.value) { //Check if we have to mark transect walk in progress if after completion a new tola is added?
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -326,9 +379,25 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            viewModel.callWorkFlowAPI(villageId, stepId)
-                            viewModel.addTolasToNetwork()
+                            viewModel.addTolasToNetwork(villageId, object : NetworkCallbackListener{
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+
+                            })
+                            viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+                            })
                         }
+                        viewModel.updateTolaNeedTOPostList(villageId)
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(
                             "step_completion_screen/${
@@ -345,6 +414,8 @@ fun TransectWalkScreen(
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
+        } else {
+            bottomPadding = 0.dp
         }
     }
 }

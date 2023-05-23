@@ -3,10 +3,7 @@ package com.patsurvey.nudge.activities
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -90,7 +87,7 @@ fun <T : Any> DropDownWithTitle(
                 }
             }
         )
-        OutlinedTextField(
+        CustomOutlineTextField(
             value = selectedItem,
             onValueChange = {
 //                onItemSelected()
@@ -109,6 +106,7 @@ fun <T : Any> DropDownWithTitle(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(40.dp)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to

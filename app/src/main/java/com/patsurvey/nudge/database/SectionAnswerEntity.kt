@@ -8,10 +8,10 @@ import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
-    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "answerId")
     val answerId: Int?=1,
 
+    @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int,
 

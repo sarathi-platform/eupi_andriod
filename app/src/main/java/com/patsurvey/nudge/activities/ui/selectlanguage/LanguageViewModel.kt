@@ -2,13 +2,11 @@ package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.LanguageListDao
-import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
-import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,4 +36,8 @@ class LanguageViewModel @Inject constructor(
             }
         }
     }
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
+
 }

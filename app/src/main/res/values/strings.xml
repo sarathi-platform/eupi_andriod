@@ -11,6 +11,9 @@
 
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text">Didis</string>
+    <string name="poor_didi_item_text">Poor Didi</string>
+    <string name="medium_didi_item_text">Medium Didi</string>
+    <string name="rich_didi_item_text">Rich Didi</string>
     <string name="more_item_text">More</string>
 
     <string name="online_text">Online</string>
@@ -23,7 +26,7 @@
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get OTP</string>
     <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
-    <string name="transect_wale_title">Transact Walk</string>
+    <string name="transect_wale_title">Transect Walk</string>
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
     <string name="submit">Submit</string>
     <string name="resend_otp">Resend OTP</string>
@@ -45,7 +48,7 @@
     <string name="village_text">Village</string>
     <string name="vo_name">VO Name</string>
     <string name="total">Total</string>
-    <string name="participation_date_wealth_ranking">Participation Wealth Ranking Date</string>
+    <string name="participation_date_wealth_ranking">Date </string>
     <string name="add_didi">Add Didi</string>
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
@@ -79,14 +82,17 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">Total %1$s new Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
+    <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
     <string name="complete_social_walk_text">Complete Social Mapping</string>
     <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
-    <string name="didi_conirmation_text">Total %1$s new Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_plural">Total %1$s new Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_singular">Total %1$s new Didi has \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
 
@@ -105,7 +111,7 @@
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
     <string name="not_avaliable">Not Available</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">Start PAT</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
@@ -113,10 +119,20 @@
     <string name="option_yes">Yes</string>
     <string name="option_no">No</string>
     <string name="no_photo_available_text">No Photo Available</string>
+    <string name="enter_name_text">Enter Name</string>
+    <string name="enter_tola_name_message">Enter Tola Name</string>
 
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">Summary Result</string>
+    <string name="summary_text">Summary</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">Poor Didi Pending</item>
+        <item quantity="other">Poor Didis Pending</item>
     </plurals>
 
 </resources>

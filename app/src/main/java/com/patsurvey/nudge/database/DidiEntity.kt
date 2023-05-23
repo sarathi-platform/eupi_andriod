@@ -54,10 +54,19 @@ data class DidiEntity(
     @ColumnInfo(name = "localPath")
     var localPath: String = BLANK_STRING,
 
+    @ColumnInfo(name = "createdDate")
+    var createdDate: Long,
+
+    @ColumnInfo(name = "modifiedDate")
+    var modifiedDate: Long,
+
     @ColumnInfo(name = "needsToPostRanking")
     var needsToPostRanking: Boolean = true,
 
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")
-    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList()
-)
+    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
+
+    @ColumnInfo(name = "patSurveyProgress")
+    var patSurveyProgress: Int=0,
+    )

@@ -26,10 +26,8 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
-import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -46,7 +44,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
     Column(modifier = modifier
-        .fillMaxSize(),
+        .fillMaxSize()
+        .padding(top = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth()) }
@@ -163,7 +162,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
-                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel?.isDidiValid?.value ?: true else true,
+                isActive = didiViewModel?.isDidiValid?.value == true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -176,15 +175,32 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                        override fun onInsertionFailed() {
                            showCustomToast(context,context.getString(R.string.didi_already_exist))
                        }
+                   }, object : NetworkCallbackListener{
+                       override fun onSuccess() {
+                       }
+
+                       override fun onFailed() {
+                           showCustomToast(context, SYNC_FAILED)
+                       }
+
                    })
                 }
                 else{
-                    didiViewModel?.updateDidiIntoDatabase(editDidiId)
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId, object : NetworkCallbackListener{
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+
+                    })
                     showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
                     onNavigation()
                 }
 
             }
+            didiViewModel?.validateDidiDetails()
         }
 
 

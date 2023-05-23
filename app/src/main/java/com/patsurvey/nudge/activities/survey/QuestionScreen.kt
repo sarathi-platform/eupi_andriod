@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -12,6 +13,7 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
+import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -20,13 +22,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.AnswerOptionType
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_RADIO_BUTTON
 import kotlinx.coroutines.launch
 
@@ -56,13 +63,22 @@ fun QuestionScreen(
     }
     val context = LocalContext.current
 
+    BackHandler() {
+        navController.navigate(Graph.HOME) {
+            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                inclusive = true
+            }
+        }
+    }
+
     Column(
         modifier = modifier.padding(horizontal = 16.dp),
         verticalArrangement = Arrangement.SpaceBetween
     ) {
         VOAndVillageBoxView(
             prefRepo = viewModel.prefRepo,
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
                 .padding(top = 10.dp),
             startPadding = 0.dp
         )
@@ -80,13 +96,17 @@ fun QuestionScreen(
                 answeredCount = answerList.size,
                 partNumber = 1
             )
-            answeredQuestion.value=answerList.size
-            HorizontalPager(pageCount = questionList.size, state = pagerState, userScrollEnabled = false) {
+            answeredQuestion.value = answerList.size
+            HorizontalPager(
+                pageCount = questionList.size,
+                state = pagerState,
+                userScrollEnabled = false
+            ) {
                 Box(modifier = Modifier.fillMaxWidth()) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Image(
-                            painter = painterResource(id = R.drawable.home_icn),
+                            painter = painterResource(id = R.drawable.pat_sample_icon),
                             contentDescription = "home image",
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -98,54 +118,66 @@ fun QuestionScreen(
                         if (questionList[it].type == TYPE_RADIO_BUTTON)
                             YesNoQuestion(
                                 modifier = Modifier.fillMaxWidth(),
-                                questionNumber = (it+1),
+                                questionNumber = (it + 1),
                                 question = questionList[it].questionDisplay ?: "",
                                 answer = viewModel.isYesClick.value,
                                 answered = viewModel.isAnswered.value,
                                 onYesClicked = {
-                                    viewModel.isYesClick.value=true
-                                    viewModel.isAnswered.value=true
-                                    viewModel.setAnswerToQuestion(didiId,it,AnswerOptionType.OPTION_A.name,
-                                        context.getString(R.string.option_yes)){
+                                    viewModel.isYesClick.value = true
+                                    viewModel.isAnswered.value = true
+                                    viewModel.setAnswerToQuestion(
+                                        didiId, it, AnswerOptionType.OPTION_A.name,
+                                        context.getString(R.string.option_yes)
+                                    ) {
                                         Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                            if (answeredQuestion.value < (questionList.size-1)) {
+                                            if (answeredQuestion.value < (questionList.size - 1)) {
                                                 answeredQuestion.value = answeredQuestion.value + 1
                                                 val nextPageIndex = pagerState.currentPage + 1
-                                                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                                                viewModel.isYesClick.value=false
-                                                viewModel.isAnswered.value=false
-                                                viewModel.updateAnswerOptions(it+1,didiId)
-                                            } else if (answeredQuestion.value == (questionList.size-1)) {
-                                                navigateToSummeryPage(navController)
-                                            }else{
-                                                navigateToSummeryPage(navController)
+                                                coroutineScope.launch {
+                                                    pagerState.animateScrollToPage(
+                                                        nextPageIndex
+                                                    )
+                                                }
+                                                viewModel.isYesClick.value = false
+                                                viewModel.isAnswered.value = false
+                                                viewModel.updateAnswerOptions(it + 1, didiId)
+                                            } else if (answeredQuestion.value == (questionList.size - 1)) {
+                                                navigateToSummeryPage(navController, didiId,viewModel)
+                                            } else {
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             }
-                                        },500)
+                                        }, 500)
 
                                     }
 
 
                                 },
                                 onNoClicked = {
-                                    viewModel.isYesClick.value=false
-                                    viewModel.isAnswered.value=true
-                                    viewModel.setAnswerToQuestion(didiId,it,AnswerOptionType.OPTION_B.name,
-                                        context.getString(R.string.option_no)){
+                                    viewModel.isYesClick.value = false
+                                    viewModel.isAnswered.value = true
+                                    viewModel.setAnswerToQuestion(
+                                        didiId, it, AnswerOptionType.OPTION_B.name,
+                                        context.getString(R.string.option_no)
+                                    ) {
 
                                         Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                            if (answeredQuestion.value < (questionList.size-1)) {
+                                            if (answeredQuestion.value < (questionList.size - 1)) {
                                                 answeredQuestion.value = answeredQuestion.value + 1
                                                 val nextPageIndex = pagerState.currentPage + 1
-                                                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                                                viewModel.isYesClick.value=false
-                                                viewModel.isAnswered.value=false
-                                                viewModel.updateAnswerOptions(it+1,didiId)
-                                            } else if (answeredQuestion.value == (questionList.size-1)) {
-                                                navigateToSummeryPage(navController)
-                                            }else{
-                                                navigateToSummeryPage(navController)
+                                                coroutineScope.launch {
+                                                    pagerState.animateScrollToPage(
+                                                        nextPageIndex
+                                                    )
+                                                }
+                                                viewModel.isYesClick.value = false
+                                                viewModel.isAnswered.value = false
+                                                viewModel.updateAnswerOptions(it + 1, didiId)
+                                            } else if (answeredQuestion.value == (questionList.size - 1)) {
+                                                navigateToSummeryPage(navController, didiId,viewModel)
+                                            } else {
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             }
-                                        },500)
+                                        }, 500)
                                     }
                                 }
                             )
@@ -155,9 +187,10 @@ fun QuestionScreen(
             }
         }
 
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 16.dp),
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 16.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val prevButtonVisible = remember {
@@ -167,45 +200,54 @@ fun QuestionScreen(
             }
             val nextButtonVisible = remember {
                 derivedStateOf {
-                    (pagerState.currentPage < questionList.size-1  && pagerState.currentPage <answerList.size)// total pages are 5
+                    (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
                 }
             }
 
-            AnimatedVisibility (prevButtonVisible.value) {
+            AnimatedVisibility(prevButtonVisible.value) {
                 Button(
                     enabled = prevButtonVisible.value,
                     onClick = {
                         val prevPageIndex = pagerState.currentPage - 1
                         coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
-                        viewModel.updateAnswerOptions(prevPageIndex,didiId)
+                        viewModel.updateAnswerOptions(prevPageIndex, didiId)
                     },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = languageItemActiveBg
+                    ),
                 ) {
-                    Text(text = "Q${pagerState.currentPage}")
+                    Text(text = "Q${pagerState.currentPage}", color = textColorDark)
                 }
             }
             Spacer(modifier = Modifier.width(if (prevButtonVisible.value) 0.dp else ButtonDefaults.MinWidth))
-            AnimatedVisibility (nextButtonVisible.value) {
+            AnimatedVisibility(nextButtonVisible.value) {
                 Button(
                     enabled = nextButtonVisible.value,
                     onClick = {
                         val nextPageIndex = pagerState.currentPage + 1
                         coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                        viewModel.updateAnswerOptions(nextPageIndex,didiId)
+                        viewModel.updateAnswerOptions(nextPageIndex, didiId)
                     },
+                    colors = ButtonDefaults.buttonColors(
+                        backgroundColor = languageItemActiveBg
+                    ),
                 ) {
-                    Text(text = "Q${pagerState.currentPage+2}")
+                    Text(text = "Q${pagerState.currentPage + 2}", color = textColorDark)
                 }
             }
         }
     }
 }
 
-fun navigateToSummeryPage(navController: NavHostController) {
-    navController.navigate(Graph.HOME) {
-        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-            inclusive = true
-        }
-    }
+fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
+
+    quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)
+    navController.navigate("pat_section_one_summary_screen/$didiId")
+//    navController.navigate(Graph.HOME) {
+//        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+//            inclusive = true
+//        }
+//    }
 }
 
 /*

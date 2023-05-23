@@ -15,6 +15,7 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
+import com.patsurvey.nudge.utils.STEP_COMPLETION_DELAY
 import kotlinx.coroutines.delay
 import nl.dionsegijn.konfetti.compose.KonfettiView
 import nl.dionsegijn.konfetti.compose.OnParticleSystemUpdateListener
@@ -67,7 +68,7 @@ fun StepCompletionScreen(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 LaunchedEffect(key1 = true) {
-                    delay(SPLASH_SCREEN_DURATION)
+                    delay(STEP_COMPLETION_DELAY)
                     onNavigateBack()
                 }
                 Text(text = "🎉", fontSize = 50.sp)

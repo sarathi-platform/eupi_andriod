@@ -48,4 +48,7 @@ interface StepsListDao {
     @Query("UPDATE $STEPS_LIST_TABLE SET status = :status, workFlowId = :workflowId where id = :stepId AND villageId = :villageId")
     fun updateWorkflowId(stepId: Int, workflowId: Int,villageId:Int,status:String)
 
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId AND isComplete = 2 ORDER BY orderNumber ASC")
+    fun getAllCompleteStepsForVillage(villageId: Int): List<StepListEntity>
+
 }

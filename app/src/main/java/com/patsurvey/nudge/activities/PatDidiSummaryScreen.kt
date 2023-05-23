@@ -7,11 +7,10 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -48,16 +47,22 @@ import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun DidiSummaryScreen(
+fun PatDidiSummaryScreen(
     navController: NavHostController,
     modifier: Modifier,
     isOnline: Boolean = true,
     patDidiSummaryViewModel: PatDidiSummaryViewModel,
-    didiDetails: String,
+    didiId: Int,
     onNavigation: () -> Unit
 ) {
 
-    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
+//    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
+
+    LaunchedEffect(key1 = true) {
+        patDidiSummaryViewModel.getDidiDetails(didiId)
+    }
+
+    val didi = patDidiSummaryViewModel.didiEntity
 
     val localContext = LocalContext.current
 
@@ -90,10 +95,13 @@ fun DidiSummaryScreen(
                 CameraView(
                     modifier = Modifier.fillMaxSize(),
                     outputDirectory = patDidiSummaryViewModel.outputDirectory,
-                    didiEntity = didi,
+                    didiEntity = didi.value,
                     executor = patDidiSummaryViewModel.cameraExecutor,
                     onImageCaptured = { uri, photoPath ->
-                        handleImageCapture(uri = uri, photoPath, didi, patDidiSummaryViewModel)
+                        handleImageCapture(uri = uri, photoPath, context = localContext as Activity, didi.value, patDidiSummaryViewModel)
+                    },
+                    onCloseButtonClicked = {
+                                           patDidiSummaryViewModel.shouldShowCamera.value = false
                     },
                     onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
                 )
@@ -101,35 +109,40 @@ fun DidiSummaryScreen(
             AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {
                 Column(
                     modifier = modifier
-                        .fillMaxSize(),
+                        .fillMaxSize()
+                        .padding(top = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 
                     VOAndVillageBoxView(
                         prefRepo = patDidiSummaryViewModel.prefRepo,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier
-                    ) {
-                        MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
-                    }
-                    Column(
                         modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        startPadding = 0.dp
+                    )
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .verticalScroll(rememberScrollState())
+                            .padding(bottom = bottomPadding),
+                        verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                        ) {
+                            MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
+                        }
                         Row() {
 
                             Text(
-                                text = stringResource(id = R.string.house_number) + ":",
+                                text = stringResource(id = R.string.house_number) + ": ",
                                 style = didiDetailLabelStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
                             Text(
-                                text = didi.address,
+                                text = didi.value.address,
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
@@ -139,14 +152,14 @@ fun DidiSummaryScreen(
 
 
                             Text(
-                                text = stringResource(id = R.string.didi) + ":",
+                                text = stringResource(id = R.string.didi) + ": ",
                                 style = didiDetailLabelStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
 
                             Text(
-                                text = didi.name,
+                                text = didi.value.name,
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
@@ -154,14 +167,14 @@ fun DidiSummaryScreen(
                         }
                         Row {
                             Text(
-                                text = stringResource(id = R.string.dada) + ":",
+                                text = stringResource(id = R.string.dada) + ": ",
                                 style = didiDetailLabelStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
 
                             Text(
-                                text = didi.guardianName,
+                                text = didi.value.guardianName,
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
@@ -169,14 +182,14 @@ fun DidiSummaryScreen(
                         }
                         Row() {
                             Text(
-                                text = stringResource(id = R.string.tola) + ":",
+                                text = stringResource(id = R.string.tola) + ": ",
                                 style = didiDetailLabelStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
 
                             Text(
-                                text = didi.cohortName,
+                                text = didi.value.cohortName,
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
@@ -184,21 +197,21 @@ fun DidiSummaryScreen(
                         }
                         Row() {
                             Text(
-                                text = stringResource(id = R.string.caste) + ":",
+                                text = stringResource(id = R.string.caste) + ": ",
                                 style = didiDetailLabelStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
 
                             Text(
-                                text = didi.castName ?: BLANK_STRING,
+                                text = didi.value.castName ?: BLANK_STRING,
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                             )
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Text(
                                 text = "Is Didi part of SHG?",
                                 fontFamily = NotoSans,
@@ -216,9 +229,9 @@ fun DidiSummaryScreen(
                                         RoundedCornerShape(6.dp)
                                     )
                                     .background(white, shape = RoundedCornerShape(6.dp))
+                                    .padding(0.dp)
                             ) {
                                 Row() {
-
                                     TextButton(
                                         onClick = {
 
@@ -237,12 +250,12 @@ fun DidiSummaryScreen(
                                                 )
                                             )
                                     ) {
-                                        Text(text = "Yes")
+                                        Text(text = stringResource(id = R.string.option_yes))
                                     }
                                     Spacer(
                                         modifier = Modifier
                                             .width(2.dp)
-                                            .background(languageItemActiveBg)
+                                            .background(greyBorder)
                                     )
                                     TextButton(
                                         onClick = {
@@ -259,12 +272,12 @@ fun DidiSummaryScreen(
                                                 RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
                                             )
                                     ) {
-                                        Text(text = "No")
+                                        Text(text = stringResource(id = R.string.option_no))
                                     }
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             Image(painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
                                 contentDescription = null,
@@ -306,15 +319,18 @@ fun DidiSummaryScreen(
                                 }
                             }
                         }
-                        Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(
                                 modifier = Modifier.fillMaxWidth(),
                                 buttonTitle = "Retake Photo"
                             ) {
+                                patDidiSummaryViewModel.setCameraExecutor()
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
-                        } else {
+                        }
+                        else
+                        {
                             BlueButtonWithIcon(
                                 buttonText = "Take Photo",
                                 icon = Icons.Default.Add,
@@ -329,7 +345,7 @@ fun DidiSummaryScreen(
 
         }
 
-        if (patDidiSummaryViewModel.shouldShowPhoto.value) {
+        if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value) {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)
@@ -345,7 +361,7 @@ fun DidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = "Next",
                 positiveButtonOnClick = {
-
+                    navController.navigate("yes_no_question_screen/${didi.value.id}")
                 },
                 negativeButtonOnClick = {}
             )
@@ -354,12 +370,13 @@ fun DidiSummaryScreen(
     }
 }
 
-fun handleImageCapture(uri: Uri, photoPath: String, didiEntity: DidiEntity, viewModal: PatDidiSummaryViewModel) {
+fun handleImageCapture(uri: Uri, photoPath: String, context: Activity, didiEntity: DidiEntity, viewModal: PatDidiSummaryViewModel) {
     viewModal.shouldShowCamera.value = false
     viewModal.photoUri = uri
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
-    viewModal.saveFilePathInDb(photoPath, didiEntity = didiEntity)
+    val location = LocationUtil.getLocation(context) ?: LocationCoordinates(0.0, 0.0)
+    viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
 }
 
 fun requestCameraPermission(context: Activity, viewModal: PatDidiSummaryViewModel) {

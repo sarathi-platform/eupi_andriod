@@ -11,6 +11,9 @@
 
     <string name="progress_item_text">प्रगति</string>
     <string name="didis_item_text">दीदी</string>
+    <string name="poor_didi_item_text">गरीब दीदी</string>
+    <string name="medium_didi_item_text">माध्यम दीदी</string>
+    <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="more_item_text">अन्य</string>
 
     <string name="online_text">ऑनलाइन</string>
@@ -43,7 +46,7 @@
     <string name="enter_mobile_text">मोबाइल दर्ज करें</string>
     <string name="enter_otp_text">ओटीपी दर्ज करें</string>
     <string name="village_text">गाँव</string>
-    <string name="participation_date_wealth_ranking">भागीदारी दिनांक धन रैंकिंग</string>
+    <string name="participation_date_wealth_ranking">भदिनांक </string>
     <string name="vo_name">वीओ नाम</string>
     <string name="total">कुल</string>
     <string name="add_didi">दीदी जोड़ें</string>
@@ -72,20 +75,21 @@
 
     <string name="user_id_text">"पहचान: "</string>
     <string name="empty_tola_string">कोई टोला नहीं जोड़ा गया</string>
-    <string name="tola_conirmation_text">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_singular">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_plural">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">गाँव की सैर पूर्ण करे</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए गाँव की सैर पूरा हो गया है</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
     <string name="transect_walk_sub_text">%1$s टोलस हो गया</string>
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूर्ण करे</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
-    <string name="didi_conirmation_text">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_plural">कुल %1$s नए दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
-
-
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सर्वेक्षण </string>
     <string name="particaptory_wealth_ranking_text">भागीदारी धन रैंकिंग </string>
 
@@ -101,6 +105,10 @@
         <item quantity="one" tools:ignore="ImpliedQuantity">दीदी जुड़ीं</item>
         <item quantity="other">दीदियों जुड़ीं</item>
     </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
+        <item quantity="other">गरीब दीदीया पेंडिंग</item>
+    </plurals>
     <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
     <string name="update_didi">अपडेट दीदी</string>
     <string name="didi_has_been_successfully_added">दीदी को सफलतापूर्वक जोड़ा गया है</string>
@@ -110,7 +118,11 @@
     <string name="didi_has_been_successfully_updated">दीदी का विवरण सफलतापूर्वक अपडेट कर दिया गया है</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">PAT शुरू करें</string>
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="summary_text">सारांश</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>
@@ -119,6 +131,8 @@
     <string name="option_yes">हाँ</string>
     <string name="option_no">नहीं</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
+    <string name="enter_name_text">नाम दर्ज करें</string>
+    <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
 
 
 </resources>

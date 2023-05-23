@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name" translatable="false">The Nudge</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
@@ -12,6 +12,9 @@
 
     <string name="progress_item_text">आगे बढ़ल</string>
     <string name="didis_item_text">बड़हन</string>
+    <string name="poor_didi_item_text">गरीब दीदी</string>
+    <string name="medium_didi_item_text">माध्यम दीदी</string>
+    <string name="rich_didi_item_text">अमीर दीदी</string>
     <string name="more_item_text">अधिका</string>
 
     <string name="online_text">ऑनलाइन</string>
@@ -69,7 +72,7 @@
     <string name="particaptory_wealth_ranking_text">साझेदारी धन रैंकिंग</string>
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
     <string name="village_text">गांव</string>
-    <string name="participation_date_wealth_ranking">भागीदारी के तारीख धन रैंकिंग के बा</string>
+    <string name="participation_date_wealth_ranking">तारीख </string>
     <string name="vo_name">वीओ के नाम बा</string>
     <string name="total">कुल</string>
     <string name="otp_send_to_mobile_number_message">%1$ के मोबाइल नंबर पर भेजल गइल ओटीपी</string>
@@ -79,16 +82,18 @@
 
     <string name="user_id_text">"आईडी के बा: "</string>
     <string name="empty_tola_string">कवनो टोला ना जोड़ल गइल</string>
-
-    <string name="tola_conirmation_text">कुल 2 गो नया टोला \nसफलतापूर्वक जोड़ल गइल बा</string>
+    <string name="tola_conirmation_text_singular">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_plural">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">गाँव के भ्रमण पूरा करे के बा</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर गाँव के भ्रमण पूरा हो गइल बा</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
     <string name="transect_walk_sub_text">%1$s तोलास हो गइल बाा</string>
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूरा करे के बा</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} खातिर सामाजिक मानचित्रण पूरा हो गइल बा</string>
-    <string name="didi_conirmation_text">कुल %1$s गो नया टोला दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_plural">कुल %1$s गो नया दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
     <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
     <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
@@ -101,10 +106,18 @@
     <string name="didi">दीदी</string>
     <string name="section_number">खंड %d</string>
     <string name="pat_survey_title">PAT Survey</string>
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="result_summary">सारांश परिणाम</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="summary_text">सारांश</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी जोड़ली</item>
         <item quantity="other">दीदियों के जोड़ली</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
+        <item quantity="other">गरीब दीदीया पेंडिंग</item>
     </plurals>
     <string name="empty_didis_string">दीदियों को नहीं जोड़ा गया</string>
     <string name="update_didi">अपडेट दीदी</string>
@@ -112,7 +125,7 @@
     <string name="didi_has_been_successfully_updated">दीदी के सफलतापूर्वक अपडेट हो गइल बा</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">Start Pat</string>
+    <string name="start_pat">PAT शुरू करें</string>
 
     <string name="done_text">पूर्ण </string>
     <string name="yes_text">हाँ</string>
@@ -121,7 +134,10 @@
     <string name="option_yes">हाँ</string>
     <string name="option_no">नहीं</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
-
+    <string name="enter_name_text">नाम दर्ज करें</string>
+    <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
+    <string name="didi_conirmation_singular_text">नई दीदियों के पास कुल %1$s हैं</string>
+    <string name="didi_conirmation_plural_text">कुल 1 नई दीदी है</string>
 
 
 </resources>

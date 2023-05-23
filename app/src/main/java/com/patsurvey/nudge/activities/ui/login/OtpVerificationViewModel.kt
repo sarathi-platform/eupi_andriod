@@ -8,6 +8,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -29,6 +30,7 @@ class OtpVerificationViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
 
     fun validateOtp(onOtpResponse: (success: Boolean, message: String) -> Unit) {
         showLoader.value = true
@@ -86,22 +88,8 @@ class OtpVerificationViewModel @Inject constructor(
         }
     }
 
-    fun fetchUserDetails() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiInterface.userAndVillageListAPI(prefRepo.getAppLanguageId()?:1)
-            withContext(Dispatchers.IO) {
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        prefRepo.savePref(PREF_KEY_USER_NAME,it.username)
-                        prefRepo.savePref(PREF_KEY_NAME,it.name)
-                        prefRepo.savePref(PREF_KEY_EMAIL,it.email)
-                        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER,it.identityNumber)
-                        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE,it.profileImage)
-                        villageListDao.insertAll(it.villageList)
-                    }
-                }
-            }
-        }
+    override fun onServerError(error: ErrorModel?) {
+        showLoader.value = false
+        networkErrorMessage.value= error?.title.toString()
     }
-
 }

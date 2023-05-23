@@ -2,6 +2,7 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -43,7 +44,7 @@ interface ApiService {
 
     @POST("/write-api/cohort/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<String?>
+    suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<List<TolaApiResponse?>>
 
     @GET("/write-api/cohort/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
