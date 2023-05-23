@@ -166,4 +166,7 @@ dependencies {
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
     implementation "androidx.camera:camera-view:1.0.0-alpha27"
     implementation "io.coil-kt:coil-compose:1.4.0"
+
+    // Exoplayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.18.7'
 }
