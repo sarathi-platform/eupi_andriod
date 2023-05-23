@@ -138,7 +138,7 @@ fun SocialMappingDidiListScreen(
                 ModuleAddedSuccessView(
                     completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
-                        if (count < 2) R.string.tola_conirmation_text_singular else R.string.didi_conirmation_text_plural,
+                        if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
                         didiList.value.filter { it.needsToPost }.size
                     ),
                     modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
@@ -372,6 +372,11 @@ fun SocialMappingDidiListScreen(
                                     }
                                 })
                             }
+                            /*if ((context as MainActivity).isOnline.value ?: false) {
+                                didiViewModel.addDidisToNetwork()
+                                didiViewModel.callWorkFlowAPI(villageId, stepId)
+                            }*/
+                            didiViewModel.updateDidisNeedTOPostList(villageId)
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${
@@ -790,13 +795,15 @@ fun DidiItemCard(
                                     )
                                 ) languageItemActiveBg else blueDark
                             ),
-                        stringResource(id = R.string.start_pat),
+                        buttonTitle = if(didi.patSurveyProgress==0) stringResource(id = R.string.start_pat) else stringResource(id = R.string.continue_text),
                         true,
                         color = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
                         textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
                         iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
                     ) {
-                        navController.navigate("didi_pat_summary/${didi.id}")
+                        if(didi.patSurveyProgress==0) {
+                            navController.navigate("didi_pat_summary/${didi.id}")
+                        }
                     }
                 }
             }

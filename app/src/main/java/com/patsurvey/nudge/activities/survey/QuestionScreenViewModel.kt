@@ -12,6 +12,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -61,10 +62,17 @@ class QuestionScreenViewModel @Inject constructor(
     fun setDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didi = didiDao.getDidi(didiId)
+            updateDidiQuesSection(didiId,PatSurveyStatus.INPROGRESS.ordinal)
             withContext(Dispatchers.Main) {
                 didiName.value = didi.name
                 mDidiId.value=didi.id
             }
+        }
+    }
+
+    fun updateDidiQuesSection(didiId: Int,status:Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+             didiDao.updateQuesSectionStatus(didiId,status)
         }
     }
     fun setAnswerToQuestion(didiId: Int,questionIndex:Int,answerOption:String,answerValue:String,onAnswerSave: () ->Unit) {

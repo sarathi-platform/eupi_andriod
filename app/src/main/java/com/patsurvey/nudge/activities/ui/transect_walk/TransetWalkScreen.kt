@@ -89,8 +89,8 @@ fun TransectWalkScreen(
             .fillMaxSize()
             .background(Color.White)
             .pointerInput(true) {
-                detectTapGestures (onTap = {
-                   focusManager.clearFocus()
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
                 })
             }
             .then(modifier)
@@ -397,6 +397,7 @@ fun TransectWalkScreen(
                                 }
                             })
                         }
+                        viewModel.updateTolaNeedTOPostList(villageId)
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(
                             "step_completion_screen/${

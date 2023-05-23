@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.google.gson.Gson
 import com.patsurvey.nudge.R
@@ -32,6 +33,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.AnswerOptionType
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_RADIO_BUTTON
 import kotlinx.coroutines.launch
 
@@ -140,9 +142,9 @@ fun QuestionScreen(
                                                 viewModel.isAnswered.value = false
                                                 viewModel.updateAnswerOptions(it + 1, didiId)
                                             } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                                navigateToSummeryPage(navController, didiId)
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             } else {
-                                                navigateToSummeryPage(navController, didiId)
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             }
                                         }, 500)
 
@@ -171,9 +173,9 @@ fun QuestionScreen(
                                                 viewModel.isAnswered.value = false
                                                 viewModel.updateAnswerOptions(it + 1, didiId)
                                             } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                                navigateToSummeryPage(navController, didiId)
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             } else {
-                                                navigateToSummeryPage(navController, didiId)
+                                                navigateToSummeryPage(navController, didiId,viewModel)
                                             }
                                         }, 500)
                                     }
@@ -237,8 +239,9 @@ fun QuestionScreen(
     }
 }
 
-fun navigateToSummeryPage(navController: NavHostController, didiId: Int) {
+fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
 
+    quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)
     navController.navigate("pat_section_one_summary_screen/$didiId")
 //    navController.navigate(Graph.HOME) {
 //        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {

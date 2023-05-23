@@ -37,6 +37,8 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 
+    @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id =:id")
+    fun updateNeedToPost(id:Int, needsToPost: Boolean)
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :id")
     fun setNeedToPostRanking(id:Int, needsToPostRanking: Boolean)
 
@@ -60,4 +62,7 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
+
+    @Query("UPDATE $DIDI_TABLE SET patSurveyProgress = :patSurveyProgress WHERE id = :didiId")
+    fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
 }

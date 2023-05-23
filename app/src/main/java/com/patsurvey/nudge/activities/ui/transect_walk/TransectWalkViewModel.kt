@@ -105,6 +105,7 @@ class TransectWalkViewModel @Inject constructor(
                 val response = apiInterface.addCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
+                        networkCallbackListener.onSuccess()
                         response.data.forEach { tolaDataFromNetwork ->
                             tolaList.value.forEach { tola ->
                                 if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
@@ -114,17 +115,20 @@ class TransectWalkViewModel @Inject constructor(
                                 }
                             }
                         }
-                        updateTolaListWithIds(tolaList.value, villageId)
-                        tolaDao.setNeedToPost(
-                            tolaList.value.filter { it.needsToPost }.map { it.id },
-                            false
-                        )
-                    }
-                } else {
+                } }
+                else {
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
                 }
+            }
+        }
+    }
+    fun updateTolaNeedTOPostList(villageId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            updateTolaListWithIds(tolaList.value, villageId)
+            tolaList.value.forEach {
+                tolaDao.updateNeedToPost(it.id, false)
             }
         }
     }
