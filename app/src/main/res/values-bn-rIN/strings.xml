@@ -140,6 +140,14 @@
     <string name="enter_tola_name_message">Tola নাম লিখুন</string>
     <string name="option_yes">अत्यंत</string>
     <string name="option_no">না</string>
+    <string name="logout">প্রস্থান</string>
+    <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
+    <string name="sync_up">সিঙ্ক আপ</string>
+    <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: 24 দিন আগে</string>
+    <string name="profile">প্রোফাইল</string>
+    <string name="forms">ফর্ম</string>
+    <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
+    <string name="language_text">ভাষা</string>
 
 
 </resources>

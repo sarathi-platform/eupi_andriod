@@ -11,8 +11,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
@@ -58,8 +60,7 @@ fun NavHomeGraph(navController: NavHostController) {
         socialMappingNavGraph(navController = navController)
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
-//        didiPatSurveyNavGraph(navController = navController)
-//        patSectionOneSummaryNavGraph(navController = navController)
+        settingNavGraph(navController = navController)
     }
 }
 
@@ -407,33 +408,6 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     }
 }
 
-/*fun NavGraphBuilder.patSectionOneSummaryNavGraph(navController: NavHostController) {
-    navigation(
-        route = Graph.PAT_SCREENS,
-        startDestination = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
-        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
-            type = NavType.IntType
-        }, navArgument(ARG_STEP_ID) {
-            type = NavType.IntType
-        })
-    ) {
-        composable(
-            route = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
-            arguments = listOf(navArgument(ARG_DIDI_ID) {
-                type = NavType.IntType
-            })
-        ) {
-            PatSurvaySectionOneSummaryScreen(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize(),
-                patDidiSummaryViewModel = hiltViewModel(),
-                didiDetails = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
-            )
-        }
-    }
-}*/
-
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
@@ -444,4 +418,33 @@ sealed class PatScreens(val route: String) {
 
     object PAT_SECTION_ONE_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+}
+
+fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.SETTING_GRAPH,
+        startDestination = SettingScreens.SETTING_SCREEN.route
+    ) {
+        composable(route = SettingScreens.SETTING_SCREEN.route) {
+            SettingScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        composable(route = SettingScreens.LANGUAGE_SCREEN.route) {
+            LanguageScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = ARG_FROM_SETTING
+            )
+        }
+    }
+}
+
+sealed class SettingScreens(val route: String) {
+    object SETTING_SCREEN : SettingScreens(route = "setting_screen")
+    object LANGUAGE_SCREEN : SettingScreens(route = "language_screen")
 }
