@@ -136,8 +136,14 @@
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
     <string name="enter_name_text">नाम दर्ज करें</string>
     <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
-    <string name="didi_conirmation_singular_text">नई दीदियों के पास कुल %1$s हैं</string>
-    <string name="didi_conirmation_plural_text">कुल 1 नई दीदी है</string>
+    <string name="logout">लॉग आउट</string>
+    <string name="this_section_is_in_progress">ई खंड InProgress अवस्था में बा</string>
+    <string name="sync_up">सिंक अप कइल जाला</string>
+    <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: 24 दिन पहिले</string>
+    <string name="profile">प्रोफाइल</string>
+    <string name="forms">फार्म</string>
+    <string name="training_videos">प्रशिक्षण वीडियो</string>
+    <string name="language_text">भाषा</string>
 
 
 </resources>

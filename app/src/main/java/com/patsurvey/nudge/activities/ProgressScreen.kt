@@ -1,7 +1,5 @@
 package com.patsurvey.nudge.activities
 
-
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -33,7 +31,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.di.NetworkModule
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -117,7 +115,7 @@ fun ProgressScreen(
                 modifier = Modifier,
                 topBar = {
                     ProgressScreenTopBar() {
-
+                        stepsNavHostController.navigate(Graph.SETTING_GRAPH)
                     }
                 }
             ) { it ->
