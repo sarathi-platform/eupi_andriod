@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -10,10 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
@@ -22,19 +20,17 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.AnswerOptionType
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.TYPE_RADIO_BUTTON
+import com.patsurvey.nudge.utils.QuestionType
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
@@ -44,11 +40,13 @@ fun QuestionScreen(
     navController: NavHostController,
     modifier: Modifier,
     viewModel: QuestionScreenViewModel,
-    didiId: Int
+    didiId: Int,
+    sectionType:String
 ) {
 
     LaunchedEffect(key1 = true) {
         viewModel.setDidiDetails(didiId)
+        viewModel.sectionType.value=sectionType
         viewModel.getAllQuestionsAnswers(didiId)
     }
 
@@ -85,7 +83,6 @@ fun QuestionScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(rememberScrollState())
                 .weight(1f)
         ) {
 
@@ -96,14 +93,14 @@ fun QuestionScreen(
                 answeredCount = answerList.size,
                 partNumber = 1
             )
-            answeredQuestion.value = answerList.size
+//            answeredQuestion.value = answerList.size
             HorizontalPager(
                 pageCount = questionList.size,
                 state = pagerState,
-                userScrollEnabled = false
+                userScrollEnabled = true
             ) {
-                Box(modifier = Modifier.fillMaxWidth()) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
+                viewModel.findQuestionOptionList(it)
+                Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Image(
                             painter = painterResource(id = R.drawable.pat_sample_icon),
@@ -115,75 +112,73 @@ fun QuestionScreen(
                             colorFilter = ColorFilter.tint(textColorDark)
                         )
                         Spacer(modifier = Modifier.height(10.dp))
-                        if (questionList[it].type == TYPE_RADIO_BUTTON)
-                            YesNoQuestion(
-                                modifier = Modifier.fillMaxWidth(),
-                                questionNumber = (it + 1),
-                                question = questionList[it].questionDisplay ?: "",
-                                answer = viewModel.isYesClick.value,
-                                answered = viewModel.isAnswered.value,
-                                onYesClicked = {
-                                    viewModel.isYesClick.value = true
-                                    viewModel.isAnswered.value = true
-                                    viewModel.setAnswerToQuestion(
-                                        didiId, it, AnswerOptionType.OPTION_A.name,
-                                        context.getString(R.string.option_yes)
-                                    ) {
-                                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                            if (answeredQuestion.value < (questionList.size - 1)) {
-                                                answeredQuestion.value = answeredQuestion.value + 1
-                                                val nextPageIndex = pagerState.currentPage + 1
-                                                coroutineScope.launch {
-                                                    pagerState.animateScrollToPage(
-                                                        nextPageIndex
-                                                    )
-                                                }
-                                                viewModel.isYesClick.value = false
-                                                viewModel.isAnswered.value = false
-                                                viewModel.updateAnswerOptions(it + 1, didiId)
-                                            } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                                navigateToSummeryPage(navController, didiId,viewModel)
-                                            } else {
-                                                navigateToSummeryPage(navController, didiId,viewModel)
+                        if (questionList[it].type == QuestionType.RadioButton.name) {
+                            RadioButtonTypeQuestion(
+                                modifier = modifier,  questionNumber = (it + 1),
+                                question = questionList[it].questionDisplay ?: "",viewModel.optionList.value){selectedIndex->
+                                viewModel.setAnswerToQuestion(
+                                    didiId, viewModel.optionList.value[selectedIndex].id,questionList[selectedIndex].questionId ?:0,
+                                    BLANK_STRING,viewModel.optionList.value[selectedIndex].optionText){
+                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                            Log.d("TAG", "QuestionScreen: If Section")
+                                            answeredQuestion.value = answeredQuestion.value + 1
+                                            val nextPageIndex = pagerState.currentPage + 1
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(
+                                                    nextPageIndex
+                                                )
                                             }
-                                        }, 500)
+                                        } else {
+                                            Log.d("TAG", "QuestionScreen: else Section")
 
-                                    }
-
-
-                                },
-                                onNoClicked = {
-                                    viewModel.isYesClick.value = false
-                                    viewModel.isAnswered.value = true
-                                    viewModel.setAnswerToQuestion(
-                                        didiId, it, AnswerOptionType.OPTION_B.name,
-                                        context.getString(R.string.option_no)
-                                    ) {
-
-                                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                            if (answeredQuestion.value < (questionList.size - 1)) {
-                                                answeredQuestion.value = answeredQuestion.value + 1
-                                                val nextPageIndex = pagerState.currentPage + 1
-                                                coroutineScope.launch {
-                                                    pagerState.animateScrollToPage(
-                                                        nextPageIndex
-                                                    )
-                                                }
-                                                viewModel.isYesClick.value = false
-                                                viewModel.isAnswered.value = false
-                                                viewModel.updateAnswerOptions(it + 1, didiId)
-                                            } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                                navigateToSummeryPage(navController, didiId,viewModel)
-                                            } else {
-                                                navigateToSummeryPage(navController, didiId,viewModel)
-                                            }
-                                        }, 500)
-                                    }
+                                            navigateToSummeryPage(
+                                                navController,
+                                                didiId,
+                                                viewModel
+                                            )
+                                        }
+                                    }, 500)
                                 }
-                            )
+                            }
+                        }else if(questionList[it].type == QuestionType.List.name){
+                            ListTypeQuestion(
+                                modifier = modifier,  questionNumber = (it + 1),
+                                question = questionList[it].questionDisplay ?: "",viewModel.optionList.value){selectedIndex->
+                                viewModel.setAnswerToQuestion(
+                                    didiId, viewModel.optionList.value[selectedIndex].id,questionList[selectedIndex].questionId ?:0,
+                                    BLANK_STRING,viewModel.optionList.value[selectedIndex].optionText){
+                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                            answeredQuestion.value = answeredQuestion.value + 1
+                                            val nextPageIndex = pagerState.currentPage + 1
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(
+                                                    nextPageIndex
+                                                )
+                                            }
+                                        } else if (answeredQuestion.value == (questionList.size - 1)) {
+                                            navigateToSummeryPage(
+                                                navController,
+                                                didiId,
+                                                viewModel
+                                            )
+                                        } else {
+                                            navigateToSummeryPage(
+                                                navController,
+                                                didiId,
+                                                viewModel
+                                            )
+                                        }
+                                    }, 500)
+                                }
+                            }
+                        }else if(questionList[it].type == QuestionType.Numeric_Field.name){
+                            NumericFieldTypeQuestion(
+                                modifier = modifier,  questionNumber = (it + 1),
+                                question = questionList[it].questionDisplay ?: "",viewModel.optionList.value)
+                        }
                     }
-
-                }
             }
         }
 
@@ -238,7 +233,6 @@ fun QuestionScreen(
         }
     }
 }
-
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
 
     quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)
@@ -250,50 +244,3 @@ fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesView
 //    }
 }
 
-/*
-@Preview(showBackground = true)
-@Composable
-fun YesNoQuestionScreenPreview() {
-    val surveyHeader = YesNoQuestionViewModel.SurveyHeaderUiState(
-        didiDetailsModel = DidiDetailsModel(
-            1,
-            "Urmila Devi",
-            "Sundar Pahar",
-            "Sundar Pahar",
-            "Kahar",
-            "112",
-            "Rajesh"
-        ),
-        "PAT Survey",
-        questionCount = 6,
-        answeredCount = 1,
-        partNumber = 1
-    )
-
-
-    YesNoQuestionScreen(
-        navController = rememberNavController(),
-        modifier = Modifier.fillMaxSize(),
-        surveyHeaderUiState = YesNoQuestionViewModel.SurveyHeaderUiState(
-            surveyHeader.didiDetailsModel,
-            surveyHeader.surveyTitle,
-            surveyHeader.questionCount,
-            surveyHeader.answeredCount,
-            surveyHeader.partNumber
-        ),
-        questionAnswerUiState = YesNoQuestionViewModel.QuestionAnswerUiState(
-            question = "Is anyone in the family in government service?",
-            questionNumber = 1,
-            answer = false,
-            answered = false
-        ),
-        nextPreviousUiState = YesNoQuestionViewModel.NextPreviousUiState(
-            nextVisible = true,
-            nextText = "Q3",
-            previousText = "Q1",
-            previousVisible = true
-        ),
-        onEvent = {}
-
-    )
-}*/

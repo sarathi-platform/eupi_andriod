@@ -30,6 +30,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -47,7 +48,10 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ANSWER_TYPE_YES
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -62,7 +66,7 @@ fun PatSurvaySectionSummaryScreen(
 
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
-        patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
+//        patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
 
     val configuration = LocalConfiguration.current
@@ -139,7 +143,7 @@ fun PatSurvaySectionSummaryScreen(
                         PatSummeryScreenDidiDetailBox(
                             modifier = Modifier,
                             screenHeight = screenHeight,
-                            didi = didi
+                            didi = didi.value
                         )
                     }
                     item {
@@ -162,16 +166,11 @@ fun PatSurvaySectionSummaryScreen(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(10.dp)
-                        )
-                    }
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+
+                        Log.d("TAG", "PatSurvaySectionSummaryScreen: ${Gson().toJson(question)} :: Answer ${Gson().toJson(answer)}")
+//                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
                     }
                 }
             }
@@ -192,7 +191,8 @@ fun PatSurvaySectionSummaryScreen(
             positiveButtonText = stringResource(id = R.string.complete_section_1_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
+//                navController.popBackStack(PatScreens.YES_NO_QUESTION_SCREEN.route, inclusive = false)
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
@@ -203,7 +203,7 @@ fun PatSurvaySectionSummaryScreen(
 fun PatSummeryScreenDidiDetailBox(
     modifier: Modifier = Modifier,
     screenHeight: Int,
-    didi: State<DidiEntity>
+    didi: DidiEntity
 ) {
     Box(
         modifier = Modifier
@@ -227,10 +227,10 @@ fun PatSummeryScreenDidiDetailBox(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
-                painter = if (didi.value.localPath.isNotEmpty()) rememberImagePainter(
+                painter = if (didi.localPath.isNotEmpty()) rememberImagePainter(
                     Uri.fromFile(
                         File(
-                            didi.value.localPath.split("|")[0]
+                            didi.localPath.split("|")[0]
                         )
                     )
                 ) else painterResource(id = R.drawable.didi_icon),
@@ -250,7 +250,7 @@ fun PatSummeryScreenDidiDetailBox(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = didi.value.name,
+                text = didi.name,
                 color = textColorDark,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.Medium,
@@ -267,7 +267,7 @@ fun PatSummeryScreenDidiDetailBox(
                     tint = Color.Black
                 )
                 Text(
-                    text = didi.value.cohortName,
+                    text = didi.cohortName,
                     style = TextStyle(
                         color = textColorDark,
                         fontSize = 14.sp,
@@ -279,6 +279,17 @@ fun PatSummeryScreenDidiDetailBox(
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PatSummeryScreenDidiDetailBoxPreview(){
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
+   val didi=DidiEntity(0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
+       castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
+       wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyProgress = 0)
+    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
 }
 
 @Composable

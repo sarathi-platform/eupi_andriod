@@ -19,8 +19,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
-    @Query("Update $ANSWER_TABLE set answerOption = :answerOption, answerValue = :answerValue where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int, questionId: Int,actionType:String,answerOption:String,answerValue:String)
+    @Query("Update $ANSWER_TABLE set answerOption = :answerOption, answerValue = :answerValue, optionId = :optionId where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,answerOption:String,answerValue:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)

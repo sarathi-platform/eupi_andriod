@@ -8,8 +8,8 @@ import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
-    @ColumnInfo(name = "answerId")
-    val answerId: Int?=1,
+    @ColumnInfo(name = "optionId")
+    val optionId: Int?=1,
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
@@ -31,7 +31,8 @@ data class SectionAnswerEntity(
     var answerOption : String,
 
     @ColumnInfo(name = "answerValue")
-    var answerValue : String
+    var answerValue : String,
+
 
 
 )

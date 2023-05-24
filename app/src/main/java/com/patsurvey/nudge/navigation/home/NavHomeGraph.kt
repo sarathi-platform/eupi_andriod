@@ -373,6 +373,7 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
             ) {
+//                navController.popBackStack()
                 navController.popBackStack()
             }
         }
@@ -381,13 +382,16 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
             route = PatScreens.YES_NO_QUESTION_SCREEN.route,
             listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
             })
         ) {
             QuestionScreen(
                 navController = navController,
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
-                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
             )
         }
         composable(
@@ -438,7 +442,7 @@ sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
 
-    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}")
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
     object STEP_COMPLETION_SCREEN :
         PatScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 

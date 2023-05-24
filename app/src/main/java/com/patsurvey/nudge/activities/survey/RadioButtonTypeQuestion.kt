@@ -1,16 +1,16 @@
 package com.patsurvey.nudge.activities.survey
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -29,11 +30,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
 
 @Composable
-fun ListTypeQuestion(
+fun RadioButtonTypeQuestion(
     modifier: Modifier,
     questionNumber: Int,
     question: String,
@@ -41,7 +43,13 @@ fun ListTypeQuestion(
     onAnswerSelection: (Int) -> Unit
 ) {
     var selectedIndex by remember { mutableStateOf(-1) }
+    /*button width will be the half size of device width, after remove padding(start, end, between)*/
+    val configuration = LocalConfiguration.current
+    val screenWidth = configuration.screenWidthDp.dp
+    val buttonWidth = (screenWidth - ((16.dp) * 3)) / 2
+
     Column(modifier = modifier) {
+
         Text(
             modifier = Modifier
                 .border(
@@ -77,38 +85,29 @@ fun ListTypeQuestion(
                 .fillMaxWidth()
                 .padding(top = 20.dp)
         ) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()){
+            LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
+             state = rememberLazyGridState()){
                 itemsIndexed(optionList){ index, option ->
-                  OptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
-                      selectedIndex=it
-                      onAnswerSelection(index)
-                  }
+                    RadioButtonOptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
+                        selectedIndex=it
+                        onAnswerSelection(index)
+                    }
                 }
             }
-
         }
 
     }
 }
 
+
 @Preview(showBackground = true)
 @Composable
-fun ListTypeQuestionPreview() {
-    val optionList= mutableListOf<AnswerOptionModel>()
-    for (i in 1..5){
-        optionList.add(AnswerOptionModel(i,"Option Value $i",false))
-    }
-    ListTypeQuestion(
-       modifier = Modifier.padding(16.dp),
-        questionNumber = 1,
-        question = "This is a sample text. This is an example of adding border to text.",
-        optionList,
-        onAnswerSelection = {}
-    )
+fun RadioButtonOptionCardPreview(){
+    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, onOptionSelected = {})
 }
 
 @Composable
-fun OptionCard(
+fun RadioButtonOptionCard(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     index: Int,
@@ -118,25 +117,32 @@ fun OptionCard(
     Column(modifier = Modifier
         .fillMaxWidth()
         .clip(RoundedCornerShape(6.dp))
-        .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
-        .clickable{
-            onOptionSelected(index)
-        }
         .padding(horizontal = 10.dp)
         .then(modifier)) {
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.TopStart,
         ) {
-            Row(
-                Modifier.padding(10.dp),
-                verticalAlignment = Alignment.CenterVertically
+            ButtonOutlineWithTopIcon(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(110.dp),
+                buttonTitle = buttonTitle,
+                textColor = if(selectedIndex == index) Color.White else blueDark,
+                buttonBackgroundColor = if(selectedIndex == index) blueDark else Color.White,
+                buttonBorderColor = if (selectedIndex == index) {
+                    blueDark
+                } else {
+                    lightGray2
+                },
+                iconTintColor = if (selectedIndex == index) {
+                    white
+                } else {
+                    greenActiveIcon
+                },
+                icon = Icons.Default.Check
             ) {
-                Text(
-                    text = buttonTitle,
-                    color = if(selectedIndex == index) Color.White else Color.Black,
-                    style = quesOptionTextStyle
-                )
+                onOptionSelected(index)
             }
         }
         Spacer(modifier = Modifier
@@ -145,9 +151,18 @@ fun OptionCard(
     }
 
 }
-
 @Preview(showBackground = true)
 @Composable
-fun OptionCardPreview(){
-    OptionCard(modifier = Modifier,"Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
+fun RadioButtonTypeQuestionPreview() {
+    val optionList= mutableListOf<AnswerOptionModel>()
+    for (i in 1..5){
+        optionList.add(AnswerOptionModel(i,"Option Value $i",false))
+    }
+    RadioButtonTypeQuestion(
+       modifier = Modifier.padding(16.dp),
+        questionNumber = 1,
+        question = "This is a sample text. This is an example of adding border to text.",
+        optionList,
+        onAnswerSelection = {}
+    )
 }

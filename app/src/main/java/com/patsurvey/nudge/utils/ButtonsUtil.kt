@@ -4,15 +4,22 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,13 +33,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
 @Composable
 fun BlueButton(
@@ -981,7 +993,7 @@ fun OutlineButtonCustom(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(white, shape = RoundedCornerShape(6.dp))
-            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp) )
+            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -1017,3 +1029,117 @@ fun OutlineButtonCustomPreview(){
     }
 }
 
+@Composable
+fun IncrementDecrementView(modifier: Modifier,optionText:String,
+                           currentValue: Int=0,
+                           onDecrementClick: ()->Unit,
+                           onIncrementClick: ()->Unit,
+                           onValueChange: (Int) -> Unit){
+    var currentCount by remember {
+        mutableStateOf(currentValue.toString())
+    }
+    Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+
+            Text(
+                text = optionText,
+                color = Color.Black,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
+        }
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .background(Color.White)
+        .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)){
+
+        Row(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                ,contentAlignment = Alignment.Center){
+                Text(
+                    text = "-",
+                    color = Color.Black,
+                    fontFamily = NotoSans,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            onDecrementClick()
+                        }
+                )
+            }
+           Spacer(modifier = Modifier
+               .width(1.dp)
+               .fillMaxHeight()
+               .background(Color.Black))
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(2f)
+                ,contentAlignment = Alignment.TopCenter){
+                TextField(
+                    modifier = Modifier
+                        .background(Color.Transparent),
+                    singleLine = true,
+                    value = currentCount,
+                    textStyle = TextStyle(
+                        fontSize = 18.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Medium,
+                        textAlign = TextAlign.Center
+                    ),
+                    onValueChange={
+                                  onValueChange(it.toInt())
+                    },
+                    colors = TextFieldDefaults.textFieldColors(
+                        backgroundColor = Color.Transparent,
+                        textColor = blueDark,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        disabledIndicatorColor = Color.Transparent,
+                    ),
+                    keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    ),
+                )
+            }
+            Spacer(modifier = Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(Color.Black))
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
+                contentAlignment = Alignment.Center){
+                Text(
+                    text = "+",
+                    color = Color.Black,
+                    fontFamily = NotoSans,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.clickable {
+                        onIncrementClick()
+                    }
+                )
+            }
+        }
+        }
+
+    }
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun IncrementDecrementViewPreview(){
+    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
+}

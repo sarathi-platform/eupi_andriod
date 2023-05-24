@@ -15,6 +15,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,16 +31,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
+import com.patsurvey.nudge.utils.IncrementDecrementView
 
 
 @Composable
-fun ListTypeQuestion(
+fun NumericFieldTypeQuestion(
     modifier: Modifier,
     questionNumber: Int,
     question: String,
     optionList: List<AnswerOptionModel>,
-    onAnswerSelection: (Int) -> Unit
 ) {
+    var buttonValue by rememberSaveable { mutableStateOf(0) }
     var selectedIndex by remember { mutableStateOf(-1) }
     Column(modifier = modifier) {
         Text(
@@ -79,10 +81,16 @@ fun ListTypeQuestion(
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()){
                 itemsIndexed(optionList){ index, option ->
-                  OptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
-                      selectedIndex=it
-                      onAnswerSelection(index)
-                  }
+                    IncrementDecrementView(modifier = Modifier,option.optionText,0,
+                        onDecrementClick = {
+
+                    },
+                    onIncrementClick = {
+
+                    },
+                    onValueChange = {
+
+                    })
                 }
             }
 
@@ -93,22 +101,16 @@ fun ListTypeQuestion(
 
 @Preview(showBackground = true)
 @Composable
-fun ListTypeQuestionPreview() {
+fun NumericFieldTypeQuestionPreview() {
     val optionList= mutableListOf<AnswerOptionModel>()
     for (i in 1..5){
         optionList.add(AnswerOptionModel(i,"Option Value $i",false))
     }
-    ListTypeQuestion(
-       modifier = Modifier.padding(16.dp),
-        questionNumber = 1,
-        question = "This is a sample text. This is an example of adding border to text.",
-        optionList,
-        onAnswerSelection = {}
-    )
+
 }
 
 @Composable
-fun OptionCard(
+fun NumericOptionCard(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     index: Int,
@@ -148,6 +150,7 @@ fun OptionCard(
 
 @Preview(showBackground = true)
 @Composable
-fun OptionCardPreview(){
-    OptionCard(modifier = Modifier,"Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
+fun NumericOptionCardPreview(){
+    NumericOptionCard(modifier = Modifier,"Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
 }
+
