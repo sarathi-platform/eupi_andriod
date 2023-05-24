@@ -52,7 +52,7 @@ class QuestionScreenViewModel @Inject constructor(
 
    fun getAllQuestionsAnswers(didiId: Int) {
        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-           val questionList = questionListDao.getQuestionForType(sectionType.value)
+           val questionList = questionListDao.getQuestionForType(sectionType.value,prefRepo.getAppLanguageId()?:2)
            val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
            withContext(Dispatchers.IO) {
                try {
@@ -73,7 +73,7 @@ class QuestionScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 try {
                     questionList.value[questionIndex].options?.forEach {
-                        updatedList.add(AnswerOptionModel(it?.optionId?:0,it?.display?: BLANK_STRING,false))
+                        updatedList.add(AnswerOptionModel(it?.optionId?:0,it?.display?: BLANK_STRING,false,it?.weight,it?.summary,it?.optionValue))
                     }
                     _optionList.emit(updatedList)
                 }catch (ex:Exception){
@@ -100,29 +100,27 @@ class QuestionScreenViewModel @Inject constructor(
              didiDao.updateQuesSectionStatus(didiId,status)
         }
     }
-    fun setAnswerToQuestion(didiId: Int,optionId:Int,questionIndex:Int,answerOption:String,answerValue:String,onAnswerSave: () ->Unit) {
+    fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,onAnswerSave: () ->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
             _answerList.emit(localAnswerList)
             withContext(Dispatchers.IO) {
-                if(questionList.value.size>questionIndex){
                     val alreadyAnsweredModel= answerDao.isAlreadyAnswered(didiId = didiId,
-                        questionId =  questionList.value[questionIndex].questionId?:0, actionType = sectionType.value)
-
-                    if(alreadyAnsweredModel!=null){
-                        answerDao.updateAnswer(didiId = didiId, questionId = questionList.value[questionIndex].questionId?:0,
+                        questionId =  questionId, actionType = sectionType.value)
+                if(alreadyAnsweredModel!=null){
+                        answerDao.updateAnswer(didiId = didiId, questionId = questionId,
                             actionType = sectionType.value,
-                        answerValue = answerValue,
-                        answerOption = answerOption, optionId = optionId)
+                        answerValue = answerOptionModel.optionText,
+                        optionValue = answerOptionModel.optionValue?:0, optionId = answerOptionModel.id, weight = answerOptionModel.weight?:0)
                         withContext(Dispatchers.Main){
                             onAnswerSave()
                         }
                     }else{
-                        answerDao.insertAnswer(SectionAnswerEntity(id = 0, optionId = optionId,
+                        answerDao.insertAnswer(SectionAnswerEntity(id = 0, optionId = answerOptionModel.id,
                             didiId = didiId,
-                            answerOption = answerOption,
-                            answerValue = answerValue,
-                            questionId = questionList.value[questionIndex].questionId?:0,
+                            optionValue = answerOptionModel.optionValue?:0,
+                            answerValue = answerOptionModel.optionText,
+                            questionId = questionId,
                             actionType = sectionType.value,
                             type = QuestionType.RadioButton.name))
                         withContext(Dispatchers.Main){
@@ -130,7 +128,7 @@ class QuestionScreenViewModel @Inject constructor(
                         }
                     }
 
-            }
+//            }
         }
     }
     }
@@ -146,17 +144,6 @@ class QuestionScreenViewModel @Inject constructor(
                             questionId = it,
                             sectionType.value)
                     }
-
-                    withContext(Dispatchers.Main){
-                        if(alreadyAnsweredModel!=null){
-                            isYesClick.value=alreadyAnsweredModel.answerValue.equals("Yes",true)
-                            isAnswered.value=true
-                        }else{
-                            isYesClick.value=false
-                            isAnswered.value=false
-                        }
-                    }
-
                 }
             }
         }

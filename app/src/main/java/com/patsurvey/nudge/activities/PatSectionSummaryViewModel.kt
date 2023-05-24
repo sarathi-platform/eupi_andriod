@@ -55,7 +55,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
            val localDidiDetails=didiDao.getDidi(didiId)
-            val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION)
+            val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
             withContext(Dispatchers.IO){
                 _didiEntity.emit(localDidiDetails)
@@ -67,7 +67,7 @@ class PatSectionSummaryViewModel @Inject constructor(
 
     fun getQuestionAnswerListForSectionOne(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION)
+            val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
             withContext(Dispatchers.IO) {
                 try {

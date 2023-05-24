@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -29,6 +30,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
@@ -39,14 +41,11 @@ fun RadioButtonTypeQuestion(
     modifier: Modifier,
     questionNumber: Int,
     question: String,
+    selectedOptionIndex: Int=-1,
     optionList: List<AnswerOptionModel>,
     onAnswerSelection: (Int) -> Unit
 ) {
-    var selectedIndex by remember { mutableStateOf(-1) }
-    /*button width will be the half size of device width, after remove padding(start, end, between)*/
-    val configuration = LocalConfiguration.current
-    val screenWidth = configuration.screenWidthDp.dp
-    val buttonWidth = (screenWidth - ((16.dp) * 3)) / 2
+    var selectedIndex by remember { mutableStateOf(selectedOptionIndex) }
 
     Column(modifier = modifier) {
 
@@ -161,8 +160,9 @@ fun RadioButtonTypeQuestionPreview() {
     RadioButtonTypeQuestion(
        modifier = Modifier.padding(16.dp),
         questionNumber = 1,
+        selectedOptionIndex = -1,
         question = "This is a sample text. This is an example of adding border to text.",
-        optionList,
+        optionList = optionList,
         onAnswerSelection = {}
     )
 }

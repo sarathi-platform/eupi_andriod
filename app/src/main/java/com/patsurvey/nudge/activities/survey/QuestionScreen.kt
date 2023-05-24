@@ -25,6 +25,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.AnswerOptionType
@@ -93,7 +94,7 @@ fun QuestionScreen(
                 answeredCount = answerList.size,
                 partNumber = 1
             )
-//            answeredQuestion.value = answerList.size
+            answeredQuestion.value = answerList.size
             HorizontalPager(
                 pageCount = questionList.size,
                 state = pagerState,
@@ -113,15 +114,20 @@ fun QuestionScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         if (questionList[it].type == QuestionType.RadioButton.name) {
-                            RadioButtonTypeQuestion(
+                            var sortedOptionList=viewModel.optionList.value.sortedBy { it.optionValue}
+                            var selectedOption=-1
+                            answerList.forEach { answer->
+                             if(questionList[it].questionId== answer.questionId){
+                                 selectedOption= answer.optionValue ?: -1
+                             }
+                            }
+                                RadioButtonTypeQuestion(
                                 modifier = modifier,  questionNumber = (it + 1),
-                                question = questionList[it].questionDisplay ?: "",viewModel.optionList.value){selectedIndex->
+                                question = questionList[it].questionDisplay ?: "",selectedOption,sortedOptionList){selectedIndex->
                                 viewModel.setAnswerToQuestion(
-                                    didiId, viewModel.optionList.value[selectedIndex].id,questionList[selectedIndex].questionId ?:0,
-                                    BLANK_STRING,viewModel.optionList.value[selectedIndex].optionText){
+                                    didiId, questionList[it].questionId ?:0,sortedOptionList[selectedIndex]){
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size - 1)) {
-                                            Log.d("TAG", "QuestionScreen: If Section")
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             coroutineScope.launch {
@@ -130,8 +136,6 @@ fun QuestionScreen(
                                                 )
                                             }
                                         } else {
-                                            Log.d("TAG", "QuestionScreen: else Section")
-
                                             navigateToSummeryPage(
                                                 navController,
                                                 didiId,
@@ -146,8 +150,7 @@ fun QuestionScreen(
                                 modifier = modifier,  questionNumber = (it + 1),
                                 question = questionList[it].questionDisplay ?: "",viewModel.optionList.value){selectedIndex->
                                 viewModel.setAnswerToQuestion(
-                                    didiId, viewModel.optionList.value[selectedIndex].id,questionList[selectedIndex].questionId ?:0,
-                                    BLANK_STRING,viewModel.optionList.value[selectedIndex].optionText){
+                                    didiId, questionList[it].questionId ?:0,viewModel.optionList.value[selectedIndex]){
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size - 1)) {
                                             answeredQuestion.value = answeredQuestion.value + 1
@@ -205,7 +208,7 @@ fun QuestionScreen(
                     onClick = {
                         val prevPageIndex = pagerState.currentPage - 1
                         coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
-                        viewModel.updateAnswerOptions(prevPageIndex, didiId)
+//                        viewModel.updateAnswerOptions(prevPageIndex, didiId)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = languageItemActiveBg
@@ -221,7 +224,7 @@ fun QuestionScreen(
                     onClick = {
                         val nextPageIndex = pagerState.currentPage + 1
                         coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                        viewModel.updateAnswerOptions(nextPageIndex, didiId)
+//                        viewModel.updateAnswerOptions(nextPageIndex, didiId)
                     },
                     colors = ButtonDefaults.buttonColors(
                         backgroundColor = languageItemActiveBg
@@ -233,6 +236,14 @@ fun QuestionScreen(
         }
     }
 }
+
+fun selectAnswerOptionValue(sortedOptionList: List<AnswerOptionModel>, optionValue: Int?) :List<AnswerOptionModel>{
+    sortedOptionList.forEach {
+        it.isSelected = optionValue==it.optionValue
+    }
+    return sortedOptionList
+}
+
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
 
     quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)

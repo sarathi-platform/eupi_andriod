@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.utils
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -43,6 +44,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
@@ -914,7 +916,11 @@ fun ButtonOutlineWithTopIcon(
             Text(
                 text = buttonTitle,
                 color = textColor,
-                style = mediumTextStyle,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                ),
             )
         }
     }
@@ -1034,11 +1040,14 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                            currentValue: Int=0,
                            onDecrementClick: ()->Unit,
                            onIncrementClick: ()->Unit,
-                           onValueChange: (Int) -> Unit){
+                           onValueChange: (String) -> Unit){
     var currentCount by remember {
         mutableStateOf(currentValue.toString())
     }
-    Column(modifier = Modifier.fillMaxWidth().padding(5.dp)) {
+    Log.d(TAG, "IncrementDecrementView: ")
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(5.dp)) {
         Row(
             modifier = Modifier
                 .padding(vertical = 6.dp),
@@ -1050,7 +1059,11 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 text = optionText,
                 color = Color.Black,
                 modifier = Modifier,
-                style = mediumTextStyle
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp
+                )
             )
         }
     Box(modifier = modifier
@@ -1058,7 +1071,9 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
         .background(Color.White)
         .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)){
 
-        Row(modifier = Modifier.fillMaxWidth().height(60.dp)) {
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(45.dp)) {
             Box(modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
@@ -1067,11 +1082,12 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                     text = "-",
                     color = Color.Black,
                     fontFamily = NotoSans,
-                    fontSize = 20.sp,
+                    fontSize = 18.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
                         .clickable {
+                            currentCount= incDecValue(0,currentCount)
                             onDecrementClick()
                         }
                 )
@@ -1080,36 +1096,49 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                .width(1.dp)
                .fillMaxHeight()
                .background(Color.Black))
-            Box(modifier = Modifier
+            Column(modifier = Modifier
                 .fillMaxHeight()
-                .weight(2f)
-                ,contentAlignment = Alignment.TopCenter){
-                TextField(
-                    modifier = Modifier
-                        .background(Color.Transparent),
-                    singleLine = true,
+                .weight(2f)){
+                CustomOutlineTextField(
                     value = currentCount,
+                    onValueChange = {
+                        currentCount = if(it.isEmpty())
+                            "0"
+                        else
+                            it
+                        onValueChange(it)
+                    },
+                    placeholder = {
+                        Text(
+                            text = "0", style = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            ), color = placeholderGrey
+                        )
+                    },
                     textStyle = TextStyle(
-                        fontSize = 18.sp,
                         fontFamily = NotoSans,
-                        fontWeight = FontWeight.Medium,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
                         textAlign = TextAlign.Center
                     ),
-                    onValueChange={
-                                  onValueChange(it.toInt())
-                    },
+                    singleLine = true,
+                    maxLines = 1,
                     colors = TextFieldDefaults.textFieldColors(
+                        textColor = textColorDark,
                         backgroundColor = Color.Transparent,
-                        textColor = blueDark,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                    keyboardOptions = KeyboardOptions(
+                    ),keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
                         autoCorrect = true,
                         keyboardType = KeyboardType.Number,
                     ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
                 )
             }
             Spacer(modifier = Modifier
@@ -1127,6 +1156,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                     fontSize = 20.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.clickable {
+                       currentCount= incDecValue(1,currentCount)
                         onIncrementClick()
                     }
                 )
@@ -1136,6 +1166,21 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
 
     }
 
+}
+
+fun incDecValue(operation:Int,value:String):String{
+    var intValue=0
+    if(value.isNotEmpty()){
+        intValue=value.toInt()
+    }
+
+    if(operation==0){
+        if(intValue>0)
+            intValue--
+    }else{
+        intValue++
+    }
+    return intValue.toString()
 }
 
 @Preview(showBackground = true)

@@ -3,17 +3,20 @@ package com.patsurvey.nudge.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.utils.ANSWER_TABLE
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
-    @ColumnInfo(name = "optionId")
-    val optionId: Int?=1,
 
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int,
+
+    @ColumnInfo(name = "optionId")
+    val optionId: Int?=1,
 
     @ColumnInfo(name = "questionId")
     var questionId : Int,
@@ -27,12 +30,14 @@ data class SectionAnswerEntity(
     @ColumnInfo(name = "type")
     var type : String,
 
-    @ColumnInfo(name = "answerOption")
-    var answerOption : String,
-
     @ColumnInfo(name = "answerValue")
     var answerValue : String,
 
+    @SerializedName("weight")
+    val weight: Int? = 0,
+
+    @SerializedName("optionValue")
+    val optionValue: Int? = -1,
 
 
 )

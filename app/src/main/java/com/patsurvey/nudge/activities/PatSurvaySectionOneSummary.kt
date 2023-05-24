@@ -66,7 +66,7 @@ fun PatSurvaySectionSummaryScreen(
 
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
-//        patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
+        patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
 
     val configuration = LocalConfiguration.current
@@ -127,50 +127,41 @@ fun PatSurvaySectionSummaryScreen(
                     style = buttonTextStyle.copy(lineHeight = 22.sp)
                 )
 
+                Spacer(
+                    modifier = Modifier
+                        .height(10.dp)
+                        .fillMaxWidth()
+                )
+
+                PatSummeryScreenDidiDetailBox(
+                    modifier = Modifier,
+                    screenHeight = screenHeight,
+                    didi = didi.value
+                )
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(10.dp)
+                )
+
+                Text(
+                    text = stringResource(R.string.summary_text),
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(10.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-                    item {
-                        PatSummeryScreenDidiDetailBox(
-                            modifier = Modifier,
-                            screenHeight = screenHeight,
-                            didi = didi.value
-                        )
-                    }
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(10.dp)
-                        )
-                    }
-                    item {
-                        Text(
-                            text = stringResource(R.string.summary_text),
-                            style = TextStyle(
-                                color = textColorDark,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            ),
-                            textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-
-                        Log.d("TAG", "PatSurvaySectionSummaryScreen: ${Gson().toJson(question)} :: Answer ${Gson().toJson(answer)}")
-//                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
                     }
                 }
             }
@@ -329,7 +320,7 @@ fun SectionOneSummeryItem(
             Text(
                 text = "${answer.answerValue}",
                 style = TextStyle(
-                    color = if (answer.answerOption == ANSWER_TYPE_YES) greenOnline else redNoAnswer,
+                    color = if (answer.optionValue == 1) greenOnline else redNoAnswer,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = NotoSans
