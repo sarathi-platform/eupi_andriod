@@ -29,6 +29,7 @@ fun SearchWithFilterView(
     placeholderString: String,
     modifier: Modifier = Modifier,
     filterSelected: Boolean = false,
+    showFilter: Boolean = true,
     onFilterSelected: (Boolean) -> Unit,
     onSearchValueChange: (String) -> Unit
 ) {
@@ -47,62 +48,66 @@ fun SearchWithFilterView(
         ) {
             Row(modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceAround) {
-                Card(modifier = Modifier
-                    .weight(1f)
-                    .border(
-                        dimensionResource(id = R.dimen.dp_1),
-                        Color.LightGray,
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                    )) {
+                Card(
+                    modifier = Modifier
+                        .weight(1f)
+                        .border(
+                            dimensionResource(id = R.dimen.dp_1),
+                            Color.LightGray,
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                        )
+                ) {
 
-                TextField(
-                    value = searchString, onValueChange ={
-                        searchString=it
-                        onSearchValueChange(it)
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        textColor = Color.Black,
-                        backgroundColor = Color.White,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done,
-                    ),
-                    textStyle = TextStyle(
-                        color = blueDark
-                    ),
-                    maxLines = 1,
-                    placeholder = { Text(text = placeholderString) },
-                )
+                    TextField(
+                        value = searchString,
+                        onValueChange = {
+                            searchString = it
+                            onSearchValueChange(it)
+                        },
+                        colors = TextFieldDefaults.textFieldColors(
+                            textColor = Color.Black,
+                            backgroundColor = Color.White,
+                            focusedIndicatorColor = Color.Transparent,
+                            unfocusedIndicatorColor = Color.Transparent,
+                            disabledIndicatorColor = Color.Transparent
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Text,
+                            imeAction = ImeAction.Done,
+                        ),
+                        textStyle = TextStyle(
+                            color = blueDark
+                        ),
+                        maxLines = 1,
+                        placeholder = { Text(text = placeholderString) },
+                    )
                 }
-
-                Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_20)))
-                Card(modifier = Modifier
-                    .height(dimensionResource(id = R.dimen.filter_image_height))
-                    .width(dimensionResource(id = R.dimen.filter_image_width))
-                    .background(color = Color.White)
-                    .border(
-                        dimensionResource(id = R.dimen.dp_1),
-                        color = (if (!filterSelected) Color.LightGray else blueDark),
-                        shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
-                    )
-                    .clickable {
-                        focusManager.clearFocus()
-                        onFilterSelected(filterSelected)
-                    }) {
-                    AppImageView(
-                        resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
-                        else R.drawable.ic_search_filter_selected,
-                        modifier = Modifier
-                            .background(
-                                if (!filterSelected) Color.White else blueDark
-                            )
-                            .padding(horizontal = 15.dp)
-                            .padding(vertical = 15.dp)
-                    )
+                if (showFilter) {
+                    Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_20)))
+                    Card(modifier = Modifier
+                        .height(dimensionResource(id = R.dimen.filter_image_height))
+                        .width(dimensionResource(id = R.dimen.filter_image_width))
+                        .background(color = Color.White)
+                        .border(
+                            dimensionResource(id = R.dimen.dp_1),
+                            color = (if (!filterSelected) Color.LightGray else blueDark),
+                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                        )
+                        .clickable {
+                            focusManager.clearFocus()
+                            onFilterSelected(filterSelected)
+                        }) {
+                        AppImageView(
+                            resource = if (!filterSelected) R.drawable.ic_search_filter_unselected
+                            else R.drawable.ic_search_filter_selected,
+                            modifier = Modifier
+                                .background(
+                                    if (!filterSelected) Color.White else blueDark
+                                )
+                                .padding(horizontal = 15.dp)
+                                .padding(vertical = 15.dp)
+                        )
+                    }
                 }
             }
         }
