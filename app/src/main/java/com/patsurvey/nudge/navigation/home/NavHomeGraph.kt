@@ -32,15 +32,19 @@ fun NavHomeGraph(navController: NavHostController) {
             ProgressScreen(
                 stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxWidth()
-            ) { villageId, stepId, index ->
-                when (index) {
-                    0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
-                    1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
-                    2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
-                    3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                modifier = Modifier.fillMaxWidth(),
+                onNavigateToStep = { villageId, stepId, index ->
+                    when (index) {
+                        0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
+                        1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
+                        2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
+                        3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                    }
+                },
+                onNavigateToSetting = {
+                    navController.navigate(Graph.SETTING_GRAPH)
                 }
-            }
+            )
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {

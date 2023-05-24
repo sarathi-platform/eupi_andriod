@@ -69,6 +69,7 @@ const val ARG_COMPLETION_MESSAGE = "completion_message"
 const val ARG_FROM_SCREEN = "fromScreen"
 
 const val PREF_PROGRAM_NAME = "programName"
+const val PREF_OPEN_FROM_HOME = "open_from_home"
 const val PREF_WEALTH_RANKING_COMPLETION_DATE = "wealth_ranking_completion_date"
 const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"

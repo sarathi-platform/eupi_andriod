@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.NetworkBanner
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -33,6 +34,7 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable
@@ -44,7 +46,7 @@ fun SettingScreen(viewModel: SettingViewModel,
 
         val list = ArrayList<SettingOptionModel>()
         list.add(SettingOptionModel(1,context.getString(R.string.sync_up),context.getString(R.string.last_syncup_text)))
-        list.add(SettingOptionModel(2,context.getString(R.string.profile), BLANK_STRING))
+//        list.add(SettingOptionModel(2,context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(3,context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4,context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5,context.getString(R.string.language_text), BLANK_STRING))
@@ -58,7 +60,6 @@ fun SettingScreen(viewModel: SettingViewModel,
             .background(Color.White)
             .fillMaxSize()) {
             val (mainBox, logoutButton)= createRefs()
-
             Column(modifier = Modifier
                 .background(Color.White)
                 .fillMaxWidth()
@@ -67,11 +68,14 @@ fun SettingScreen(viewModel: SettingViewModel,
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 }) {
-                  LazyColumn{
+                if(!viewModel.prefRepo.getPref(PREF_OPEN_FROM_HOME,false)){
+                    NetworkBanner()
+                }
+                LazyColumn{
                     itemsIndexed(viewModel.optionList.value){ index,item->
                         SettingCard(title = item.title, subTitle =item.subTitle ){
                            when(index){
-                               4->{
+                               3->{
                                 navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
                                }else->{
                                    showCustomToast(context,context.getString(R.string.this_section_is_in_progress))
