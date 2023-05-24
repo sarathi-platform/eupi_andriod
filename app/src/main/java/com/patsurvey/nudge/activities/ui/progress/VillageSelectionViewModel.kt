@@ -35,7 +35,7 @@ class VillageSelectionViewModel @Inject constructor(
     val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao
 ) : BaseViewModel() {
-
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
@@ -270,6 +270,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
+        networkErrorMessage.value= error?.title.toString()
     }
 
 }

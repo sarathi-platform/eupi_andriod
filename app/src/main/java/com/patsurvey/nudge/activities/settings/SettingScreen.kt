@@ -41,7 +41,7 @@ fun SettingScreen(viewModel: SettingViewModel,
                   modifier: Modifier = Modifier
 ){
     val context= LocalContext.current
-    LaunchedEffect(key1 = Unit){
+
         val list = ArrayList<SettingOptionModel>()
         list.add(SettingOptionModel(1,context.getString(R.string.sync_up),context.getString(R.string.last_syncup_text)))
         list.add(SettingOptionModel(2,context.getString(R.string.profile), BLANK_STRING))
@@ -49,7 +49,7 @@ fun SettingScreen(viewModel: SettingViewModel,
         list.add(SettingOptionModel(4,context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5,context.getString(R.string.language_text), BLANK_STRING))
         viewModel.createSettingMenu(list)
-    }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(Color.White)

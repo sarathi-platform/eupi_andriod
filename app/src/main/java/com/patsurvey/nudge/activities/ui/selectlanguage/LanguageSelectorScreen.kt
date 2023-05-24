@@ -42,6 +42,11 @@ fun LanguageScreen(
     pageFrom:String
 ) {
     val context = LocalContext.current
+    val networkErrorMessage = viewModel.networkErrorMessage.value
+    if(networkErrorMessage.isNotEmpty()){
+        showCustomToast(context,networkErrorMessage)
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     BackHandler {
         (context as? Activity)?.finish()
     }
