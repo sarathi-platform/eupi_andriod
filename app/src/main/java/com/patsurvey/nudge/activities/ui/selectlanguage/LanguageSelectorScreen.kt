@@ -30,7 +30,6 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
-import com.patsurvey.nudge.model.dataModel.LanguageSelectionModel
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.*
 
@@ -39,7 +38,8 @@ import com.patsurvey.nudge.utils.*
 fun LanguageScreen(
     viewModel: LanguageViewModel,
     navController: NavController,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    pageFrom:String
 ) {
     val context = LocalContext.current
     BackHandler {
@@ -87,7 +87,7 @@ fun LanguageScreen(
 
         Button(
             onClick = {
-                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let { it ->
+                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                     it.id?.let { languageId->
                         viewModel.prefRepo.saveAppLanguageId(languageId)
                     }
@@ -96,8 +96,9 @@ fun LanguageScreen(
                         (context as MainActivity).setLanguage(code)
                     }
                 }
-
-               navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+              if(pageFrom.equals(ARG_FROM_HOME,true))
+                    navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                else navController.popBackStack()
             },
             modifier = Modifier
                 .fillMaxWidth()

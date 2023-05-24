@@ -11,6 +11,7 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
@@ -25,11 +26,13 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 hiltViewModel()
             )
         }
-        composable(route = AuthScreen.LANGUAGE_SCREEN.route) {
+        composable(route = AuthScreen.LANGUAGE_SCREEN.route
+        ) {
             LanguageScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = ARG_FROM_HOME
             )
         }
 
