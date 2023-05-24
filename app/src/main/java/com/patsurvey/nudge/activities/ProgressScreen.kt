@@ -1,7 +1,5 @@
 package com.patsurvey.nudge.activities
 
-
-import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -33,7 +31,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.di.NetworkModule
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -43,7 +41,8 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
-    onNavigateToStep:(Int, Int, Int) ->Unit
+    onNavigateToStep:(Int, Int, Int) ->Unit,
+    onNavigateToSetting:()->Unit
 ) {
 
     val scaffoldState =
@@ -117,7 +116,8 @@ fun ProgressScreen(
                 modifier = Modifier,
                 topBar = {
                     ProgressScreenTopBar() {
-
+                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                        onNavigateToSetting()
                     }
                 }
             ) { it ->

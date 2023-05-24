@@ -36,4 +36,5 @@ object Graph {
     const val SOCIAL_MAPPING = "social_mapping_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val WEALTH_RANKING = "wealth_ranking/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val PAT_SCREENS = "pat_screens/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
+    const val SETTING_GRAPH = "setting_graph"
 }

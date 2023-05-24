@@ -133,6 +133,14 @@
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
     <string name="enter_name_text">नाम दर्ज करें</string>
     <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
+    <string name="logout">लॉग आउट</string>
+    <string name="this_section_is_in_progress">यह अनुभाग प्रगति पर है</string>
+    <string name="sync_up">से मिलान</string>
+    <string name="last_syncup_text">अंतिम बार समन्‍वयित: 24 दिन पहले</string>
+    <string name="profile">प्रोफाइल</string>
+    <string name="forms">फार्म</string>
+    <string name="training_videos">प्रशिक्षण वीडियो</string>
+    <string name="language_text">भाषा</string>
 
 
 </resources>
