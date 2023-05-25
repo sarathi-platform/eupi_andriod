@@ -53,7 +53,7 @@ fun YesNoQuestion(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = textColorBlueLight,
+                        color = textColorDark,
                         fontSize = 14.sp,
                         fontWeight = FontWeight.Normal,
                         fontFamily = NotoSans
