@@ -67,4 +67,15 @@ interface DidiDao {
     fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
     @Query("select * from $DIDI_TABLE where cohortId = :tolaId")
     fun getDidisForTola(tolaId: Int): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET section1 = :section1 WHERE id = :didiId")
+    fun updatePatSection1Status(didiId: Int, section1: Int)
+
+    @Query("UPDATE $DIDI_TABLE SET section2 = :section2 WHERE id = :didiId")
+    fun updatePatSection2Status(didiId: Int, section2: Int)
+
+    @Query("select * from $DIDI_TABLE where id = :didiId")
+    fun fetchDidiDetails(didiId: Int): DidiEntity
+
+
 }

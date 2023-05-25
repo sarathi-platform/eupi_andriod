@@ -52,4 +52,8 @@ interface PrefRepo {
 
    fun getFromPage():String
    fun saveFromPage(pageFrom:String)
+
+   fun getStepId():Int
+   fun saveStepId(stepId:Int
+   )
 }

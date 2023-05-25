@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -10,6 +11,7 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -51,6 +53,7 @@ class PatSectionSummaryViewModel @Inject constructor(
 
     private val _answerList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val answerList: StateFlow<List<SectionAnswerEntity>> get() = _answerList
+    val isYesSelected = mutableStateOf(false)
 
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -65,14 +68,26 @@ class PatSectionSummaryViewModel @Inject constructor(
         }
     }
 
+    fun setPATSurveyComplete(didiId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
+                didiDao.updatePatSection1Status(didiId,2)
+            }
+        }
+    }
+
     fun getQuestionAnswerListForSectionOne(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
+            val yesQuesCount = answerDao.fetchOptionYesCount(didiId = didiId,QuestionType.RadioButton.name,TYPE_EXCLUSION)
             withContext(Dispatchers.IO) {
                 try {
                     _questionList.emit(questionList)
                     _answerList.emit(localAnswerList)
+                    if(yesQuesCount>0){
+                        isYesSelected.value=true
+                    }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
                 }

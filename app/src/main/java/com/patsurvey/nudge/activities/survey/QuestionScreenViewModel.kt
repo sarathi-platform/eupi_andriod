@@ -49,8 +49,6 @@ class QuestionScreenViewModel @Inject constructor(
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
     val totalAssetAmount = mutableStateOf(0)
-    val isYesClick = mutableStateOf(false)
-    val isAnswered = mutableStateOf(false)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
 
@@ -102,6 +100,10 @@ class QuestionScreenViewModel @Inject constructor(
     fun updateDidiQuesSection(didiId: Int,status:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
              didiDao.updateQuesSectionStatus(didiId,status)
+            if(sectionType.value.equals(TYPE_EXCLUSION,true)){
+                didiDao.updatePatSection1Status(didiId,1)
+            }else didiDao.updatePatSection2Status(didiId,1)
+
         }
     }
     fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,onAnswerSave: () ->Unit) {

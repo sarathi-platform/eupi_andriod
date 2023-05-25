@@ -77,12 +77,16 @@ fun PatSurvaySectionSummaryScreen(
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
-
     val didi = patSectionSummaryViewModel.didiEntity.collectAsState()
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
+LaunchedEffect(key1 = Unit){
+    questionList.forEach {
+        val answer = answerList.find { it.questionId == it.questionId }
+    }
 
+}
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -162,6 +166,7 @@ fun PatSurvaySectionSummaryScreen(
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
                        SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+
                     }
                 }
             }
@@ -179,10 +184,14 @@ fun PatSurvaySectionSummaryScreen(
                     }
                 },
 
-            positiveButtonText = stringResource(id = R.string.complete_section_1_text),
+            positiveButtonText = if(patSectionSummaryViewModel.isYesSelected.value) stringResource(id = R.string.complete_pat_survey) else stringResource(id = R.string.complete_section_1_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
+                if(patSectionSummaryViewModel.isYesSelected.value){
+                    patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id)
+                    navController.navigate("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}")
+                }else
+                   navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
 //                navController.popBackStack(PatScreens.YES_NO_QUESTION_SCREEN.route, inclusive = false)
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }

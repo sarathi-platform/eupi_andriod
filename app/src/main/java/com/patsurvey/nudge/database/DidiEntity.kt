@@ -69,4 +69,10 @@ data class DidiEntity(
 
     @ColumnInfo(name = "patSurveyProgress")
     var patSurveyProgress: Int=0,
+
+    @ColumnInfo(name = "section1")
+    var section1: Int=0,
+
+    @ColumnInfo(name = "section2")
+    var section2: Int=0,
     )

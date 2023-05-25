@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -87,7 +88,7 @@ fun RadioButtonTypeQuestion(
             LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
              state = rememberLazyGridState()){
                 itemsIndexed(optionList){ index, option ->
-                    RadioButtonOptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
+                    RadioButtonOptionCard(buttonTitle = option.optionText,index = index, optionValue = option.optionValue?:0,selectedIndex = selectedIndex ){
                         selectedIndex=it
                         onAnswerSelection(index)
                     }
@@ -102,7 +103,7 @@ fun RadioButtonTypeQuestion(
 @Preview(showBackground = true)
 @Composable
 fun RadioButtonOptionCardPreview(){
-    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, onOptionSelected = {})
+    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, optionValue = 0,onOptionSelected = {})
 }
 
 @Composable
@@ -111,6 +112,7 @@ fun RadioButtonOptionCard(
     buttonTitle: String,
     index: Int,
     selectedIndex: Int,
+    optionValue:Int,
     onOptionSelected: (Int) -> Unit
 ) {
     Column(modifier = Modifier
@@ -139,7 +141,7 @@ fun RadioButtonOptionCard(
                 } else {
                     greenActiveIcon
                 },
-                icon = Icons.Default.Check
+                icon = if(optionValue == 1) Icons.Default.Check else Icons.Default.Close
             ) {
                 onOptionSelected(index)
             }

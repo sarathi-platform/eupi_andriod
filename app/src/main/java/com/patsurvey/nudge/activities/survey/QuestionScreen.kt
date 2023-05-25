@@ -35,6 +35,7 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
@@ -72,14 +73,14 @@ fun QuestionScreen(
         }
     }
 
-    LaunchedEffect(key1 = answerList.isNotEmpty()) {
-        if (answerList.isNotEmpty()) {
-            val sortedList = answerList.sortedBy { it.questionId }
-            val idList = sortedList.map { it.id }
-            val scrollToIndex = idList.indexOf(idList.last())
-            pagerState.animateScrollToPage(scrollToIndex)
-        }
-    }
+//    LaunchedEffect(key1 = answerList.isNotEmpty()) {
+//        if (answerList.isNotEmpty()) {
+//            val sortedList = answerList.sortedBy { it.questionId }
+//            val idList = sortedList.map { it.id }
+//            val scrollToIndex = idList.indexOf(idList.last())
+//            pagerState.animateScrollToPage(scrollToIndex)
+//        }
+//    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),
@@ -103,7 +104,7 @@ fun QuestionScreen(
                     didiName = viewModel.didiName.value,
                     questionCount = questionList.size,
                     answeredCount = answerList.size,
-                    partNumber = 1
+                    partNumber = if(sectionType.equals(TYPE_EXCLUSION,true)) 1 else 2
                 )
                 answeredQuestion.value = answerList.size
                 HorizontalPager(
@@ -146,7 +147,7 @@ fun QuestionScreen(
                                     sortedOptionList[selectedIndex]
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                        if (answeredQuestion.value < (questionList.size)) {
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             coroutineScope.launch {
@@ -210,7 +211,9 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = viewModel.optionList.value,
                                 viewModel = viewModel
-                            )
+                            ){
+
+                            }
                         }
                     }
                 }

@@ -801,9 +801,14 @@ fun DidiItemCard(
                         textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
                         iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
                     ) {
-//                        if(didi.patSurveyProgress==0) {
+                        Log.d(TAG, "DidiItemCard: ${Gson().toJson(didi)}")
+                        if(didi.patSurveyProgress==0) {
                             navController.navigate("didi_pat_summary/${didi.id}")
-//                        }
+                        }else{
+                            if(didi.section1==1)
+                               navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                           else navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                        }
                     }
                 }
             }

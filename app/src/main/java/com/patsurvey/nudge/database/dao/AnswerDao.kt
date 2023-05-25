@@ -30,4 +30,8 @@ interface AnswerDao {
 
     @Query("DELETE from $ANSWER_TABLE")
     fun deleteAnswerTable()
+
+    @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND type = :type AND actionType = :actionType AND optionValue=1")
+    fun fetchOptionYesCount(didiId: Int, type: String,actionType:String): Int
+
 }
