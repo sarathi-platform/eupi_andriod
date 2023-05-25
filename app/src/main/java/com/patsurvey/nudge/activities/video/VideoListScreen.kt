@@ -45,10 +45,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainTitle
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
-import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CircularProgressBarWithIcon
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.TrainingVideoEntity
@@ -198,11 +195,12 @@ fun VideoItemCard(
                 id = if (isDownloaded) R.drawable.file_download_remove else R.drawable.outline_file_download
             ),
                 contentDescription = "download file",
-                tint = if (!isDownloaded) languageItemActiveBg else Color.Black,
+                tint = if (!isDownloaded) GreyDark else Color.Black,
                 modifier = Modifier
                     .clickable {
                         videoListViewModel.downloadItem(context, videoItem)
                     }
+                    .absolutePadding(top = 4.dp)
             )
         }
 

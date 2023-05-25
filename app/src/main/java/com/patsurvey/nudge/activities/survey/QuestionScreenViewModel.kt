@@ -100,7 +100,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun updateDidiQuesSection(didiId: Int,status:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-             didiDao.updatePatSurveyStatus(didiId,status)
+             didiDao.updateQuesSectionStatus(didiId,status)
             if(sectionType.value.equals(TYPE_EXCLUSION,true)){
                 didiDao.updatePatSection1Status(didiId,1)
             }else didiDao.updatePatSection2Status(didiId,1)

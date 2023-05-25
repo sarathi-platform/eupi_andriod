@@ -11,9 +11,8 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.SHGFlag
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -80,7 +79,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     fun setPATSurveyComplete(didiId: Int,status:Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                didiDao.updatePatSurveyStatus(didiId,status)
+                didiDao.updateQuesSectionStatus(didiId,status)
             }
         }
     }

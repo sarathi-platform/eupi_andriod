@@ -65,7 +65,7 @@ interface DidiDao {
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
 
     @Query("UPDATE $DIDI_TABLE SET patSurveyProgress = :patSurveyProgress WHERE id = :didiId")
-    fun updatePatSurveyStatus(didiId: Int, patSurveyProgress: Int)
+    fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
     @Query("select * from $DIDI_TABLE where cohortId = :tolaId")
     fun getDidisForTola(tolaId: Int): List<DidiEntity>
 

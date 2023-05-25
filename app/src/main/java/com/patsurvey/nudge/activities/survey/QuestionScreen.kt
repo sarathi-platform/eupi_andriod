@@ -35,6 +35,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -80,12 +81,9 @@ fun QuestionScreen(
 
     val context = LocalContext.current
     BackHandler() {
-        navController.navigate(Graph.HOME) {
-            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                inclusive = true
-            }
-        }
+        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),

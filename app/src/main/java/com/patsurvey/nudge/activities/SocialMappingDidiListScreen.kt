@@ -787,7 +787,7 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
-                if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) {
+                if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -820,9 +820,9 @@ fun DidiItemCard(
                                     if (didiMarkedNotAvailable.value
                                     ) languageItemActiveBg else blueDark
                                 ),
-                            buttonTitle = if (didi.patSurveyProgress == 0) stringResource(id = R.string.start_pat) else stringResource(
-                                id = R.string.continue_text
-                            ),
+                            buttonTitle = if(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            else "",
                             true,
                             color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
                             textColor = if (!didiMarkedNotAvailable.value) white else blueDark,

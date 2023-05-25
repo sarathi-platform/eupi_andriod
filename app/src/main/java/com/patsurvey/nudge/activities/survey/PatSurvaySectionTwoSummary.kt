@@ -43,10 +43,7 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.*
 import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -270,7 +267,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
     val screenHeight = configuration.screenHeightDp
    val didi=DidiEntity(0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
-       wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyProgress = 0)
+       wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyProgress = 0, shgFlag = SHGFlag.NOT_MARKED.value)
     PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
 }
 @Preview(showBackground = true)
