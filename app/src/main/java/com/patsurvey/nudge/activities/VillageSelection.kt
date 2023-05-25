@@ -38,8 +38,10 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BackPress
 import com.patsurvey.nudge.utils.findActivity
+import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
 @Composable
@@ -51,7 +53,10 @@ fun VillageSelectionScreen(
     val villages by viewModel.villageList.collectAsState()
     val context = LocalContext.current
     var showToast by remember { mutableStateOf(false) }
-
+    if(viewModel.networkErrorMessage.value.isNotEmpty()){
+        showCustomToast(context,viewModel.networkErrorMessage.value)
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
 //    BackHandler {
 //        (context as? Activity)?.finish()

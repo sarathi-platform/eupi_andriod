@@ -44,7 +44,10 @@ data class QuestionEntity(
     var actionType: String? = BLANK_STRING,
 
     @ColumnInfo(name = "orderNumber")
-    var sectionOrderNumber: Int? = 0
+    var sectionOrderNumber: Int? = 0,
+
+    @ColumnInfo(name = "languageId")
+    var languageId: Int? = 1
 )
 
 

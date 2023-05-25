@@ -56,6 +56,11 @@ val buttonTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+val quesOptionTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
+)
 
 val smallTextStyle = TextStyle(
     fontFamily = NotoSans,

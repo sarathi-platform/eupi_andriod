@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.NetworkBanner
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -34,6 +35,7 @@ import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable

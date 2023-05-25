@@ -1,18 +1,26 @@
 package com.patsurvey.nudge.utils
 
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,13 +34,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
 @Composable
 fun BlueButton(
@@ -902,7 +916,11 @@ fun ButtonOutlineWithTopIcon(
             Text(
                 text = buttonTitle,
                 color = textColor,
-                style = mediumTextStyle,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                ),
             )
         }
     }
@@ -981,7 +999,7 @@ fun OutlineButtonCustom(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(white, shape = RoundedCornerShape(6.dp))
-            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp) )
+            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -1017,3 +1035,156 @@ fun OutlineButtonCustomPreview(){
     }
 }
 
+@Composable
+fun IncrementDecrementView(modifier: Modifier,optionText:String,
+                           currentValue: Int=0,
+                           onDecrementClick: ()->Unit,
+                           onIncrementClick: ()->Unit,
+                           onValueChange: (String) -> Unit){
+    var currentCount by remember {
+        mutableStateOf(currentValue.toString())
+    }
+    Log.d(TAG, "IncrementDecrementView: ")
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(5.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+
+            Text(
+                text = optionText,
+                color = Color.Black,
+                modifier = Modifier,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp
+                )
+            )
+        }
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .background(Color.White)
+        .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)){
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(45.dp)) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                ,contentAlignment = Alignment.Center){
+                Text(
+                    text = "-",
+                    color = Color.Black,
+                    fontFamily = NotoSans,
+                    fontSize = 18.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable {
+                            currentCount= incDecValue(0,currentCount)
+                            onDecrementClick()
+                        }
+                )
+            }
+           Spacer(modifier = Modifier
+               .width(1.dp)
+               .fillMaxHeight()
+               .background(Color.Black))
+            Column(modifier = Modifier
+                .fillMaxHeight()
+                .weight(2f)){
+                CustomOutlineTextField(
+                    value = currentCount,
+                    onValueChange = {
+                        currentCount = if(it.isEmpty())
+                            "0"
+                        else
+                            it
+                        onValueChange(it)
+                    },
+                    placeholder = {
+                        Text(
+                            text = "0", style = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            ), color = placeholderGrey
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = textColorDark,
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                )
+            }
+            Spacer(modifier = Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(Color.Black))
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
+                contentAlignment = Alignment.Center){
+                Text(
+                    text = "+",
+                    color = Color.Black,
+                    fontFamily = NotoSans,
+                    fontSize = 20.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.clickable {
+                       currentCount= incDecValue(1,currentCount)
+                        onIncrementClick()
+                    }
+                )
+            }
+        }
+        }
+
+    }
+
+}
+
+fun incDecValue(operation:Int,value:String):String{
+    var intValue=0
+    if(value.isNotEmpty()){
+        intValue=value.toInt()
+    }
+
+    if(operation==0){
+        if(intValue>0)
+            intValue--
+    }else{
+        intValue++
+    }
+    return intValue.toString()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun IncrementDecrementViewPreview(){
+    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
+}

@@ -31,6 +31,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.*
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -42,6 +43,11 @@ fun LanguageScreen(
     pageFrom:String
 ) {
     val context = LocalContext.current
+    val networkErrorMessage = viewModel.networkErrorMessage.value
+    if(networkErrorMessage.isNotEmpty()){
+        showCustomToast(context,networkErrorMessage)
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     BackHandler {
         (context as? Activity)?.finish()
     }
@@ -98,7 +104,15 @@ fun LanguageScreen(
                 }
               if(pageFrom.equals(ARG_FROM_HOME,true))
                     navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
-                else navController.popBackStack()
+                else {
+                  viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,false)
+                    navController.navigate(SettingScreens.SETTING_SCREEN.route){
+                        popUpTo(SettingScreens.SETTING_SCREEN.route){
+                            inclusive = true
+                        }
+
+                    }
+              }
             },
             modifier = Modifier
                 .fillMaxWidth()

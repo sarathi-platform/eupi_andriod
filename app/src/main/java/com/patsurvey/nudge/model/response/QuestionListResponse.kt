@@ -33,5 +33,12 @@ data class OptionsItem(
 	val weight: Int? = null,
 
 	@SerializedName("optionId")
-	val optionId: Int? = null
+	val optionId: Int? = null,
+
+	@SerializedName("optionValue")
+	val optionValue: Int? = null,
+
+	@SerializedName("summary")
+	val summary: String? = null,
+
 )
