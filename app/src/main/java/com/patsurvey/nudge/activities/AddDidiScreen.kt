@@ -28,6 +28,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -43,6 +44,11 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     var endPadding by remember { mutableStateOf(16.dp) }
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        didiViewModel?.checkIfTolaIsNotDeleted()
+    }
+
     Column(modifier = modifier
         .fillMaxSize()
         .padding(top = 14.dp),
@@ -68,7 +74,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.house_number),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.houseNumber?.value ?: BLANK_STRING,
                 isRequiredField = false
@@ -80,7 +86,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.didi_name),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.didiName?.value?: BLANK_STRING,
                 isRequiredField = false
@@ -92,7 +98,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.dada_name),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.dadaName?.value ?: BLANK_STRING,
                 isRequiredField = false
@@ -104,7 +110,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 title = stringResource(id = R.string.caste),
                 items = didiViewModel?.casteList?.value?: emptyList(),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = casteExpanded,
                 onExpandedChange = {
@@ -128,7 +134,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 title = stringResource(id = R.string.tola),
                 items = didiViewModel?.tolaList?.value ?: emptyList(),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = tolaExpended,
                 onExpandedChange = {

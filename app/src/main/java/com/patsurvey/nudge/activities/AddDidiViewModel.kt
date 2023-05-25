@@ -539,4 +539,13 @@ class AddDidiViewModel @Inject constructor(
             }
         }
     }
+
+    fun checkIfTolaIsNotDeleted() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tola = tolaDao.fetchSingleTola(selectedTola.value.first)
+            if (tola == null){
+                selectedTola.value = Pair(-1, "")
+            }
+        }
+    }
 }

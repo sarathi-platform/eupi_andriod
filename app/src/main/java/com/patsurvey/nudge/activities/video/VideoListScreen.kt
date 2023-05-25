@@ -1,14 +1,27 @@
 package com.patsurvey.nudge.activities.video
 
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -16,75 +29,64 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
+import coil.compose.AsyncImagePainter
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.bumptech.glide.Glide
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.customviews.CircularProgressBarWithIcon
 import com.patsurvey.nudge.customviews.SearchWithFilterView
+import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.navigation.home.SettingScreens
+import com.patsurvey.nudge.utils.debounceClickable
+import com.patsurvey.nudge.utils.videoList
 
-private val videoList = listOf(
-    VideoItem(
-        id = 1,
-        title = "Video 1",
-        description = "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For \$35.  Find out more at google.com/chromecast.",
-        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-    ),
-    VideoItem(
-        id = 2,
-        title = "Video 2",
-        description = "Supporting description",
-        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-    ),
-    VideoItem(
-        id = 3,
-        title = "Video 3",
-        description = "Supporting description",
-        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-    ),
-    VideoItem(
-        id = 4,
-        title = "Video 4",
-        description = "Supporting description",
-        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-    )
-
-)
 
 @Composable
 fun VideoListScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier.fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize(),
+    viewModel: VideoListViewModel
 ) {
 
     var filterSelected by remember {
         mutableStateOf(false)
     }
 
+    LaunchedEffect(key1 = true) {
+        viewModel.getVideoList()
+    }
+
+    val trainingVideos = viewModel.trainingVideos.collectAsState()
+
+
     Column(modifier = modifier) {
         MainTitle("Training Videos", Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp))
 
         SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
             modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-            ,
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             showFilter = false,
             filterSelected = filterSelected,
             onFilterSelected = {
 
             }, onSearchValueChange = {
 //                didiViewModel.performQuery(it, filterSelected)
-
             }
         )
 
-        Text(text = "Showing ${videoList.size} Videos",
+        Text(
+            text = "Showing ${videoList.size} Videos",
             style = TextStyle(
                 color = textColorDark,
                 fontSize = 14.sp,
@@ -97,13 +99,18 @@ fun VideoListScreen(
         )
 
         LazyColumn(
-            contentPadding = PaddingValues(bottom = 10.dp, start = 16.dp, end = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            contentPadding = PaddingValues(bottom = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             itemsIndexed(
-                videoList
+                trainingVideos.value
             ) { index, videoItem ->
-                VideoItemCard(Modifier, videoItem)
+                VideoItemCard(
+                    Modifier
+                        .debounceClickable {
+                            navController.navigate("video_player_screen/${videoItem.id}")
+                        }, videoItem, viewModel
+                )
             }
         }
 
@@ -113,22 +120,39 @@ fun VideoListScreen(
 }
 
 @Composable
-fun VideoItemCard(modifier: Modifier, videoItem: VideoItem) {
+fun VideoItemCard(
+    modifier: Modifier,
+    videoItem: TrainingVideoEntity,
+    videoListViewModel: VideoListViewModel
+) {
+
+    val context = LocalContext.current
+
+    val isDownloaded by remember {
+        mutableStateOf(false)
+    }
+
     Row(
-        modifier = Modifier.fillMaxWidth().then(modifier),
-        verticalAlignment = Alignment.CenterVertically
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+            .then(modifier),
+        horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         Image(
-            painter = rememberImagePainter(videoItem.thumbUrl),
+            painter = rememberAsyncImagePainter(model = videoItem.thumbUrl),
             contentDescription = null,
             modifier = Modifier
-                .width(135.dp)
-                .height(112.dp),
+                .width(100.dp)
+                .height(75.dp),
             contentScale = ContentScale.Inside
         )
 
-        Column() {
-
+        Column(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 4.dp)
+        ) {
             Text(
                 text = videoItem.title,
                 style = TextStyle(
@@ -140,9 +164,7 @@ fun VideoItemCard(modifier: Modifier, videoItem: VideoItem) {
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .align(Alignment.Start)
                     .fillMaxWidth()
-                    .padding(start = 12.dp, top = 8.dp)
             )
 
             Text(
@@ -153,17 +175,31 @@ fun VideoItemCard(modifier: Modifier, videoItem: VideoItem) {
                     fontWeight = FontWeight.Medium,
                     fontFamily = NotoSans
                 ),
-                maxLines = 3,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .align(Alignment.Start)
                     .fillMaxWidth()
-                    .padding(start = 12.dp)
             )
         }
+
+        Icon(painter = painterResource(
+            id = if (videoListViewModel.getVideoPath(
+                    context,
+                    videoItem.id
+                ).exists()
+            ) R.drawable.file_download_remove else R.drawable.outline_file_download
+        ),
+        contentDescription = "download file",
+        tint = Color.Black,
+        modifier = Modifier
+            .clickable {
+                videoListViewModel.downloadItem(context, videoItem)
+            }
+        )
     }
 }
 
+/*
 @Preview(showBackground = true)
 @Composable
 fun VideoListPreview() {
@@ -171,4 +207,4 @@ fun VideoListPreview() {
         navController = rememberNavController(),
         modifier = Modifier.fillMaxSize()
     )
-}
+}*/

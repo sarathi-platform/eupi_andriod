@@ -72,6 +72,14 @@ fun QuestionScreen(
         }
     }
 
+    LaunchedEffect(key1 = answerList.isNotEmpty()) {
+        if (answerList.isNotEmpty()) {
+            val sortedList = answerList.sortedBy { it.questionId }
+            val idList = sortedList.map { it.id }
+            val scrollToIndex = idList.indexOf(idList.last())
+            pagerState.animateScrollToPage(scrollToIndex)
+        }
+    }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),

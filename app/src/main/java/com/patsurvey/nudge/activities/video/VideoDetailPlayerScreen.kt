@@ -1,108 +1,182 @@
 package com.patsurvey.nudge.activities.video
 
+import android.content.pm.ActivityInfo
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.MediaMetadata
+import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.ui.R
 import com.google.android.exoplayer2.ui.StyledPlayerView
+import com.google.android.exoplayer2.ui.StyledPlayerView.SHOW_BUFFERING_ALWAYS
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.activities.ui.theme.textColorDark50
-import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.utils.setScreenOrientation
+import com.patsurvey.nudge.utils.videoList
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.io.File
 
-private val videoItem = VideoItem(
-    id = 1,
-    title = "Video 1",
-    description = "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For \$35.  Find out more at google.com/chromecast.",
-    url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-)
 
 @Composable
 fun VideoDetailPlayerScreen(
     navController: NavHostController,
-    modifier: Modifier = Modifier.fillMaxSize()
+    modifier: Modifier = Modifier.fillMaxSize(),
+    viewModel: VideDetailPlayerViewModel,
+    videoId: Int
 ) {
 
+    val showFullScreen = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = true) {
+        viewModel.getVideoDetails(videoId)
+    }
+
+    val videoItem = viewModel.trainingVideo.collectAsState()
+
+    val context = LocalContext.current
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+
+    BackHandler() {
+        showFullScreen.value = false
+        with(context) {
+            setScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+        }
+        navController.popBackStack()
+    }
+
     Column(modifier = modifier) {
-        MainTitle(videoItem.title, Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp))
 
-        VideoPlayer(
-            modifier =
-            Modifier.fillMaxWidth()
-                .height(250.dp)
-                .background(white)
-                .padding(start = 16.dp, end = 16.dp, top = 10.dp)
-        )
+        if (viewModel.showLoader.value) {
 
-        Text(
-            text = videoItem.description,
-            style = TextStyle(
-                color = textColorDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = NotoSans,
-            ),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 12.dp)
-        )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        } else {
 
-        Text(
-            text = videoItem.description,
-            style = TextStyle(
-                color = textColorDark50,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = NotoSans
-            ),
-            maxLines = 3,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .align(Alignment.Start)
-                .fillMaxWidth()
-                .padding(start = 16.dp, top = 8.dp)
-        )
+            AnimatedVisibility(visible = !showFullScreen.value) {
+                MainTitle(
+                    videoItem.value.title,
+                    Modifier
+                        .padding(top = 30.dp)
+                        .padding(horizontal = 16.dp)
+                )
+            }
 
+            if (!viewModel.showLoader.value) {
+                VideoPlayer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(if (showFullScreen.value) screenHeight.dp else 250.dp)
+                        .background(white)
+                        .padding(top = if (showFullScreen.value) 0.dp else 10.dp),
+                    videoItem = videoItem.value,
+                    viewModel = viewModel,
+                    showFullScreen = {
+                        showFullScreen.value = it
+                    }
+                )
+            }
+
+
+            AnimatedVisibility(visible = !showFullScreen.value) {
+                Text(
+                    text = videoItem.value.description,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = NotoSans,
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .fillMaxWidth()
+                        .padding(top = 12.dp)
+                )
+            }
+
+
+            /*Text(
+                text = videoItem.value.description,
+                style = TextStyle(
+                    color = textColorDark50,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = NotoSans
+                ),
+                maxLines = 3,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .fillMaxWidth()
+                    .padding(top = 8.dp)
+            )*/
+        }
     }
 }
 
 
 @Composable
-fun VideoPlayer(modifier: Modifier = Modifier) {
+fun VideoPlayer(
+    modifier: Modifier = Modifier,
+    videoItem: TrainingVideoEntity,
+    viewModel: VideDetailPlayerViewModel,
+    showFullScreen: (Boolean) -> Unit
+) {
     val context = LocalContext.current
 
     val mediaItems = arrayListOf<MediaItem>()
 
+    val scope = rememberCoroutineScope()
+
     // create MediaItem
     mediaItems.add(
         MediaItem.Builder()
-            .setUri(videoItem.url)
-            .setMediaId(videoItem.url)
-            .setTag(videoItem)
+            .setUri(
+                if (videoItem.isDownload) viewModel.getVideoPath(
+                    context,
+                    videoItem.id
+                ) else videoItem.url
+            )
+            .setMediaId(videoItem.id.toString())
             .setMediaMetadata(
                 MediaMetadata.Builder()
                     .setDisplayTitle(videoItem.title)
@@ -116,7 +190,31 @@ fun VideoPlayer(modifier: Modifier = Modifier) {
         ExoPlayer.Builder(context).build().apply {
             this.setMediaItems(mediaItems)
             this.prepare()
-            this.playWhenReady = true
+            this.playWhenReady = false
+            addListener(
+                object : Player.Listener {
+
+                    override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
+                        super.onPlayWhenReadyChanged(playWhenReady, reason)
+                        Log.d("VideoDetailPlayerScreen", "onPlayWhenReadyChanged: $playWhenReady")
+                    }
+
+                    override fun onIsLoadingChanged(isLoading: Boolean) {
+                        super.onIsLoadingChanged(isLoading)
+                        Log.d("VideoDetailPlayerScreen", "onIsLoadingChanged: $isLoading")
+
+                    }
+
+                    override fun onEvents(player: Player, events: Player.Events) {
+                        super.onEvents(player, events)
+                    }
+
+                    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
+                        super.onMediaItemTransition(mediaItem, reason)
+
+                    }
+                }
+            )
         }
     }
 
@@ -127,18 +225,14 @@ fun VideoPlayer(modifier: Modifier = Modifier) {
         DisposableEffect(
             AndroidView(
                 modifier =
-                Modifier.testTag("VideoPlayer")
-                    .constrainAs(videoPlayer) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                        bottom.linkTo(parent.bottom)
-                    },
+                Modifier
+                    .fillMaxWidth()
+                    .padding(0.dp),
                 factory = {
 
                     // exo player view for our video player
                     StyledPlayerView(context).apply {
-//                        useController = false
+                        useController = true
                         player = exoPlayer
                         layoutParams =
                             FrameLayout.LayoutParams(
@@ -147,6 +241,26 @@ fun VideoPlayer(modifier: Modifier = Modifier) {
                                 ViewGroup.LayoutParams
                                     .MATCH_PARENT
                             )
+                        setShowNextButton(false)
+                        setShowPreviousButton(false)
+                        setFullscreenButtonClickListener { isFullScreen ->
+                            Log.d("VideoDetailPlayerScreen", "isFullScreen: $isFullScreen")
+                            scope.launch {
+                                showFullScreen(isFullScreen)
+                                delay(1000)
+                                with(context as MainActivity) {
+                                    if (isFullScreen) {
+                                        setScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+                                    } else {
+                                        setScreenOrientation(orientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+                                    }
+                                }
+                            }
+
+                        }
+                        findViewById<View>(R.id.exo_fullscreen).visibility = View.VISIBLE
+                        setShowBuffering(SHOW_BUFFERING_ALWAYS)
+                        findViewById<View>(R.id.exo_settings).visibility = View.GONE
                     }
                 }
             )
@@ -160,12 +274,11 @@ fun VideoPlayer(modifier: Modifier = Modifier) {
 }
 
 
-
-@Preview(showBackground = true)
-@Composable
-fun VideoDetailPlayerPreview() {
-    VideoDetailPlayerScreen(
-        navController = rememberNavController(),
-        modifier = Modifier.fillMaxSize()
-    )
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun VideoDetailPlayerPreview() {
+//    VideoDetailPlayerScreen(
+//        navController = rememberNavController(),
+//        modifier = Modifier.fillMaxSize()
+//    )
+//}

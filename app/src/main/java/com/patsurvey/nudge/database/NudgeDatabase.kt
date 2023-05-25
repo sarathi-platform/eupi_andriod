@@ -9,7 +9,7 @@ import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.*
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
-    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class], version = 1, exportSchema = false)
+    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class], version = 1, exportSchema = false)
 @TypeConverters(IntConverter::class, BeneficiaryStepConverter::class,QuestionsOptionsConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
@@ -24,5 +24,7 @@ abstract class NudgeDatabase: RoomDatabase()  {
     abstract fun questionListDao(): QuestionListDao
     abstract fun answerDao(): AnswerDao
     abstract fun numericAnswerDao(): NumericAnswerDao
+
+    abstract fun trainingVideoDao(): TrainingVideoDao
 
 }

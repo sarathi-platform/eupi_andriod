@@ -89,5 +89,9 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun updateDidiRanking(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<DidiEntity>
 
+    @POST("/write-api/beneficiary/delete")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
+
 
 }

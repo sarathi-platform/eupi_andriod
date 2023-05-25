@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.content.Context
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -69,7 +70,11 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-        outputDirectory = getOutputDirectory(activity)
+        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+    }
+
+    private fun getImagePath(context: Context): File {
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
     }
 
     private fun getOutputDirectory(activity: MainActivity): File {

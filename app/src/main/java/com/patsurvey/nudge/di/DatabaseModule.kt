@@ -67,4 +67,8 @@ object DatabaseModule {
     @Singleton
     fun provideNumericAnswerDao(db: NudgeDatabase) = db.numericAnswerDao()
 
+    @Provides
+    @Singleton
+    fun provideTrainingVideoDao(db: NudgeDatabase) = db.trainingVideoDao()
+
 }

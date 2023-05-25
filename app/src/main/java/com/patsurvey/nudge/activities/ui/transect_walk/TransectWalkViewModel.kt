@@ -171,13 +171,38 @@ class TransectWalkViewModel @Inject constructor(
                     val response = apiInterface.deleteCohort(jsonArray)
                     if (response.status.equals(SUCCESS)) {
                         tolaDao.removeTola(tolaId)
+                        deleteDidisForTola(tolaId)
                     } else {
                         tolaDao.setNeedToPost(listOf(tolaId), true)
                         networkCallbackListener.onFailed()
                     }
                 }
             } catch (ex: Exception) {
-                onError("TransectWalkViewModel", "${ex.message}: \n${ex.stackTraceToString()}")
+                onError("TransectWalkViewModel", "removeTola- ${ex.message}: \n${ex.stackTraceToString()}")
+            }
+        }
+    }
+
+    private fun deleteDidisForTola(tolaId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val didList = didiDao.getDidisForTola(tolaId)
+                didiDao.deleteDidisForTola(tolaId)
+                val jsonArray = JsonArray()
+                didList.forEach {
+                    val jsonObject = JsonObject()
+                    jsonObject.addProperty("id", it.id)
+                    jsonArray.add(jsonObject)
+                }
+                val deleteDidiApiRespone = apiInterface.deleteDidi(jsonArray)
+                if (deleteDidiApiRespone.status.equals(SUCCESS)) {
+                    Log.d("TransectWalkViewModel", "Didids Deleted Successfully")
+                } else {
+                    Log.d("TransectWalkViewModel", "Didids not Deleted Successfully")
+                }
+
+            } catch (ex: Exception) {
+                onError("TransectWalkViewModel", "deleteDidisForTola- ${ex.message}: \n${ex.stackTraceToString()}")
             }
         }
     }
