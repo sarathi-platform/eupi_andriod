@@ -106,8 +106,7 @@ class QuestionScreenViewModel @Inject constructor(
     }
     fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,onAnswerSave: () ->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
-            _answerList.emit(localAnswerList)
+
             withContext(Dispatchers.IO) {
                     val alreadyAnsweredModel= answerDao.isAlreadyAnswered(didiId = didiId,
                         questionId =  questionId, actionType = sectionType.value)
@@ -131,7 +130,8 @@ class QuestionScreenViewModel @Inject constructor(
                             onAnswerSave()
                         }
                     }
-
+                val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
+                _answerList.emit(localAnswerList)
 //            }
         }
     }

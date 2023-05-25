@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.utils
 
+import androidx.compose.ui.unit.dp
+
 const val BLANK_STRING=""
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
@@ -131,5 +133,9 @@ const val LAST_UPDATE_TIME = "last_updated_time"
 const val SYNC_FAILED = "Online Sync Failed"
 
 const val PREF_DIDI_UNAVAILABLE = "pref_didi_unavailable"
+private val FabSize = 56.dp
+val ExtendedFabSize = 48.dp
+private val ExtendedFabIconPadding = 12.dp
+private val ExtendedFabTextPadding = 20.dp
 
 

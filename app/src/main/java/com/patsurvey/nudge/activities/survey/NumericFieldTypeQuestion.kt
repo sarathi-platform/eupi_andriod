@@ -193,6 +193,7 @@ fun NumericFieldTypeQuestion(
                             .fillMaxWidth()
                             .padding(horizontal = 5.dp)
                             .padding(top = 20.dp)
+                            .padding(bottom = 100.dp)
                     ) {
                         ButtonPositive(buttonTitle = "Submit", isArrowRequired = false) {
 
