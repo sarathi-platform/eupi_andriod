@@ -10,6 +10,7 @@ import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
@@ -18,6 +19,8 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
+import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
@@ -449,10 +452,31 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 pageFrom = ARG_FROM_SETTING
             )
         }
+        
+        composable(route = SettingScreens.VIDEO_LIST_SCREEN.route) {
+            VideoListScreen(navController = navController, modifier = Modifier, viewModel = hiltViewModel())
+        }
+        
+        composable(
+            route = SettingScreens.VIDEO_PLAYER_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VIDEO_ID){
+                type = NavType.IntType
+            })
+        ) {
+            VideoDetailPlayerScreen(navController = navController, modifier = Modifier, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
+        }
+
+        composable(route = SettingScreens.PROFILE_SCREEN.route) {
+            ProfileScreen(profileScreenVideModel = hiltViewModel())
+        }
+
     }
 }
 
 sealed class SettingScreens(val route: String) {
     object SETTING_SCREEN : SettingScreens(route = "setting_screen")
     object LANGUAGE_SCREEN : SettingScreens(route = "language_screen")
+    object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
+    object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
+    object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
 }

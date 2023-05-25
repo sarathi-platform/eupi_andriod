@@ -37,6 +37,7 @@ const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
 const val QUESTION_TABLE = "question_table"
+const val TRAINING_VIDEO_TABLE = "training_video_table"
 
 const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
@@ -68,6 +69,7 @@ const val ARG_IS_STEP_COMPLETE = "isStepComplete"
 const val ARG_STEP_INDEX = "step_index"
 const val ARG_COMPLETION_MESSAGE = "completion_message"
 const val ARG_FROM_SCREEN = "fromScreen"
+const val ARG_VIDEO_ID = "video_id"
 
 const val PREF_PROGRAM_NAME = "programName"
 const val PREF_OPEN_FROM_HOME = "open_from_home"

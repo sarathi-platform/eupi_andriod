@@ -34,47 +34,47 @@ class ConfigViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO).launch {
             try {
 
-                    val response = apiInterface.configDetails()
+                val response = apiInterface.configDetails()
                 val localCasteList = casteListDao.getAllCaste()
-                if(localCasteList.isNotEmpty()){
+                if (localCasteList.isNotEmpty()) {
                     casteListDao.deleteCasteTable()
                 }
-                    withContext(Dispatchers.IO) {
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                languageListDao.insertAll(it.languageList)
-                                it.languageList.forEach { language->
-                                    launch {
-                                        // Fetch CasteList from Server
-                                        val casteResponse = apiInterface.getCasteList(language.id)
-                                        if(casteResponse.status.equals(SUCCESS,true)){
-                                            casteResponse.data?.let { casteList->
-                                                casteList.forEach { casteEntity ->
-                                                    casteEntity.languageId=language.id
-                                                }
-                                                casteListDao.insertAll(casteList)
+                withContext(Dispatchers.IO) {
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            languageListDao.insertAll(it.languageList)
+                            it.languageList.forEach { language ->
+                                launch {
+                                    // Fetch CasteList from Server
+                                    val casteResponse = apiInterface.getCasteList(language.id)
+                                    if (casteResponse.status.equals(SUCCESS, true)) {
+                                        casteResponse.data?.let { casteList ->
+                                            casteList.forEach { casteEntity ->
+                                                casteEntity.languageId = language.id
                                             }
+                                            casteListDao.insertAll(casteList)
                                         }
                                     }
                                 }
-                                delay(SPLASH_SCREEN_DURATION)
-                                withContext(Dispatchers.Main) {
-                                    callBack()
-                                }
                             }
-                        } else if (response.status.equals(FAIL, true)) {
-                            addDefaultLanguage()
-                            withContext(Dispatchers.Main) {
-                                callBack()
-                            }
-                        } else {
-                            onError(tag = "ConfigViewModel", "Error : ${response.message} ")
-                            addDefaultLanguage()
+                            delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
                                 callBack()
                             }
                         }
+                    } else if (response.status.equals(FAIL, true)) {
+                        addDefaultLanguage()
+                        withContext(Dispatchers.Main) {
+                            callBack()
+                        }
+                    } else {
+                        onError(tag = "ConfigViewModel", "Error : ${response.message} ")
+                        addDefaultLanguage()
+                        withContext(Dispatchers.Main) {
+                            callBack()
+                        }
                     }
+                }
 
             } catch (ex: Exception) {
                 onError(tag = "ConfigViewModel", "Error : ${ex.localizedMessage}")
@@ -96,7 +96,10 @@ class ConfigViewModel @Inject constructor(
             )
         )
     }
+
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            addDefaultLanguage()
+        }
     }
 }

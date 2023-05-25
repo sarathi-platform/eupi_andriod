@@ -31,6 +31,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -38,28 +39,40 @@ import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable
-fun SettingScreen(viewModel: SettingViewModel,
-                  navController: NavController,
-                  modifier: Modifier = Modifier
-){
-    val context= LocalContext.current
-
+fun SettingScreen(
+    viewModel: SettingViewModel,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
         val list = ArrayList<SettingOptionModel>()
-        list.add(SettingOptionModel(1,context.getString(R.string.sync_up),context.getString(R.string.last_syncup_text)))
-//        list.add(SettingOptionModel(2,context.getString(R.string.profile), BLANK_STRING))
-        list.add(SettingOptionModel(3,context.getString(R.string.forms), BLANK_STRING))
-        list.add(SettingOptionModel(4,context.getString(R.string.training_videos), BLANK_STRING))
-        list.add(SettingOptionModel(5,context.getString(R.string.language_text), BLANK_STRING))
+        list.add(
+            SettingOptionModel(
+                1,
+                context.getString(R.string.sync_up),
+                context.getString(R.string.last_syncup_text)
+            )
+        )
+        list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
+        list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
+        list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
+        list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         viewModel.createSettingMenu(list)
-
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(Color.White)
-        .then(modifier) ){
-        ConstraintLayout(modifier = Modifier
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
             .background(Color.White)
-            .fillMaxSize()) {
-            val (mainBox, logoutButton)= createRefs()
+            .then(modifier)
+    ) {
+        ConstraintLayout(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxSize()
+        ) {
+            val (mainBox, logoutButton) = createRefs()
+
             Column(modifier = Modifier
                 .background(Color.White)
                 .fillMaxWidth()
@@ -68,19 +81,27 @@ fun SettingScreen(viewModel: SettingViewModel,
                     top.linkTo(parent.top)
                     end.linkTo(parent.end)
                 }) {
-                if(!viewModel.prefRepo.getPref(PREF_OPEN_FROM_HOME,false)){
-                    NetworkBanner()
-                }
-                LazyColumn{
-                    itemsIndexed(viewModel.optionList.value){ index,item->
-                        SettingCard(title = item.title, subTitle =item.subTitle ){
-                           when(index){
-                               3->{
-                                navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
-                               }else->{
-                                   showCustomToast(context,context.getString(R.string.this_section_is_in_progress))
-                               }
-                           }
+                LazyColumn {
+                    itemsIndexed(viewModel.optionList.value) { index, item ->
+                        SettingCard(title = item.title, subTitle = item.subTitle) {
+                            when (index) {
+                                1 -> {
+                                    navController.navigate(SettingScreens.PROFILE_SCREEN.route)
+                                }
+                                3 -> {
+                                    navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                                }
+                                4 -> {
+                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                }
+
+                                else -> {
+                                    showCustomToast(
+                                        context,
+                                        context.getString(R.string.this_section_is_in_progress)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
@@ -95,7 +116,7 @@ fun SettingScreen(viewModel: SettingViewModel,
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
                     bottom.linkTo(parent.bottom)
-                }){
+                }) {
                 ButtonPositive(
                     buttonTitle = stringResource(id = R.string.logout),
                     isArrowRequired = false,
@@ -114,20 +135,24 @@ fun SettingScreen(viewModel: SettingViewModel,
 }
 
 @Composable
-fun SettingCard(title:String,
-                subTitle:String,
-                onClick : ()->Unit){
+fun SettingCard(
+    title: String,
+    subTitle: String,
+    onClick: () -> Unit
+) {
     Column(modifier = Modifier
         .background(Color.White)
         .fillMaxWidth()
         .clickable {
             onClick()
-        }){
-        Column(modifier = Modifier
-            .background(Color.White)
-            .fillMaxWidth()
-            .padding(horizontal = dimensionResource(id = R.dimen.dp_20))
-            .padding(vertical = dimensionResource(id = R.dimen.dp_15))) {
+        }) {
+        Column(
+            modifier = Modifier
+                .background(Color.White)
+                .fillMaxWidth()
+                .padding(horizontal = dimensionResource(id = R.dimen.dp_20))
+                .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+        ) {
             Text(
                 text = title,
                 textAlign = TextAlign.Start,
@@ -138,7 +163,7 @@ fun SettingCard(title:String,
                 modifier = Modifier.fillMaxWidth()
             )
 
-            if(!subTitle.isNullOrEmpty()) {
+            if (!subTitle.isNullOrEmpty()) {
                 Text(
                     text = subTitle,
                     textAlign = TextAlign.Start,
@@ -150,9 +175,11 @@ fun SettingCard(title:String,
                 )
             }
         }
-        Spacer(modifier = Modifier
-            .fillMaxWidth()
-            .height(dimensionResource(id = R.dimen.dp_2))
-            .background(borderGreyLight))
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(dimensionResource(id = R.dimen.dp_2))
+                .background(borderGreyLight)
+        )
     }
 }

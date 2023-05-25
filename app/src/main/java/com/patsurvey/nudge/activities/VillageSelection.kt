@@ -81,6 +81,10 @@ fun VillageSelectionScreen(
         showToast = true
     }
 
+    LaunchedEffect(key1 = true) {
+        viewModel.saveVideosToDb(context)
+    }
+
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
