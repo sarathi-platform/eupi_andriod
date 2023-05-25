@@ -21,6 +21,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.PointerEventPass
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -34,6 +36,7 @@ import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
+import kotlinx.coroutines.coroutineScope
 
 
 @Composable
@@ -87,7 +90,7 @@ fun RadioButtonTypeQuestion(
             LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
              state = rememberLazyGridState()){
                 itemsIndexed(optionList){ index, option ->
-                    RadioButtonOptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
+                    RadioButtonOptionCard(Modifier.disableSplitMotionEvents(),buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
                         selectedIndex=it
                         onAnswerSelection(index)
                     }
@@ -98,6 +101,24 @@ fun RadioButtonTypeQuestion(
     }
 }
 
+fun Modifier.disableSplitMotionEvents() =
+    pointerInput(Unit) {
+        coroutineScope {
+            var currentId: Long = -1L
+            awaitPointerEventScope {
+                while (true) {
+                    awaitPointerEvent(PointerEventPass.Initial).changes.forEach { pointerInfo ->
+                        when {
+                            pointerInfo.pressed && currentId == -1L -> currentId = pointerInfo.id.value
+                            pointerInfo.pressed.not() && currentId == pointerInfo.id.value -> currentId = -1
+                            pointerInfo.id.value != currentId && currentId != -1L -> pointerInfo.consume()
+                            else -> Unit
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 @Preview(showBackground = true)
 @Composable
