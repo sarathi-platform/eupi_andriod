@@ -361,7 +361,7 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = "Next",
                 positiveButtonOnClick = {
-                    navController.navigate("yes_no_question_screen/${didi.value.id}")
+                    navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}")
                 },
                 negativeButtonOnClick = {}
             )

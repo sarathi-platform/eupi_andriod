@@ -7,6 +7,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.BLANK_STRING
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +20,7 @@ class LanguageViewModel @Inject constructor(
   val languageListDao: LanguageListDao
 ) :BaseViewModel(){
 
-
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageEntity>()
@@ -37,7 +38,7 @@ class LanguageViewModel @Inject constructor(
         }
     }
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        networkErrorMessage.value= error?.title.toString()
     }
 
 }

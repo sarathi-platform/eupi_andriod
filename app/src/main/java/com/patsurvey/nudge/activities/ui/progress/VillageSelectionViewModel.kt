@@ -35,11 +35,12 @@ class VillageSelectionViewModel @Inject constructor(
     val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao
 ) : BaseViewModel() {
-
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
     val villageSelected = mutableStateOf(-1)
+    val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
@@ -75,7 +76,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                     villageList.forEach { village ->
                         launch {
-
+                             stateId.value=village.stateId
                             val response = apiService.getStepsList(village.id)
                             val cohortResponse =
                                 apiService.getCohortFromNetwork(villageId = village.id)
@@ -193,19 +194,16 @@ class VillageSelectionViewModel @Inject constructor(
                     localLanguageList?.let {
                         localLanguageList.forEach { languageEntity ->
                             val quesListResponse = apiService.fetchQuestionListFromServer(
-                                GetQuestionListRequest(languageEntity.id, 1, PAT_SURVEY_CONSTANT)
+                                GetQuestionListRequest(languageEntity.id, stateId.value, PAT_SURVEY_CONSTANT)
                             )
                             // Fetch QuestionList from Server
                             if (quesListResponse.status.equals(SUCCESS, true)) {
-                                val localQuestionList = questionListDao.getAllQuestions()
-                                if (localQuestionList.isNotEmpty()) {
-                                    questionListDao.deleteQuestionTable()
-                                }
                                 quesListResponse.data?.let { questionList ->
                                     questionList.listOfQuestionSectionList?.forEach { list ->
                                         list?.questionList?.forEach { question ->
                                             question?.sectionOrderNumber = list.orderNumber
                                             question?.actionType = list.actionType
+                                            question?.languageId = languageEntity.id
                                         }
                                         list?.questionList?.let {
                                             questionListDao.insertAll(it as List<QuestionEntity>)
@@ -258,18 +256,23 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                     } else {
                         onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
-                        showLoader.value = false
+                        withContext(Dispatchers.Main) {
+                            showLoader.value = false
+                        }
                     }
                 }
             } catch (ex: Exception) {
                 onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
-                showLoader.value = false
+                withContext(Dispatchers.Main) {
+                    showLoader.value = false
+                }
             }
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
+        networkErrorMessage.value= error?.title.toString()
     }
 
 }

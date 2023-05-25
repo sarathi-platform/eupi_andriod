@@ -41,7 +41,8 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
-    onNavigateToStep:(Int, Int, Int) ->Unit
+    onNavigateToStep:(Int, Int, Int) ->Unit,
+    onNavigateToSetting:()->Unit
 ) {
 
     val scaffoldState =
@@ -115,7 +116,8 @@ fun ProgressScreen(
                 modifier = Modifier,
                 topBar = {
                     ProgressScreenTopBar() {
-                        stepsNavHostController.navigate(Graph.SETTING_GRAPH)
+                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                        onNavigateToSetting()
                     }
                 }
             ) { it ->
