@@ -2,13 +2,17 @@ package com.patsurvey.nudge.activities.ui.progress
 
 
 import android.app.Activity
+import android.content.Context
+import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.LocalContext
+import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -20,6 +24,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -33,7 +38,8 @@ class VillageSelectionViewModel @Inject constructor(
     val didiDao: DidiDao,
     val casteListDao: CasteListDao,
     val languageListDao: LanguageListDao,
-    val questionListDao: QuestionListDao
+    val questionListDao: QuestionListDao,
+    val trainingVideoDao: TrainingVideoDao
 ) : BaseViewModel() {
 
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -59,6 +65,44 @@ class VillageSelectionViewModel @Inject constructor(
             } else
                 fetchVillageList()
         }
+    }
+
+    fun saveVideosToDb(context: Context) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val trainingVideos = trainingVideoDao.getVideoList()
+            if (trainingVideos.isEmpty()) {
+                videoList.forEach {
+                    val trainingVideoEntity = TrainingVideoEntity(
+                        id = it.id,
+                        title = it.title,
+                        description = it.description,
+                        url = it.url,
+                        thumbUrl = it.thumbUrl,
+                        isDownload = getVideoPath(context, it.id).exists()
+                    )
+                    trainingVideoDao.insert(trainingVideoEntity)
+                }
+            } else {
+                trainingVideos.forEach {
+                    val videoIsDownloaded = getVideoPath(context, it.id).exists()
+                    if (it.isDownload != videoIsDownloaded) {
+                        val trainingVideoEntity = TrainingVideoEntity(
+                            id = it.id,
+                            title = it.title,
+                            description = it.description,
+                            url = it.url,
+                            thumbUrl = it.thumbUrl,
+                            isDownload = videoIsDownloaded
+                        )
+                        trainingVideoDao.insert(trainingVideoEntity)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getVideoPath(context: Context, videoItemId: Int): File {
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)?.absolutePath}/${videoItemId}.mp4")
     }
 
     private fun fetchVillageList() {
@@ -193,7 +237,7 @@ class VillageSelectionViewModel @Inject constructor(
                     localLanguageList?.let {
                         localLanguageList.forEach { languageEntity ->
                             val quesListResponse = apiService.fetchQuestionListFromServer(
-                                GetQuestionListRequest(languageEntity.id, 1, PAT_SURVEY_CONSTANT)
+                                GetQuestionListRequest(languageEntity.id, 2, PAT_SURVEY_CONSTANT)
                             )
                             // Fetch QuestionList from Server
                             if (quesListResponse.status.equals(SUCCESS, true)) {
@@ -220,8 +264,7 @@ class VillageSelectionViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
                 showLoader.value = false
-            }
-            finally {
+            } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 showLoader.value = false
             }

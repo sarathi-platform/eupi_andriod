@@ -86,7 +86,7 @@ fun ProgressScreen(
                         itemsIndexed(villages) { index, village ->
                             VillageAndVoBoxForBottomSheet(
                                 tolaName = village.name,
-                                voName = village.name,
+                                voName = village.federationName,
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
                             ) {
