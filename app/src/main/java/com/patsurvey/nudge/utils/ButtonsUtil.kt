@@ -1194,3 +1194,43 @@ fun IncrementDecrementViewPreview(){
     IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
 }
 
+@Preview(showBackground = true)
+@Composable
+fun DidiPATSurveyCompleteViewPreview(){
+    DidiPATSurveyCompleteView(modifier = Modifier, onClick = {})
+}
+
+
+@Composable
+fun DidiPATSurveyCompleteView(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(modifier = Modifier.
+    fillMaxWidth()
+        .padding(vertical = 10.dp)
+        .padding(horizontal = 10.dp)
+        .clickable {
+            onClick()
+        }
+        .then(modifier),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Show",
+            style = smallTextStyleMediumWeight,
+            color = textColorDark,
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = blueDark,
+            modifier = Modifier
+                .absolutePadding(top = 4.dp, left = 2.dp)
+                .size(24.dp)
+        )
+    }
+}
+
+
+

@@ -148,6 +148,7 @@ fun NumericFieldTypeQuestion(
                             .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)
                     ) {
                         OutlinedTextField(
+                            readOnly = false,
                             value = if ((totalAssetAmount?.value
                                     ?: 0) <= 0
                             ) BLANK_STRING else (totalAssetAmount?.value ?: 0).toString(),

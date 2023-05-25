@@ -1,8 +1,7 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -37,37 +36,30 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ANSWER_TYPE_YES
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun PatSurvaySectionSummaryScreen(
+fun PatSurvaySectionTwoSummaryScreen(
     navController: NavHostController,
     modifier: Modifier,
-    isOnline: Boolean = true,
     patSectionSummaryViewModel: PatSectionSummaryViewModel,
     didiId: Int
 ) {
 
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
-        patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
 
     val configuration = LocalConfiguration.current
@@ -79,15 +71,8 @@ fun PatSurvaySectionSummaryScreen(
         mutableStateOf(0.dp)
     }
     val didi = patSectionSummaryViewModel.didiEntity.collectAsState()
-    val questionList by patSectionSummaryViewModel.questionList.collectAsState()
-    val answerList by patSectionSummaryViewModel.answerList.collectAsState()
+    val answerSummeryList by patSectionSummaryViewModel.answerSummeryList.collectAsState()
 
-LaunchedEffect(key1 = Unit){
-    questionList.forEach {
-        val answer = answerList.find { it.questionId == it.questionId }
-    }
-
-}
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -164,10 +149,8 @@ LaunchedEffect(key1 = Unit){
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
-                        val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
-
+                    itemsIndexed(answerSummeryList) { index, answer ->
+                      SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString() )
                     }
                 }
             }
@@ -185,18 +168,13 @@ LaunchedEffect(key1 = Unit){
                     }
                 },
 
-            positiveButtonText = if(patSectionSummaryViewModel.isYesSelected.value) stringResource(id = R.string.complete_pat_survey) else stringResource(id = R.string.complete_section_1_text),
+            positiveButtonText =stringResource(id = R.string.complete),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                patSectionSummaryViewModel.setPATSection1Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                if(patSectionSummaryViewModel.isYesSelected.value){
+                    patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                     patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                     navController.navigate("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}")
-                }else{
-                    patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)
-                    patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)
-                    navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
-                }
+
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
@@ -295,13 +273,19 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyProgress = 0)
     PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
 }
+@Preview(showBackground = true)
+@Composable
+fun SectionTwoSummeryItemPreview(){
+    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery")
+}
+
+
 
 @Composable
-fun SectionOneSummeryItem(
+fun SectionTwoSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
-    question: QuestionEntity,
-    answer: SectionAnswerEntity
+    quesSummery:String
 ) {
     Column(
         modifier = Modifier
@@ -309,15 +293,9 @@ fun SectionOneSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth()) {
-            Icon(
-                painter = painterResource(id = R.drawable.home_icn),
-                contentDescription = null,
-                tint = textColorDark,
-                modifier = Modifier
-                    .size(25.dp)
-            )
+
             Text(
-                text = "$index. ${question.questionDisplay}.",
+                text = "${index+1}. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,
@@ -325,23 +303,10 @@ fun SectionOneSummeryItem(
                     fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
-                maxLines = 1,
+                maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .weight(1f)
-            )
-            Text(
-                text = "${answer.answerValue}",
-                style = TextStyle(
-                    color = if (answer.optionValue == 1) greenOnline else redNoAnswer,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
-                textAlign = TextAlign.Start,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
             )
         }
         Divider(
