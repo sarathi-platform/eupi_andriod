@@ -63,7 +63,6 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchVillageList() {
-        Log.d("VllageSelectionViewModel", "fetchVillageList method called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
@@ -216,7 +215,7 @@ class VillageSelectionViewModel @Inject constructor(
                 }
 
             } catch (ex: Exception) {
-                onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
+                onCatchError(ex)
                 showLoader.value = false
             }
             finally {
@@ -262,7 +261,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onError(tag = "VillageSelectionViewModel", "Exception : ${ex.localizedMessage}")
+                onCatchError(ex)
                 withContext(Dispatchers.Main) {
                     showLoader.value = false
                 }
@@ -272,7 +271,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
-        networkErrorMessage.value= error?.title.toString()
+        networkErrorMessage.value= error?.message.toString()
     }
 
 }

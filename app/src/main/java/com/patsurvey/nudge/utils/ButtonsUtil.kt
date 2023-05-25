@@ -1038,8 +1038,8 @@ fun OutlineButtonCustomPreview(){
 @Composable
 fun IncrementDecrementView(modifier: Modifier,optionText:String,
                            currentValue: Int=0,
-                           onDecrementClick: ()->Unit,
-                           onIncrementClick: ()->Unit,
+                           onDecrementClick: (Int)->Unit,
+                           onIncrementClick: (Int)->Unit,
                            onValueChange: (String) -> Unit){
     var currentCount by remember {
         mutableStateOf(currentValue.toString())
@@ -1088,7 +1088,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                         .fillMaxWidth()
                         .clickable {
                             currentCount= incDecValue(0,currentCount)
-                            onDecrementClick()
+                            onDecrementClick(currentCount.toInt())
                         }
                 )
             }
@@ -1101,6 +1101,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 .weight(2f)){
                 CustomOutlineTextField(
                     value = currentCount,
+                    readOnly = true,
                     onValueChange = {
                         currentCount = if(it.isEmpty())
                             "0"
@@ -1157,7 +1158,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.clickable {
                        currentCount= incDecValue(1,currentCount)
-                        onIncrementClick()
+                        onIncrementClick(currentCount.toInt())
                     }
                 )
             }

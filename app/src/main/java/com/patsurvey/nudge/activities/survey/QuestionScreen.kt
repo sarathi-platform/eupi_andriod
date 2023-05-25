@@ -13,6 +13,7 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -98,7 +99,7 @@ fun QuestionScreen(
             HorizontalPager(
                 pageCount = questionList.size,
                 state = pagerState,
-                userScrollEnabled = true
+                userScrollEnabled = false
             ) {
                 viewModel.findQuestionOptionList(it)
                 Column(modifier = Modifier.fillMaxWidth()) {
@@ -178,8 +179,13 @@ fun QuestionScreen(
                             }
                         }else if(questionList[it].type == QuestionType.Numeric_Field.name){
                             NumericFieldTypeQuestion(
-                                modifier = modifier,  questionNumber = (it + 1),
-                                question = questionList[it].questionDisplay ?: "",viewModel.optionList.value)
+                                modifier = modifier,
+                                questionNumber = (it + 1),
+                                question = questionList[it].questionDisplay ?: "",
+                                didiId=didiId,
+                                questionId = questionList[it].questionId?:0,
+                                optionList=viewModel.optionList.value,
+                                viewModel=viewModel)
                         }
                     }
             }
@@ -187,8 +193,7 @@ fun QuestionScreen(
 
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp),
+                .fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             val prevButtonVisible = remember {
@@ -203,32 +208,28 @@ fun QuestionScreen(
             }
 
             AnimatedVisibility(prevButtonVisible.value) {
-                Button(
-                    enabled = prevButtonVisible.value,
+                FloatingActionButton(
                     onClick = {
                         val prevPageIndex = pagerState.currentPage - 1
                         coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
 //                        viewModel.updateAnswerOptions(prevPageIndex, didiId)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        backgroundColor = languageItemActiveBg
-                    ),
+                    }
                 ) {
                     Text(text = "Q${pagerState.currentPage}", color = textColorDark)
                 }
             }
             Spacer(modifier = Modifier.width(if (prevButtonVisible.value) 0.dp else ButtonDefaults.MinWidth))
             AnimatedVisibility(nextButtonVisible.value) {
-                Button(
-                    enabled = nextButtonVisible.value,
+                FloatingActionButton(
+
                     onClick = {
                         val nextPageIndex = pagerState.currentPage + 1
                         coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
 //                        viewModel.updateAnswerOptions(nextPageIndex, didiId)
                     },
-                    colors = ButtonDefaults.buttonColors(
+                    /*colors = ButtonDefaults.buttonColors(
                         backgroundColor = languageItemActiveBg
-                    ),
+                    ),*/
                 ) {
                     Text(text = "Q${pagerState.currentPage + 2}", color = textColorDark)
                 }
