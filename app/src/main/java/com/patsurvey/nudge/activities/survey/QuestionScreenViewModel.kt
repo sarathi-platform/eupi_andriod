@@ -6,10 +6,12 @@ import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
@@ -32,7 +34,8 @@ class QuestionScreenViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val numericAnswerDao: NumericAnswerDao
 ) : BaseViewModel() {
 
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
@@ -45,6 +48,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
+    val totalAssetAmount = mutableStateOf(0)
     val isYesClick = mutableStateOf(false)
     val isAnswered = mutableStateOf(false)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
@@ -102,8 +106,7 @@ class QuestionScreenViewModel @Inject constructor(
     }
     fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,onAnswerSave: () ->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
-            _answerList.emit(localAnswerList)
+
             withContext(Dispatchers.IO) {
                     val alreadyAnsweredModel= answerDao.isAlreadyAnswered(didiId = didiId,
                         questionId =  questionId, actionType = sectionType.value)
@@ -127,11 +130,32 @@ class QuestionScreenViewModel @Inject constructor(
                             onAnswerSave()
                         }
                     }
-
+                val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
+                _answerList.emit(localAnswerList)
 //            }
         }
     }
     }
+    fun updateNumericAnswer(numericAnswer: NumericAnswerEntity){
+        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
+            withContext(Dispatchers.IO){
+                val optionDetails=numericAnswerDao.getOptionDetails(numericAnswer.optionId,
+                    numericAnswer.questionId,numericAnswer.didiId)
+                if(optionDetails!=null){
+                    numericAnswerDao.updateAnswer(numericAnswer.didiId,numericAnswer.optionId,numericAnswer.questionId,numericAnswer.count)
+                }else{
+                    numericAnswerDao.insertNumericOption(numericAnswer)
+                }
+
+                val listOfAmount=numericAnswerDao.getTotalAssetAmount()
+                totalAssetAmount.value=0
+                listOfAmount?.forEach {
+                    totalAssetAmount.value=totalAssetAmount.value+it
+                }
+            }
+        }
+    }
+
     fun updateAnswerOptions(questionIndex:Int,didiId: Int){
         job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
             val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)

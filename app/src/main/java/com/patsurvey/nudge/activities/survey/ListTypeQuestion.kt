@@ -84,6 +84,10 @@ fun ListTypeQuestion(
                       onAnswerSelection(index)
                   }
                 }
+
+                item {
+                    Spacer(modifier = Modifier.fillMaxWidth().padding(bottom = 100.dp))
+                }
             }
 
         }
@@ -119,7 +123,7 @@ fun OptionCard(
         .fillMaxWidth()
         .clip(RoundedCornerShape(6.dp))
         .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
-        .clickable{
+        .clickable {
             onOptionSelected(index)
         }
         .padding(horizontal = 10.dp)

@@ -1,9 +1,12 @@
 package com.patsurvey.nudge.utils
 
+import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
@@ -16,6 +19,7 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,8 +32,10 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -40,6 +46,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -1038,8 +1045,8 @@ fun OutlineButtonCustomPreview(){
 @Composable
 fun IncrementDecrementView(modifier: Modifier,optionText:String,
                            currentValue: Int=0,
-                           onDecrementClick: ()->Unit,
-                           onIncrementClick: ()->Unit,
+                           onDecrementClick: (Int)->Unit,
+                           onIncrementClick: (Int)->Unit,
                            onValueChange: (String) -> Unit){
     var currentCount by remember {
         mutableStateOf(currentValue.toString())
@@ -1078,19 +1085,16 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 .weight(1f)
                 .fillMaxHeight()
                 ,contentAlignment = Alignment.Center){
-                Text(
-                    text = "-",
-                    color = Color.Black,
-                    fontFamily = NotoSans,
-                    fontSize = 18.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable {
-                            currentCount= incDecValue(0,currentCount)
-                            onDecrementClick()
-                        }
-                )
+                Row(modifier = Modifier.fillMaxWidth().clickable {
+                    currentCount = incDecValue(0, currentCount)
+                    onDecrementClick(currentCount.toInt())
+                }, horizontalArrangement = Arrangement.Center){
+                    Spacer(modifier = Modifier.width(14.dp)
+                        .background(Color.Black)
+                        .height(1.5.dp)
+                        .align(Alignment.CenterVertically))
+                }
+
             }
            Spacer(modifier = Modifier
                .width(1.dp)
@@ -1098,9 +1102,10 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                .background(Color.Black))
             Column(modifier = Modifier
                 .fillMaxHeight()
-                .weight(2f)){
+                .weight(1f)){
                 CustomOutlineTextField(
                     value = currentCount,
+                    readOnly = true,
                     onValueChange = {
                         currentCount = if(it.isEmpty())
                             "0"
@@ -1153,11 +1158,11 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                     text = "+",
                     color = Color.Black,
                     fontFamily = NotoSans,
-                    fontSize = 20.sp,
+                    fontSize = 22.sp,
                     textAlign = TextAlign.Center,
                     modifier = Modifier.clickable {
                        currentCount= incDecValue(1,currentCount)
-                        onIncrementClick()
+                        onIncrementClick(currentCount.toInt())
                     }
                 )
             }
@@ -1188,3 +1193,4 @@ fun incDecValue(operation:Int,value:String):String{
 fun IncrementDecrementViewPreview(){
     IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
 }
+
