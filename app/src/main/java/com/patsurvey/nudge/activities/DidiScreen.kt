@@ -31,6 +31,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
+import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -42,6 +43,10 @@ fun DidiScreen(
     stepId:Int,
     onNavigateToAddDidi:()-> Unit
 ) {
+
+    LaunchedEffect(key1 = true) {
+        didiViewModel.checkIfTolaIsNotDeleted()
+    }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
