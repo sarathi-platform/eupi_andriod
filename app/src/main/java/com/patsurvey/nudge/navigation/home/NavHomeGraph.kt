@@ -13,6 +13,7 @@ import androidx.navigation.compose.navigation
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.settings.SettingScreen
+import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -416,6 +417,21 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
             )
         }
+
+        composable(
+            route = PatScreens.PAT_SECTION_TWO_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionTwoSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
     }
 }
 
@@ -429,6 +445,8 @@ sealed class PatScreens(val route: String) {
 
     object PAT_SECTION_ONE_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_SECTION_TWO_SUMMARY_SCREEN :
+        PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
 }
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {

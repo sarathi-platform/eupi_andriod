@@ -49,8 +49,6 @@ class QuestionScreenViewModel @Inject constructor(
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
     val totalAssetAmount = mutableStateOf(0)
-    val isYesClick = mutableStateOf(false)
-    val isAnswered = mutableStateOf(false)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
 
@@ -76,6 +74,7 @@ class QuestionScreenViewModel @Inject constructor(
             val updatedList = mutableListOf<AnswerOptionModel>()
             withContext(Dispatchers.IO) {
                 try {
+                    val qId= questionList.value[questionIndex].questionId
                     questionList.value[questionIndex].options?.forEach {
                         updatedList.add(AnswerOptionModel(it?.optionId?:0,it?.display?: BLANK_STRING,false,it?.weight,it?.summary,it?.optionValue))
                     }
@@ -101,20 +100,31 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun updateDidiQuesSection(didiId: Int,status:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-             didiDao.updateQuesSectionStatus(didiId,status)
+             didiDao.updatePatSurveyStatus(didiId,status)
+            if(sectionType.value.equals(TYPE_EXCLUSION,true)){
+                didiDao.updatePatSection1Status(didiId,1)
+            }else didiDao.updatePatSection2Status(didiId,1)
+
         }
     }
-    fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,onAnswerSave: () ->Unit) {
+    fun setAnswerToQuestion(didiId: Int,questionId:Int,answerOptionModel: AnswerOptionModel,
+                            assetAmount:Int,quesType:String,summary:String,onAnswerSave: () ->Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             withContext(Dispatchers.IO) {
+                Log.d("TAG", "setAnswerToQuestion: ${answerOptionModel.toString()}")
                     val alreadyAnsweredModel= answerDao.isAlreadyAnswered(didiId = didiId,
                         questionId =  questionId, actionType = sectionType.value)
                 if(alreadyAnsweredModel!=null){
                         answerDao.updateAnswer(didiId = didiId, questionId = questionId,
                             actionType = sectionType.value,
-                        answerValue = answerOptionModel.optionText,
-                        optionValue = answerOptionModel.optionValue?:0, optionId = answerOptionModel.id, weight = answerOptionModel.weight?:0)
+                            answerValue = answerOptionModel.optionText,
+                            optionValue = answerOptionModel.optionValue?:0,
+                            optionId = answerOptionModel.id,
+                            weight = answerOptionModel.weight?:0,
+                            type=quesType,
+                            totalAssetAmount = assetAmount,
+                            summary = summary )
                         withContext(Dispatchers.Main){
                             onAnswerSave()
                         }
@@ -125,7 +135,9 @@ class QuestionScreenViewModel @Inject constructor(
                             answerValue = answerOptionModel.optionText,
                             questionId = questionId,
                             actionType = sectionType.value,
-                            type = QuestionType.RadioButton.name))
+                            totalAssetAmount = assetAmount,
+                            type = quesType,
+                            summary = summary))
                         withContext(Dispatchers.Main){
                             onAnswerSave()
                         }

@@ -58,7 +58,8 @@ fun NumericFieldTypeQuestion(
     questionId: Int,
     didiId: Int,
     optionList: List<AnswerOptionModel>,
-    viewModel: QuestionScreenViewModel?=null
+    viewModel: QuestionScreenViewModel?=null,
+    onSubmitClick:()->Unit
 ) {
     var totalAssetAmount by rememberSaveable { mutableStateOf(viewModel?.totalAssetAmount) }
     var selectedIndex by remember { mutableStateOf(-1) }
@@ -147,6 +148,7 @@ fun NumericFieldTypeQuestion(
                             .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)
                     ) {
                         OutlinedTextField(
+                            readOnly = false,
                             value = if ((totalAssetAmount?.value
                                     ?: 0) <= 0
                             ) BLANK_STRING else (totalAssetAmount?.value ?: 0).toString(),
@@ -196,7 +198,7 @@ fun NumericFieldTypeQuestion(
                             .padding(bottom = 100.dp)
                     ) {
                         ButtonPositive(buttonTitle = "Submit", isArrowRequired = false) {
-
+                          onSubmitClick()
                         }
                 }
 
@@ -220,7 +222,8 @@ fun NumericFieldTypeQuestionPreview() {
         question ="How many Goats?" ,
         questionId = 1,
         didiId = 1,
-        optionList = optionList
+        optionList = optionList,
+        onSubmitClick = {}
     )
 }
 

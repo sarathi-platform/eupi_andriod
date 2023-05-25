@@ -149,6 +149,10 @@
     <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
     <string name="language_text">ভাষা</string>
     <string name="productive_asset_owned_by_family">পরিবারের মালিকানাধীন উত্পাদনশীল সম্পদ</string>
+    <string name="complete_pat_survey">সম্পূর্ণ PAT সমীক্ষা</string>
+    <string name="total_productive_asset_value">মোট উৎপাদনশীল সম্পদ মূল্য = ₹ %1$s/-</string>
+    <string name="complete">সম্পূর্ণ</string>
+    <string name="show">দেখা</string>
 
 
 </resources>

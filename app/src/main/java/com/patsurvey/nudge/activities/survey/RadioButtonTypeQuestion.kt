@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,7 +93,7 @@ fun RadioButtonTypeQuestion(
             LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
              state = rememberLazyGridState()){
                 itemsIndexed(optionList){ index, option ->
-                    RadioButtonOptionCard(Modifier.disableSplitMotionEvents(),buttonTitle = option.optionText, index = index, optionValue = option.optionValue?:0, selectedIndex = selectedIndex ){
+                    RadioButtonOptionCard(buttonTitle = option.optionText,index = index, optionValue = option.optionValue?:0,selectedIndex = selectedIndex ){
                         selectedIndex=it
                         onAnswerSelection(index)
                     }
@@ -103,29 +104,11 @@ fun RadioButtonTypeQuestion(
     }
 }
 
-fun Modifier.disableSplitMotionEvents() =
-    pointerInput(Unit) {
-        coroutineScope {
-            var currentId: Long = -1L
-            awaitPointerEventScope {
-                while (true) {
-                    awaitPointerEvent(PointerEventPass.Initial).changes.forEach { pointerInfo ->
-                        when {
-                            pointerInfo.pressed && currentId == -1L -> currentId = pointerInfo.id.value
-                            pointerInfo.pressed.not() && currentId == pointerInfo.id.value -> currentId = -1
-                            pointerInfo.id.value != currentId && currentId != -1L -> pointerInfo.consume()
-                            else -> Unit
-                        }
-                    }
-                }
-            }
-        }
-    }
 
 @Preview(showBackground = true)
 @Composable
 fun RadioButtonOptionCardPreview(){
-    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, onOptionSelected = {}, optionValue = 1)
+    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, optionValue = 0,onOptionSelected = {})
 }
 
 @Composable

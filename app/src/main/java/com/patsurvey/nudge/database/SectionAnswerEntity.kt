@@ -39,5 +39,11 @@ data class SectionAnswerEntity(
     @SerializedName("optionValue")
     val optionValue: Int? = -1,
 
+    @SerializedName("totalAssetAmount")
+    val totalAssetAmount: Int? = 0,
+
+    @SerializedName("summary")
+    val summary: String? = BLANK_STRING,
+
 
 )

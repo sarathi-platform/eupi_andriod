@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
@@ -37,10 +39,11 @@ fun ListTypeQuestion(
     modifier: Modifier,
     questionNumber: Int,
     question: String,
+    index: Int=-1,
     optionList: List<AnswerOptionModel>,
     onAnswerSelection: (Int) -> Unit
 ) {
-    var selectedIndex by remember { mutableStateOf(-1) }
+    var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
         Text(
             modifier = Modifier
@@ -80,13 +83,16 @@ fun ListTypeQuestion(
             LazyColumn(modifier = Modifier.fillMaxWidth()){
                 itemsIndexed(optionList){ index, option ->
                   OptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
+                      Log.d("TAG", "ListTypeQuestion: $index :: ${Gson().toJson(option)}")
                       selectedIndex=it
                       onAnswerSelection(index)
                   }
                 }
 
                 item {
-                    Spacer(modifier = Modifier.fillMaxWidth().padding(bottom = 100.dp))
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 100.dp))
                 }
             }
 
@@ -106,8 +112,8 @@ fun ListTypeQuestionPreview() {
        modifier = Modifier.padding(16.dp),
         questionNumber = 1,
         question = "This is a sample text. This is an example of adding border to text.",
-        optionList,
-        onAnswerSelection = {}
+       optionList= optionList,
+        onAnswerSelection = {},
     )
 }
 
