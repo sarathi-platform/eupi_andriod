@@ -665,6 +665,10 @@ fun DidiItemCard(
 
     val transition = updateTransition(expanded, label = "transition")
 
+    val didiMarkedNotAvailable  = remember {
+        mutableStateOf(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+    }
+
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "animate color") {
@@ -768,19 +772,18 @@ fun DidiItemCard(
                     ButtonNegativeForPAT(
                         buttonTitle = stringResource(id = R.string.not_avaliable),
                         isArrowRequired = false,
-                        color = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
-                        textColor = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
+                        color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (didiMarkedNotAvailable.value) white else blueDark,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(45.dp)
                             .weight(1f)
                             .background(
-                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
-                                        didi.id
-                                    )
+                                if (didiMarkedNotAvailable.value
                                 ) blueDark else languageItemActiveBg
                             )
                     ){
+                        didiMarkedNotAvailable.value = true
                         didiViewModel.setDidiAsUnavailable(didi.id)
                     }
                     Spacer(modifier = Modifier.width(6.dp))
@@ -790,20 +793,20 @@ fun DidiItemCard(
                             .height(45.dp)
                             .weight(1f)
                             .background(
-                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
-                                        didi.id
-                                    )
+                                if (didiMarkedNotAvailable.value
                                 ) languageItemActiveBg else blueDark
                             ),
-                        buttonTitle = if(didi.patSurveyProgress==0) stringResource(id = R.string.start_pat) else stringResource(id = R.string.continue_text),
+                        buttonTitle = if(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat) else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text) else "",
                         true,
-                        color = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
-                        textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
-                        iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
+                        color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
+                        iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                     ) {
-//                        if(didi.patSurveyProgress==0) {
+                        if(didi.patSurveyProgress==0) {
                             navController.navigate("didi_pat_summary/${didi.id}")
-//                        }
+                        } else if (didi.patSurveyProgress == 1) {
+                            navController.navigate("yes_no_question_screen/${didi.id}/${TYPE_EXCLUSION}")
+                        }
                     }
                 }
             }

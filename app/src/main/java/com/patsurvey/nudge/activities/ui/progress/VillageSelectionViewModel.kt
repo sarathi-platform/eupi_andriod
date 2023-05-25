@@ -79,13 +79,13 @@ class VillageSelectionViewModel @Inject constructor(
                         description = it.description,
                         url = it.url,
                         thumbUrl = it.thumbUrl,
-                        isDownload = getVideoPath(context, it.id).exists()
+                        isDownload = if (getVideoPath(context, it.id).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     )
                     trainingVideoDao.insert(trainingVideoEntity)
                 }
             } else {
                 trainingVideos.forEach {
-                    val videoIsDownloaded = getVideoPath(context, it.id).exists()
+                    val videoIsDownloaded = if (getVideoPath(context, it.id).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     if (it.isDownload != videoIsDownloaded) {
                         val trainingVideoEntity = TrainingVideoEntity(
                             id = it.id,
@@ -187,8 +187,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         needsToPost = false,
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
-                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus
-                                                    )
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.NOT_MARKED.value                                                    )
                                                 )
                                             }
                                         }

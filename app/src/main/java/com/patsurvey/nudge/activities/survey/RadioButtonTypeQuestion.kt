@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventPass
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,6 +34,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
@@ -90,7 +92,7 @@ fun RadioButtonTypeQuestion(
             LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
              state = rememberLazyGridState()){
                 itemsIndexed(optionList){ index, option ->
-                    RadioButtonOptionCard(Modifier.disableSplitMotionEvents(),buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
+                    RadioButtonOptionCard(Modifier.disableSplitMotionEvents(),buttonTitle = option.optionText, index = index, optionValue = option.optionValue?:0, selectedIndex = selectedIndex ){
                         selectedIndex=it
                         onAnswerSelection(index)
                     }
@@ -123,7 +125,7 @@ fun Modifier.disableSplitMotionEvents() =
 @Preview(showBackground = true)
 @Composable
 fun RadioButtonOptionCardPreview(){
-    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, onOptionSelected = {})
+    RadioButtonOptionCard(modifier = Modifier,"Yes",0,1, onOptionSelected = {}, optionValue = 1)
 }
 
 @Composable
@@ -132,6 +134,7 @@ fun RadioButtonOptionCard(
     buttonTitle: String,
     index: Int,
     selectedIndex: Int,
+    optionValue:Int,
     onOptionSelected: (Int) -> Unit
 ) {
     Column(modifier = Modifier
@@ -158,9 +161,14 @@ fun RadioButtonOptionCard(
                 iconTintColor = if (selectedIndex == index) {
                     white
                 } else {
-                    greenActiveIcon
+                    if (optionValue == 1)
+                        greenActiveIcon
+                    else
+                        redOffline
                 },
-                icon = Icons.Default.Check
+                icon = if (optionValue == 1) painterResource(id = R.drawable.icon_check) else painterResource(
+                    id = R.drawable.icon_close
+                )
             ) {
                 onOptionSelected(index)
             }

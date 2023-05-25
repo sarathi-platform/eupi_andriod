@@ -195,7 +195,8 @@ class AddDidiViewModel @Inject constructor(
                         relationship = HUSBAND_STRING,
                         villageId = prefRepo.getSelectedVillage().id,
                         createdDate = System.currentTimeMillis(),
-                        modifiedDate = System.currentTimeMillis()
+                        modifiedDate = System.currentTimeMillis(),
+                        shgFlag = SHGFlag.NOT_MARKED.value
                     )
                 )
 
@@ -240,7 +241,8 @@ class AddDidiViewModel @Inject constructor(
                 relationship = HUSBAND_STRING,
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
                 createdDate = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).createdDate,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                shgFlag = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).shgFlag
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
@@ -400,7 +402,6 @@ class AddDidiViewModel @Inject constructor(
                                     didi.modifiedDate = didiFromNetwork.modifiedDate
                                 }
                             }
-
                         }
                     }
                 } else {
@@ -444,7 +445,8 @@ class AddDidiViewModel @Inject constructor(
                     needsToPost = false,
                     createdDate = it.createdDate,
                     modifiedDate = System.currentTimeMillis(),
-                    beneficiaryProcessStatus = it.beneficiaryProcessStatus
+                    beneficiaryProcessStatus = it.beneficiaryProcessStatus,
+                    shgFlag = it.shgFlag
                 )
             )
         }
@@ -525,9 +527,20 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun setDidiAsUnavailable(didiId: Int) {
-        prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
+        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyProgress = PatSurveyStatus.NOT_AVAILABLE.ordinal
+//        prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
         _markedNotAvailable.value = _markedNotAvailable.value.also {
             it.add(didiId)
+        }
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+        }
+    }
+
+    fun updateDidiPatStatus(didiId: Int, patSurveyStatus: PatSurveyStatus) {
+        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyProgress = patSurveyStatus.ordinal
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateQuesSectionStatus(didiId, patSurveyStatus.ordinal)
         }
     }
 

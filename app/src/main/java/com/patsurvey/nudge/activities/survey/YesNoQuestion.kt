@@ -99,8 +99,7 @@ fun YesNoQuestion(
                     white
                 } else {
                     red
-                },
-                icon = Icons.Default.Close
+                }
             ) {
                 onNoClicked()
                 isNoSelected(true, false)
@@ -128,8 +127,7 @@ fun YesNoQuestion(
                     white
                 } else {
                     greenActiveIcon
-                },
-                icon = Icons.Default.Check
+                }
             ) {
                 onYesClicked()
                 isYesSelected(true, true)

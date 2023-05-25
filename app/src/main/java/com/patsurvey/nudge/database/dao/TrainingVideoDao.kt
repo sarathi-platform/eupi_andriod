@@ -22,7 +22,7 @@ interface TrainingVideoDao {
     @Query("SELECT * from $TRAINING_VIDEO_TABLE where id = :id")
     fun getVideo(id: Int) : TrainingVideoEntity
 
-    @Query("Update $TRAINING_VIDEO_TABLE set isDownload = 1 where id = :id")
+    @Query("Update $TRAINING_VIDEO_TABLE set isDownload = 2 where id = :id")
     fun setVideoAsDownloaded(id: Int)
 
 }

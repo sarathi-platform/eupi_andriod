@@ -69,4 +69,8 @@ data class DidiEntity(
 
     @ColumnInfo(name = "patSurveyProgress")
     var patSurveyProgress: Int=0,
+
+    @ColumnInfo(name = "shgFlag")
+    var shgFlag: Int
+
     )

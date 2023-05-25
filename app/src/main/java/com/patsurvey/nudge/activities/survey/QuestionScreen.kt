@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,7 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
@@ -63,6 +65,15 @@ fun QuestionScreen(
     val answeredQuestion = remember {
         mutableStateOf(0)
     }
+
+    LaunchedEffect(key1 = true) {
+        delay(200)
+        val mAnsweredQuestion = answerList.size
+        if (mAnsweredQuestion > 0) {
+            pagerState.animateScrollToPage(mAnsweredQuestion + 1)
+        }
+    }
+
     val context = LocalContext.current
     BackHandler() {
         navController.navigate(Graph.HOME) {
@@ -146,7 +157,7 @@ fun QuestionScreen(
                                     sortedOptionList[selectedIndex]
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                        if (answeredQuestion.value < (questionList.size)) {
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             coroutineScope.launch {
@@ -231,6 +242,10 @@ fun QuestionScreen(
             }
         }
         //Previous Ques Button
+        AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
+            .padding(all = 16.dp)
+            /*.visible(prevButtonVisible.value)*/
+            .align(alignment = Alignment.BottomStart)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
@@ -243,14 +258,14 @@ fun QuestionScreen(
                     coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
-                        Image(
-                            painter = painterResource(id = R.drawable.baseline_arrow_back),
-                            contentDescription = "Negative Button",
-                            modifier = Modifier
-                                .height(20.dp)
-                                .absolutePadding(top = 2.dp),
-                            colorFilter = ColorFilter.tint(textColorDark)
-                        )
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_arrow_back),
+                        contentDescription = "Negative Button",
+                        modifier = Modifier
+                            .height(20.dp)
+                            .absolutePadding(top = 2.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
 
                     Text(text = "Q${pagerState.currentPage}",
                         color = textColorDark,
@@ -263,39 +278,46 @@ fun QuestionScreen(
 
                 },
             )
+        }
+
 
         //Next Ques Button
-        ExtendedFloatingActionButton(
-            modifier = Modifier
-                .padding(all = 16.dp)
-                /*.visible(nextButtonVisible.value)*/
-                .align(alignment = Alignment.BottomEnd),
-            shape = RoundedCornerShape(6.dp),
-            backgroundColor = languageItemActiveBg,
-            onClick = {
-                val nextPageIndex = pagerState.currentPage + 1
-                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-            },
-            text = {
-                Text(text = "Q${pagerState.currentPage + 2}",
-                    color = textColorDark,
-                    style = TextStyle(
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        textAlign = TextAlign.Start
-                    ) )
-                Image(
-                    painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
-                    contentDescription = "Negative Button",
-                    modifier = Modifier
-                        .height(20.dp)
-                        .absolutePadding(top = 2.dp),
-                    colorFilter = ColorFilter.tint(textColorDark)
-                )
+        AnimatedVisibility(visible = nextButtonVisible.value, modifier = Modifier
+            .padding(all = 16.dp)
+            /*.visible(nextButtonVisible.value)*/
+            .align(alignment = Alignment.BottomEnd)) {
+            ExtendedFloatingActionButton(
+                modifier = Modifier
+                    .padding(all = 16.dp)
+                    /*.visible(nextButtonVisible.value)*/
+                    .align(alignment = Alignment.BottomEnd),
+                shape = RoundedCornerShape(6.dp),
+                backgroundColor = languageItemActiveBg,
+                onClick = {
+                    val nextPageIndex = pagerState.currentPage + 1
+                    coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                },
+                text = {
+                    Text(text = "Q${pagerState.currentPage + 2}",
+                        color = textColorDark,
+                        style = TextStyle(
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            textAlign = TextAlign.Start
+                        ) )
+                    Image(
+                        painter = painterResource(id = R.drawable.baseline_arrow_forward_ios_24),
+                        contentDescription = "Negative Button",
+                        modifier = Modifier
+                            .height(20.dp)
+                            .absolutePadding(top = 2.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
 
-            },
-        )
+                },
+            )
+        }
     }
 }
 

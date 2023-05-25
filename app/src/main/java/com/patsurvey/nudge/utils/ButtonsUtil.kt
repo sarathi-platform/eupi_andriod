@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalLayoutDirection
@@ -898,7 +899,7 @@ fun ButtonOutlineWithTopIcon(
     iconTintColor: Color,
     buttonBackgroundColor: Color = white,
     buttonBorderColor: Color = lightGray2,
-    icon: ImageVector = Icons.Default.Check,
+    icon: Painter = painterResource(id = R.drawable.icon_check),
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -940,8 +941,7 @@ fun ButtonOutlineWithTopIconPreview() {
         modifier = Modifier.size(155.dp, 110.dp),
         buttonTitle = "Yes",
         textColor = textColorDark,
-        iconTintColor = greenActiveIcon,
-        icon = Icons.Default.Close
+        iconTintColor = greenActiveIcon
     ) {}
 }
 
@@ -1085,11 +1085,14 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 .weight(1f)
                 .fillMaxHeight()
                 ,contentAlignment = Alignment.Center){
-                Row(modifier = Modifier.fillMaxWidth().clickable {
-                    currentCount = incDecValue(0, currentCount)
-                    onDecrementClick(currentCount.toInt())
-                }, horizontalArrangement = Arrangement.Center){
-                    Spacer(modifier = Modifier.width(14.dp)
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        currentCount = incDecValue(0, currentCount)
+                        onDecrementClick(currentCount.toInt())
+                    }, horizontalArrangement = Arrangement.Center){
+                    Spacer(modifier = Modifier
+                        .width(14.dp)
                         .background(Color.Black)
                         .height(1.5.dp)
                         .align(Alignment.CenterVertically))

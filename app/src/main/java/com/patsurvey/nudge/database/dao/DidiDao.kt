@@ -5,6 +5,7 @@ import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -67,4 +68,7 @@ interface DidiDao {
     fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
     @Query("select * from $DIDI_TABLE where cohortId = :tolaId")
     fun getDidisForTola(tolaId: Int): List<DidiEntity>
+
+    @Query("update $DIDI_TABLE set shgFlag =:shgFlag where id = :didiId")
+    fun updateDidiShgStatus(didiId: Int, shgFlag: Int)
 }

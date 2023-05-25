@@ -82,6 +82,11 @@ fun PatDidiSummaryScreen(
             .background(Color.White)
             .then(modifier)
     ) {
+
+        val shgFlag = remember {
+            mutableStateOf(-1)
+        }
+
         val (bottomActionBox, mainBox) = createRefs()
         Box(modifier = Modifier
             .constrainAs(mainBox) {
@@ -231,10 +236,11 @@ fun PatDidiSummaryScreen(
                                     .background(white, shape = RoundedCornerShape(6.dp))
                                     .padding(0.dp)
                             ) {
-                                Row() {
+                                Row(Modifier.padding(0.dp)) {
                                     TextButton(
                                         onClick = {
-
+                                                  shgFlag.value = SHGFlag.YES.value
+                                            patDidiSummaryViewModel.updateDidiShgFlag(didiId, SHGFlag.YES)
                                         }, modifier = Modifier
                                             .clip(
                                                 RoundedCornerShape(
@@ -243,23 +249,25 @@ fun PatDidiSummaryScreen(
                                                 )
                                             )
                                             .background(
-                                                Color.Transparent,
+                                                if (shgFlag.value == SHGFlag.YES.value) blueDark else Color.Transparent,
                                                 RoundedCornerShape(
                                                     topStart = 6.dp,
                                                     bottomStart = 6.dp
                                                 )
                                             )
                                     ) {
-                                        Text(text = stringResource(id = R.string.option_yes))
+                                        Text(text = stringResource(id = R.string.option_yes), color = if (shgFlag.value == SHGFlag.YES.value) white else textColorDark)
                                     }
                                     Spacer(
                                         modifier = Modifier
                                             .width(2.dp)
+                                            .fillMaxHeight()
                                             .background(greyBorder)
                                     )
                                     TextButton(
                                         onClick = {
-
+                                            shgFlag.value = SHGFlag.NO.value
+                                            patDidiSummaryViewModel.updateDidiShgFlag(didiId, SHGFlag.NO)
                                         }, modifier = Modifier
                                             .clip(
                                                 RoundedCornerShape(
@@ -268,11 +276,11 @@ fun PatDidiSummaryScreen(
                                                 )
                                             )
                                             .background(
-                                                Color.Transparent,
+                                                if (shgFlag.value == SHGFlag.NO.value) blueDark else Color.Transparent,
                                                 RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
                                             )
                                     ) {
-                                        Text(text = stringResource(id = R.string.option_no))
+                                        Text(text = stringResource(id = R.string.option_no), color = if (shgFlag.value == SHGFlag.NO.value) white else textColorDark )
                                     }
                                 }
                             }
