@@ -171,7 +171,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                     }
                 },
 
-            positiveButtonText =stringResource(id = R.string.complete),
+            positiveButtonText =stringResource(id = R.string.complete_section_2),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
                     patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
