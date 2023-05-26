@@ -1,26 +1,22 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -38,18 +34,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.EditTextWithTitle
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
+import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun NumericFieldTypeQuestion(
     modifier: Modifier,
@@ -57,13 +51,28 @@ fun NumericFieldTypeQuestion(
     question: String,
     questionId: Int,
     didiId: Int,
-    optionList: List<AnswerOptionModel>,
+    optionList: List<OptionsItem>,
     viewModel: QuestionScreenViewModel?=null,
     onSubmitClick:()->Unit
 ) {
     var totalAssetAmount by rememberSaveable { mutableStateOf(viewModel?.totalAssetAmount) }
-    var selectedIndex by remember { mutableStateOf(-1) }
-    var totalAsset by remember { mutableStateOf(0) }
+
+    val numValueList= viewModel?.optionNumValueList?.collectAsState()
+        if(numValueList?.value?.isNotEmpty() == true){
+        optionList.forEach { option ->
+            numValueList.value?.let { list ->
+                if (list.map { it.optionId }.indexOf(option.optionId) > -1) {
+                    val countValue = list[list.map { it.optionId }.indexOf(option.optionId)]?.count
+                    if (countValue != null) {
+                        option.count = if (countValue <= 0) 0 else countValue
+                    }
+                }
+            }
+
+        }
+            viewModel?.calculateAssetAmount(questionId,didiId)
+
+    }
     Column(modifier = modifier.fillMaxSize()) {
         Text(
             modifier = Modifier
@@ -101,27 +110,29 @@ fun NumericFieldTypeQuestion(
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()) {
                 itemsIndexed(optionList) { index, option ->
-                    IncrementDecrementView(modifier = Modifier, option.optionText, 0,
+                    IncrementDecrementView(modifier = Modifier, option.display?: BLANK_STRING, option.count?:0,
                         onDecrementClick = {
                             val numericAnswerEntity = NumericAnswerEntity(
-                                optionId = option.id,
+                                optionId = option.optionId?:0,
                                 weight = option.weight ?: 1,
                                 questionId = questionId,
                                 count = it,
                                 didiId = didiId,
                                 id = 0
                             )
+                            option.count=it
                             viewModel?.updateNumericAnswer(numericAnswerEntity)
                         },
                         onIncrementClick = {
                             val numericAnswerEntity = NumericAnswerEntity(
-                                optionId = option.id,
+                                optionId = option.optionId?:0,
                                 weight = option.weight ?: 1,
                                 questionId = questionId,
                                 count = it,
                                 didiId = didiId,
                                 id = 0
                             )
+                            option.count=it
                             viewModel?.updateNumericAnswer(numericAnswerEntity)
                         },
                         onValueChange = {
@@ -145,7 +156,11 @@ fun NumericFieldTypeQuestion(
                             .padding(horizontal = 5.dp)
                             .background(Color.White)
                             .wrapContentHeight()
-                            .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)
+                            .border(
+                                width = 1.dp,
+                                shape = RoundedCornerShape(6.dp),
+                                color = Color.Black
+                            )
                     ) {
                         OutlinedTextField(
                             readOnly = false,
@@ -212,9 +227,9 @@ fun NumericFieldTypeQuestion(
 @Preview(showBackground = true)
 @Composable
 fun NumericFieldTypeQuestionPreview() {
-    val optionList= mutableListOf<AnswerOptionModel>()
+    val optionList= mutableListOf<OptionsItem>()
     for (i in 1..5){
-        optionList.add(AnswerOptionModel(i,"Option Value $i",false))
+        optionList.add(OptionsItem("Option Value $i",i+1,i,1,"Summery"))
     }
     NumericFieldTypeQuestion(
         modifier = Modifier,
@@ -222,9 +237,8 @@ fun NumericFieldTypeQuestionPreview() {
         question ="How many Goats?" ,
         questionId = 1,
         didiId = 1,
-        optionList = optionList,
-        onSubmitClick = {}
-    )
+        optionList = optionList
+    ) {}
 }
 
 @Composable
@@ -263,10 +277,6 @@ fun NumericOptionCard(
             .fillMaxWidth()
             .height(5.dp))
     }
-
-}
-
-fun calculateTotalAmount(weight:Int){
 
 }
 

@@ -148,6 +148,7 @@
     <string name="total_productive_asset_value">Total Productive asset value = ₹ %1$s/-</string>
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>
+    <string name="complete_section_2">Complete Section 2</string>
     <string name="show">Show</string>
     <string name="pat_survey_completion_text">PAT Survey - Complete</string>
     <string name="next">Next</string>
