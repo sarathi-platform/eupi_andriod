@@ -124,6 +124,7 @@
     <string name="enter_tola_name_message">Enter Tola Name</string>
 
     <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
     <string name="complete_section_1_text">Complete Section 1</string>
@@ -137,7 +138,7 @@
     </plurals>
     <string name="logout">Logout</string>
     <string name="this_section_is_in_progress">This Section is InProgress state</string>
-    <string name="sync_up">Sync Up</string>
+    <string name="sync_up">Sync Data</string>
     <string name="last_syncup_text">Last Synced: 24 days ago</string>
     <string name="profile">Profile</string>
     <string name="forms">Forms</string>
@@ -148,6 +149,12 @@
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>
     <string name="show">Show</string>
+    <string name="pat_survey_completion_text">PAT Survey - Complete</string>
+    <string name="next">Next</string>
+    <string name="didi_pat_comption_dialog">You are submitting PAT for {DIDI_NAME}.</string>
+    <string name="confirmation_dialog_titile">Are you sure?</string>
+    <string name="section_1_text">"Section 1: "</string>
+    <string name="section_2_text">"Section 2: "</string>
 
 
 </resources>

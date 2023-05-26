@@ -432,6 +432,20 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
             )
         }
+
+        composable(route = PatScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurveyCompleteSummary(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
     }
 }
 
@@ -447,6 +461,7 @@ sealed class PatScreens(val route: String) {
         PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
 }
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {

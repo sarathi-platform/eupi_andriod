@@ -235,9 +235,9 @@ fun SocialMappingDidiListScreen(
                                         )
                                     ) {
                                         append(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
-                                            "${didiList.value.size}"
+                                            "${newFilteredDidiList.size}"
                                         else
-                                            "${didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank}.size}")
+                                            "${newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyProgress != PatSurveyStatus.COMPLETED.ordinal}.size}")
                                     }
                                     append(
                                         " ${
@@ -856,7 +856,7 @@ fun DidiItemCard(
                         .padding(vertical = 10.dp)
                         .padding(horizontal = 20.dp)
                         .clickable {
-
+                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}")
                         }
                         .then(modifier),
                         horizontalArrangement = Arrangement.SpaceBetween

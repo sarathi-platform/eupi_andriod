@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -38,12 +39,15 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
@@ -70,11 +74,15 @@ fun PatSurvaySectionTwoSummaryScreen(
 
     val localDensity = LocalDensity.current
 
+    val context = LocalContext.current
+
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
     val didi = patSectionSummaryViewModel.didiEntity.collectAsState()
     val answerSummeryList by patSectionSummaryViewModel.answerSummeryList.collectAsState()
+
+    val showDialog = remember { mutableStateOf(false) }
 
     ConstraintLayout(
         modifier = Modifier
@@ -83,6 +91,18 @@ fun PatSurvaySectionTwoSummaryScreen(
             .then(modifier)
     ) {
         val (bottomActionBox, mainBox) = createRefs()
+
+        if (showDialog.value){
+            ShowDialog(title = stringResource(R.string.confirmation_dialog_titile), message = stringResource(R.string.didi_pat_comption_dialog).replace("{DIDI_NAME}", didi.value.name), setShowDialog = {
+                showDialog.value = it
+            }, positiveButtonClicked = {
+                patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
+                patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
+                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+            })
+        }
+
+
         Box(modifier = Modifier
             .constrainAs(mainBox) {
                 start.linkTo(parent.start)
@@ -174,10 +194,7 @@ fun PatSurvaySectionTwoSummaryScreen(
             positiveButtonText =stringResource(id = R.string.complete),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                    patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                    patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                navController.popBackStack("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}", inclusive = false)
-
+                                    showDialog.value = true
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )

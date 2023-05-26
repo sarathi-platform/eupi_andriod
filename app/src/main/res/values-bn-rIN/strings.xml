@@ -111,7 +111,8 @@
     <string name="pat_survey">PAT জরিপ</string>
     <string name="didi">দিদি</string>
     <string name="section_number">বিভাগ %d</string>
-    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_section_1">PAT सर्वे सेक्शन 1</string>
+    <string name="pat_survey_complete">PAT सर्वे</string>
     <string name="result_summary">सारांश परिणाम</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <string name="summary_text">सारांश</string>
@@ -143,7 +144,7 @@
     <string name="option_no">না</string>
     <string name="logout">প্রস্থান</string>
     <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
-    <string name="sync_up">সিঙ্ক আপ</string>
+    <string name="sync_up">সিঙ্ক ডেটা</string>
     <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: 24 দিন আগে</string>
     <string name="profile">প্রোফাইল</string>
     <string name="forms">ফর্ম</string>
@@ -154,6 +155,11 @@
     <string name="total_productive_asset_value">মোট উৎপাদনশীল সম্পদ মূল্য = ₹ %1$s/-</string>
     <string name="complete">সম্পূর্ণ</string>
     <string name="show">দেখা</string>
-
+    <string name="next">आगे</string>
+    <string name="pat_survey_completion_text">PAT सर्वेक्षण - पूर्ण</string>
+    <string name="confirmation_dialog_titile">क्या आपको यकीन है?</string>
+    <string name="didi_pat_comption_dialog">आप {DIDI_NAME} के लिए PAT सबमिट कर रहे हैं.</string>
+    <string name="section_1_text">"खंड 1: "</string>
+    <string name="section_2_text">"खंड 2: "</string>
 
 </resources>

@@ -120,9 +120,10 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">PAT शुरू करें</string>
-    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_section_1">PAT सर्वे खंड 1</string>
+    <string name="pat_survey_complete">PAT सर्वे</string>
     <string name="result_summary">सारांश परिणाम</string>
-    <string name="complete_section_1_text">Complete Section 1</string>
+    <string name="complete_section_1_text">सबमिट खंड 1</string>
     <string name="summary_text">सारांश</string>
 
     <string name="done_text">पूर्ण </string>
@@ -136,17 +137,23 @@
     <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
     <string name="logout">लॉग आउट</string>
     <string name="this_section_is_in_progress">यह अनुभाग प्रगति पर है</string>
-    <string name="sync_up">से मिलान</string>
+    <string name="sync_up">डेटा सिंक करें</string>
     <string name="last_syncup_text">अंतिम बार समन्‍वयित: 24 दिन पहले</string>
     <string name="profile">प्रोफाइल</string>
     <string name="forms">फार्म</string>
     <string name="training_videos">प्रशिक्षण वीडियो</string>
     <string name="language_text">भाषा</string>
     <string name="productive_asset_owned_by_family">परिवार के स्वामित्व वाली उत्पादक संपत्ति</string>
-    <string name="complete_pat_survey">पूर्ण पीएटी सर्वेक्षण</string>
+    <string name="complete_pat_survey"> PAT सर्वेक्षण पूर्ण कर</string>
     <string name="total_productive_asset_value">कुल उत्पादक संपत्ति मूल्य = ₹ %1$s/-</string>
     <string name="complete">पूर्ण करे</string>
     <string name="show">देखे</string>
+    <string name="next">आगे</string>
+    <string name="pat_survey_completion_text">PAT सर्वेक्षण - पूर्ण</string>
+    <string name="confirmation_dialog_titile">क्या आपको यकीन है?</string>
+    <string name="didi_pat_comption_dialog">आप {DIDI_NAME} के लिए PAT सबमिट कर रहे हैं.</string>
+    <string name="section_1_text">"खंड 1: "</string>
+    <string name="section_2_text">"खंड 2: "</string>
 
 
 </resources>
