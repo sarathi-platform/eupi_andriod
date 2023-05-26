@@ -34,6 +34,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.TAG
 
 
 @Composable
@@ -42,11 +43,12 @@ fun ListTypeQuestion(
     questionNumber: Int,
     question: String,
     index: Int=-1,
+    selectedIndex: Int,
     optionList: List<OptionsItem?>?,
     onAnswerSelection: (Int) -> Unit
 ) {
     Log.d("TAG", "ListTypeQuestion: ${index}")
-    var selectedIndex by remember { mutableStateOf(index) }
+//    var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
         Text(
             modifier = Modifier
@@ -86,7 +88,7 @@ fun ListTypeQuestion(
             LazyColumn(modifier = Modifier.fillMaxWidth()){
                 itemsIndexed(optionList?: emptyList()){ index, option ->
                   OptionCard(buttonTitle = option?.display?: BLANK_STRING, index = index, selectedIndex = selectedIndex ){
-                      selectedIndex=it
+//                      selectedIndex=it
                       onAnswerSelection(index)
                   }
                 }
@@ -114,7 +116,8 @@ fun ListTypeQuestionPreview() {
        modifier = Modifier.padding(16.dp),
         questionNumber = 1,
         question = "This is a sample text. This is an example of adding border to text.",
-       optionList= optionList,
+        optionList= optionList,
+        selectedIndex = 0,
         onAnswerSelection = {},
     )
 }

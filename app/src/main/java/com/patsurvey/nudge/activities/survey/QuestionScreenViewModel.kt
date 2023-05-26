@@ -246,15 +246,12 @@ class QuestionScreenViewModel @Inject constructor(
                     sectionType.value
                 )
                 if(optionId>0){
-                    questionList.value[quesIndex].options.forEachIndexed { index, answerOptionModel ->
-                        if (optionId == answerOptionModel.optionId) {
-                            listTypeAnswerIndex.value = index
-                            _selIndValue.emit(index)
-                        }
-                    }
+                    val index = questionList.value[quesIndex].options.map { it.optionId }.indexOf(optionId)
+                    listTypeAnswerIndex.value = index
+                    _selIndValue.value = index
                 }else{
                     listTypeAnswerIndex.value = -1
-                    _selIndValue.emit(-1)
+                    _selIndValue.value = -1
                 }
 
             }

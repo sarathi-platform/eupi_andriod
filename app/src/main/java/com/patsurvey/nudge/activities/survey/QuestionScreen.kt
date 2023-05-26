@@ -183,8 +183,9 @@ fun QuestionScreen(
                             ListTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
-                                index = viewModel.selIndValue.value,
+                                index = viewModel.selIndValue.collectAsState().value,
                                 question = questionList[it].questionDisplay ?: "",
+                                selectedIndex = viewModel.selIndValue.collectAsState().value,
                                 optionList = questionList[it].options
                             ) { selectedIndex ->
                                 viewModel.setAnswerToQuestion(
@@ -197,7 +198,7 @@ fun QuestionScreen(
                                     selIndex = viewModel.listTypeAnswerIndex.value
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                        if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
@@ -207,12 +208,6 @@ fun QuestionScreen(
                                                     nextPageIndex
                                                 )
                                             }
-                                        } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
                                         } else {
                                             navigateToSummeryPage(
                                                 navController,
@@ -246,7 +241,7 @@ fun QuestionScreen(
                                     selIndex = -1
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size - 1)) {
+                                        if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
@@ -256,12 +251,6 @@ fun QuestionScreen(
                                                     nextPageIndex
                                                 )
                                             }
-                                        } else if (answeredQuestion.value == (questionList.size - 1)) {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
                                         } else {
                                             navigateToSummeryPage(
                                                 navController,
