@@ -25,17 +25,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
+import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
@@ -65,6 +68,9 @@ fun QuestionScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val answeredQuestion = remember {
+        mutableStateOf(0)
+    }
+    val selQuesIndex = remember {
         mutableStateOf(0)
     }
 
@@ -109,12 +115,12 @@ fun QuestionScreen(
                     partNumber = if(sectionType.equals(TYPE_EXCLUSION,true)) 1 else 2
                 )
                 answeredQuestion.value = answerList.size
+                viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                 HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
-                    userScrollEnabled = true
+                    userScrollEnabled = false
                 ) {
-                    viewModel.findQuestionOptionList(pagerState.currentPage)
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Image(
@@ -129,7 +135,7 @@ fun QuestionScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         if (questionList[it].type == QuestionType.RadioButton.name) {
                             var sortedOptionList =
-                                viewModel.optionList.value.sortedBy { it.optionValue }
+                                questionList[it].options?.sortedBy { it?.optionValue }
                             var selectedOption = -1
                             answerList.forEach { answer ->
                                 if (questionList[it].questionId == answer.questionId) {
@@ -146,13 +152,15 @@ fun QuestionScreen(
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel= sortedOptionList[selectedIndex],
+                                    answerOptionModel= sortedOptionList?.get(selectedIndex)!!,
                                     assetAmount = 0,
                                     quesType = QuestionType.RadioButton.name,
-                                    summary = viewModel.optionList.value[selectedIndex].summary?: BLANK_STRING
+                                    summary = questionList[it].options?.get(selectedIndex)?.summary?: BLANK_STRING,
+                                    selIndex = selectedIndex
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
+                                            selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             coroutineScope.launch {
@@ -171,35 +179,29 @@ fun QuestionScreen(
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
-                            var selIndex=-1
-                            Log.d("TAG", "QuestionScreenData $${Gson().toJson(answerList)}")
-                            answerList.forEachIndexed{ansIndex,answerEntity->
-
-                                if(answerEntity.questionId==questionList[it].questionId){
-                                    selIndex=ansIndex
-                                }
-                            }
-                            Log.d("TAG", "QuestionScreen Size: ${answerList.size}")
+                            Log.d(TAG, "QuestionScreenValues: ${viewModel.selIndValue.value}")
                             ListTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
-                                index = selIndex,
+                                index = viewModel.selIndValue.value,
                                 question = questionList[it].questionDisplay ?: "",
-                                optionList = viewModel.optionList.value
+                                optionList = questionList[it].options
                             ) { selectedIndex ->
-                                Log.d("TAG", "QuestionScreen Index: $selectedIndex")
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel= viewModel.optionList.value[selectedIndex],
+                                    answerOptionModel= questionList[it].options[selectedIndex],
                                     assetAmount = 0,
                                     quesType = QuestionType.List.name,
-                                    summary = viewModel.optionList.value[selectedIndex].summary?: BLANK_STRING
+                                    summary = questionList[it].options[selectedIndex].summary?: BLANK_STRING,
+                                    selIndex = viewModel.listTypeAnswerIndex.value
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size - 1)) {
+                                            selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
+                                            viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                                             coroutineScope.launch {
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
@@ -232,20 +234,23 @@ fun QuestionScreen(
                                 optionList = viewModel.optionList.value,
                                 viewModel = viewModel
                             ){
-                                val newAnswerOptionModel=AnswerOptionModel(0, BLANK_STRING,false,0,
-                                    BLANK_STRING,0)
+                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,1,1,1,
+                                    BLANK_STRING)
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
                                     assetAmount = viewModel.totalAssetAmount.value,
                                     quesType = QuestionType.Numeric_Field.name,
-                                    summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAssetAmount.value.toString())
+                                    summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAssetAmount.value.toString()),
+                                    selIndex = -1
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size - 1)) {
+                                            selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
+                                            viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                                             coroutineScope.launch {
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
@@ -300,7 +305,9 @@ fun QuestionScreen(
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
+                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
                     coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
@@ -340,7 +347,9 @@ fun QuestionScreen(
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
+                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
                     coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                 },
                 text = {

@@ -17,7 +17,7 @@ data class QuestionEntity(
     var questionId: Int? = 0,
 
     @ColumnInfo(name = "options")
-    var options: List<OptionsItem?>? = emptyList(),
+    var options: List<OptionsItem> = emptyList(),
 
     @ColumnInfo(name = "questionImageUrl")
     var questionImageUrl: String? = BLANK_STRING,

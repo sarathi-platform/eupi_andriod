@@ -19,8 +19,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
-    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String)
+    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary,selectedIndex = :selectedIndex where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String,selectedIndex:Int)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)
@@ -33,4 +33,10 @@ interface AnswerDao {
 
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND type = :type AND actionType = :actionType AND optionValue=1")
     fun fetchOptionYesCount(didiId: Int, type: String,actionType:String): Int
+
+    @Query("Select optionId FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType AND questionId = :questionId")
+    fun fetchOptionID(didiId: Int, questionId: Int,actionType:String): Int
+
+    @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType AND questionId = :questionId AND optionId=:optionId")
+    fun countOfOptionId(didiId: Int, questionId: Int,actionType:String,optionId:Int): Int
 }

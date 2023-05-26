@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
+import com.patsurvey.nudge.model.response.OptionsItem
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 
 @Composable
@@ -40,9 +42,10 @@ fun ListTypeQuestion(
     questionNumber: Int,
     question: String,
     index: Int=-1,
-    optionList: List<AnswerOptionModel>,
+    optionList: List<OptionsItem?>?,
     onAnswerSelection: (Int) -> Unit
 ) {
+    Log.d("TAG", "ListTypeQuestion: ${index}")
     var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
         Text(
@@ -81,9 +84,8 @@ fun ListTypeQuestion(
                 .padding(top = 20.dp)
         ) {
             LazyColumn(modifier = Modifier.fillMaxWidth()){
-                itemsIndexed(optionList){ index, option ->
-                  OptionCard(buttonTitle = option.optionText, index = index, selectedIndex = selectedIndex ){
-                      Log.d("TAG", "ListTypeQuestion: $index :: ${Gson().toJson(option)}")
+                itemsIndexed(optionList?: emptyList()){ index, option ->
+                  OptionCard(buttonTitle = option?.display?: BLANK_STRING, index = index, selectedIndex = selectedIndex ){
                       selectedIndex=it
                       onAnswerSelection(index)
                   }
@@ -104,9 +106,9 @@ fun ListTypeQuestion(
 @Preview(showBackground = true)
 @Composable
 fun ListTypeQuestionPreview() {
-    val optionList= mutableListOf<AnswerOptionModel>()
+    val optionList= mutableListOf<OptionsItem>()
     for (i in 1..5){
-        optionList.add(AnswerOptionModel(i,"Option Value $i",false))
+        optionList.add(OptionsItem("Option Value $i",i+1,i,1,"Summery"))
     }
     ListTypeQuestion(
        modifier = Modifier.padding(16.dp),
