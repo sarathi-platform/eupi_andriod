@@ -1,8 +1,5 @@
 package com.patsurvey.nudge.activities.video
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -16,40 +13,27 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
-import coil.compose.rememberImagePainter
-import com.bumptech.glide.Glide
-import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
-import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainTitle
-import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.customviews.CircularProgressBarWithIcon
+import com.patsurvey.nudge.activities.ui.theme.GreyDark
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.TrainingVideoEntity
-import com.patsurvey.nudge.navigation.home.SettingScreens
+import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.debounceClickable
 import com.patsurvey.nudge.utils.videoList
 
@@ -75,7 +59,7 @@ fun VideoListScreen(
     Column(modifier = modifier) {
         MainTitle("Training Videos", Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp))
 
-        SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
+        SearchWithFilterView(placeholderString = stringResource(id = R.string.search_video),
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, top = 16.dp),
             showFilter = false,
@@ -131,7 +115,7 @@ fun VideoItemCard(
     val context = LocalContext.current
 
     val isDownloaded by remember {
-        mutableStateOf(false)
+        mutableStateOf(videoItem.isDownload)
     }
 
     Column {
@@ -187,15 +171,15 @@ fun VideoItemCard(
                 )
             }
 
-            val isDownloaded = videoListViewModel.getVideoPath(
+            /*val isDownloaded = videoListViewModel.getVideoPath(
                 context,
                 videoItem.id
-            ).exists()
+            ).exists()*/
             Icon(painter = painterResource(
-                id = if (isDownloaded) R.drawable.file_download_remove else R.drawable.outline_file_download
+                id = if (isDownloaded == DownloadStatus.DOWNLOADED.value) R.drawable.file_download_remove else R.drawable.outline_file_download
             ),
                 contentDescription = "download file",
-                tint = if (!isDownloaded) GreyDark else Color.Black,
+                tint = if (isDownloaded != DownloadStatus.DOWNLOADED.value) GreyDark else Color.Black,
                 modifier = Modifier
                     .clickable {
                         videoListViewModel.downloadItem(context, videoItem)

@@ -91,7 +91,7 @@ fun DidiScreen(
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
-                            Log.e("arg",didiViewModel.prefRepo.getFromPage())
+                            Log.d("arg",didiViewModel.prefRepo.getFromPage())
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                                 && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
                                 BlueButtonWithDrawableIcon(

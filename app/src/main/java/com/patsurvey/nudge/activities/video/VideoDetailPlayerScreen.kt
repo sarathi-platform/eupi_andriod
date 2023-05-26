@@ -75,7 +75,7 @@ fun VideoDetailPlayerScreen(
         navController.popBackStack()
     }
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(horizontal = 16.dp)) {
 
         if (viewModel.showLoader.value) {
 
@@ -98,7 +98,6 @@ fun VideoDetailPlayerScreen(
                     videoItem.value.title,
                     Modifier
                         .padding(top = 30.dp)
-                        .padding(horizontal = 16.dp)
                 )
             }
 
@@ -107,8 +106,7 @@ fun VideoDetailPlayerScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(if (showFullScreen.value) screenHeight.dp else 250.dp)
-                        .background(white)
-                        .padding(top = if (showFullScreen.value) 0.dp else 10.dp),
+                        .background(white),
                     videoItem = videoItem.value,
                     viewModel = viewModel,
                     showFullScreen = {

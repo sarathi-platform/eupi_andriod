@@ -236,6 +236,7 @@ fun PatDidiSummaryScreen(
                                     .background(white, shape = RoundedCornerShape(6.dp))
                                     .padding(0.dp)
                             ) {
+//                                shgFlag.value = didi.value.shgFlag
                                 Row(Modifier.padding(0.dp)) {
                                     TextButton(
                                         onClick = {
@@ -353,7 +354,7 @@ fun PatDidiSummaryScreen(
 
         }
 
-        if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value) {
+        if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value && shgFlag.value != SHGFlag.NOT_MARKED.value) {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)

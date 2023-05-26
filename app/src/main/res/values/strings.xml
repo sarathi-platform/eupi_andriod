@@ -35,6 +35,7 @@
     <string name="medium_text">Medium</string>
     <string name="rich_text">Rich</string>
     <string name="search_didis">Search Didis</string>
+    <string name="search_video">Search Video</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending">%1s Didis Pending</string>
     <string name="expiry_login_verify_otp" translatable="false">%s s</string>

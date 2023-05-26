@@ -35,6 +35,9 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE")
     fun deleteDidiTable()
 
+    @Query("DELETE from $DIDI_TABLE where villageId = :villageId")
+    fun deleteDidiForVillage(villageId: Int)
+
     @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id in (:ids)")
     fun setNeedToPost(ids: List<Int>, needsToPost: Boolean)
 
@@ -53,7 +56,6 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET localPath = :path WHERE id = :didiId")
     fun saveLocalImagePath(path: String, didiId: Int)
-
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking AND villageId = :villageId")
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean,villageId: Int): List<DidiEntity>
@@ -80,4 +82,6 @@ interface DidiDao {
 
     @Query("update $DIDI_TABLE set shgFlag =:shgFlag where id = :didiId")
     fun updateDidiShgStatus(didiId: Int, shgFlag: Int)
+    @Query("update $DIDI_TABLE set cohortName = :newName where cohortId = :id")
+    fun updateTolaName(id: Int, newName: String)
 }

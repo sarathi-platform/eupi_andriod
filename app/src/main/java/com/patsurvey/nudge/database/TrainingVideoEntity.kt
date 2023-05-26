@@ -19,5 +19,5 @@ data class TrainingVideoEntity(
     @ColumnInfo(name = "thumbUrl")
     val thumbUrl: String,
     @ColumnInfo(name = "isDownload")
-    val isDownload: Int
+    var isDownload: Int
 )

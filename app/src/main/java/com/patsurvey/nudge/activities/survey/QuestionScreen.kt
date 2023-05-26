@@ -37,10 +37,7 @@ import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -76,6 +73,8 @@ fun QuestionScreen(
         val mAnsweredQuestion = answerList.size
         if (mAnsweredQuestion > 0) {
             pagerState.animateScrollToPage(mAnsweredQuestion + 1)
+        } else if (mAnsweredQuestion == questionList.size) {
+            pagerState.animateScrollToPage(mAnsweredQuestion)
         }
     }
 
@@ -291,12 +290,12 @@ fun QuestionScreen(
         //Previous Ques Button
         AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
-            /*.visible(prevButtonVisible.value)*/
+            .visible(prevButtonVisible.value)
             .align(alignment = Alignment.BottomStart)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
-                    /*.visible(prevButtonVisible.value)*/
+                    .visible(prevButtonVisible.value)
                     .align(alignment = Alignment.BottomStart),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
@@ -331,12 +330,12 @@ fun QuestionScreen(
         //Next Ques Button
         AnimatedVisibility(visible = nextButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
-            /*.visible(nextButtonVisible.value)*/
+            .visible(nextButtonVisible.value)
             .align(alignment = Alignment.BottomEnd)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
-                    /*.visible(nextButtonVisible.value)*/
+                    .visible(nextButtonVisible.value)
                     .align(alignment = Alignment.BottomEnd),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,

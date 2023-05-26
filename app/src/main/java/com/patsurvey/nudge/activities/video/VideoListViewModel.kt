@@ -70,6 +70,7 @@ class VideoListViewModel @Inject constructor(
                         id = videoItem.id,
                         downloadManager = downloadManager
                     )
+                    _trainingVideos.value[_trainingVideos.value.map { it.id }.indexOf(videoItem.id)].isDownload = DownloadStatus.DOWNLOADED.ordinal
                     trainingVideoDao.setVideoAsDownloaded(videoItem.id)
                 }
             } catch (ex: Exception) {

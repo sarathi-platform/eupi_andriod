@@ -222,6 +222,7 @@ class TransectWalkViewModel @Inject constructor(
                 modifiedDate = System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
+            didiDao.updateTolaName(id, newName)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             _tolaList.value = updatedTolaList
             if (isTransectWalkComplete.value)
