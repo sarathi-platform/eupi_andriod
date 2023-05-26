@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
@@ -40,6 +39,9 @@ class QuestionScreenViewModel @Inject constructor(
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
     private val _optionList = MutableStateFlow(listOf<AnswerOptionModel>())
+
+    val optionNumValueList: StateFlow<List<NumericAnswerEntity>> get() = _optionNumValueList
+    private val _optionNumValueList = MutableStateFlow(listOf<NumericAnswerEntity>())
     val optionList: StateFlow<List<AnswerOptionModel>> get() = _optionList
 
     private val _answerList = MutableStateFlow(listOf<SectionAnswerEntity>())
@@ -74,6 +76,18 @@ class QuestionScreenViewModel @Inject constructor(
             }
         }
     }
+    fun calculateAssetAmount(questionId:Int,didiId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+          withContext(Dispatchers.IO){
+              val listOfAmount = numericAnswerDao.getTotalAssetAmount(questionId,didiId)
+              totalAssetAmount?.value = 0
+              listOfAmount.forEach {
+                  totalAssetAmount?.value = totalAssetAmount?.value?.plus(it) ?:0
+              }
+          }
+        }
+
+    }
 
     fun findQuestionOptionList(questionIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -103,10 +117,6 @@ class QuestionScreenViewModel @Inject constructor(
                             )
                         )
                     }
-                    Log.d(
-                        "TAG",
-                        "findQuestionOptionList ${questionIndex} Option: ${Gson().toJson(updatedList)}"
-                    )
                     _optionList.emit(updatedList)
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -191,6 +201,15 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
+    fun fetchNumericDetails(quesIndex: Int, didiId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+              withContext(Dispatchers.IO) {
+                 val list=numericAnswerDao.getSingleQueOptions(questionId =questionList.value[quesIndex].questionId?:0, didiId = didiId)
+                  _optionNumValueList.value=list
+            }
+        }
+    }
+
     fun updateNumericAnswer(numericAnswer: NumericAnswerEntity) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -209,7 +228,7 @@ class QuestionScreenViewModel @Inject constructor(
                     numericAnswerDao.insertNumericOption(numericAnswer)
                 }
 
-                val listOfAmount = numericAnswerDao.getTotalAssetAmount()
+                val listOfAmount = numericAnswerDao.getTotalAssetAmount(numericAnswer.questionId,numericAnswer.didiId)
                 totalAssetAmount.value = 0
                 listOfAmount.forEach {
                     totalAssetAmount.value = totalAssetAmount.value + it

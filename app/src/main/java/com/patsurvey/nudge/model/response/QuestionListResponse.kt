@@ -44,4 +44,7 @@ data class OptionsItem(
 	@SerializedName("isSelected")
 	val isSelected: Boolean? = false,
 
+	@SerializedName("count")
+	var count: Int? = 0,
+
 )

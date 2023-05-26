@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,13 +32,11 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -116,6 +113,7 @@ fun QuestionScreen(
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
+                viewModel.fetchNumericDetails(pagerState.currentPage, didiId = didiId)
                 HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
@@ -179,7 +177,6 @@ fun QuestionScreen(
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
-                            Log.d(TAG, "QuestionScreenValues: ${viewModel.selIndValue.value}")
                             ListTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
@@ -226,7 +223,7 @@ fun QuestionScreen(
                                 question = questionList[it].questionDisplay ?: "",
                                 didiId = didiId,
                                 questionId = questionList[it].questionId ?: 0,
-                                optionList = viewModel.optionList.value,
+                                optionList = questionList[it].options,
                                 viewModel = viewModel
                             ){
                                 val newAnswerOptionModel= OptionsItem( BLANK_STRING,1,1,1,
