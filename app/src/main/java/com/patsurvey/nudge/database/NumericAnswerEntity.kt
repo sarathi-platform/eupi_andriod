@@ -24,6 +24,6 @@ data class NumericAnswerEntity(
     var weight : Int,
 
     @ColumnInfo(name = "count")
-    val count : Int,
+    val count : Int=0,
 
 )

@@ -45,5 +45,8 @@ data class SectionAnswerEntity(
     @SerializedName("summary")
     val summary: String? = BLANK_STRING,
 
+    @SerializedName("selectedIndex")
+    val selectedIndex: Int? = -1,
+
 
 )

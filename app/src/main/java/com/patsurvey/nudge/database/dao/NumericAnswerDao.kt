@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 
 @Dao
@@ -29,6 +28,9 @@ interface NumericAnswerDao {
     @Query("DELETE from $NUMERIC_TABLE_NAME")
     fun deleteNumericTable()
 
-    @Query("SELECT weight*count AS total_amount FROM $NUMERIC_TABLE_NAME")
-    fun getTotalAssetAmount(): List<Int>
+    @Query("SELECT weight*count AS total_amount FROM $NUMERIC_TABLE_NAME where questionId =:questionId AND didiId =:didiId")
+    fun getTotalAssetAmount(questionId: Int,didiId: Int): List<Int>
+
+    @Query("SELECT * FROM $NUMERIC_TABLE_NAME where questionId =:questionId AND didiId =:didiId")
+    fun getSingleQueOptions(questionId:Int,didiId:Int): List<NumericAnswerEntity>
 }
