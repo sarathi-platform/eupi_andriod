@@ -37,6 +37,7 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.setScreenOrientation
 import com.patsurvey.nudge.utils.videoList
 import kotlinx.coroutines.delay
@@ -171,7 +172,7 @@ fun VideoPlayer(
     mediaItems.add(
         MediaItem.Builder()
             .setUri(
-                if (videoItem.isDownload) viewModel.getVideoPath(
+                if (videoItem.isDownload == DownloadStatus.DOWNLOADED.value) viewModel.getVideoPath(
                     context,
                     videoItem.id
                 ) else videoItem.url

@@ -46,6 +46,7 @@ fun DidiScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.checkIfTolaIsNotDeleted()
+        didiViewModel.prefRepo.saveStepId(stepId)
     }
 
     val configuration = LocalConfiguration.current

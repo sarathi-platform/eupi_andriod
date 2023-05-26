@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.DidiPhotoModel
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -56,7 +57,8 @@ class PatDidiSummaryViewModel @Inject constructor(
             cohortName = "",
             villageId = 0,
             createdDate = System.currentTimeMillis(),
-            modifiedDate = System.currentTimeMillis()
+            modifiedDate = System.currentTimeMillis(),
+            shgFlag = SHGFlag.NOT_MARKED.value
         )
     )
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
@@ -126,6 +128,13 @@ class PatDidiSummaryViewModel @Inject constructor(
             } else {
                 callBack(false)
             }
+        }
+    }
+
+    fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateDidiShgStatus(didiId = didiId, shgFlag = flagStatus.value)
+
         }
     }
 }

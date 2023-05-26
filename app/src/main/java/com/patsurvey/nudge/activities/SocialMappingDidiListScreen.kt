@@ -17,6 +17,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -505,10 +506,10 @@ private fun decoupledConstraints(): ConstraintSet {
     return ConstraintSet {
         val didiImage = createRefFor("didiImage")
         val didiName = createRefFor("didiName")
+        val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
-
         val didiDetailLayout = createRefFor("didiDetailLayout")
 
 
@@ -518,6 +519,12 @@ private fun decoupledConstraints(): ConstraintSet {
             start.linkTo(parent.start, margin = 10.dp)
         }
         constrain(didiName) {
+            start.linkTo(didiImage.end, 10.dp)
+            top.linkTo(parent.top, 10.dp)
+            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(didiRow) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
             end.linkTo(expendArrowImage.start, margin = 10.dp)
@@ -665,6 +672,10 @@ fun DidiItemCard(
 
     val transition = updateTransition(expanded, label = "transition")
 
+    val didiMarkedNotAvailable  = remember {
+        mutableStateOf(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+    }
+
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = "animate color") {
@@ -707,16 +718,32 @@ fun DidiItemCard(
                     CircularDidiImage(
                         modifier = Modifier.layoutId("didiImage")
                     )
-                    Text(
-                        text = didi.name,
-                        style = TextStyle(
-                            color = animateColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        ),
-                        modifier = Modifier.layoutId("didiName")
-                    )
+                    Row(modifier = Modifier.layoutId("didiRow").fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            text = didi.name,
+                            style = TextStyle(
+                                color = animateColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans,
+                                textAlign = TextAlign.Start
+                            ),
+                        )
+
+                        if(didi.patSurveyProgress.equals(PatSurveyStatus.COMPLETED.ordinal)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_completed_tick),
+                                contentDescription = "home image",
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                                    .padding(5.dp)
+                                    .layoutId("successImage")
+                            )
+                        }
+                    }
+
 
                     Image(
                         painter = painterResource(id = R.drawable.home_icn),
@@ -760,50 +787,80 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                ) {
-                    ButtonNegativeForPAT(
-                        buttonTitle = stringResource(id = R.string.not_avaliable),
-                        isArrowRequired = false,
-                        color = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
-                        textColor = if (didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
+                if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(45.dp)
-                            .weight(1f)
-                            .background(
-                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
-                                        didi.id
-                                    )
-                                ) blueDark else languageItemActiveBg
-                            )
-                    ){
-                        didiViewModel.setDidiAsUnavailable(didi.id)
-                    }
-                    Spacer(modifier = Modifier.width(6.dp))
-                    ButtonPositiveForPAT(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(45.dp)
-                            .weight(1f)
-                            .background(
-                                if (didiViewModel.markedNotAvailable.collectAsState().value.contains(
-                                        didi.id
-                                    )
-                                ) languageItemActiveBg else blueDark
-                            ),
-                        buttonTitle = if(didi.patSurveyProgress==0) stringResource(id = R.string.start_pat) else stringResource(id = R.string.continue_text),
-                        true,
-                        color = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) blueDark else languageItemActiveBg,
-                        textColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark,
-                        iconTintColor = if (!didiViewModel.markedNotAvailable.collectAsState().value.contains(didi.id)) white else blueDark
+                            .padding(vertical = 10.dp, horizontal = 16.dp)
                     ) {
-//                        if(didi.patSurveyProgress==0) {
-                            navController.navigate("didi_pat_summary/${didi.id}")
-//                        }
+                        ButtonNegativeForPAT(
+                            buttonTitle = stringResource(id = R.string.not_avaliable),
+                            isArrowRequired = false,
+                            color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                            textColor = if (didiMarkedNotAvailable.value) white else blueDark,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp)
+                                .weight(1f)
+                                .background(
+                                    if (didiMarkedNotAvailable.value
+                                    ) blueDark else languageItemActiveBg
+                                )
+                        ){
+                            didiMarkedNotAvailable.value = true
+                            didiViewModel.setDidiAsUnavailable(didi.id)
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        ButtonPositiveForPAT(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp)
+                                .weight(1f)
+                                .background(
+                                    if (didiMarkedNotAvailable.value
+                                    ) languageItemActiveBg else blueDark
+                                ),
+                            buttonTitle = if(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            else "",
+                            true,
+                            color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                            textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
+                            iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
+                        ) {
+                            if (didi.patSurveyProgress == 0) {
+                                navController.navigate("didi_pat_summary/${didi.id}")
+                            } else if (didi.patSurveyProgress == 1) {
+                                if (didi.section1 == 0 || didi.section1 == 1)
+                                    navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                                else if (didi.section2 == 0 || didi.section2 == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                            }
+                        }
+                    }
+                }else{
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                        .padding(horizontal = 20.dp)
+                        .clickable {
+
+                        }
+                        .then(modifier),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.show),
+                            style = smallTextStyleMediumWeight,
+                            color = textColorDark,
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint = blueDark,
+                            modifier = Modifier
+                                .absolutePadding(top = 4.dp, left = 2.dp)
+                                .size(24.dp)
+                        )
                     }
                 }
             }

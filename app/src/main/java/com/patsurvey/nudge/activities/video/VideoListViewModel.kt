@@ -6,7 +6,9 @@ import android.content.Context
 import android.database.Cursor
 import android.os.Environment
 import android.util.Log
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
@@ -42,10 +44,15 @@ class VideoListViewModel @Inject constructor(
     val trainingVideos: StateFlow<List<TrainingVideoEntity>> get() = _trainingVideos
 
 
+    var filterdList by mutableStateOf(listOf<TrainingVideoEntity>())
+    private set
+
     fun getVideoList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val mTrainingVideos = trainingVideoDao.getVideoList()
             _trainingVideos.emit(mTrainingVideos)
+
+            filterdList = trainingVideos.value
         }
     }
 
@@ -127,5 +134,19 @@ class VideoListViewModel @Inject constructor(
 
     fun getVideoPath(context: Context, videoItemId: Int): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)?.absolutePath}/${videoItemId}.mp4")
+    }
+
+    fun performQuery(query: String) {
+        filterdList = if (query.isNotEmpty()) {
+            val mFilteredList = ArrayList<TrainingVideoEntity>()
+            trainingVideos.value.forEach { videos ->
+                if (videos.title.lowercase().contains(query.lowercase())) {
+                    mFilteredList.add(videos)
+                }
+            }
+            mFilteredList
+        } else {
+            trainingVideos.value
+        }
     }
 }

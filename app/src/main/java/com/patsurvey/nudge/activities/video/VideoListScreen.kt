@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
@@ -42,8 +45,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainTitle
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CircularProgressBarWithIcon
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.TrainingVideoEntity
@@ -67,7 +69,7 @@ fun VideoListScreen(
         viewModel.getVideoList()
     }
 
-    val trainingVideos = viewModel.trainingVideos.collectAsState()
+    val trainingVideos = viewModel.filterdList
 
 
     Column(modifier = modifier) {
@@ -81,7 +83,7 @@ fun VideoListScreen(
             onFilterSelected = {
 
             }, onSearchValueChange = {
-//                didiViewModel.performQuery(it, filterSelected)
+                viewModel.performQuery(it)
             }
         )
 
@@ -103,7 +105,7 @@ fun VideoListScreen(
             verticalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             itemsIndexed(
-                trainingVideos.value
+                trainingVideos
             ) { index, videoItem ->
                 VideoItemCard(
                     Modifier
@@ -132,69 +134,83 @@ fun VideoItemCard(
         mutableStateOf(false)
     }
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .then(modifier),
-        horizontalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Image(
-            painter = rememberAsyncImagePainter(model = videoItem.thumbUrl),
-            contentDescription = null,
-            modifier = Modifier
-                .width(100.dp)
-                .height(75.dp),
-            contentScale = ContentScale.Inside
-        )
+    Column {
 
-        Column(
+        Row(
             modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .then(modifier),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Text(
-                text = videoItem.title,
-                style = TextStyle(
-                    color = textColorDark,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans,
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+            Image(
+                painter = rememberAsyncImagePainter(model = videoItem.thumbUrl),
+                contentDescription = null,
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .width(100.dp)
+                    .height(75.dp)
+                    .clip(RoundedCornerShape(6.dp)),
+                contentScale = ContentScale.Inside
             )
 
-            Text(
-                text = videoItem.description,
-                style = TextStyle(
-                    color = textColorDark,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = NotoSans
-                ),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
+            Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .weight(1f)
+                    .padding(horizontal = 4.dp)
+            ) {
+                Text(
+                    text = videoItem.title,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans,
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+
+                Text(
+                    text = videoItem.description,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = NotoSans
+                    ),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+
+            val isDownloaded = videoListViewModel.getVideoPath(
+                context,
+                videoItem.id
+            ).exists()
+            Icon(painter = painterResource(
+                id = if (isDownloaded) R.drawable.file_download_remove else R.drawable.outline_file_download
+            ),
+                contentDescription = "download file",
+                tint = if (!isDownloaded) GreyDark else Color.Black,
+                modifier = Modifier
+                    .clickable {
+                        videoListViewModel.downloadItem(context, videoItem)
+                    }
+                    .absolutePadding(top = 4.dp)
             )
         }
 
-        Icon(painter = painterResource(
-            id = if (videoListViewModel.getVideoPath(
-                    context,
-                    videoItem.id
-                ).exists()
-            ) R.drawable.file_download_remove else R.drawable.outline_file_download
-        ),
-        contentDescription = "download file",
-        tint = Color.Black,
-        modifier = Modifier
-            .clickable {
-                videoListViewModel.downloadItem(context, videoItem)
-            }
+        Divider(
+            color = borderGreyLight,
+            thickness = 1.dp,
+            modifier = Modifier.padding(
+                vertical = 2.dp,
+                horizontal = 16.dp
+            )
         )
     }
 }
