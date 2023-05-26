@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -45,7 +46,7 @@ fun SettingScreen(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
-    LaunchedEffect(key1 = Unit) {
+//    LaunchedEffect(key1 = true) {
         val list = ArrayList<SettingOptionModel>()
         list.add(
             SettingOptionModel(
@@ -59,7 +60,10 @@ fun SettingScreen(
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         viewModel.createSettingMenu(list)
-    }
+//    }
+
+    val optionList = viewModel.optionList.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -82,7 +86,7 @@ fun SettingScreen(
                     end.linkTo(parent.end)
                 }) {
                 LazyColumn {
-                    itemsIndexed(viewModel.optionList.value) { index, item ->
+                    itemsIndexed(optionList.value) { index, item ->
                         SettingCard(title = item.title, subTitle = item.subTitle) {
                             when (index) {
                                 1 -> {

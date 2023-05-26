@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -43,6 +44,7 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
 
@@ -57,6 +59,10 @@ fun PatSurvaySectionTwoSummaryScreen(
 
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
+    }
+
+    BackHandler() {
+        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
     val configuration = LocalConfiguration.current
@@ -170,7 +176,7 @@ fun PatSurvaySectionTwoSummaryScreen(
             positiveButtonOnClick = {
                     patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                     patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                    navController.navigate("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}")
+                navController.popBackStack("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}", inclusive = false)
 
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }

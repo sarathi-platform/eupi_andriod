@@ -22,7 +22,7 @@ class SettingViewModel @Inject constructor(
     fun createSettingMenu(list:ArrayList<SettingOptionModel>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
-                _optionList.emit(list)
+                _optionList.value = list
             }
         }
     }

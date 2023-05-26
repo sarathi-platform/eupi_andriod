@@ -49,7 +49,10 @@ fun LanguageScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     BackHandler {
-        (context as? Activity)?.finish()
+        if (pageFrom == ARG_FROM_HOME)
+            (context as? Activity)?.finish()
+        else
+            navController.popBackStack()
     }
     Box(
         modifier = Modifier
@@ -106,12 +109,12 @@ fun LanguageScreen(
                     navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
                 else {
                   viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,false)
-                    navController.navigate(SettingScreens.SETTING_SCREEN.route){
-                        popUpTo(SettingScreens.SETTING_SCREEN.route){
-                            inclusive = true
-                        }
-
-                    }
+                  navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
+//                    navController.navigate(SettingScreens.SETTING_SCREEN.route){
+//                        popUpTo(SettingScreens.SETTING_SCREEN.route){
+//                            inclusive = false
+//                        }
+//                    }
               }
             },
             modifier = Modifier

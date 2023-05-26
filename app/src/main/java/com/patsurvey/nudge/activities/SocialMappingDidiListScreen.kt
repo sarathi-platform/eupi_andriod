@@ -12,6 +12,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -63,6 +64,9 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -179,16 +183,20 @@ fun SocialMappingDidiListScreen(
                                 stringResource(R.string.didis_item_text)
                             MainTitle(title, Modifier.weight(0.5f))
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
-                                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                                BlueButtonWithIconWithFixedWidth(
-                                    modifier = Modifier
-                                        .weight(0.5f),
-                                    buttonText = stringResource(id = R.string.add_didi),
-                                    icon = Icons.Default.Add
-                                ) {
-                                    didiViewModel.resetAllFields()
-                                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
-                                        launchSingleTop = true
+                                && !didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_PAT_SURVEY, true)
+                            ) {
+                                if (!didiViewModel.isSocialMappingComplete.value) {
+                                    BlueButtonWithIconWithFixedWidth(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        buttonText = stringResource(id = R.string.add_didi),
+                                        icon = Icons.Default.Add
+                                    ) {
+                                        didiViewModel.resetAllFields()
+                                        navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
                             }
@@ -718,7 +726,9 @@ fun DidiItemCard(
                     CircularDidiImage(
                         modifier = Modifier.layoutId("didiImage")
                     )
-                    Row(modifier = Modifier.layoutId("didiRow").fillMaxWidth(),
+                    Row(modifier = Modifier
+                        .layoutId("didiRow")
+                        .fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween) {
                         Text(
                             text = didi.name,
@@ -731,7 +741,7 @@ fun DidiItemCard(
                             ),
                         )
 
-                        if(didi.patSurveyProgress.equals(PatSurveyStatus.COMPLETED.ordinal)) {
+                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyProgress.equals(PatSurveyStatus.COMPLETED.ordinal)) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_completed_tick),
                                 contentDescription = "home image",
@@ -828,9 +838,12 @@ fun DidiItemCard(
                             textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
-                            if (didi.patSurveyProgress == 0) {
+                            if (didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                if (didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                    didiMarkedNotAvailable.value = false
+                                }
                                 navController.navigate("didi_pat_summary/${didi.id}")
-                            } else if (didi.patSurveyProgress == 1) {
+                            } else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) {
                                 if (didi.section1 == 0 || didi.section1 == 1)
                                     navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
                                 else if (didi.section2 == 0 || didi.section2 == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")

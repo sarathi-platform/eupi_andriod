@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -77,12 +78,17 @@ fun PatSurvaySectionSummaryScreen(
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
-LaunchedEffect(key1 = Unit){
-    questionList.forEach {
-        val answer = answerList.find { it.questionId == it.questionId }
+    LaunchedEffect(key1 = Unit){
+        questionList.forEach {
+            val answer = answerList.find { it.questionId == it.questionId }
+        }
+
     }
 
-}
+    BackHandler() {
+        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -185,7 +191,7 @@ LaunchedEffect(key1 = Unit){
                 patSectionSummaryViewModel.setPATSection1Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 if(patSectionSummaryViewModel.isYesSelected.value){
                     patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                    navController.navigate("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}")
+                    navController.popBackStack("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}", inclusive = false)
                 }else{
                     patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)
                     patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)

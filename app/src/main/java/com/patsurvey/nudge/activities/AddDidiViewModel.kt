@@ -414,7 +414,7 @@ class AddDidiViewModel @Inject constructor(
     }
     fun updateDidisNeedTOPostList(villageId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            updateTolaListWithIds(didiList)
+            updateTolaListWithIds(didiList, villageId)
             didiList.value.forEach {
                 didiDao.updateNeedToPost(it.id, false)
             }
@@ -425,8 +425,8 @@ class AddDidiViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
-    private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>) {
-        didiDao.deleteDidiTable()
+    private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
+        didiDao.deleteDidiForVillage(villageId)
         val didis = mutableListOf<DidiEntity>()
         newDidiList.value.forEach {
             didis.add(
@@ -441,7 +441,7 @@ class AddDidiViewModel @Inject constructor(
                     cohortId = it.cohortId,
                     cohortName = it.cohortName,
                     wealth_ranking = it.beneficiaryProcessStatus?.find { it.name == StepType.WEALTH_RANKING.name }?.status ?: WealthRank.NOT_RANKED.rank,
-                    villageId = villageId,
+                    villageId = this.villageId,
                     needsToPost = false,
                     createdDate = it.createdDate,
                     modifiedDate = System.currentTimeMillis(),

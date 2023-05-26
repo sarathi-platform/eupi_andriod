@@ -32,6 +32,7 @@
     <string name="resend_otp">ओटीपी के फेर से भेजल जाला</string>
     <string name="ranking_text">रैंकिंग:</string>
     <string name="search_didis">खोज दीदीस के बा</string>
+    <string name="search_video">वीडियो को खोजें</string>
     <string name="count_didis_pending">%1s दीदीस लंबित बा</string>
     <string name="poor_text">गरीब</string>
     <string name="medium_text">माध्यम</string>

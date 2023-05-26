@@ -46,6 +46,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     val context = LocalContext.current
 
     LaunchedEffect(key1 = true) {
+        delay(200)
         didiViewModel?.checkIfTolaIsNotDeleted()
     }
 
