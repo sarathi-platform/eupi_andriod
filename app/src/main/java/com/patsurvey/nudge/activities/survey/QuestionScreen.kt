@@ -75,8 +75,6 @@ fun QuestionScreen(
         delay(200)
         val mAnsweredQuestion = answerList.size
         if (mAnsweredQuestion > 0) {
-            pagerState.animateScrollToPage(mAnsweredQuestion + 1)
-        } else if (mAnsweredQuestion == questionList.size) {
             pagerState.animateScrollToPage(mAnsweredQuestion)
         }
     }

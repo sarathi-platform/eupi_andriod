@@ -191,7 +191,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                     }
                 },
 
-            positiveButtonText =stringResource(id = R.string.complete_section_2),
+            positiveButtonText =stringResource(id = R.string.complete_pat_survey),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
                                     showDialog.value = true
