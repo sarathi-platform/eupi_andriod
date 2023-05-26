@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -78,15 +79,18 @@ fun PatSurvaySectionSummaryScreen(
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
-    LaunchedEffect(key1 = Unit){
+    LaunchedEffect(key1 = Unit) {
         questionList.forEach {
             val answer = answerList.find { it.questionId == it.questionId }
         }
-
     }
 
     BackHandler() {
         navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+    }
+
+    val showPatCompletion = remember {
+        mutableStateOf(false)
     }
 
     ConstraintLayout(
@@ -150,6 +154,22 @@ fun PatSurvaySectionSummaryScreen(
                         .height(10.dp)
                 )
 
+                AnimatedVisibility(visible = showPatCompletion.value) {
+                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+                        Text(
+                            text = stringResource(R.string.pat_survey_completion_text),
+                            modifier = Modifier.fillMaxWidth(),
+                            textAlign = TextAlign.Center,
+                            style = TextStyle(
+                                color = textColorDark,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans
+                            )
+                        )
+                    }
+
+                }
                 Text(
                     text = stringResource(R.string.summary_text),
                     style = TextStyle(
@@ -185,16 +205,37 @@ fun PatSurvaySectionSummaryScreen(
                     }
                 },
 
-            positiveButtonText = if(patSectionSummaryViewModel.isYesSelected.value) stringResource(id = R.string.complete_pat_survey) else stringResource(id = R.string.complete_section_1_text),
+            positiveButtonText = if (patSectionSummaryViewModel.isYesSelected.value) {
+                if (showPatCompletion.value)
+                    stringResource(id = R.string.next)
+                else
+                    stringResource(id = R.string.complete_pat_survey)
+            } else stringResource(id = R.string.complete_section_1_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                patSectionSummaryViewModel.setPATSection1Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                if(patSectionSummaryViewModel.isYesSelected.value){
-                    patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                    navController.popBackStack("pat_screens/${patSectionSummaryViewModel.prefRepo.getSelectedVillage().id}/${patSectionSummaryViewModel.prefRepo.getStepId()}", inclusive = false)
-                }else{
-                    patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)
-                    patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.INPROGRESS.ordinal)
+                patSectionSummaryViewModel.setPATSection1Complete(
+                    didi.value.id,
+                    PatSurveyStatus.COMPLETED.ordinal
+                )
+                if (patSectionSummaryViewModel.isYesSelected.value) {
+                    if (showPatCompletion.value) {
+                        patSectionSummaryViewModel.setPATSurveyComplete(
+                            didi.value.id,
+                            PatSurveyStatus.COMPLETED.ordinal
+                        )
+                        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                    } else {
+                        showPatCompletion.value = true
+                    }
+                } else {
+                    patSectionSummaryViewModel.setPATSection2Complete(
+                        didi.value.id,
+                        PatSurveyStatus.INPROGRESS.ordinal
+                    )
+                    patSectionSummaryViewModel.setPATSurveyComplete(
+                        didi.value.id,
+                        PatSurveyStatus.INPROGRESS.ordinal
+                    )
                     navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
                 }
             },

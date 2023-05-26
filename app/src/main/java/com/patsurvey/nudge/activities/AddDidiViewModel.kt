@@ -242,7 +242,12 @@ class AddDidiViewModel @Inject constructor(
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
                 createdDate = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).createdDate,
                 modifiedDate = System.currentTimeMillis(),
-                shgFlag = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).shgFlag
+                shgFlag = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).shgFlag,
+                beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).beneficiaryProcessStatus,
+                patSurveyProgress = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyProgress,
+                section1 = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1,
+                section2 = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2,
+
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
@@ -426,6 +431,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
+        val oldDidiList = didiDao.getAllDidisForVillage(villageId)
         didiDao.deleteDidiForVillage(villageId)
         val didis = mutableListOf<DidiEntity>()
         newDidiList.value.forEach {
@@ -446,7 +452,10 @@ class AddDidiViewModel @Inject constructor(
                     createdDate = it.createdDate,
                     modifiedDate = System.currentTimeMillis(),
                     beneficiaryProcessStatus = it.beneficiaryProcessStatus,
-                    shgFlag = it.shgFlag
+                    patSurveyProgress = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyProgress,
+                    section1 = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section1,
+                    section2 = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section2,
+                    shgFlag = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].shgFlag
                 )
             )
         }

@@ -489,8 +489,11 @@ fun ButtonNegativeForPAT(
         contentAlignment = Alignment.Center,
     ) {
         Row(
-            Modifier.padding(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            Modifier.padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
         ) {
             if (isArrowRequired) {
                 Image(
@@ -504,7 +507,12 @@ fun ButtonNegativeForPAT(
             Text(
                 text = buttonTitle,
                 color = textColor,
-                style = buttonTextStyle
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
             )
         }
     }
