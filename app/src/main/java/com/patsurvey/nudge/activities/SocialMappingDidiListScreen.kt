@@ -186,7 +186,7 @@ fun SocialMappingDidiListScreen(
                                 && !didiViewModel.prefRepo.getFromPage()
                                     .equals(ARG_FROM_PAT_SURVEY, true)
                             ) {
-                                if (!didiViewModel.isSocialMappingComplete.value) {
+//                                if (!didiViewModel.isSocialMappingComplete.value) {
                                     BlueButtonWithIconWithFixedWidth(
                                         modifier = Modifier
                                             .weight(0.5f),
@@ -198,7 +198,7 @@ fun SocialMappingDidiListScreen(
                                             launchSingleTop = true
                                         }
                                     }
-                                }
+//                                }
                             }
                         }
                     }

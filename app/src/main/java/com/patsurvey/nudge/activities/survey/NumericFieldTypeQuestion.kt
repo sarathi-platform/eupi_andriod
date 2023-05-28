@@ -13,12 +13,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,22 +52,23 @@ fun NumericFieldTypeQuestion(
     onSubmitClick:()->Unit
 ) {
     var totalAssetAmount by rememberSaveable { mutableStateOf(viewModel?.totalAssetAmount) }
-
-    val numValueList= viewModel?.optionNumValueList?.collectAsState()
-        if(numValueList?.value?.isNotEmpty() == true){
-        optionList.forEach { option ->
-            numValueList.value?.let { list ->
-                if (list.map { it.optionId }.indexOf(option.optionId) > -1) {
-                    val countValue = list[list.map { it.optionId }.indexOf(option.optionId)]?.count
-                    if (countValue != null) {
-                        option.count = if (countValue <= 0) 0 else countValue
+    val numValueList = viewModel?.optionNumValueList?.collectAsState()
+    LaunchedEffect(key1 = Unit) {
+        if (numValueList?.value?.isNotEmpty() == true) {
+            optionList.forEach { option ->
+                numValueList.value?.let { list ->
+                    if (list.map { it.optionId }.indexOf(option.optionId) > -1) {
+                        val countValue =
+                            list[list.map { it.optionId }.indexOf(option.optionId)]?.count
+                        if (countValue != null) {
+                            option.count = if (countValue <= 0) 0 else countValue
+                        }
                     }
                 }
+
             }
-
+            viewModel?.calculateAssetAmount(questionId, didiId)
         }
-            viewModel?.calculateAssetAmount(questionId,didiId)
-
     }
     Column(modifier = modifier.fillMaxSize()) {
         Text(

@@ -47,7 +47,6 @@ fun ListTypeQuestion(
     optionList: List<OptionsItem?>?,
     onAnswerSelection: (Int) -> Unit
 ) {
-    Log.d("TAG", "ListTypeQuestion: ${index}")
 //    var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
         Text(
