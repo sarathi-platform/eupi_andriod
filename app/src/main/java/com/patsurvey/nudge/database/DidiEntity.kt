@@ -51,7 +51,32 @@ data class DidiEntity(
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
 
+    @ColumnInfo(name = "localPath")
+    var localPath: String = BLANK_STRING,
+
+    @ColumnInfo(name = "createdDate")
+    var createdDate: Long,
+
+    @ColumnInfo(name = "modifiedDate")
+    var modifiedDate: Long,
+
+    @ColumnInfo(name = "needsToPostRanking")
+    var needsToPostRanking: Boolean = true,
+
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")
-    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList()
-)
+    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
+
+    @ColumnInfo(name = "patSurveyProgress")
+    var patSurveyProgress: Int=0,
+
+    @ColumnInfo(name = "section1")
+    var section1: Int=0,
+
+    @ColumnInfo(name = "section2")
+    var section2: Int=0,
+
+    @ColumnInfo(name = "shgFlag")
+    var shgFlag: Int
+
+    )

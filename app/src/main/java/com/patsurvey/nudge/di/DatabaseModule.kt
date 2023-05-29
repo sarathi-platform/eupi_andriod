@@ -3,7 +3,6 @@ package com.patsurvey.nudge.di
 import android.content.Context
 import androidx.room.Room
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.NUDGE_DATABASE
 import dagger.Module
 import dagger.Provides
@@ -55,5 +54,21 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideLastSelectedTolaDao(db: NudgeDatabase) = db.lastSelectedTola()
+
+    @Provides
+    @Singleton
+    fun provideQuestionDao(db: NudgeDatabase) = db.questionListDao()
+
+    @Provides
+    @Singleton
+    fun provideAnswerDao(db: NudgeDatabase) = db.answerDao()
+
+    @Provides
+    @Singleton
+    fun provideNumericAnswerDao(db: NudgeDatabase) = db.numericAnswerDao()
+
+    @Provides
+    @Singleton
+    fun provideTrainingVideoDao(db: NudgeDatabase) = db.trainingVideoDao()
 
 }

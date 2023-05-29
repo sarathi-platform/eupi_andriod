@@ -66,8 +66,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                         Manifest.permission.ACCESS_FINE_LOCATION,
                         Manifest.permission.ACCESS_COARSE_LOCATION,
                         Manifest.permission.CAMERA,
-                        Manifest.permission.READ_EXTERNAL_STORAGE,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
                     )
                 )
 
@@ -130,6 +130,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
+
+
+    }
+    fun exitApplication(){
+        this.finish()
     }
 
     override fun onDestroy() {

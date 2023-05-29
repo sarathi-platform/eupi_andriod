@@ -6,9 +6,15 @@ import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
-import com.patsurvey.nudge.intefaces.LocalDbListener
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -28,16 +34,16 @@ class WealthRankingViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
     val apiService: ApiService
-):BaseViewModel() {
+) : BaseViewModel() {
     private val _expandedCardIdsList = MutableStateFlow(listOf<Int>())
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
-    val shouldShowBottomButton = mutableStateOf(false)
+    val shouldShowBottomButton = mutableStateOf(didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
 
-    var filterDidiList by mutableStateOf(listOf<DidiEntity>())
-        private set
+    private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
+    val filterDidiList: StateFlow<List<DidiEntity>> get() = _filterDidiList
 
     var tolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
@@ -54,12 +60,13 @@ class WealthRankingViewModel @Inject constructor(
         villageId = prefRepo.getSelectedVillage().id
         fetchDidisFromDB()
     }
-    fun fetchDidisFromDB(){
+
+    fun fetchDidisFromDB() {
         showLoader.value = true
-        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
                 _didiList.emit(didiDao.getAllDidisForVillage(villageId))
-                filterDidiList=didiList.value
+                _filterDidiList.value = didiList.value
                 showLoader.value = false
             }
         }
@@ -68,7 +75,9 @@ class WealthRankingViewModel @Inject constructor(
 
     fun onCardArrowClicked(cardId: Int) {
         _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
-            if (list.contains(cardId)) list.remove(cardId) else {
+            if (list.contains(cardId))
+                list.remove(cardId)
+            else {
                 list.clear()
                 list.add(cardId)
             }
@@ -85,13 +94,13 @@ class WealthRankingViewModel @Inject constructor(
             }
         }
         tolaMapList = map
-        filterTolaMapList=map
+        filterTolaMapList = map
 
     }
 
-    fun performQuery(query: String, isTolaFilterSelected:Boolean) {
-        if(!isTolaFilterSelected){
-            filterDidiList = if(query.isNotEmpty()) {
+    fun performQuery(query: String, isTolaFilterSelected: Boolean) {
+        if (!isTolaFilterSelected) {
+            _filterDidiList.value = if (query.isNotEmpty()) {
                 val filteredList = ArrayList<DidiEntity>()
                 didiList.value.forEach { didi ->
                     if (didi.name.lowercase().contains(query.lowercase())) {
@@ -99,40 +108,89 @@ class WealthRankingViewModel @Inject constructor(
                     }
                 }
                 filteredList
-            }else {
+            } else {
                 didiList.value
             }
-        }else{
-            if(query.isNotEmpty()){
-                val fList= mutableMapOf<String, MutableList<DidiEntity>>()
-                tolaMapList.keys.forEach { key->
-                    val newDidiList= ArrayList<DidiEntity>()
-                    tolaMapList[key]?.forEach { didi->
+        } else {
+            if (query.isNotEmpty()) {
+                val fList = mutableMapOf<String, MutableList<DidiEntity>>()
+                tolaMapList.keys.forEach { key ->
+                    val newDidiList = ArrayList<DidiEntity>()
+                    tolaMapList[key]?.forEach { didi ->
                         if (didi.name.lowercase().contains(query.lowercase())) {
                             newDidiList.add(didi)
                         }
                     }
-                    if(newDidiList.isNotEmpty())
-                        fList[key]=newDidiList
+                    if (newDidiList.isNotEmpty())
+                        fList[key] = newDidiList
                 }
-                filterTolaMapList=fList
-            }else{
-                filterTolaMapList=tolaMapList
+                filterTolaMapList = fList
+            } else {
+                filterTolaMapList = tolaMapList
             }
         }
     }
 
-    fun updateDidiRankInDb(id: Int, rank: String) {
+    fun updateDidiRankInDb(id: Int, rank: String, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val updatedDidiList = didiList.value
-            didiDao.updateDidiRank(id, rank)
-            val remainingDidi = didiDao.getUnrankedDidiCount(villageId)
-            updatedDidiList[id].wealth_ranking = rank
-            _didiList.emit(updatedDidiList)
-            withContext(Dispatchers.Main) {
-                shouldShowBottomButton.value = remainingDidi == 0
+            try {
+                val updatedDidiList = didiList.value
+                didiDao.updateDidiRank(id, rank)
+                didiDao.updateBeneficiaryProcessStatus(
+                    id, listOf(
+                        BeneficiaryProcessStatusModel(
+                            StepType.TRANSECT_WALK.name,
+                            StepStatus.COMPLETED.name
+                        ),
+                        BeneficiaryProcessStatusModel(
+                            StepType.SOCIAL_MAPPING.name,
+                            StepStatus.COMPLETED.name
+                        ),
+                        BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+                    )
+                )
+                updatedDidiList[updatedDidiList.map { it.id }.indexOf(id)].wealth_ranking = rank
+                _didiList.value = updatedDidiList
+//                onError("WealthRankingViewModel", "here is error")
+                withContext(Dispatchers.IO) {
+                    val updateWealthRankResponse=apiService.updateDidiRanking(
+                        listOf(EditDidiWealthRankingRequest(id, StepType.WEALTH_RANKING.name, rank),
+                            EditDidiWealthRankingRequest(id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                        )
+                    )
+                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                        didiDao.setNeedToPostRanking(id,false)
+                    } else {
+                        networkCallbackListener.onFailed()
+                    }
+                }
+            } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+                onError("WealthRankingViewModel", "here is error: ${ex.message} \n${ex.stackTrace}")
             }
-            onError("WealthRankingViewModel", "here is error")
+        }
+    }
+
+    fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            withContext(Dispatchers.Main) {
+                if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    callBack(true)
+                } else {
+                    callBack(false)
+                }
+            }
+        }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
+
+    fun closeLastCard(cardId: Int) {
+        _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
+            list.clear()
         }
     }
 

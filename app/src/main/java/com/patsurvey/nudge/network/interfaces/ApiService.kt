@@ -2,7 +2,9 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.*
@@ -42,7 +44,7 @@ interface ApiService {
 
     @POST("/write-api/cohort/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<String?>
+    suspend fun deleteCohort(@Body deleteCohort: JsonArray): ApiResponseModel<List<TolaApiResponse?>>
 
     @GET("/write-api/cohort/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -76,4 +78,20 @@ interface ApiService {
     @POST("/write-api/workflow/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun editWorkFlow(@Body addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>
+
+    // Get Questions List
+    @POST("/pat-api/pat/view")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchQuestionListFromServer(@Body getQuestionListRequest: GetQuestionListRequest):ApiResponseModel<QuestionListResponse>
+
+    // Edit Didi and updating Wealth Ranking
+    @POST("/write-api/beneficiary/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun updateDidiRanking(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<DidiEntity>
+
+    @POST("/write-api/beneficiary/delete")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
+
+
 }

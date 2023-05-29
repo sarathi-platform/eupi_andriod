@@ -10,14 +10,14 @@ import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController, prefRepo: PrefRepo) {
+fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.AUTHENTICATION,
-        startDestination = if(prefRepo.getLoginStatus()) AuthScreen.VILLAGE_SELECTION_SCREEN.route else AuthScreen.START_SCREEN.route
+        startDestination = AuthScreen.START_SCREEN.route
     ) {
 
         composable(route = AuthScreen.START_SCREEN.route) {
@@ -26,11 +26,13 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController, prefRepo: Pre
                 hiltViewModel()
             )
         }
-        composable(route = AuthScreen.LANGUAGE_SCREEN.route) {
+        composable(route = AuthScreen.LANGUAGE_SCREEN.route
+        ) {
             LanguageScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = ARG_FROM_HOME
             )
         }
 

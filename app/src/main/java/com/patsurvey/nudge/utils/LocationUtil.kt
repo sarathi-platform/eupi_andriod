@@ -52,11 +52,15 @@ object LocationUtil {
                 return if (location != null)
                     LocationCoordinates(location.latitude, location.longitude)
                 else {
-                    Toast.makeText(context, "Location not Available", Toast.LENGTH_LONG).show()
+                    context.runOnUiThread {
+                        Toast.makeText(context, "Location not Available", Toast.LENGTH_LONG).show()
+                    }
                     LocationCoordinates(0.0, 0.0)
                 }
             } else {
-                Toast.makeText(context, "Location not Enabled", Toast.LENGTH_LONG).show()
+                context.runOnUiThread {
+                    Toast.makeText(context, "Location not Enabled", Toast.LENGTH_LONG).show()
+                }
                 return null
             }
 
@@ -86,7 +90,9 @@ object LocationUtil {
                 )
                 return LocationCoordinates(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
             } else {
-                Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
+                context.runOnUiThread{
+                    Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
+                }
                 return null
             }
         }

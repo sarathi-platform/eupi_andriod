@@ -17,6 +17,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_LANGUAGE_CODE = "language_code"
         const val PREF_KEY_LANGUAGE_ID = "language_id"
         const val PREF_KEY_PAGE_FROM = "page_from"
+        const val PREF_KEY_STEP_ID = "step_id"
         const val PREF_KEY_LAST_TOLA_ID = "last_tola_id"
         const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
         const val SELECTED_VILLAGE_ID = "selected_village_id"
@@ -143,5 +144,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun saveFromPage(pageFrom: String) {
         prefs.edit().putString(PREF_KEY_PAGE_FROM,pageFrom).apply()
+    }
+
+    override fun getStepId(): Int {
+        return prefs.getInt(PREF_KEY_STEP_ID, 0)
+    }
+
+    override fun saveStepId(stepId: Int) {
+        prefs.edit().putInt(PREF_KEY_STEP_ID,stepId).apply()
     }
 }

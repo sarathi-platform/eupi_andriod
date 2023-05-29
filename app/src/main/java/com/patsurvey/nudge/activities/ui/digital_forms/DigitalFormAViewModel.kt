@@ -19,6 +19,7 @@ import com.wwdablu.soumya.simplypdf.composers.properties.cell.Cell
 import com.wwdablu.soumya.simplypdf.composers.properties.cell.TextCell
 import com.wwdablu.soumya.simplypdf.document.DocumentInfo
 import com.wwdablu.soumya.simplypdf.document.Margin
+import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,6 +46,9 @@ class DigitalFormAViewModel @Inject constructor(
                 _didiDetailList.emit(didiDao.getAllPoorDidisForVillage(villageId))
             }
         }
+    }
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
     }
 
     suspend fun pdf(context: Context){

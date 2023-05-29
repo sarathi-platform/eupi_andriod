@@ -11,7 +11,9 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -20,6 +22,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
+import com.patsurvey.nudge.R
+
 
 @Composable
 fun YesNoQuestion(
@@ -41,7 +45,7 @@ fun YesNoQuestion(
         Text(
             modifier = Modifier
                 .border(
-                    BorderStroke(2.dp, lightGray2),
+                    BorderStroke(1.dp, lightGray2),
                     shape = RoundedCornerShape(6.dp)
                 )
                 .padding(14.dp)
@@ -49,9 +53,9 @@ fun YesNoQuestion(
             text = buildAnnotatedString {
                 withStyle(
                     style = SpanStyle(
-                        color = textColorBlueLight,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.SemiBold,
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Normal,
                         fontFamily = NotoSans
                     )
                 ) {
@@ -59,7 +63,11 @@ fun YesNoQuestion(
                 }
                 append(" $question")
             },
-            style = buttonTextStyle,
+            style = TextStyle(
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+            ),
             color = textColorDark
         )
 
@@ -71,7 +79,7 @@ fun YesNoQuestion(
         ) {
             ButtonOutlineWithTopIcon(
                 modifier = Modifier.size(buttonWidth, 110.dp),
-                buttonTitle = "No",
+                buttonTitle = stringResource(id = R.string.option_no),
                 textColor = if (isNoSelected(answered, answer)) {
                     white
                 } else {
@@ -91,15 +99,15 @@ fun YesNoQuestion(
                     white
                 } else {
                     red
-                },
-                icon = Icons.Default.Close
+                }
             ) {
                 onNoClicked()
+                isNoSelected(true, false)
             }
 
             ButtonOutlineWithTopIcon(
                 modifier = Modifier.size(buttonWidth, 110.dp),
-                buttonTitle = "Yes",
+                buttonTitle = stringResource(id = R.string.option_yes),
                 textColor = if (isYesSelected(answered, answer)) {
                     white
                 } else {
@@ -119,10 +127,10 @@ fun YesNoQuestion(
                     white
                 } else {
                     greenActiveIcon
-                },
-                icon = Icons.Default.Check
+                }
             ) {
                 onYesClicked()
+                isYesSelected(true, true)
             }
 
         }

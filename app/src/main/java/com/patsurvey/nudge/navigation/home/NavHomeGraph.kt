@@ -6,16 +6,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.ViewModelStoreOwner
 import androidx.navigation.*
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.settings.SettingScreen
+import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
+import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
+import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
-import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
+import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
@@ -30,34 +36,42 @@ fun NavHomeGraph(navController: NavHostController) {
             ProgressScreen(
                 stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxWidth()
-            ){ villageId,stepId,index->
-                when(index){
-                    0->navController.navigate("details_graph/$villageId/$stepId/$index")
-                    1->navController.navigate("social_mapping_graph/$villageId/$stepId")
-                    2->navController.navigate("wealth_ranking/$villageId/$stepId")
+                modifier = Modifier.fillMaxWidth(),
+                onNavigateToStep = { villageId, stepId, index ->
+                    when (index) {
+                        0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
+                        1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
+                        2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
+                        3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                    }
+                },
+                onNavigateToSetting = {
+                    navController.navigate(Graph.SETTING_GRAPH)
                 }
-            }
+            )
         }
 
-        composable(route = HomeScreens.DIDI_SCREEN.route){
+        composable(route = HomeScreens.DIDI_SCREEN.route) {
             DidiScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
-                didiViewModel = hiltViewModel(),-1,-1){
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                didiViewModel = hiltViewModel(), -1, -1
+            ) {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
                     launchSingleTop = true
                 }
             }
         }
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
-        socialMappingNavGraph(navController=navController)
+        socialMappingNavGraph(navController = navController)
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
+        settingNavGraph(navController = navController)
     }
 }
+
 sealed class HomeScreens(val route: String) {
     object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
     object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
@@ -97,9 +111,13 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(Graph.HOME){
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                     }
                 }
@@ -111,8 +129,9 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
 
 sealed class DetailsScreen(val route: String) {
     object ADD_DIDI_SCREEN : DetailsScreen(route = "add_didi_screen")
-    object TRANSECT_WALK_SCREEN : DetailsScreen(route ="transect_walk_screen")
-    object STEP_COMPLETION_SCREEN : DetailsScreen(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object TRANSECT_WALK_SCREEN : DetailsScreen(route = "transect_walk_screen")
+    object STEP_COMPLETION_SCREEN :
+        DetailsScreen(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }
 
 
@@ -122,27 +141,57 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
         startDestination = DetailsScreen.ADD_DIDI_SCREEN.route,
         arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
             type = NavType.StringType
-            nullable=true
+            nullable = true
         })
     ) {
         composable(route = DetailsScreen.ADD_DIDI_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
                 type = NavType.StringType
-                nullable=true
+                nullable = true
                 defaultValue = null
-            })){
+            })
+        ) {
             AddDidiScreen(
-                navController=navController,
+                navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
                 didiViewModel = hiltViewModel(),
-            ){
+            ) {
                 navController.popBackStack()
             }
         }
     }
 }
+
+/*fun NavGraphBuilder.didiPatSurveyNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.DIDI_PAT_SUMMARY,
+        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+            type = NavType.StringType
+            nullable = true
+        })
+    ) {
+        composable(route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
+                type = NavType.StringType
+                nullable = true
+                defaultValue = null
+            })
+        ) {
+            PatDidiSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiId = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
+                patDidiSummaryViewModel = hiltViewModel(),
+            ) {
+                navController.popBackStack()
+            }
+        }
+    }
+}*/
 
 fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
     navigation(
@@ -156,18 +205,20 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
     ) {
         composable(route = SocialMappingScreen.SM_DIDI_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
-            type = NavType.IntType
-        }, navArgument(ARG_STEP_ID) {
-            type = NavType.IntType
-        })){
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        ) {
             DidiScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 didiViewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1){
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING"){
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            ) {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
                     launchSingleTop = true
                 }
             }
@@ -179,9 +230,13 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(Graph.HOME){
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
                     }
                 }
@@ -193,7 +248,8 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
 
 sealed class SocialMappingScreen(val route: String) {
     object SM_DIDI_SCREEN : SocialMappingScreen(route = "sm_didi_screen")
-    object SM_STEP_COMPLETION_SCREEN: SocialMappingScreen(route ="sm_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object SM_STEP_COMPLETION_SCREEN :
+        SocialMappingScreen(route = "sm_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 }
 
 
@@ -229,13 +285,18 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
             route = WealthRankingScreens.WEALTH_RANKING_SURVEY.route,
             arguments = listOf(navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
-            })
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
         ) {
             ParticipatoryWealthRankingSurvey(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
             )
         }
 
@@ -245,35 +306,43 @@ fun NavGraphBuilder.wealthRankingNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(navController = navController, modifier = Modifier, message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""){
-                navController.navigate(WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route)
-//                navController.navigate(Graph.HOME){
-//                    popUpTo(HomeScreens.PROGRESS_SCREEN.route){
-//                        inclusive = true
-//                    }
-//                }
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(WealthRankingScreens.DIGITAL_FORM_A_SCREEN.route)
+
             }
         }
 
         composable(
-            route = WealthRankingScreens.DIFITAL_FORM_A_SCREEN.route
+            route = WealthRankingScreens.DIGITAL_FORM_A_SCREEN.route
         ) {
-            DigitalFormAScreen(navController = navController, viewModel = hiltViewModel(), modifier = Modifier.fillMaxSize())
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
         }
     }
 }
 
 sealed class WealthRankingScreens(val route: String) {
     object WEALTH_RANKING_SCREEN : WealthRankingScreens(route = "wealth_ranking")
-    object WEALTH_RANKING_SURVEY :  WealthRankingScreens(route = "wealth_ranking_survey/{$ARG_STEP_ID}")
-    object WR_STEP_COMPLETION_SCREEN : WealthRankingScreens(route ="wr_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
-    object DIFITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
+    object WEALTH_RANKING_SURVEY :
+        WealthRankingScreens(route = "wealth_ranking_survey/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object WR_STEP_COMPLETION_SCREEN :
+        WealthRankingScreens(route = "wr_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object DIGITAL_FORM_A_SCREEN : WealthRankingScreens(route = "digital_form_a_screen")
 }
 
 fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.PAT_SCREENS,
-        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route ,
+        startDestination = PatScreens.PAT_LIST_SCREEN.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
@@ -281,22 +350,166 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         })
     ) {
         composable(
-            route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
+            route = PatScreens.PAT_LIST_SCREEN.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
                 type = NavType.IntType
             }, navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
             })
         ) {
-
+            DidiScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiViewModel = hiltViewModel(),
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            ) {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                    launchSingleTop = true
+                }
+            }
         }
 
+        composable(route = PatScreens.DIDI_PAT_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })){
+            PatDidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                patDidiSummaryViewModel = hiltViewModel(),
+            ) {
+//                navController.popBackStack()
+                navController.popBackStack()
+            }
+        }
+
+        composable(
+            route = PatScreens.YES_NO_QUESTION_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
+            })
+        ) {
+            QuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
+            )
+        }
+        composable(
+            route = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(
+            route = PatScreens.PAT_SECTION_TWO_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionTwoSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(route = PatScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurveyCompleteSummary(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
     }
 }
 
 sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
-    object PAT_IMAGE_PREVIEW_SCREEN :  PatScreens(route = "pat_image_preview_screen")
-    object PAT_IMAGE_CAPTURE_SCREEN : PatScreens(route ="pat_image_capture_screen")
-    object STEP_COMPLETION_SCREEN : PatScreens(route ="step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
+
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object STEP_COMPLETION_SCREEN :
+        PatScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object PAT_SECTION_ONE_SUMMARY_SCREEN :
+        PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_SECTION_TWO_SUMMARY_SCREEN :
+        PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
+}
+
+fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
+    navigation(
+        route = Graph.SETTING_GRAPH,
+        startDestination = SettingScreens.SETTING_SCREEN.route
+    ) {
+        composable(route = SettingScreens.SETTING_SCREEN.route) {
+            SettingScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
+        composable(route = SettingScreens.LANGUAGE_SCREEN.route) {
+            LanguageScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = ARG_FROM_SETTING
+            )
+        }
+        
+        composable(route = SettingScreens.VIDEO_LIST_SCREEN.route) {
+            VideoListScreen(navController = navController, modifier = Modifier, viewModel = hiltViewModel())
+        }
+        
+        composable(
+            route = SettingScreens.VIDEO_PLAYER_SCREEN.route,
+            arguments = listOf(navArgument(ARG_VIDEO_ID){
+                type = NavType.IntType
+            })
+        ) {
+            VideoDetailPlayerScreen(navController = navController, modifier = Modifier, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
+        }
+
+        composable(route = SettingScreens.PROFILE_SCREEN.route) {
+            ProfileScreen(profileScreenVideModel = hiltViewModel())
+        }
+
+    }
+}
+
+sealed class SettingScreens(val route: String) {
+    object SETTING_SCREEN : SettingScreens(route = "setting_screen")
+    object LANGUAGE_SCREEN : SettingScreens(route = "language_screen")
+    object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
+    object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
+    object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
 }

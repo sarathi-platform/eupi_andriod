@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.database
 
 import androidx.room.*
+import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Entity(tableName = VILLAGE_TABLE_NAME)
@@ -11,6 +12,12 @@ data class VillageEntity(
 
     @ColumnInfo(name = "name")
     var name : String,
+
+    @ColumnInfo(name = "federationName")
+    var federationName: String,
+
+    @ColumnInfo(name = "stateId")
+    val stateId: Int,
 
     @TypeConverters(IntConverter::class)
     @ColumnInfo(name = "steps_completed")

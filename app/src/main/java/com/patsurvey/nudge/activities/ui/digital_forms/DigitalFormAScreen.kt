@@ -176,7 +176,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().name + " Mandal",
+                                text = viewModel.prefRepo.getSelectedVillage().federationName,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,

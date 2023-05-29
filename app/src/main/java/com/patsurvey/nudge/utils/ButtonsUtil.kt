@@ -1,18 +1,30 @@
 package com.patsurvey.nudge.utils
 
+import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,19 +32,29 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 
 @Composable
 fun BlueButton(
@@ -91,7 +113,62 @@ fun BlueButton(
 }
 
 @Composable
-fun BlueButtonWithIcon(
+fun BlueButtonWithRightArrow(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    isArrowRequired: Boolean = false,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+//            .padding(vertical = 14.dp)
+            .background(Color.Transparent)
+            .width(160.dp)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .width(160.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = mediumTextStyle
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Forward arrow",
+                    tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                    modifier = Modifier.absolutePadding(top = 4.dp)
+
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun BlueButtonWithIconWithFixedWidth(
     modifier: Modifier = Modifier,
     buttonText: String,
     icon: ImageVector,
@@ -144,12 +221,63 @@ fun BlueButtonWithIcon(
     }
 }
 
+@Composable
+fun BlueButtonWithIcon(
+    modifier: Modifier = Modifier,
+    buttonText: String,
+    icon: ImageVector,
+    shouldBeActive: Boolean = true,
+    onClick: () -> Unit
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    Button(
+        onClick = {
+            onClick()
+        },
+        modifier = Modifier
+            .background(Color.Transparent)
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .then(modifier),
+        enabled = shouldBeActive,
+        colors = ButtonDefaults.buttonColors(if (shouldBeActive) blueDark else languageItemActiveBg),
+        shape = RoundedCornerShape(6.dp),
+        interactionSource = interactionSource
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 1.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                icon,
+                contentDescription = "Button Icon",
+                tint = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier
+                    .absolutePadding(top = 4.dp)
+
+            )
+            Text(
+                text = buttonText,
+                color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
+                modifier = Modifier,
+                style = newMediumTextStyle
+            )
+        }
+    }
+}
 
 
 @Preview(showBackground = true)
 @Composable
 fun BlueButtonWithIconPreview() {
-    BlueButtonWithIcon(
+    BlueButtonWithIconWithFixedWidth(
         modifier = Modifier,
         buttonText = stringResource(id = R.string.add_didi),
         icon = Icons.Default.Add
@@ -194,6 +322,65 @@ fun ButtonPositive(
             Text(
                 text = buttonTitle,
                 color = if (isActive) white else greyBorder,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowForward,
+                    contentDescription = "Positive Button",
+                    tint = iconTintColor,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, left = 2.dp)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ButtonPositiveForPAT(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
+    color: Color = languageItemActiveBg,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+
+            ) {
+                if (isActive) onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = buttonTitle,
+                color = textColor,
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
@@ -267,6 +454,65 @@ fun ButtonNegative(
                 text = buttonTitle,
                 color = blueDark,
                 style = buttonTextStyle
+            )
+        }
+    }
+}
+
+
+@Composable
+fun ButtonNegativeForPAT(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    color: Color = languageItemActiveBg,
+    textColor: Color = blueDark,
+    horizontalPadding : Dp = 10.dp,
+    isArrowRequired: Boolean = true,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(color)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.Black
+                )
+
+            ) {
+                onClick()
+            }
+            .padding(horizontal = horizontalPadding)
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier.padding(10.dp)
+                .fillMaxWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if (isArrowRequired) {
+                Image(
+                    painter = painterResource(id = R.drawable.baseline_arrow_back),
+                    contentDescription = "Negative Button",
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp),
+                    colorFilter = ColorFilter.tint(blueDark)
+                )
+            }
+            Text(
+                text = buttonTitle,
+                color = textColor,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -661,7 +907,7 @@ fun ButtonOutlineWithTopIcon(
     iconTintColor: Color,
     buttonBackgroundColor: Color = white,
     buttonBorderColor: Color = lightGray2,
-    icon: ImageVector = Icons.Default.Check,
+    icon: Painter = painterResource(id = R.drawable.icon_check),
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -686,7 +932,11 @@ fun ButtonOutlineWithTopIcon(
             Text(
                 text = buttonTitle,
                 color = textColor,
-                style = mediumTextStyle,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp
+                ),
             )
         }
     }
@@ -699,8 +949,7 @@ fun ButtonOutlineWithTopIconPreview() {
         modifier = Modifier.size(155.dp, 110.dp),
         buttonTitle = "Yes",
         textColor = textColorDark,
-        iconTintColor = greenActiveIcon,
-        icon = Icons.Default.Close
+        iconTintColor = greenActiveIcon
     ) {}
 }
 
@@ -765,7 +1014,7 @@ fun OutlineButtonCustom(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
             .background(white, shape = RoundedCornerShape(6.dp))
-            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp) )
+            .border(1.dp, color = borderGreyShare, shape = RoundedCornerShape(6.dp))
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
                 indication = rememberRipple(
@@ -800,4 +1049,199 @@ fun OutlineButtonCustomPreview(){
 
     }
 }
+
+@Composable
+fun IncrementDecrementView(modifier: Modifier,optionText:String,
+                           currentValue: Int=0,
+                           onDecrementClick: (Int)->Unit,
+                           onIncrementClick: (Int)->Unit,
+                           onValueChange: (String) -> Unit){
+    var currentCount by remember {
+        mutableStateOf(currentValue.toString())
+    }
+    Log.d(TAG, "IncrementDecrementView: ")
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .padding(5.dp)) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 6.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+
+            Text(
+                text = optionText,
+                color = Color.Black,
+                modifier = Modifier,
+                style = TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp
+                )
+            )
+        }
+    Box(modifier = modifier
+        .fillMaxWidth()
+        .background(Color.White)
+        .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)){
+
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(45.dp)) {
+            Box(modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight()
+                ,contentAlignment = Alignment.Center){
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable {
+                        currentCount = incDecValue(0, currentCount)
+                        onDecrementClick(currentCount.toInt())
+                    }, horizontalArrangement = Arrangement.Center){
+                    Spacer(modifier = Modifier
+                        .width(14.dp)
+                        .background(Color.Black)
+                        .height(1.5.dp)
+                        .align(Alignment.CenterVertically))
+                }
+
+            }
+           Spacer(modifier = Modifier
+               .width(1.dp)
+               .fillMaxHeight()
+               .background(Color.Black))
+            Column(modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f)){
+                CustomOutlineTextField(
+                    value = currentCount,
+                    readOnly = true,
+                    onValueChange = {
+                        currentCount = if(it.isEmpty())
+                            "0"
+                        else
+                            it
+                        onValueChange(it)
+                    },
+                    placeholder = {
+                        Text(
+                            text = "0", style = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp,
+                                textAlign = TextAlign.Center
+                            ), color = placeholderGrey
+                        )
+                    },
+                    textStyle = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp,
+                        textAlign = TextAlign.Center
+                    ),
+                    singleLine = true,
+                    maxLines = 1,
+                    colors = TextFieldDefaults.textFieldColors(
+                        textColor = textColorDark,
+                        backgroundColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    ),keyboardOptions = KeyboardOptions(
+                        capitalization = KeyboardCapitalization.None,
+                        autoCorrect = true,
+                        keyboardType = KeyboardType.Number,
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(40.dp)
+                )
+            }
+            Spacer(modifier = Modifier
+                .width(1.dp)
+                .fillMaxHeight()
+                .background(Color.Black))
+            Box(modifier = Modifier
+                .fillMaxHeight()
+                .weight(1f),
+                contentAlignment = Alignment.Center){
+                Text(
+                    text = "+",
+                    color = Color.Black,
+                    fontFamily = NotoSans,
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.clickable {
+                       currentCount= incDecValue(1,currentCount)
+                        onIncrementClick(currentCount.toInt())
+                    }
+                )
+            }
+        }
+        }
+
+    }
+
+}
+
+fun incDecValue(operation:Int,value:String):String{
+    var intValue=0
+    if(value.isNotEmpty()){
+        intValue=value.toInt()
+    }
+
+    if(operation==0){
+        if(intValue>0)
+            intValue--
+    }else{
+        intValue++
+    }
+    return intValue.toString()
+}
+
+@Preview(showBackground = true)
+@Composable
+fun IncrementDecrementViewPreview(){
+    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DidiPATSurveyCompleteViewPreview(){
+    DidiPATSurveyCompleteView(modifier = Modifier, onClick = {})
+}
+
+
+@Composable
+fun DidiPATSurveyCompleteView(
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit
+) {
+    Row(modifier = Modifier.
+    fillMaxWidth()
+        .padding(vertical = 10.dp)
+        .padding(horizontal = 10.dp)
+        .clickable {
+            onClick()
+        }
+        .then(modifier),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Show",
+            style = smallTextStyleMediumWeight,
+            color = textColorDark,
+        )
+        Icon(
+            imageVector = Icons.Default.ArrowForward,
+            contentDescription = null,
+            tint = blueDark,
+            modifier = Modifier
+                .absolutePadding(top = 4.dp, left = 2.dp)
+                .size(24.dp)
+        )
+    }
+}
+
+
 

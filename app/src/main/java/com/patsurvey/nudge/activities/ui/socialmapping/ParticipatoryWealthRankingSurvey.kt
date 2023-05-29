@@ -1,9 +1,7 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.socialmapping
 
-import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,30 +25,26 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.google.gson.Gson
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.socialmapping.*
-import com.patsurvey.nudge.activities.ui.socialmapping.ExpandableCard
+import com.patsurvey.nudge.activities.DidiItemCard
+import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
-import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
 @Composable
@@ -58,7 +52,8 @@ fun ParticipatoryWealthRankingSurvey(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: WealthRankingSurveyViewModel,
-    stepId: Int
+    stepId: Int,
+    isStepComplete: Boolean
 ) {
 
     val didids = viewModel.didiList.collectAsState()
@@ -74,6 +69,24 @@ fun ParticipatoryWealthRankingSurvey(
 
     LaunchedEffect(key1 = true) {
         viewModel.stepId = stepId
+        viewModel.getWealthRankingStepStatus(stepId) {
+            viewModel.showBottomButton.value = !it
+        }
+    }
+    BackHandler() {
+        if (showDidiListForRank.first){
+            showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+        } else {
+            if (isStepComplete) {
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+            } else {
+                navController.popBackStack()
+            }
+        }
     }
     
     val showDialog = remember { mutableStateOf(false) }
@@ -90,17 +103,32 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
                 showDialog.value = it
             }) {
-//                if ((context as MainActivity).isOnline.value ?: false) {
-//                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId)
-////                    viewModel.updateWealthRankingToNetwork()
-//                }
-//                viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
-//                viewModel.saveWealthRankingCompletionDate()
-                navController.navigate("wr_step_completion_screen/${context.getString(R.string.transect_walk_completed_message).replace(
+                if ((context as MainActivity).isOnline.value ?: false) {
+                    viewModel.updateWealthRankingToNetwork(object :
+                        NetworkCallbackListener {
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+                    })
+                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
+                        NetworkCallbackListener {
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+                    })
+                }
+                viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                viewModel.saveWealthRankingCompletionDate()
+                navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
                             "{VILLAGE_NAME}",
                             viewModel.selectedVillage?.name ?: "")}"
                 )
-//                navController.navigate()
             }
         }
         
@@ -122,7 +150,7 @@ fun ParticipatoryWealthRankingSurvey(
 
                 VillageDetailView(
                     villageName = viewModel.selectedVillage?.name ?: "",
-                    voName = (viewModel.selectedVillage?.name + " Mandal") ?: "",
+                    voName = (viewModel.selectedVillage?.federationName) ?: "",
                     modifier = Modifier
                 )
 
@@ -147,7 +175,13 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.didis_item_text),
+                        text = stringResource(id = if (showDidiListForRank.first) {
+                            when (showDidiListForRank.second) {
+                                WealthRank.POOR -> R.string.poor_didi_item_text
+                                WealthRank.MEDIUM -> R.string.medium_didi_item_text
+                                else -> R.string.rich_didi_item_text
+                            }
+                        } else R.string.didis_item_text),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -167,7 +201,7 @@ fun ParticipatoryWealthRankingSurvey(
                         .fillMaxSize()
                         .padding(vertical = 8.dp)) {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
-                            contentPadding = PaddingValues(bottom = 10.dp),
+                            contentPadding = PaddingValues(bottom = bottomPadding),
                         modifier = Modifier.padding(bottom = 10.dp)) {
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
@@ -210,30 +244,35 @@ fun ParticipatoryWealthRankingSurvey(
                 }
             }
         }
-        
-        BottomButtonBox(
-            modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+
+        if (viewModel.showBottomButton.value || showDidiListForRank.first) {
+            BottomButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
-                },
-            positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
-                id = R.string.complete_wealth_ranking_btn_text
-            ),
-            isArrowRequired = !showDidiListForRank.first,
-            positiveButtonOnClick = {
-                if (showDidiListForRank.first)
-                    showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
-                else {
-                    showDialog.value = true
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
+                    id = R.string.complete_wealth_ranking_btn_text
+                ),
+                isArrowRequired = !showDidiListForRank.first,
+                positiveButtonOnClick = {
+                    if (showDidiListForRank.first)
+                        showDidiListForRank =
+                            Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+                    else {
+                        showDialog.value = true
+                    }
                 }
-            }
-        )
+            )
+        } else {
+            bottomPadding = 0.dp
+        }
     }
 }
 

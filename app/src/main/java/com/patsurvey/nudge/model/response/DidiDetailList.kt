@@ -11,6 +11,8 @@ data class DidiDetailList(
     @SerializedName("guardianName") var guardianName: String,
     @SerializedName("address") var address: String,
     @SerializedName("relationship") var relationship: String,
+    @SerializedName("createdDate") var createdDate: Long,
+    @SerializedName("modifiedDate") var modifiedDate: Long,
     @SerializedName("beneficiaryProcessStatus") var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>,
 
 )

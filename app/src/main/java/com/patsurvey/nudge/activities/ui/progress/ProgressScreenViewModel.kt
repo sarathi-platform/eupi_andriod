@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.*
@@ -43,6 +44,7 @@ class ProgressScreenViewModel @Inject constructor(
     val villageSelected = mutableStateOf(0)
     val tolaCount = mutableStateOf(0)
     val didiCount = mutableStateOf(0)
+    val poorDidiCount = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -69,8 +71,10 @@ class ProgressScreenViewModel @Inject constructor(
      fun getStepsList(villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val didiList = didiDao.getAllDidisForVillage(villageId)
-            val tolaList = tolaDao.getAllTolasForVillage(villageId)
+            val mDidiList = didiDao.getAllDidisForVillage(villageId)
+            val mTolaList = tolaDao.getAllTolasForVillage(villageId)
+            _tolaList.emit(mTolaList)
+            _didiList.emit(mDidiList)
             val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
             if(dbInProgressStep!=null){
                 if(stepList.size>dbInProgressStep.orderNumber)
@@ -80,8 +84,10 @@ class ProgressScreenViewModel @Inject constructor(
             }
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                tolaCount.value=tolaList.size
-                didiCount.value=didiList.size
+                tolaCount.value=_tolaList.value.size
+                didiCount.value=didiList.value.size
+                poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                showLoader.value = false
             }
         }
     }
@@ -172,5 +178,7 @@ class ProgressScreenViewModel @Inject constructor(
             }
         }
     }
-
+    override fun onServerError(error: ErrorModel?) {
+        showLoader.value = false
+    }
 }

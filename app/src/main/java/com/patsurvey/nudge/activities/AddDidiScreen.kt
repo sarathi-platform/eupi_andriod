@@ -26,10 +26,9 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
-import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -45,8 +44,15 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     var endPadding by remember { mutableStateOf(16.dp) }
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
+
+    LaunchedEffect(key1 = true) {
+        delay(200)
+        didiViewModel?.checkIfTolaIsNotDeleted()
+    }
+
     Column(modifier = modifier
-        .fillMaxSize(),
+        .fillMaxSize()
+        .padding(top = 14.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
 
         didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth()) }
@@ -69,7 +75,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.house_number),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.houseNumber?.value ?: BLANK_STRING,
                 isRequiredField = false
@@ -81,7 +87,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.didi_name),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.didiName?.value?: BLANK_STRING,
                 isRequiredField = false
@@ -93,7 +99,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             EditTextWithTitle(
                 stringResource(id = R.string.dada_name),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 currentString = didiViewModel?.dadaName?.value ?: BLANK_STRING,
                 isRequiredField = false
@@ -105,7 +111,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 title = stringResource(id = R.string.caste),
                 items = didiViewModel?.casteList?.value?: emptyList(),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = casteExpanded,
                 onExpandedChange = {
@@ -129,7 +135,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 title = stringResource(id = R.string.tola),
                 items = didiViewModel?.tolaList?.value ?: emptyList(),
                 modifier = Modifier
-                    .padding(top=topPadding,start = startPadding, end = endPadding)
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
                     .fillMaxWidth(),
                 expanded = tolaExpended,
                 onExpandedChange = {
@@ -163,7 +169,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
-                isActive =  if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) didiViewModel?.isDidiValid?.value ?: true else true,
+                isActive = didiViewModel?.isDidiValid?.value == true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
@@ -176,15 +182,32 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                        override fun onInsertionFailed() {
                            showCustomToast(context,context.getString(R.string.didi_already_exist))
                        }
+                   }, object : NetworkCallbackListener{
+                       override fun onSuccess() {
+                       }
+
+                       override fun onFailed() {
+                           showCustomToast(context, SYNC_FAILED)
+                       }
+
                    })
                 }
                 else{
-                    didiViewModel?.updateDidiIntoDatabase(editDidiId)
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId, object : NetworkCallbackListener{
+                        override fun onSuccess() {
+                        }
+
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+
+                    })
                     showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
                     onNavigation()
                 }
 
             }
+            didiViewModel?.validateDidiDetails()
         }
 
 

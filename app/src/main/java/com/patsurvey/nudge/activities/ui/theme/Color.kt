@@ -12,6 +12,7 @@ val Teal50 = Color(0xFFE0F2F1)
 val blueDark = Color(0xFF222E50)
 val buttonBgColor = Color(0xFFEFF2FC)
 val textColorDark = Color(0xFF271914)
+val textColorDark50 = Color(0x7F271914)
 val textColorDark80 = Color(0xCC271914)
 val textColorBlueLight = Color(0x80271914)
 val languageItemActiveBg = Color(0xFFF7F7F7)
@@ -74,3 +75,7 @@ val poorRankColor = Color(0xFF439A86)
 val richRankColor = Color(0xFFD12222)
 
 val borderGreyShare = Color(0xFFE8E8E8)
+
+val redNoAnswer = Color(0xFFD32517)
+
+val brownDark = Color(0xFF693D30)

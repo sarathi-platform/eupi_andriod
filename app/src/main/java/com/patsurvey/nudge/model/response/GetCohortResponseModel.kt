@@ -14,8 +14,8 @@ data class GetCohortResponseModel(
     @SerializedName("status") var status: Int
 ) {
     companion object {
-        fun convertToTolaEntity(tola: GetCohortResponseModel): TolaEntity {
+       /* fun convertToTolaEntity(tola: GetCohortResponseModel): TolaEntity {
             return TolaEntity(id = tola.id, name = tola.name, villageId = tola.villageId, status = tola.status, type = tola.type, latitude = tola.latitude, longitude = tola.longitude, needsToPost = false)
-        }
+        }*/
     }
 }

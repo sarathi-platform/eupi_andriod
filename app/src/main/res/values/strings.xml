@@ -11,6 +11,9 @@
 
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text">Didis</string>
+    <string name="poor_didi_item_text">Poor Didi</string>
+    <string name="medium_didi_item_text">Medium Didi</string>
+    <string name="rich_didi_item_text">Rich Didi</string>
     <string name="more_item_text">More</string>
 
     <string name="online_text">Online</string>
@@ -23,7 +26,7 @@
     <string name="verification_text">Verification</string>
     <string name="get_otp">Get OTP</string>
     <string name="otp_will_be_sent_to_this_number">OTP will be sent to this number</string>
-    <string name="transect_wale_title">Transact Walk</string>
+    <string name="transect_wale_title">Transect Walk</string>
     <string name="invalid_mobile_number">Invalid Mobile Number</string>
     <string name="submit">Submit</string>
     <string name="resend_otp">Resend OTP</string>
@@ -32,6 +35,7 @@
     <string name="medium_text">Medium</string>
     <string name="rich_text">Rich</string>
     <string name="search_didis">Search Didis</string>
+    <string name="search_video">Search Video</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending">%1s Didis Pending</string>
     <string name="expiry_login_verify_otp" translatable="false">%s s</string>
@@ -45,16 +49,18 @@
     <string name="village_text">Village</string>
     <string name="vo_name">VO Name</string>
     <string name="total">Total</string>
-    <string name="participation_date_wealth_ranking">Participation Wealth Ranking Date</string>
+    <string name="participation_date_wealth_ranking">Date </string>
     <string name="add_didi">Add Didi</string>
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
     <string name="dada_name">Dada Name</string>
+    <string name="dada">Dada</string>
     <string name="enter">Enter</string>
     <string name="caste">Caste</string>
     <string name="tola">Tola</string>
     <string name="select">Select</string>
+    <string name="pat_survey">PAT Survey</string>
 
     <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Survey</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
@@ -77,18 +83,22 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text">Total %1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">Total %1$s new Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
+    <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
     <string name="complete_social_walk_text">Complete Social Mapping</string>
     <string name="review_wealth_ranking">Review Wealth Ranking</string>
 
     <string name="social_mapping_completed_message">Social Mapping for {VILLAGE_NAME} \nis completed</string>
-    <string name="didi_conirmation_text">Total %1$s new Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_plural">Total %1$s new Didis have \nbeen added successfully</string>
+    <string name="didi_conirmation_text_singular">Total %1$s new Didi has \nbeen added successfully</string>
 
     <string name="transect_walk_sub_text">%1$s Tolas Done</string>
 
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
@@ -98,17 +108,54 @@
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>
-    <string name="pat_survey">PAT Survey</string>
+    <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
     <string name="section_number">Section %d</string>
+    <string name="not_avaliable">Not Available</string>
+    <string name="start_pat">Start PAT</string>
     <string name="done_text">Done</string>
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
     <string name="download_button_text">Download</string>
+    <string name="option_yes">Yes</string>
+    <string name="option_no">No</string>
+    <string name="no_photo_available_text">No Photo Available</string>
+    <string name="enter_name_text">Enter Name</string>
+    <string name="enter_tola_name_message">Enter Tola Name</string>
 
+    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_complete">PAT Survey</string>
+    <string name="result_summary">Summary Result</string>
+    <string name="summary_text">Summary</string>
+    <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
         <item quantity="other">Didis Added</item>
     </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">Poor Didi Pending</item>
+        <item quantity="other">Poor Didis Pending</item>
+    </plurals>
+    <string name="logout">Logout</string>
+    <string name="this_section_is_in_progress">This Section is InProgress state</string>
+    <string name="sync_up">Sync Data</string>
+    <string name="last_syncup_text">Last Synced: 24 days ago</string>
+    <string name="profile">Profile</string>
+    <string name="forms">Forms</string>
+    <string name="training_videos">Training Videos</string>
+    <string name="language_text">Language</string>
+    <string name="productive_asset_owned_by_family">Productive asset owned by Family</string>
+    <string name="total_productive_asset_value">Total Productive asset value = ₹ %1$s/-</string>
+    <string name="complete_pat_survey">Complete PAT Survey</string>
+    <string name="complete">Complete</string>
+    <string name="complete_section_2">Complete Section 2</string>
+    <string name="show">Show</string>
+    <string name="pat_survey_completion_text">PAT Survey - Complete</string>
+    <string name="next">Next</string>
+    <string name="didi_pat_comption_dialog">You are submitting PAT for {DIDI_NAME}.</string>
+    <string name="confirmation_dialog_titile">Are you sure?</string>
+    <string name="section_1_text">"Section 1: "</string>
+    <string name="section_2_text">"Section 2: "</string>
+
 
 </resources>

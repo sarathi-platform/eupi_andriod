@@ -8,14 +8,17 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
@@ -24,12 +27,14 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -56,8 +61,12 @@ import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -89,6 +98,10 @@ fun SocialMappingDidiListScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
+    val focusManager = LocalFocusManager.current
+
+    val markedUnabailableList = didiViewModel.markedNotAvailable.collectAsState()
+
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -100,6 +113,11 @@ fun SocialMappingDidiListScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
+            .pointerInput(true) {
+                detectTapGestures(onTap = {
+                    focusManager.clearFocus()
+                })
+            }
             .then(modifier)
     ) {
         val (bottomActionBox, mainBox) = createRefs()
@@ -118,14 +136,15 @@ fun SocialMappingDidiListScreen(
 
                 VOAndVillageBoxView(
                     prefRepo = didiViewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
                 )
 
+                val count = didiList.value.filter { it.needsToPost }.size
                 ModuleAddedSuccessView(
                     completeAdditionClicked = completeTolaAdditionClicked,
                     message = stringResource(
-                        R.string.didi_conirmation_text,
-                        didiList.value.size
+                        if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
+                        didiList.value.filter { it.needsToPost }.size
                     ),
                     modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                 )
@@ -140,53 +159,54 @@ fun SocialMappingDidiListScreen(
                                     .getFromPage()
                                     .equals(ARG_FROM_HOME, true)
                             ) {
-                                if (!didiViewModel.isSocialMappingComplete.value)
-                                    bottomPadding
-                                else
-                                    0.dp
+                                0.dp
                             } else {
                                 50.dp
                             }
                         ),
-                    contentPadding = PaddingValues(vertical = 10.dp),
+                    contentPadding = PaddingValues(bottom = 10.dp, start = 16.dp, end = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
                     item {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceAround,
-                            modifier = Modifier.padding(start = 16.dp, end = 16.dp)
+                            modifier = Modifier
                         ) {
-                            MainTitle(
-                                title = if (!didiViewModel.prefRepo.getFromPage()
-                                        .equals(ARG_FROM_HOME, true)
-                                ) stringResource(id = R.string.social_mapping)
-                                else stringResource(id = R.string.didis_item_text),
-                                modifier = Modifier.weight(0.5f)
-                            )
-                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
-                                BlueButtonWithIcon(
-                                    modifier = Modifier
-                                        .weight(0.5f),
-                                    buttonText = stringResource(id = R.string.add_didi),
-                                    icon = Icons.Default.Add
-                                ) {
-                                    didiViewModel.resetAllFields()
-                                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
-                                        launchSingleTop = true
+                            val title = if (didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_PAT_SURVEY, true))
+                                stringResource(R.string.pat_survey_title)
+                            else if (!didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_HOME, true))
+                                stringResource(R.string.social_mapping)
+                            else
+                                stringResource(R.string.didis_item_text)
+                            MainTitle(title, Modifier.weight(0.5f))
+                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
+                                && !didiViewModel.prefRepo.getFromPage()
+                                    .equals(ARG_FROM_PAT_SURVEY, true)
+                            ) {
+//                                if (!didiViewModel.isSocialMappingComplete.value) {
+                                    BlueButtonWithIconWithFixedWidth(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        buttonText = stringResource(id = R.string.add_didi),
+                                        icon = Icons.Default.Add
+                                    ) {
+                                        didiViewModel.resetAllFields()
+                                        navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                                            launchSingleTop = true
+                                        }
                                     }
-                                }
+//                                }
                             }
                         }
                     }
                     item {
                         SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
-                            modifier = Modifier.padding(
-                                start = 16.dp,
-                                end = 16.dp,
-                                top = 10.dp,
-                                bottom = 10.dp
-                            ),
+                            modifier = Modifier
+                                .padding(vertical = 10.dp)
+                            ,
                             filterSelected = filterSelected,
                             onFilterSelected = {
                                 if (didiList.value.isNotEmpty()) {
@@ -214,14 +234,22 @@ fun SocialMappingDidiListScreen(
                                             fontFamily = NotoSans
                                         )
                                     ) {
-                                        append("${didiList.value.size}")
+                                        append(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
+                                            "${newFilteredDidiList.size}"
+                                        else
+                                            "${newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyProgress != PatSurveyStatus.COMPLETED.ordinal}.size}")
                                     }
                                     append(
                                         " ${
-                                            pluralStringResource(
-                                                id = R.plurals.didis_added,
-                                                didiList.value.size
-                                            )
+                                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
+                                                pluralStringResource(
+                                                    id = R.plurals.didis_added,
+                                                    newFilteredDidiList.size
+                                                )
+                                            else
+                                                pluralStringResource(id =  R.plurals.poor_didis_pending_text, count = newFilteredDidiList.filter { it.beneficiaryProcessStatus?.contains(
+                                                    BeneficiaryProcessStatusModel(StepType.PAT_SURVEY.name, StepStatus.COMPLETED.name)) == false}.size)
+                                            
                                         }"
                                     )
                                 },
@@ -233,18 +261,18 @@ fun SocialMappingDidiListScreen(
                                 ),
                                 modifier = Modifier
                                     .align(Alignment.Start)
-                                    .padding(start = 16.dp)
                             )
                         }
                     }
                     if (filterSelected) {
                         itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
+                            newFilteredTolaDidiList.keys.toList()
                         ) { index, didiKey ->
-                            ShowDidisFromTola(
+                            ShowDidisFromTola(navController,didiViewModel,
                                 didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey]?.reversed()
-                                    ?: emptyList(),
+                                didiList = if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
+                                    newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList()
+                                else  newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                 modifier = modifier,
                                 expandedIds = expandedIds,
                                 onExpendClick = { expand, didiDetailModel ->
@@ -255,8 +283,15 @@ fun SocialMappingDidiListScreen(
                                     }
                                 },
                                 onNavigate = {
-                                    navController.navigate("add_didi_graph/$it") {
-                                        launchSingleTop = true
+                                    if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isSocialMappingComplete.value) {
+                                        navController.navigate("add_didi_graph/$it") {
+                                            launchSingleTop = true
+                                        }
+                                    }else if(didiViewModel.prefRepo.getFromPage().equals(
+                                            ARG_FROM_HOME, true)){
+                                        navController.navigate("add_didi_graph/$it") {
+                                            launchSingleTop = true
+                                        }
                                     }
                                 }
                             )
@@ -275,9 +310,8 @@ fun SocialMappingDidiListScreen(
                             }
                         }
                     } else {
-
-                        itemsIndexed(newFilteredDidiList.reversed()) { index, didi ->
-                            DidiItemCard(didi, expandedIds.contains(didi.id), modifier,
+                        itemsIndexed(if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank } else newFilteredDidiList) { index, didi ->
+                            DidiItemCard(navController, didiViewModel, didi, expandedIds.contains(didi.id), modifier,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)) {
                                         expandedIds.remove(didiDetailModel.id)
@@ -286,23 +320,30 @@ fun SocialMappingDidiListScreen(
                                     }
                                 },
                                 onItemClick = { didi ->
-                                    val jsonDidi = Gson().toJson(didi)
-                                    navController.navigate("add_didi_graph/$jsonDidi") {
-                                        launchSingleTop = true
+                                    if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isSocialMappingComplete.value) {
+                                        navController.navigate("add_didi_graph/${Gson().toJson(didi)}") {
+                                            launchSingleTop = true
+                                        }
+                                    }else if(didiViewModel.prefRepo.getFromPage().equals(
+                                            ARG_FROM_HOME, true)){
+                                        navController.navigate("add_didi_graph/${Gson().toJson(didi)}") {
+                                            launchSingleTop = true
+                                        }
                                     }
-
                                 }
                             )
                         }
+                        if (!didiViewModel.isSocialMappingComplete.value)
+                            item { Spacer(modifier = Modifier.height(bottomPadding)) }
                     }
-
                 }
             }
         }
 
 
-        if (didiList.value.isNotEmpty() /*&& !didiViewModel.isSocialMappingComplete.value*/) {
-            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
+        if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
+            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
+                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 DoubleButtonBox(
                     modifier = Modifier
                         .shadow(10.dp)
@@ -323,9 +364,28 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                didiViewModel.callWorkFlowAPI(villageId, stepId)
-                                didiViewModel.addDidisToNetwork()
+                                didiViewModel.addDidisToNetwork( object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                                didiViewModel.callWorkFlowAPI(villageId, stepId,  object : NetworkCallbackListener{
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
                             }
+                            /*if ((context as MainActivity).isOnline.value ?: false) {
+                                didiViewModel.addDidisToNetwork()
+                                didiViewModel.callWorkFlowAPI(villageId, stepId)
+                            }*/
+                            didiViewModel.updateDidisNeedTOPostList(villageId)
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${
@@ -365,6 +425,8 @@ fun ShowFilteredList(
 
 @Composable
 fun ShowDidisFromTola(
+    navController:NavHostController,
+    didiViewModel: AddDidiViewModel,
     didiTola: String,
     didiList: List<DidiEntity>,
     modifier: Modifier,
@@ -414,7 +476,7 @@ fun ShowDidisFromTola(
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
             didiList.forEachIndexed { index, didi ->
-                DidiItemCard(didi, expandedIds.contains(didi.id), modifier.padding(horizontal = 16.dp),
+                DidiItemCard(navController,didiViewModel,didi, expandedIds.contains(didi.id), modifier,
                     onExpendClick = { expand, didiDetailModel ->
                         onExpendClick(expand, didiDetailModel)
                     },
@@ -452,10 +514,10 @@ private fun decoupledConstraints(): ConstraintSet {
     return ConstraintSet {
         val didiImage = createRefFor("didiImage")
         val didiName = createRefFor("didiName")
+        val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
-
         val didiDetailLayout = createRefFor("didiDetailLayout")
 
 
@@ -465,6 +527,12 @@ private fun decoupledConstraints(): ConstraintSet {
             start.linkTo(parent.start, margin = 10.dp)
         }
         constrain(didiName) {
+            start.linkTo(didiImage.end, 10.dp)
+            top.linkTo(parent.top, 10.dp)
+            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(didiRow) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
             end.linkTo(expendArrowImage.start, margin = 10.dp)
@@ -601,6 +669,220 @@ private fun didiDetailConstraints(): ConstraintSet {
 
 @Composable
 fun DidiItemCard(
+    navController:NavHostController,
+    didiViewModel: AddDidiViewModel,
+    didi: DidiEntity,
+    expanded: Boolean,
+    modifier: Modifier,
+    onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onItemClick: (DidiEntity) -> Unit
+) {
+
+    val transition = updateTransition(expanded, label = "transition")
+
+    val didiMarkedNotAvailable  = remember {
+        mutableStateOf(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+    }
+
+    val animateColor by transition.animateColor({
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
+    }, label = "animate color") {
+        if (it) {
+            greenOnline
+        } else {
+            textColorDark
+        }
+    }
+
+    val animateInt by transition.animateInt({
+        tween(durationMillis = 10)
+    }, label = "animate float") {
+        if (it) 1 else 0
+    }
+
+    val arrowRotationDegree by transition.animateFloat({
+        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
+    }, label = "rotationDegreeTransition") {
+        if (it) 180f else 0f
+    }
+    Card(
+        elevation = 10.dp,
+        shape = RoundedCornerShape(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable {
+                onItemClick(didi)
+            }
+            .then(modifier)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BoxWithConstraints {
+                val constraintSet = decoupledConstraints()
+                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                    CircularDidiImage(
+                        modifier = Modifier.layoutId("didiImage")
+                    )
+                    Row(modifier = Modifier
+                        .layoutId("didiRow")
+                        .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween) {
+                        Text(
+                            text = didi.name,
+                            style = TextStyle(
+                                color = animateColor,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans,
+                                textAlign = TextAlign.Start
+                            ),
+                        )
+
+                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyProgress.equals(PatSurveyStatus.COMPLETED.ordinal)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_completed_tick),
+                                contentDescription = "home image",
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                                    .padding(5.dp)
+                                    .layoutId("successImage")
+                            )
+                        }
+                    }
+
+
+                    Image(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(14.dp)
+                            .layoutId("homeImage"),
+                        colorFilter = ColorFilter.tint(textColorBlueLight)
+                    )
+
+                    Text(
+                        text = didi.cohortName,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("village")
+                    )
+                    if (!didiViewModel.prefRepo.getFromPage()
+                            .equals(ARG_FROM_PAT_SURVEY, true)
+                    ) {
+                        CardArrow(
+                            modifier = Modifier.layoutId("expendArrowImage"),
+                            degrees = arrowRotationDegree,
+                            iconColor = animateColor,
+                            onClick = { onExpendClick(expanded, didi) }
+                        )
+
+                        DidiDetailExpendableContent(
+                            modifier = Modifier.layoutId("didiDetailLayout"),
+                            didi,
+                            animateInt == 1
+                        )
+                    }
+                }
+            }
+            if (didiViewModel.prefRepo.getFromPage()
+                    .equals(ARG_FROM_PAT_SURVEY, true)
+            ) {
+                if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 10.dp, horizontal = 16.dp)
+                    ) {
+                        ButtonNegativeForPAT(
+                            buttonTitle = stringResource(id = R.string.not_avaliable),
+                            isArrowRequired = false,
+                            color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                            textColor = if (didiMarkedNotAvailable.value) white else blueDark,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp)
+                                .weight(1f)
+                                .background(
+                                    if (didiMarkedNotAvailable.value
+                                    ) blueDark else languageItemActiveBg
+                                )
+                        ){
+                            didiMarkedNotAvailable.value = true
+                            didiViewModel.setDidiAsUnavailable(didi.id)
+                        }
+                        Spacer(modifier = Modifier.width(6.dp))
+                        ButtonPositiveForPAT(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(45.dp)
+                                .weight(1f)
+                                .background(
+                                    if (didiMarkedNotAvailable.value
+                                    ) languageItemActiveBg else blueDark
+                                ),
+                            buttonTitle = if(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            else "",
+                            true,
+                            color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                            textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
+                            iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
+                        ) {
+                            if (didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                if (didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                    didiMarkedNotAvailable.value = false
+                                }
+                                navController.navigate("didi_pat_summary/${didi.id}")
+                            } else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) {
+                                if (didi.section1 == 0 || didi.section1 == 1)
+                                    navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                                else if (didi.section2 == 0 || didi.section2 == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                            }
+                        }
+                    }
+                }else{
+                    Row(modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp)
+                        .padding(horizontal = 20.dp)
+                        .clickable {
+                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}")
+                        }
+                        .then(modifier),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.show),
+                            style = smallTextStyleMediumWeight,
+                            color = textColorDark,
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint = blueDark,
+                            modifier = Modifier
+                                .absolutePadding(top = 4.dp, left = 2.dp)
+                                .size(24.dp)
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun DidiItemCard(
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
@@ -641,57 +923,62 @@ fun DidiItemCard(
             }
             .then(modifier)
     ) {
-        BoxWithConstraints {
-            val constraintSet = decoupledConstraints()
-            ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
-                CircularDidiImage(
-                    modifier = Modifier.layoutId("didiImage")
-                )
-                Text(
-                    text = didi.name,
-                    style = TextStyle(
-                        color = animateColor,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    modifier = Modifier.layoutId("didiName")
-                )
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BoxWithConstraints {
+                val constraintSet = decoupledConstraints()
+                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                    CircularDidiImage(
+                        modifier = Modifier.layoutId("didiImage")
+                    )
+                    Text(
+                        text = didi.name,
+                        style = TextStyle(
+                            color = animateColor,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        modifier = Modifier.layoutId("didiName")
+                    )
 
-                Image(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    modifier = Modifier
-                        .width(18.dp)
-                        .height(14.dp)
-                        .layoutId("homeImage"),
-                    colorFilter = ColorFilter.tint(textColorBlueLight)
-                )
+                    Image(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(14.dp)
+                            .layoutId("homeImage"),
+                        colorFilter = ColorFilter.tint(textColorBlueLight)
+                    )
 
-                Text(
-                    text = didi.cohortName,
-                    style = TextStyle(
-                        color = textColorBlueLight,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.layoutId("village")
-                )
+                    Text(
+                        text = didi.cohortName,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("village")
+                    )
+                        CardArrow(
+                            modifier = Modifier.layoutId("expendArrowImage"),
+                            degrees = arrowRotationDegree,
+                            iconColor = animateColor,
+                            onClick = { onExpendClick(expanded, didi) }
+                        )
 
-                CardArrow(
-                    modifier = Modifier.layoutId("expendArrowImage"),
-                    degrees = arrowRotationDegree,
-                    iconColor = animateColor,
-                    onClick = { onExpendClick(expanded, didi) }
-                )
-
-                DidiDetailExpendableContent(
-                    modifier = Modifier.layoutId("didiDetailLayout"),
-                    didi,
-                    animateInt == 1
-                )
+                        DidiDetailExpendableContent(
+                            modifier = Modifier.layoutId("didiDetailLayout"),
+                            didi,
+                            animateInt == 1
+                        )
+                }
             }
         }
     }
