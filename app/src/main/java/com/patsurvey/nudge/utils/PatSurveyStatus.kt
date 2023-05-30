@@ -31,3 +31,9 @@ enum class SHGFlag(val value: Int) {
     }
 
 }
+
+enum class VoEndorsementStatus {
+    NOT_STARTED,
+    INPROGRESS,
+    COMPLETED
+}
