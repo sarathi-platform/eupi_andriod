@@ -160,5 +160,8 @@
     <string name="section_2_text">"खंड 2: "</string>
     <string name="vo_endorsement_screen_title">वीओ एंडोर्समेंट के लिए दीदियों की सूची</string>
     <string name="start_endorsement">अनुमोदन प्रारंभ करें</string>
+    <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
+    <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
+
 
 </resources>

@@ -754,15 +754,16 @@ fun DoubleButtonBoxPreview() {
 fun OutlineButtonWithIcon(
     modifier: Modifier = Modifier,
     buttonTitle: String,
-    icon: Int,
+    icon: ImageVector,
     contentColor: Color,
+    borderColor: Color = greyBorder,
     onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = {
             onClick()
         },
-        border = BorderStroke(1.dp, greyBorder),
+        border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
@@ -773,7 +774,7 @@ fun OutlineButtonWithIcon(
             horizontalArrangement = Arrangement.Center
         ) {
             Icon(
-                painterResource(id = icon),
+                imageVector = icon,
                 contentDescription = "Add Button",
                 tint = contentColor,
                 modifier = Modifier.absolutePadding(top = 2.dp)
