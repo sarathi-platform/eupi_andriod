@@ -3,13 +3,16 @@ package com.patsurvey.nudge.navigation.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.settings.SettingScreen
@@ -20,6 +23,7 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -43,6 +47,7 @@ fun NavHomeGraph(navController: NavHostController) {
                         1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
                         2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
                         3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                        4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId")
                     }
                 },
                 onNavigateToSetting = {
@@ -69,6 +74,7 @@ fun NavHomeGraph(navController: NavHostController) {
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
+        voEndorsmentNavGraph(navController = navController)
     }
 }
 
@@ -446,6 +452,25 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
             )
         }
+
+        composable(
+            route = PatScreens.PAT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            ParticipatoryWealthRankingSurvey(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
+            )
+        }
     }
 }
 
@@ -462,6 +487,10 @@ sealed class PatScreens(val route: String) {
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
+
+    object PAT_SURVEY_SUMMARY :
+        PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
 }
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
@@ -512,4 +541,26 @@ sealed class SettingScreens(val route: String) {
     object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
+}
+
+fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
+    navigation(route = Graph.VO_ENDORSEMENT_GRAPH,
+        startDestination = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ) {
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route
+        ) {
+            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize())
+        }
+    }
+}
+
+sealed class VoEndorsmentScreeens(val route: String) {
+    object VO_ENDORSMENT_LIST_SCREEN : VoEndorsmentScreeens(route = "vo_endorsment_list_screen")
+
 }

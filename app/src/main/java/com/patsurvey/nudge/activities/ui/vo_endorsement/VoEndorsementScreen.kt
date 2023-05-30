@@ -1,0 +1,506 @@
+package com.patsurvey.nudge.activities.ui.vo_endorsement
+
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.ConstraintSet
+import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CircularDidiImage
+import com.patsurvey.nudge.activities.circleLayout
+import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.SearchWithFilterView
+import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.utils.*
+
+@Composable
+fun VoEndorsementScreen(
+    modifier: Modifier = Modifier,
+    navController: NavHostController,
+    viewModel: VoEndorsementScreenViewModel
+) {
+
+    LaunchedEffect(key1 = true) {
+        viewModel.fetchDidisFromDB()
+    }
+
+    val didis by viewModel.didiList.collectAsState()
+
+    val newFilteredTolaDidiList = viewModel.filterTolaMapList
+    val newFilteredDidiList = viewModel.filterDidiList.collectAsState()
+
+//    val _pendingDidiCount = remember {
+//        mutableStateOf(newFilteredDidiList.value.size)
+//    }
+
+    val localDensity = LocalDensity.current
+
+    var bottomPadding by remember {
+        mutableStateOf(0.dp)
+    }
+
+    var filterSelected by remember {
+        mutableStateOf(false)
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .then(modifier)
+    ) {
+        val (bottomActionBox, mainBox) = createRefs()
+
+        Box(modifier = Modifier
+            .constrainAs(mainBox) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(bottomActionBox.top)
+                height = Dimension.fillToConstraints
+            }
+            .padding(top = 14.dp)
+            .padding(horizontal = 16.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+            ) {
+
+                VOAndVillageBoxView(
+                    prefRepo = viewModel.prefRepo,
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = white)
+                        .weight(1f),
+                    contentPadding = PaddingValues(vertical = 10.dp)
+                ) {
+
+                    item {
+                        Text(
+                            text = stringResource(id = R.string.vo_endorsement_screen_title),
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                        )
+                    }
+                    item {
+                        SearchWithFilterView(
+                            placeholderString = stringResource(id = R.string.search_didis),
+                            filterSelected = filterSelected,
+                            onFilterSelected = {
+                                if (didis.isNotEmpty()) {
+                                    filterSelected = !it
+                                    viewModel.filterList()
+                                }
+                            },
+                            onSearchValueChange = {
+                                viewModel.performQuery(it, filterSelected)
+                            }
+                        )
+                    }
+
+                    item {
+                        Text(
+                            text = stringResource(
+                                id = R.string.count_didis_pending,
+                                newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                            ),
+                            color = Color.Black,
+                            fontSize = 12.sp,
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                        )
+                    }
+
+                    if (filterSelected) {
+                        itemsIndexed(
+                            newFilteredTolaDidiList.keys.toList().reversed()
+                        ) { index, didiKey ->
+                            ShowDidisFromTolaForVo(
+                                navController = navController,
+                                viewModel = viewModel,
+                                didiTola = didiKey,
+                                didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
+                                modifier = modifier,
+                                onNavigate = {
+
+                                }
+                            )
+                            if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                Divider(
+                                    color = borderGreyLight,
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        top = 22.dp,
+                                        bottom = 1.dp
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        itemsIndexed(newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
+                            DidiItemCardForVo(
+                                navController = navController,
+                                didiViewModel = viewModel,
+                                didi = didi,
+                                expanded = false,
+                                modifier = modifier,
+                                onItemClick = {
+                                    //TODO navigate to summary screen for Endorsement
+                                }
+                            )
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+                    }
+                }
+            }
+        }
+        if (false) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+
+                positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
+                negativeButtonRequired = false,
+                positiveButtonOnClick = {
+                    val stepStatus = false
+//                    navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
+                },
+                negativeButtonOnClick = {/*Nothing to do here*/ }
+            )
+        }
+    }
+}
+
+@Composable
+fun DidiItemCardForVo(
+    navController: NavHostController,
+    didiViewModel: VoEndorsementScreenViewModel,
+    didi: DidiEntity,
+    expanded: Boolean,
+    modifier: Modifier,
+    onItemClick: (DidiEntity) -> Unit
+) {
+
+    Card(
+        elevation = 10.dp,
+        shape = RoundedCornerShape(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(bgGreyLight, RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = borderGreyLight, shape = RoundedCornerShape(6.dp))
+            .clickable {
+                onItemClick(didi)
+            }
+            .then(modifier)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BoxWithConstraints {
+                val constraintSet = decoupledConstraints()
+                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                    CircularDidiImage(
+                        modifier = Modifier.layoutId("didiImage")
+                    )
+                    Row(
+                        modifier = Modifier
+                            .layoutId("didiRow")
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = didi.name,
+                            style = TextStyle(
+                                color = textColorDark,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans,
+                                textAlign = TextAlign.Start
+                            ),
+                        )
+
+                        //TODO figureout a way to save voendorsement status.
+                        if (didi.patSurveyProgress.equals(VoEndorsementStatus.COMPLETED.ordinal)) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_completed_tick),
+                                contentDescription = "home image",
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                                    .padding(5.dp)
+                                    .layoutId("successImage")
+                            )
+                        }
+                    }
+
+
+                    Image(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(14.dp)
+                            .layoutId("homeImage"),
+                        colorFilter = ColorFilter.tint(textColorBlueLight)
+                    )
+
+                    Text(
+                        text = didi.cohortName,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("village")
+                    )
+                    Divider(
+                        color = borderGreyLight,
+                        thickness = 1.dp,
+                        modifier = Modifier.layoutId("divider").padding(vertical = 4.dp)
+                    )
+                }
+            }
+            if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 10.dp)
+                ) {
+                    ButtonPositiveForVo(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
+                            .background(blueDark),
+                        buttonTitle = stringResource(id = R.string.start_endorsement),
+                        true,
+                        color = blueDark,
+                        textColor = white,
+                        iconTintColor = white
+                    ) {
+                        onItemClick(didi)
+                    }
+                }
+            } else {
+                Row(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+                    .padding(bottom = 10.dp)
+                    .clickable {
+                        onItemClick(didi)
+                    }
+                    .then(modifier),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+
+                    Text(
+                        text = "Endorsed",
+                        style = smallTextStyleMediumWeight,
+                        color = greenOnline,
+                    )
+
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.show),
+                            style = smallTextStyleMediumWeight,
+                            color = textColorDark,
+                        )
+                        Spacer(modifier = Modifier.width(2.dp))
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = null,
+                            tint = blueDark,
+                            modifier = Modifier
+                                .absolutePadding(top = 4.dp, left = 2.dp)
+                                .size(24.dp)
+                        )
+                    }
+
+                }
+            }
+        }
+    }
+}
+
+private fun decoupledConstraints(): ConstraintSet {
+    return ConstraintSet {
+        val divider = createRefFor("divider")
+        val didiImage = createRefFor("didiImage")
+        val didiName = createRefFor("didiName")
+        val didiRow = createRefFor("didiRow")
+        val homeImage = createRefFor("homeImage")
+        val village = createRefFor("village")
+        val expendArrowImage = createRefFor("expendArrowImage")
+        val didiDetailLayout = createRefFor("didiDetailLayout")
+
+        constrain(divider) {
+            top.linkTo(village.bottom)
+            end.linkTo(parent.end)
+            start.linkTo(parent.start)
+        }
+
+        constrain(didiImage) {
+            top.linkTo(parent.top, margin = 12.dp)
+            start.linkTo(parent.start, margin = 10.dp)
+        }
+        constrain(didiName) {
+            start.linkTo(didiImage.end, 10.dp)
+            top.linkTo(parent.top, 10.dp)
+            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(didiRow) {
+            start.linkTo(didiImage.end, 10.dp)
+            top.linkTo(parent.top, 10.dp)
+            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(village) {
+            start.linkTo(homeImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
+            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(homeImage) {
+            top.linkTo(village.top)
+            bottom.linkTo(village.bottom)
+            start.linkTo(didiName.start)
+        }
+        constrain(expendArrowImage) {
+            top.linkTo(didiName.top)
+            bottom.linkTo(village.bottom)
+            end.linkTo(parent.end, margin = 10.dp)
+        }
+
+        constrain(didiDetailLayout) {
+            top.linkTo(village.bottom, margin = 15.dp, goneMargin = 20.dp)
+            end.linkTo(parent.end)
+            start.linkTo(parent.start)
+        }
+    }
+}
+
+@Composable
+fun ShowDidisFromTolaForVo(
+    navController:NavHostController,
+    viewModel: VoEndorsementScreenViewModel,
+    didiTola: String,
+    didiList: List<DidiEntity>,
+    modifier: Modifier,
+    onNavigate: (String) -> Unit
+) {
+    Column(modifier = Modifier) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_icn),
+                contentDescription = "home image",
+                modifier = Modifier
+                    .size(18.dp),
+                colorFilter = ColorFilter.tint(textColorBlueLight)
+            )
+
+            Text(
+                text = didiTola,
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(end = 10.dp)
+            )
+            Text(
+                text = "${didiList.size}",
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .background(yellowBg, shape = CircleShape)
+                    .circleLayout()
+                    .padding(3.dp),
+                textAlign = TextAlign.Start
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            didiList.forEachIndexed { index, didi ->
+                DidiItemCardForVo(
+                    navController = navController,
+                    didiViewModel = viewModel,
+                    didi = didi,
+                    expanded = false,
+                    modifier = modifier,
+                    onItemClick = {
+                        //TODO navigate to summary screen for Endorsement
+                    }
+                )
+            }
+
+        }
+    }
+}

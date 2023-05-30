@@ -10,6 +10,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -21,13 +22,21 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.showCustomToast
+
 @Composable
 fun SplashScreen(
     navController: NavController,
     modifier: Modifier = Modifier,
     viewModel: ConfigViewModel
 ) {
-
+    val context = LocalContext.current
+    val networkErrorMessage = viewModel.networkErrorMessage.value
+    if(networkErrorMessage.isNotEmpty()){
+        showCustomToast(context,networkErrorMessage)
+        viewModel.networkErrorMessage.value = BLANK_STRING
+    }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
     LaunchedEffect(key1 = true) {
         viewModel.fetchLanguageDetails {

@@ -46,8 +46,6 @@ class TransectWalkViewModel @Inject constructor(
     val isTransectWalkComplete = mutableStateOf(false)
 
     val showLoader = mutableStateOf(false)
-
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     init {
 //        fetchTolaList(villageId)
 
@@ -368,7 +366,7 @@ class TransectWalkViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
-        networkErrorMessage.value = error?.title.toString()
+        networkErrorMessage.value = error?.message.toString()
     }
 
 

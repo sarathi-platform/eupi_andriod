@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -14,7 +13,6 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,13 +31,13 @@ import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 
 
-@SuppressLint("SuspiciousIndentation")
 @Composable
 fun NumericFieldTypeQuestion(
     modifier: Modifier,
@@ -51,25 +49,7 @@ fun NumericFieldTypeQuestion(
     viewModel: QuestionScreenViewModel?=null,
     onSubmitClick:()->Unit
 ) {
-    var totalAssetAmount by rememberSaveable { mutableStateOf(viewModel?.totalAssetAmount) }
-    val numValueList = viewModel?.optionNumValueList?.collectAsState()
-    LaunchedEffect(key1 = Unit) {
-        if (numValueList?.value?.isNotEmpty() == true) {
-            optionList.forEach { option ->
-                numValueList.value?.let { list ->
-                    if (list.map { it.optionId }.indexOf(option.optionId) > -1) {
-                        val countValue =
-                            list[list.map { it.optionId }.indexOf(option.optionId)]?.count
-                        if (countValue != null) {
-                            option.count = if (countValue <= 0) 0 else countValue
-                        }
-                    }
-                }
 
-            }
-            viewModel?.calculateAssetAmount(questionId, didiId)
-        }
-    }
     Column(modifier = modifier.fillMaxSize()) {
         Text(
             modifier = Modifier
@@ -118,6 +98,7 @@ fun NumericFieldTypeQuestion(
                                 id = 0
                             )
                             option.count=it
+                            viewModel?.totalAmount?.value = option.weight?.times(it)?:0
                             viewModel?.updateNumericAnswer(numericAnswerEntity)
                         },
                         onIncrementClick = {
@@ -161,15 +142,9 @@ fun NumericFieldTypeQuestion(
                     ) {
                         OutlinedTextField(
                             readOnly = false,
-                            value = if ((totalAssetAmount?.value
-                                    ?: 0) <= 0
-                            ) BLANK_STRING else (totalAssetAmount?.value ?: 0).toString(),
+                            value =viewModel?.totalAmount?.value.toString(),
                             onValueChange = {
-                                if (it.isEmpty()) {
-                                    totalAssetAmount?.value = 0
-                                } else {
-                                    totalAssetAmount?.value = it.toInt()
-                                }
+                              viewModel?.totalAmount?.value=it.toInt()
                             },
                             placeholder = {
                                 Text(
@@ -217,6 +192,16 @@ fun NumericFieldTypeQuestion(
             }
 
             }
+        }
+    }
+}
+
+fun calculateAmount(questionId: Int,list: List<SectionAnswerEntity>){
+    if(list.isNotEmpty()){
+
+        val aIndex=list.map { it.questionId }.indexOf(questionId)
+        if(aIndex!=-1){
+
         }
     }
 }

@@ -67,12 +67,11 @@ class AddDidiViewModel @Inject constructor(
     var stepId: Int = -1
 
     val isSocialMappingComplete = mutableStateOf(false)
+    val isPATSurveyComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
-
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
+    val pendingDidiCount = mutableStateOf(0)
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
-    val markedNotAvailable: StateFlow<List<Int>> get() = _markedNotAvailable
 
 
     init {
@@ -97,8 +96,6 @@ class AddDidiViewModel @Inject constructor(
                         updatedList.add(it)
                     }
                 }
-
-                Log.d(TAG, "_didiList: ${updatedList.toString()}")
                 _didiList.value = updatedList
                 _casteList.emit(
                     casteListDao.getAllCasteForLanguage(
@@ -117,6 +114,8 @@ class AddDidiViewModel @Inject constructor(
                 filterDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEach {
                     getDidiAvailabilityStatus(it.id)
                 }
+
+
             }
         }
 
@@ -214,6 +213,7 @@ class AddDidiViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                     isSocialMappingComplete.value = false
+                    isPATSurveyComplete.value = false
                     localDbListener.onInsertionSuccess()
                 }
             } else {
@@ -268,6 +268,7 @@ class AddDidiViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                 isSocialMappingComplete.value = false
+                isPATSurveyComplete.value=false
 
             }
 
@@ -375,16 +376,21 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
+
     fun isSocialMappingComplete(stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val isComplete =
                 stepsListDao.isStepComplete(stepId, villageId) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isSocialMappingComplete.value = isComplete
+                isPATSurveyComplete.value = isComplete
+
             }
 
         }
     }
+
+
 
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
@@ -537,7 +543,6 @@ class AddDidiViewModel @Inject constructor(
 
     fun setDidiAsUnavailable(didiId: Int) {
         _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyProgress = PatSurveyStatus.NOT_AVAILABLE.ordinal
-//        prefRepo.savePref("${PREF_DIDI_UNAVAILABLE}_$didiId", true)
         _markedNotAvailable.value = _markedNotAvailable.value.also {
             it.add(didiId)
         }
@@ -570,6 +575,7 @@ class AddDidiViewModel @Inject constructor(
             }
         }
     }
+
 
 
 }
