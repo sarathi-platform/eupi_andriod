@@ -798,6 +798,12 @@ fun DidiItemCard(
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
                 if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    Divider(
+                        color = borderGreyLight,
+                        thickness = 1.dp,
+                        modifier = Modifier.layoutId("divider").padding(vertical = 4.dp)
+                    )
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
