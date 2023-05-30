@@ -1,24 +1,29 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
-import androidx.compose.foundation.*
+import android.content.Intent
+import android.os.Environment
+import android.util.Log
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -28,16 +33,14 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.NetworkBanner
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.model.dataModel.DidiDetailsModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ButtonNegative
-import com.patsurvey.nudge.utils.ButtonOutline
-import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
+import com.patsurvey.nudge.utils.*
+import java.io.File
 
 
 @Composable
@@ -261,7 +264,32 @@ fun DigitalFormAScreen(
                         .weight(1f),
                         isArrowRequired = false
                     ) {
-                        //TODO Add Create PDF and Share Functionality when pdf format available.
+                        val pdfFile = File("${context.getExternalFilesDir(
+                            Environment.DIRECTORY_DOCUMENTS)?.absolutePath}", "digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                        if (!pdfFile.exists()) {
+                            viewModel.generateFormAPDF(context){
+                                Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
+                                val fileUri = uriFromFile(context, pdfFile)
+                                val shareIntent = Intent(Intent.ACTION_SEND)
+                                shareIntent.type = "application/pdf"
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                                ContextCompat.startActivity(
+                                    context,
+                                    Intent.createChooser(shareIntent, "Share Form A"),
+                                    null
+                                )
+                            }
+                        } else {
+                            val fileUri = uriFromFile(context, pdfFile)
+                            val shareIntent = Intent(Intent.ACTION_SEND)
+                            shareIntent.type = "application/pdf"
+                            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                            ContextCompat.startActivity(
+                                context,
+                                Intent.createChooser(shareIntent, "Share Form A"),
+                                null
+                            )
+                        }
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     OutlineButtonCustom(
@@ -270,7 +298,9 @@ fun DigitalFormAScreen(
                             .weight(1f),
                         buttonTitle = stringResource(R.string.download_button_text),
                     ) {
-                        //TODO Add Create PDF and Download Functionality when pdf format available.
+                       viewModel.generateFormAPDF(context) {
+                           showToast(context, "Digital Form A Downloaded")
+                       }
                     }
                 }
 

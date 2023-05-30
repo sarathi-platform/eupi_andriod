@@ -1,13 +1,9 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
-import android.app.Activity
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -15,15 +11,19 @@ import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -52,7 +52,7 @@ class VillageSelectionViewModel @Inject constructor(
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
-        showLoader.value = true
+//        showLoader.value = true
         fetchUserDetails {
             if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                 if ((System.currentTimeMillis() - prefRepo.getPref(
@@ -61,8 +61,8 @@ class VillageSelectionViewModel @Inject constructor(
                     )) > TimeUnit.DAYS.toMillis(5)
                 )
                     fetchVillageList()
-                else
-                    showLoader.value = false
+//                else
+//                    showLoader.value = false
             } else
                 fetchVillageList()
         }
@@ -79,13 +79,13 @@ class VillageSelectionViewModel @Inject constructor(
                         description = it.description,
                         url = it.url,
                         thumbUrl = it.thumbUrl,
-                        isDownload = if (getVideoPath(context, it.id).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                        isDownload = if (getVideoPath(context, it.id, fileType = FileType.VIDEO).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     )
                     trainingVideoDao.insert(trainingVideoEntity)
                 }
             } else {
                 trainingVideos.forEach {
-                    val videoIsDownloaded = if (getVideoPath(context, it.id).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                    val videoIsDownloaded = if (getVideoPath(context, it.id, fileType = FileType.VIDEO).exists()) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     if (it.isDownload != videoIsDownloaded) {
                         val trainingVideoEntity = TrainingVideoEntity(
                             id = it.id,
@@ -102,8 +102,8 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun getVideoPath(context: Context, videoItemId: Int): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_MOVIES)?.absolutePath}/${videoItemId}.mp4")
+    private fun getVideoPath(context: Context, videoItemId: Int, fileType: FileType): File {
+        return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
     }
 
     private fun fetchVillageList() {
@@ -313,7 +313,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        showLoader.value = false
+//        showLoader.value = false
         networkErrorMessage.value= error?.message.toString()
     }
 
