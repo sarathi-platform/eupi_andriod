@@ -23,6 +23,7 @@ import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.VideoListScreen
@@ -557,10 +558,16 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         ) {
             VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize())
         }
+
+        composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route) {
+            FormPictureScreen(navController = navController, formPictureScreenViewModel = hiltViewModel())
+        }
     }
 }
 
 sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSMENT_LIST_SCREEN : VoEndorsmentScreeens(route = "vo_endorsment_list_screen")
+
+    object FORM_PICTURE_SCREEN : VoEndorsmentScreeens(route = "form_picture_screen")
 
 }

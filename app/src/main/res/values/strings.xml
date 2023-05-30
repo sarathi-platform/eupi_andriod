@@ -158,6 +158,9 @@
     <string name="section_2_text">"Section 2: "</string>
     <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>
     <string name="start_endorsement">Start Endorsement</string>
+    <string name="form_c_photo_button_text">Take picture of form C</string>
+    <string name="form_d_photo_button_text">Take picture of form D</string>
+
 
 
 </resources>
