@@ -40,6 +40,9 @@ class DigitalFormAViewModel @Inject constructor(
     fun generateFormAPDF(context: Context, callBack: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             PdfUtils.getFormAPdf(context = context, villageEntity = prefRepo.getSelectedVillage(), didiDetailList = didiDetailList.value, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "") ?: "")
+            withContext(Dispatchers.Main) {
+                callBack()
+            }
         }
     }
 

@@ -269,14 +269,21 @@ fun DigitalFormAScreen(
                         if (!pdfFile.exists()) {
                             viewModel.generateFormAPDF(context){
                                 Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
+                                val fileUri = uriFromFile(context, pdfFile)
+                                val shareIntent = Intent(Intent.ACTION_SEND)
+                                shareIntent.type = "application/pdf"
+                                shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                                ContextCompat.startActivity(
+                                    context,
+                                    Intent.createChooser(shareIntent, "Share Form A"),
+                                    null
+                                )
                             }
                         } else {
                             val fileUri = uriFromFile(context, pdfFile)
-//                            context.grantUriPermission(BuildConfig.APPLICATION_ID, fileUri, Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
                             val shareIntent = Intent(Intent.ACTION_SEND)
                             shareIntent.type = "application/pdf"
                             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
-//                            shareIntent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                             ContextCompat.startActivity(
                                 context,
                                 Intent.createChooser(shareIntent, "Share Form A"),
