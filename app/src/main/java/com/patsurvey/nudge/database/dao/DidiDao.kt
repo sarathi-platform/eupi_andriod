@@ -84,4 +84,8 @@ interface DidiDao {
     fun updateDidiShgStatus(didiId: Int, shgFlag: Int)
     @Query("update $DIDI_TABLE set cohortName = :newName where cohortId = :id")
     fun updateTolaName(id: Int, newName: String)
+
+    @Query("select COUNT(*) from $DIDI_TABLE where villageId =:villageId AND patSurveyProgress=0 AND wealth_ranking='POOR'")
+    fun fetchPendingDidiCount(villageId: Int): Int
+
 }

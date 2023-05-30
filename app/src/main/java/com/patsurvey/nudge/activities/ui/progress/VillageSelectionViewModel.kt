@@ -41,7 +41,6 @@ class VillageSelectionViewModel @Inject constructor(
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao
 ) : BaseViewModel() {
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 

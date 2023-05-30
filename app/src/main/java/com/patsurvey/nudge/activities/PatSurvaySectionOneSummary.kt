@@ -79,18 +79,14 @@ fun PatSurvaySectionSummaryScreen(
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
-    LaunchedEffect(key1 = Unit) {
-        questionList.forEach {
-            val answer = answerList.find { it.questionId == it.questionId }
-        }
-    }
-
-    BackHandler() {
-        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
-    }
-
     val showPatCompletion = remember {
         mutableStateOf(false)
+    }
+
+    if(showPatCompletion.value) {
+        BackHandler {
+            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }
     }
 
     ConstraintLayout(
@@ -228,14 +224,6 @@ fun PatSurvaySectionSummaryScreen(
                         showPatCompletion.value = true
                     }
                 } else {
-                    patSectionSummaryViewModel.setPATSection2Complete(
-                        didi.value.id,
-                        PatSurveyStatus.INPROGRESS.ordinal
-                    )
-                    patSectionSummaryViewModel.setPATSurveyComplete(
-                        didi.value.id,
-                        PatSurveyStatus.INPROGRESS.ordinal
-                    )
                     navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
                 }
             },

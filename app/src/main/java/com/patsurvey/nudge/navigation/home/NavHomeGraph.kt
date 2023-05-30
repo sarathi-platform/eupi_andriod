@@ -453,6 +453,25 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
             )
         }
+
+        composable(
+            route = PatScreens.PAT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            ParticipatoryWealthRankingSurvey(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
+            )
+        }
     }
 }
 
@@ -469,6 +488,10 @@ sealed class PatScreens(val route: String) {
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
+
+    object PAT_SURVEY_SUMMARY :
+        PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
 }
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {

@@ -22,16 +22,12 @@ class ConfigViewModel @Inject constructor(
     private val languageListDao: LanguageListDao,
     val casteListDao: CasteListDao
 ) : BaseViewModel() {
-    init {
-
-    }
-
     fun isLoggedIn(): Boolean {
         return prefRepo.getAccessToken()?.isNotEmpty() == true
     }
 
     fun fetchLanguageDetails(callBack: () -> Unit) {
-        job = CoroutineScope(Dispatchers.IO).launch {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
 
                 val response = apiInterface.configDetails()
@@ -77,7 +73,7 @@ class ConfigViewModel @Inject constructor(
                 }
 
             } catch (ex: Exception) {
-                onError(tag = "ConfigViewModel", "Error : ${ex.localizedMessage}")
+                onCatchError(ex)
                 withContext(Dispatchers.Main) {
                     callBack()
                 }
@@ -98,6 +94,7 @@ class ConfigViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
+        networkErrorMessage.value= error?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             addDefaultLanguage()
         }
