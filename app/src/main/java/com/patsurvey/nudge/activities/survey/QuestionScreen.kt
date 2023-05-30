@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -59,6 +60,7 @@ fun QuestionScreen(
     }
 
     val questionList by viewModel.questionList.collectAsState()
+    val totalAmount by viewModel.totalAssetAmount.collectAsState()
     val answerList by viewModel.answerList.collectAsState()
 
     val pagerState = rememberPagerState()
@@ -111,7 +113,6 @@ fun QuestionScreen(
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                viewModel.fetchNumericDetails(pagerState.currentPage, didiId = didiId)
                 HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
@@ -214,7 +215,6 @@ fun QuestionScreen(
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
-                            viewModel.totalAssetAmount.value=0
                             NumericFieldTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
@@ -224,13 +224,13 @@ fun QuestionScreen(
                                 optionList = questionList[it].options,
                                 viewModel = viewModel
                             ){
-                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,1,1,1,
+                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,0,0,0,
                                     BLANK_STRING)
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
-                                    assetAmount = viewModel.totalAssetAmount.value,
+                                    assetAmount = viewModel?.totalAmount?.value ?:0,
                                     quesType = QuestionType.Numeric_Field.name,
                                     summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAssetAmount.value.toString()),
                                     selIndex = -1
@@ -242,6 +242,7 @@ fun QuestionScreen(
                                             val nextPageIndex = pagerState.currentPage + 1
                                             viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                                             coroutineScope.launch {
+                                                viewModel.calculateTotalAmount(pagerState.currentPage)
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
@@ -292,6 +293,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
+                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
@@ -334,6 +336,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
+                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                 },
                 text = {
@@ -360,22 +363,9 @@ fun QuestionScreen(
     }
 }
 
-fun selectAnswerOptionValue(sortedOptionList: List<AnswerOptionModel>, optionValue: Int?) :List<AnswerOptionModel>{
-    sortedOptionList.forEach {
-        it.isSelected = optionValue==it.optionValue
-    }
-    return sortedOptionList
-}
-
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
-    quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)
     if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true))
             navController.navigate("pat_section_one_summary_screen/$didiId")
     else     navController.navigate("pat_section_two_summary_screen/$didiId")
-//    navController.navigate(Graph.HOME) {
-//        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-//            inclusive = true
-//        }
-//    }
 }
 

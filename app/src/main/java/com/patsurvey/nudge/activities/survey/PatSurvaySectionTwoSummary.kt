@@ -64,11 +64,6 @@ fun PatSurvaySectionTwoSummaryScreen(
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
     }
-
-    BackHandler() {
-        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
-    }
-
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 

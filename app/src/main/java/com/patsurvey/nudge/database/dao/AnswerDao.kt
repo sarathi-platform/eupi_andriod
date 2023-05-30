@@ -39,4 +39,7 @@ interface AnswerDao {
 
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType AND questionId = :questionId AND optionId=:optionId")
     fun countOfOptionId(didiId: Int, questionId: Int,actionType:String,optionId:Int): Int
+
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND type=:type")
+    fun getNumTypeAnswer(didiId: Int, questionId: Int,type:String): SectionAnswerEntity
 }

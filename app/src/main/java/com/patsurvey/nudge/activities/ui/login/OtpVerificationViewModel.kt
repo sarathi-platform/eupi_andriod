@@ -30,7 +30,6 @@ class OtpVerificationViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
 
     fun validateOtp(onOtpResponse: (success: Boolean, message: String) -> Unit) {
         showLoader.value = true
@@ -90,6 +89,6 @@ class OtpVerificationViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
-        networkErrorMessage.value= error?.title.toString()
+        networkErrorMessage.value= error?.message.toString()
     }
 }

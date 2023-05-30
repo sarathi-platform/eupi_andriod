@@ -20,7 +20,7 @@ class LanguageViewModel @Inject constructor(
   val languageListDao: LanguageListDao
 ) :BaseViewModel(){
 
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
+
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageEntity>()
@@ -38,7 +38,7 @@ class LanguageViewModel @Inject constructor(
         }
     }
     override fun onServerError(error: ErrorModel?) {
-        networkErrorMessage.value= error?.title.toString()
+        networkErrorMessage.value= error?.message.toString()
     }
 
 }

@@ -1,13 +1,9 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
-import android.app.Activity
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.platform.LocalContext
-import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -41,7 +37,6 @@ class VillageSelectionViewModel @Inject constructor(
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao
 ) : BaseViewModel() {
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
