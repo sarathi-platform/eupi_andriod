@@ -158,6 +158,16 @@
     <string name="section_2_text">"Section 2: "</string>
     <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>
     <string name="start_endorsement">Start Endorsement</string>
+    <string name="pat_completed">PAT Completed</string>
+    <string name="didi_not_available">Didi not available</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Didis.</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
+    <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
+    <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
+
+
+
 
 
 </resources>

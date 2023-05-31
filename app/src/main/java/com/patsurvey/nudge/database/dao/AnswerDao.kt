@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.utils.ANSWER_TABLE
+import com.patsurvey.nudge.utils.DIDI_TABLE
 
 @Dao
 interface AnswerDao {
@@ -42,4 +43,20 @@ interface AnswerDao {
 
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND type=:type")
     fun getNumTypeAnswer(didiId: Int, questionId: Int,type:String): SectionAnswerEntity
+
+    @Query("Select * FROM $ANSWER_TABLE where villageId = :villageId AND needsToPost = 1")
+    fun getAllNeedToPostQues(villageId: Int): List<SectionAnswerEntity>
+
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND needsToPost = 1")
+    fun getAllNeedToPostQuesForDidi(didiId: Int): List<SectionAnswerEntity>
+
+
+    @Query("select  $DIDI_TABLE.id  from $DIDI_TABLE INNER join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId GROUP BY $DIDI_TABLE.id")
+    fun fetchPATSurveyDidiList(villageId: Int): List<Int>
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
+    fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
+
+    @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
+    fun updateNeedToPost(didiId: Int,questionId: Int,needsToPost:Boolean)
+
 }

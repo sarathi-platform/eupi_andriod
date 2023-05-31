@@ -74,6 +74,8 @@ const val ARG_STEP_INDEX = "step_index"
 const val ARG_COMPLETION_MESSAGE = "completion_message"
 const val ARG_FROM_SCREEN = "fromScreen"
 const val ARG_VIDEO_ID = "video_id"
+const val USER_CRP = "CPR"
+const val USER_BPC = "BPC"
 
 const val PREF_PROGRAM_NAME = "programName"
 const val PREF_OPEN_FROM_HOME = "open_from_home"

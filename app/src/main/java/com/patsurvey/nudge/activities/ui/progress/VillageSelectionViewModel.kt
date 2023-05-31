@@ -246,6 +246,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             question?.sectionOrderNumber = list.orderNumber
                                             question?.actionType = list.actionType
                                             question?.languageId = languageEntity.id
+                                            question?.surveyId = questionList.surveyId
                                         }
                                         list?.questionList?.let {
                                             questionListDao.insertAll(it as List<QuestionEntity>)

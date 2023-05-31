@@ -164,5 +164,12 @@
     <string name="section_2_text">"खंड 2: "</string>
     <string name="vo_endorsement_screen_title">वीओ एंडोर्समेंट के लिए दीदियों की सूची</string>
     <string name="start_endorsement">अनुमोदन प्रारंभ करें</string>
+    <string name="pat_completed">PAT সম্পন্ন হয়েছে</string>
+    <string name="didi_not_available">দিদি পাওয়া যাচ্ছে না</string>
+    <string name="are_you_sure">তুমি কি নিশ্চিত?</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">আপনি VO অনুমোদনের জন্য %1$s PAT সম্পন্ন Didis পাঠাচ্ছেন</string>
+    <string name="send_all_for_vo_endorsement">VO অনুমোদনের জন্য সব পাঠান</string>
+    <string name="pat_survey_completed_message">{VILLAGE_NAME}-এর জন্য PAT সমীক্ষা \nসম্পন্ন হয়</string>
 
 </resources>
