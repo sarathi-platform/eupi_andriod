@@ -6,7 +6,9 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -18,7 +20,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
-class DigitalFormAViewModel @Inject constructor(
+class DigitalFormViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
 ):BaseViewModel()  {
@@ -46,4 +48,12 @@ class DigitalFormAViewModel @Inject constructor(
         }
     }
 
+    fun generateFormBPDF(context: Context, callBack: () -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(), didiDetailList = didiDetailList.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }, prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "") ?: "")
+            withContext(Dispatchers.Main) {
+                callBack()
+            }
+        }
+    }
 }

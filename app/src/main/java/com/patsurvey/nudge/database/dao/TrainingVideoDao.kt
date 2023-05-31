@@ -25,4 +25,7 @@ interface TrainingVideoDao {
     @Query("Update $TRAINING_VIDEO_TABLE set isDownload = 2 where id = :id")
     fun setVideoAsDownloaded(id: Int)
 
+    @Query("Update $TRAINING_VIDEO_TABLE set isDownload = :videoStatus where id = :id")
+    fun updateVideoDownloadStatus(id: Int, videoStatus: Int)
+
 }

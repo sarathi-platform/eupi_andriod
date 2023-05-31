@@ -19,6 +19,7 @@ import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
@@ -533,6 +534,23 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             ProfileScreen(profileScreenVideModel = hiltViewModel())
         }
 
+        composable(route = SettingScreens.FORM_A_SCREEN.route) {
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
+        composable(route = SettingScreens.FORM_B_SCREEN.route) {
+            DigitalFormBScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
+
     }
 }
 
@@ -542,6 +560,9 @@ sealed class SettingScreens(val route: String) {
     object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
+    object FORM_A_SCREEN : SettingScreens(route = "form_a_screen")
+    object FORM_B_SCREEN : SettingScreens(route = "form_b_screen")
+    object FORM_C_SCREEN : SettingScreens(route = "form_c_screen")
 }
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {

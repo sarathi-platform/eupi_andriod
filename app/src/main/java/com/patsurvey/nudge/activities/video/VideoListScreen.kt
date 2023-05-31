@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -26,15 +27,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
-import com.patsurvey.nudge.activities.ui.theme.GreyDark
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.CircularProgressBarWithOutText
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.debounceClickable
+import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.videoList
 
 
@@ -54,6 +55,8 @@ fun VideoListScreen(
     }
 
     val trainingVideos = viewModel.filterdList
+
+    val downloadStatus = viewModel.downloadStauts.collectAsState()
 
 
     Column(modifier = modifier) {
@@ -95,7 +98,9 @@ fun VideoListScreen(
                     Modifier
                         .debounceClickable {
                             navController.navigate("video_player_screen/${videoItem.id}")
-                        }, videoItem, viewModel
+                        }, videoItem, viewModel,
+                    mDownloadStatus = downloadStatus.value[videoItem.id]
+                        ?: DownloadStatus.UNAVAILABLE
                 )
             }
         }
@@ -109,7 +114,8 @@ fun VideoListScreen(
 fun VideoItemCard(
     modifier: Modifier,
     videoItem: TrainingVideoEntity,
-    videoListViewModel: VideoListViewModel
+    videoListViewModel: VideoListViewModel,
+    mDownloadStatus: DownloadStatus
 ) {
 
     val context = LocalContext.current
@@ -119,7 +125,6 @@ fun VideoItemCard(
     }
 
     Column {
-
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -171,28 +176,63 @@ fun VideoItemCard(
                 )
             }
 
-            /*val isDownloaded = videoListViewModel.getVideoPath(
-                context,
-                videoItem.id
-            ).exists()*/
-            Icon(painter = painterResource(
-                id = if (isDownloaded == DownloadStatus.DOWNLOADED.value) R.drawable.file_download_remove else R.drawable.outline_file_download
-            ),
-                contentDescription = "download file",
-                tint = if (isDownloaded != DownloadStatus.DOWNLOADED.value) GreyDark else Color.Black,
-                modifier = Modifier
-                    .clickable {
-                        videoListViewModel.downloadItem(context, videoItem)
+            when (mDownloadStatus) {
+                DownloadStatus.DOWNLOAD_PAUSED -> {
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator(
+                            color = blueDark,
+                            modifier = Modifier
+                                .size(24.dp)
+                                .align(Alignment.Center),
+                            strokeWidth = 2.dp
+                        )
                     }
-                    .absolutePadding(top = 4.dp)
-            )
+                }
+                DownloadStatus.DOWNLOADING -> {
+                    CircularProgressBarWithOutText(
+                        modifier = Modifier.size(28.dp),
+                        circleRadius = 28f,
+                        initialPosition = videoListViewModel.initialPosition.value,
+                        borderThickness = 7.dp
+                    )
+                }
+                DownloadStatus.DOWNLOADED -> {
+                    Icon(painter = painterResource(id = R.drawable.file_download_remove),
+                        contentDescription = "download file",
+                        tint = Color.Black,
+                        modifier = Modifier
+                            .clickable {
+                                videoListViewModel.removeDownload(context, videoItem)
+                            }
+                            .absolutePadding(top = 4.dp)
+                    )
+                }
+                else -> {
+                    Icon(painter = painterResource(R.drawable.outline_file_download),
+                        contentDescription = "download file",
+                        tint = GreyDark,
+                        modifier = Modifier
+                            .absolutePadding(top = 4.dp)
+                            .clickable {
+                                if ((context as MainActivity).isOnline.value) {
+                                    videoListViewModel.downloadItem(context, videoItem)
+                                } else {
+                                    showToast(
+                                        context,
+                                        "You are offline, unable to download videos."
+                                    )
+                                }
+                            }
+                    )
+                }
+            }
         }
 
         Divider(
             color = borderGreyLight,
             thickness = 1.dp,
             modifier = Modifier.padding(
-                vertical = 2.dp,
+                vertical = 8.dp,
                 horizontal = 16.dp
             )
         )
