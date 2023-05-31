@@ -32,6 +32,7 @@ import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.home.PatScreens
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
 @Composable
@@ -39,7 +40,8 @@ fun PatSurveyCompleteSummary(
     navController: NavHostController,
     modifier: Modifier,
     patSectionSummaryViewModel: PatSectionSummaryViewModel,
-    didiId: Int
+    didiId: Int,
+    fromScreen: String
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -52,7 +54,10 @@ fun PatSurveyCompleteSummary(
     }
 
     BackHandler() {
-        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
+            navController.popBackStack()
+        else
+            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
     val configuration = LocalConfiguration.current
@@ -210,7 +215,10 @@ fun PatSurveyCompleteSummary(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
+                    navController.popBackStack()
+                else
+                    navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )

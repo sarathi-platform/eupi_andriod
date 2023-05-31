@@ -14,11 +14,17 @@ import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -48,6 +54,7 @@ class ProgressScreenViewModel @Inject constructor(
     val tolaCount = mutableStateOf(0)
     val didiCount = mutableStateOf(0)
     val poorDidiCount = mutableStateOf(0)
+    val ultrPoorDidiCouont = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -90,6 +97,7 @@ class ProgressScreenViewModel @Inject constructor(
                 tolaCount.value=_tolaList.value.size
                 didiCount.value=didiList.value.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                ultrPoorDidiCouont.value = didiList.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size
                 showLoader.value = false
             }
         }

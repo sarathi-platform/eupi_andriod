@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -31,13 +30,8 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -86,7 +80,7 @@ fun QuestionScreen(
         navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxSize().padding(top = 14.dp)) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
@@ -94,8 +88,7 @@ fun QuestionScreen(
             VOAndVillageBoxView(
                 prefRepo = viewModel.prefRepo,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .fillMaxWidth(),
                 startPadding = 0.dp
             )
             Column(

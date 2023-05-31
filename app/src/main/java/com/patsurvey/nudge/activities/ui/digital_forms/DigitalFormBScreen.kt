@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.digital_forms
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -11,7 +10,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Card
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,9 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,15 +36,13 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import java.io.File
 
-
 @Composable
-fun DigitalFormAScreen(
+fun DigitalFormBScreen(
     navController: NavController,
     viewModel: DigitalFormViewModel,
     modifier: Modifier = Modifier,
@@ -80,7 +78,7 @@ fun DigitalFormAScreen(
             ) {
 
                 Text(
-                    text = "Digital Form A",
+                    text = "Digital Form B",
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -152,7 +150,7 @@ fun DigitalFormAScreen(
                             )
                             Text(
                                 text = viewModel.prefRepo.getPref(
-                                    PREF_WEALTH_RANKING_COMPLETION_DATE,
+                                    PREF_PAT_COMPLETION_DATE,
                                     ""
                                 ) ?: "",
                                 color = Color.Black,
@@ -206,7 +204,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.size.toString(),
+                                text = didiList.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -248,7 +246,7 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList) { card ->
+                        items(didiList.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }) { card ->
                             DidiVillageItem(card)
                         }
                     }
@@ -272,20 +270,21 @@ fun DigitalFormAScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "digital_form_b_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
-                        viewModel.generateFormAPDF(context) {
-                            Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
+                        viewModel.generateFormBPDF(context) {
+                            Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
                             val fileUri = uriFromFile(context, pdfFile)
                             val shareIntent = Intent(Intent.ACTION_SEND)
                             shareIntent.type = "application/pdf"
                             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
                             ContextCompat.startActivity(
                                 context,
-                                Intent.createChooser(shareIntent, "Share Form A"),
+                                Intent.createChooser(shareIntent, "Share Form B"),
                                 null
                             )
                         }
+
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     OutlineButtonCustom(
@@ -294,8 +293,8 @@ fun DigitalFormAScreen(
                             .weight(1f),
                         buttonTitle = stringResource(R.string.download_button_text),
                     ) {
-                        viewModel.generateFormAPDF(context) {
-                            showToast(context, "Digital Form A Downloaded")
+                        viewModel.generateFormBPDF(context) {
+                            showToast(context, "Digital Form ABDownloaded")
                         }
                     }
                 }
@@ -341,68 +340,6 @@ fun DigitalFormAScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun DidiVillageItem(didiDetailsModel: DidiEntity) {
-    Column(
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.Start,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = dimensionResource(id = R.dimen.dp_20))
-            .padding(end = dimensionResource(id = R.dimen.dp_15))
-            .padding(vertical = dimensionResource(id = R.dimen.dp_5))
-    ) {
-
-        Column {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Text(
-                    text = didiDetailsModel.name,
-                    color = colorResource(id = R.color.text_didi_name_color),
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier
-                )
-                Image(
-                    painter = painterResource(R.drawable.ic_completed_tick),
-                    contentDescription = "completed",
-                    modifier = Modifier
-                        .padding(top = dimensionResource(id = R.dimen.dp_5))
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.ic_baseline_home_24),
-                    contentDescription = "Get Location",
-                    modifier = Modifier,
-                    tint = blueDark,
-
-                    )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = didiDetailsModel.cohortName,
-                    textAlign = TextAlign.Center,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 12.sp,
-                    color = blueDark
                 )
             }
         }

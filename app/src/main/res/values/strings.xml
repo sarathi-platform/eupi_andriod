@@ -11,6 +11,7 @@
 
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text">Didis</string>
+    <string name="didis_list_text">List of Didis</string>
     <string name="poor_didi_item_text">Poor Didi</string>
     <string name="medium_didi_item_text">Medium Didi</string>
     <string name="rich_didi_item_text">Rich Didi</string>
@@ -99,6 +100,8 @@
 
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
     <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
+    <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
+    <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
@@ -123,7 +126,8 @@
     <string name="enter_name_text">Enter Name</string>
     <string name="enter_tola_name_message">Enter Tola Name</string>
 
-    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_section_1">PAT Survey - Section 1</string>
+    <string name="pat_survey_section_2">PAT Survey - Section 2</string>
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
@@ -170,6 +174,12 @@
 
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
+    <string name="pat_completed_box_title">PAT Completed</string>
+    <string name="didi_not_available_text">Didi not available</string>
+    <string name="send_for_vo_text">Send All For VO Endorsement</string>
+    <string name="didi_pat_complete_text">Didis PAT completed</string>
+    <string name="didi_not_available_sub_heading_text">Didis Not Available</string>
+
 
 
 

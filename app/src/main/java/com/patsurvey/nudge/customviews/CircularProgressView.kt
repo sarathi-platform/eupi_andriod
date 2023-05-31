@@ -1,9 +1,7 @@
 package com.patsurvey.nudge.customviews
 
 import android.graphics.Paint
-import android.graphics.drawable.Icon
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
@@ -23,13 +21,11 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.patsurvey.nudge.activities.ui.theme.black1
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.grayProgressBackground
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -124,6 +120,78 @@ fun CircularProgressBar(
 
         }
 
+    }
+}
+
+@Composable
+fun CircularProgressBarWithOutText(
+    modifier: Modifier,
+    circleRadius: Float = 16f,
+    backgroundColor: Color = Color.Transparent,
+    progressBackgroundColor: Color = grayProgressBackground,
+    progressColor: Color = blueDark,
+    initialPosition: Float = 0f,
+    maxProgress: Int = 100,
+    borderThickness: Dp = 2.dp,
+) {
+    var circleCenter by remember {
+        mutableStateOf(Offset.Zero)
+    }
+
+    var animationPlayed by remember {
+        mutableStateOf(false)
+    }
+
+    val curPercentage = animateFloatAsState(
+        targetValue = if (animationPlayed) initialPosition else 0f,
+        animationSpec = tween()
+    )
+
+    LaunchedEffect(key1 = initialPosition) {
+        animationPlayed = true
+    }
+
+    Box(modifier = modifier) {
+        Canvas(modifier = Modifier.fillMaxSize()) {
+            val width = size.width
+            val height = size.height
+            val circleThickness = borderThickness//width/30f
+            circleCenter = Offset(x = width / 2f, y = height / 2f)
+
+            drawCircle(
+                color = backgroundColor,
+                radius = circleRadius,
+                center = circleCenter
+            )
+
+            drawCircle(
+                style = Stroke(
+                    width = circleThickness.value
+                ),
+                color = progressBackgroundColor,
+                radius = circleRadius,
+                center = circleCenter
+            )
+
+            drawArc(
+                color = progressColor,
+                startAngle = -90f,
+                sweepAngle = (360f / maxProgress) * curPercentage.value,
+                style = Stroke(
+                    width = circleThickness.value,
+                    cap = StrokeCap.Butt
+                ),
+                useCenter = false,
+                size = Size(
+                    width = circleRadius * 2f,
+                    height = circleRadius * 2f
+                ),
+                topLeft = Offset(
+                    x = (width - circleRadius * 2f) / 2f,
+                    y = (height - circleRadius * 2f) / 2f
+                )
+            )
+        }
     }
 }
 
