@@ -171,5 +171,8 @@
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">আপনি VO অনুমোদনের জন্য %1$s PAT সম্পন্ন Didis পাঠাচ্ছেন</string>
     <string name="send_all_for_vo_endorsement">VO অনুমোদনের জন্য সব পাঠান</string>
     <string name="pat_survey_completed_message">{VILLAGE_NAME}-এর জন্য PAT সমীক্ষা \nসম্পন্ন হয়</string>
+    <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
+    <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
+
 
 </resources>

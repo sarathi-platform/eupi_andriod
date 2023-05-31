@@ -168,6 +168,9 @@
 
 
 
+    <string name="form_c_photo_button_text">Take picture of form C</string>
+    <string name="form_d_photo_button_text">Take picture of form D</string>
+
 
 
 </resources>

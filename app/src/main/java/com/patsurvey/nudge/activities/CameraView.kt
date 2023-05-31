@@ -6,8 +6,8 @@ import android.util.Log
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
 import androidx.camera.core.ImageCaptureException
-import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
@@ -36,13 +35,9 @@ import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.*
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
@@ -181,6 +176,145 @@ fun takePhoto(
 }
 
 private suspend fun Context.getCameraProvider(): ProcessCameraProvider =
+    suspendCoroutine { continuation ->
+        ProcessCameraProvider.getInstance(this).also { cameraProvider ->
+            cameraProvider.addListener({
+                continuation.resume(cameraProvider.get())
+            }, ContextCompat.getMainExecutor(this))
+        }
+
+    }
+
+@Composable
+fun CameraViewForForm(
+    modifier: Modifier = Modifier,
+    outputDirectory: File,
+    formName: String,
+    executor: Executor,
+    onImageCaptured: (Uri, String) -> Unit,
+    onCloseButtonClicked: () -> Unit,
+    onError: (ImageCaptureException) -> Unit
+) {
+    val lensFacing = CameraSelector.LENS_FACING_BACK
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    val preview = Preview.Builder().build()
+    val previewView = remember { PreviewView(context) }
+    val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
+    val cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+
+    LaunchedEffect(key1 = lensFacing) {
+        val cameraProvider = context.getCameraProviderForForm()
+        cameraProvider.unbindAll()
+        cameraProvider.bindToLifecycle(
+            lifecycleOwner,
+            cameraSelector,
+            preview,
+            imageCapture
+        )
+        preview.setSurfaceProvider(previewView.surfaceProvider)
+    }
+
+    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
+        AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
+
+        Icon(
+            imageVector = Icons.Default.Close,
+            contentDescription = "close camera",
+            tint = white,
+            modifier = Modifier
+                .align(
+                    Alignment.TopStart
+                )
+                .padding(start = 10.dp, top = 10.dp)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(
+                        bounded = true,
+                        color = Color.Black
+                    )
+                ) {
+                    onCloseButtonClicked()
+                }
+        )
+        Box(
+            modifier = Modifier
+                .padding(bottom = 20.dp)
+                .clip(CircleShape)
+                .background(Color.Transparent, shape = CircleShape)
+                .size(size = 50.dp)
+                .align(Alignment.BottomCenter)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = rememberRipple(
+                        bounded = true,
+                        color = Color.Black
+                    )
+                ) {
+                    takeFormPhoto(
+                        formName = formName,
+                        imageCapture = imageCapture,
+                        outputDirectory = outputDirectory,
+                        executor = executor,
+                        onImageCaptured = onImageCaptured,
+                        onError = onError
+                    )
+                },
+        ) {
+            Canvas(
+                modifier = Modifier
+                    .size(size = 50.dp)
+                    .border(
+                        width = 2.dp,
+                        color = white,
+                        shape = CircleShape
+                    )
+                    .padding(5.dp)
+
+            ) {
+                drawCircle(
+                    color = Color.White,
+                )
+            }
+        }
+
+    }
+}
+
+fun takeFormPhoto(
+    formName: String,
+    imageCapture: ImageCapture,
+    outputDirectory: File,
+    executor: Executor,
+    onImageCaptured: (Uri, String) -> Unit,
+    onError: (ImageCaptureException) -> Unit
+) {
+    val photoFile = File(
+        outputDirectory,
+        "$formName.jpg"
+    )
+
+    val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+
+    imageCapture.takePicture(outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
+        override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
+            val saveUri = Uri.fromFile(photoFile)
+            Log.d("CameraView", "Take Photo path: ${photoFile.absoluteFile}")
+            onImageCaptured(saveUri, photoFile.absolutePath)
+        }
+
+        override fun onError(exception: ImageCaptureException) {
+            Log.e("CameraView", "Take Photo error: ", exception)
+            onError(exception)
+        }
+
+    })
+}
+
+private suspend fun Context.getCameraProviderForForm(): ProcessCameraProvider =
     suspendCoroutine { continuation ->
         ProcessCameraProvider.getInstance(this).also { cameraProvider ->
             cameraProvider.addListener({
