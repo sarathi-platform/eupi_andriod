@@ -182,7 +182,8 @@ class QuestionScreenViewModel @Inject constructor(
                             totalAssetAmount = assetAmount,
                             type = quesType,
                             summary = summary,
-                            selectedIndex = selIndex + 1
+                            selectedIndex = selIndex + 1,
+                            villageId = prefRepo.getSelectedVillage().id
                         )
                     )
                     withContext(Dispatchers.Main) {

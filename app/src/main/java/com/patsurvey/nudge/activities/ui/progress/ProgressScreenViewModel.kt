@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.ui.progress
 
-import android.util.Log
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -29,7 +29,10 @@ class ProgressScreenViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val questionDao: QuestionListDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -115,8 +118,6 @@ class ProgressScreenViewModel @Inject constructor(
                     getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
-
-
             }
         }
     }
@@ -181,4 +182,5 @@ class ProgressScreenViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
     }
+
 }

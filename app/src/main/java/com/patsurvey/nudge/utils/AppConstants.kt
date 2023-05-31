@@ -77,6 +77,8 @@ const val ARG_VIDEO_ID = "video_id"
 const val PREF_FORM_PATH = "pref_form_path"
 const val FORM_C = "form_C"
 const val FORM_D = "form_D"
+const val USER_CRP = "CPR"
+const val USER_BPC = "BPC"
 
 const val PREF_PROGRAM_NAME = "programName"
 const val PREF_OPEN_FROM_HOME = "open_from_home"

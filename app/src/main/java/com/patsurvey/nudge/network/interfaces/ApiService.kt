@@ -93,5 +93,9 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
 
+    @POST("/pat-api/pat/save")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun savePATSurveyToServer(@Body patSummarySaveRequest: List<PATSummarySaveRequest>): ApiResponseModel<PATSummaryResponse>
+
 
 }

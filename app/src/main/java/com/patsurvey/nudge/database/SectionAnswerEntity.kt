@@ -24,6 +24,9 @@ data class SectionAnswerEntity(
     @ColumnInfo(name = "didiId")
     var didiId : Int,
 
+    @ColumnInfo(name = "villageId")
+    var villageId : Int,
+
     @ColumnInfo(name = "actionType")
     var actionType : String,
 
@@ -47,6 +50,9 @@ data class SectionAnswerEntity(
 
     @SerializedName("selectedIndex")
     val selectedIndex: Int? = -1,
+
+    @ColumnInfo(name = "needsToPost")
+    var needsToPost: Boolean = true
 
 
 )
