@@ -473,6 +473,33 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
             )
         }
+
+        composable(
+            route = PatScreens.PAT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(PatScreens.PAT_DIGITAL_FORM_A_SCREEN.route)
+
+            }
+        }
+
+
+        composable(
+            route = PatScreens.PAT_DIGITAL_FORM_A_SCREEN.route
+        ) {
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
 
@@ -492,6 +519,11 @@ sealed class PatScreens(val route: String) {
 
     object PAT_SURVEY_SUMMARY :
         PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object PAT_STEP_COMPLETION_SCREEN :
+        PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object PAT_DIGITAL_FORM_A_SCREEN : PatScreens(route = "pat_digital_form_a_screen")
 
 }
 

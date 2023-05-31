@@ -52,6 +52,8 @@ data class QuestionEntity(
     @ColumnInfo(name = "totalAssetAmount")
     var totalAssetAmount: Int? = 0,
 
+    @ColumnInfo(name = "surveyId")
+    var surveyId: Int? = 0
 )
 
 
