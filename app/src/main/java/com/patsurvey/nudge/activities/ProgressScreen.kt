@@ -31,7 +31,6 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.launch
 
@@ -221,7 +220,6 @@ fun ProgressScreen(
                                         5 -> {}
                                     }
                                     onNavigateToStep(villageId,step.id,index)
-
                                 }
                             }
                         }
@@ -307,7 +305,10 @@ fun StepsBox(
                                 bottom.linkTo(parent.bottom)
                             }
                             .size(48.dp)
-                            .padding(top = if (isCompleted) 0.dp else 6.dp, start = if (isCompleted) 0.dp else 4.dp)
+                            .padding(
+                                top = if (isCompleted) 0.dp else 6.dp,
+                                start = if (isCompleted) 0.dp else 4.dp
+                            )
                     )
                 }
 
@@ -347,7 +348,7 @@ fun StepsBox(
                             2 -> viewModel?.didiCount?.value
                                 ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
                             3 -> viewModel?.poorDidiCount?.value?.let { stringResource(id = R.string.wealth_ranking_sub_text, it) }
-                            4 -> ""
+                            4 -> viewModel?.ultrPoorDidiCouont?.value?.let { if (it > 1) stringResource(id = R.string.pat_sub_text_plural, it) else stringResource(id = R.string.pat_sub_text_singular, it) }
                             5 -> ""
                             else -> ""
                         }
@@ -361,7 +362,7 @@ fun StepsBox(
                                 softWrap = true,
                                 textAlign = TextAlign.Start,
                                 overflow = TextOverflow.Ellipsis,
-                                maxLines = 1,
+                                maxLines = 2,
                                 style = smallerTextStyle
                             )
                         }

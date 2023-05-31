@@ -11,6 +11,8 @@
 
     <string name="progress_item_text">प्रगति</string>
     <string name="didis_item_text">दीदी</string>
+    <string name="didis_list_text">दीदियों की सूची</string>
+
     <string name="poor_didi_item_text">गरीब दीदी</string>
     <string name="medium_didi_item_text">माध्यम दीदी</string>
     <string name="rich_didi_item_text">अमीर दीदी</string>
@@ -91,6 +93,8 @@
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
+    <string name="pat_sub_text_singular">%1$s अत्यंत दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
+    <string name="pat_sub_text_plural">%1$s अत्यंत दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सर्वेक्षण </string>
     <string name="particaptory_wealth_ranking_text">भागीदारी धन रैंकिंग </string>
 
@@ -120,7 +124,9 @@
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">PAT शुरू करें</string>
-    <string name="pat_survey_section_1">PAT सर्वे खंड 1</string>
+    <string name="pat_survey_section_1">PAT सर्वे - खंड 1</string>
+    <string name="pat_survey_section_2">PAT सर्वे - खंड  2</string>
+
     <string name="pat_survey_complete">PAT सर्वे</string>
     <string name="result_summary">सारांश परिणाम</string>
     <string name="complete_section_1_text">सबमिट खंड 1</string>
@@ -166,7 +172,10 @@
     <string name="pat_survey_completed_message">{VILLAGE_NAME} के लिए पैट सर्वेक्षण \nबन चूका है</string>
     <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
     <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
-
-
+    <string name="pat_completed_box_title">PAT पूरा हो गया है</string>
+    <string name="didi_not_available_text">दीदी उपलब्ध नहीं है</string>
+    <string name="send_for_vo_text">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
+    <string name="didi_pat_complete_text">दीदी का PAT पूरा हुआ</string>
+    <string name="didi_not_available_sub_heading_text">दीदी उपलब्ध नहीं है</string>
 
 </resources>

@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -39,15 +38,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
@@ -121,7 +116,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                     startPadding = 0.dp
                 )
                 Text(
-                    text = stringResource(id = R.string.pat_survey_section_1),
+                    text = stringResource(id = R.string.pat_survey_section_2),
                     modifier = Modifier
                         .layoutId("sectionText"),
                     color = textColorDark,
