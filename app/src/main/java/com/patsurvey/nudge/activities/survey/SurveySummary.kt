@@ -93,7 +93,7 @@ fun SurveySummary(
         if (showDialog.value) {
             ShowDialog(
                 title = "Are you sure?",
-                message = "You are sending ${didids.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size} PAT completed Didis for VO Endorsement.",
+                message = "You are sending ${didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size} PAT completed Didis for VO Endorsement.",
                 setShowDialog = {
                     showDialog.value = it
                 }) {
@@ -202,7 +202,7 @@ fun SurveySummary(
                             contentPadding = PaddingValues(bottom = bottomPadding),
                             modifier = Modifier.padding(bottom = 10.dp)
                         ) {
-                            itemsIndexed(didids.value.filter { it.patSurveyProgress == showDidiListForStatus.second }) { index, didi ->
+                            itemsIndexed(didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
                                 DidiItemCardForPat(didi = didi, modifier = modifier, onItemClick = {
                                     if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal)
                                         navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
@@ -217,7 +217,7 @@ fun SurveySummary(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     SummaryBox(
-                        count = didids.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size,
+                        count = didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size,
                         boxColor = blueLighter,
                         boxTitle = stringResource(R.string.pat_completed_box_title), //added changes for vo endorsement text
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
@@ -225,7 +225,7 @@ fun SurveySummary(
                         showDidiListForStatus = Pair(true, PatSurveyStatus.COMPLETED.ordinal)
                     }
                     SummaryBox(
-                        count = didids.value.filter { it.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size,
+                        count = didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
                         boxTitle = stringResource(id = R.string.didi_not_available_text), //added changes for vo endorsement text
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)

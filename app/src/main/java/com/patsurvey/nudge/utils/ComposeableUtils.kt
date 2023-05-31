@@ -172,7 +172,7 @@ fun DidiItemCardForPat(
                     )
                 }
             }
-            if (didi.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal) {
+            if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal) {
                 Divider(
                     color = borderGreyLight,
                     thickness = 1.dp,

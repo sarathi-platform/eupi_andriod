@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -146,7 +147,6 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             withContext(Dispatchers.IO) {
-
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
                     didiId = didiId,
                     questionId = questionId,

@@ -50,7 +50,7 @@ class DigitalFormViewModel @Inject constructor(
 
     fun generateFormBPDF(context: Context, callBack: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(), didiDetailList = didiDetailList.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }, prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "") ?: "")
+            PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(), didiDetailList = didiDetailList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "") ?: "")
             withContext(Dispatchers.Main) {
                 callBack()
             }

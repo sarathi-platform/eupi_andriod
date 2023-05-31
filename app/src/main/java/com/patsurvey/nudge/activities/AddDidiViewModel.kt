@@ -243,9 +243,9 @@ class AddDidiViewModel @Inject constructor(
                 modifiedDate = System.currentTimeMillis(),
                 shgFlag = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).shgFlag,
                 beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).beneficiaryProcessStatus,
-                patSurveyProgress = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyProgress,
-                section1 = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1,
-                section2 = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2,
+                patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyStatus,
+                section1Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1Status,
+                section2Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2Status,
 
             )
             updatedDidi.guardianName
@@ -456,9 +456,9 @@ class AddDidiViewModel @Inject constructor(
                     createdDate = it.createdDate,
                     modifiedDate = System.currentTimeMillis(),
                     beneficiaryProcessStatus = it.beneficiaryProcessStatus,
-                    patSurveyProgress = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyProgress,
-                    section1 = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section1,
-                    section2 = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section2,
+                    patSurveyStatus = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyStatus,
+                    section1Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section1Status,
+                    section2Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section2Status,
                     shgFlag = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].shgFlag
                 )
             )
@@ -540,7 +540,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun setDidiAsUnavailable(didiId: Int) {
-        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyProgress = PatSurveyStatus.NOT_AVAILABLE.ordinal
+        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE.ordinal
         _markedNotAvailable.value = _markedNotAvailable.value.also {
             it.add(didiId)
         }
@@ -550,7 +550,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun updateDidiPatStatus(didiId: Int, patSurveyStatus: PatSurveyStatus) {
-        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyProgress = patSurveyStatus.ordinal
+        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = patSurveyStatus.ordinal
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             didiDao.updateQuesSectionStatus(didiId, patSurveyStatus.ordinal)
         }

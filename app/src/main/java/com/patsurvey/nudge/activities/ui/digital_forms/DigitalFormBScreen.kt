@@ -204,7 +204,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size.toString(),
+                                text = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -246,7 +246,7 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }) { card ->
+                        items(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }) { card ->
                             DidiVillageItem(card)
                         }
                     }
