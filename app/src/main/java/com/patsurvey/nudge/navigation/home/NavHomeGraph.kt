@@ -18,6 +18,7 @@ import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
+import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -444,14 +445,18 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         composable(route = PatScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
         ) {
             PatSurveyCompleteSummary(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 patSectionSummaryViewModel = hiltViewModel(),
-                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
             )
         }
 
@@ -465,13 +470,7 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 }
             )
         ) {
-            ParticipatoryWealthRankingSurvey(
-                navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
-                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false
-            )
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_PAT_SURVEY, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
         }
 
         composable(
@@ -485,16 +484,16 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(PatScreens.PAT_DIGITAL_FORM_A_SCREEN.route)
+                navController.navigate(PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route)
 
             }
         }
 
 
         composable(
-            route = PatScreens.PAT_DIGITAL_FORM_A_SCREEN.route
+            route = PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route
         ) {
-            DigitalFormAScreen(
+            DigitalFormBScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize()
@@ -515,7 +514,7 @@ sealed class PatScreens(val route: String) {
         PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
-    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
     object PAT_SURVEY_SUMMARY :
         PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
@@ -523,7 +522,7 @@ sealed class PatScreens(val route: String) {
     object PAT_STEP_COMPLETION_SCREEN :
         PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
-    object PAT_DIGITAL_FORM_A_SCREEN : PatScreens(route = "pat_digital_form_a_screen")
+    object PAT_DIGITAL_FORM_B_SCREEN : PatScreens(route = "pat_digital_form_b_screen")
 
 }
 

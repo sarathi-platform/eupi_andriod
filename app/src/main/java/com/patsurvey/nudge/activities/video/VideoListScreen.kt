@@ -29,6 +29,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CircularProgressBarWithOutText
 import com.patsurvey.nudge.customviews.SearchWithFilterView
@@ -124,6 +125,15 @@ fun VideoItemCard(
         mutableStateOf(videoItem.isDownload)
     }
 
+
+    val showDialog = remember { mutableStateOf(false) }
+
+    if (showDialog.value) {
+        ShowDialog(title = "Are you sure?", message = "You want to delete ${videoItem.title}", setShowDialog ={showDialog.value = it}) {
+            videoListViewModel.removeDownload(context, videoItem)
+
+        }
+    }
     Column {
         Row(
             modifier = Modifier
@@ -202,7 +212,7 @@ fun VideoItemCard(
                         tint = Color.Black,
                         modifier = Modifier
                             .clickable {
-                                videoListViewModel.removeDownload(context, videoItem)
+                                showDialog.value = true
                             }
                             .absolutePadding(top = 4.dp)
                     )

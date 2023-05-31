@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
@@ -37,11 +39,11 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.DidiItemCard
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
@@ -75,7 +77,7 @@ fun ParticipatoryWealthRankingSurvey(
         }
     }
     BackHandler() {
-        if (showDidiListForRank.first){
+        if (showDidiListForRank.first) {
             showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
             if (isStepComplete) {
@@ -89,7 +91,7 @@ fun ParticipatoryWealthRankingSurvey(
             }
         }
     }
-    
+
     val showDialog = remember { mutableStateOf(false) }
 
     ConstraintLayout(
@@ -100,37 +102,25 @@ fun ParticipatoryWealthRankingSurvey(
     ) {
         val (bottomActionBox, mainBox) = createRefs()
 
-        if (showDialog.value){
+        if (showDialog.value) {
             ShowDialog(title = stringResource(id = R.string.are_you_sure),
-                message =  if(!viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
-                    context.getString(R.string.you_are_submitting_wealth_ranking_for_count_didis,didids.value.size.toString())
-                else context.getString(R.string.you_are_sending_count_pat_completed_didis_for_vo_endorsement,didids.value.size.toString()),
+                message = context.getString(
+                    R.string.you_are_submitting_wealth_ranking_for_count_didis,
+                    didids.value.size.toString()
+                ),
                 setShowDialog = {
-                showDialog.value = it
-            }) {
+                    showDialog.value = it
+                }) {
                 if ((context as MainActivity).isOnline.value ?: false) {
-                    if(viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
-                        viewModel.savePATSummeryToServer(object : NetworkCallbackListener{
-                            override fun onSuccess() {
+                    viewModel.updateWealthRankingToNetwork(object :
+                        NetworkCallbackListener {
+                        override fun onSuccess() {
+                        }
 
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-
-                        })
-                    }else {
-                        viewModel.updateWealthRankingToNetwork(object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-                        })
-                    }
+                        override fun onFailed() {
+                            showCustomToast(context, SYNC_FAILED)
+                        }
+                    })
                     viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
                         NetworkCallbackListener {
                         override fun onSuccess() {
@@ -143,21 +133,17 @@ fun ParticipatoryWealthRankingSurvey(
                 }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
-                if(viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
-                    navController.navigate("pat_step_completion_screen/${context.getString(R.string.pat_survey_completed_message).replace(
-                        "{VILLAGE_NAME}",
-                        viewModel.selectedVillage?.name ?: "")}"
-                    )
-                }else{
-                    navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
-                        "{VILLAGE_NAME}",
-                        viewModel.selectedVillage?.name ?: "")}"
-                    )
-                }
-
+                navController.navigate(
+                    "pat_step_completion_screen/${
+                        context.getString(R.string.pat_survey_completed_message).replace(
+                            "{VILLAGE_NAME}",
+                            viewModel.selectedVillage?.name ?: ""
+                        )
+                    }"
+                )
             }
         }
-        
+
         Box(
             modifier = Modifier
                 .constrainAs(mainBox) {
@@ -186,9 +172,8 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = if(!viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
-                            stringResource(id = R.string.particaptory_wealth_ranking_survey_text)
-                        else stringResource(id = R.string.pat_survey_title),
+                        text =
+                        stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -203,17 +188,15 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = if(!viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                            stringResource(
-                                id = if (showDidiListForRank.first) {
-                                    when (showDidiListForRank.second) {
-                                        WealthRank.POOR -> R.string.poor_didi_item_text
-                                        WealthRank.MEDIUM -> R.string.medium_didi_item_text
-                                        else -> R.string.rich_didi_item_text
-                                    }
-                                } else R.string.didis_item_text
-                            )
-                        }else stringResource(id=R.string.summary_text),
+                        text = stringResource(
+                            id = if (showDidiListForRank.first) {
+                                when (showDidiListForRank.second) {
+                                    WealthRank.POOR -> R.string.poor_didi_item_text
+                                    WealthRank.MEDIUM -> R.string.medium_didi_item_text
+                                    else -> R.string.rich_didi_item_text
+                                }
+                            } else R.string.didis_list_text
+                        ),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -229,15 +212,21 @@ fun ParticipatoryWealthRankingSurvey(
 
                 AnimatedVisibility(visible = showDidiListForRank.first) {
 
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 8.dp)) {
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             contentPadding = PaddingValues(bottom = bottomPadding),
-                        modifier = Modifier.padding(bottom = 10.dp)) {
+                            modifier = Modifier.padding(bottom = 10.dp)
+                        ) {
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
-                                DidiItemCard(didi, expandedCardIds.contains(didi.id), Modifier.padding(horizontal = 0.dp),
+                                DidiItemCard(didi,
+                                    expandedCardIds.contains(didi.id),
+                                    Modifier.padding(horizontal = 0.dp),
                                     onExpendClick = { expand, didiDetailModel ->
                                         viewModel.onCardArrowClicked(didiDetailModel.id)
                                     },
@@ -252,79 +241,32 @@ fun ParticipatoryWealthRankingSurvey(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
-                    if(!viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                        WealthRankingBox(
-                            count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
-                            wealthRank = WealthRank.POOR,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                        ) {
-                            showDidiListForRank = Pair(true, WealthRank.POOR)
-                        }
-                        WealthRankingBox(
-                            count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
-                            wealthRank = WealthRank.MEDIUM,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                        ) {
-                            showDidiListForRank = Pair(true, WealthRank.MEDIUM)
-                        }
-                        WealthRankingBox(
-                            count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
-                            wealthRank = WealthRank.RICH,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                        ) {
-                            showDidiListForRank = Pair(true, WealthRank.RICH)
-                        }
-                    }else{
-                        PATSurveyBox(
-                            count = didids.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size,
-                           isComplete =  true,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                        ) {
-
-                        }
-
-                        PATSurveyBox(
-                            count = didids.value.filter { it.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size,
-                            isComplete =  false,
-                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                        ) {
-
-                        }
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,
+                        wealthRank = WealthRank.POOR,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.POOR)
+                    }
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size,
+                        wealthRank = WealthRank.MEDIUM,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.MEDIUM)
+                    }
+                    WealthRankingBox(
+                        count = didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size,
+                        wealthRank = WealthRank.RICH,
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    ) {
+                        showDidiListForRank = Pair(true, WealthRank.RICH)
                     }
                 }
             }
         }
 
-        if(!viewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-            if (viewModel.showBottomButton.value || showDidiListForRank.first) {
-                BottomButtonBox(
-                    modifier = Modifier
-                        .constrainAs(bottomActionBox) {
-                            bottom.linkTo(parent.bottom)
-                            start.linkTo(parent.start)
-                        }
-                        .onGloballyPositioned { coordinates ->
-                            bottomPadding = with(localDensity) {
-                                coordinates.size.height.toDp()
-                            }
-                        },
-                    positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
-                        id = R.string.complete_wealth_ranking_btn_text
-                    ),
-                    isArrowRequired = !showDidiListForRank.first,
-                    positiveButtonOnClick = {
-                        if (showDidiListForRank.first)
-                            showDidiListForRank =
-                                Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
-                        else {
-                            showDialog.value = true
-                        }
-                    }
-                )
-            } else {
-                bottomPadding = 0.dp
-            }
-        }else{
+        if (viewModel.showBottomButton.value || showDidiListForRank.first) {
             BottomButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -336,25 +278,42 @@ fun ParticipatoryWealthRankingSurvey(
                             coordinates.size.height.toDp()
                         }
                     },
-                positiveButtonText = stringResource(id = R.string.send_all_for_vo_endorsement) ,
-                isArrowRequired = true,
+                positiveButtonText = if (showDidiListForRank.first) stringResource(id = R.string.done_text) else stringResource(
+                    id = R.string.complete_wealth_ranking_btn_text
+                ),
+                isArrowRequired = !showDidiListForRank.first,
                 positiveButtonOnClick = {
+                    if (showDidiListForRank.first)
+                        showDidiListForRank =
+                            Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
+                    else {
                         showDialog.value = true
+                    }
                 }
             )
+        } else {
+            bottomPadding = 0.dp
         }
     }
 }
 
 @Composable
-fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit, positiveButtonClicked: () -> Unit) {
+fun ShowDialog(
+    title: String,
+    message: String,
+    setShowDialog: (Boolean) -> Unit,
+    positiveButtonClicked: () -> Unit
+) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(6.dp),
             color = Color.White
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Text(
                         text = title,
                         textAlign = TextAlign.Start,
@@ -373,11 +332,19 @@ fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        ButtonNegative(buttonTitle = stringResource(id = R.string.cancel_tola_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                        ButtonNegative(
+                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             setShowDialog(false)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        ButtonPositive(buttonTitle = stringResource(id = R.string.yes_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.yes_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             positiveButtonClicked()
                             setShowDialog(false)
                         }
@@ -502,11 +469,11 @@ fun WealthRankingBox(
 fun PATSurveyBox(
     modifier: Modifier = Modifier,
     count: Int,
-    isComplete:Boolean=false,
+    isComplete: Boolean = false,
     onPATSurveyBoxClicked: () -> Unit
 ) {
-    val boxColor = if(isComplete) blueLighter else yellowLight
-    val boxTitle = if(isComplete) stringResource(id = R.string.pat_completed)
+    val boxColor = if (isComplete) blueLighter else yellowLight
+    val boxTitle = if (isComplete) stringResource(id = R.string.pat_completed)
     else stringResource(id = R.string.didi_not_available)
 
     Box(
@@ -536,16 +503,16 @@ fun PATSurveyBox(
                 style = veryLargeTextStyle,
                 color = textColorDark
             )
-        Row(
-            modifier = Modifier.padding(horizontal = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = boxTitle,
-                style = mediumTextStyle,
-                color = textColorDark
-            )
-          }
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = boxTitle,
+                    style = mediumTextStyle,
+                    color = textColorDark
+                )
+            }
         }
 
         Row(
@@ -565,16 +532,17 @@ fun PATSurveyBox(
 
     }
 }
+
 @Preview(showBackground = true)
 @Composable
-fun WealthRankingBoxPreview(){
-    WealthRankingBox(modifier = Modifier,5,WealthRank.POOR, onWealthRankingBoxClicked = {})
+fun WealthRankingBoxPreview() {
+    WealthRankingBox(modifier = Modifier, 5, WealthRank.POOR, onWealthRankingBoxClicked = {})
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PATSurveyBoxPreview(){
-    PATSurveyBox(modifier = Modifier,5,true, onPATSurveyBoxClicked = {})
+fun PATSurveyBoxPreview() {
+    PATSurveyBox(modifier = Modifier, 5, true, onPATSurveyBoxClicked = {})
 }
 
 @Composable

@@ -78,7 +78,7 @@ fun DigitalFormBScreen(
             ) {
 
                 Text(
-                    text = "Digital Form A",
+                    text = "Digital Form B",
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -204,7 +204,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.size.toString(),
+                                text = didiList.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,

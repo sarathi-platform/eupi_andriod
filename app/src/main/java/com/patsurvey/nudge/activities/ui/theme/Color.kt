@@ -79,3 +79,5 @@ val borderGreyShare = Color(0xFFE8E8E8)
 val redNoAnswer = Color(0xFFD32517)
 
 val brownDark = Color(0xFF693D30)
+
+val redLight = Color(0xFFF8D5D5)

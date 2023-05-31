@@ -60,7 +60,6 @@ import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 
@@ -84,6 +83,17 @@ fun SocialMappingDidiListScreen(
     var filterSelected by remember {
         mutableStateOf(false)
     }
+
+
+    LaunchedEffect(key1 = true) {
+        if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            didiViewModel.getPatStepStatus(stepId) {
+                if (it)
+                    navController.navigate("pat_survey_summary/$stepId/$it")
+            }
+        }
+    }
+
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         if(newFilteredDidiList.isNotEmpty()){
@@ -412,7 +422,7 @@ fun SocialMappingDidiListScreen(
 
         // Didi PAT Survey
 
-        if (didiList.value.isNotEmpty() && !didiViewModel.isPATSurveyComplete.value) {
+        if (didiList.value.isNotEmpty() && didiViewModel.pendingDidiCount.value == 0) {
             if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didiViewModel.pendingDidiCount.value == 0) {
                 DoubleButtonBox(
                     modifier = Modifier
@@ -431,10 +441,9 @@ fun SocialMappingDidiListScreen(
                         id = R.string.complete
                     ),
                     positiveButtonOnClick = {
-                            didiViewModel.markSocialMappingComplete(villageId, stepId)
-                            val stepStatus = false
-                            navController.navigate("pat_survey_summary/$stepId/$stepStatus")
-
+                        didiViewModel.getPatStepStatus(stepId) {
+                            navController.navigate("pat_survey_summary/$stepId/$it")
+                        }
                     },
                     negativeButtonOnClick = {}
                 )
@@ -836,7 +845,9 @@ fun DidiItemCard(
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
-                        modifier = Modifier.layoutId("divider").padding(vertical = 4.dp)
+                        modifier = Modifier
+                            .layoutId("divider")
+                            .padding(vertical = 4.dp)
                     )
 
                     Row(
@@ -898,7 +909,7 @@ fun DidiItemCard(
                         .padding(vertical = 10.dp)
                         .padding(horizontal = 20.dp)
                         .clickable {
-                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}")
+                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_DIDI_LIST_SCREEN}")
                         }
                         .then(modifier),
                         horizontalArrangement = Arrangement.SpaceBetween
