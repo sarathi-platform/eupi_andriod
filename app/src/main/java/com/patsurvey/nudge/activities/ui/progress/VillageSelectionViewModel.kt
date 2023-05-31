@@ -7,7 +7,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
@@ -39,7 +41,9 @@ class VillageSelectionViewModel @Inject constructor(
     val casteListDao: CasteListDao,
     val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao,
-    val trainingVideoDao: TrainingVideoDao
+    val trainingVideoDao: TrainingVideoDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val answerDao: AnswerDao
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
@@ -113,10 +117,12 @@ class VillageSelectionViewModel @Inject constructor(
                     val localStepsList = stepsListDao.getAllSteps()
                     val localTolaList = tolaDao.getAllTolas()
                     val localLanguageList = languageListDao.getAllLanguages()
+                    val villageIdList:ArrayList<Int> = arrayListOf()
                     if (localStepsList.isNotEmpty()) {
                         stepsListDao.deleteAllStepsFromDB()
                     }
                     villageList.forEach { village ->
+                        villageIdList.add(village.id)
                         launch {
                              stateId.value=village.stateId
                             val response = apiService.getStepsList(village.id)
@@ -252,6 +258,77 @@ class VillageSelectionViewModel @Inject constructor(
                                             questionListDao.insertAll(it as List<QuestionEntity>)
                                         }
                                     }
+                                }
+                            }
+                        }
+                    }
+                    answerDao.deleteAnswerTable()
+                    numericAnswerDao.deleteNumericTable()
+                    villageIdList?.let {
+                        val answerApiResponse = apiService.fetchPATSurveyToServer(it)
+                        if(answerApiResponse.status.equals(SUCCESS,true)){
+                            answerApiResponse.data?.let {
+                                val answerList:ArrayList<SectionAnswerEntity> = arrayListOf()
+                                val numAnswerList:ArrayList<NumericAnswerEntity> = arrayListOf()
+                                it.forEach {item->
+                                   if(item?.answers?.isNotEmpty() == true){
+                                       item?.answers?.forEach { answersItem ->
+                                           if(answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true){
+                                               answerList.add(SectionAnswerEntity(
+                                                   id = 0,
+                                                   optionId = 0,
+                                                   didiId = item.beneficiaryId?:0,
+                                                   questionId =answersItem?.questionId?:0 ,
+                                                   villageId = item.villageId?:0,
+                                                   actionType = answersItem?.section?: TYPE_EXCLUSION,
+                                                   weight = 0,
+                                                   summary = answersItem?.summary,
+                                                   optionValue = answersItem?.options?.get(0)?.optionValue,
+                                                   totalAssetAmount = answersItem?.totalWeight,
+                                                   needsToPost = false,
+                                                   answerValue =  answersItem?.options?.get(0)?.summary?: BLANK_STRING,
+                                                   type = answersItem?.questionType?:QuestionType.RadioButton.name))
+
+                                               if(answersItem?.options?.isNotEmpty()==true){
+
+                                                   answersItem?.options?.forEach { optionItem->
+                                                       numAnswerList.add(NumericAnswerEntity(
+                                                           id=0,
+                                                           optionId = optionItem?.optionId?:0,
+                                                           questionId = answersItem?.questionId?:0,
+                                                           weight = optionItem?.weight?:0,
+                                                           didiId = item.beneficiaryId?:0,
+                                                           count = optionItem?.count?:0
+                                                       ))
+                                                   }
+
+                                               }
+                                           }else{
+                                               answerList.add(SectionAnswerEntity(
+                                                   id = 0,
+                                                   optionId = answersItem?.options?.get(0)?.optionId?:0,
+                                                   didiId = item.beneficiaryId?:0,
+                                                   questionId =answersItem?.questionId?:0 ,
+                                                   villageId = item.villageId?:0,
+                                                   actionType = answersItem?.section?: TYPE_EXCLUSION,
+                                                   weight = 0,
+                                                   summary = answersItem?.summary,
+                                                   optionValue = answersItem?.options?.get(0)?.optionValue,
+                                                   totalAssetAmount = answersItem?.totalWeight,
+                                                   needsToPost = false,
+                                                   answerValue =  answersItem?.options?.get(0)?.summary?: BLANK_STRING,
+                                                   type = answersItem?.questionType?:QuestionType.RadioButton.name))
+                                           }
+
+                                       }
+                                   }
+
+                               }
+                                if(answerList.isNotEmpty()){
+                                    answerDao.insertAll(answerList)
+                                }
+                                if(numAnswerList.isNotEmpty()){
+                                    numericAnswerDao.insertAll(numAnswerList)
                                 }
                             }
                         }

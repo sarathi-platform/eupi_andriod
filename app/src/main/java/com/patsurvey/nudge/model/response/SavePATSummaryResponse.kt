@@ -1,14 +1,15 @@
-package com.patsurvey.nudge.model.request
+package com.patsurvey.nudge.model.response
 
 import com.google.gson.annotations.SerializedName
+import com.patsurvey.nudge.utils.BLANK_STRING
 
-data class PATSummaryResponse(
+data class SavePATSummaryResponse(
 
 	@SerializedName("PATSummaryResponse")
 	val pATSummaryResponse: List<PATSummaryResponseItem?>? = null
 )
 
-data class OptionsItem(
+data class SummaryOptionsItem(
 
 	@SerializedName("summary")
 	val summary: String? = null,
@@ -35,31 +36,29 @@ data class OptionsItem(
 data class AnswersItem(
 
 	@SerializedName("summary")
-	val summary: String? = null,
+	val summary: String? = BLANK_STRING,
 
 	@SerializedName("score")
-	val score: Int? = null,
+	val score: Int? = 0,
 
 	@SerializedName("questionId")
-	val questionId: Int? = null,
+	val questionId: Int? = 0,
 
 	@SerializedName("options")
-	val options: List<OptionsItem?>? = null,
+	val options: List<SummaryOptionsItem?>? = null,
 
 	@SerializedName("totalWeight")
-	val totalWeight: Any? = null,
+	val totalWeight: Int? = 0,
 
 	@SerializedName("section")
-	val section: String? = null,
+	val section: String? = BLANK_STRING,
 
 	@SerializedName("displayQuestion")
-	val displayQuestion: String? = null,
+	val displayQuestion: String? = BLANK_STRING,
 
 	@SerializedName("questionType")
-	val questionType: String? = null,
+	val questionType: String? = BLANK_STRING,
 
-	@SerializedName("ratio")
-	val ratio: Any? = null
 )
 
 data class PATSummaryResponseItem(
@@ -103,3 +102,5 @@ data class PATSummaryResponseItem(
 	@SerializedName("status")
 	val status: Int? = null
 )
+
+

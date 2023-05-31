@@ -164,8 +164,7 @@ class QuestionScreenViewModel @Inject constructor(
                         weight = answerOptionModel.weight ?: 0,
                         type = quesType,
                         totalAssetAmount = assetAmount,
-                        summary = summary,
-                        selectedIndex = selIndex + 1
+                        summary = summary
                     )
                     withContext(Dispatchers.Main) {
                         onAnswerSave()
@@ -182,7 +181,6 @@ class QuestionScreenViewModel @Inject constructor(
                             totalAssetAmount = assetAmount,
                             type = quesType,
                             summary = summary,
-                            selectedIndex = selIndex + 1,
                             villageId = prefRepo.getSelectedVillage().id
                         )
                     )
