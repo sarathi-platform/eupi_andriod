@@ -163,9 +163,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
-                        didiIDList.forEach { didiId->
+                        didiIDList.forEach { didi->
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didiId)
+                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
                                 needToPostQuestionsList.forEach {
                                     surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
@@ -211,12 +211,15 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 answeredDidiList.add(PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
-                                    beneficiaryId = didiId,
+                                    beneficiaryId = didi.id,
                                     languageId = prefRepo.getAppLanguageId()?:0,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
                                     userType = USER_CRP,
-                                    answerDetailDTOList= qList
+                                    answerDetailDTOList= qList,
+                                    patSurveyStatus = didi.patSurveyStatus,
+                                    section1Status = didi.section1Status,
+                                    section2Status = didi.section2Status
                                 ))
                             }
                         }

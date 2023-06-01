@@ -275,7 +275,7 @@ fun DidiItemCardForVo(
                         )
 
                         //TODO figureout a way to save voendorsement status.
-                        if (didi.patSurveyProgress.equals(VoEndorsementStatus.COMPLETED.ordinal)) {
+                        if (didi.patSurveyStatus.equals(VoEndorsementStatus.COMPLETED.ordinal)) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_completed_tick),
                                 contentDescription = "home image",
@@ -317,7 +317,7 @@ fun DidiItemCardForVo(
                     )
                 }
             }
-            if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+            if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()

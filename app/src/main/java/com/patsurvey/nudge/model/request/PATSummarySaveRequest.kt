@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.model.request
 
+import androidx.room.ColumnInfo
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -28,7 +29,16 @@ data class PATSummarySaveRequest(
     val villageId: Int? = 0,
 
     @SerializedName("beneficiaryId")
-    val beneficiaryId: Int? = 0
+    val beneficiaryId: Int? = 0,
+
+    @ColumnInfo(name = "patSurveyStatus")
+    var patSurveyStatus: Int=0,
+
+    @ColumnInfo(name = "section1Status")
+    var section1Status: Int=0,
+
+    @ColumnInfo(name = "section2Status")
+    var section2Status: Int=0
 )
 
 data class AnswerDetailDTOListItem(

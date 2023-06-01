@@ -97,7 +97,7 @@ class ProgressScreenViewModel @Inject constructor(
                 tolaCount.value=_tolaList.value.size
                 didiCount.value=didiList.value.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
-                ultrPoorDidiCouont.value = didiList.value.filter { it.patSurveyProgress == PatSurveyStatus.COMPLETED.ordinal }.size
+                ultrPoorDidiCouont.value = didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
                 showLoader.value = false
             }
         }

@@ -23,7 +23,7 @@ interface NumericAnswerDao {
     fun insertNumericOption(numericAnswer: NumericAnswerEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(castes: List<NumericAnswerEntity>)
+    fun insertAll(numList: List<NumericAnswerEntity>)
 
     @Query("DELETE from $NUMERIC_TABLE_NAME")
     fun deleteNumericTable()

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -146,7 +147,6 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             withContext(Dispatchers.IO) {
-
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
                     didiId = didiId,
                     questionId = questionId,
@@ -162,8 +162,7 @@ class QuestionScreenViewModel @Inject constructor(
                         weight = answerOptionModel.weight ?: 0,
                         type = quesType,
                         totalAssetAmount = assetAmount,
-                        summary = summary,
-                        selectedIndex = selIndex + 1
+                        summary = summary
                     )
                     withContext(Dispatchers.Main) {
                         onAnswerSave()
@@ -180,7 +179,6 @@ class QuestionScreenViewModel @Inject constructor(
                             totalAssetAmount = assetAmount,
                             type = quesType,
                             summary = summary,
-                            selectedIndex = selIndex + 1,
                             villageId = prefRepo.getSelectedVillage().id
                         )
                     )

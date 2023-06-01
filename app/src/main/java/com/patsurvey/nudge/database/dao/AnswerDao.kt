@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.DIDI_TABLE
 
@@ -20,8 +21,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
-    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary,selectedIndex = :selectedIndex where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String,selectedIndex:Int)
+    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)
@@ -51,8 +52,8 @@ interface AnswerDao {
     fun getAllNeedToPostQuesForDidi(didiId: Int): List<SectionAnswerEntity>
 
 
-    @Query("select  $DIDI_TABLE.id  from $DIDI_TABLE INNER join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId GROUP BY $DIDI_TABLE.id")
-    fun fetchPATSurveyDidiList(villageId: Int): List<Int>
+    @Query("select  $DIDI_TABLE.id,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status from $DIDI_TABLE INNER join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId GROUP BY $DIDI_TABLE.id")
+    fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
 

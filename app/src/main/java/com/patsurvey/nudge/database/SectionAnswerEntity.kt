@@ -48,9 +48,6 @@ data class SectionAnswerEntity(
     @SerializedName("summary")
     val summary: String? = BLANK_STRING,
 
-    @SerializedName("selectedIndex")
-    val selectedIndex: Int? = -1,
-
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true
 
