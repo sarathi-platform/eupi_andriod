@@ -33,6 +33,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 
 @Composable
@@ -168,7 +169,8 @@ fun PatSurveyCompleteSummary(
 
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                        SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+                        SectionOneSummeryItem(index = index+1, questionDisplay = question.questionDisplay?: BLANK_STRING,
+                            answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
                     }
 
                     if (answerSummeryList.isNotEmpty()) {

@@ -133,13 +133,9 @@ fun ParticipatoryWealthRankingSurvey(
                 }
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
-                navController.navigate(
-                    "pat_step_completion_screen/${
-                        context.getString(R.string.pat_survey_completed_message).replace(
-                            "{VILLAGE_NAME}",
-                            viewModel.selectedVillage?.name ?: ""
-                        )
-                    }"
+                navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
+                    "{VILLAGE_NAME}",
+                    viewModel.selectedVillage?.name ?: "")}"
                 )
             }
         }
