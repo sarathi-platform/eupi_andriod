@@ -42,8 +42,6 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.QuestionEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
@@ -179,7 +177,7 @@ fun PatSurvaySectionSummaryScreen(
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionDisplay?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
+                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionSummary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
                     }
                 }
             }

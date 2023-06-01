@@ -28,8 +28,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
-import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
-import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -611,7 +609,7 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         composable(
             route = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route
         ) {
-            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize())
+            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize(), stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1)
         }
 
         composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route) {
@@ -629,6 +627,19 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
                 didiIndex = it.arguments?.getInt(ARG_DIDI_INDEX) ?: 0
             )
         }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_SURVEY_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_VO_ENDORSEMENT_SCREEN, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
+        }
     }
 }
 
@@ -638,5 +649,7 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object FORM_PICTURE_SCREEN : VoEndorsmentScreeens(route = "form_picture_screen")
 
     object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
+
+    object VO_ENDORSEMENT_SURVEY_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
 }

@@ -16,6 +16,9 @@ interface AnswerDao {
     @Query("SELECT * FROM $ANSWER_TABLE")
     fun getAllAnswer(): List<SectionAnswerEntity>
 
+    @Query("SELECT * FROM $ANSWER_TABLE where didiId = :didiId")
+    fun getAllAnswerForDidi(didiId: Int): List<SectionAnswerEntity>
+
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType")
     fun getAnswerForDidi(actionType: String,didiId:Int): List<SectionAnswerEntity>
 

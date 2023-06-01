@@ -48,7 +48,8 @@ import com.patsurvey.nudge.utils.*
 fun VoEndorsementScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: VoEndorsementScreenViewModel
+    viewModel: VoEndorsementScreenViewModel,
+    stepId: Int
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -187,7 +188,7 @@ fun VoEndorsementScreen(
                             }
                         }
                     } else {
-                        itemsIndexed(newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
+                        itemsIndexed(newFilteredDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status ==PatSurveyStatus.COMPLETED.ordinal }) { index, didi ->
                             if(didi?.voEndorsementStatus!=2){
                                 viewModel.pendingDidiCount.value++
                             }
@@ -209,7 +210,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (false) {
+        if (didis.filter { it.voEndorsementStatus == 2 }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -225,8 +226,8 @@ fun VoEndorsementScreen(
                 positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    val stepStatus = false
-//                    navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
+                    val stepStatus = true
+                    navController.navigate("vo_endorsement_survey_summary/{$stepId}/{$stepStatus}")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )

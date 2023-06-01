@@ -6,8 +6,7 @@ import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.model.ErrorModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -23,6 +22,9 @@ class VoEndorsementScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val tolaDao: TolaDao,
+    val questionListDao: QuestionListDao,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao
 ): BaseViewModel() {
 
     val pendingDidiCount = mutableStateOf(0)
@@ -53,6 +55,8 @@ class VoEndorsementScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 _didiList.value = didiDao.patCompletedDidis(villageId)
+               //TODO calculate didi score and filter didis before saving final list
+
                 _filterDidiList.value = didiList.value
 //                showLoader.value = false
             }
