@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -39,16 +38,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import java.io.File
 
@@ -79,18 +75,14 @@ fun PatSurvaySectionSummaryScreen(
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
-    LaunchedEffect(key1 = Unit) {
-        questionList.forEach {
-            val answer = answerList.find { it.questionId == it.questionId }
-        }
-    }
-
-    BackHandler() {
-        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
-    }
-
     val showPatCompletion = remember {
         mutableStateOf(false)
+    }
+
+    if(showPatCompletion.value) {
+        BackHandler {
+            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }
     }
 
     ConstraintLayout(
@@ -170,24 +162,24 @@ fun PatSurvaySectionSummaryScreen(
                     }
 
                 }
-                Text(
-                    text = stringResource(R.string.summary_text),
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
-                )
+//                Text(
+//                    text = stringResource(R.string.summary_text),
+//                    style = TextStyle(
+//                        color = textColorDark,
+//                        fontSize = 12.sp,
+//                        fontWeight = FontWeight.SemiBold,
+//                        fontFamily = NotoSans
+//                    ),
+//                    textAlign = TextAlign.Start,
+//                    modifier = Modifier.fillMaxWidth()
+//                )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionDisplay?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
                     }
                 }
             }
@@ -228,14 +220,6 @@ fun PatSurvaySectionSummaryScreen(
                         showPatCompletion.value = true
                     }
                 } else {
-                    patSectionSummaryViewModel.setPATSection2Complete(
-                        didi.value.id,
-                        PatSurveyStatus.INPROGRESS.ordinal
-                    )
-                    patSectionSummaryViewModel.setPATSurveyComplete(
-                        didi.value.id,
-                        PatSurveyStatus.INPROGRESS.ordinal
-                    )
                     navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
                 }
             },
@@ -333,7 +317,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
     val screenHeight = configuration.screenHeightDp
    val didi=DidiEntity(0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
-       wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyProgress = 0, shgFlag = SHGFlag.NOT_MARKED.value)
+       wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value)
     PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
 }
 
@@ -341,8 +325,9 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 fun SectionOneSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
-    question: QuestionEntity,
-    answer: SectionAnswerEntity
+    questionDisplay: String,
+    answerValue: String,
+    optionValue:Int
 ) {
     Column(
         modifier = Modifier
@@ -358,7 +343,7 @@ fun SectionOneSummeryItem(
                     .size(25.dp)
             )
             Text(
-                text = "$index. ${question.questionDisplay}.",
+                text = "$index. ${questionDisplay}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,
@@ -372,9 +357,9 @@ fun SectionOneSummeryItem(
                     .weight(1f)
             )
             Text(
-                text = "${answer.answerValue}",
+                text = "${answerValue}",
                 style = TextStyle(
-                    color = if (answer.optionValue == 1) greenOnline else redNoAnswer,
+                    color = if (optionValue == 1) greenOnline else redNoAnswer,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = NotoSans

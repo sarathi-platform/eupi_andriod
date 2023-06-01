@@ -2,7 +2,6 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
-import com.google.gson.JsonObject
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -92,6 +91,14 @@ interface ApiService {
     @POST("/write-api/beneficiary/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
+
+    @POST("/pat-api/pat/save")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun savePATSurveyToServer(@Body patSummarySaveRequest: List<PATSummarySaveRequest>): ApiResponseModel<SavePATSummaryResponse>
+
+    @POST("/pat-api/pat/summary")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchPATSurveyToServer(@Body villageIdList: List<Int>): ApiResponseModel<List<PATSummaryResponseItem>>
 
 
 }

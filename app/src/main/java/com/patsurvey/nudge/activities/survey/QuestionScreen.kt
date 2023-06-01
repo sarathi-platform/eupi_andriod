@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -30,13 +31,8 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -51,18 +47,25 @@ fun QuestionScreen(
     didiId: Int,
     sectionType:String
 ) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.setDidiDetails(didiId)
         viewModel.sectionType.value=sectionType
         viewModel.getAllQuestionsAnswers(didiId)
+        delay(300)
+        val mAnswerList  = viewModel.answerList.value
+        val mAnsweredQuestion = mAnswerList.size
+        if (mAnsweredQuestion > 0) {
+            pagerState.animateScrollToPage(mAnsweredQuestion)
+        }
     }
 
     val questionList by viewModel.questionList.collectAsState()
+    val totalAmount by viewModel.totalAssetAmount.collectAsState()
     val answerList by viewModel.answerList.collectAsState()
 
-    val pagerState = rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
 
     val answeredQuestion = remember {
         mutableStateOf(0)
@@ -71,20 +74,19 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
 
-    LaunchedEffect(key1 = true) {
-        delay(200)
-        val mAnsweredQuestion = answerList.size
-        if (mAnsweredQuestion > 0) {
-            pagerState.animateScrollToPage(mAnsweredQuestion)
-        }
-    }
+
 
     val context = LocalContext.current
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+
     BackHandler() {
         navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 14.dp)) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
@@ -92,8 +94,7 @@ fun QuestionScreen(
             VOAndVillageBoxView(
                 prefRepo = viewModel.prefRepo,
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 10.dp),
+                    .fillMaxWidth(),
                 startPadding = 0.dp
             )
             Column(
@@ -111,7 +112,6 @@ fun QuestionScreen(
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                viewModel.fetchNumericDetails(pagerState.currentPage, didiId = didiId)
                 HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
@@ -171,7 +171,7 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
@@ -210,11 +210,10 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
-                            viewModel.totalAssetAmount.value=0
                             NumericFieldTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
@@ -224,13 +223,13 @@ fun QuestionScreen(
                                 optionList = questionList[it].options,
                                 viewModel = viewModel
                             ){
-                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,1,1,1,
+                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,0,0,0,
                                     BLANK_STRING)
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
-                                    assetAmount = viewModel.totalAssetAmount.value,
+                                    assetAmount = viewModel?.totalAmount?.value ?:0,
                                     quesType = QuestionType.Numeric_Field.name,
                                     summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAssetAmount.value.toString()),
                                     selIndex = -1
@@ -242,6 +241,7 @@ fun QuestionScreen(
                                             val nextPageIndex = pagerState.currentPage + 1
                                             viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                                             coroutineScope.launch {
+                                                viewModel.calculateTotalAmount(pagerState.currentPage)
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
@@ -253,9 +253,8 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
-
                             }
                         }
                     }
@@ -280,6 +279,7 @@ fun QuestionScreen(
         AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
             .visible(prevButtonVisible.value)
+            .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomStart)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
@@ -292,6 +292,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
+                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
@@ -322,6 +323,7 @@ fun QuestionScreen(
         AnimatedVisibility(visible = nextButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
             .visible(nextButtonVisible.value)
+            .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomEnd)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
@@ -334,6 +336,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
+                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                 },
                 text = {
@@ -360,22 +363,9 @@ fun QuestionScreen(
     }
 }
 
-fun selectAnswerOptionValue(sortedOptionList: List<AnswerOptionModel>, optionValue: Int?) :List<AnswerOptionModel>{
-    sortedOptionList.forEach {
-        it.isSelected = optionValue==it.optionValue
-    }
-    return sortedOptionList
-}
-
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
-    quesViewModel.updateDidiQuesSection(didiId,PatSurveyStatus.COMPLETED.ordinal)
     if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true))
             navController.navigate("pat_section_one_summary_screen/$didiId")
     else     navController.navigate("pat_section_two_summary_screen/$didiId")
-//    navController.navigate(Graph.HOME) {
-//        popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-//            inclusive = true
-//        }
-//    }
 }
 

@@ -67,16 +67,19 @@ data class DidiEntity(
     @ColumnInfo(name = "beneficiaryProcessStatus")
     var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
 
-    @ColumnInfo(name = "patSurveyProgress")
-    var patSurveyProgress: Int=0,
+    @ColumnInfo(name = "patSurveyStatus")
+    var patSurveyStatus: Int=0,
 
-    @ColumnInfo(name = "section1")
-    var section1: Int=0,
+    @ColumnInfo(name = "section1Status")
+    var section1Status: Int=0,
 
-    @ColumnInfo(name = "section2")
-    var section2: Int=0,
+    @ColumnInfo(name = "section2Status")
+    var section2Status: Int=0,
 
     @ColumnInfo(name = "shgFlag")
-    var shgFlag: Int
+    var shgFlag: Int,
+
+    @ColumnInfo(name = "voEndorsementStatus")
+    var voEndorsementStatus: Int =0
 
     )

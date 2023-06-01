@@ -23,13 +23,16 @@ interface NumericAnswerDao {
     fun insertNumericOption(numericAnswer: NumericAnswerEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(castes: List<NumericAnswerEntity>)
+    fun insertAll(numList: List<NumericAnswerEntity>)
 
     @Query("DELETE from $NUMERIC_TABLE_NAME")
     fun deleteNumericTable()
 
     @Query("SELECT weight*count AS total_amount FROM $NUMERIC_TABLE_NAME where questionId =:questionId AND didiId =:didiId")
     fun getTotalAssetAmount(questionId: Int,didiId: Int): List<Int>
+
+    @Query("SELECT * FROM $NUMERIC_TABLE_NAME where didiId =:didiId")
+    fun getAllAnswersForDidi(didiId:Int): List<NumericAnswerEntity>
 
     @Query("SELECT * FROM $NUMERIC_TABLE_NAME where questionId =:questionId AND didiId =:didiId")
     fun getSingleQueOptions(questionId:Int,didiId:Int): List<NumericAnswerEntity>

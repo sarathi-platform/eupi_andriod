@@ -68,15 +68,15 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
 
-    @Query("UPDATE $DIDI_TABLE SET patSurveyProgress = :patSurveyProgress WHERE id = :didiId")
+    @Query("UPDATE $DIDI_TABLE SET patSurveyStatus = :patSurveyProgress WHERE id = :didiId")
     fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
     @Query("select * from $DIDI_TABLE where cohortId = :tolaId")
     fun getDidisForTola(tolaId: Int): List<DidiEntity>
 
-    @Query("UPDATE $DIDI_TABLE SET section1 = :section1 WHERE id = :didiId")
+    @Query("UPDATE $DIDI_TABLE SET section1Status = :section1 WHERE id = :didiId")
     fun updatePatSection1Status(didiId: Int, section1: Int)
 
-    @Query("UPDATE $DIDI_TABLE SET section2 = :section2 WHERE id = :didiId")
+    @Query("UPDATE $DIDI_TABLE SET section2Status = :section2 WHERE id = :didiId")
     fun updatePatSection2Status(didiId: Int, section2: Int)
 
     @Query("select * from $DIDI_TABLE where id = :didiId")
@@ -95,4 +95,13 @@ interface DidiDao {
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>
+
+    @Query("select COUNT(*) from $DIDI_TABLE where villageId =:villageId AND patSurveyStatus=0 AND wealth_ranking='POOR'")
+    fun fetchPendingDidiCount(villageId: Int): Int
+
+    @Query("UPDATE $DIDI_TABLE set voEndorsementStatus =:status WHERE id =:didiId AND villageId = :villageId")
+    fun updateVOEndorsementStatus(villageId: Int,didiId:Int,status:Int)
+
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 ORDER BY createdDate DESC")
+    fun patCompletedDidis(villageId: Int): List<DidiEntity>
 }

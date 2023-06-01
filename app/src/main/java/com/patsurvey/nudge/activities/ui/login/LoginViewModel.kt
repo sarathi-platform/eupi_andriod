@@ -20,7 +20,6 @@ class LoginViewModel @Inject constructor(
     val apiInterface: ApiService,
 ) : BaseViewModel() {
     val mobileNumber = mutableStateOf(TextFieldValue())
-    var networkErrorMessage = mutableStateOf(BLANK_STRING)
 
     val showLoader = mutableStateOf(false)
     fun generateOtp(onLoginResponse: (success: Boolean, message: String) -> Unit) {
@@ -54,6 +53,6 @@ class LoginViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
-        networkErrorMessage.value= error?.title.toString()
+        networkErrorMessage.value= error?.message.toString()
     }
 }

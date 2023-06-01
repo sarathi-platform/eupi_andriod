@@ -10,7 +10,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -28,8 +27,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -37,7 +39,6 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -218,11 +219,29 @@ fun PatDidiSummaryScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = "Is Didi part of SHG?",
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.Normal,
-                                fontSize = 14.sp,
-                                color = textColorDark80
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            color = textColorDark80
+                                        )
+                                    ) {
+                                        append(stringResource(R.string.shg_question_text))
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = red,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(" *")
+                                    }
+                                } ,
+
                             )
 
                             Box(
@@ -388,7 +407,7 @@ fun handleImageCapture(uri: Uri, photoPath: String, context: Activity, didiEntit
     viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
 }
 
-fun requestCameraPermission(context: Activity, viewModal: PatDidiSummaryViewModel) {
+private fun requestCameraPermission(context: Activity, viewModal: PatDidiSummaryViewModel) {
     when {
         ContextCompat.checkSelfPermission(
             context,

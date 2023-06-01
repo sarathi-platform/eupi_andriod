@@ -4,13 +4,10 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Build
 import android.os.Environment
-import android.util.Log
 import androidx.core.net.toUri
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.database.TrainingVideoEntity
-import com.patsurvey.nudge.utils.TAG
 import java.io.File
 
 class AndroidDownloader(

@@ -47,7 +47,13 @@ data class QuestionEntity(
     var sectionOrderNumber: Int? = 0,
 
     @ColumnInfo(name = "languageId")
-    var languageId: Int? = 1
+    var languageId: Int? = 1,
+
+    @ColumnInfo(name = "totalAssetAmount")
+    var totalAssetAmount: Int? = 0,
+
+    @ColumnInfo(name = "surveyId")
+    var surveyId: Int? = 0
 )
 
 

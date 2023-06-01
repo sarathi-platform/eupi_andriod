@@ -11,6 +11,7 @@
 
     <string name="progress_item_text">Progress</string>
     <string name="didis_item_text">Didis</string>
+    <string name="didis_list_text">List of Didis</string>
     <string name="poor_didi_item_text">Poor Didi</string>
     <string name="medium_didi_item_text">Medium Didi</string>
     <string name="rich_didi_item_text">Rich Didi</string>
@@ -62,7 +63,7 @@
     <string name="select">Select</string>
     <string name="pat_survey">PAT Survey</string>
 
-    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Survey</string>
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Summary</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
@@ -99,6 +100,8 @@
 
     <string name="social_mapping_sub_text">%1$s Didis Identified</string>
     <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
+    <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
+    <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
@@ -123,7 +126,8 @@
     <string name="enter_name_text">Enter Name</string>
     <string name="enter_tola_name_message">Enter Tola Name</string>
 
-    <string name="pat_survey_section_1">PAT Survey section 1</string>
+    <string name="pat_survey_section_1">PAT Survey - Section 1</string>
+    <string name="pat_survey_section_2">PAT Survey - Section 2</string>
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
@@ -156,6 +160,30 @@
     <string name="confirmation_dialog_titile">Are you sure?</string>
     <string name="section_1_text">"Section 1: "</string>
     <string name="section_2_text">"Section 2: "</string>
+    <string name="vo_endorsement_screen_title">List of Didis for VO Endorsement</string>
+    <string name="start_endorsement">Start Endorsement</string>
+    <string name="pat_completed">PAT Completed</string>
+    <string name="didi_not_available">Didi not available</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Didis.</string>
+    <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
+    <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
+    <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
+    <string name="form_c_photo_button_text">Take picture of form C</string>
+    <string name="form_d_photo_button_text">Take picture of form D</string>
+    <string name="pat_completed_box_title">PAT Completed</string>
+    <string name="didi_not_available_text">Didi not available</string>
+    <string name="send_for_vo_text">Send All For VO Endorsement</string>
+    <string name="didi_pat_complete_text">Didis PAT completed</string>
+    <string name="didi_not_available_sub_heading_text">Didis Not Available</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="endorse">Endorse</string>
+    <string name="endorsed">Endorsed</string>
+    <string name="rejected">Rejected</string>
+
+    <string name="shg_question_text">Is Didi part of SHG?</string>
+
 
     <string name="no_internet">No Internet Available</string>
 </resources>

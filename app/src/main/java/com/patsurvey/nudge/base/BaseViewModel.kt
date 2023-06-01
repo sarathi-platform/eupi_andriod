@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.base
 
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.network.model.ErrorModel
@@ -13,7 +14,7 @@ import java.net.SocketTimeoutException
 
 abstract class BaseViewModel : ViewModel(){
     var job: Job? = null
-
+    var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         when (e) {
             is HttpException -> {

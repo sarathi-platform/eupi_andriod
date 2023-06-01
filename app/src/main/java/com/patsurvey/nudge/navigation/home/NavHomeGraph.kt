@@ -3,24 +3,34 @@ package com.patsurvey.nudge.navigation.home
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.*
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
+import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
+import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
 import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
+import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -43,6 +53,7 @@ fun NavHomeGraph(navController: NavHostController) {
                         1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
                         2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
                         3 -> navController.navigate("pat_screens/$villageId/$stepId")
+                        4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId")
                     }
                 },
                 onNavigateToSetting = {
@@ -69,6 +80,7 @@ fun NavHomeGraph(navController: NavHostController) {
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
+        voEndorsmentNavGraph(navController = navController)
     }
 }
 
@@ -436,14 +448,58 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
         composable(route = PatScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            })
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
         ) {
             PatSurveyCompleteSummary(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
                 patSectionSummaryViewModel = hiltViewModel(),
-                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
+            )
+        }
+
+        composable(
+            route = PatScreens.PAT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_PAT_SURVEY, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
+        }
+
+        composable(
+            route = PatScreens.PAT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route)
+
+            }
+        }
+
+
+        composable(
+            route = PatScreens.PAT_DIGITAL_FORM_B_SCREEN.route
+        ) {
+            DigitalFormBScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -461,7 +517,16 @@ sealed class PatScreens(val route: String) {
         PatScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
-    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+
+    object PAT_SURVEY_SUMMARY :
+        PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object PAT_STEP_COMPLETION_SCREEN :
+        PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object PAT_DIGITAL_FORM_B_SCREEN : PatScreens(route = "pat_digital_form_b_screen")
+
 }
 
 fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
@@ -496,11 +561,28 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 type = NavType.IntType
             })
         ) {
-            VideoDetailPlayerScreen(navController = navController, modifier = Modifier, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
+            FullscreenView(navController = navController, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {
             ProfileScreen(profileScreenVideModel = hiltViewModel())
+        }
+
+        composable(route = SettingScreens.FORM_A_SCREEN.route) {
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
+        composable(route = SettingScreens.FORM_B_SCREEN.route) {
+            DigitalFormBScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
         }
 
     }
@@ -512,4 +594,49 @@ sealed class SettingScreens(val route: String) {
     object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
+    object FORM_A_SCREEN : SettingScreens(route = "form_a_screen")
+    object FORM_B_SCREEN : SettingScreens(route = "form_b_screen")
+    object FORM_C_SCREEN : SettingScreens(route = "form_c_screen")
+}
+
+fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
+    navigation(route = Graph.VO_ENDORSEMENT_GRAPH,
+        startDestination = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ) {
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route
+        ) {
+            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize())
+        }
+
+        composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route) {
+            FormPictureScreen(navController = navController, formPictureScreenViewModel = hiltViewModel())
+        }
+
+        composable(VoEndorsmentScreeens.VO_ENDORSEMENT_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID){
+            type = NavType.IntType
+        },navArgument(ARG_DIDI_INDEX){
+                type = NavType.IntType
+            })) {
+            VoEndorsementSummaryScreen( navController=navController,viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                didiIndex = it.arguments?.getInt(ARG_DIDI_INDEX) ?: 0
+            )
+        }
+    }
+}
+
+sealed class VoEndorsmentScreeens(val route: String) {
+    object VO_ENDORSMENT_LIST_SCREEN : VoEndorsmentScreeens(route = "vo_endorsment_list_screen")
+
+    object FORM_PICTURE_SCREEN : VoEndorsmentScreeens(route = "form_picture_screen")
+
+    object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
+
 }

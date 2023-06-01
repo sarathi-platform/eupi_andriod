@@ -20,4 +20,6 @@ data class TrainingVideoEntity(
     val thumbUrl: String,
     @ColumnInfo(name = "isDownload")
     var isDownload: Int
-)
+) {
+
+}

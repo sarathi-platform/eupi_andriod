@@ -1,28 +1,38 @@
 package com.patsurvey.nudge.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
+import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.util.TypedValue
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.core.FastOutLinearInEasing
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
-import androidx.compose.ui.layout.*
+import androidx.compose.ui.layout.LayoutModifier
+import androidx.compose.ui.layout.Measurable
+import androidx.compose.ui.layout.MeasureResult
+import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Constraints
+import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
-import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.video.VideoItem
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -141,6 +151,13 @@ fun Context.showSystemUi() {
     ).show(WindowInsetsCompat.Type.systemBars())
 }
 
+fun uriFromFile(context:Context, file:File): Uri {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
+    } else {
+        Uri.fromFile(file)
+    }
+}
 
 var videoList = listOf(
     VideoItem(
@@ -173,3 +190,29 @@ var videoList = listOf(
     )
 
 )
+@OptIn(ExperimentalAnimationApi::class)
+@Composable
+internal fun AnimatedScaleInTransition(
+    visible: Boolean,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
+) {
+    AnimatedVisibility(
+        visible = visible,
+        enter = slideInHorizontally(
+            initialOffsetX = { -300 }, // small slide 300px
+            animationSpec = tween(
+                durationMillis = EXPANSTION_TRANSITION_DURATION,
+                easing = FastOutLinearInEasing // interpolator
+            )
+        ),
+        exit = slideOutHorizontally(
+            targetOffsetX = { -300 },
+                animationSpec = tween(
+                durationMillis = EXPANSTION_TRANSITION_DURATION,
+        easing = LinearEasing
+       )
+     ),
+        content = content
+    )
+}
+

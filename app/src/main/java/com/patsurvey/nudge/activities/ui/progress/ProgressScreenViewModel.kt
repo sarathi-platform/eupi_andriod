@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities.ui.progress
 
-import android.util.Log
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -14,11 +14,17 @@ import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,7 +35,10 @@ class ProgressScreenViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val questionDao: QuestionListDao
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -45,6 +54,7 @@ class ProgressScreenViewModel @Inject constructor(
     val tolaCount = mutableStateOf(0)
     val didiCount = mutableStateOf(0)
     val poorDidiCount = mutableStateOf(0)
+    val ultrPoorDidiCouont = mutableStateOf(0)
     val selectedText = mutableStateOf("Select Village")
 
     val showLoader = mutableStateOf(false)
@@ -87,6 +97,7 @@ class ProgressScreenViewModel @Inject constructor(
                 tolaCount.value=_tolaList.value.size
                 didiCount.value=didiList.value.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                ultrPoorDidiCouont.value = didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
                 showLoader.value = false
             }
         }
@@ -115,8 +126,6 @@ class ProgressScreenViewModel @Inject constructor(
                     getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
-
-
             }
         }
     }
@@ -181,4 +190,5 @@ class ProgressScreenViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
     }
+
 }

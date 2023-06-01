@@ -1,6 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
+import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -8,12 +8,14 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -27,6 +29,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class WealthRankingSurveyViewModel @Inject constructor(
@@ -35,7 +38,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
     val didiDao: DidiDao,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
-    val lastSelectedTolaDao: LastSelectedTolaDao,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val questionDao: QuestionListDao,
     val apiService: ApiService
 ): BaseViewModel() {
 
@@ -147,6 +152,118 @@ class WealthRankingSurveyViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
+    @SuppressLint("SuspiciousIndentation")
+    fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.IO){
+                    var optionList= emptyList<OptionsItem>()
+                    var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var surveyId =0
+
+                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                    if(didiIDList.isNotEmpty()){
+                        didiIDList.forEach { didi->
+                            var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                            if(needToPostQuestionsList.isNotEmpty()){
+                                needToPostQuestionsList.forEach {
+                                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
+                                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
+                                        optionList= listOf(
+                                            OptionsItem(optionId = it.optionId,
+                                                optionValue = it.optionValue,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = 0,
+                                                isSelected = false)
+                                        )
+                                    }else{
+                                        val numOptionList=numericAnswerDao.getSingleQueOptions(it.questionId,it.didiId)
+                                        val tList:ArrayList<OptionsItem> = arrayListOf()
+                                        if(numOptionList.isNotEmpty()){
+                                            numOptionList.forEach { numOption->
+                                                tList.add(
+                                                    OptionsItem(optionId = numOption.optionId,
+                                                        optionValue = 0,
+                                                        count = numOption.count,
+                                                        summary = it.summary,
+                                                        display = it.answerValue,
+                                                        weight = numOption.weight,
+                                                        isSelected = false)
+                                                )
+                                            }
+                                            optionList=tList
+                                        }
+
+                                    }
+                                    try {
+                                        qList.add(AnswerDetailDTOListItem(
+                                            questionId =it.questionId,
+                                            section = it.actionType,
+                                            options = optionList))
+                                    }catch (e:Exception){
+                                        e.printStackTrace()
+                                    }
+
+                                }
+                                answeredDidiList.add(PATSummarySaveRequest(
+                                    villageId= prefRepo.getSelectedVillage().id,
+                                    surveyId=surveyId,
+                                    beneficiaryId = didi.id,
+                                    languageId = prefRepo.getAppLanguageId()?:0,
+                                    stateId = prefRepo.getSelectedVillage().stateId,
+                                    totalScore = 0,
+                                    userType = USER_CRP,
+                                    answerDetailDTOList= qList,
+                                    patSurveyStatus = didi.patSurveyStatus,
+                                    section1Status = didi.section1Status,
+                                    section2Status = didi.section2Status
+                                ))
+                            }
+                        }
+                        if(answeredDidiList.isNotEmpty()){
+                            withContext(Dispatchers.IO){
+                                val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
+                                if(saveAPIResponse.status.equals(SUCCESS,true)){
+                                    networkCallbackListener.onSuccess()
+                                    saveAPIResponse.data?.pATSummaryResponse?.let {
+                                        it.forEach { patSummaryResponseItem ->
+                                            val answersList= patSummaryResponseItem?.answers
+                                            if(answersList?.isNotEmpty() == true){
+                                                answersList.forEach { answersItem ->
+                                                    val answerDetails = answerDao.getQuestionAnswerForDidi(
+                                                        patSummaryResponseItem.beneficiaryId?:0, answersItem?.questionId?:0)
+
+                                                    answerDetails?.let {
+                                                        answerDao.updateNeedToPost(patSummaryResponseItem.beneficiaryId?:0,
+                                                            answersItem?.questionId?:0,
+                                                            false)
+                                                    }
+
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    networkCallbackListener.onFailed()
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+            }  catch (ex:Exception){
+                networkCallbackListener.onFailed()
+                ex.printStackTrace()
+                onCatchError(ex)
+            }
+        }
+    }
+
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -173,9 +290,13 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
+                onCatchError(ex)
                 networkCallbackListener.onFailed()
                 onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
             }
         }
     }
+
+
+
 }

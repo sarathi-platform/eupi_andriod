@@ -4,8 +4,11 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.utils.ANSWER_TABLE
+import com.patsurvey.nudge.utils.DIDI_TABLE
 
 @Dao
 interface AnswerDao {
@@ -19,8 +22,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
-    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary,selectedIndex = :selectedIndex where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String,selectedIndex:Int)
+    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)
@@ -39,4 +42,27 @@ interface AnswerDao {
 
     @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType AND questionId = :questionId AND optionId=:optionId")
     fun countOfOptionId(didiId: Int, questionId: Int,actionType:String,optionId:Int): Int
+
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND type=:type")
+    fun getNumTypeAnswer(didiId: Int, questionId: Int,type:String): SectionAnswerEntity
+
+    @Query("Select * FROM $ANSWER_TABLE where villageId = :villageId AND needsToPost = 1")
+    fun getAllNeedToPostQues(villageId: Int): List<SectionAnswerEntity>
+
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND needsToPost = 1")
+    fun getAllNeedToPostQuesForDidi(didiId: Int): List<SectionAnswerEntity>
+
+
+    @Query("select  $DIDI_TABLE.id,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status from $DIDI_TABLE INNER join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId GROUP BY $DIDI_TABLE.id")
+    fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
+    fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
+    @Query("select  d.* from $DIDI_TABLE d  INNER join $ANSWER_TABLE q  on q.didiId = d.id where d.villageId =:villageId AND voEndorsementStatus != 2 GROUP BY d.id ORDER BY d.createdDate DESC")
+    fun fetchAllDidisForVO(villageId: Int): List<DidiEntity>
+
+    @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
+    fun updateNeedToPost(didiId: Int,questionId: Int,needsToPost:Boolean)
+
+
+
 }

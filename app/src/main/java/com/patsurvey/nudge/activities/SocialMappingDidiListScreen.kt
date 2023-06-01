@@ -12,7 +12,6 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -61,13 +60,8 @@ import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
-
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -89,8 +83,28 @@ fun SocialMappingDidiListScreen(
     var filterSelected by remember {
         mutableStateOf(false)
     }
+
+
+    LaunchedEffect(key1 = true) {
+        if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            didiViewModel.getPatStepStatus(stepId) {
+                if (it)
+                    navController.navigate("pat_survey_summary/$stepId/$it")
+            }
+        }
+    }
+
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
+        if(newFilteredDidiList.isNotEmpty()){
+            didiViewModel.pendingDidiCount.value=0
+            newFilteredDidiList.forEach {
+                if(it.wealth_ranking.equals(WealthRank.POOR.rank,true) && it.patSurveyStatus == 0){
+                    didiViewModel.pendingDidiCount.value++
+                    Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.pendingDidiCount.value}")
+                }
+            }
+        }
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -99,9 +113,6 @@ fun SocialMappingDidiListScreen(
     val screenHeight = configuration.screenHeightDp
 
     val focusManager = LocalFocusManager.current
-
-    val markedUnabailableList = didiViewModel.markedNotAvailable.collectAsState()
-
     BackHandler() {
         if (completeTolaAdditionClicked)
             completeTolaAdditionClicked = false
@@ -109,6 +120,7 @@ fun SocialMappingDidiListScreen(
             navController.popBackStack()
         }
     }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -237,7 +249,7 @@ fun SocialMappingDidiListScreen(
                                         append(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true))
                                             "${newFilteredDidiList.size}"
                                         else
-                                            "${newFilteredDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyProgress != PatSurveyStatus.COMPLETED.ordinal}.size}")
+                                            "${didiViewModel.pendingDidiCount.value}")
                                     }
                                     append(
                                         " ${
@@ -246,9 +258,10 @@ fun SocialMappingDidiListScreen(
                                                     id = R.plurals.didis_added,
                                                     newFilteredDidiList.size
                                                 )
-                                            else
-                                                pluralStringResource(id =  R.plurals.poor_didis_pending_text, count = newFilteredDidiList.filter { it.beneficiaryProcessStatus?.contains(
-                                                    BeneficiaryProcessStatusModel(StepType.PAT_SURVEY.name, StepStatus.COMPLETED.name)) == false}.size)
+                                            else{
+                                                pluralStringResource(id =  R.plurals.poor_didis_pending_text, count = didiViewModel.pendingDidiCount.value)
+                                            }
+                                               
                                             
                                         }"
                                     )
@@ -340,7 +353,7 @@ fun SocialMappingDidiListScreen(
             }
         }
 
-
+       // Didi Add\Edit and Wealth Ranking
         if (didiList.value.isNotEmpty() && !didiViewModel.isSocialMappingComplete.value) {
             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                 && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
@@ -399,6 +412,37 @@ fun SocialMappingDidiListScreen(
 
                         } else {
                             completeTolaAdditionClicked = true
+                        }
+                    },
+                    negativeButtonOnClick = {}
+                )
+            }
+
+        }
+
+        // Didi PAT Survey
+
+        if (didiList.value.isNotEmpty() && didiViewModel.pendingDidiCount.value == 0) {
+            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didiViewModel.pendingDidiCount.value == 0) {
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .shadow(10.dp)
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+                    negativeButtonRequired = false,
+                    positiveButtonText = stringResource(
+                        id = R.string.complete
+                    ),
+                    positiveButtonOnClick = {
+                        didiViewModel.getPatStepStatus(stepId) {
+                            navController.navigate("pat_survey_summary/$stepId/$it")
                         }
                     },
                     negativeButtonOnClick = {}
@@ -681,7 +725,7 @@ fun DidiItemCard(
     val transition = updateTransition(expanded, label = "transition")
 
     val didiMarkedNotAvailable  = remember {
-        mutableStateOf(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+        mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal)
     }
 
     val animateColor by transition.animateColor({
@@ -741,7 +785,7 @@ fun DidiItemCard(
                             ),
                         )
 
-                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyProgress.equals(PatSurveyStatus.COMPLETED.ordinal)) {
+                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_completed_tick),
                                 contentDescription = "home image",
@@ -797,7 +841,17 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
-                if(didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                if(didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    Divider(
+                        color = borderGreyLight,
+                        thickness = 1.dp,
+                        modifier = Modifier
+                            .layoutId("divider")
+                            .padding(vertical = 4.dp)
+                    )
+
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -819,6 +873,7 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
+                            didiViewModel.pendingDidiCount.value--
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
@@ -830,23 +885,23 @@ fun DidiItemCard(
                                     if (didiMarkedNotAvailable.value
                                     ) languageItemActiveBg else blueDark
                                 ),
-                            buttonTitle = if(didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
-                            else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
                             else "",
                             true,
                             color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
                             textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
-                            if (didi.patSurveyProgress == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
-                                if (didi.patSurveyProgress == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                     didiMarkedNotAvailable.value = false
                                 }
                                 navController.navigate("didi_pat_summary/${didi.id}")
-                            } else if (didi.patSurveyProgress == PatSurveyStatus.INPROGRESS.ordinal) {
-                                if (didi.section1 == 0 || didi.section1 == 1)
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                if (didi.section1Status == 0 || didi.section1Status == 1)
                                     navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
-                                else if (didi.section2 == 0 || didi.section2 == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                                else if (didi.section2Status == 0 || didi.section2Status == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
                             }
                         }
                     }
@@ -856,7 +911,7 @@ fun DidiItemCard(
                         .padding(vertical = 10.dp)
                         .padding(horizontal = 20.dp)
                         .clickable {
-                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}")
+                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_DIDI_LIST_SCREEN}")
                         }
                         .then(modifier),
                         horizontalArrangement = Arrangement.SpaceBetween

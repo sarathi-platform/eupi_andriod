@@ -12,7 +12,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
@@ -31,16 +33,17 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.DidiItemCard
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
@@ -74,7 +77,7 @@ fun ParticipatoryWealthRankingSurvey(
         }
     }
     BackHandler() {
-        if (showDidiListForRank.first){
+        if (showDidiListForRank.first) {
             showDidiListForRank = Pair(!showDidiListForRank.first, WealthRank.NOT_RANKED)
         } else {
             if (isStepComplete) {
@@ -88,7 +91,7 @@ fun ParticipatoryWealthRankingSurvey(
             }
         }
     }
-    
+
     val showDialog = remember { mutableStateOf(false) }
 
     ConstraintLayout(
@@ -99,10 +102,15 @@ fun ParticipatoryWealthRankingSurvey(
     ) {
         val (bottomActionBox, mainBox) = createRefs()
 
-        if (showDialog.value){
-            ShowDialog(title = "Are you sure?", message = "You are submitting the wealth ranking for ${didids.value.size} Didis.", setShowDialog = {
-                showDialog.value = it
-            }) {
+        if (showDialog.value) {
+            ShowDialog(title = stringResource(id = R.string.are_you_sure),
+                message = context.getString(
+                    R.string.you_are_submitting_wealth_ranking_for_count_didis,
+                    didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size.toString()
+                ),
+                setShowDialog = {
+                    showDialog.value = it
+                }) {
                 if ((context as MainActivity).isOnline.value ?: false) {
                     viewModel.updateWealthRankingToNetwork(object :
                         NetworkCallbackListener {
@@ -126,12 +134,12 @@ fun ParticipatoryWealthRankingSurvey(
                 viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                 viewModel.saveWealthRankingCompletionDate()
                 navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
-                            "{VILLAGE_NAME}",
-                            viewModel.selectedVillage?.name ?: "")}"
+                    "{VILLAGE_NAME}",
+                    viewModel.selectedVillage?.name ?: "")}"
                 )
             }
         }
-        
+
         Box(
             modifier = Modifier
                 .constrainAs(mainBox) {
@@ -160,7 +168,8 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
+                        text =
+                        stringResource(id = R.string.particaptory_wealth_ranking_survey_text),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -175,13 +184,25 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = if (showDidiListForRank.first) {
+                        text = "${if (showDidiListForRank.first) {
                             when (showDidiListForRank.second) {
-                                WealthRank.POOR -> R.string.poor_didi_item_text
-                                WealthRank.MEDIUM -> R.string.medium_didi_item_text
-                                else -> R.string.rich_didi_item_text
+                                WealthRank.POOR -> didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                                WealthRank.MEDIUM -> didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size
+                                else -> didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size
                             }
-                        } else R.string.didis_item_text),
+                        } else
+                            didids.value.size
+                        } ${
+                            stringResource(
+                                id = if (showDidiListForRank.first) {
+                                    when (showDidiListForRank.second) {
+                                        WealthRank.POOR -> R.string.poor_didi_item_text
+                                        WealthRank.MEDIUM -> R.string.medium_didi_item_text
+                                        else -> R.string.rich_didi_item_text
+                                    }
+                                } else R.string.didis_item_text
+                            )
+                        }",
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -197,15 +218,21 @@ fun ParticipatoryWealthRankingSurvey(
 
                 AnimatedVisibility(visible = showDidiListForRank.first) {
 
-                    Box(modifier = Modifier
-                        .fillMaxSize()
-                        .padding(vertical = 8.dp)) {
-                        LazyColumn(verticalArrangement = Arrangement.spacedBy(4.dp),
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(4.dp),
                             contentPadding = PaddingValues(bottom = bottomPadding),
-                        modifier = Modifier.padding(bottom = 10.dp)) {
+                            modifier = Modifier.padding(bottom = 10.dp)
+                        ) {
                             item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
-                                DidiItemCard(didi, expandedCardIds.contains(didi.id), Modifier.padding(horizontal = 0.dp),
+                                DidiItemCard(didi,
+                                    expandedCardIds.contains(didi.id),
+                                    Modifier.padding(horizontal = 0.dp),
                                     onExpendClick = { expand, didiDetailModel ->
                                         viewModel.onCardArrowClicked(didiDetailModel.id)
                                     },
@@ -277,14 +304,22 @@ fun ParticipatoryWealthRankingSurvey(
 }
 
 @Composable
-fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit, positiveButtonClicked: () -> Unit) {
+fun ShowDialog(
+    title: String,
+    message: String,
+    setShowDialog: (Boolean) -> Unit,
+    positiveButtonClicked: () -> Unit
+) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(6.dp),
             color = Color.White
         ) {
             Box(contentAlignment = Alignment.Center) {
-                Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
                     Text(
                         text = title,
                         textAlign = TextAlign.Start,
@@ -303,11 +338,19 @@ fun ShowDialog(title: String, message: String, setShowDialog: (Boolean) -> Unit,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Row(modifier = Modifier.fillMaxWidth()) {
-                        ButtonNegative(buttonTitle = stringResource(id = R.string.cancel_tola_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                        ButtonNegative(
+                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             setShowDialog(false)
                         }
                         Spacer(modifier = Modifier.width(8.dp))
-                        ButtonPositive(buttonTitle = stringResource(id = R.string.yes_text), isArrowRequired = false, modifier = Modifier.weight(1f)) {
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.yes_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
                             positiveButtonClicked()
                             setShowDialog(false)
                         }
@@ -426,6 +469,86 @@ fun WealthRankingBox(
             )
         }
     }
+}
+
+@Composable
+fun PATSurveyBox(
+    modifier: Modifier = Modifier,
+    count: Int,
+    isComplete: Boolean = false,
+    onPATSurveyBoxClicked: () -> Unit
+) {
+    val boxColor = if (isComplete) blueLighter else yellowLight
+    val boxTitle = if (isComplete) stringResource(id = R.string.pat_completed)
+    else stringResource(id = R.string.didi_not_available)
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(boxColor, shape = RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(6.dp))
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            ) {
+                onPATSurveyBoxClicked()
+            }
+            .then(modifier)
+    ) {
+        Row(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = if (count < 10) String.format("%02d", count) else count.toString(),
+                style = veryLargeTextStyle,
+                color = textColorDark
+            )
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = boxTitle,
+                    style = mediumTextStyle,
+                    color = textColorDark
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = null,
+                tint = textColorDark,
+                modifier = Modifier
+                    .padding(start = 20.dp)
+            )
+        }
+
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun WealthRankingBoxPreview() {
+    WealthRankingBox(modifier = Modifier, 5, WealthRank.POOR, onWealthRankingBoxClicked = {})
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PATSurveyBoxPreview() {
+    PATSurveyBox(modifier = Modifier, 5, true, onPATSurveyBoxClicked = {})
 }
 
 @Composable
