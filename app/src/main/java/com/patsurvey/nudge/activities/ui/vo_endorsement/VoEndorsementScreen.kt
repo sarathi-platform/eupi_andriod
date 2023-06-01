@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -143,7 +144,7 @@ fun VoEndorsementScreen(
                         Text(
                             text = stringResource(
                                 id = R.string.count_didis_pending,
-                                newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.size
                             ),
                             color = Color.Black,
                             fontSize = 12.sp,
@@ -159,9 +160,7 @@ fun VoEndorsementScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
-                                viewModel.pendingDidiCount.value++
-                            }
+
                             ShowDidisFromTolaForVo(
                                 navController = navController,
                                 viewModel = viewModel,
@@ -169,7 +168,7 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==0){
                                         navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
                                     }
                                 }
@@ -189,9 +188,6 @@ fun VoEndorsementScreen(
                         }
                     } else {
                         itemsIndexed(newFilteredDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status ==PatSurveyStatus.COMPLETED.ordinal }) { index, didi ->
-                            if(didi?.voEndorsementStatus!=2){
-                                viewModel.pendingDidiCount.value++
-                            }
                             DidiItemCardForVo(
                                 navController = navController,
                                 didiViewModel = viewModel,
@@ -199,7 +195,7 @@ fun VoEndorsementScreen(
                                 expanded = false,
                                 modifier = modifier,
                                 onItemClick = {
-                                    if(didi?.voEndorsementStatus!=2) {
+                                    if((didi?.voEndorsementStatus?:0)==0) {
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
                                     }
                                 }
@@ -223,7 +219,7 @@ fun VoEndorsementScreen(
                         }
                     },
 
-                positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
+                positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     val stepStatus = true
