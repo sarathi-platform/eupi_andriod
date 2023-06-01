@@ -63,7 +63,7 @@
     <string name="select">Select</string>
     <string name="pat_survey">PAT Survey</string>
 
-    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Survey</string>
+    <string name="particaptory_wealth_ranking_survey_text">Participatory Wealth Ranking Summary</string>
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
@@ -182,6 +182,7 @@
     <string name="endorsed">Endorsed</string>
     <string name="rejected">Rejected</string>
 
+    <string name="shg_question_text">Is Didi part of SHG?</string>
 
 
 

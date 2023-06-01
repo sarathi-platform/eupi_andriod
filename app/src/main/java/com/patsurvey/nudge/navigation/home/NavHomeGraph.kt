@@ -30,6 +30,7 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
 import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
+import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -560,7 +561,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 type = NavType.IntType
             })
         ) {
-            VideoDetailPlayerScreen(navController = navController, modifier = Modifier, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
+            FullscreenView(navController = navController, viewModel =  hiltViewModel(), videoId = it.arguments?.getInt(ARG_VIDEO_ID) ?: -1)
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {

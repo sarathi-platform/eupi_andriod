@@ -106,7 +106,7 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = stringResource(id = R.string.are_you_sure),
                 message = context.getString(
                     R.string.you_are_submitting_wealth_ranking_for_count_didis,
-                    didids.value.size.toString()
+                    didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size.toString()
                 ),
                 setShowDialog = {
                     showDialog.value = it
@@ -184,15 +184,25 @@ fun ParticipatoryWealthRankingSurvey(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(
-                            id = if (showDidiListForRank.first) {
-                                when (showDidiListForRank.second) {
-                                    WealthRank.POOR -> R.string.poor_didi_item_text
-                                    WealthRank.MEDIUM -> R.string.medium_didi_item_text
-                                    else -> R.string.rich_didi_item_text
-                                }
-                            } else R.string.didis_list_text
-                        ),
+                        text = "${if (showDidiListForRank.first) {
+                            when (showDidiListForRank.second) {
+                                WealthRank.POOR -> didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                                WealthRank.MEDIUM -> didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size
+                                else -> didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size
+                            }
+                        } else
+                            didids.value.size
+                        } ${
+                            stringResource(
+                                id = if (showDidiListForRank.first) {
+                                    when (showDidiListForRank.second) {
+                                        WealthRank.POOR -> R.string.poor_didi_item_text
+                                        WealthRank.MEDIUM -> R.string.medium_didi_item_text
+                                        else -> R.string.rich_didi_item_text
+                                    }
+                                } else R.string.didis_item_text
+                            )
+                        }",
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),

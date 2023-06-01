@@ -17,6 +17,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -46,19 +47,25 @@ fun QuestionScreen(
     didiId: Int,
     sectionType:String
 ) {
+    val pagerState = rememberPagerState()
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         viewModel.setDidiDetails(didiId)
         viewModel.sectionType.value=sectionType
         viewModel.getAllQuestionsAnswers(didiId)
+        delay(300)
+        val mAnswerList  = viewModel.answerList.value
+        val mAnsweredQuestion = mAnswerList.size
+        if (mAnsweredQuestion > 0) {
+            pagerState.animateScrollToPage(mAnsweredQuestion)
+        }
     }
 
     val questionList by viewModel.questionList.collectAsState()
     val totalAmount by viewModel.totalAssetAmount.collectAsState()
     val answerList by viewModel.answerList.collectAsState()
 
-    val pagerState = rememberPagerState()
-    val coroutineScope = rememberCoroutineScope()
 
     val answeredQuestion = remember {
         mutableStateOf(0)
@@ -67,20 +74,19 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
 
-    LaunchedEffect(key1 = true) {
-        delay(200)
-        val mAnsweredQuestion = answerList.size
-        if (mAnsweredQuestion > 0) {
-            pagerState.animateScrollToPage(mAnsweredQuestion)
-        }
-    }
+
 
     val context = LocalContext.current
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+
     BackHandler() {
         navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
-    Box(modifier = Modifier.fillMaxSize().padding(top = 14.dp)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .padding(top = 14.dp)) {
         Column(
             modifier = modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
@@ -165,7 +171,7 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
@@ -204,7 +210,7 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
@@ -247,9 +253,8 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 500)
+                                    }, 250)
                                 }
-
                             }
                         }
                     }
@@ -274,6 +279,7 @@ fun QuestionScreen(
         AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
             .visible(prevButtonVisible.value)
+            .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomStart)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier
@@ -317,6 +323,7 @@ fun QuestionScreen(
         AnimatedVisibility(visible = nextButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
             .visible(nextButtonVisible.value)
+            .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomEnd)) {
             ExtendedFloatingActionButton(
                 modifier = Modifier

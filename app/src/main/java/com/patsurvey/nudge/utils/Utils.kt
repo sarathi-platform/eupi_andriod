@@ -159,11 +159,6 @@ fun uriFromFile(context:Context, file:File): Uri {
     }
 }
 
-fun shareFile(context: Context, pdfFile: File) {
-
-}
-
-
 var videoList = listOf(
     VideoItem(
         id = 1,

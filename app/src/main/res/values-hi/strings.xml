@@ -95,7 +95,7 @@
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
     <string name="pat_sub_text_singular">%1$s अत्यंत दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
     <string name="pat_sub_text_plural">%1$s अत्यंत दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
-    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सर्वेक्षण </string>
+    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सारांश</string>
     <string name="particaptory_wealth_ranking_text">भागीदारी धन रैंकिंग </string>
 
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
@@ -183,4 +183,5 @@
     <string name="rejected">अस्वीकार कर दिया</string>
     <string name="endorse">समर्थन</string>
 
+    <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
 </resources>
