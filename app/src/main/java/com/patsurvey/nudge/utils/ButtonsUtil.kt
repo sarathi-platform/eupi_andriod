@@ -1285,5 +1285,81 @@ fun DidiPATSurveyCompleteView(
     }
 }
 
+@Composable
+fun AcceptRejectButtonBox(
+    modifier: Modifier = Modifier,
+    positiveButtonText: String,
+    negativeButtonRequired: Boolean = true,
+    negativeButtonText: String = "",
+    positiveButtonOnClick: () -> Unit,
+    negativeButtonOnClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .padding(0.dp)
+            .fillMaxWidth()
+            .background(Color.White)
+            .shadow(20.dp, shape = RectangleShape, clip = true)
+            .then(modifier)
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(16.dp)
+            ) {
+                if (negativeButtonRequired) {
+
+                    Row(
+                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(6.dp))
+                            .background(rejectColor).clickable( interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = true,
+                                    color = redLight
+                                )) {
+                            negativeButtonOnClick()
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            modifier =Modifier.padding(all = 10.dp),
+                            text = negativeButtonText,
+                            color = redDark,
+                            style = /*mediumTextStyle*/TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            ),
+                        )
+                    }
+                    Spacer(modifier = Modifier.padding(10.dp))
+                }
+                ButtonPositive(
+                    modifier = Modifier.weight(1.5f),
+                    buttonTitle = positiveButtonText,
+                    isArrowRequired = false
+                ) {
+                    positiveButtonOnClick()
+                }
+            }
+        }
+    }
+}
+
+@Preview (showBackground = true)
+@Composable
+fun AcceptRejectButtonBoxPreview(){
+    AcceptRejectButtonBox(
+        modifier = Modifier.shadow(10.dp),
+        negativeButtonRequired = true,
+        positiveButtonText = "Accept",
+        negativeButtonText = "Reject",
+        positiveButtonOnClick = {},
+        negativeButtonOnClick = {}
+    )
+}
+
+
 
 

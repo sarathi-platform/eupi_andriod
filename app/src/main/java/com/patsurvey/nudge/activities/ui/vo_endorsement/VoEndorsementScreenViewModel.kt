@@ -25,7 +25,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
     val tolaDao: TolaDao,
 ): BaseViewModel() {
 
-
+    val pendingDidiCount = mutableStateOf(0)
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
@@ -52,7 +52,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
 //        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.value = didiDao.getAllDidisForVillage(villageId)
+                _didiList.value = didiDao.patCompletedDidis(villageId)
                 _filterDidiList.value = didiList.value
 //                showLoader.value = false
             }

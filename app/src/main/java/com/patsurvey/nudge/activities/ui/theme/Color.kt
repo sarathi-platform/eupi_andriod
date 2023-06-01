@@ -81,3 +81,9 @@ val redNoAnswer = Color(0xFFD32517)
 val brownDark = Color(0xFF693D30)
 
 val redLight = Color(0xFFF8D5D5)
+val rejectColor = Color(0xFFFFEDED)
+val acceptEndorsementColor = Color(0xFF87D3C1)
+val rejectEndorsementColor = Color(0xFFF8D5D5)
+
+val acceptEndorsementTextColor = Color(0xFF439A86)
+val rejectEndorsementTextColor = Color(0xFFE31F06)

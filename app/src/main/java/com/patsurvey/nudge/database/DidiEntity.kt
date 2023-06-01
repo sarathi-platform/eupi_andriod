@@ -77,6 +77,9 @@ data class DidiEntity(
     var section2Status: Int=0,
 
     @ColumnInfo(name = "shgFlag")
-    var shgFlag: Int
+    var shgFlag: Int,
+
+    @ColumnInfo(name = "voEndorsementStatus")
+    var voEndorsementStatus: Int =0
 
     )

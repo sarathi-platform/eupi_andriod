@@ -184,5 +184,11 @@
     <string name="send_for_vo_text">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
     <string name="didi_pat_complete_text">दीदी का PAT पूरा हुआ</string>
     <string name="didi_not_available_sub_heading_text">दीदी उपलब्ध नहीं है</string>
+    <string name="accept">গ্রহণ করুন</string>
+    <string name="reject">প্রত্যাখ্যান করুন</string>
+    <string name="endorsed">অনুমোদন</string>
+    <string name="rejected">প্রত্যাখ্যাত</string>
+    <string name="endorse">অনুমোদন করা</string>
+
     <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
 </resources>

@@ -169,9 +169,6 @@
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
     <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
     <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
-
-
-
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
     <string name="pat_completed_box_title">PAT Completed</string>
@@ -179,6 +176,12 @@
     <string name="send_for_vo_text">Send All For VO Endorsement</string>
     <string name="didi_pat_complete_text">Didis PAT completed</string>
     <string name="didi_not_available_sub_heading_text">Didis Not Available</string>
+    <string name="accept">Accept</string>
+    <string name="reject">Reject</string>
+    <string name="endorse">Endorse</string>
+    <string name="endorsed">Endorsed</string>
+    <string name="rejected">Rejected</string>
+
     <string name="shg_question_text">Is Didi part of SHG?</string>
 
 

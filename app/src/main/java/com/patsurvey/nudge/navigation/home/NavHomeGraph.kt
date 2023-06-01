@@ -27,6 +27,9 @@ import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
+import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -614,6 +617,18 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route) {
             FormPictureScreen(navController = navController, formPictureScreenViewModel = hiltViewModel())
         }
+
+        composable(VoEndorsmentScreeens.VO_ENDORSEMENT_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID){
+            type = NavType.IntType
+        },navArgument(ARG_DIDI_INDEX){
+                type = NavType.IntType
+            })) {
+            VoEndorsementSummaryScreen( navController=navController,viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                didiIndex = it.arguments?.getInt(ARG_DIDI_INDEX) ?: 0
+            )
+        }
     }
 }
 
@@ -621,5 +636,7 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSMENT_LIST_SCREEN : VoEndorsmentScreeens(route = "vo_endorsment_list_screen")
 
     object FORM_PICTURE_SCREEN : VoEndorsmentScreeens(route = "form_picture_screen")
+
+    object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
 
 }

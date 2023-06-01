@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.utils.ANSWER_TABLE
@@ -56,8 +57,12 @@ interface AnswerDao {
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
+    @Query("select  d.* from $DIDI_TABLE d  INNER join $ANSWER_TABLE q  on q.didiId = d.id where d.villageId =:villageId AND voEndorsementStatus != 2 GROUP BY d.id ORDER BY d.createdDate DESC")
+    fun fetchAllDidisForVO(villageId: Int): List<DidiEntity>
 
     @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
     fun updateNeedToPost(didiId: Int,questionId: Int,needsToPost:Boolean)
+
+
 
 }

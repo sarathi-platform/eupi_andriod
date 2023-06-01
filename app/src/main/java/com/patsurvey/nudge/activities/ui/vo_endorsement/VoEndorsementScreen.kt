@@ -158,6 +158,9 @@ fun VoEndorsementScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
+                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                                viewModel.pendingDidiCount.value++
+                            }
                             ShowDidisFromTolaForVo(
                                 navController = navController,
                                 viewModel = viewModel,
@@ -165,7 +168,9 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-
+                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                                        navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
+                                    }
                                 }
                             )
                             if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -183,6 +188,9 @@ fun VoEndorsementScreen(
                         }
                     } else {
                         itemsIndexed(newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
+                            if(didi?.voEndorsementStatus!=2){
+                                viewModel.pendingDidiCount.value++
+                            }
                             DidiItemCardForVo(
                                 navController = navController,
                                 didiViewModel = viewModel,
@@ -190,7 +198,9 @@ fun VoEndorsementScreen(
                                 expanded = false,
                                 modifier = modifier,
                                 onItemClick = {
-                                    //TODO navigate to summary screen for Endorsement
+                                    if(didi?.voEndorsementStatus!=2) {
+                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
+                                    }
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -275,7 +285,7 @@ fun DidiItemCardForVo(
                         )
 
                         //TODO figureout a way to save voendorsement status.
-                        if (didi.patSurveyStatus.equals(VoEndorsementStatus.COMPLETED.ordinal)) {
+                        if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
                             Image(
                                 painter = painterResource(id = R.drawable.ic_completed_tick),
                                 contentDescription = "home image",
@@ -313,11 +323,13 @@ fun DidiItemCardForVo(
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
-                        modifier = Modifier.layoutId("divider").padding(vertical = 4.dp)
+                        modifier = Modifier
+                            .layoutId("divider")
+                            .padding(vertical = 4.dp)
                     )
                 }
             }
-            if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+            if (didi.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -352,9 +364,9 @@ fun DidiItemCardForVo(
                 ) {
 
                     Text(
-                        text = "Endorsed",
+                        text = stringResource(id = if(didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) R.string.endorsed else R.string.rejected),
                         style = smallTextStyleMediumWeight,
-                        color = greenOnline,
+                        color = if(didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) acceptEndorsementTextColor else rejectEndorsementTextColor,
                     )
 
                     Row() {

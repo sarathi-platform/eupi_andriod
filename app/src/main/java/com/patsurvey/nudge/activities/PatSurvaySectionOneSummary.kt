@@ -179,7 +179,7 @@ fun PatSurvaySectionSummaryScreen(
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, question = question, answer = answer!!)
+                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionDisplay?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
                     }
                 }
             }
@@ -325,8 +325,9 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 fun SectionOneSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
-    question: QuestionEntity,
-    answer: SectionAnswerEntity
+    questionDisplay: String,
+    answerValue: String,
+    optionValue:Int
 ) {
     Column(
         modifier = Modifier
@@ -342,7 +343,7 @@ fun SectionOneSummeryItem(
                     .size(25.dp)
             )
             Text(
-                text = "$index. ${question.questionDisplay}.",
+                text = "$index. ${questionDisplay}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,
@@ -356,9 +357,9 @@ fun SectionOneSummeryItem(
                     .weight(1f)
             )
             Text(
-                text = "${answer.answerValue}",
+                text = "${answerValue}",
                 style = TextStyle(
-                    color = if (answer.optionValue == 1) greenOnline else redNoAnswer,
+                    color = if (optionValue == 1) greenOnline else redNoAnswer,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = NotoSans
