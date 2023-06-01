@@ -187,4 +187,11 @@
 
     <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
     <string name="no_internet">No Internet Available</string>
+
+    <string name="sync">Sync</string>
+    <string name="battery">Battery</string>
+    <string name="mobile_data">Mobile Data</string>
+    <string name="estimated_time_required">Estimated Time Required</string>
+    <string name="size">Size</string>
+    <string name="syncing">Syncing</string>
 </resources>

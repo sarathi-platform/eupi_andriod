@@ -29,7 +29,6 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
-import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
