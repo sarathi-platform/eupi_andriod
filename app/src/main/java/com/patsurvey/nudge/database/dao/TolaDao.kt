@@ -3,6 +3,7 @@ package com.patsurvey.nudge.database.dao
 import androidx.room.*
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 import com.patsurvey.nudge.utils.TOLA_TABLE
 
@@ -40,4 +41,10 @@ interface TolaDao {
 
     @Query("UPDATE $TOLA_TABLE SET status = :status, needsToPost = 1 WHERE id = :id")
     fun deleteTolaOffline(id: Int, status: Int)
+
+    @Query("DELETE from $TOLA_TABLE where needsToPost = :needsToPost")
+    fun deleteTolaNeedToPost( needsToPost: Boolean)
+
+    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost")
+    fun fetchTolaNeedToPost( needsToPost: Boolean) : List<TolaEntity>
 }

@@ -190,6 +190,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         villageId = village.id,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
+                                                        needsToPostRanking = false,
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
