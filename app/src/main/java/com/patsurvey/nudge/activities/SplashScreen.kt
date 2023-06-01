@@ -20,7 +20,6 @@ import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.showCustomToast
@@ -84,7 +83,8 @@ fun SplashScreen(
             end.linkTo(parent.end)
         }) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(text = "Sarathi", style = veryLargeTextStyle, color = blueDark)
+                /*Text(text = "Sarathi", style = veryLargeTextStyle, color = blueDark)*/
+                Image(painter = painterResource(id = R.drawable.sarathi_logo_full), contentDescription = "Sarathi Logo")
                 Text(text = "To End Ultra Poverty", style = smallTextStyleNormalWeight, color = blueDark)
             }
         }

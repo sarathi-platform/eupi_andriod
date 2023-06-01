@@ -147,17 +147,6 @@ fun PatSurvaySectionTwoSummaryScreen(
                         .height(10.dp)
                 )
 
-                Text(
-                    text = stringResource(R.string.summary_text),
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
-                )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally

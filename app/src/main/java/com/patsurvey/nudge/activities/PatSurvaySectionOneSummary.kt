@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.net.Uri
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -39,16 +38,13 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import java.io.File
 
@@ -166,17 +162,17 @@ fun PatSurvaySectionSummaryScreen(
                     }
 
                 }
-                Text(
-                    text = stringResource(R.string.summary_text),
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        fontFamily = NotoSans
-                    ),
-                    textAlign = TextAlign.Start,
-                    modifier = Modifier.fillMaxWidth()
-                )
+//                Text(
+//                    text = stringResource(R.string.summary_text),
+//                    style = TextStyle(
+//                        color = textColorDark,
+//                        fontSize = 12.sp,
+//                        fontWeight = FontWeight.SemiBold,
+//                        fontFamily = NotoSans
+//                    ),
+//                    textAlign = TextAlign.Start,
+//                    modifier = Modifier.fillMaxWidth()
+//                )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
