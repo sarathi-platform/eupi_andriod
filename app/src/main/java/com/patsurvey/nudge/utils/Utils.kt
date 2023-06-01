@@ -2,7 +2,6 @@ package com.patsurvey.nudge.utils
 
 import android.content.Context
 import android.content.ContextWrapper
-import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
@@ -21,7 +20,6 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Constraints
-import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -152,11 +150,6 @@ fun uriFromFile(context:Context, file:File): Uri {
         Uri.fromFile(file)
     }
 }
-
-fun shareFile(context: Context, pdfFile: File) {
-
-}
-
 
 var videoList = listOf(
     VideoItem(

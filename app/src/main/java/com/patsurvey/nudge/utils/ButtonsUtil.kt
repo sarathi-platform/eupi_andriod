@@ -1204,7 +1204,11 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 .background(Color.Black))
             Box(modifier = Modifier
                 .fillMaxHeight()
-                .weight(1f),
+                .weight(1f)
+                .clickable {
+                    currentCount= incDecValue(1,currentCount)
+                    onIncrementClick(currentCount.toInt())
+                },
                 contentAlignment = Alignment.Center){
                 Text(
                     text = "+",
@@ -1212,10 +1216,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                     fontFamily = NotoSans,
                     fontSize = 22.sp,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.clickable {
-                       currentCount= incDecValue(1,currentCount)
-                        onIncrementClick(currentCount.toInt())
-                    }
+                    modifier = Modifier
                 )
             }
         }

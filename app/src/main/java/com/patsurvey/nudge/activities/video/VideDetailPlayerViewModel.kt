@@ -5,12 +5,15 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.DownloadStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -27,6 +30,7 @@ class VideDetailPlayerViewModel @Inject constructor(
 ): BaseViewModel() {
 
     var showLoader = mutableStateOf(true)
+    val mediaItem = mutableStateOf(MediaItem.EMPTY)
 
     private val _trainingVideo = MutableStateFlow(TrainingVideoEntity(id = -1, "", "", "" ,"", 0))
     val trainingVideo: StateFlow<TrainingVideoEntity> get() = _trainingVideo
@@ -45,6 +49,20 @@ class VideDetailPlayerViewModel @Inject constructor(
                 showLoader.value = false
             }
         }
+    }
+
+    fun createMediaItem(context: Context, videoItem: TrainingVideoEntity) {
+        val mMediaItem = MediaItem.Builder()
+            .setUri(if (videoItem.isDownload == DownloadStatus.DOWNLOADED.value) getVideoPath(context, videoItem.id) else videoItem.url
+            )
+            .setMediaId(videoItem.id.toString())
+            .setMediaMetadata(
+                MediaMetadata.Builder()
+                    .setDisplayTitle(videoItem.title)
+                    .build()
+            )
+            .build()
+        mediaItem.value = mMediaItem
     }
 
     private fun getOutputDirectory(activity: MainActivity): File {
