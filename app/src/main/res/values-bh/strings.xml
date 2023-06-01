@@ -158,5 +158,5 @@
     <string name="didi_pat_comption_dialog">आप {DIDI_NAME} के लिए PAT सबमिट कर रहे हैं.</string>
     <string name="section_1_text">"खंड 1: "</string>
     <string name="section_2_text">"खंड 2: "</string>
-
+    <string name="no_internet">No Internet Available</string>
 </resources>

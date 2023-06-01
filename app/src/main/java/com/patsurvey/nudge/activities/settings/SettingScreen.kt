@@ -89,6 +89,9 @@ fun SettingScreen(
                     itemsIndexed(optionList.value) { index, item ->
                         SettingCard(title = item.title, subTitle = item.subTitle) {
                             when (index) {
+                                0 -> {
+                                    viewModel.syncDataOnServer(context)
+                                }
                                 1 -> {
                                     navController.navigate(SettingScreens.PROFILE_SCREEN.route)
                                 }

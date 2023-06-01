@@ -3,9 +3,11 @@ package com.patsurvey.nudge.database.dao
 import android.net.Uri
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -84,4 +86,13 @@ interface DidiDao {
     fun updateDidiShgStatus(didiId: Int, shgFlag: Int)
     @Query("update $DIDI_TABLE set cohortName = :newName where cohortId = :id")
     fun updateTolaName(id: Int, newName: String)
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost")
+    fun fetchAllDidiNeedToPost( needsToPost: Boolean) : List<DidiEntity>
+
+    @Query("DELETE from $DIDI_TABLE where needsToPost = :needsToPost")
+    fun deleteDidiNeedToPost( needsToPost: Boolean)
+
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
+    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>
 }

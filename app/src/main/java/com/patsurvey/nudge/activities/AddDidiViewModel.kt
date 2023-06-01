@@ -420,9 +420,6 @@ class AddDidiViewModel @Inject constructor(
     fun updateDidisNeedTOPostList(villageId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateTolaListWithIds(didiList, villageId)
-            didiList.value.forEach {
-                didiDao.updateNeedToPost(it.id, false)
-            }
         }
     }
 

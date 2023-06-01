@@ -157,5 +157,5 @@
     <string name="section_1_text">"Section 1: "</string>
     <string name="section_2_text">"Section 2: "</string>
 
-
+    <string name="no_internet">No Internet Available</string>
 </resources>

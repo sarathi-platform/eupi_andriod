@@ -115,7 +115,8 @@ class TransectWalkViewModel @Inject constructor(
                                 }
                             }
                         }
-                } }
+                    }
+                }
                 else {
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
@@ -127,9 +128,6 @@ class TransectWalkViewModel @Inject constructor(
     fun updateTolaNeedTOPostList(villageId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateTolaListWithIds(tolaList.value, villageId)
-            tolaList.value.forEach {
-                tolaDao.updateNeedToPost(it.id, false)
-            }
         }
     }
 
@@ -145,7 +143,7 @@ class TransectWalkViewModel @Inject constructor(
                     latitude = it.latitude,
                     longitude = it.longitude,
                     villageId = it.villageId,
-                    needsToPost = true,
+                    needsToPost = false,
                     status = it.status,
                     createdDate = it.createdDate,
                     modifiedDate = it.modifiedDate
