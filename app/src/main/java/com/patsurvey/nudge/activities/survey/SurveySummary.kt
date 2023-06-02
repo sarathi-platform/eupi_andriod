@@ -275,7 +275,7 @@ fun SurveySummary(
                         showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY) Pair(
                             true,
                             PatSurveyStatus.COMPLETED.ordinal
-                        ) else Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
+                        ) else Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
                     }
                     SummaryBox(
                         count = if (fromScreen == ARG_FROM_PAT_SURVEY)
@@ -298,7 +298,7 @@ fun SurveySummary(
             }
         }
 
-        if (!isStepComplete || showDidiListForStatus.first) {
+        if (isStepComplete || showDidiListForStatus.first) {
             BottomButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -324,12 +324,12 @@ fun SurveySummary(
                        },
                 isArrowRequired = !showDidiListForStatus.first,
                 positiveButtonOnClick = {
-                    if (showDidiListForStatus.first)
+                    if (showDidiListForStatus.first) {
                         showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            Pair(true, PatSurveyStatus.NOT_STARTED.ordinal)
+                            Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
                         else
-                            Pair(true, DidiEndorsementStatus.NO_STARTED.ordinal)
-                    else
+                            Pair(false, DidiEndorsementStatus.NO_STARTED.ordinal)
+                    }else
                         showDialog.value = true
                 }
             )

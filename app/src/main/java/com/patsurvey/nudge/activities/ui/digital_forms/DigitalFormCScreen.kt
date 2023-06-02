@@ -31,10 +31,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
-import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
@@ -242,53 +239,55 @@ fun DigitalFormCScreen(
                         .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        items(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }) { card ->
-                            DidiVillageItem(card)
-                        }
-                        item {
-                            Divider(
-                                color = borderGreyLight,
-                                thickness = 1.dp,
-                                modifier = Modifier
-                                    .padding(vertical = 4.dp)
-                            )
-                        }
-                        item {
-                            Row() {
-                                Image(
-                                    painter = painterResource(id = R.drawable.endorsement_badge),
-                                    contentDescription = null
+                    Column() {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        ) {
+                            items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }) { card ->
+                                DidiVillageItem(card)
+                            }
+                            item {
+                                Divider(
+                                    color = borderGreyLight,
+                                    thickness = 1.dp,
+                                    modifier = Modifier
+                                        .padding(vertical = 4.dp)
                                 )
-                                Column() {
-                                    Text(
-                                        text = "Link Form C",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            textDecoration = TextDecoration.Underline
-                                        ),
-                                        modifier = Modifier.clickable{
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
+                            Image(
+                                painter = painterResource(id = R.drawable.endorsement_badge),
+                                contentDescription = null
+                            )
+                            Column() {
+                                Text(
+                                    text = "Link Form C",
+                                    style = TextStyle(
+                                        fontFamily = NotoSans,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        textDecoration = TextDecoration.Underline
+                                    ),
+                                    color = textColorDark,
+                                    modifier = Modifier.clickable {
 
-                                        }
-                                    )
-                                    Text(
-                                        text = "Link Form D",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            textDecoration = TextDecoration.Underline
-                                        ),
-                                        modifier = Modifier.clickable{
+                                    }
+                                )
+                                Text(
+                                    text = "Link Form D",
+                                    style = TextStyle(
+                                        fontFamily = NotoSans,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontSize = 14.sp,
+                                        textDecoration = TextDecoration.Underline
+                                    ),
+                                    color = textColorDark,
+                                    modifier = Modifier.clickable {
 
-                                        }
-                                    )
-                                }
+                                    }
+                                )
                             }
                         }
                     }

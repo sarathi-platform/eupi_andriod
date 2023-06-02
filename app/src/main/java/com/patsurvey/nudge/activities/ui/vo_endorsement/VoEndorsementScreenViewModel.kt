@@ -10,11 +10,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.FLAG_RATIO
-import com.patsurvey.nudge.utils.FLAG_WEIGHT
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.calculateScore
-import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +27,8 @@ class VoEndorsementScreenViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
-    val numericAnswerDao: NumericAnswerDao
+    val numericAnswerDao: NumericAnswerDao,
+    val stepsListDao: StepsListDao
 ): BaseViewModel() {
 
     val pendingDidiCount = mutableStateOf(0)
@@ -158,6 +155,19 @@ class VoEndorsementScreenViewModel @Inject constructor(
         }
     }
 
+
+    fun getVoEndorsementStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            withContext(Dispatchers.Main) {
+                if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    callBack(true)
+                } else {
+                    callBack(false)
+                }
+            }
+        }
+    }
     override fun onServerError(error: ErrorModel?) {
         TODO("Not yet implemented")
     }

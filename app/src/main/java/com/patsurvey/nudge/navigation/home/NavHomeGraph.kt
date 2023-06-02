@@ -518,11 +518,9 @@ sealed class PatScreens(val route: String) {
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
-    object PAT_SURVEY_SUMMARY :
-        PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+    object PAT_SURVEY_SUMMARY : PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
-    object PAT_STEP_COMPLETION_SCREEN :
-        PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object PAT_STEP_COMPLETION_SCREEN : PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
     object PAT_DIGITAL_FORM_B_SCREEN : PatScreens(route = "pat_digital_form_b_screen")
 
@@ -588,7 +586,8 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             DigitalFormCScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
             )
         }
 
@@ -638,7 +637,7 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         }
 
         composable(
-            route = VoEndorsmentScreeens.VO_ENDORSEMENT_SURVEY_SUMMARY_SCREEN.route,
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_SURVEY_SUMMARY.route,
             arguments = listOf(navArgument(ARG_STEP_ID) {
                 type = NavType.IntType
             },
@@ -672,7 +671,7 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
             DigitalFormCScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
             )
         }
     }
@@ -685,7 +684,7 @@ sealed class VoEndorsmentScreeens(val route: String) {
 
     object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
 
-    object VO_ENDORSEMENT_SURVEY_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+    object VO_ENDORSEMENT_SURVEY_SUMMARY: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : PatScreens(route = "vo_endorsement_digital_form_c_screen")
