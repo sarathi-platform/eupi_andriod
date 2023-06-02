@@ -83,6 +83,9 @@ data class DidiEntity(
     var voEndorsementStatus: Int =0,
 
     @ColumnInfo(name = "forVoEndorsement")
-    var forVoEndorsement: Int =0
+    var forVoEndorsement: Int =0,
+
+    @ColumnInfo(name = "needsToPostPAT")
+    var needsToPostPAT: Boolean = true
 
     )

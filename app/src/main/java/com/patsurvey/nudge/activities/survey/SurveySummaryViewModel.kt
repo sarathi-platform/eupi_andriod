@@ -137,6 +137,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     networkCallbackListener.onSuccess()
                                     saveAPIResponse.data?.pATSummaryResponse?.let {
                                         it.forEach { patSummaryResponseItem ->
+                                            didiDao.updateNeedToPostPAT(false,patSummaryResponseItem?.beneficiaryId?:0,prefRepo.getSelectedVillage().id)
                                             val answersList= patSummaryResponseItem?.answers
                                             if(answersList?.isNotEmpty() == true){
                                                 answersList.forEach { answersItem ->

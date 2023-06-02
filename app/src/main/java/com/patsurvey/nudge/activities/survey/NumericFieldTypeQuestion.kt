@@ -160,7 +160,7 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                readOnly = false,
+                                readOnly = true,
                                 value = viewModel?.totalAmount?.value.toString(),
                                 onValueChange = {
                                     viewModel?.totalAmount?.value = it.toInt()

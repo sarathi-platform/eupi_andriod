@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import android.content.Context
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -266,9 +267,16 @@ class VillageSelectionViewModel @Inject constructor(
                         val answerApiResponse = apiService.fetchPATSurveyToServer(it)
                         if(answerApiResponse.status.equals(SUCCESS,true)){
                             answerApiResponse.data?.let {
+                                Log.d(TAG, "fetchVillageList: DEtails")
                                 val answerList:ArrayList<SectionAnswerEntity> = arrayListOf()
                                 val numAnswerList:ArrayList<NumericAnswerEntity> = arrayListOf()
                                 it.forEach {item->
+                                    didiDao.updateNeedToPostPAT(false,item.beneficiaryId?:0,item.villageId?:0)
+                                    didiDao.updatePATProgressStatus(
+                                        patSurveyStatus = item.patSurveyStatus?:0,
+                                        section1Status = item.section1Status?:0,
+                                        section2Status = item.section2Status?:0,
+                                        didiId = item.beneficiaryId?:0)
                                    if(item?.answers?.isNotEmpty() == true){
                                        item?.answers?.forEach { answersItem ->
                                            if(answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true){
