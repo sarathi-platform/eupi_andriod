@@ -626,6 +626,7 @@ fun ButtonOutline(
     buttonTitle: String = "Add Tola",
     outlineColor: Color = greyBorder,
     textColor: Color = blueDark,
+    contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -635,7 +636,8 @@ fun ButtonOutline(
         border = BorderStroke(1.dp, outlineColor),
         modifier = Modifier
             .fillMaxWidth()
-            .then(modifier)
+            .then(modifier),
+        contentPadding = contentPadding
     ) {
         Row(
             modifier = Modifier.padding(vertical = 0.dp),
