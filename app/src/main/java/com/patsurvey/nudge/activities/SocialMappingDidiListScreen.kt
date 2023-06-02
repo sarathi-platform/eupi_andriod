@@ -96,6 +96,7 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
+        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
         /*if(newFilteredDidiList.isNotEmpty()){
             didiViewModel.pendingDidiCount.value=0
             newFilteredDidiList.forEach {
@@ -261,8 +262,6 @@ fun SocialMappingDidiListScreen(
                                             else{
                                                 pluralStringResource(id =  R.plurals.poor_didis_pending_text, count = didiViewModel.pendingDidiCount.value)
                                             }
-                                               
-                                            
                                         }"
                                     )
                                 },

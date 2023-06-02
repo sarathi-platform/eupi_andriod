@@ -53,6 +53,7 @@ fun TransectWalkScreen(
     LaunchedEffect(key1 = true) {
         viewModel.fetchTolaList(villageId)
         viewModel.isTransectWalkComplete(stepId,villageId)
+        viewModel.isVoEndorsementCompleteForVillage(villageId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
     val tolaList by viewModel.tolaList.collectAsState()
@@ -154,15 +155,17 @@ fun TransectWalkScreen(
                                             )
                                         )
                                     ) {
-                                        //TODO Make button text vertically center.
-                                        ButtonOutline(
-                                            modifier = Modifier
-                                                .weight(0.9f)
-                                                .height(45.dp),
-                                        ) {
-                                            if (!showAddTolaBox)
-                                                showAddTolaBox = true
-                                        }
+                                        //TODO if required uncomment this to hide add tola button.
+//                                        if (!viewModel.isVoEndorsementComplete.value) {
+                                            ButtonOutline(
+                                                modifier = Modifier
+                                                    .weight(0.9f)
+                                                    .height(45.dp),
+                                            ) {
+                                                if (!showAddTolaBox)
+                                                    showAddTolaBox = true
+                                            }
+//                                        }
                                     }
                                 }
                             }
