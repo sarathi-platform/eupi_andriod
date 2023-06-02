@@ -113,4 +113,7 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int,villageId: Int)
+
+    @Query("SELECT COUNT(*) FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus< 2 ORDER BY createdDate DESC")
+    fun getAllPendingPATDidisCount(villageId: Int): Int
 }

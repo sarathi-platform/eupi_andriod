@@ -117,7 +117,6 @@ fun NumericFieldTypeQuestion(
                                     id = 0
                                 )
                                 option.count = it
-                                viewModel?.totalAmount?.value = option.weight?.times(it) ?: 0
                                 viewModel?.updateNumericAnswer(numericAnswerEntity)
                             },
                             onIncrementClick = {

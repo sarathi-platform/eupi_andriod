@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.base.BaseViewModel
@@ -384,6 +385,8 @@ class AddDidiViewModel @Inject constructor(
                 isSocialMappingComplete.value = isComplete
                 isPATSurveyComplete.value = isComplete
             }
+            withContext(Dispatchers.IO){
+            }
 
         }
     }
@@ -574,6 +577,7 @@ class AddDidiViewModel @Inject constructor(
     fun getPatStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            Log.d(TAG, "getPatStepStatus: $stepStatus ")
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     callBack(true)

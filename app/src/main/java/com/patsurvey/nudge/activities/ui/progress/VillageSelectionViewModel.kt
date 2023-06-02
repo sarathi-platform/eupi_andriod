@@ -267,7 +267,6 @@ class VillageSelectionViewModel @Inject constructor(
                         val answerApiResponse = apiService.fetchPATSurveyToServer(it)
                         if(answerApiResponse.status.equals(SUCCESS,true)){
                             answerApiResponse.data?.let {
-                                Log.d(TAG, "fetchVillageList: DEtails")
                                 val answerList:ArrayList<SectionAnswerEntity> = arrayListOf()
                                 val numAnswerList:ArrayList<NumericAnswerEntity> = arrayListOf()
                                 it.forEach {item->

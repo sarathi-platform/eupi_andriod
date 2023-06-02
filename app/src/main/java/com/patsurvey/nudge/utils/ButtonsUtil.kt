@@ -1299,7 +1299,6 @@ fun AcceptRejectButtonBox(
             .padding(0.dp)
             .fillMaxWidth()
             .background(Color.White)
-            .shadow(20.dp, shape = RectangleShape, clip = true)
             .then(modifier)
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {

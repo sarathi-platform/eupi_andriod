@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -63,7 +64,7 @@ fun QuestionScreen(
     }
 
     val questionList by viewModel.questionList.collectAsState()
-    val totalAmount by viewModel.totalAssetAmount.collectAsState()
+    /*val totalAmount by viewModel.totalAssetAmount.collectAsState()*/
     val answerList by viewModel.answerList.collectAsState()
 
 
@@ -229,9 +230,9 @@ fun QuestionScreen(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
-                                    assetAmount = viewModel?.totalAmount?.value ?:0,
+                                    assetAmount = viewModel.totalAmount.value,
                                     quesType = QuestionType.Numeric_Field.name,
-                                    summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAssetAmount.value.toString()),
+                                    summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
                                     selIndex = -1
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
@@ -241,7 +242,7 @@ fun QuestionScreen(
                                             val nextPageIndex = pagerState.currentPage + 1
                                             viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
                                             coroutineScope.launch {
-                                                viewModel.calculateTotalAmount(pagerState.currentPage)
+//                                                viewModel.calculateTotalAmount(pagerState.currentPage)
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
@@ -292,7 +293,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
-                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
+//                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
@@ -336,7 +337,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
-                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
+//                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                 },
                 text = {

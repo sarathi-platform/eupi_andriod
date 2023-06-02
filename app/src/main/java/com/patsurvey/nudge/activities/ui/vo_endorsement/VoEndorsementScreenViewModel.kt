@@ -101,6 +101,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
 
                     }
                     _didiList.value = scoredDidiList
+                    pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.size
                     _filterDidiList.value = _didiList.value
 
                 }
