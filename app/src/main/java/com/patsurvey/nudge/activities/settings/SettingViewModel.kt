@@ -19,10 +19,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.SYNC_FAILED
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +44,7 @@ class SettingViewModel @Inject constructor(
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
 
+    val showLoader = mutableStateOf(false)
     fun isFormAAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
@@ -101,14 +99,17 @@ class SettingViewModel @Inject constructor(
 
     fun syncDataOnServer(context: Context) {
         if(isInternetAvailable(context)){
-            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job)
+            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader)
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
+                        showLoader.value = false
+                        showCustomToast(context, SYNC_SUCCESSFULL)
                     }
 
                     override fun onFailed() {
                         showCustomToast(context, SYNC_FAILED)
+                        showLoader.value = false
                     }
             })
         }
