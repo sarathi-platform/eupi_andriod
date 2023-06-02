@@ -10,18 +10,25 @@
     <string name="go_back_text">वापस जाओ</string>
 
     <string name="progress_item_text">प्रगति</string>
-    <string name="didis_item_text">दीदी</string>
+    <string name="didis_item_text_plural">दीदीया</string>
+    <string name="didis_item_text_singular">दीदी</string>
+
     <string name="didis_list_text">दीदियों की सूची</string>
 
     <string name="poor_didi_item_text">गरीब दीदी</string>
     <string name="medium_didi_item_text">माध्यम दीदी</string>
     <string name="rich_didi_item_text">अमीर दीदी</string>
+    <string name="poor_didi_item_text_plural">गरीब दीदीया</string>
+    <string name="medium_didi_item_text_plural">माध्यम दीदीया</string>
+    <string name="rich_didi_item_text_plural">अमीर दीदीया</string>
     <string name="more_item_text">अन्य</string>
 
     <string name="online_text">ऑनलाइन</string>
     <string name="offline_text">ऑफलाइन</string>
     <string name="choose_language">भाषा चुनें</string>
-    <string name="continue_text">जारी रखना</string>
+    <string name="continue_text">जारी रखें</string>
+    <string name="continue_pat_text">PAT जारी रखें</string>
+
     <string name="enter_mobile_number">मोबाइल नंबर दर्ज करें</string>
     <string name="mobile_text">मोबाइल</string>
     <string name="verification_text">सत्यापन</string>
@@ -139,6 +146,7 @@
     <string name="yes_text">हाँ</string>
     <string name="share_button_text">शेयर करें</string>
     <string name="download_button_text">डाउनलोड करें</string>
+    <string name="downloading_button_text">Downloading</string>
     <string name="option_yes">हाँ</string>
     <string name="option_no">नहीं</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
@@ -204,4 +212,12 @@
     <string name="estimated_time_required">Estimated Time Required</string>
     <string name="size">Size</string>
     <string name="syncing">Syncing</string>
+
+    <string name="pat_completion_dialog_message_plural">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदीया भेज रहे हैं।</string>
+    <string name="pat_completion_dialog_message_singular">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदी भेज रहे हैं।</string>
+
+    <string name="vo_endorsement_completion_dialog_message_plural">आप {COUNT} समर्थित दीदियों के लिए अंतिम सबमिशन कर रहे हैं।</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">आप {COUNT} समर्थित दीदी के लिए अंतिम सबमिशन कर रहे हैं।.</string>
+    <string name="form_picture_screen_title">फॉर्म के लिए फोटो जोड़ें</string>
+    <string name="view">View Form</string>
 </resources>

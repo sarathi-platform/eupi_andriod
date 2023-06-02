@@ -10,17 +10,22 @@
     <string name="go_back_text">Go Back</string>
 
     <string name="progress_item_text">Progress</string>
-    <string name="didis_item_text">Didis</string>
+    <string name="didis_item_text_plural">Didis</string>
+    <string name="didis_item_text_singular">Didi</string>
     <string name="didis_list_text">List of Didis</string>
     <string name="poor_didi_item_text">Poor Didi</string>
     <string name="medium_didi_item_text">Medium Didi</string>
     <string name="rich_didi_item_text">Rich Didi</string>
+    <string name="poor_didi_item_text_plural">Poor Didis</string>
+    <string name="medium_didi_item_text_plural">Medium Didis</string>
+    <string name="rich_didi_item_text_plural">Rich Didis</string>
     <string name="more_item_text">More</string>
 
     <string name="online_text">Online</string>
     <string name="offline_text">Offline</string>
     <string name="choose_language">Choose Language</string>
     <string name="continue_text">Continue</string>
+    <string name="continue_pat_text">Continue PAT</string>
     <string name="enter_mobile_number">Enter Mobile Number</string>
     <string name="mobile_text">Mobile</string>
     <string name="enter_mobile_text">Enter Mobile</string>
@@ -122,6 +127,7 @@
     <string name="yes_text">Yes</string>
     <string name="share_button_text">Share</string>
     <string name="download_button_text">Download</string>
+    <string name="downloading_button_text">Downloading</string>
     <string name="option_yes">Yes</string>
     <string name="option_no">No</string>
     <string name="no_photo_available_text">No Photo Available</string>
@@ -156,7 +162,7 @@
     <string name="complete">Complete</string>
     <string name="complete_section_2">Complete Section 2</string>
     <string name="show">Show</string>
-    <string name="pat_survey_completion_text">PAT Survey - Complete</string>
+    <string name="pat_survey_completion_text">PAT Survey - Completed</string>
     <string name="next">Next</string>
     <string name="didi_pat_comption_dialog">You are submitting PAT for {DIDI_NAME}.</string>
     <string name="confirmation_dialog_titile">Are you sure?</string>
@@ -201,4 +207,12 @@
     <string name="estimated_time_required">Estimated Time Required</string>
     <string name="size">Size</string>
     <string name="syncing">Syncing</string>
+    <string name="pat_completion_dialog_message_plural">You are sending {COUNT} PAT completed Didis for VO Endorsement.</string>
+    <string name="pat_completion_dialog_message_singular">You are sending {COUNT} PAT completed Didi for VO Endorsement.</string>
+
+    <string name="vo_endorsement_completion_dialog_message_plural">You are doing the final submission for {COUNT} endorsed didis.</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">You are doing the final submission for {COUNT} endorsed didi.</string>
+    <string name="form_picture_screen_title">Add Images of Forms</string>
+    <string name="view">View Form</string>
+
 </resources>

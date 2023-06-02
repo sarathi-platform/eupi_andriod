@@ -271,6 +271,9 @@ fun StepsBox(
                     shape = RoundedCornerShape(6.dp)
                 )
                 .background(Color.White)
+                .clickable {
+                    onclick(index)
+                }
                 .constrainAs(stepBox) {
                     start.linkTo(parent.start)
                     top.linkTo(step_no.bottom, margin = -16.dp)

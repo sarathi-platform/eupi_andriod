@@ -305,7 +305,7 @@ fun VoEndorsementSummaryScreen(
         }
         val nextButtonVisible = remember {
             derivedStateOf {
-                pagerState.currentPage < voDidiList.size-1
+                pagerState.currentPage < voDidiList.size-1 && pagerState.currentPage < voDidiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size
             }
         }
 

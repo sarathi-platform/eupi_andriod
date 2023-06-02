@@ -529,7 +529,8 @@ fun ButtonNegativeForPAT(
         contentAlignment = Alignment.Center,
     ) {
         Row(
-            Modifier.padding(10.dp)
+            Modifier
+                .padding(10.dp)
                 .fillMaxWidth()
                 .align(Alignment.Center),
             verticalAlignment = Alignment.CenterVertically,
@@ -583,12 +584,13 @@ fun ButtonOutline(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 0.dp)
-            .then(modifier)
+            .then(modifier),
+        contentPadding = PaddingValues(vertical = 0.dp)
     ) {
         Row(
-            modifier = Modifier.wrapContentHeight(align = Alignment.CenterVertically)/*.padding(vertical = 6.dp)*/,
+            modifier = Modifier.align(Alignment.CenterVertically)/*.padding(vertical = 6.dp)*/,
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
         ) {
             Icon(
                 icon,
@@ -603,6 +605,9 @@ fun ButtonOutline(
                 color = blueDark,
                 style = mediumTextStyle,
                 textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .absolutePadding(bottom = 3.dp)
             )
         }
     }
@@ -1049,6 +1054,7 @@ fun OutlineButtonCustom(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     horizontalPadding : Dp = 10.dp,
+    showLoader: Boolean = false,
     onClick: () -> Unit
 ) {
     Box(
@@ -1074,6 +1080,10 @@ fun OutlineButtonCustom(
             Modifier.padding(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            if (showLoader) {
+                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = textColorDark)
+                Spacer(modifier = Modifier.width(4.dp))
+            }
             Text(
                 text = buttonTitle,
                 color = blueDark,
@@ -1206,7 +1216,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                 .fillMaxHeight()
                 .weight(1f)
                 .clickable {
-                    currentCount= incDecValue(1,currentCount)
+                    currentCount = incDecValue(1, currentCount)
                     onIncrementClick(currentCount.toInt())
                 },
                 contentAlignment = Alignment.Center){
@@ -1259,8 +1269,8 @@ fun DidiPATSurveyCompleteView(
     modifier: Modifier = Modifier,
     onClick: () -> Unit
 ) {
-    Row(modifier = Modifier.
-    fillMaxWidth()
+    Row(modifier = Modifier
+        .fillMaxWidth()
         .padding(vertical = 10.dp)
         .padding(horizontal = 10.dp)
         .clickable {
@@ -1311,13 +1321,18 @@ fun AcceptRejectButtonBox(
                 if (negativeButtonRequired) {
 
                     Row(
-                        modifier = Modifier.weight(1f).clip(RoundedCornerShape(6.dp))
-                            .background(rejectColor).clickable( interactionSource = remember { MutableInteractionSource() },
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(rejectColor)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(
                                     bounded = true,
                                     color = redLight
-                                )) {
-                            negativeButtonOnClick()
+                                )
+                            ) {
+                                negativeButtonOnClick()
                             },
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center

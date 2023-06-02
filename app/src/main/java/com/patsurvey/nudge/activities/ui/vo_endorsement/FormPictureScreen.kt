@@ -69,6 +69,10 @@ fun FormPictureScreen(
             mutableStateOf(-1)
         }
 
+        val formsClicked = remember {
+            mutableStateOf(0)
+        }
+
         val (bottomActionBox, mainBox) = createRefs()
         Box(modifier = Modifier
             .constrainAs(mainBox) {
@@ -92,6 +96,9 @@ fun FormPictureScreen(
                             formName = formPictureScreenViewModel.shouldShowCamera.value.first,
                             formPictureScreenViewModel
                         )
+                        if (formsClicked.value < 2) {
+                            formsClicked.value = formsClicked.value++
+                        }
                     },
                     onCloseButtonClicked = {
                         formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
@@ -123,7 +130,7 @@ fun FormPictureScreen(
                     {
 
                         Text(
-                            text = "फॉर्म के लिए फोटो जोड़ें",
+                            text = stringResource(R.string.form_picture_screen_title),
                             style = mediumTextStyle,
                             color = textColorDark
                         )
@@ -152,7 +159,7 @@ fun FormPictureScreen(
             }
         }
 
-        if (!formPictureScreenViewModel.shouldShowCamera.value.second){
+        if (!formPictureScreenViewModel.shouldShowCamera.value.second && formsClicked.value == 2){
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)

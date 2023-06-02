@@ -193,7 +193,7 @@ fun SocialMappingDidiListScreen(
                                     .equals(ARG_FROM_HOME, true))
                                 stringResource(R.string.social_mapping)
                             else
-                                stringResource(R.string.didis_item_text)
+                                stringResource(R.string.didis_item_text_plural)
                             MainTitle(title, Modifier.weight(0.5f))
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                                 && !didiViewModel.prefRepo.getFromPage()
@@ -887,7 +887,7 @@ fun DidiItemCard(
                                     ) languageItemActiveBg else blueDark
                                 ),
                             buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
-                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_pat_text)
                             else "",
                             true,
                             color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,

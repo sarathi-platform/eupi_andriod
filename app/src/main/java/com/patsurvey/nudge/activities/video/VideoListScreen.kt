@@ -76,7 +76,8 @@ fun VideoListScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
-                }
+                },
+                backgroundColor = Color.White
             )
         }) {
 
@@ -84,7 +85,7 @@ fun VideoListScreen(
 
             SearchWithFilterView(placeholderString = stringResource(id = R.string.search_video),
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()),
+                    .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()+20.dp),
                 showFilter = false,
                 filterSelected = filterSelected,
                 onFilterSelected = {

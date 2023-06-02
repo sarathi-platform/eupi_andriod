@@ -239,23 +239,34 @@ fun DigitalFormCScreen(
                         .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
-                    Box() {
+                    ConstraintLayout() {
+                        val (listBox, bottomBox) = createRefs()
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .align(Alignment.TopCenter)
+                                .constrainAs(listBox) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    bottom.linkTo(bottomBox.top)
+                                    height = Dimension.fillToConstraints
+                                }
                         ) {
                             items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }) { card ->
                                 DidiVillageItem(card)
                             }
                             item {
-
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
                         }
                         Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
                             .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .padding(horizontal = 10.dp)) {
+                            .constrainAs(bottomBox) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            }
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
                             Column() {
                                 Divider(
                                     color = borderGreyLight,
@@ -263,38 +274,45 @@ fun DigitalFormCScreen(
                                     modifier = Modifier
                                         .padding(vertical = 4.dp)
                                 )
-                                Image(
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Image(
                                         painter = painterResource(id = R.drawable.endorsement_badge),
-                                contentDescription = null
-                                )
-                                Column() {
-                                    Text(
-                                        text = "Link Form C",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            textDecoration = TextDecoration.Underline
-                                        ),
-                                        color = textColorDark,
-                                        modifier = Modifier.clickable {
-
-                                        }
+                                        contentDescription = null
                                     )
-                                    Text(
-                                        text = "Link Form D",
-                                        style = TextStyle(
-                                            fontFamily = NotoSans,
-                                            fontWeight = FontWeight.SemiBold,
-                                            fontSize = 14.sp,
-                                            textDecoration = TextDecoration.Underline
-                                        ),
-                                        color = textColorDark,
-                                        modifier = Modifier.clickable {
+                                    Column() {
+                                        Text(
+                                            text = "Link Form C",
+                                            style = TextStyle(
+                                                fontFamily = NotoSans,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp,
+                                                textDecoration = TextDecoration.Underline
+                                            ),
+                                            color = textColorDark,
+                                            modifier = Modifier.clickable {
 
-                                        }
-                                    )
+                                            }
+                                        )
+                                        Text(
+                                            text = "Link Form D",
+                                            style = TextStyle(
+                                                fontFamily = NotoSans,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp,
+                                                textDecoration = TextDecoration.Underline
+                                            ),
+                                            color = textColorDark,
+                                            modifier = Modifier.clickable {
+
+                                            }
+                                        )
+                                    }
                                 }
+
                             }
 
                         }

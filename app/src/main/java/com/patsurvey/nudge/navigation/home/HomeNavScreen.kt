@@ -28,9 +28,7 @@ import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.smallestTextStyle
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
-import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.BottomNavItem
-import javax.inject.Inject
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -51,7 +49,7 @@ fun BottomBar(navController: NavHostController,prefRepo: PrefRepo) {
             painterResource(R.drawable.progress_icon)
         ),
         BottomNavItem(
-            stringResource(R.string.didis_item_text),
+            stringResource(R.string.didis_item_text_plural),
             HomeScreens.DIDI_SCREEN.route,
             painterResource(R.drawable.didi_icon)
         )
