@@ -232,7 +232,7 @@ fun VoEndorsementSummaryScreen(
                                 }
                                 itemsIndexed(answerSection1List) { index, answer ->
                                     SectionOneSummeryItem(
-                                        index = index,
+                                        index = index+1,
                                         answerValue = answer.answerValue,
                                         questionDisplay = answer.summary ?: BLANK_STRING,
                                         optionValue = answer.optionValue ?: 0
@@ -299,7 +299,6 @@ fun VoEndorsementSummaryScreen(
                             showDialog.value = false
                             pagerState.animateScrollToPage(nextPageIndex)
                         }else{
-                            viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
                             delay(2000)
                             showDialog.value = false
                             navController.popBackStack()
@@ -319,7 +318,6 @@ fun VoEndorsementSummaryScreen(
                             showDialog.value = false
                             pagerState.animateScrollToPage(nextPageIndex)
                         }else{
-                            viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
                             delay(2000)
                             showDialog.value = false
                             navController.popBackStack()

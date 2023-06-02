@@ -32,12 +32,17 @@ import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.video.VideoItem
+import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import java.io.File
+import java.lang.reflect.Type
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
 private object Invisible : LayoutModifier {
@@ -214,5 +219,80 @@ internal fun AnimatedScaleInTransition(
      ),
         content = content
     )
+}
+
+fun fromWeightageRatio(list: List<WeightageRatioModal>): String {
+    val type: Type = object : TypeToken<List<WeightageRatioModal?>?>() {}.type
+    return Gson().toJson(list, type)
+}
+
+fun toWeightageRatio(listInString: String): List<WeightageRatioModal> {
+    val type =
+        object : TypeToken<List<WeightageRatioModal?>?>() {}.type
+    val gson = GsonBuilder().disableHtmlEscaping().create()
+    return gson.fromJson(listInString, type)
+}
+
+fun checkStringOperator(operator:String) = when(operator){
+      "==" ->Operator.EQUAL_TO
+      "=" ->Operator.EQUAL_TO
+      "<" ->Operator.LESS_THAN
+      "<=" ->Operator.LESS_THAN_EQUAL_TO
+      ">" ->Operator.MORE_THAN
+      ">=" ->Operator.MORE_THAN_EQUAL_TO
+      else->{}
+  }
+fun stringToDouble(string: String):Double{
+    var doubleAmount=0.0
+    if(string!=null){
+        doubleAmount = if(string.isEmpty())
+            0.0
+        else string.toDouble()
+    }
+   return doubleAmount
+}
+fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Boolean):Double{
+    var score:Double = 0.0
+    run breaking@{
+        list.forEach {
+            when(checkStringOperator(it.operator)){
+                Operator.EQUAL_TO -> {
+
+                    if(totalAmount == (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                        score = it.score.toDouble()
+                        return@breaking
+                    }
+                }
+                Operator.LESS_THAN -> {
+                    if(totalAmount < (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                        score = it.score.toDouble()
+                        return@breaking
+                    }
+                }
+                Operator.LESS_THAN_EQUAL_TO ->{
+                    if(totalAmount <= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                        score = it.score.toDouble()
+                        return@breaking
+                    }
+                }
+                Operator.MORE_THAN -> {
+                    if(totalAmount > (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                        score = it.score.toDouble()
+                        return@breaking
+                    }
+                }
+                Operator.MORE_THAN_EQUAL_TO -> {
+                    if(totalAmount >= (if(!isRatio) stringToDouble(it.weightage) else stringToDouble(it.ratio))){
+                        score = it.score.toDouble()
+                        return@breaking
+                    }
+                }
+                else -> {
+                    score =0.0
+                }
+            }
+        }
+    }
+    return score
 }
 
