@@ -167,7 +167,14 @@ fun FormPictureScreen(
             negativeButtonRequired = false,
             positiveButtonText = stringResource(id = R.string.submit),
             positiveButtonOnClick = {
-                //TODO Add navigation to next screen.
+                navController.navigate(
+                    "vo_endorsement_step_completion_screen/${
+                        localContext.getString(R.string.vo_endorsement_completed_message).replace(
+                            "{VILLAGE_NAME}",
+                            formPictureScreenViewModel.prefRepo.getSelectedVillage().name
+                        )
+                    }"
+                )
             },
             negativeButtonOnClick = {}
         )

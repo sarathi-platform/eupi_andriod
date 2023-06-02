@@ -159,7 +159,7 @@ fun VoEndorsementScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==VoEndorsementStatus.NOT_STARTED.ordinal){
                                 viewModel.pendingDidiCount.value++
                             }
                             ShowDidisFromTolaForVo(
@@ -169,7 +169,7 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==VoEndorsementStatus.NOT_STARTED.ordinal){
                                         navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
                                     }
                                 }
@@ -188,18 +188,17 @@ fun VoEndorsementScreen(
                             }
                         }
                     } else {
-                        itemsIndexed(newFilteredDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status ==PatSurveyStatus.COMPLETED.ordinal }) { index, didi ->
-                            if(didi?.voEndorsementStatus!=2){
+                        //TODO replace with filtered list
+                        itemsIndexed(newFilteredDidiList.value) { index, didi ->
+                            if(didi.voEndorsementStatus !=2){
                                 viewModel.pendingDidiCount.value++
                             }
                             DidiItemCardForVo(
                                 navController = navController,
-                                didiViewModel = viewModel,
                                 didi = didi,
-                                expanded = false,
                                 modifier = modifier,
                                 onItemClick = {
-                                    if(didi?.voEndorsementStatus!=2) {
+                                    if(didi.voEndorsementStatus ==VoEndorsementStatus.NOT_STARTED.ordinal) {
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
                                     }
                                 }
@@ -210,7 +209,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == 2 }.isEmpty()) {
+        if (didis.filter { it.voEndorsementStatus == VoEndorsementStatus.NOT_STARTED.ordinal }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -238,9 +237,7 @@ fun VoEndorsementScreen(
 @Composable
 fun DidiItemCardForVo(
     navController: NavHostController,
-    didiViewModel: VoEndorsementScreenViewModel,
     didi: DidiEntity,
-    expanded: Boolean,
     modifier: Modifier,
     onItemClick: (DidiEntity) -> Unit
 ) {
@@ -504,9 +501,7 @@ fun ShowDidisFromTolaForVo(
             didiList.forEachIndexed { index, didi ->
                 DidiItemCardForVo(
                     navController = navController,
-                    didiViewModel = viewModel,
                     didi = didi,
-                    expanded = false,
                     modifier = modifier,
                     onItemClick = {
                         //TODO navigate to summary screen for Endorsement

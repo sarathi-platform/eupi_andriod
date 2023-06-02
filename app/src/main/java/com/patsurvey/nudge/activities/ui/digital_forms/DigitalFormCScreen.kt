@@ -3,17 +3,12 @@ package com.patsurvey.nudge.activities.ui.digital_forms
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Card
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,9 +18,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -35,14 +33,16 @@ import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import java.io.File
 
+
 @Composable
-fun DigitalFormBScreen(
+fun DigitalFormCScreen(
     navController: NavController,
     viewModel: DigitalFormViewModel,
     modifier: Modifier = Modifier,
@@ -78,7 +78,7 @@ fun DigitalFormBScreen(
             ) {
 
                 Text(
-                    text = "Digital Form B",
+                    text = "Digital Form C",
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -249,6 +249,48 @@ fun DigitalFormBScreen(
                         items(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }) { card ->
                             DidiVillageItem(card)
                         }
+                        item {
+                            Divider(
+                                color = borderGreyLight,
+                                thickness = 1.dp,
+                                modifier = Modifier
+                                    .padding(vertical = 4.dp)
+                            )
+                        }
+                        item {
+                            Row() {
+                                Image(
+                                    painter = painterResource(id = R.drawable.endorsement_badge),
+                                    contentDescription = null
+                                )
+                                Column() {
+                                    Text(
+                                        text = "Link Form C",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            textDecoration = TextDecoration.Underline
+                                        ),
+                                        modifier = Modifier.clickable{
+
+                                        }
+                                    )
+                                    Text(
+                                        text = "Link Form D",
+                                        style = TextStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 14.sp,
+                                            textDecoration = TextDecoration.Underline
+                                        ),
+                                        modifier = Modifier.clickable{
+
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
                 }
 
@@ -270,17 +312,17 @@ fun DigitalFormBScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "digital_form_b_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "digital_form_c_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
                         viewModel.generateFormBPDF(context) {
-                            Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
+                            Log.d("DigitalFormBScreen", "Digital Form C Downloaded")
                             val fileUri = uriFromFile(context, pdfFile)
                             val shareIntent = Intent(Intent.ACTION_SEND)
                             shareIntent.type = "application/pdf"
                             shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
                             ContextCompat.startActivity(
                                 context,
-                                Intent.createChooser(shareIntent, "Share Form B"),
+                                Intent.createChooser(shareIntent, "Share Form C"),
                                 null
                             )
                         }
@@ -294,7 +336,7 @@ fun DigitalFormBScreen(
                         buttonTitle = stringResource(R.string.download_button_text),
                     ) {
                         viewModel.generateFormBPDF(context) {
-                            showToast(context, "Digital Form B Downloaded")
+                            showToast(context, "Digital Form C Downloaded")
                         }
                     }
                 }
@@ -331,7 +373,7 @@ fun DigitalFormBScreen(
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
             ) {
                 Text(
-                    text = stringResource(id = if (fromScreen == "") R.string.continue_text else R.string.done_text),
+                    text = stringResource(id = if (fromScreen == "") R.string.finish else R.string.done_text),
                     color = Color.White,
                     fontSize = 16.sp,
                     fontFamily = NotoSans,

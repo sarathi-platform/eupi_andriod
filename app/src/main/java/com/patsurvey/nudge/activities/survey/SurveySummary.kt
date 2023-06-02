@@ -27,8 +27,10 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
+import com.patsurvey.nudge.activities.ui.vo_endorsement.DidiItemCardForVo
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.home.VoEndorsmentScreeens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
@@ -64,8 +66,9 @@ fun SurveySummary(
 
     BackHandler() {
         if (showDidiListForStatus.first) {
-            showDidiListForStatus = Pair(!showDidiListForStatus.first, PatSurveyStatus.NOT_STARTED.ordinal)
-        } else if (showDialog.value){
+            showDidiListForStatus =
+                Pair(!showDidiListForStatus.first, PatSurveyStatus.NOT_STARTED.ordinal)
+        } else if (showDialog.value) {
             showDialog.value = !showDialog.value
         } else {
             if (isStepComplete) {
@@ -93,7 +96,8 @@ fun SurveySummary(
         if (showDialog.value) {
             ShowDialog(
                 title = "Are you sure?",
-                message = "You are sending ${didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size} PAT completed Didis for VO Endorsement.",
+                message = if (fromScreen == ARG_FROM_PAT_SURVEY) "You are sending ${didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size} PAT completed Didis for VO Endorsement."
+                else "You are doing the final submission for ${didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size} endorsed didi.",
                 setShowDialog = {
                     showDialog.value = it
                 }) {
@@ -108,22 +112,38 @@ fun SurveySummary(
                         }
 
                     })
-                    surveySummaryViewModel.callWorkFlowAPI(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId, object :
-                        NetworkCallbackListener {
-                        override fun onSuccess() {
-                        }
+                    surveySummaryViewModel.callWorkFlowAPI(
+                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                        stepId,
+                        object :
+                            NetworkCallbackListener {
+                            override fun onSuccess() {
+                            }
 
-                        override fun onFailed() {
-                            showCustomToast(context, SYNC_FAILED)
-                        }
-                    })
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+                        })
                 }
-                surveySummaryViewModel.markPatComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                surveySummaryViewModel.savePatCompletionDate()
-                navController.navigate("pat_step_completion_screen/${context.getString(R.string.pat_survey_completed_message).replace(
-                    "{VILLAGE_NAME}",
-                    surveySummaryViewModel.prefRepo.getSelectedVillage().name)}"
-                )
+                if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                    surveySummaryViewModel.markPatComplete(
+                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                        stepId
+                    )
+                    surveySummaryViewModel.savePatCompletionDate()
+                    navController.navigate(
+                        "pat_step_completion_screen/${
+                            context.getString(R.string.pat_survey_completed_message).replace(
+                                "{VILLAGE_NAME}",
+                                surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                            )
+                        }"
+                    )
+                } else {
+                    surveySummaryViewModel.markVoEndorsementComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                    surveySummaryViewModel.saveVoEndorsementDate()
+                    navController.navigate(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route)
+                }
             }
         }
 
@@ -171,13 +191,23 @@ fun SurveySummary(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = if (showDidiListForStatus.first){
-                            if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal){
-                                R.string.didi_pat_complete_text
-                            } else {
-                                R.string.didi_not_available_sub_heading_text
-                            }
-                        } else R.string.summary_text),
+                        text = stringResource(
+                            id = if (showDidiListForStatus.first) {
+                                if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                    if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
+                                        R.string.didi_pat_complete_text
+                                    } else {
+                                        R.string.didi_not_available_sub_heading_text
+                                    }
+                                } else {
+                                    if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                        R.string.didi_endorsed_text_plural
+                                    } else {
+                                        R.string.didi_rejected_text_plural
+                                    }
+                                }
+                            } else R.string.summary_text
+                        ),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),
@@ -202,12 +232,27 @@ fun SurveySummary(
                             contentPadding = PaddingValues(bottom = bottomPadding),
                             modifier = Modifier.padding(bottom = 10.dp)
                         ) {
-                            itemsIndexed(didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
-                                DidiItemCardForPat(didi = didi, modifier = modifier, onItemClick = {
-                                    if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal)
-                                        navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                                })
-                            }
+                            if (fromScreen == ARG_FROM_PAT_SURVEY)
+                                itemsIndexed(didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
+                                    DidiItemCardForPat(
+                                        didi = didi,
+                                        modifier = modifier,
+                                        onItemClick = {
+                                            if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal)
+                                                navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                        })
+                                }
+                            else
+                                itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
+                                    DidiItemCardForVo(
+                                        navController = navController,
+                                        didi = didi,
+                                        modifier = modifier,
+                                        onItemClick = {
+
+                                        }
+                                    )
+                                }
                             item { Spacer(modifier = Modifier.height(6.dp)) }
                         }
                     }
@@ -217,22 +262,38 @@ fun SurveySummary(
                     verticalArrangement = Arrangement.spacedBy(14.dp)
                 ) {
                     SummaryBox(
-                        count = didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size,
+                        count = if (fromScreen == ARG_FROM_PAT_SURVEY)
+                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+                        else
+                            didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size,
                         boxColor = blueLighter,
-                        boxTitle = stringResource(R.string.pat_completed_box_title), //added changes for vo endorsement text
+                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(R.string.pat_completed_box_title) else stringResource(
+                            id = R.string.didi_endorsed_text_plural
+                        ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {
-                        showDidiListForStatus = Pair(true, PatSurveyStatus.COMPLETED.ordinal)
+                        showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY) Pair(
+                            true,
+                            PatSurveyStatus.COMPLETED.ordinal
+                        ) else Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
                     }
                     SummaryBox(
-                        count = didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size,
+                        count = if (fromScreen == ARG_FROM_PAT_SURVEY)
+                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size
+                        else
+                            didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
-                        boxTitle = stringResource(id = R.string.didi_not_available_text), //added changes for vo endorsement text
+                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = R.string.didi_not_available_text) else stringResource(
+                            id = R.string.didi_rejected_text_plural
+                        ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {
-                        showDidiListForStatus = Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                        showDidiListForStatus =
+                            if (fromScreen == ARG_FROM_PAT_SURVEY)
+                                Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                            else
+                                Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
                     }
-
                 }
             }
         }
@@ -249,13 +310,25 @@ fun SurveySummary(
                             coordinates.size.height.toDp()
                         }
                     },
-                positiveButtonText = if (showDidiListForStatus.first) stringResource(id = R.string.done_text) else stringResource(
-                    id = R.string.send_for_vo_text
-                ),
+                positiveButtonText =
+                if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                    if (showDidiListForStatus.first)
+                        stringResource(id = R.string.done_text)
+                    else
+                        stringResource(id = R.string.send_for_vo_text)
+                } else {
+                    if (showDidiListForStatus.first)
+                        stringResource(id = R.string.done_text)
+                    else
+                        stringResource(id = R.string.confirm_text)
+                       },
                 isArrowRequired = !showDidiListForStatus.first,
                 positiveButtonOnClick = {
                     if (showDidiListForStatus.first)
-                        showDidiListForStatus = Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
+                        showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY)
+                            Pair(true, PatSurveyStatus.NOT_STARTED.ordinal)
+                        else
+                            Pair(true, DidiEndorsementStatus.NO_STARTED.ordinal)
                     else
                         showDialog.value = true
                 }

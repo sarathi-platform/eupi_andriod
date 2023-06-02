@@ -51,14 +51,12 @@ class VoEndorsementScreenViewModel @Inject constructor(
     }
 
     fun fetchDidisFromDB() {
-//        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 _didiList.value = didiDao.patCompletedDidis(villageId)
                //TODO calculate didi score and filter didis before saving final list
 
                 _filterDidiList.value = didiList.value
-//                showLoader.value = false
             }
         }
     }

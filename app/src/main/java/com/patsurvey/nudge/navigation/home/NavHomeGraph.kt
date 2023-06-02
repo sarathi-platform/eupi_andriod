@@ -21,6 +21,7 @@ import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
@@ -583,6 +584,14 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             )
         }
 
+        composable(route = SettingScreens.FORM_C_SCREEN.route) {
+            DigitalFormCScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
     }
 }
 
@@ -640,6 +649,32 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         ) {
             SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_VO_ENDORSEMENT_SCREEN, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
         }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
+
+            }
+        }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route
+        ) {
+            DigitalFormCScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
     }
 }
 
@@ -651,5 +686,8 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
 
     object VO_ENDORSEMENT_SURVEY_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : PatScreens(route = "vo_endorsement_digital_form_c_screen")
 
 }

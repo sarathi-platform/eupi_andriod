@@ -110,15 +110,19 @@ fun SettingScreen(
                     modifier = Modifier
                         .padding(vertical = 10.dp, horizontal = 16.dp)
                         .clickable {
-                        navController.navigate(Graph.HOME) {
-                            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                inclusive = true
+                            navController.navigate(Graph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
                 )
-                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier.padding(vertical = 10.dp).weight(1f), textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier.size(24.dp).padding(vertical = 10.dp))
+                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier
+                    .padding(vertical = 10.dp)
+                    .weight(1f), textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier
+                    .size(24.dp)
+                    .padding(vertical = 10.dp))
             }
         }
     ) {
@@ -352,10 +356,14 @@ fun ExpandedSettingsList(
                                 )
                                 .clickable {
                                     when (index) {
-                                        0 -> navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                                        1 -> {}/*navController.navigate(SettingScreens.FORM_B_SCREEN.route)*/
+                                        0 -> {
+                                            navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                                        }
+                                        1 -> {
+                                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                                        }
                                         2 -> {
-                                            //add Form C action once done.
+                                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
                                         }
                                     }
 

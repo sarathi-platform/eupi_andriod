@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <string name="app_name">The Nudge</string>
+    <string name="app_name">Sarathi</string>
     <string name="hindi">हिंदी</string>
     <string name="bangla">হিন্দি</string>
     <string name="gujrati">હિન્દી</string>
@@ -93,8 +93,11 @@
 
     <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
     <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
-    <string name="pat_sub_text_singular">%1$s अत्यंत दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
-    <string name="pat_sub_text_plural">%1$s अत्यंत दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
+    <string name="pat_sub_text_singular">%1$s अत्यंत गरीब दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
+    <string name="pat_sub_text_plural">%1$s अत्यंत गरीब दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
+    <string name="vo_endorsement_sub_text_singular">%1$s अत्यंत गरीब दीदी का समर्थन किया गया</string>
+    <string name="vo_endorsement_sub_text_plural">%1$s अत्यंत गरीब दीदियों का समर्थन किया गया</string>
+
     <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सारांश</string>
     <string name="particaptory_wealth_ranking_text">भागीदारी धन रैंकिंग </string>
 
@@ -169,13 +172,18 @@
     <string name="you_are_submitting_wealth_ranking_for_count_didis">आप %1$s दीदियों के लिए धन रैंकिंग सबमिट कर रहे हैं।</string>
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">आप वीओ एंडोर्समेंट के लिए %1$s पीएटी पूर्ण दीदी भेज रहे हैं</string>
     <string name="send_all_for_vo_endorsement">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
-    <string name="pat_survey_completed_message">{VILLAGE_NAME} के लिए पैट सर्वेक्षण \nबन चूका है</string>
+    <string name="pat_survey_completed_message">{VILLAGE_NAME} के लिए पैट सर्वेक्षण \nपूर्ण हो गया है</string>
+    <string name="vo_endorsement_completed_message">{VILLAGE_NAME} वीओ समर्थन \nपूर्ण हो गया है</string>
     <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
     <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
     <string name="pat_completed_box_title">PAT पूरा हो गया है</string>
     <string name="didi_not_available_text">दीदी उपलब्ध नहीं है</string>
     <string name="send_for_vo_text">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
     <string name="didi_pat_complete_text">दीदी का PAT पूरा हुआ</string>
+    <string name="didi_endorsed_text_plural">Didis Endorsed</string>
+    <string name="didi_endorsed_text_singula">Didi Endorsed</string>
+    <string name="didi_rejected_text_plural">Didis Rejected</string>
+    <string name="didi_rejected_text_singula">Didi Rejected</string>
     <string name="didi_not_available_sub_heading_text">दीदी उपलब्ध नहीं है</string>
     <string name="accept">स्वीकार करना</string>
     <string name="reject">अस्वीकार करना</string>
@@ -184,4 +192,8 @@
     <string name="endorse">समर्थन</string>
 
     <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
+    <string name="confirm_text">पुष्टि करना</string>
+    <string name="finish">समाप्त करें</string>
+
+
 </resources>
