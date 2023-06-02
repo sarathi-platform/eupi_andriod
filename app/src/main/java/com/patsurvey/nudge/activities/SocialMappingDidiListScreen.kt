@@ -97,7 +97,7 @@ fun SocialMappingDidiListScreen(
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         didiViewModel.isVoEndorsementCompleteForVillage(villageId)
-        /*if(newFilteredDidiList.isNotEmpty()){
+        if(newFilteredDidiList.isNotEmpty()){
             didiViewModel.pendingDidiCount.value=0
             newFilteredDidiList.forEach {
                 if(it.wealth_ranking.equals(WealthRank.POOR.rank,true) && it.patSurveyStatus == 0){
@@ -105,7 +105,7 @@ fun SocialMappingDidiListScreen(
                     Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.pendingDidiCount.value}")
                 }
             }
-        }*/
+        }
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -873,7 +873,9 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
-                            didiViewModel.pendingDidiCount.value--
+                            if(didiViewModel.pendingDidiCount.value >0) {
+                                didiViewModel.pendingDidiCount.value--
+                            }
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
