@@ -177,9 +177,7 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==DidiEndorsementStatus.NO_STARTED.ordinal){
-                                        navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
-                                    }
+                                        navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}")
                                 }
                             )
                             if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -205,9 +203,8 @@ fun VoEndorsementScreen(
                                 didi = didi,
                                 modifier = modifier,
                                 onItemClick = {
-                                    if((didi.voEndorsementStatus ?:0)==DidiEndorsementStatus.NO_STARTED.ordinal) {
-                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
-                                    }
+                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))

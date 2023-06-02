@@ -96,8 +96,7 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
-        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
-        if(newFilteredDidiList.isNotEmpty()){
+        /*if(newFilteredDidiList.isNotEmpty()){
             didiViewModel.pendingDidiCount.value=0
             newFilteredDidiList.forEach {
                 if(it.wealth_ranking.equals(WealthRank.POOR.rank,true) && it.patSurveyStatus == 0){
@@ -105,7 +104,7 @@ fun SocialMappingDidiListScreen(
                     Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.pendingDidiCount.value}")
                 }
             }
-        }
+        }*/
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -443,6 +442,7 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         didiViewModel.getPatStepStatus(stepId) {
+                            Log.d(TAG, "SocialMappingDidiListScreen: ${it}")
                             navController.navigate("pat_survey_summary/$stepId/$it")
                         }
                     },

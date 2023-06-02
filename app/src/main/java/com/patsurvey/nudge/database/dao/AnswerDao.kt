@@ -60,7 +60,7 @@ interface AnswerDao {
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
-    @Query("select  d.* from $DIDI_TABLE d  INNER join $ANSWER_TABLE q  on q.didiId = d.id where d.villageId =:villageId AND d.forVoEndorsement = 1 AND d.voEndorsementStatus != 2 GROUP BY d.id ORDER BY d.createdDate DESC")
+    @Query("select  d.* from $DIDI_TABLE d  INNER join $ANSWER_TABLE q  on q.didiId = d.id where d.villageId =:villageId AND d.forVoEndorsement = 1 GROUP BY d.id ORDER BY d.createdDate DESC")
     fun fetchAllDidisForVO(villageId: Int): List<DidiEntity>
 
     @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
