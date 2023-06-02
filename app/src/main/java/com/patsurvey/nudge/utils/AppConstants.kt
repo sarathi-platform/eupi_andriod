@@ -89,6 +89,7 @@ const val PREF_OPEN_FROM_HOME = "open_from_home"
 const val PREF_WEALTH_RANKING_COMPLETION_DATE = "wealth_ranking_completion_date"
 const val PREF_PAT_COMPLETION_DATE = "pat_completion_date"
 const val PREF_VO_ENDORSEMENT_COMPLETION_DATE = "vo_endorsement_completion_date"
+const val VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_ = "vo_endorsement_complete_for_village_"
 const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
@@ -145,6 +146,7 @@ const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some 
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
 
 const val LAST_UPDATE_TIME = "last_updated_time"
+const val LAST_SYNC_TIME = "last_sync_time"
 
 const val SYNC_FAILED = "Online Sync Failed"
 const val SYNC_SUCCESSFULL = "Online Sync Successful"

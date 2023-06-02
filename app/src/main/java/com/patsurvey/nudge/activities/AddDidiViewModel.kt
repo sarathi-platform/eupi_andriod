@@ -66,6 +66,7 @@ class AddDidiViewModel @Inject constructor(
     var stepId: Int = -1
 
     val isSocialMappingComplete = mutableStateOf(false)
+    val isVoEndorsementComplete = mutableStateOf(false)
     val isPATSurveyComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
     val pendingDidiCount = mutableStateOf(0)
@@ -388,6 +389,10 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
+    fun isVoEndorsementCompleteForVillage(villageId: Int) {
+        val isComplete = prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+        isVoEndorsementComplete.value = isComplete
+    }
 
 
 

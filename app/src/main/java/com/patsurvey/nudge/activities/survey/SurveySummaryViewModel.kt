@@ -241,6 +241,7 @@ class SurveySummaryViewModel @Inject constructor(
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
             }
+            prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
     }
 

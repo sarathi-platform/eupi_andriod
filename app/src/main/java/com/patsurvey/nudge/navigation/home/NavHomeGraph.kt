@@ -29,8 +29,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
-import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
-import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -564,7 +562,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel())
+            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
 
         composable(route = SettingScreens.FORM_A_SCREEN.route) {

@@ -145,12 +145,12 @@
     <string name="logout">Logout</string>
     <string name="this_section_is_in_progress">This Section is InProgress state</string>
     <string name="sync_up">Sync Data</string>
-    <string name="last_syncup_text">Last Synced: 24 days ago</string>
+    <string name="last_syncup_text">Last Synced: {LAST_SYNC_TIME}</string>
     <string name="profile">Profile</string>
     <string name="forms">Forms</string>
     <string name="training_videos">Training Videos</string>
     <string name="language_text">Language</string>
-    <string name="productive_asset_owned_by_family">Productive asset owned by Family</string>
+    <string name="productive_asset_owned_by_family"><!--Productive asset owned by Family-->Earning ratio</string>
     <string name="total_productive_asset_value">Total Productive asset value = ₹ %1$s/-</string>
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>

@@ -148,12 +148,12 @@
     <string name="logout">लॉग आउट</string>
     <string name="this_section_is_in_progress">ई खंड InProgress अवस्था में बा</string>
     <string name="sync_up">डेटा सिंक करें</string>
-    <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: 24 दिन पहिले</string>
+    <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: {LAST_SYNC_TIME}</string>
     <string name="profile">प्रोफाइल</string>
     <string name="forms">फार्म</string>
     <string name="training_videos">प्रशिक्षण वीडियो</string>
     <string name="language_text">भाषा</string>
-    <string name="productive_asset_owned_by_family">परिवार के स्वामित्व वाली उत्पादक संपत्ति</string>
+    <string name="productive_asset_owned_by_family"><!--परिवार के स्वामित्व वाली उत्पादक संपत्ति-->कमाई अनुपात</string>
     <string name="complete_pat_survey">पूर्ण पीएटी सर्वेक्षण</string>
     <string name="total_productive_asset_value">कुल उत्पादक संपत्ति मूल्य  = ₹ %1$s/-</string>
     <string name="complete">पूर्ण करे</string>

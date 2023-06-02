@@ -153,12 +153,12 @@
     <string name="logout">প্রস্থান</string>
     <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
     <string name="sync_up">সিঙ্ক ডেটা</string>
-    <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: 24 দিন আগে</string>
+    <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: {LAST_SYNC_TIME}</string>
     <string name="profile">প্রোফাইল</string>
     <string name="forms">ফর্ম</string>
     <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
     <string name="language_text">ভাষা</string>
-    <string name="productive_asset_owned_by_family">পরিবারের মালিকানাধীন উত্পাদনশীল সম্পদ</string>
+    <string name="productive_asset_owned_by_family"><!--পরিবারের মালিকানাধীন উত্পাদনশীল সম্পদ-->আয়ের অনুপাত</string>
     <string name="complete_pat_survey">সম্পূর্ণ PAT সমীক্ষা</string>
     <string name="total_productive_asset_value">মোট উৎপাদনশীল সম্পদ মূল্য = ₹ %1$s/-</string>
     <string name="complete">সম্পূর্ণ</string>
