@@ -272,7 +272,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     if(needToPostDidiList.isNotEmpty()){
                         needToPostDidiList.forEach { didi->
                             launch {
-                                didi.wealth_ranking?.let {
+                                didi.wealth_ranking.let {
                                     val updateWealthRankResponse=apiService.updateDidiRanking(
                                         listOf(EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking),
                                             EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)

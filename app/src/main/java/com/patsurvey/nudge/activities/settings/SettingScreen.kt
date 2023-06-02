@@ -153,6 +153,9 @@ fun SettingScreen(
                             navController = navController
                         ) {
                             when (index) {
+                                0 -> {
+                                    viewModel.syncDataOnServer(context)
+                                }
                                 1 -> {
                                     navController.navigate(SettingScreens.PROFILE_SCREEN.route)
                                 }
