@@ -1,13 +1,20 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.toWeightageRatio
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -34,6 +41,9 @@ class VoEndorsementScreenViewModel @Inject constructor(
     private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
     val filterDidiList: StateFlow<List<DidiEntity>> get() = _filterDidiList
 
+    private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
+    val  inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
+
     var tolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
@@ -50,14 +60,54 @@ class VoEndorsementScreenViewModel @Inject constructor(
 //        fetchDidisFromDB()
     }
 
+    @SuppressLint("SuspiciousIndentation")
     fun fetchDidisFromDB() {
 //        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.value = didiDao.patCompletedDidis(villageId)
-               //TODO calculate didi score and filter didis before saving final list
+               val  localDidiList = didiDao.patCompletedDidis(villageId)
+                var passingMark=0
+                val scoredDidiList:ArrayList<DidiEntity> = arrayListOf()
+                if(localDidiList.isNotEmpty()){
+                    localDidiList.forEach {didi->
+                            _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId = didi.id)
+                            if(_inclusiveQueList.value.isNotEmpty()){
+                                var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didi.id)
+                                val numQueList= _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
+                                if(numQueList.isNotEmpty()){
+                                    numQueList.forEach { answer->
+                                        val numQue=questionListDao.getQuestion(answer.questionId)
+                                        passingMark =numQue.surveyPassingMark?:0
+                                        if(numQue.questionFlag?.equals(FLAG_WEIGHT,true) == true){
+                                            val weightList= toWeightageRatio(numQue.json.toString())
+                                              if(weightList.isNotEmpty()){
+                                                    val newScore= calculateScore(weightList,
+                                                        answer.totalAssetAmount?.toDouble()?:0.0,
+                                                        false)
+                                                  totalWightWithoutNumQue += newScore
+                                              }
+                                        }else if(numQue.questionFlag?.equals(FLAG_RATIO,true) == true){
+                                            val ratioList= toWeightageRatio(numQue.json.toString())
+                                            val newScore= calculateScore(ratioList,
+                                                answer.totalAssetAmount?.toDouble()?:0.0,
+                                                true)
+                                            totalWightWithoutNumQue += newScore
+                                        }
+                                    }
+                                }
+                                if(totalWightWithoutNumQue>=passingMark){
+                                    didiDao.updateVOEndorsementDidiStatus(prefRepo.getSelectedVillage().id,didi.id)
+                                    scoredDidiList.add(didi)
 
-                _filterDidiList.value = didiList.value
+                                }
+                            }
+
+
+                    }
+                    _didiList.value = scoredDidiList
+                    _filterDidiList.value = _didiList.value
+
+                }
 //                showLoader.value = false
             }
         }
