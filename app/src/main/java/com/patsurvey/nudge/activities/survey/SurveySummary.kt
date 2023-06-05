@@ -377,7 +377,7 @@ fun SurveySummary(
                         showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY)
                             Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
                         else
-                            Pair(false, DidiEndorsementStatus.NO_STARTED.ordinal)
+                            Pair(false, DidiEndorsementStatus.NOT_STARTED.ordinal)
                     }else
                         showDialog.value = true
                 }

@@ -245,7 +245,7 @@ fun VoEndorsementSummaryScreen(
             }
 
 //            if(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
-            AnimatedVisibility(visible = didi?.value?.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal, enter = fadeIn(), exit = fadeOut(),
+            AnimatedVisibility(visible = didi?.value?.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal, enter = fadeIn(), exit = fadeOut(),
                 modifier = Modifier
                 .constrainAs(bottomActionBox) {
                     bottom.linkTo(parent.bottom)
@@ -333,7 +333,7 @@ fun VoEndorsementSummaryScreen(
             }
         }
 
-        AnimatedVisibility(visible = (prevButtonVisible.value && didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = (prevButtonVisible.value && didiStatus == DidiEndorsementStatus.NOT_STARTED.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(prevButtonVisible.value)
@@ -364,7 +364,7 @@ fun VoEndorsementSummaryScreen(
                 },
             )
         }
-        AnimatedVisibility(visible = ( nextButtonVisible.value && didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = ( nextButtonVisible.value && didiStatus == DidiEndorsementStatus.NOT_STARTED.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(nextButtonVisible.value)

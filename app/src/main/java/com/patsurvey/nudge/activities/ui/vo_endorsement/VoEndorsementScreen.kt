@@ -151,7 +151,7 @@ fun VoEndorsementScreen(
                         Text(
                             text = stringResource(
                                 id = R.string.count_didis_pending,
-                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.size
+                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
                             ),
                             color = Color.Black,
                             fontSize = 12.sp,
@@ -195,7 +195,7 @@ fun VoEndorsementScreen(
                         }
                     } else {
                         itemsIndexed(newFilteredDidiList.value) { index, didi ->
-                            if(didi.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal){
+                            if(didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal){
                                 viewModel.pendingDidiCount.value++
                             }
                             DidiItemCardForVo(
@@ -212,7 +212,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isEmpty()) {
+        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -330,7 +330,7 @@ fun DidiItemCardForVo(
                     )
                 }
             }
-            if (didi.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
+            if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
