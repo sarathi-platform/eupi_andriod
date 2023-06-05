@@ -204,7 +204,6 @@ fun VoEndorsementScreen(
                                 modifier = modifier,
                                 onItemClick = {
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
-
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -213,7 +212,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isNotEmpty()) {
+        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

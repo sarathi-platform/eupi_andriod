@@ -357,8 +357,7 @@ fun PatDidiSummaryScreen(
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         }
-                        else
-                        {
+                        else {
                             BlueButtonWithIcon(
                                 buttonText = "Take Photo",
                                 icon = Icons.Default.Add,

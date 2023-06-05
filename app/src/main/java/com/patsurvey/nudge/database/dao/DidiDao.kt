@@ -1,13 +1,9 @@
 package com.patsurvey.nudge.database.dao
 
-import android.net.Uri
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
-import com.patsurvey.nudge.utils.SHGFlag
-import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -62,6 +58,9 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking AND villageId = :villageId")
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean,villageId: Int): List<DidiEntity>
 
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostPAT = :needsToPostPAT AND villageId = :villageId")
+    fun getAllNeedToPostPATDidi(needsToPostPAT: Boolean, villageId: Int): List<DidiEntity>
+
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
 
@@ -113,6 +112,8 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int,villageId: Int)
+    @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId AND villageId=:villageId")
+    fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int,villageId: Int)
 
     @Query("SELECT COUNT(*) FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus< 2 ORDER BY createdDate DESC")
     fun getAllPendingPATDidisCount(villageId: Int): Int

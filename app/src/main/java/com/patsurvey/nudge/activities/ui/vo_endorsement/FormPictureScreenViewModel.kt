@@ -7,10 +7,20 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -18,6 +28,8 @@ import javax.inject.Inject
 @HiltViewModel
 class FormPictureScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
+    val villageListDao: VillageListDao,
+    val stepsListDao: StepsListDao
 ): BaseViewModel() {
 
     lateinit var outputDirectory: File
@@ -25,12 +37,14 @@ class FormPictureScreenViewModel @Inject constructor(
 
     val shouldShowCamera = mutableStateOf(Pair<String, Boolean>("", false))
 
+    val formsClicked = mutableStateOf(0)
+
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
 
-    init {
-        cameraExecutor = Executors.newSingleThreadExecutor()
-    }
+//    init {
+//        cameraExecutor = Executors.newSingleThreadExecutor()
+//    }
 
     fun setCameraExecutor() {
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -46,6 +60,34 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun saveFormPath(formPath: String, formName: String){
         prefRepo.savePref("${PREF_FORM_PATH}_$formName", formPath)
+    }
+
+    fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val updatedCompletedStepsList = mutableListOf<Int>()
+            if (!existingList.isNullOrEmpty()) {
+                existingList.forEach {
+                    updatedCompletedStepsList.add(it)
+                }
+            }
+            updatedCompletedStepsList.add(stepId)
+            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
+            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
+                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
+                    StepStatus.INPROGRESS.ordinal,villageId)
+            }
+            prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
+        }
+    }
+
+    fun saveVoEndorsementDate() {
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        val date = dateFormat.format(currentTime)
+        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, date)
     }
 
     override fun onServerError(error: ErrorModel?) {

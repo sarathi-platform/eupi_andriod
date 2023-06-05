@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -114,7 +113,7 @@ fun SurveySummary(
                     showDialog.value = it
                 }) {
                 if ((context as MainActivity).isOnline.value ?: false) {
-                    surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
+                    surveySummaryViewModel.updatePatStatusToNetwork(object : NetworkCallbackListener {
                         override fun onSuccess() {
 
                         }
@@ -136,8 +135,21 @@ fun SurveySummary(
                                 showCustomToast(context, SYNC_FAILED)
                             }
                         })
+                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                        surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
+                    }
                 }
                 if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                    surveySummaryViewModel.updateDidiPatStatus()
                     surveySummaryViewModel.markPatComplete(
                         surveySummaryViewModel.prefRepo.getSelectedVillage().id,
                         stepId
@@ -152,6 +164,31 @@ fun SurveySummary(
                         }"
                     )
                 } else {
+                    if ((context as MainActivity).isOnline.value ?: false) {
+                        surveySummaryViewModel.updateVoStatusToNetwork(object : NetworkCallbackListener{
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
+                        surveySummaryViewModel.callWorkFlowAPI(
+                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                            stepId,
+                            object :
+                                NetworkCallbackListener {
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+                            })
+                    }
+                    surveySummaryViewModel.updateDidiVoEndorsementStatus()
                     surveySummaryViewModel.markVoEndorsementComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
                     surveySummaryViewModel.saveVoEndorsementDate()
                     navController.navigate(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route)

@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -58,6 +59,10 @@ fun FormPictureScreen(
         mutableStateOf(0.dp)
     }
 
+    BackHandler() {
+        navController.popBackStack()
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -67,10 +72,6 @@ fun FormPictureScreen(
 
         val shgFlag = remember {
             mutableStateOf(-1)
-        }
-
-        val formsClicked = remember {
-            mutableStateOf(0)
         }
 
         val (bottomActionBox, mainBox) = createRefs()
@@ -96,9 +97,6 @@ fun FormPictureScreen(
                             formName = formPictureScreenViewModel.shouldShowCamera.value.first,
                             formPictureScreenViewModel
                         )
-                        if (formsClicked.value < 2) {
-                            formsClicked.value = formsClicked.value++
-                        }
                     },
                     onCloseButtonClicked = {
                         formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
@@ -136,30 +134,44 @@ fun FormPictureScreen(
                         )
                         Spacer(modifier = Modifier.height(10.dp))
                         OutlineButtonWithIcon(
-                            buttonTitle = stringResource(R.string.form_c_photo_button_text),
+                            buttonTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(R.string.form_c_photo_button_text) else stringResource(id = R.string.view),
                             icon = Icons.Default.Add,
                             contentColor = textColorDark,
                             borderColor = textColorDark,
+                            showIcon = formPictureScreenViewModel.formsClicked.value < 1,
                             modifier = Modifier
                         ) {
-                            formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
+                            if (formPictureScreenViewModel.formsClicked.value < 1) {
+                                formPictureScreenViewModel.setCameraExecutor()
+                                formPictureScreenViewModel.shouldShowCamera.value =
+                                    Pair(FORM_C, true)
+                            } else {
+                                navController.navigate("image_viewer/$FORM_C")
+                            }
                         }
 
                         OutlineButtonWithIcon(
-                            buttonTitle = stringResource(R.string.form_d_photo_button_text),
+                            buttonTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(R.string.form_d_photo_button_text) else stringResource(id = R.string.view),
                             icon = Icons.Default.Add,
                             contentColor = textColorDark,
                             borderColor = textColorDark,
+                            showIcon = formPictureScreenViewModel.formsClicked.value < 2,
                             modifier = Modifier
                         ) {
-                            formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_D, true)
+                            if (formPictureScreenViewModel.formsClicked.value < 2) {
+                                formPictureScreenViewModel.setCameraExecutor()
+                                formPictureScreenViewModel.shouldShowCamera.value =
+                                    Pair(FORM_D, true)
+                            } else {
+                                navController.navigate("image_viewer/$FORM_D")
+                            }
                         }
                     }
                 }
             }
         }
 
-        if (!formPictureScreenViewModel.shouldShowCamera.value.second && formsClicked.value == 2){
+        if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value == 2){
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)
@@ -203,6 +215,9 @@ private fun handleImageCapture(
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
     viewModal.saveFormPath(photoPath, formName)
+    if (viewModal.formsClicked.value < 2) {
+        viewModal.formsClicked.value = viewModal.formsClicked.value + 1
+    }
 }
 
 private fun requestCameraPermission(context: Activity, viewModal: FormPictureScreenViewModel) {

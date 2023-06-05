@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
-import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -81,6 +83,10 @@ fun VoEndorsementSummaryScreen(
     }
     var bottomPadding by remember {
         mutableStateOf(0.dp)
+    }
+
+    BackHandler() {
+        navController.popBackStack()
     }
 
     Box(modifier = Modifier
@@ -239,10 +245,21 @@ fun VoEndorsementSummaryScreen(
             }
 
 //            if(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
+            AnimatedVisibility(visible = didi?.value?.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal, enter = fadeIn(), exit = fadeOut(),
+                modifier = Modifier
+                .constrainAs(bottomActionBox) {
+                    bottom.linkTo(parent.bottom)
+                    start.linkTo(parent.start)
+                }
+                .onGloballyPositioned { coordinates ->
+                    bottomPadding = with(localDensity) {
+                        coordinates.size.height.toDp()
+                    }
+                }) {
                 AcceptRejectButtonBox(
                     modifier = Modifier
-                        .visible(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal)
-                        .constrainAs(bottomActionBox) {
+//                        .visible(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal)
+                        /*.constrainAs(bottomActionBox) {
                             bottom.linkTo(parent.bottom)
                             start.linkTo(parent.start)
                         }
@@ -250,7 +267,7 @@ fun VoEndorsementSummaryScreen(
                             bottomPadding = with(localDensity) {
                                 coordinates.size.height.toDp()
                             }
-                        },
+                        }*/,
 
                     positiveButtonText = stringResource(id = R.string.endorse),
                     negativeButtonText = stringResource(id = R.string.reject),
@@ -300,7 +317,7 @@ fun VoEndorsementSummaryScreen(
                         }
                     }
                 )
-//            }
+            }
 
 
         }
@@ -312,7 +329,7 @@ fun VoEndorsementSummaryScreen(
         }
         val nextButtonVisible = remember {
             derivedStateOf {
-                pagerState.currentPage < voDidiList.size-1 && pagerState.currentPage < voDidiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size
+                pagerState.currentPage < voDidiList.size-1/* && pagerState.currentPage < voDidiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size*/
             }
         }
 

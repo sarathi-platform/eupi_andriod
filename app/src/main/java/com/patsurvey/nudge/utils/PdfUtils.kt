@@ -34,7 +34,7 @@ object PdfUtils {
     private val contentTextProperties = getContentTextProperties()
     private val cellDataTextProperties = getTextPropertiesForCell()
 
-    suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String){
+    suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean{
 
         val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_a")
 
@@ -155,12 +155,13 @@ object PdfUtils {
 
         })
 
-        simplyPdfDocument.finish()
+        val success = simplyPdfDocument.finish()
+        return success
     }
 
 
 
-    suspend fun getFormBPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String) {
+    suspend fun getFormBPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
         val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_b")
 
@@ -234,11 +235,11 @@ object PdfUtils {
 
         simplyPdfDocument.insertEmptyLines(1)
 
-        simplyPdfDocument.finish()
-
+        val success = simplyPdfDocument.finish()
+        return success
     }
 
-    suspend fun getFormCPdg(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String) {
+    suspend fun getFormCPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
         val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_c")
 
@@ -312,7 +313,8 @@ object PdfUtils {
 
         simplyPdfDocument.insertEmptyLines(1)
 
-        simplyPdfDocument.finish()
+        val success = simplyPdfDocument.finish()
+        return success
 
     }
 
@@ -325,7 +327,7 @@ object PdfUtils {
             .build()
     }
 
-    private fun getPdfPath(context: Context, formName: String, villageName: String): File {
+    fun getPdfPath(context: Context, formName: String, villageName: String): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageName}.pdf")
     }
 

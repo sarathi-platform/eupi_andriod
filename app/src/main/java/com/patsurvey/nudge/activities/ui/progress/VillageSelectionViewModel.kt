@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -396,6 +395,9 @@ class VillageSelectionViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
 //        showLoader.value = false
+//        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            _villagList.value = villageListDao.getAllVillages()
+//        }
         networkErrorMessage.value= error?.message.toString()
     }
 

@@ -13,9 +13,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,6 +65,21 @@ fun DigitalFormAScreen(
                 }
             }
         }
+    }
+
+    val formPathState = remember {
+        mutableStateOf(File(
+            "${
+                context.getExternalFilesDir(
+                    Environment.DIRECTORY_DOCUMENTS
+                )?.absolutePath
+            }")
+        )
+    }
+
+
+    val showLoader = remember {
+        mutableStateOf(false)
     }
 
     ConstraintLayout(
@@ -287,7 +300,7 @@ fun DigitalFormAScreen(
                                 )?.absolutePath
                             }", "digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
-                        viewModel.generateFormAPDF(context) {
+                        viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
                             val fileUri = uriFromFile(context, pdfFile)
                             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -305,10 +318,32 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .background(white)
                             .weight(1f),
-                        buttonTitle = stringResource(R.string.download_button_text),
+                        buttonTitle = if (formPathState.value.isFile) stringResource(id = R.string.view) else {
+                            if (showLoader.value)
+                                stringResource(id = R.string.downloading_button_text)
+                            else
+                                stringResource(R.string.download_button_text)
+                        }, showLoader = showLoader.value,
                     ) {
-                        viewModel.generateFormAPDF(context) {
-                            showToast(context, "Digital Form A Downloaded")
+                        if (formPathState.value.isFile) {
+                            navController.navigate("pdf_viewer/digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                        } else {
+                            showLoader.value = true
+                            viewModel.generateFormAPdf(context) { formGenerated, formPath ->
+                                if (formGenerated) {
+                                    showToast(context, "Digital Form A Downloaded")
+                                    formPath?.let {
+                                        formPathState.value = it
+                                    }
+                                    showLoader.value = false
+                                } else {
+                                    showToast(
+                                        context,
+                                        "Something went wrong, unable to download form."
+                                    )
+                                    showLoader.value = false
+                                }
+                            }
                         }
                     }
                 }
