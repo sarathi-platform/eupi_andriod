@@ -100,7 +100,18 @@ data class PATSummaryResponseItem(
 	val beneficiaryId: Int? = 0,
 
 	@SerializedName("status")
-	val status: Int? = null
+	val status: Int? = null,
+
+	@SerializedName("patSurveyStatus")
+	val patSurveyStatus: Int? = 0,
+
+	@SerializedName("section1Status")
+	val section1Status: Int? = 0,
+
+	@SerializedName("section2Status")
+	val section2Status: Int? = 0,
+
+
 )
 
 

@@ -344,12 +344,27 @@ fun StepsBox(
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
                         val subText = when(stepNo) {
-                            1 -> viewModel?.tolaCount?.value?.let { stringResource(id = R.string.transect_walk_sub_text, it) }
-                            2 -> viewModel?.didiCount?.value
-                                ?.let { stringResource(id = R.string.social_mapping_sub_text, it) }
-                            3 -> viewModel?.poorDidiCount?.value?.let { stringResource(id = R.string.wealth_ranking_sub_text, it) }
-                            4 -> viewModel?.ultrPoorDidiCouont?.value?.let { if (it > 1) stringResource(id = R.string.pat_sub_text_plural, it) else stringResource(id = R.string.pat_sub_text_singular, it) }
-                            5 -> ""
+                            1 -> viewModel?.tolaCount?.value?.let {
+                                stringResource(id = R.string.transect_walk_sub_text, it)
+                            }
+                            2 -> viewModel?.didiCount?.value?.let {
+                                stringResource(id = R.string.social_mapping_sub_text, it)
+                            }
+                            3 -> viewModel?.poorDidiCount?.value?.let {
+                                stringResource(id = R.string.wealth_ranking_sub_text, it)
+                            }
+                            4 -> viewModel?.ultrPoorDidiCount?.value?.let {
+                                if (it > 1)
+                                    stringResource(id = R.string.pat_sub_text_plural, it)
+                                else
+                                    stringResource(id = R.string.pat_sub_text_singular, it)
+                            }
+                            5 -> viewModel?.endorsedDidiCount?.value?.let {
+                                if (it > 1)
+                                    stringResource(id = R.string.vo_endorsement_sub_text_plural, it)
+                                else
+                                    stringResource(id = R.string.vo_endorsement_sub_text_singular, it)
+                            }
                             else -> ""
                         }
                         if (subText != null) {

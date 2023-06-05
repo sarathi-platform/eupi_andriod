@@ -21,6 +21,7 @@ import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
@@ -28,8 +29,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
-import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryViewModel
-import com.patsurvey.nudge.activities.video.VideoDetailPlayerScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -519,11 +518,9 @@ sealed class PatScreens(val route: String) {
         PatScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : PatScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
-    object PAT_SURVEY_SUMMARY :
-        PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+    object PAT_SURVEY_SUMMARY : PatScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
-    object PAT_STEP_COMPLETION_SCREEN :
-        PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object PAT_STEP_COMPLETION_SCREEN : PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
     object PAT_DIGITAL_FORM_B_SCREEN : PatScreens(route = "pat_digital_form_b_screen")
 
@@ -565,7 +562,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel())
+            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
 
         composable(route = SettingScreens.FORM_A_SCREEN.route) {
@@ -578,6 +575,15 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
         composable(route = SettingScreens.FORM_B_SCREEN.route) {
             DigitalFormBScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
+
+        composable(route = SettingScreens.FORM_C_SCREEN.route) {
+            DigitalFormCScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
@@ -611,7 +617,7 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         composable(
             route = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route
         ) {
-            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize())
+            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize(), stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1)
         }
 
         composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route) {
@@ -629,6 +635,45 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
                 didiIndex = it.arguments?.getInt(ARG_DIDI_INDEX) ?: 0
             )
         }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_VO_ENDORSEMENT_SCREEN, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
+        }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
+
+            }
+        }
+
+        composable(
+            route = VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route
+        ) {
+            DigitalFormCScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
     }
 }
 
@@ -638,5 +683,10 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object FORM_PICTURE_SCREEN : VoEndorsmentScreeens(route = "form_picture_screen")
 
     object  VO_ENDORSEMENT_SUMMARY_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_summary_screen/{$ARG_DIDI_ID}/{$ARG_DIDI_INDEX}")
+
+    object VO_ENDORSEMENT_SURVEY_SUMMARY: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : PatScreens(route = "vo_endorsement_digital_form_c_screen")
 
 }

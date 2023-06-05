@@ -137,6 +137,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     networkCallbackListener.onSuccess()
                                     saveAPIResponse.data?.pATSummaryResponse?.let {
                                         it.forEach { patSummaryResponseItem ->
+                                            didiDao.updateNeedToPostPAT(false,patSummaryResponseItem?.beneficiaryId?:0,prefRepo.getSelectedVillage().id)
                                             val answersList= patSummaryResponseItem?.answers
                                             if(answersList?.isNotEmpty() == true){
                                                 answersList.forEach { answersItem ->
@@ -223,5 +224,32 @@ class SurveySummaryViewModel @Inject constructor(
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
         val date = dateFormat.format(currentTime)
         prefRepo.savePref(PREF_PAT_COMPLETION_DATE, date)
+    }
+
+    fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val updatedCompletedStepsList = mutableListOf<Int>()
+            if (!existingList.isNullOrEmpty()) {
+                existingList.forEach {
+                    updatedCompletedStepsList.add(it)
+                }
+            }
+            updatedCompletedStepsList.add(stepId)
+            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
+            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
+            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
+                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+            }
+            prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
+        }
+    }
+
+    fun saveVoEndorsementDate() {
+        val currentTime = System.currentTimeMillis()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        val date = dateFormat.format(currentTime)
+        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, date)
     }
 }

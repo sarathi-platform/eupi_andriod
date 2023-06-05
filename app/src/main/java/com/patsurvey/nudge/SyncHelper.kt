@@ -2,6 +2,8 @@ package com.patsurvey.nudge
 
 import android.text.TextUtils
 import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -30,13 +32,15 @@ class SyncHelper (
     val exceptionHandler : CoroutineExceptionHandler,
     val villegeListDao: VillageListDao,
     val didiDao: DidiDao,
-    var job: Job?
+    var job: Job?,
+    val showLoader : MutableState<Boolean>
 ){
 
     fun syncDataToServer(networkCallbackListener: NetworkCallbackListener){
         addTolasToNetwork(networkCallbackListener)
         addDidisToNetwork(networkCallbackListener)
         updateWealthRankingToNetwork(networkCallbackListener)
+        networkCallbackListener.onSuccess()
     }
 
     fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {

@@ -3,15 +3,11 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import android.content.Context
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.QuestionEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.TrainingVideoEntity
-import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.database.*
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -254,6 +250,8 @@ class VillageSelectionViewModel @Inject constructor(
                                             question?.actionType = list.actionType
                                             question?.languageId = languageEntity.id
                                             question?.surveyId = questionList.surveyId
+                                            question?.thresholdScore = questionList.thresholdScore
+                                            question?.surveyPassingMark = questionList.surveyPassingMark
                                         }
                                         list?.questionList?.let {
                                             questionListDao.insertAll(it as List<QuestionEntity>)
@@ -269,9 +267,16 @@ class VillageSelectionViewModel @Inject constructor(
                         val answerApiResponse = apiService.fetchPATSurveyToServer(it)
                         if(answerApiResponse.status.equals(SUCCESS,true)){
                             answerApiResponse.data?.let {
+                                Log.d(TAG, "fetchVillageList: DEtails")
                                 val answerList:ArrayList<SectionAnswerEntity> = arrayListOf()
                                 val numAnswerList:ArrayList<NumericAnswerEntity> = arrayListOf()
                                 it.forEach {item->
+                                    didiDao.updateNeedToPostPAT(false,item.beneficiaryId?:0,item.villageId?:0)
+                                    didiDao.updatePATProgressStatus(
+                                        patSurveyStatus = item.patSurveyStatus?:0,
+                                        section1Status = item.section1Status?:0,
+                                        section2Status = item.section2Status?:0,
+                                        didiId = item.beneficiaryId?:0)
                                    if(item?.answers?.isNotEmpty() == true){
                                        item?.answers?.forEach { answersItem ->
                                            if(answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true){

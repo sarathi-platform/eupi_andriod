@@ -8,6 +8,12 @@ data class QuestionListResponse(
 	@SerializedName("surveyId")
 	val surveyId: Int? = null,
 
+	 @SerializedName("surveyPassingMark")
+	 val surveyPassingMark: Int,
+
+	@SerializedName("thresholdScore")
+	val thresholdScore: Int,
+
 	@SerializedName("listOfQuestionSectionList")
 	val listOfQuestionSectionList: List<ListOfQuestionSectionListItem?>? = null
 )

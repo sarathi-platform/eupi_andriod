@@ -48,7 +48,8 @@ import com.patsurvey.nudge.utils.*
 fun VoEndorsementScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    viewModel: VoEndorsementScreenViewModel
+    viewModel: VoEndorsementScreenViewModel,
+    stepId: Int
 ) {
 
     LaunchedEffect(key1 = true) {
@@ -142,7 +143,7 @@ fun VoEndorsementScreen(
                         Text(
                             text = stringResource(
                                 id = R.string.count_didis_pending,
-                                newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.size
                             ),
                             color = Color.Black,
                             fontSize = 12.sp,
@@ -158,7 +159,7 @@ fun VoEndorsementScreen(
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                            if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==VoEndorsementStatus.NOT_STARTED.ordinal){
                                 viewModel.pendingDidiCount.value++
                             }
                             ShowDidisFromTolaForVo(
@@ -168,7 +169,7 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus!=2){
+                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==DidiEndorsementStatus.NO_STARTED.ordinal){
                                         navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
                                     }
                                 }
@@ -187,18 +188,16 @@ fun VoEndorsementScreen(
                             }
                         }
                     } else {
-                        itemsIndexed(newFilteredDidiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
-                            if(didi?.voEndorsementStatus!=2){
+                        itemsIndexed(newFilteredDidiList.value) { index, didi ->
+                            if(didi.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal){
                                 viewModel.pendingDidiCount.value++
                             }
                             DidiItemCardForVo(
                                 navController = navController,
-                                didiViewModel = viewModel,
                                 didi = didi,
-                                expanded = false,
                                 modifier = modifier,
                                 onItemClick = {
-                                    if(didi?.voEndorsementStatus!=2) {
+                                    if((didi.voEndorsementStatus ?:0)==DidiEndorsementStatus.NO_STARTED.ordinal) {
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
                                     }
                                 }
@@ -209,7 +208,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (false) {
+        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -222,11 +221,11 @@ fun VoEndorsementScreen(
                         }
                     },
 
-                positiveButtonText = stringResource(id = R.string.review_wealth_ranking),
+                positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    val stepStatus = false
-//                    navController.navigate("wealth_ranking_survey/$stepId/$stepStatus")
+                    val stepStatus = true
+                    navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
@@ -237,9 +236,7 @@ fun VoEndorsementScreen(
 @Composable
 fun DidiItemCardForVo(
     navController: NavHostController,
-    didiViewModel: VoEndorsementScreenViewModel,
     didi: DidiEntity,
-    expanded: Boolean,
     modifier: Modifier,
     onItemClick: (DidiEntity) -> Unit
 ) {
@@ -503,9 +500,7 @@ fun ShowDidisFromTolaForVo(
             didiList.forEachIndexed { index, didi ->
                 DidiItemCardForVo(
                     navController = navController,
-                    didiViewModel = viewModel,
                     didi = didi,
-                    expanded = false,
                     modifier = modifier,
                     onItemClick = {
                         //TODO navigate to summary screen for Endorsement

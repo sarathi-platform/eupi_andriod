@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities.settings
 
+import android.content.Context.BATTERY_SERVICE
+import android.os.BatteryManager
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
@@ -12,10 +14,8 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
@@ -32,18 +32,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.*
+import java.text.SimpleDateFormat
+import java.util.*
+
 
 @Composable
 fun SettingScreen(
@@ -54,11 +56,15 @@ fun SettingScreen(
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val list = ArrayList<SettingOptionModel>()
+    val lastSyncTimeInMS = viewModel.prefRepo.getPref(
+        LAST_SYNC_TIME, 0L)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
+    val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
     list.add(
         SettingOptionModel(
             1,
             context.getString(R.string.sync_up),
-            context.getString(R.string.last_syncup_text)
+            context.getString(R.string.last_syncup_text).replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
         )
     )
     list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
@@ -90,6 +96,9 @@ fun SettingScreen(
     val expanded = remember {
         mutableStateOf(false)
     }
+    val showSyncDialog = remember {
+        mutableStateOf(false)
+    }
 
     Scaffold(
         modifier = Modifier
@@ -97,7 +106,24 @@ fun SettingScreen(
             .background(Color.White)
             .then(modifier),
         topBar = {
-            Row(
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Settings",
+                        style = mediumTextStyle,
+                        color = textColorDark,
+                        modifier = Modifier,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
+                    }
+                },
+                backgroundColor = Color.White
+            )
+            /*Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -110,16 +136,20 @@ fun SettingScreen(
                     modifier = Modifier
                         .padding(vertical = 10.dp, horizontal = 16.dp)
                         .clickable {
-                        navController.navigate(Graph.HOME) {
-                            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                inclusive = true
+                            navController.navigate(Graph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                    inclusive = true
+                                }
                             }
                         }
-                    }
                 )
-                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier.padding(vertical = 10.dp).weight(1f), textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier.size(24.dp).padding(vertical = 10.dp))
-            }
+                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier
+                    .padding(vertical = 10.dp)
+                    .weight(1f), textAlign = TextAlign.Center)
+                Spacer(modifier = Modifier
+                    .size(24.dp)
+                    .padding(vertical = 10.dp))
+            }*/
         }
     ) {
         ConstraintLayout(
@@ -150,7 +180,9 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-                                    viewModel.syncDataOnServer(context)
+                                    showSyncDialog.value = true
+//                                    viewModel.syncDataOnServer(context)
+
                                 }
                                 1 -> {
                                     navController.navigate(SettingScreens.PROFILE_SCREEN.route)
@@ -177,7 +209,6 @@ fun SettingScreen(
                 }
 
             }
-
             Box(modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
@@ -198,9 +229,170 @@ fun SettingScreen(
                 ) {
                 }
             }
-
+            if (viewModel.showLoader.value) {
+                showSyncInProgressDialog(setShowDialog = {
+                    viewModel.showLoader.value = false
+                })
+                viewModel.syncDataOnServer(context)
+                viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+            }
+            if (showSyncDialog.value) {
+                showSyncDialog(setShowDialog = {
+                    showSyncDialog.value = it
+                }){
+                    viewModel.showLoader.value = true
+                }
+            }
         }
 
+    }
+}
+
+@Composable
+fun showSyncDialog(
+    setShowDialog: (Boolean) -> Unit,
+    positiveButtonClicked: () -> Unit
+) {
+
+    val context = LocalContext.current
+
+    val isInternetConnected = (context as MainActivity).isOnline.value
+
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier
+                    ) {
+                        MainTitle(stringResource(R.string.sync), Modifier.weight(1f))
+                    }
+                    val batSystemService = LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
+                    val batteryLevel = batSystemService.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+                    Row() {
+
+                        Text(
+                            text = stringResource(id = R.string.battery) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = "$batteryLevel%",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.mobile_data) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+
+                        Text(
+                            text = if(isInternetConnected) "Connected" else stringResource(id = R.string.no_internet),
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier,
+                            color = if (isInternetConnected) greenOnline else redOffline
+                        )
+                    }
+                    Row {
+                        Text(
+                            text = stringResource(id = R.string.estimated_time_required) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+
+                        Text(
+                            text = "2 min",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.size) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+
+                        Text(
+                            text = "10 MB",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+                    }
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonNegative(
+                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            setShowDialog(false)
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.sync),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            setShowDialog(false)
+                            positiveButtonClicked()
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun showSyncInProgressDialog(
+    setShowDialog: (Boolean) -> Unit
+) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceAround,
+                        modifier = Modifier
+                    ) {
+                        MainTitle(stringResource(R.string.syncing), Modifier.weight(1f))
+                    }
+                    Row(
+                        modifier = Modifier.padding(14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        CustomProgressBar(modifier = Modifier)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -355,10 +547,14 @@ fun ExpandedSettingsList(
                                 )
                                 .clickable {
                                     when (index) {
-                                        0 -> navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                                        1 -> {}/*navController.navigate(SettingScreens.FORM_B_SCREEN.route)*/
+                                        0 -> {
+                                            navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                                        }
+                                        1 -> {
+                                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                                        }
                                         2 -> {
-                                            //add Form C action once done.
+                                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
                                         }
                                     }
 

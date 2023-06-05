@@ -80,6 +80,12 @@ data class DidiEntity(
     var shgFlag: Int,
 
     @ColumnInfo(name = "voEndorsementStatus")
-    var voEndorsementStatus: Int =0
+    var voEndorsementStatus: Int =0,
+
+    @ColumnInfo(name = "forVoEndorsement")
+    var forVoEndorsement: Int =0,
+
+    @ColumnInfo(name = "needsToPostPAT")
+    var needsToPostPAT: Boolean = true
 
     )

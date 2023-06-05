@@ -28,6 +28,9 @@ data class QuestionEntity(
     @ColumnInfo(name = "questionDisplay")
     var questionDisplay: String? = BLANK_STRING,
 
+    @ColumnInfo(name = "questionSummary")
+    var questionSummary: String? = BLANK_STRING,
+
     @ColumnInfo(name = "gotoQuestionId")
     var gotoQuestionId: Int? = 0,
 
@@ -53,7 +56,13 @@ data class QuestionEntity(
     var totalAssetAmount: Int? = 0,
 
     @ColumnInfo(name = "surveyId")
-    var surveyId: Int? = 0
+    var surveyId: Int? = 0,
+
+    @ColumnInfo(name = "surveyPassingMark")
+    var surveyPassingMark: Int? = 0,
+
+    @ColumnInfo(name = "thresholdScore")
+    var thresholdScore: Int? = 0,
 )
 
 

@@ -152,25 +152,35 @@ fun FormPictureScreen(
             }
         }
 
-        DoubleButtonBox(
-            modifier = Modifier
-                .shadow(10.dp)
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+        if (!formPictureScreenViewModel.shouldShowCamera.value.second){
+            DoubleButtonBox(
+                modifier = Modifier
+                    .shadow(10.dp)
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                negativeButtonRequired = false,
+                positiveButtonText = stringResource(id = R.string.submit),
+                positiveButtonOnClick = {
+                    navController.navigate(
+                        "vo_endorsement_step_completion_screen/${
+                            localContext.getString(R.string.vo_endorsement_completed_message)
+                                .replace(
+                                    "{VILLAGE_NAME}",
+                                    formPictureScreenViewModel.prefRepo.getSelectedVillage().name
+                                )
+                        }"
+                    )
                 },
-            negativeButtonRequired = false,
-            positiveButtonText = stringResource(id = R.string.submit),
-            positiveButtonOnClick = {
-                //TODO Add navigation to next screen.
-            },
-            negativeButtonOnClick = {}
-        )
+                negativeButtonOnClick = {}
+            )
+        }
     }
 }
 

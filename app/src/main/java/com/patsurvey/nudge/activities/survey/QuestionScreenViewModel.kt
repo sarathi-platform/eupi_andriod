@@ -170,7 +170,8 @@ class QuestionScreenViewModel @Inject constructor(
                 } else {
                     answerDao.insertAnswer(
                         SectionAnswerEntity(
-                            id = 0, optionId = answerOptionModel.optionId?:0,
+                            id = 0,
+                            optionId = answerOptionModel.optionId?:0,
                             didiId = didiId,
                             optionValue = answerOptionModel.optionValue ?: 0,
                             answerValue = answerOptionModel.display?: BLANK_STRING,
@@ -179,7 +180,8 @@ class QuestionScreenViewModel @Inject constructor(
                             totalAssetAmount = assetAmount,
                             type = quesType,
                             summary = summary,
-                            villageId = prefRepo.getSelectedVillage().id
+                            villageId = prefRepo.getSelectedVillage().id,
+                            weight=answerOptionModel.weight ?: 0
                         )
                     )
                     withContext(Dispatchers.Main) {

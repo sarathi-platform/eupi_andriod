@@ -102,6 +102,15 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set voEndorsementStatus =:status WHERE id =:didiId AND villageId = :villageId")
     fun updateVOEndorsementStatus(villageId: Int,didiId:Int,status:Int)
 
+    @Query("UPDATE $DIDI_TABLE set forVoEndorsement = 1 WHERE id =:didiId AND villageId = :villageId")
+    fun updateVOEndorsementDidiStatus(villageId: Int,didiId:Int)
+
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 ORDER BY createdDate DESC")
     fun patCompletedDidis(villageId: Int): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status WHERE id =:didiId")
+    fun updatePATProgressStatus(patSurveyStatus: Int,section1Status:Int,section2Status:Int,didiId:Int)
+
+    @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId AND villageId=:villageId")
+    fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int,villageId: Int)
 }
