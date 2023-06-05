@@ -67,6 +67,13 @@ fun VoEndorsementScreen(
 
     val localDensity = LocalDensity.current
 
+    LaunchedEffect(key1 = true) {
+        viewModel.getVoEndorsementStepStatus(stepId) {
+            if (it)
+                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
+        }
+    }
+
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -100,7 +107,8 @@ fun VoEndorsementScreen(
 
                 VOAndVillageBoxView(
                     prefRepo = viewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    startPadding = 0.dp
                 )
 
                 LazyColumn(
@@ -169,9 +177,7 @@ fun VoEndorsementScreen(
                                 didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank } ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    if(newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus==DidiEndorsementStatus.NO_STARTED.ordinal){
-                                        navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${index}")
-                                    }
+                                        navController.navigate("vo_endorsement_summary_screen/${newFilteredTolaDidiList[didiKey]?.get(index)?.id}/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}")
                                 }
                             )
                             if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -197,9 +203,8 @@ fun VoEndorsementScreen(
                                 didi = didi,
                                 modifier = modifier,
                                 onItemClick = {
-                                    if((didi.voEndorsementStatus ?:0)==DidiEndorsementStatus.NO_STARTED.ordinal) {
-                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${index}")
-                                    }
+                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+
                                 }
                             )
                             Spacer(modifier = Modifier.height(10.dp))
@@ -208,7 +213,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isEmpty()) {
+        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isNotEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -224,7 +229,7 @@ fun VoEndorsementScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    val stepStatus = true
+                    val stepStatus = false
                     navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }

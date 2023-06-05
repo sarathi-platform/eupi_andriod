@@ -1,7 +1,7 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -150,7 +150,8 @@ fun AddTolaBox(
 
                     ) {
                         location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
-                        if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) locationAdded = true
+                        if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) locationAdded =
+                            true
                         focusManager.clearFocus()
                     }
                     .height(45.dp)
@@ -158,8 +159,7 @@ fun AddTolaBox(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .align(Alignment.Center)
-                        .padding(vertical = 12.dp),
+                        .align(Alignment.Center),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -175,7 +175,8 @@ fun AddTolaBox(
                         text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                         textAlign = TextAlign.Center,
                         style = smallTextStyle,
-                        color = if (locationAdded) greenOnline else blueDark
+                        color = if (locationAdded) greenOnline else blueDark,
+                        modifier = Modifier.absolutePadding(bottom = 2.dp)
                     )
                 }
             }
@@ -410,8 +411,7 @@ fun TolaBox(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .align(Alignment.Center)
-                                    .padding(vertical = 12.dp),
+                                    .align(Alignment.Center),
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
@@ -427,7 +427,8 @@ fun TolaBox(
                                     text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
                                     style = smallTextStyle,
-                                    color = if (locationAdded) greenOnline else blueDark
+                                    color = if (locationAdded) greenOnline else blueDark,
+                                    modifier = Modifier.absolutePadding(bottom = 2.dp)
                                 )
                             }
                         }

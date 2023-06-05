@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.digital_forms
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -55,6 +56,18 @@ fun DigitalFormAScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
+
+    BackHandler() {
+        if (fromScreen == ARG_FROM_SETTING)
+            navController.popBackStack()
+        else {
+            navController.navigate(Graph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier

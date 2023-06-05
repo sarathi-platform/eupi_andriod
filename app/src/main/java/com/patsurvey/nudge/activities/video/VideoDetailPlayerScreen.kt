@@ -291,9 +291,12 @@ fun FullscreenView(
         },
         modifier = Modifier
             .fillMaxSize()
-            .systemBarsPadding(),
+            .systemBarsPadding()
+            .background(Color.White),
     ) { padding ->
-        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+        Column(modifier = Modifier.background(
+            Color.White
+        )) {
             if (!isLandscape) {
                 mediaContent(
                     false,
@@ -312,6 +315,7 @@ fun FullscreenView(
                 )
             }
 
+            Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
             Text(
                 videoItem.value.title,
                 style = mediumTextStyle,
@@ -320,6 +324,7 @@ fun FullscreenView(
                     .align(Alignment.Start)
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
+                    .padding(top = 8.dp)
             )
 
             Text(
@@ -335,6 +340,7 @@ fun FullscreenView(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             )
+            }
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -94,10 +95,21 @@ fun SurveySummary(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
+            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             ShowDialog(
                 title = "Are you sure?",
-                message = if (fromScreen == ARG_FROM_PAT_SURVEY) "You are sending ${didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size} PAT completed Didis for VO Endorsement."
-                else "You are doing the final submission for ${didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size} endorsed didi.",
+                message = if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                    if (count > 1)
+                        stringResource(R.string.pat_completion_dialog_message_plural).replace("{COUNT}", count.toString())
+                    else
+                        stringResource(R.string.pat_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                }
+                 else {
+                     if (count > 1)
+                         stringResource(id = R.string.vo_endorsement_completion_dialog_message_plural).replace("{COUNT}", count.toString())
+                    else
+                         stringResource(id = R.string.vo_endorsement_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                },
                 setShowDialog = {
                     showDialog.value = it
                 }) {
@@ -298,7 +310,7 @@ fun SurveySummary(
             }
         }
 
-        if (isStepComplete || showDidiListForStatus.first) {
+        if (!isStepComplete || showDidiListForStatus.first) {
             BottomButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

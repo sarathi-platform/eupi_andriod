@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.base.BaseViewModel
@@ -15,7 +14,10 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.request.*
+import com.patsurvey.nudge.model.request.AddCohortRequest
+import com.patsurvey.nudge.model.request.DeleteTolaRequest
+import com.patsurvey.nudge.model.request.EditCohortRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
@@ -44,6 +46,7 @@ class TransectWalkViewModel @Inject constructor(
     val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     val isTransectWalkComplete = mutableStateOf(false)
+    val isVoEndorsementComplete = mutableStateOf(false)
 
     val showLoader = mutableStateOf(false)
     init {
@@ -332,6 +335,11 @@ class TransectWalkViewModel @Inject constructor(
                 isTransectWalkComplete.value = isComplete
             }
         }
+    }
+
+    fun isVoEndorsementCompleteForVillage(villageId: Int) {
+        val isComplete = prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+        isVoEndorsementComplete.value = isComplete
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){

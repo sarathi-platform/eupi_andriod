@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -49,7 +50,8 @@ fun ProfileScreen(
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
-                }
+                },
+                backgroundColor = Color.White
             )
         }
     ) {
@@ -58,7 +60,7 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(top = it.calculateTopPadding()),
+                .padding(top = it.calculateTopPadding() + 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 

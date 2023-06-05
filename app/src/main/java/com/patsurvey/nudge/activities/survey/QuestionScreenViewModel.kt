@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -8,7 +7,6 @@ import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.*
-import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
@@ -38,11 +36,6 @@ class QuestionScreenViewModel @Inject constructor(
     val totalAmount = mutableStateOf(0)
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
-    private val _optionList = MutableStateFlow(listOf<AnswerOptionModel>())
-
-    val optionNumValueList: StateFlow<List<NumericAnswerEntity>> get() = _optionNumValueList
-    private val _optionNumValueList = MutableStateFlow(listOf<NumericAnswerEntity>())
-    val optionList: StateFlow<List<AnswerOptionModel>> get() = _optionList
 
     private val _answerList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val answerList: StateFlow<List<SectionAnswerEntity>> get() = _answerList
@@ -56,7 +49,7 @@ class QuestionScreenViewModel @Inject constructor(
     private val _selIndValue = MutableStateFlow<Int>(-1)
     val selIndValue: StateFlow<Int> get() = _selIndValue
 
-    private val _totalAssetAmount = MutableStateFlow<Int>(-1)
+    private val _totalAssetAmount = MutableStateFlow<Int>(0)
     val totalAssetAmount:StateFlow<Int> get() = _totalAssetAmount
 
 

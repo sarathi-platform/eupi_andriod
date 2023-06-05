@@ -72,8 +72,11 @@ fun DidiScreen(
                     )
                     Box(modifier = Modifier.fillMaxSize()) {
                         Column(
-                            modifier = Modifier.padding(vertical = (screenHeight/4).dp).align(
-                                Alignment.TopCenter),
+                            modifier = Modifier
+                                .padding(vertical = (screenHeight / 4).dp)
+                                .align(
+                                    Alignment.TopCenter
+                                ),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
