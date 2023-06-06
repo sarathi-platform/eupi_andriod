@@ -99,7 +99,7 @@ fun ProgressScreen(
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
-                                    delay(1500)
+                                    delay(1000)
                                     viewModel.showLoader.value = false
                                 }
                             }

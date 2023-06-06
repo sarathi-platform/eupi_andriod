@@ -172,9 +172,18 @@ class VillageSelectionViewModel @Inject constructor(
                                                 casteName = it.casteName
                                             }
                                             if (singleTola != null) {
-                                                val wealthRanking = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.WEALTH_RANKING.name)].status else WealthRank.NOT_RANKED.rank
-                                                val patSurveyStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.PAT_SURVEY.name)) PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status) else PatSurveyStatus.NOT_STARTED.ordinal
-                                                val voEndorsementStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.VO_ENDORSEMENT.name)) DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status) else DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                val wealthRanking = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.WEALTH_RANKING.name))
+                                                    didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.WEALTH_RANKING.name)].status
+                                                else
+                                                    WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.PAT_SURVEY.name))
+                                                    PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status)
+                                                else
+                                                    PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.VO_ENDORSEMENT.name))
+                                                    DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status)
+                                                else
+                                                    DidiEndorsementStatus.NOT_STARTED.ordinal
                                                 didiDao.insertDidi(
                                                     DidiEntity(
                                                         id = didi.id,
@@ -195,7 +204,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.NOT_MARKED.value                                                    )
+                                                        shgFlag = SHGFlag.NOT_MARKED.value
+                                                    )
                                                 )
                                             }
                                         }

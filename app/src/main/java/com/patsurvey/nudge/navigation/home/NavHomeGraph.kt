@@ -596,6 +596,14 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
             PdfViewer(filePath = it.arguments?.getString(ARG_FORM_PATH) ?: "", modifier = Modifier, navController = navController)
         }
 
+        composable(route = SettingScreens.IMAGE_VIEWER.route, arguments = listOf(
+            navArgument(ARG_IMAGE_PATH) {
+                type = NavType.StringType
+            }
+        )) {
+            FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+        }
+
     }
 }
 
@@ -682,7 +690,7 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = SettingScreens.IMAGE_VIEWER.route, arguments = listOf(
+        composable(route = VoEndorsmentScreeens.IMAGE_VIEWER.route, arguments = listOf(
             navArgument(ARG_IMAGE_PATH) {
                 type = NavType.StringType
             }

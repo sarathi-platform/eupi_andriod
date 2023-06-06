@@ -10,10 +10,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -37,14 +34,39 @@ class FormPictureScreenViewModel @Inject constructor(
 
     val shouldShowCamera = mutableStateOf(Pair<String, Boolean>("", false))
 
+    val formCPageList =
+        mutableStateOf(mutableListOf<Int>())
+
+    val formDPageList =
+        mutableStateOf(mutableListOf<Int>())
+
+    val formCImageList =
+        mutableStateOf(mutableMapOf<String, String>())
+
+
+    val formDImageList =
+        mutableStateOf(mutableMapOf<String, String>())
+
+
     val formsClicked = mutableStateOf(0)
 
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
 
+    val pageItemClicked = mutableStateOf("")
+
+//    { formName } _page_ ${ formPictureScreenViewModel.formDPageList.value.size + 1 }
+
+    val imagePath = mutableStateOf("")
+
+    val uri = mutableStateOf (Uri.EMPTY)
 //    init {
 //        cameraExecutor = Executors.newSingleThreadExecutor()
 //    }
+
+    fun setUri(context: Context) {
+        uri.value = if (imagePath.value != null ) uriFromFile(context, File(imagePath.value)) else null
+    }
 
     fun setCameraExecutor() {
         cameraExecutor = Executors.newSingleThreadExecutor()

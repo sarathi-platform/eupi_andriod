@@ -160,5 +160,8 @@ private val ExtendedFabIconPadding = 12.dp
 private val ExtendedFabTextPadding = 20.dp
 
 const val ACCEPTED = "ACCEPTED"
+const val FORM_A_PDF_NAME = "Digital_Form_A"
+const val FORM_B_PDF_NAME = "Digital_Form_B"
+const val FORM_C_PDF_NAME = "Digital_Form_C"
 
 

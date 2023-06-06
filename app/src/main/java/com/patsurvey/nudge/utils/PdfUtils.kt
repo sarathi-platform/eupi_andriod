@@ -36,7 +36,7 @@ object PdfUtils {
 
     suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean{
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_a")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
         simplyPdfDocument.text.write("List of households categorized into Rich, Medium, and Poor in Participatory Wealth Ranking", subTitleTextProperties)
@@ -163,7 +163,7 @@ object PdfUtils {
 
     suspend fun getFormBPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_b")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_B_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -241,7 +241,7 @@ object PdfUtils {
 
     suspend fun getFormCPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_c")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_C_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 

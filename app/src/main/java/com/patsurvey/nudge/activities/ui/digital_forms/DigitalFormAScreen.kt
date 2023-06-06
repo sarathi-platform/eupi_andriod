@@ -298,7 +298,7 @@ fun DigitalFormAScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
                         viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
@@ -326,7 +326,7 @@ fun DigitalFormAScreen(
                         }, showLoader = showLoader.value,
                     ) {
                         if (formPathState.value.isFile) {
-                            navController.navigate("pdf_viewer/digital_form_a_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                            navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
                         } else {
                             showLoader.value = true
                             viewModel.generateFormAPdf(context) { formGenerated, formPath ->

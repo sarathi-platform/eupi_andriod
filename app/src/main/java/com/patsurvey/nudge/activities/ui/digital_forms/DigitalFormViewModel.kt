@@ -40,8 +40,8 @@ class DigitalFormViewModel @Inject constructor(
             val success = PdfUtils.getFormAPdf(context = context, villageEntity = villageEntity,
                 didiDetailList = didiDetailList.value, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "") ?: "")
             withContext(Dispatchers.Main) {
-                delay(200)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = "digital_form_a", villageEntity.name) else null
+                delay(500)
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.name) else null
                 callBack(success, path)
             }
         }
@@ -54,8 +54,8 @@ class DigitalFormViewModel @Inject constructor(
                 didiDetailList = didiDetailList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
                 prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "") ?: "")
             withContext(Dispatchers.Main) {
-                delay(200)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = "digital_form_b", villageEntity.name) else null
+                delay(500)
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.name) else null
                 callBack(success, path)
             }
         }
@@ -68,8 +68,8 @@ class DigitalFormViewModel @Inject constructor(
                 didiDetailList = didiDetailList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal },
                 prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, "") ?: "")
             withContext(Dispatchers.Main) {
-                delay(200)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = "digital_form_c", villageEntity.name) else null
+                delay(500)
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.name) else null
                 callBack(success, path)
             }
         }
