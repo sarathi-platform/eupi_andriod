@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -33,7 +34,9 @@ data class TolaEntity(
     @ColumnInfo(name = "modifiedDate")
     var modifiedDate: Long,
     @ColumnInfo(name = "needsToPost")
-    var needsToPost: Boolean = true
+    var needsToPost: Boolean = true,
+    @ColumnInfo(name = "transactionId")
+    var transactionId: String? = ""
 ) {
 
     fun compare(other: GetCohortResponseModel, ignoreIds: Boolean = false): Boolean {
@@ -54,7 +57,8 @@ data class TolaEntity(
                 villageId = villageId,
                 status = 1,
                 createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                transactionId = ""
             )
         }
 
