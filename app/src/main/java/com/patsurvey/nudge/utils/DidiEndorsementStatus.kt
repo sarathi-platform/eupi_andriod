@@ -1,8 +1,18 @@
 package com.patsurvey.nudge.utils
 
 enum class DidiEndorsementStatus {
-    NO_STARTED,
+    NOT_STARTED,
     REJECTED,
-    ENDORSED,
+    ENDORSED;
+
+    companion object {
+        fun toInt(status: String): Int {
+            return when(status) {
+                ENDORSED.name -> ENDORSED.ordinal
+                REJECTED.name -> REJECTED.ordinal
+                else -> NOT_STARTED.ordinal
+            }
+        }
+    }
 
 }

@@ -6,6 +6,18 @@ enum class PatSurveyStatus {
     COMPLETED,
     NOT_AVAILABLE,
     NOT_AVAILABLE_WITH_CONTINUE
+    NOT_AVAILABLE;
+
+    companion object {
+        fun toInt(status: String) : Int {
+            return when(status) {
+                NOT_AVAILABLE.name -> NOT_AVAILABLE.ordinal
+                INPROGRESS.name -> INPROGRESS.ordinal
+                COMPLETED.name -> COMPLETED.ordinal
+                else -> NOT_STARTED.ordinal
+            }
+        }
+    }
 }
 
 enum class SHGFlag(val value: Int) {

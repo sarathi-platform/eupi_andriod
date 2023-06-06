@@ -10,9 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -63,7 +61,24 @@ fun DigitalFormCScreen(
             }
         }
     }
-    
+
+    val formPathState = remember {
+        mutableStateOf(
+            File(
+                "${
+                    context.getExternalFilesDir(
+                        Environment.DIRECTORY_DOCUMENTS
+                    )?.absolutePath
+                }"
+            )
+        )
+    }
+
+
+    val showLoader = remember {
+        mutableStateOf(false)
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -307,9 +322,10 @@ fun DigitalFormCScreen(
                                             ),
                                             color = textColorDark,
                                             modifier = Modifier.clickable {
-
+                                                navController.navigate("image_viewer/$FORM_C")
                                             }
                                         )
+                                        Spacer(modifier = Modifier.height(4.dp))
                                         Text(
                                             text = "Link Form D",
                                             style = TextStyle(
@@ -320,7 +336,7 @@ fun DigitalFormCScreen(
                                             ),
                                             color = textColorDark,
                                             modifier = Modifier.clickable {
-
+                                                navController.navigate("image_viewer/$FORM_D")
                                             }
                                         )
                                     }
@@ -351,9 +367,9 @@ fun DigitalFormCScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "digital_form_c_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
-                        viewModel.generateFormBPDF(context) {
+                        viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormBScreen", "Digital Form C Downloaded")
                             val fileUri = uriFromFile(context, pdfFile)
                             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -365,21 +381,42 @@ fun DigitalFormCScreen(
                                 null
                             )
                         }
-
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     OutlineButtonCustom(
                         modifier = Modifier
                             .background(white)
                             .weight(1f),
-                        buttonTitle = stringResource(R.string.download_button_text),
+                        buttonTitle = if (formPathState.value.isFile) stringResource(id = R.string.view) else {
+                            if (showLoader.value)
+                                stringResource(id = R.string.downloading_button_text)
+                            else
+                                stringResource(R.string.download_button_text)
+                        },
+                        showLoader = showLoader.value,
                     ) {
-                        viewModel.generateFormBPDF(context) {
-                            showToast(context, "Digital Form C Downloaded")
+                        if (formPathState.value.isFile) {
+                            navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                        } else {
+                            showLoader.value = true
+                            viewModel.generateFormCPdf(context) { formGenerated, formPath ->
+                                if (formGenerated) {
+                                    showToast(context, "Digital Form C Downloaded")
+                                    formPath?.let {
+                                        formPathState.value = it
+                                    }
+                                    showLoader.value = false
+                                } else {
+                                    showToast(
+                                        context,
+                                        "Something went wrong, unable to download form."
+                                    )
+                                    showLoader.value = false
+                                }
+                            }
                         }
                     }
                 }
-
             }
         }
 

@@ -79,6 +79,8 @@ const val ARG_FROM_PAT_SUMMARY_SCREEN = "from_pat_summary_screen"
 const val ARG_FROM_VO_ENDORSEMENT_SCREEN = "from_vo_endorsement_screen"
 const val ARG_VIDEO_ID = "video_id"
 const val PREF_FORM_PATH = "pref_form_path"
+const val ARG_FORM_PATH = "form_path"
+const val ARG_IMAGE_PATH = "image_path"
 const val FORM_C = "form_C"
 const val FORM_D = "form_D"
 const val USER_CRP = "CPR"
@@ -156,5 +158,10 @@ private val FabSize = 56.dp
 val ExtendedFabSize = 48.dp
 private val ExtendedFabIconPadding = 12.dp
 private val ExtendedFabTextPadding = 20.dp
+
+const val ACCEPTED = "ACCEPTED"
+const val FORM_A_PDF_NAME = "Digital_Form_A"
+const val FORM_B_PDF_NAME = "Digital_Form_B"
+const val FORM_C_PDF_NAME = "Digital_Form_C"
 
 
