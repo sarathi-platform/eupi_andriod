@@ -223,7 +223,7 @@ fun WealthRankingScreen(
             }
         }
 
-        if (viewModel.shouldShowBottomButton.value) {
+        if (viewModel.shouldShowBottomButton.value || didis.filter { it.wealth_ranking == WealthRank.NOT_RANKED.rank }.isEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {

@@ -90,6 +90,7 @@ fun VillageSelectionScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp, top = 12.dp)
+            .fillMaxWidth()
             .then(modifier)
     ) {
         Text(

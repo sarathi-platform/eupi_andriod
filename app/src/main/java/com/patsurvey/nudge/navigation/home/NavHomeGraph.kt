@@ -710,7 +710,7 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSEMENT_SURVEY_SUMMARY: VoEndorsmentScreeens(route = "vo_endorsement_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
-    object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : PatScreens(route = "vo_endorsement_digital_form_c_screen")
-    object IMAGE_VIEWER : SettingScreens(route = "image_viewer/{$ARG_IMAGE_PATH}")
+    object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : VoEndorsmentScreeens(route = "vo_endorsement_digital_form_c_screen")
+    object IMAGE_VIEWER : VoEndorsmentScreeens(route = "vo_image_viewer/{$ARG_IMAGE_PATH}")
 
 }

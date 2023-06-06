@@ -284,12 +284,14 @@ fun VoEndorsementSummaryScreen(
                             val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
-                                delay(2000)
+                                delay(1000)
                                 showDialog.value = false
+                                delay(1000)
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
-                                delay(2000)
+                                delay(1000)
                                 showDialog.value = false
+                                delay(100)
                                 navController.popBackStack()
                             }
                         }

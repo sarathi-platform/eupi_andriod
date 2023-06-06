@@ -24,6 +24,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -116,7 +117,11 @@ fun OtpCell(
         .height(dimensionResource(id = R.dimen.otp_box_height))
         .width(dimensionResource(id = R.dimen.otp_box_width))
         .padding(dimensionResource(id = R.dimen.dp_4))
-        .border(width = 1.dp, color = otpBorderColor, shape = MaterialTheme.shapes.small))
+        .border(
+            width = 1.dp,
+            color = if (isFocus) textColorDark else otpBorderColor,
+            shape = MaterialTheme.shapes.small
+        ))
         {
             Text(
                 text = char,

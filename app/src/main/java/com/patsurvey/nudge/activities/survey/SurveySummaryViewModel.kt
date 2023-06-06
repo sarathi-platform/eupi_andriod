@@ -384,4 +384,15 @@ class SurveySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            val currentStepIndex = stepList.map { it.id }.indexOf(currentStepId)
+
+            withContext(Dispatchers.Main) {
+                callBack(stepList.sortedBy { it.orderNumber }[currentStepIndex - 1].isComplete == StepStatus.COMPLETED.ordinal)
+            }
+        }
+    }
 }

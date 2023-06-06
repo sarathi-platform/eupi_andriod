@@ -250,7 +250,6 @@ class AddDidiViewModel @Inject constructor(
                 patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyStatus,
                 section1Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1Status,
                 section2Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2Status,
-
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)

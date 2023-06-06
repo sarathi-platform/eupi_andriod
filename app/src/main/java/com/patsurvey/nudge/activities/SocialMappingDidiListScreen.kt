@@ -553,6 +553,7 @@ private fun decoupledConstraints(): ConstraintSet {
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
+        val expendArrowImageEnd = createRefFor("expendArrowImageEnd")
         val moreActionIcon = createRefFor("moreActionIcon")
         val moreDropDown = createRefFor("moreDropDown")
         val didiDetailLayout = createRefFor("didiDetailLayout")
@@ -589,13 +590,19 @@ private fun decoupledConstraints(): ConstraintSet {
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
+            end.linkTo(moreActionIcon.start)
+        }
+
+        constrain(expendArrowImageEnd) {
+            top.linkTo(didiName.top)
+            bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
         }
 
         constrain(moreActionIcon) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
-            end.linkTo(expendArrowImage.start)
+            end.linkTo(parent.end, margin = 10.dp)
         }
 
         constrain(moreDropDown) {
@@ -874,7 +881,7 @@ fun DidiItemCard(
                         }
 
                         CardArrow(
-                            modifier = Modifier.layoutId("expendArrowImage"),
+                            modifier = Modifier.layoutId(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isSocialMappingComplete.value)"expendArrowImage" else "expendArrowImageEnd"),
                             degrees = arrowRotationDegree,
                             iconColor = animateColor,
                             onClick = { onExpendClick(expanded, didi) }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.annotation.SuppressLint
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -8,17 +7,14 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.model.request.PATSummarySaveRequest
-import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,7 +25,6 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class WealthRankingSurveyViewModel @Inject constructor(
@@ -42,7 +37,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
     val apiService: ApiService
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
@@ -62,9 +57,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
         fetchDidisFromDB()
     }
 
-    fun fetchDidisFromDB(){
-        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
+    fun fetchDidisFromDB() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
                 _didiList.emit(didiDao.getAllDidisForVillage(villageId))
             }
         }
@@ -80,34 +75,43 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
     }
 
-    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+    fun callWorkFlowAPI(
+        villageId: Int,
+        stepId: Int,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                if(dbResponse.workFlowId>0){
+                val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                if (dbResponse.workFlowId > 0) {
                     val response = apiService.editWorkFlow(
                         listOf(
                             EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        ) )
-                    withContext(Dispatchers.IO){
+                        )
+                    )
+                    withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateWorkflowId(
+                                    stepId,
+                                    dbResponse.workFlowId,
+                                    villageId,
+                                    it[0].status
+                                )
                             }
-                        }else{
+                        } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
 
-            }catch (ex:Exception){
+            } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
-
 
 
     fun markWealthRakningComplete(villageId: Int, stepId: Int) {
@@ -121,10 +125,18 @@ class WealthRankingSurveyViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId,
+                StepStatus.COMPLETED.ordinal,
+                villageId
+            )
+            val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
+            if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
+                stepsListDao.markStepAsInProgress(
+                    (stepDetails.orderNumber + 1),
+                    StepStatus.INPROGRESS.ordinal,
+                    villageId
+                )
             }
         }
     }
@@ -136,7 +148,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
         prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE, date)
     }
 
-    fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean)->Unit) {
+    fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepStatus = stepsListDao.isStepComplete(stepId, prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
@@ -148,26 +160,37 @@ class WealthRankingSurveyViewModel @Inject constructor(
             }
         }
     }
+
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
     }
 
-    fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
+    fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true,prefRepo.getSelectedVillage().id)
-                    if(needToPostDidiList.isNotEmpty()){
-                        needToPostDidiList.forEach { didi->
+                withContext(Dispatchers.IO) {
+                    val needToPostDidiList =
+                        didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
+                    if (needToPostDidiList.isNotEmpty()) {
+                        needToPostDidiList.forEach { didi ->
                             launch {
                                 didi.wealth_ranking.let {
-                                    val updateWealthRankResponse=apiService.updateDidiRanking(
-                                        listOf(EditDidiWealthRankingRequest(didi.id,StepType.WEALTH_RANKING.name,didi.wealth_ranking),
-                                            EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                                    val updateWealthRankResponse = apiService.updateDidiRanking(
+                                        listOf(
+                                            EditDidiWealthRankingRequest(
+                                                didi.id,
+                                                StepType.WEALTH_RANKING.name,
+                                                didi.wealth_ranking
+                                            ),
+                                            EditDidiWealthRankingRequest(
+                                                didi.id,
+                                                StepType.SOCIAL_MAPPING.name,
+                                                StepStatus.COMPLETED.name
+                                            )
                                         )
                                     )
-                                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                        didiDao.setNeedToPostRanking(didi.id,false)
+                                    if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                                        didiDao.setNeedToPostRanking(didi.id, false)
                                     } else {
                                         networkCallbackListener.onFailed()
                                     }
@@ -180,11 +203,24 @@ class WealthRankingSurveyViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onCatchError(ex)
                 networkCallbackListener.onFailed()
-                onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
+                onError(
+                    "WealthRankingSurveyViewModel",
+                    "onError: ${ex.message}, \n${ex.stackTrace}"
+                )
             }
         }
     }
 
+    fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            val currentStepIndex = stepList.map { it.id }.indexOf(currentStepId)
+
+            withContext(Dispatchers.Main) {
+                callBack(stepList.sortedBy { it.orderNumber }[currentStepIndex - 1].isComplete == StepStatus.COMPLETED.ordinal)
+            }
+        }
+    }
 
 
 }

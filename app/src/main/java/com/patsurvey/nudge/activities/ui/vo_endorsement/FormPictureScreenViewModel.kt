@@ -50,6 +50,9 @@ class FormPictureScreenViewModel @Inject constructor(
 
     val formsClicked = mutableStateOf(0)
 
+    val retakeImageIndex =
+        mutableStateOf(-1)
+
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
 
@@ -114,6 +117,13 @@ class FormPictureScreenViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    fun updateFormCImageCount(size: Int) {
+        prefRepo.savePref(PREF_FORM_C_PAGE_COUNT, size)
+    }
+    fun updateFormDImageCount(size: Int) {
+        prefRepo.savePref(PREF_FORM_D_PAGE_COUNT, size)
     }
 
 

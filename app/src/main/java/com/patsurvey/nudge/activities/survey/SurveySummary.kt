@@ -112,87 +112,94 @@ fun SurveySummary(
                 setShowDialog = {
                     showDialog.value = it
                 }) {
-                if ((context as MainActivity).isOnline.value ?: false) {
-                    surveySummaryViewModel.updatePatStatusToNetwork(object : NetworkCallbackListener {
-                        override fun onSuccess() {
-
-                        }
-
-                        override fun onFailed() {
-                            showCustomToast(context, SYNC_FAILED)
-                        }
-
-                    })
-                    surveySummaryViewModel.callWorkFlowAPI(
-                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                        stepId,
-                        object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-                        })
-                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                        surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
-                            override fun onSuccess() {
-
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-
-                        })
-                    }
-                }
-                if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                    surveySummaryViewModel.updateDidiPatStatus()
-                    surveySummaryViewModel.markPatComplete(
-                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                        stepId
-                    )
-                    surveySummaryViewModel.savePatCompletionDate()
-                    navController.navigate(
-                        "pat_step_completion_screen/${
-                            context.getString(R.string.pat_survey_completed_message).replace(
-                                "{VILLAGE_NAME}",
-                                surveySummaryViewModel.prefRepo.getSelectedVillage().name
-                            )
-                        }"
-                    )
-                } else {
-                    if ((context as MainActivity).isOnline.value ?: false) {
-                        surveySummaryViewModel.updateVoStatusToNetwork(object : NetworkCallbackListener{
-                            override fun onSuccess() {
-
-                            }
-
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
-
-                        })
-                        surveySummaryViewModel.callWorkFlowAPI(
-                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                            stepId,
-                            object :
-                                NetworkCallbackListener {
+                surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+                    if (isPreviousStepComplete) {
+                        if ((context as MainActivity).isOnline.value ?: false) {
+                            surveySummaryViewModel.updatePatStatusToNetwork(object : NetworkCallbackListener {
                                 override fun onSuccess() {
+
                                 }
 
                                 override fun onFailed() {
                                     showCustomToast(context, SYNC_FAILED)
                                 }
+
                             })
+                            surveySummaryViewModel.callWorkFlowAPI(
+                                surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                stepId,
+                                object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })
+                            }
+                        }
+                        if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                            surveySummaryViewModel.updateDidiPatStatus()
+                            surveySummaryViewModel.markPatComplete(
+                                surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                stepId
+                            )
+                            surveySummaryViewModel.savePatCompletionDate()
+                            navController.navigate(
+                                "pat_step_completion_screen/${
+                                    context.getString(R.string.pat_survey_completed_message).replace(
+                                        "{VILLAGE_NAME}",
+                                        surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                                    )
+                                }"
+                            )
+                        } else {
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                surveySummaryViewModel.updateVoStatusToNetwork(object : NetworkCallbackListener{
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })
+                                surveySummaryViewModel.callWorkFlowAPI(
+                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId,
+                                    object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
+                            }
+                            surveySummaryViewModel.updateDidiVoEndorsementStatus()
+                            surveySummaryViewModel.markVoEndorsementComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                            surveySummaryViewModel.saveVoEndorsementDate()
+                            navController.navigate(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route)
+                        }
+                    } else {
+                        showToast(context, "Previous Step Not Complete.")
                     }
-                    surveySummaryViewModel.updateDidiVoEndorsementStatus()
-                    surveySummaryViewModel.markVoEndorsementComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                    surveySummaryViewModel.saveVoEndorsementDate()
-                    navController.navigate(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route)
                 }
+
             }
         }
 

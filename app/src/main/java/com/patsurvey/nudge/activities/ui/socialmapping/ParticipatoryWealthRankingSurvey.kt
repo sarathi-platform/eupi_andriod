@@ -111,32 +111,45 @@ fun ParticipatoryWealthRankingSurvey(
                 setShowDialog = {
                     showDialog.value = it
                 }) {
-                if ((context as MainActivity).isOnline.value ?: false) {
-                    viewModel.updateWealthRankingToNetwork(object :
-                        NetworkCallbackListener {
-                        override fun onSuccess() {
+                viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+                    if (isPreviousStepComplete) {
+                        if ((context as MainActivity).isOnline.value ?: false) {
+                            viewModel.updateWealthRankingToNetwork(object :
+                                NetworkCallbackListener {
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+                            })
+                            viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
+                                NetworkCallbackListener {
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+                            })
                         }
 
-                        override fun onFailed() {
-                            showCustomToast(context, SYNC_FAILED)
-                        }
-                    })
-                    viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
-                        NetworkCallbackListener {
-                        override fun onSuccess() {
-                        }
-
-                        override fun onFailed() {
-                            showCustomToast(context, SYNC_FAILED)
-                        }
-                    })
+                        viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                        viewModel.saveWealthRankingCompletionDate()
+                        navController.navigate(
+                            "wr_step_completion_screen/${
+                                context.getString(R.string.wealth_ranking_completed_message)
+                                    .replace(
+                                        "{VILLAGE_NAME}",
+                                        viewModel.selectedVillage?.name ?: ""
+                                    )
+                            }"
+                        )
+                    } else {
+                        showToast(context, "Previous Step Not Complete.")
+                    }
                 }
-                viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
-                viewModel.saveWealthRankingCompletionDate()
-                navController.navigate("wr_step_completion_screen/${context.getString(R.string.wealth_ranking_completed_message).replace(
-                    "{VILLAGE_NAME}",
-                    viewModel.selectedVillage?.name ?: "")}"
-                )
+
             }
         }
 
@@ -197,11 +210,11 @@ fun ParticipatoryWealthRankingSurvey(
                             stringResource(
                                 id = if (showDidiListForRank.first) {
                                     when (showDidiListForRank.second) {
-                                        WealthRank.POOR -> if (count>1) R.string.poor_didi_item_text_plural else R.string.poor_didi_item_text
-                                        WealthRank.MEDIUM -> if (count>1) R.string.medium_didi_item_text_plural else  R.string.medium_didi_item_text
-                                        else -> if (count>1) R.string.rich_didi_item_text_plural else R.string.rich_didi_item_text
+                                        WealthRank.POOR -> if (count > 1) R.string.poor_didi_item_text_plural else R.string.poor_didi_item_text
+                                        WealthRank.MEDIUM -> if (count > 1) R.string.medium_didi_item_text_plural else R.string.medium_didi_item_text
+                                        else -> if (count > 1) R.string.rich_didi_item_text_plural else R.string.rich_didi_item_text
                                     }
-                                } else if (count >1) R.string.didis_item_text_plural else R.string.didis_item_text_singular
+                                } else if (count > 1) R.string.didis_item_text_plural else R.string.didis_item_text_singular
                             )
                         }",
                         modifier = Modifier
