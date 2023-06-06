@@ -220,4 +220,5 @@
     <string name="vo_endorsement_completion_dialog_message_singular">आप {COUNT} समर्थित दीदी के लिए अंतिम सबमिशन कर रहे हैं।.</string>
     <string name="form_picture_screen_title">फॉर्म के लिए फोटो जोड़ें</string>
     <string name="view">View Form</string>
+    <string name="continue_pat">PAT जारी रखें</string>
 </resources>

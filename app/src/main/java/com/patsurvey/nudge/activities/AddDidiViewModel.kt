@@ -111,6 +111,7 @@ class AddDidiViewModel @Inject constructor(
                     }
 
                 }
+                pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
                 filterDidiList = didiList.value
                 filterDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEach {
                     getDidiAvailabilityStatus(it.id)
@@ -162,6 +163,7 @@ class AddDidiViewModel @Inject constructor(
                 }
                 _didiList.value = updatedList
                 filterDidiList = didiList.value
+                pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
                 showLoader.value = false
             }
         }
@@ -459,6 +461,8 @@ class AddDidiViewModel @Inject constructor(
                     villageId = this.villageId,
                     needsToPost = false,
                     createdDate = it.createdDate,
+                    needsToPostPAT=oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].needsToPostPAT,
+                    needsToPostRanking =oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].needsToPostRanking,
                     modifiedDate = System.currentTimeMillis(),
                     beneficiaryProcessStatus = it.beneficiaryProcessStatus,
                     patSurveyStatus = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyStatus,
@@ -545,12 +549,20 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun setDidiAsUnavailable(didiId: Int) {
-        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE.ordinal
         _markedNotAvailable.value = _markedNotAvailable.value.also {
             it.add(didiId)
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+            val didiPatProgress = didiDao.getDidi(didiId).patSurveyStatus
+            if(didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
+                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+            }else{
+                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE.ordinal
+                didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+            }
+            didiDao.updateNeedToPostPAT(true,didiId,prefRepo.getSelectedVillage().id)
+            pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
         }
     }
 

@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -69,6 +70,7 @@ class SurveySummaryViewModel @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
+                            Log.d(TAG, "savePATSummeryToServer: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -115,8 +117,10 @@ class SurveySummaryViewModel @Inject constructor(
                                     }
 
                                 }
-                                answeredDidiList.add(
-                                    PATSummarySaveRequest(
+
+                            }
+                            answeredDidiList.add(
+                                PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
                                     beneficiaryId = didi.id,
@@ -124,21 +128,22 @@ class SurveySummaryViewModel @Inject constructor(
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
                                     userType = USER_CRP,
+                                    beneficiaryName= didi.name,
                                     answerDetailDTOList= qList,
                                     patSurveyStatus = didi.patSurveyStatus,
                                     section2Status = didi.section2Status,
                                     section1Status = didi.section1Status
                                 )
-                                )
-                            }
+                            )
                         }
-                        if(answeredDidiList.isNotEmpty()){
+                        /*if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
                                     networkCallbackListener.onSuccess()
                                     saveAPIResponse.data?.pATSummaryResponse?.let {
                                         it.forEach { patSummaryResponseItem ->
+                                            Log.d(TAG, "savePATSummeryToServer: ${patSummaryResponseItem?.beneficiaryId?:0} :: ${prefRepo.getSelectedVillage().id}")
                                             didiDao.updateNeedToPostPAT(false,patSummaryResponseItem?.beneficiaryId?:0,prefRepo.getSelectedVillage().id)
                                             val answersList= patSummaryResponseItem?.answers
                                             if(answersList?.isNotEmpty() == true){
@@ -146,11 +151,11 @@ class SurveySummaryViewModel @Inject constructor(
                                                     val answerDetails = answerDao.getQuestionAnswerForDidi(
                                                         patSummaryResponseItem.beneficiaryId?:0, answersItem?.questionId?:0)
 
-                                                    answerDetails?.let {
+                                                  *//*  answerDetails?.let {
                                                         answerDao.updateNeedToPost(patSummaryResponseItem.beneficiaryId?:0,
                                                             answersItem?.questionId?:0,
                                                             false)
-                                                    }
+                                                    }*//*
 
                                                 }
                                             }
@@ -161,7 +166,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
                             }
 
-                        }
+                        }*/
 
                     }
                 }

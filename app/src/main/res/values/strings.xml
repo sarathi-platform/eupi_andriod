@@ -207,6 +207,7 @@
     <string name="estimated_time_required">Estimated Time Required</string>
     <string name="size">Size</string>
     <string name="syncing">Syncing</string>
+    <string name="continue_pat">Continue PAT</string>
     <string name="pat_completion_dialog_message_plural">You are sending {COUNT} PAT completed Didis for VO Endorsement.</string>
     <string name="pat_completion_dialog_message_singular">You are sending {COUNT} PAT completed Didi for VO Endorsement.</string>
 

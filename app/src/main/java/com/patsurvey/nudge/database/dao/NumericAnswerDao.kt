@@ -36,4 +36,7 @@ interface NumericAnswerDao {
 
     @Query("SELECT * FROM $NUMERIC_TABLE_NAME where questionId =:questionId AND didiId =:didiId")
     fun getSingleQueOptions(questionId:Int,didiId:Int): List<NumericAnswerEntity>
+
+    @Query("SELECT SUM(weight * count) FROM $NUMERIC_TABLE_NAME where didiId =:didiId AND questionId = :questionId")
+    fun fetchTotalAmount(questionId:Int,didiId:Int):Int
 }

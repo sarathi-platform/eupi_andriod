@@ -140,6 +140,7 @@ class QuestionScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             withContext(Dispatchers.IO) {
+                didiDao.updateNeedToPostPAT(true,didiId, villageId = prefRepo.getSelectedVillage().id)
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
                     didiId = didiId,
                     questionId = questionId,
@@ -253,8 +254,8 @@ class QuestionScreenViewModel @Inject constructor(
                     totalAmount.value =0
                 } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
 
-                    val answer=answerDao.getNumTypeAnswer(didiId,questionList.value[quesIndex].questionId?:0,QuestionType.Numeric_Field.name)
-                    totalAmount.value =  answer.totalAssetAmount?:0
+                    val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
+                    totalAmount.value =  totalDBAmount
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
                 } else{
