@@ -2,8 +2,10 @@ package com.patsurvey.nudge.database.dao
 
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -86,8 +88,8 @@ interface DidiDao {
     @Query("update $DIDI_TABLE set cohortName = :newName where cohortId = :id")
     fun updateTolaName(id: Int, newName: String)
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost")
-    fun fetchAllDidiNeedToPost( needsToPost: Boolean) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId")
+    fun fetchAllDidiNeedToPost( needsToPost: Boolean,transactionId : String?) : List<DidiEntity>
 
     @Query("DELETE from $DIDI_TABLE where needsToPost = :needsToPost")
     fun deleteDidiNeedToPost( needsToPost: Boolean)
@@ -117,5 +119,11 @@ interface DidiDao {
 
     @Query("SELECT COUNT(*) FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus< 2 AND wealth_ranking='POOR' ORDER BY createdDate DESC")
     fun getAllPendingPATDidisCount(villageId: Int): Int
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
+    fun fetchPendingDidi(needsToPost: Boolean,transactionId : String?) : List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET transactionId = :transactionId WHERE id = :id")
+    fun updateDidiTransactionId(id: Int, transactionId: String)
 
 }

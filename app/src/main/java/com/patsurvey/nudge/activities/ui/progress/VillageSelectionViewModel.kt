@@ -204,8 +204,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.NOT_MARKED.value
-                                                    )
+                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        transactionId = "")
                                                 )
                                             }
                                         }
