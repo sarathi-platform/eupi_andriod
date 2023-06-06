@@ -9,14 +9,14 @@ import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 
 @Composable
-fun MainTitle(title: String, modifier: Modifier) {
+fun MainTitle(title: String, modifier: Modifier, align: TextAlign = TextAlign.Start) {
     Text(
         text = title,
         style = mediumTextStyle,
         color = black100Percent,
         modifier = modifier,
         maxLines = 1,
-        textAlign=TextAlign.Start,
+        textAlign=align,
         overflow = TextOverflow.Ellipsis,
     )
 }
