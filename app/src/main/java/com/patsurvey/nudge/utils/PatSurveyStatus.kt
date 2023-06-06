@@ -5,8 +5,7 @@ enum class PatSurveyStatus {
     INPROGRESS,
     COMPLETED,
     NOT_AVAILABLE,
-    NOT_AVAILABLE_WITH_CONTINUE
-    NOT_AVAILABLE;
+    NOT_AVAILABLE_WITH_CONTINUE;
 
     companion object {
         fun toInt(status: String) : Int {
@@ -14,6 +13,7 @@ enum class PatSurveyStatus {
                 NOT_AVAILABLE.name -> NOT_AVAILABLE.ordinal
                 INPROGRESS.name -> INPROGRESS.ordinal
                 COMPLETED.name -> COMPLETED.ordinal
+                NOT_AVAILABLE_WITH_CONTINUE.name -> NOT_AVAILABLE_WITH_CONTINUE.ordinal
                 else -> NOT_STARTED.ordinal
             }
         }
