@@ -6,6 +6,7 @@ enum class PatSurveyStatus {
     COMPLETED,
     NOT_AVAILABLE,
     NOT_AVAILABLE_WITH_CONTINUE;
+
     companion object {
         fun toInt(status: String) : Int {
             return when(status) {
