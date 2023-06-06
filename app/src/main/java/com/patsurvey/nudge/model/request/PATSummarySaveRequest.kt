@@ -31,6 +31,9 @@ data class PATSummarySaveRequest(
     @SerializedName("beneficiaryId")
     val beneficiaryId: Int? = 0,
 
+    @SerializedName("beneficiaryName")
+    val beneficiaryName: String? = BLANK_STRING,
+
     @ColumnInfo(name = "patSurveyStatus")
     var patSurveyStatus: Int=0,
 

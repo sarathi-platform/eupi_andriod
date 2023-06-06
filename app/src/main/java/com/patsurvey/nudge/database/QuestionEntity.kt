@@ -63,6 +63,9 @@ data class QuestionEntity(
 
     @ColumnInfo(name = "thresholdScore")
     var thresholdScore: Int? = 0,
+
+    @ColumnInfo(name = "headingProductAssetValue")
+    var headingProductAssetValue: String? = BLANK_STRING,
 )
 
 
