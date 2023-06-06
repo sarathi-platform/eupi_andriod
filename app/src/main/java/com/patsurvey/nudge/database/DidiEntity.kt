@@ -19,28 +19,28 @@ data class DidiEntity(
     var id: Int,
 
     @ColumnInfo(name = "name")
-    var name : String,
+    var name: String,
 
     @ColumnInfo(name = "address")
-    var address : String,
+    var address: String,
 
     @ColumnInfo(name = "guardianName")
-    var guardianName : String,
+    var guardianName: String,
 
     @ColumnInfo(name = "relationship")
-    var relationship : String,
+    var relationship: String,
 
     @ColumnInfo(name = "castId")
-    var castId : Int,
+    var castId: Int,
 
     @ColumnInfo(name = "castName")
-    var castName : String,
+    var castName: String,
 
     @ColumnInfo(name = "cohortId")
-    var cohortId : Int,
+    var cohortId: Int,
 
     @ColumnInfo(name = "cohortName")
-    var cohortName : String,
+    var cohortName: String,
 
     @ColumnInfo(name = "villageId")
     var villageId: Int,
@@ -65,30 +65,33 @@ data class DidiEntity(
 
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")
-    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>?= emptyList(),
+    var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>? = emptyList(),
 
     @ColumnInfo(name = "patSurveyStatus")
-    var patSurveyStatus: Int=0,
+    var patSurveyStatus: Int = 0,
 
     @ColumnInfo(name = "section1Status")
-    var section1Status: Int=0,
+    var section1Status: Int = 0,
 
     @ColumnInfo(name = "section2Status")
-    var section2Status: Int=0,
+    var section2Status: Int = 0,
 
     @ColumnInfo(name = "shgFlag")
     var shgFlag: Int,
 
     @ColumnInfo(name = "voEndorsementStatus")
-    var voEndorsementStatus: Int =0,
+    var voEndorsementStatus: Int = 0,
 
     @ColumnInfo(name = "forVoEndorsement")
-    var forVoEndorsement: Int =0,
+    var forVoEndorsement: Int = 0,
 
     @ColumnInfo(name = "needsToPostPAT")
     var needsToPostPAT: Boolean = true,
 
     @ColumnInfo(name = "needsToPostVo")
-    var needsToPostVo: Boolean = true
+    var needsToPostVo: Boolean = true,
+
+    @ColumnInfo(name = "transactionId")
+    var transactionId: String? = ""
 
 )

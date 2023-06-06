@@ -9,6 +9,7 @@ data class TolaApiResponse(
     @SerializedName("createdBy") var createdBy: Int,
     @SerializedName("modifiedBy") var modifiedBy: Int,
     @SerializedName("id") var id: Int,
+    @SerializedName("transactionId") var transactionId: String,
     @SerializedName("status") var status: Int,
     @SerializedName("name") var name: String,
     @SerializedName("type") var type: String,

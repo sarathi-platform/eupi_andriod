@@ -198,7 +198,8 @@ class AddDidiViewModel @Inject constructor(
                         villageId = prefRepo.getSelectedVillage().id,
                         createdDate = System.currentTimeMillis(),
                         modifiedDate = System.currentTimeMillis(),
-                        shgFlag = SHGFlag.NOT_MARKED.value
+                        shgFlag = SHGFlag.NOT_MARKED.value,
+                        transactionId = ""
                     )
                 )
 
@@ -250,7 +251,7 @@ class AddDidiViewModel @Inject constructor(
                 patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyStatus,
                 section1Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1Status,
                 section2Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2Status,
-
+                transactionId = ""
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
@@ -468,7 +469,8 @@ class AddDidiViewModel @Inject constructor(
                     patSurveyStatus = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyStatus,
                     section1Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section1Status,
                     section2Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section2Status,
-                    shgFlag = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].shgFlag
+                    shgFlag = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].shgFlag,
+                    transactionId = ""
                 )
             )
         }
