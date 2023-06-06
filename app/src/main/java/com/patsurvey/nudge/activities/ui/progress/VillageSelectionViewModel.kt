@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import android.content.Context
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -173,6 +172,18 @@ class VillageSelectionViewModel @Inject constructor(
                                                 casteName = it.casteName
                                             }
                                             if (singleTola != null) {
+                                                val wealthRanking = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.WEALTH_RANKING.name))
+                                                    didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.WEALTH_RANKING.name)].status
+                                                else
+                                                    WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.PAT_SURVEY.name))
+                                                    PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status)
+                                                else
+                                                    PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus = if (didi.beneficiaryProcessStatus.map { it.name }.contains(StepType.VO_ENDORSEMENT.name))
+                                                    DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(StepType.PAT_SURVEY.name)].status)
+                                                else
+                                                    DidiEndorsementStatus.NOT_STARTED.ordinal
                                                 didiDao.insertDidi(
                                                     DidiEntity(
                                                         id = didi.id,
@@ -186,11 +197,15 @@ class VillageSelectionViewModel @Inject constructor(
                                                         villageId = village.id,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
+                                                        wealth_ranking = wealthRanking,
+                                                        patSurveyStatus = patSurveyStatus,
+                                                        voEndorsementStatus = voEndorsementStatus,
                                                         needsToPostRanking = false,
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.NOT_MARKED.value                                                    )
+                                                        shgFlag = SHGFlag.NOT_MARKED.value
+                                                    )
                                                 )
                                             }
                                         }
@@ -396,6 +411,9 @@ class VillageSelectionViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
 //        showLoader.value = false
+//        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            _villagList.value = villageListDao.getAllVillages()
+//        }
         networkErrorMessage.value= error?.message.toString()
     }
 

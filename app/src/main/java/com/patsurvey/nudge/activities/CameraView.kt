@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
@@ -75,7 +76,9 @@ fun CameraView(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .then(modifier)) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
         Icon(
@@ -218,28 +221,24 @@ fun CameraViewForForm(
         preview.setSurfaceProvider(previewView.surfaceProvider)
     }
 
-    Box(modifier = Modifier.fillMaxSize().then(modifier)) {
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .then(modifier)) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
-        Icon(
-            imageVector = Icons.Default.Close,
-            contentDescription = "close camera",
-            tint = white,
-            modifier = Modifier
-                .align(
-                    Alignment.TopStart
-                )
-                .padding(start = 10.dp, top = 10.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(
-                        bounded = true,
-                        color = Color.Black
+        IconButton(onClick = { onCloseButtonClicked() }) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "close camera",
+                tint = white,
+                modifier = Modifier
+                    .align(
+                        Alignment.TopStart
                     )
-                ) {
-                    onCloseButtonClicked()
-                }
-        )
+                    .padding(start = 4.dp, top = 4.dp)
+            )
+        }
+
         Box(
             modifier = Modifier
                 .padding(bottom = 20.dp)

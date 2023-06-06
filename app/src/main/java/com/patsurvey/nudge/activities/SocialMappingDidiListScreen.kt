@@ -562,6 +562,8 @@ private fun decoupledConstraints(): ConstraintSet {
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
+        val moreActionIcon = createRefFor("moreActionIcon")
+        val moreDropDown = createRefFor("moreDropDown")
         val didiDetailLayout = createRefFor("didiDetailLayout")
 
 
@@ -573,19 +575,19 @@ private fun decoupledConstraints(): ConstraintSet {
         constrain(didiName) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(didiRow) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(village) {
             start.linkTo(homeImage.end, margin = 10.dp)
             top.linkTo(didiName.bottom)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
@@ -597,6 +599,17 @@ private fun decoupledConstraints(): ConstraintSet {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
+        }
+
+        constrain(moreActionIcon) {
+            top.linkTo(didiName.top)
+            bottom.linkTo(village.bottom)
+            end.linkTo(expendArrowImage.start)
+        }
+
+        constrain(moreDropDown) {
+            top.linkTo(moreActionIcon.bottom)
+            end.linkTo(moreActionIcon.end)
         }
 
         constrain(didiDetailLayout) {
@@ -749,13 +762,18 @@ fun DidiItemCard(
     }, label = "rotationDegreeTransition") {
         if (it) 180f else 0f
     }
+
+    val showMenu = remember {
+        mutableStateOf(false)
+    }
+
     Card(
         elevation = 10.dp,
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onItemClick(didi)
+                onExpendClick(expanded, didi)
             }
             .then(modifier)
     ) {
@@ -823,6 +841,47 @@ fun DidiItemCard(
                     if (!didiViewModel.prefRepo.getFromPage()
                             .equals(ARG_FROM_PAT_SURVEY, true)
                     ) {
+
+                        IconButton(onClick = {
+                                             showMenu.value = !showMenu.value
+                        }, modifier = Modifier
+                            .layoutId("moreActionIcon")
+                            .visible(
+                                !didiViewModel.prefRepo
+                                    .getFromPage()
+                                    .equals(
+                                        ARG_FROM_PAT_SURVEY,
+                                        true
+                                    ) && !didiViewModel.isSocialMappingComplete.value
+                            )) {
+                            Icon(painter = painterResource(id = R.drawable.baseline_more_icon), contentDescription = "more action", tint = textColorDark)
+                        }
+
+                        Box(modifier = Modifier.layoutId("moreDropDown")) {
+                            DropdownMenu(
+                                expanded = showMenu.value,
+                                onDismissRequest = { showMenu.value = false },
+                                modifier = Modifier
+                            ) {
+                                DropdownMenuItem(onClick = { onItemClick(didi) }) {
+                                    Text(
+                                        text = "Edit",
+                                        style = quesOptionTextStyle,
+                                        color = textColorDark
+                                    )
+                                }
+                                DropdownMenuItem(onClick = {
+                                    //TODO Add Delete Functionality after discussion
+                                }) {
+                                    Text(
+                                        text = "Delete",
+                                        style = quesOptionTextStyle,
+                                        color = textColorDark
+                                    )
+                                }
+                            }
+                        }
+
                         CardArrow(
                             modifier = Modifier.layoutId("expendArrowImage"),
                             degrees = arrowRotationDegree,
