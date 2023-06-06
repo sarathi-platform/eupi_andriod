@@ -53,6 +53,7 @@ val yellowBg = Color(0xFFFCF6F0)
 
 val black1 = Color(0xCC271914)
 val black2 = Color(0xFF271424)
+val black20 = Color(0x33000000)
 
 val white = Color(0xFFFFFFFF)
 
@@ -87,3 +88,5 @@ val rejectEndorsementColor = Color(0xFFF8D5D5)
 
 val acceptEndorsementTextColor = Color(0xFF439A86)
 val rejectEndorsementTextColor = Color(0xFFE31F06)
+
+val pdfViewerBg = Color(0xFFf1f3f4)

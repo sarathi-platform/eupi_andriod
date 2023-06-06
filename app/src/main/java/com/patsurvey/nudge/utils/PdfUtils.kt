@@ -34,9 +34,9 @@ object PdfUtils {
     private val contentTextProperties = getContentTextProperties()
     private val cellDataTextProperties = getTextPropertiesForCell()
 
-    suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String){
+    suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean{
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_a")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
         simplyPdfDocument.text.write("List of households categorized into Rich, Medium, and Poor in Participatory Wealth Ranking", subTitleTextProperties)
@@ -155,14 +155,15 @@ object PdfUtils {
 
         })
 
-        simplyPdfDocument.finish()
+        val success = simplyPdfDocument.finish()
+        return success
     }
 
 
 
-    suspend fun getFormBPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String) {
+    suspend fun getFormBPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_b")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_B_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
 
@@ -234,13 +235,13 @@ object PdfUtils {
 
         simplyPdfDocument.insertEmptyLines(1)
 
-        simplyPdfDocument.finish()
-
+        val success = simplyPdfDocument.finish()
+        return success
     }
 
-    suspend fun getFormCPdg(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String) {
+    suspend fun getFormCPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean {
 
-        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, "digital_form_c")
+        val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_C_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
 
@@ -312,7 +313,8 @@ object PdfUtils {
 
         simplyPdfDocument.insertEmptyLines(1)
 
-        simplyPdfDocument.finish()
+        val success = simplyPdfDocument.finish()
+        return success
 
     }
 
@@ -325,7 +327,7 @@ object PdfUtils {
             .build()
     }
 
-    private fun getPdfPath(context: Context, formName: String, villageName: String): File {
+    fun getPdfPath(context: Context, formName: String, villageName: String): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageName}.pdf")
     }
 
