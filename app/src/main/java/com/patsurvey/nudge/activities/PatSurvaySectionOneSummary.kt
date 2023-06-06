@@ -120,7 +120,7 @@ fun PatSurvaySectionSummaryScreen(
                     style = buttonTextStyle.copy(lineHeight = 22.sp)
                 )
                 Text(
-                    text = stringResource(id = R.string.result_summary),
+                    text = stringResource(id = R.string.summary_text),
                     modifier = Modifier
                         .layoutId("sectionText"),
                     color = textColorDark,

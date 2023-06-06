@@ -60,7 +60,7 @@ fun HomeScreen(
                         painterResource(R.drawable.progress_icon)
                     ),
                     BottomNavItem(
-                        stringResource(R.string.didis_item_text),
+                        stringResource(R.string.didi_endorsed_text_plural),
                         HomeScreens.DIDI_SCREEN.route,
                         painterResource(R.drawable.didi_icon)
                     ),

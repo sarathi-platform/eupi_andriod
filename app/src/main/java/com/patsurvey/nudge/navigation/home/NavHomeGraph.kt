@@ -562,7 +562,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.PROFILE_SCREEN.route) {
-            ProfileScreen(profileScreenVideModel = hiltViewModel())
+            ProfileScreen(profileScreenVideModel = hiltViewModel(), navController = navController)
         }
 
         composable(route = SettingScreens.FORM_A_SCREEN.route) {

@@ -36,7 +36,7 @@ import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.IncrementDecrementView
 
 
@@ -213,7 +213,7 @@ fun NumericFieldTypeQuestion(
                             bottom.linkTo(parent.bottom)
                         }
                     ) {
-                ButtonPositive(buttonTitle = stringResource(id = R.string.next), isArrowRequired = false) {
+                ButtonOutline(modifier = Modifier.height(45.dp), buttonTitle = stringResource(id = R.string.next), contentPadding = PaddingValues(vertical = 0.dp)) {
                     onSubmitClick()
                 }
             }

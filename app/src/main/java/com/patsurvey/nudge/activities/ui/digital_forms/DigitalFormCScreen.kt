@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.digital_forms
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -51,6 +52,18 @@ fun DigitalFormCScreen(
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
+    BackHandler() {
+        if (fromScreen == ARG_FROM_SETTING)
+            navController.popBackStack()
+        else {
+            navController.navigate(Graph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    inclusive = true
+                }
+            }
+        }
+    }
+    
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -239,56 +252,82 @@ fun DigitalFormCScreen(
                         .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
-                    Column() {
+                    ConstraintLayout() {
+                        val (listBox, bottomBox) = createRefs()
                         LazyColumn(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .constrainAs(listBox) {
+                                    top.linkTo(parent.top)
+                                    start.linkTo(parent.start)
+                                    bottom.linkTo(bottomBox.top)
+                                    height = Dimension.fillToConstraints
+                                }
                         ) {
                             items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }) { card ->
                                 DidiVillageItem(card)
                             }
                             item {
+                                Spacer(modifier = Modifier.height(10.dp))
+                            }
+                        }
+                        Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier
+                            .fillMaxWidth()
+                            .constrainAs(bottomBox) {
+                                bottom.linkTo(parent.bottom)
+                                start.linkTo(parent.start)
+                            }
+                            .background(Color.White)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
+                        ) {
+                            Column() {
                                 Divider(
                                     color = borderGreyLight,
                                     thickness = 1.dp,
                                     modifier = Modifier
                                         .padding(vertical = 4.dp)
                                 )
-                            }
-                        }
-                        Row(horizontalArrangement = Arrangement.SpaceBetween) {
-                            Image(
-                                painter = painterResource(id = R.drawable.endorsement_badge),
-                                contentDescription = null
-                            )
-                            Column() {
-                                Text(
-                                    text = "Link Form C",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        textDecoration = TextDecoration.Underline
-                                    ),
-                                    color = textColorDark,
-                                    modifier = Modifier.clickable {
+                                Row(
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Image(
+                                        painter = painterResource(id = R.drawable.endorsement_badge),
+                                        contentDescription = null
+                                    )
+                                    Column() {
+                                        Text(
+                                            text = "Link Form C",
+                                            style = TextStyle(
+                                                fontFamily = NotoSans,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp,
+                                                textDecoration = TextDecoration.Underline
+                                            ),
+                                            color = textColorDark,
+                                            modifier = Modifier.clickable {
 
-                                    }
-                                )
-                                Text(
-                                    text = "Link Form D",
-                                    style = TextStyle(
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 14.sp,
-                                        textDecoration = TextDecoration.Underline
-                                    ),
-                                    color = textColorDark,
-                                    modifier = Modifier.clickable {
+                                            }
+                                        )
+                                        Text(
+                                            text = "Link Form D",
+                                            style = TextStyle(
+                                                fontFamily = NotoSans,
+                                                fontWeight = FontWeight.SemiBold,
+                                                fontSize = 14.sp,
+                                                textDecoration = TextDecoration.Underline
+                                            ),
+                                            color = textColorDark,
+                                            modifier = Modifier.clickable {
 
+                                            }
+                                        )
                                     }
-                                )
+                                }
+
                             }
+
                         }
                     }
                 }
@@ -297,6 +336,7 @@ fun DigitalFormCScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 16.dp)
+
 //                    .padding(bottom = 70.dp)
                 ) {
                     ButtonNegative(

@@ -96,6 +96,7 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
+        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -183,13 +184,13 @@ fun SocialMappingDidiListScreen(
                                     .equals(ARG_FROM_HOME, true))
                                 stringResource(R.string.social_mapping)
                             else
-                                stringResource(R.string.didis_item_text)
+                                stringResource(R.string.didis_item_text_plural)
                             MainTitle(title, Modifier.weight(0.5f))
                             if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
                                 && !didiViewModel.prefRepo.getFromPage()
                                     .equals(ARG_FROM_PAT_SURVEY, true)
                             ) {
-//                                if (!didiViewModel.isSocialMappingComplete.value) {
+                                if (!didiViewModel.isVoEndorsementComplete.value) {
                                     BlueButtonWithIconWithFixedWidth(
                                         modifier = Modifier
                                             .weight(0.5f),
@@ -201,7 +202,7 @@ fun SocialMappingDidiListScreen(
                                             launchSingleTop = true
                                         }
                                     }
-//                                }
+                                }
                             }
                         }
                     }
@@ -252,8 +253,6 @@ fun SocialMappingDidiListScreen(
                                             else{
                                                 pluralStringResource(id =  R.plurals.poor_didis_pending_text, count = didiViewModel.pendingDidiCount.value)
                                             }
-                                               
-                                            
                                         }"
                                     )
                                 },

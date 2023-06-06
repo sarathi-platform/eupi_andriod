@@ -1,9 +1,15 @@
 package com.patsurvey.nudge
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -11,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -21,28 +28,39 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 
 @Composable
 fun ProfileScreen(
+    navController: NavHostController,
     modifier: Modifier = Modifier,
     profileScreenVideModel: ProfileScreenViewModel
 ) {
 
-    Column() {
-
-        Box(modifier = Modifier.fillMaxWidth().padding(start = 16.dp)) {
-            Text(
-                text = "User Profile",
-                color = textColorDark,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start,
-                style = largeTextStyle
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "User Profile",
+                        color = textColorDark,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                        style = largeTextStyle
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
+                    }
+                },
+                backgroundColor = Color.White
             )
         }
+    ) {
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .padding(top = 8.dp),
+                .padding(top = it.calculateTopPadding() + 20.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
 
@@ -52,7 +70,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -62,7 +80,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = NotoSans
                         )
@@ -77,7 +95,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -87,7 +105,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = NotoSans
                         )
@@ -102,7 +120,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -112,7 +130,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = NotoSans
                         )
@@ -127,7 +145,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.SemiBold,
                             fontFamily = NotoSans
                         )
@@ -137,7 +155,7 @@ fun ProfileScreen(
                     withStyle(
                         style = SpanStyle(
                             color = textColorDark,
-                            fontSize = 12.sp,
+                            fontSize = 14.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = NotoSans
                         )

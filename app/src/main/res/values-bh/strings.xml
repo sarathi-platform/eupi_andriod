@@ -11,17 +11,23 @@
     <string name="go_back_text">वापस जाइए</string>
 
     <string name="progress_item_text">आगे बढ़ल</string>
-    <string name="didis_item_text">बड़हन</string>
+    <string name="didis_item_text_plural">दीदीया</string>
+    <string name="didis_item_text_singular">दीदी</string>
     <string name="didis_list_text">दीदियों की सूची</string>
     <string name="poor_didi_item_text">गरीब दीदी</string>
     <string name="medium_didi_item_text">माध्यम दीदी</string>
     <string name="rich_didi_item_text">अमीर दीदी</string>
+    <string name="poor_didi_item_text_plural">गरीब दीदीया</string>
+    <string name="medium_didi_item_text_plural">माध्यम दीदीया</string>
+    <string name="rich_didi_item_text_plural">अमीर दीदीया</string>
     <string name="more_item_text">अधिका</string>
 
     <string name="online_text">ऑनलाइन</string>
     <string name="offline_text">ऑफलाइन बा</string>
     <string name="choose_language">भाषा चुने के बा</string>
     <string name="continue_text">चालू रखीं</string>
+    <string name="continue_pat_text">PAT जारी रखें</string>
+
     <string name="enter_mobile_number">मोबाइल नंबर दर्ज करीं</string>
     <string name="mobile_text">मोबाइल</string>
     <string name="verification_text">सत्यापन के बा</string>
@@ -140,6 +146,7 @@
     <string name="yes_text">हाँ</string>
     <string name="share_button_text">शेयर करें</string>
     <string name="download_button_text">डाउनलोड करें</string>
+    <string name="downloading_button_text">Downloading</string>
     <string name="option_yes">हाँ</string>
     <string name="option_no">नहीं</string>
     <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
@@ -148,12 +155,12 @@
     <string name="logout">लॉग आउट</string>
     <string name="this_section_is_in_progress">ई खंड InProgress अवस्था में बा</string>
     <string name="sync_up">डेटा सिंक करें</string>
-    <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: 24 दिन पहिले</string>
+    <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: {LAST_SYNC_TIME}</string>
     <string name="profile">प्रोफाइल</string>
     <string name="forms">फार्म</string>
     <string name="training_videos">प्रशिक्षण वीडियो</string>
     <string name="language_text">भाषा</string>
-    <string name="productive_asset_owned_by_family">परिवार के स्वामित्व वाली उत्पादक संपत्ति</string>
+    <string name="productive_asset_owned_by_family"><!--परिवार के स्वामित्व वाली उत्पादक संपत्ति-->कमाई अनुपात</string>
     <string name="complete_pat_survey">पूर्ण पीएटी सर्वेक्षण</string>
     <string name="total_productive_asset_value">कुल उत्पादक संपत्ति मूल्य  = ₹ %1$s/-</string>
     <string name="complete">पूर्ण करे</string>
@@ -205,5 +212,14 @@
     <string name="estimated_time_required">Estimated Time Required</string>
     <string name="size">Size</string>
     <string name="syncing">Syncing</string>
+
+    <string name="pat_completion_dialog_message_plural">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदीया भेज रहे हैं।</string>
+    <string name="pat_completion_dialog_message_singular">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदी भेज रहे हैं।</string>
+
+    <string name="vo_endorsement_completion_dialog_message_plural">आप {COUNT} समर्थित दीदियों के लिए अंतिम सबमिशन कर रहे हैं।</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">आप {COUNT} समर्थित दीदी के लिए अंतिम सबमिशन कर रहे हैं।.</string>
+    <string name="form_picture_screen_title">फॉर्म के लिए फोटो जोड़ें</string>
+    <string name="view">View Form</string>
+
     <string name="continue_pat">PAT जारी रखें</string>
 </resources>

@@ -183,24 +183,25 @@ fun ParticipatoryWealthRankingSurvey(
                         .fillMaxWidth()
                         .padding(vertical = 2.dp)
                 ) {
+                    var count: Int = if (showDidiListForRank.first) {
+                        when (showDidiListForRank.second) {
+                            WealthRank.POOR -> didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
+                            WealthRank.MEDIUM -> didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size
+                            else -> didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size
+                        }
+                    } else {
+                        didids.value.size
+                    }
                     Text(
-                        text = "${if (showDidiListForRank.first) {
-                            when (showDidiListForRank.second) {
-                                WealthRank.POOR -> didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
-                                WealthRank.MEDIUM -> didids.value.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size
-                                else -> didids.value.filter { it.wealth_ranking == WealthRank.RICH.rank }.size
-                            }
-                        } else
-                            didids.value.size
-                        } ${
+                        text = "$count ${
                             stringResource(
                                 id = if (showDidiListForRank.first) {
                                     when (showDidiListForRank.second) {
-                                        WealthRank.POOR -> R.string.poor_didi_item_text
-                                        WealthRank.MEDIUM -> R.string.medium_didi_item_text
-                                        else -> R.string.rich_didi_item_text
+                                        WealthRank.POOR -> if (count>1) R.string.poor_didi_item_text_plural else R.string.poor_didi_item_text
+                                        WealthRank.MEDIUM -> if (count>1) R.string.medium_didi_item_text_plural else  R.string.medium_didi_item_text
+                                        else -> if (count>1) R.string.rich_didi_item_text_plural else R.string.rich_didi_item_text
                                     }
-                                } else R.string.didis_item_text
+                                } else if (count >1) R.string.didis_item_text_plural else R.string.didis_item_text_singular
                             )
                         }",
                         modifier = Modifier

@@ -6,10 +6,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -28,7 +28,6 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CircularProgressBarWithOutText
@@ -60,55 +59,74 @@ fun VideoListScreen(
     val downloadStatus = viewModel.downloadStauts.collectAsState()
 
 
-    Column(modifier = modifier) {
-        MainTitle("Training Videos", Modifier.padding(start = 16.dp, end = 16.dp, top = 30.dp))
+    Scaffold(modifier = modifier,
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Training Videos",
+                        color = textColorDark,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        textAlign = TextAlign.Start,
+                        style = largeTextStyle
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
+                    }
+                },
+                backgroundColor = Color.White
+            )
+        }) {
 
-        SearchWithFilterView(placeholderString = stringResource(id = R.string.search_video),
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp),
-            showFilter = false,
-            filterSelected = filterSelected,
-            onFilterSelected = {
+        Column() {
 
-            }, onSearchValueChange = {
-                viewModel.performQuery(it)
-            }
-        )
+            SearchWithFilterView(placeholderString = stringResource(id = R.string.search_video),
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = it.calculateTopPadding()+20.dp),
+                showFilter = false,
+                filterSelected = filterSelected,
+                onFilterSelected = {
 
-        Text(
-            text = "Showing ${videoList.size} Videos",
-            style = TextStyle(
-                color = textColorDark,
-                fontSize = 14.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = NotoSans
-            ),
-            modifier = Modifier
-                .align(Alignment.Start)
-                .padding(start = 16.dp, end = 16.dp, top = 20.dp)
-        )
+                }, onSearchValueChange = {
+                    viewModel.performQuery(it)
+                }
+            )
 
-        LazyColumn(
-            contentPadding = PaddingValues(bottom = 10.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            itemsIndexed(
-                trainingVideos
-            ) { index, videoItem ->
-                VideoItemCard(
-                    Modifier
-                        .debounceClickable {
-                            navController.navigate("video_player_screen/${videoItem.id}")
-                        }, videoItem, viewModel,
-                    mDownloadStatus = downloadStatus.value[videoItem.id]
-                        ?: DownloadStatus.UNAVAILABLE
-                )
+            Text(
+                text = "Showing ${videoList.size} Videos",
+                style = TextStyle(
+                    color = textColorDark,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .align(Alignment.Start)
+                    .padding(start = 16.dp, end = 16.dp, top = 20.dp)
+            )
+
+            LazyColumn(
+                contentPadding = PaddingValues(bottom = 10.dp),
+                verticalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                itemsIndexed(
+                    trainingVideos
+                ) { index, videoItem ->
+                    VideoItemCard(
+                        Modifier
+                            .debounceClickable {
+                                navController.navigate("video_player_screen/${videoItem.id}")
+                            }, videoItem, viewModel,
+                        mDownloadStatus = downloadStatus.value[videoItem.id]
+                            ?: DownloadStatus.UNAVAILABLE
+                    )
+                }
             }
         }
-
-
     }
-
 }
 
 @Composable

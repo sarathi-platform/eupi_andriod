@@ -36,14 +36,15 @@ import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 @Composable
@@ -55,11 +56,15 @@ fun SettingScreen(
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val list = ArrayList<SettingOptionModel>()
+    val lastSyncTimeInMS = viewModel.prefRepo.getPref(
+        LAST_SYNC_TIME, 0L)
+    val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
+    val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
     list.add(
         SettingOptionModel(
             1,
             context.getString(R.string.sync_up),
-            context.getString(R.string.last_syncup_text)
+            context.getString(R.string.last_syncup_text).replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
         )
     )
     list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
@@ -101,7 +106,24 @@ fun SettingScreen(
             .background(Color.White)
             .then(modifier),
         topBar = {
-            Row(
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Settings",
+                        style = mediumTextStyle,
+                        color = textColorDark,
+                        modifier = Modifier,
+                        textAlign = TextAlign.Center
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
+                    }
+                },
+                backgroundColor = Color.White
+            )
+            /*Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier
@@ -127,7 +149,7 @@ fun SettingScreen(
                 Spacer(modifier = Modifier
                     .size(24.dp)
                     .padding(vertical = 10.dp))
-            }
+            }*/
         }
     ) {
         ConstraintLayout(
@@ -212,6 +234,7 @@ fun SettingScreen(
                     viewModel.showLoader.value = false
                 })
                 viewModel.syncDataOnServer(context)
+                viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             }
             if (showSyncDialog.value) {
                 showSyncDialog(setShowDialog = {
@@ -230,6 +253,11 @@ fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit
 ) {
+
+    val context = LocalContext.current
+
+    val isInternetConnected = (context as MainActivity).isOnline.value
+
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
             shape = RoundedCornerShape(6.dp),
@@ -273,10 +301,11 @@ fun showSyncDialog(
                         )
 
                         Text(
-                            text = "connected",
+                            text = if(isInternetConnected) "Connected" else stringResource(id = R.string.no_internet),
                             style = didiDetailItemStyle,
                             textAlign = TextAlign.Start,
-                            modifier = Modifier
+                            modifier = Modifier,
+                            color = if (isInternetConnected) greenOnline else redOffline
                         )
                     }
                     Row {

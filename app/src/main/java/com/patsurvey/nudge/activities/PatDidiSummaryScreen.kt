@@ -350,7 +350,7 @@ fun PatDidiSummaryScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier.fillMaxWidth().height(45.dp),
                                 buttonTitle = "Retake Photo"
                             ) {
                                 patDidiSummaryViewModel.setCameraExecutor()
@@ -362,7 +362,7 @@ fun PatDidiSummaryScreen(
                             BlueButtonWithIcon(
                                 buttonText = "Take Photo",
                                 icon = Icons.Default.Add,
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier.fillMaxWidth().height(45.dp)
                             ) {
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }

@@ -67,6 +67,13 @@ fun VoEndorsementScreen(
 
     val localDensity = LocalDensity.current
 
+    LaunchedEffect(key1 = true) {
+        viewModel.getVoEndorsementStepStatus(stepId) {
+            if (it)
+                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
+        }
+    }
+
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -100,7 +107,8 @@ fun VoEndorsementScreen(
 
                 VOAndVillageBoxView(
                     prefRepo = viewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    startPadding = 0.dp
                 )
 
                 LazyColumn(
@@ -205,7 +213,7 @@ fun VoEndorsementScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isEmpty()) {
+        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NO_STARTED.ordinal }.isNotEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
