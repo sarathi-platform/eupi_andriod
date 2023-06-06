@@ -70,7 +70,7 @@ class SurveySummaryViewModel @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
-                            Log.d(TAG, "savePATSummeryToServer: ${didi.id} :: ${didi.patSurveyStatus}")
+                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -140,27 +140,11 @@ class SurveySummaryViewModel @Inject constructor(
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
-                                    networkCallbackListener.onSuccess()
-                                    saveAPIResponse.data?.pATSummaryResponse?.let {
-                                        it.forEach { patSummaryResponseItem ->
-                                            Log.d(TAG, "savePATSummeryToServer: ${patSummaryResponseItem?.beneficiaryId?:0} :: ${prefRepo.getSelectedVillage().id}")
-                                            didiDao.updateNeedToPostPAT(false,patSummaryResponseItem?.beneficiaryId?:0,prefRepo.getSelectedVillage().id)
-                                            val answersList= patSummaryResponseItem?.answers
-                                            if(answersList?.isNotEmpty() == true){
-                                                answersList.forEach { answersItem ->
-                                                    val answerDetails = answerDao.getQuestionAnswerForDidi(
-                                                        patSummaryResponseItem.beneficiaryId?:0, answersItem?.questionId?:0)
-
-                                                    answerDetails?.let {
-                                                        answerDao.updateNeedToPost(patSummaryResponseItem.beneficiaryId?:0,
-                                                            answersItem?.questionId?:0,
-                                                            false)
-                                                    }
-
-                                                }
-                                            }
-                                        }
+                                    didiIDList.forEach { didiItem->
+                                        didiDao.updateNeedToPostPAT(false,didiItem.id,prefRepo.getSelectedVillage().id)
                                     }
+                                    networkCallbackListener.onSuccess()
+
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }

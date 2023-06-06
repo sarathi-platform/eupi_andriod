@@ -94,7 +94,7 @@ interface ApiService {
 
     @POST("/pat-api/pat/save")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun savePATSurveyToServer(@Body patSummarySaveRequest: List<PATSummarySaveRequest>): ApiResponseModel<SavePATSummaryResponse>
+    suspend fun savePATSurveyToServer(@Body patSummarySaveRequest: List<PATSummarySaveRequest>): ApiResponseModel<List<TransactionResponseModel>>
 
     @POST("/pat-api/pat/summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
