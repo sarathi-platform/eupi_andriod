@@ -65,7 +65,8 @@ class TransectWalkViewModel @Inject constructor(
                 villageEntity.value?.id ?: 0,
                 status = 1,
                 createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                transactionId = ""
             )
             tolaDao.insert(tolaItem)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
@@ -147,7 +148,8 @@ class TransectWalkViewModel @Inject constructor(
                     needsToPost = false,
                     status = it.status,
                     createdDate = it.createdDate,
-                    modifiedDate = it.modifiedDate
+                    modifiedDate = it.modifiedDate,
+                    transactionId = ""
                 )
             )
         }
@@ -218,7 +220,8 @@ class TransectWalkViewModel @Inject constructor(
                 needsToPost = true,
                 status = tolaList.value[getIndexOfTola(id)].status,
                 createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                transactionId = ""
             )
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)

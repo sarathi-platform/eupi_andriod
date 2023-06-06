@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
+import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
@@ -39,13 +40,17 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
-
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun SettingScreen(
@@ -232,7 +237,7 @@ fun SettingScreen(
             if (viewModel.showLoader.value) {
                 showSyncInProgressDialog(setShowDialog = {
                     viewModel.showLoader.value = false
-                })
+                },viewModel)
                 viewModel.syncDataOnServer(context)
                 viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             }
@@ -364,7 +369,8 @@ fun showSyncDialog(
 
 @Composable
 fun showSyncInProgressDialog(
-    setShowDialog: (Boolean) -> Unit
+    setShowDialog: (Boolean) -> Unit,
+    settingViewModel: SettingViewModel
 ) {
     Dialog(onDismissRequest = { setShowDialog(false) }) {
         Surface(
@@ -374,23 +380,97 @@ fun showSyncInProgressDialog(
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
+                        horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
                     ) {
                         MainTitle(stringResource(R.string.syncing), Modifier.weight(1f))
                     }
-                    Row(
-                        modifier = Modifier.padding(14.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        CustomProgressBar(modifier = Modifier)
-                    }
+                    GradientProgressbar(settingViewModel)
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun GradientProgressbar(
+    settingViewModel: SettingViewModel
+) {
+    val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
+    val indicatorPadding = 24.dp
+    val gradientColors = listOf(Color(0xFF2EE08E),Color(0xFF2EE08E))
+    val numberStyle: TextStyle = mediumTextStyle
+    val animationDuration = 1000
+    val animationDelay = 0
+
+    val syncPercentage : Float = settingViewModel.syncPercentage.value
+    Log.e("sync","->$syncPercentage")
+
+    val animateNumber = animateFloatAsState(
+        targetValue = syncPercentage,
+        animationSpec = tween(
+            durationMillis = animationDuration,
+            delayMillis = animationDelay
+        )
+    )
+    Box(contentAlignment = Alignment.Center) {
+        Column(
+            modifier = Modifier.padding(14.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                Canvas(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(24.dp)
+                        .padding(start = indicatorPadding, end = indicatorPadding)
+                ) {
+
+                    // Background indicator
+                    drawLine(
+                        color = backgroundIndicatorColor,
+                        cap = StrokeCap.Round,
+                        strokeWidth = size.height,
+                        start = Offset(x = 0f, y = 0f),
+                        end = Offset(x = size.width, y = 0f)
+                    )
+
+                    // Convert the downloaded percentage into progress (width of foreground indicator)
+                    val progress =
+                        (animateNumber.value / 100) * size.width // size.width returns the width of the canvas
+
+                    // Foreground indicator
+                    drawLine(
+                        brush = Brush.linearGradient(
+                            colors = gradientColors
+                        ),
+                        cap = StrokeCap.Round,
+                        strokeWidth = size.height,
+                        start = Offset(x = 0f, y = 0f),
+                        end = Offset(x = progress, y = 0f)
+                    )
+
+                }
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Text(
+                    text = syncPercentage.toInt().toString() + "%",
+                    style = numberStyle,
+                    textAlign = TextAlign.Start,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    color = textColorDark,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Log.e("sync","new ->$syncPercentage")
             }
         }
     }

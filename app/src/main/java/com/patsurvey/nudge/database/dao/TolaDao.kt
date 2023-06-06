@@ -47,4 +47,10 @@ interface TolaDao {
 
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost")
     fun fetchTolaNeedToPost( needsToPost: Boolean) : List<TolaEntity>
+
+    @Query("UPDATE $TOLA_TABLE SET transactionId = :transactionId WHERE id = :id")
+    fun updateTolaTransactionId(id: Int, transactionId: String)
+
+    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
+    fun fetchPendingTola(needsToPost: Boolean,transactionId : String?) : List<TolaEntity>
 }

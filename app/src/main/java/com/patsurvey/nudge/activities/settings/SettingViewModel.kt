@@ -1,9 +1,6 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
-import android.text.TextUtils
-import android.util.Log
-import com.google.gson.JsonArray
 import com.patsurvey.nudge.SyncHelper
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
@@ -14,19 +11,14 @@ import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.model.request.AddCohortRequest
-import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -41,6 +33,7 @@ class SettingViewModel @Inject constructor(
     val formAAvailabe = mutableStateOf(false)
     val formBAvailabe = mutableStateOf(false)
     val formCAvailabe = mutableStateOf(false)
+    var syncPercentage = mutableStateOf(0f)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
 
@@ -99,7 +92,7 @@ class SettingViewModel @Inject constructor(
 
     fun syncDataOnServer(context: Context) {
         if(isInternetAvailable(context)){
-            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader)
+            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage)
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
