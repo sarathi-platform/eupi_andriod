@@ -98,11 +98,13 @@ class SettingViewModel @Inject constructor(
                     override fun onSuccess() {
                         showLoader.value = false
                         showCustomToast(context, SYNC_SUCCESSFULL)
+                        syncPercentage.value = 100f
                     }
 
                     override fun onFailed() {
                         showCustomToast(context, SYNC_FAILED)
                         showLoader.value = false
+                        syncPercentage.value = 100f
                     }
             })
         }
