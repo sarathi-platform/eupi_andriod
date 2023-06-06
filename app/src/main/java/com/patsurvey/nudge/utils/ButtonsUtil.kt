@@ -597,7 +597,7 @@ fun ButtonOutline(
                 contentDescription = "Add Button",
                 tint = blueDark,
                 modifier = Modifier
-                    .absolutePadding(top = 4.dp, right = 2.dp)
+                    .absolutePadding(top = 0.dp, right = 2.dp)
                     .size(22.dp)
             )
             Text(
@@ -764,6 +764,7 @@ fun OutlineButtonWithIcon(
     icon: ImageVector,
     contentColor: Color,
     borderColor: Color = greyBorder,
+    showIcon: Boolean = true,
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -780,13 +781,15 @@ fun OutlineButtonWithIcon(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = "Add Button",
-                tint = contentColor,
-                modifier = Modifier.absolutePadding(top = 2.dp)
-            )
-            Spacer(modifier = Modifier.width(10.dp))
+            if (showIcon) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = "Add Button",
+                    tint = contentColor,
+                    modifier = Modifier.absolutePadding(top = 2.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+            }
             Text(
                 text = buttonTitle,
                 color = contentColor,
@@ -1083,7 +1086,7 @@ fun OutlineButtonCustom(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (showLoader) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = textColorDark)
+                CircularProgressIndicator(modifier = Modifier.size(22.dp), color = textColorDark, strokeWidth = 2.dp)
                 Spacer(modifier = Modifier.width(4.dp))
             }
             Text(
@@ -1317,7 +1320,7 @@ fun AcceptRejectButtonBox(
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
             ) {
                 if (negativeButtonRequired) {
 
@@ -1349,7 +1352,7 @@ fun AcceptRejectButtonBox(
                             ),
                         )
                     }
-                    Spacer(modifier = Modifier.padding(10.dp))
+                    Spacer(modifier = Modifier.width(10.dp))
                 }
                 ButtonPositive(
                     modifier = Modifier.weight(1.5f),

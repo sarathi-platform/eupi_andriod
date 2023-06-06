@@ -36,7 +36,6 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.debounceClickable
 import com.patsurvey.nudge.utils.showToast
-import com.patsurvey.nudge.utils.videoList
 
 
 @Composable
@@ -96,7 +95,7 @@ fun VideoListScreen(
             )
 
             Text(
-                text = "Showing ${videoList.size} Videos",
+                text = "Showing ${trainingVideos.size} Videos",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

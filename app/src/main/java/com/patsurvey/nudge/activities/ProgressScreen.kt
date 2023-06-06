@@ -32,6 +32,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -98,6 +99,8 @@ fun ProgressScreen(
                                 viewModel.selectedText.value = viewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
+                                    delay(1000)
+                                    viewModel.showLoader.value = false
                                 }
                             }
                         }

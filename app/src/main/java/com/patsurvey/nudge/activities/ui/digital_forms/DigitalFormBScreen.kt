@@ -15,9 +15,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -65,6 +63,23 @@ fun DigitalFormBScreen(
                 }
             }
         }
+    }
+
+    val formPathState = remember {
+        mutableStateOf(
+            File(
+                "${
+                    context.getExternalFilesDir(
+                        Environment.DIRECTORY_DOCUMENTS
+                    )?.absolutePath
+                }"
+            )
+        )
+    }
+
+
+    val showLoader = remember {
+        mutableStateOf(false)
     }
 
     ConstraintLayout(
@@ -283,9 +298,9 @@ fun DigitalFormBScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "digital_form_b_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
-                        viewModel.generateFormBPDF(context) {
+                        viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
                             val fileUri = uriFromFile(context, pdfFile)
                             val shareIntent = Intent(Intent.ACTION_SEND)
@@ -304,10 +319,33 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .background(white)
                             .weight(1f),
-                        buttonTitle = stringResource(R.string.download_button_text),
+                        buttonTitle = if (formPathState.value.isFile) stringResource(id = R.string.view) else {
+                            if (showLoader.value)
+                                stringResource(id = R.string.downloading_button_text)
+                            else
+                                stringResource(R.string.download_button_text)
+                        },
+                        showLoader = showLoader.value,
                     ) {
-                        viewModel.generateFormBPDF(context) {
-                            showToast(context, "Digital Form B Downloaded")
+                        if (formPathState.value.isFile) {
+                            navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                        } else {
+                            showLoader.value = true
+                            viewModel.generateFormBPdf(context) { formGenerated, formPath ->
+                                if (formGenerated) {
+                                    showToast(context, "Digital Form B Downloaded")
+                                    formPath?.let {
+                                        formPathState.value = it
+                                    }
+                                    showLoader.value = false
+                                } else {
+                                    showToast(
+                                        context,
+                                        "Something went wrong, unable to download form."
+                                    )
+                                    showLoader.value = false
+                                }
+                            }
                         }
                     }
                 }

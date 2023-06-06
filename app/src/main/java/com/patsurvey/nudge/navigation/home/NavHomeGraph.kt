@@ -19,9 +19,7 @@ import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
-import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
-import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
-import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.*
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
@@ -590,6 +588,21 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
                 fromScreen = ARG_FROM_SETTING
             )
         }
+        composable(route = SettingScreens.PDF_VIEWER.route, arguments = listOf(
+            navArgument(ARG_FORM_PATH){
+                type = NavType.StringType
+            }
+        )) {
+            PdfViewer(filePath = it.arguments?.getString(ARG_FORM_PATH) ?: "", modifier = Modifier, navController = navController)
+        }
+
+        composable(route = SettingScreens.IMAGE_VIEWER.route, arguments = listOf(
+            navArgument(ARG_IMAGE_PATH) {
+                type = NavType.StringType
+            }
+        )) {
+            FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+        }
 
     }
 }
@@ -603,6 +616,8 @@ sealed class SettingScreens(val route: String) {
     object FORM_A_SCREEN : SettingScreens(route = "form_a_screen")
     object FORM_B_SCREEN : SettingScreens(route = "form_b_screen")
     object FORM_C_SCREEN : SettingScreens(route = "form_c_screen")
+    object PDF_VIEWER : SettingScreens(route = "pdf_viewer/{$ARG_FORM_PATH}")
+    object IMAGE_VIEWER : SettingScreens(route = "image_viewer/{$ARG_IMAGE_PATH}")
 }
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
@@ -674,6 +689,14 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
             )
         }
+
+        composable(route = VoEndorsmentScreeens.IMAGE_VIEWER.route, arguments = listOf(
+            navArgument(ARG_IMAGE_PATH) {
+                type = NavType.StringType
+            }
+        )) {
+            FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
+        }
     }
 }
 
@@ -688,5 +711,6 @@ sealed class VoEndorsmentScreeens(val route: String) {
 
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : PatScreens(route = "vo_endorsement_digital_form_c_screen")
+    object IMAGE_VIEWER : SettingScreens(route = "image_viewer/{$ARG_IMAGE_PATH}")
 
 }

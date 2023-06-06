@@ -97,15 +97,6 @@ fun SocialMappingDidiListScreen(
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
         didiViewModel.isVoEndorsementCompleteForVillage(villageId)
-        if(newFilteredDidiList.isNotEmpty()){
-            didiViewModel.pendingDidiCount.value=0
-            newFilteredDidiList.forEach {
-                if(it.wealth_ranking.equals(WealthRank.POOR.rank,true) && it.patSurveyStatus == 0){
-                    didiViewModel.pendingDidiCount.value++
-                    Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.pendingDidiCount.value}")
-                }
-            }
-        }
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -562,6 +553,8 @@ private fun decoupledConstraints(): ConstraintSet {
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
+        val moreActionIcon = createRefFor("moreActionIcon")
+        val moreDropDown = createRefFor("moreDropDown")
         val didiDetailLayout = createRefFor("didiDetailLayout")
 
 
@@ -573,19 +566,19 @@ private fun decoupledConstraints(): ConstraintSet {
         constrain(didiName) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(didiRow) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(village) {
             start.linkTo(homeImage.end, margin = 10.dp)
             top.linkTo(didiName.bottom)
-            end.linkTo(expendArrowImage.start, margin = 10.dp)
+            end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
@@ -597,6 +590,17 @@ private fun decoupledConstraints(): ConstraintSet {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
+        }
+
+        constrain(moreActionIcon) {
+            top.linkTo(didiName.top)
+            bottom.linkTo(village.bottom)
+            end.linkTo(expendArrowImage.start)
+        }
+
+        constrain(moreDropDown) {
+            top.linkTo(moreActionIcon.bottom)
+            end.linkTo(moreActionIcon.end)
         }
 
         constrain(didiDetailLayout) {
@@ -725,7 +729,7 @@ fun DidiItemCard(
     val transition = updateTransition(expanded, label = "transition")
 
     val didiMarkedNotAvailable  = remember {
-        mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+        mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
     }
 
     val animateColor by transition.animateColor({
@@ -749,13 +753,18 @@ fun DidiItemCard(
     }, label = "rotationDegreeTransition") {
         if (it) 180f else 0f
     }
+
+    val showMenu = remember {
+        mutableStateOf(false)
+    }
+
     Card(
         elevation = 10.dp,
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onItemClick(didi)
+                onExpendClick(expanded, didi)
             }
             .then(modifier)
     ) {
@@ -823,6 +832,47 @@ fun DidiItemCard(
                     if (!didiViewModel.prefRepo.getFromPage()
                             .equals(ARG_FROM_PAT_SURVEY, true)
                     ) {
+
+                        IconButton(onClick = {
+                                             showMenu.value = !showMenu.value
+                        }, modifier = Modifier
+                            .layoutId("moreActionIcon")
+                            .visible(
+                                !didiViewModel.prefRepo
+                                    .getFromPage()
+                                    .equals(
+                                        ARG_FROM_PAT_SURVEY,
+                                        true
+                                    ) && !didiViewModel.isSocialMappingComplete.value
+                            )) {
+                            Icon(painter = painterResource(id = R.drawable.baseline_more_icon), contentDescription = "more action", tint = textColorDark)
+                        }
+
+                        Box(modifier = Modifier.layoutId("moreDropDown")) {
+                            DropdownMenu(
+                                expanded = showMenu.value,
+                                onDismissRequest = { showMenu.value = false },
+                                modifier = Modifier
+                            ) {
+                                DropdownMenuItem(onClick = { onItemClick(didi) }) {
+                                    Text(
+                                        text = "Edit",
+                                        style = quesOptionTextStyle,
+                                        color = textColorDark
+                                    )
+                                }
+                                DropdownMenuItem(onClick = {
+                                    //TODO Add Delete Functionality after discussion
+                                }) {
+                                    Text(
+                                        text = "Delete",
+                                        style = quesOptionTextStyle,
+                                        color = textColorDark
+                                    )
+                                }
+                            }
+                        }
+
                         CardArrow(
                             modifier = Modifier.layoutId("expendArrowImage"),
                             degrees = arrowRotationDegree,
@@ -843,7 +893,8 @@ fun DidiItemCard(
             ) {
                 if(didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
-                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal ) {
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
@@ -873,9 +924,6 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
-                            if(didiViewModel.pendingDidiCount.value >0) {
-                                didiViewModel.pendingDidiCount.value--
-                            }
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
@@ -887,20 +935,27 @@ fun DidiItemCard(
                                     if (didiMarkedNotAvailable.value
                                     ) languageItemActiveBg else blueDark
                                 ),
-                            buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
-                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_pat_text)
+                            buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal)
+                                stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                stringResource(id = R.string.continue_pat)
                             else "",
                             true,
                             color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
                             textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
-                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                 if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                     didiMarkedNotAvailable.value = false
                                 }
                                 navController.navigate("didi_pat_summary/${didi.id}")
-                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                 if (didi.section1Status == 0 || didi.section1Status == 1)
                                     navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
                                 else if (didi.section2Status == 0 || didi.section2Status == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")

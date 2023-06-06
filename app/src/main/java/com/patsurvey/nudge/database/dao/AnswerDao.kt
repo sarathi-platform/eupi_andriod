@@ -56,7 +56,7 @@ interface AnswerDao {
     fun getAllNeedToPostQuesForDidi(didiId: Int): List<SectionAnswerEntity>
 
 
-    @Query("select  $DIDI_TABLE.id,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status from $DIDI_TABLE INNER join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 GROUP BY $DIDI_TABLE.id")
+    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
