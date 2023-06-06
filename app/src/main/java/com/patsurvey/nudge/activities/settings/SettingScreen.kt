@@ -4,10 +4,8 @@ import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
 import androidx.compose.animation.*
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateInt
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
@@ -24,11 +22,15 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,12 +47,6 @@ import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.*
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.Canvas
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.text.TextStyle
 
 @Composable
 fun SettingScreen(
@@ -388,7 +384,7 @@ fun showSyncInProgressDialog(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
                     ) {
-                        MainTitle(stringResource(R.string.syncing), Modifier.weight(1f))
+                        MainTitle(stringResource(R.string.syncing), Modifier.weight(1f).fillMaxWidth(), align = TextAlign.Center)
                     }
                     GradientProgressbar(settingViewModel)
                 }
@@ -423,7 +419,7 @@ fun GradientProgressbar(
             modifier = Modifier.padding(14.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Column(Modifier.fillMaxWidth()) {
                 Canvas(
                     modifier = Modifier
                         .fillMaxWidth()
