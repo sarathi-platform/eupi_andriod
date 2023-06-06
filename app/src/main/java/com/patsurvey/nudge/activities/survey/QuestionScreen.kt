@@ -222,7 +222,8 @@ fun QuestionScreen(
                                 didiId = didiId,
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
-                                viewModel = viewModel
+                                viewModel = viewModel,
+                                totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
                                 val newAnswerOptionModel= OptionsItem( BLANK_STRING,0,0,0,
                                     BLANK_STRING)

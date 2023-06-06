@@ -48,6 +48,7 @@ fun NumericFieldTypeQuestion(
     questionId: Int,
     didiId: Int,
     optionList: List<OptionsItem>,
+    totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
     onSubmitClick: () -> Unit
 ) {
@@ -137,7 +138,7 @@ fun NumericFieldTypeQuestion(
 
                     item {
                         Text(
-                            text = stringResource(id = R.string.productive_asset_owned_by_family),
+                            text = totalValueTitle?: BLANK_STRING,
                             color = Color.Black,
                             modifier = Modifier.padding(bottom = 5.dp, start = 5.dp),
                             style = TextStyle(
@@ -244,7 +245,8 @@ fun NumericFieldTypeQuestionPreview() {
         question = "How many Goats?",
         questionId = 1,
         didiId = 1,
-        optionList = optionList
+        optionList = optionList,
+        totalValueTitle="Total Value"
     ) {}
 }
 
