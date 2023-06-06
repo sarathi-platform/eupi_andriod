@@ -134,7 +134,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 )
                             )
                         }
-                        /*if(answeredDidiList.isNotEmpty()){
+                        if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
@@ -149,11 +149,11 @@ class SurveySummaryViewModel @Inject constructor(
                                                     val answerDetails = answerDao.getQuestionAnswerForDidi(
                                                         patSummaryResponseItem.beneficiaryId?:0, answersItem?.questionId?:0)
 
-                                                  *//*  answerDetails?.let {
+                                                    answerDetails?.let {
                                                         answerDao.updateNeedToPost(patSummaryResponseItem.beneficiaryId?:0,
                                                             answersItem?.questionId?:0,
                                                             false)
-                                                    }*//*
+                                                    }
 
                                                 }
                                             }
@@ -164,7 +164,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
                             }
 
-                        }*/
+                        }
 
                     }
                 }

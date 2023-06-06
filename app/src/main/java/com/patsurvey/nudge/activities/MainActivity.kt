@@ -17,6 +17,7 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import android.Manifest
+import android.os.Build
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.DisposableEffect
@@ -28,6 +29,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -55,6 +57,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     override fun onCreate(savedInstanceState: Bundle?) {
         localizationDelegate.addOnLocaleChangedListener(this)
         localizationDelegate.onCreate()
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
+            setTheme(R.style.Android_starter_project_blow_lollipop)
+        }
         super.onCreate(savedInstanceState)
         setContent {
             Nudge_Theme {
