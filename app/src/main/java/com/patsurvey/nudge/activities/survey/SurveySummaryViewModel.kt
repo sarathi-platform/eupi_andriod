@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.util.Log
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -67,6 +68,7 @@ class SurveySummaryViewModel @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
+                            Log.d(TAG, "savePATSummeryToServer: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -113,8 +115,10 @@ class SurveySummaryViewModel @Inject constructor(
                                     }
 
                                 }
-                                answeredDidiList.add(
-                                    PATSummarySaveRequest(
+
+                            }
+                            answeredDidiList.add(
+                                PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
                                     beneficiaryId = didi.id,
@@ -127,8 +131,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     section2Status = didi.section2Status,
                                     section1Status = didi.section1Status
                                 )
-                                )
-                            }
+                            )
                         }
                         if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
@@ -137,6 +140,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     networkCallbackListener.onSuccess()
                                     saveAPIResponse.data?.pATSummaryResponse?.let {
                                         it.forEach { patSummaryResponseItem ->
+                                            Log.d(TAG, "savePATSummeryToServer: ${patSummaryResponseItem?.beneficiaryId?:0} :: ${prefRepo.getSelectedVillage().id}")
                                             didiDao.updateNeedToPostPAT(false,patSummaryResponseItem?.beneficiaryId?:0,prefRepo.getSelectedVillage().id)
                                             val answersList= patSummaryResponseItem?.answers
                                             if(answersList?.isNotEmpty() == true){

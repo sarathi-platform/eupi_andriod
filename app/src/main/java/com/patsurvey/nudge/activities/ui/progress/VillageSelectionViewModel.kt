@@ -270,7 +270,6 @@ class VillageSelectionViewModel @Inject constructor(
                                 val answerList:ArrayList<SectionAnswerEntity> = arrayListOf()
                                 val numAnswerList:ArrayList<NumericAnswerEntity> = arrayListOf()
                                 it.forEach {item->
-                                    didiDao.updateNeedToPostPAT(false,item.beneficiaryId?:0,item.villageId?:0)
                                     didiDao.updatePATProgressStatus(
                                         patSurveyStatus = item.patSurveyStatus?:0,
                                         section1Status = item.section1Status?:0,

@@ -4,7 +4,8 @@ enum class PatSurveyStatus {
     NOT_STARTED,
     INPROGRESS,
     COMPLETED,
-    NOT_AVAILABLE
+    NOT_AVAILABLE,
+    NOT_AVAILABLE_WITH_CONTINUE
 }
 
 enum class SHGFlag(val value: Int) {

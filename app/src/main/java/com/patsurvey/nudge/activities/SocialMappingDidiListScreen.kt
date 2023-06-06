@@ -96,15 +96,6 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
-        if(newFilteredDidiList.isNotEmpty()){
-            didiViewModel.pendingDidiCount.value=0
-            newFilteredDidiList.forEach {
-                if(it.wealth_ranking.equals(WealthRank.POOR.rank,true) && it.patSurveyStatus == 0){
-                    didiViewModel.pendingDidiCount.value++
-                    Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.pendingDidiCount.value}")
-                }
-            }
-        }
     }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -726,7 +717,7 @@ fun DidiItemCard(
     val transition = updateTransition(expanded, label = "transition")
 
     val didiMarkedNotAvailable  = remember {
-        mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+        mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
     }
 
     val animateColor by transition.animateColor({
@@ -844,7 +835,8 @@ fun DidiItemCard(
             ) {
                 if(didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
-                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
+                    didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal ) {
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
@@ -874,9 +866,6 @@ fun DidiItemCard(
                         ){
                             didiMarkedNotAvailable.value = true
                             didiViewModel.setDidiAsUnavailable(didi.id)
-                            if(didiViewModel.pendingDidiCount.value >0) {
-                                didiViewModel.pendingDidiCount.value--
-                            }
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
@@ -888,20 +877,27 @@ fun DidiItemCard(
                                     if (didiMarkedNotAvailable.value
                                     ) languageItemActiveBg else blueDark
                                 ),
-                            buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) stringResource(id = R.string.start_pat)
-                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) stringResource(id = R.string.continue_text)
+                            buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal)
+                                stringResource(id = R.string.start_pat)
+                            else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                stringResource(id = R.string.continue_pat)
                             else "",
                             true,
                             color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
                             textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
-                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                                || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                 if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                     didiMarkedNotAvailable.value = false
                                 }
                                 navController.navigate("didi_pat_summary/${didi.id}")
-                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                 if (didi.section1Status == 0 || didi.section1Status == 1)
                                     navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
                                 else if (didi.section2Status == 0 || didi.section2Status == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
