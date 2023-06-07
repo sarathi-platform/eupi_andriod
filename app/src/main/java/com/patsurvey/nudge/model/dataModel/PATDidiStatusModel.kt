@@ -21,4 +21,5 @@ data class PATDidiStatusModel(
 
     @ColumnInfo(name = "name")
     var name: String= BLANK_STRING
+
 )

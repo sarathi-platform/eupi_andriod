@@ -1,5 +1,6 @@
 package com.patsurvey.nudge
 
+import android.annotation.SuppressLint
 import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
@@ -9,18 +10,12 @@ import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.request.AddCohortRequest
-import com.patsurvey.nudge.model.request.AddDidiRequest
-import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.*
+import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.*
 import java.util.Timer
 import java.util.TimerTask
@@ -35,7 +30,10 @@ class SyncHelper (
     val didiDao: DidiDao,
     var job: Job?,
     val showLoader : MutableState<Boolean>,
-    var syncPercentage : MutableState<Float>
+    var syncPercentage : MutableState<Float>,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val questionDao: QuestionListDao
 ){
 
     private val pendingTimerTime : Long= 10000
@@ -70,13 +68,46 @@ class SyncHelper (
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
-                if(isPending == 1){
-                    checkTolaStatus(networkCallbackListener)
-                } else if(isPending == 2){
-                    checkDidiStatus(networkCallbackListener)
+                when (isPending) {
+                    1 -> {
+                        checkTolaStatus(networkCallbackListener)
+                    }
+                    2 -> {
+                        checkDidiStatus(networkCallbackListener)
+                    }
+                    3 -> {
+                        checkDidiWealthStatus(networkCallbackListener)
+                    }
                 }
             }
         },pendingTimerTime)
+    }
+
+    private fun checkDidiWealthStatus(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchPendingWealthStatusDidi(true,"")
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { didi ->
+                    didi.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
+                            }
+                        }
+                    }
+                    savePATSummeryToServer(networkCallbackListener)
+                } else
+                    networkCallbackListener.onFailed()
+            } else {
+//                updateWealthRankingToNetwork(networkCallbackListener)
+                savePATSummeryToServer(networkCallbackListener)
+            }
+        }
     }
 
     private fun checkDidiStatus(networkCallbackListener: NetworkCallbackListener) {
@@ -97,7 +128,8 @@ class SyncHelper (
                         }
                     }
                     updateDidisNeedTOPostList(didiList,networkCallbackListener)
-                }
+                } else
+                    networkCallbackListener.onFailed()
             } else {
                 updateWealthRankingToNetwork(networkCallbackListener)
             }
@@ -122,7 +154,8 @@ class SyncHelper (
                         }
                     }
                     updateTolaNeedTOPostList(tolaList,networkCallbackListener)
-                }
+                } else
+                    networkCallbackListener.onFailed()
             } else {
                 addDidisToNetwork(networkCallbackListener)
             }
@@ -132,7 +165,7 @@ class SyncHelper (
     fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
         Log.e("add tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val tolaList = tolaDao.fetchTolaNeedToPost(true,null)
+            val tolaList = tolaDao.fetchTolaNeedToPost(true,"")
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
                 for (tola in tolaList) {
@@ -289,31 +322,202 @@ class SyncHelper (
                 withContext(Dispatchers.IO){
                     val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
                     if(needToPostDidiList.isNotEmpty()){
+                        val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             launch {
-                                didi.wealth_ranking.let {
-                                    val updateWealthRankResponse=apiService.updateDidiRanking(
-                                        listOf(
-                                            EditDidiWealthRankingRequest(didi.id,
-                                                StepType.WEALTH_RANKING.name,didi.wealth_ranking),
-                                            EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                                didiRequestList.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking))
+//                                didiRequestList.add(EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name))
+                            }
+                        }
+                        val updateWealthRankResponse=apiService.updateDidiRanking(
+                            didiRequestList
+                        )
+                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                            val didiListResponse = updateWealthRankResponse.data
+                            if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
+                                for(i in needToPostDidiList.indices){
+                                    needToPostDidiList[i].transactionId = didiListResponse?.get(i)?.transactionId
+                                    needToPostDidiList[i].transactionId?.let {
+                                        didiDao.updateDidiTransactionId(
+                                            needToPostDidiList[i].id,
+                                            it
                                         )
-                                    )
-                                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                        didiDao.setNeedToPostRanking(didi.id,false)
-                                        networkCallbackListener.onSuccess()
-                                    } else {
-                                        networkCallbackListener.onFailed()
                                     }
                                 }
+                                isPending = 3
+                                startSyncTimer(networkCallbackListener)
+                            } else {
+                                needToPostDidiList.forEach { didi ->
+                                    didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
+                                }
+                                savePATSummeryToServer(networkCallbackListener)
+                            }
+                        }
+                    } else {
+                        checkDidiWealthStatus(networkCallbackListener)
+                    }
 
+                }
+            } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+//                onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
+            }
+        }
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.IO){
+                    var optionList= emptyList<OptionsItem>()
+                    val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var surveyId =0
+
+                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                    if(didiIDList.isNotEmpty()){
+                        didiIDList.forEach { didi->
+                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                            if(needToPostQuestionsList.isNotEmpty()){
+                                needToPostQuestionsList.forEach {
+                                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
+                                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
+                                        optionList= listOf(
+                                            OptionsItem(optionId = it.optionId,
+                                                optionValue = it.optionValue,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = 0,
+                                                isSelected = false)
+                                        )
+                                    }else{
+                                        val numOptionList=numericAnswerDao.getSingleQueOptions(it.questionId,it.didiId)
+                                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
+                                        if(numOptionList.isNotEmpty()){
+                                            numOptionList.forEach { numOption->
+                                                tList.add(
+                                                    OptionsItem(optionId = numOption.optionId,
+                                                        optionValue = 0,
+                                                        count = numOption.count,
+                                                        summary = it.summary,
+                                                        display = it.answerValue,
+                                                        weight = numOption.weight,
+                                                        isSelected = false)
+                                                )
+                                            }
+                                            optionList=tList
+                                        }
+
+                                    }
+                                    try {
+                                        qList.add(
+                                            AnswerDetailDTOListItem(
+                                                questionId =it.questionId,
+                                                section = it.actionType,
+                                                options = optionList)
+                                        )
+                                    }catch (e:Exception){
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                            answeredDidiList.add(
+                                PATSummarySaveRequest(
+                                    villageId= prefRepo.getSelectedVillage().id,
+                                    surveyId=surveyId,
+                                    beneficiaryId = didi.id,
+                                    languageId = prefRepo.getAppLanguageId()?:0,
+                                    stateId = prefRepo.getSelectedVillage().stateId,
+                                    totalScore = 0,
+                                    userType = USER_CRP,
+                                    beneficiaryName= didi.name,
+                                    answerDetailDTOList= qList,
+                                    patSurveyStatus = didi.patSurveyStatus,
+                                    section2Status = didi.section2Status,
+                                    section1Status = didi.section1Status
+                                )
+                            )
+                        }
+                        if(answeredDidiList.isNotEmpty()){
+                            withContext(Dispatchers.IO){
+                                val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
+                                if(saveAPIResponse.status.equals(SUCCESS,true)){
+                                    if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                        didiIDList.forEach { didiItem ->
+                                            didiDao.updateNeedToPostPAT(
+                                                false,
+                                                didiItem.id,
+                                                prefRepo.getSelectedVillage().id
+                                            )
+                                        }
+//                                    networkCallbackListener.onSuccess()
+                                        updateVoStatusToNetwork(networkCallbackListener)
+                                    } else {
+                                        /*for (didi in didiIDList){
+                                            didi
+                                        }*/
+                                    }
+                                } else {
+                                    networkCallbackListener.onFailed()
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+
+            }  catch (ex:Exception){
+                networkCallbackListener.onFailed()
+                ex.printStackTrace()
+            }
+        }
+    }
+
+    fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.IO){
+                    val needToPostDidiList=didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id)
+                    if(needToPostDidiList.isNotEmpty()){
+                        needToPostDidiList.forEach { didi->
+                            launch {
+                                didi.voEndorsementStatus.let {
+                                    if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                        val updateWealthRankResponse=apiService.updateDidiRanking(
+                                            listOf(
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, ACCEPTED),
+                                            )
+                                        )
+                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                        } else {
+                                            networkCallbackListener.onFailed()
+                                        }
+                                    } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
+                                        val updateWealthRankResponse=apiService.updateDidiRanking(
+                                            listOf(
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name),
+                                            )
+                                        )
+                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                        } else {
+                                            networkCallbackListener.onFailed()
+                                        }
+                                    }
+                                }
                             }
                         }
                     }
                 }
             } catch (ex: Exception) {
+//                onCatchError(ex)
                 networkCallbackListener.onFailed()
-//                onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
+//                onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
             }
         }
     }

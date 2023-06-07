@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -136,6 +137,7 @@ class WealthRankingViewModel @Inject constructor(
             try {
                 val updatedDidiList = didiList.value
                 didiDao.updateDidiRank(id, rank)
+                didiDao.updateDidiNeedToPostWealthRank(id,true)
                 didiDao.updateBeneficiaryProcessStatus(
                     id, listOf(
                         BeneficiaryProcessStatusModel(
@@ -165,6 +167,8 @@ class WealthRankingViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
+                Log.e("exception",ex.printStackTrace().toString())
+                Log.e("exception",ex.toString())
                 networkCallbackListener.onFailed()
                 onError("WealthRankingViewModel", "here is error: ${ex.message} \n${ex.stackTrace}")
             }
