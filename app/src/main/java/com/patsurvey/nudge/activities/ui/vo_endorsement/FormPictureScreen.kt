@@ -178,11 +178,17 @@ fun FormPictureScreen(
                             modifier = Modifier.fillMaxSize(),
                             outputDirectory = formPictureScreenViewModel.outputDirectory,
                             formName = if (formPictureScreenViewModel.retakeImageIndex.value != -1)
-                                formPictureScreenViewModel.getFormSubPath(formPictureScreenViewModel.shouldShowCamera.value.first, formPictureScreenViewModel.retakeImageIndex.value + 1)
+                                formPictureScreenViewModel.getFormSubPath(
+                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                    formPictureScreenViewModel.retakeImageIndex.value + 1
+                                )
 //                                "${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.retakeImageIndex.value + 1}"
                             else
-                                formPictureScreenViewModel.getFormSubPath(formPictureScreenViewModel.shouldShowCamera.value.first, formPictureScreenViewModel.formCPageList.value.size + 1)
-                                    /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
+                                formPictureScreenViewModel.getFormSubPath(
+                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                    formPictureScreenViewModel.formCPageList.value.size + 1
+                                )
+                            /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
                             executor = formPictureScreenViewModel.cameraExecutor,
                             onImageCaptured = { uri, photoPath ->
                                 handleImageCapture(
@@ -248,9 +254,15 @@ fun FormPictureScreen(
                                         pageItemClicked = {
                                             scope.launch {
                                                 formPictureScreenViewModel.pageItemClicked.value =
-                                                    formPictureScreenViewModel.getFormSubPath(FORM_C, it)
+                                                    formPictureScreenViewModel.getFormSubPath(
+                                                        FORM_C,
+                                                        it
+                                                    )
                                                 formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.pageItemClicked.value),
+                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                        formPictureScreenViewModel.getFormPathKey(
+                                                            formPictureScreenViewModel.pageItemClicked.value
+                                                        ),
                                                         ""
                                                     )?.let { if (it.isNotEmpty()) it else "" }
                                                         .toString()
@@ -290,7 +302,8 @@ fun FormPictureScreen(
                                                 formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
                                         },
                                         deleteButtonClicked = {
-
+                                            formPictureScreenViewModel.formCPageList.value =
+                                                mutableListOf()
                                         }
                                     )
                                 }
@@ -309,9 +322,16 @@ fun FormPictureScreen(
                                         pageList = formPictureScreenViewModel.formDPageList.value,
                                         pageItemClicked = {
                                             scope.launch {
-                                                formPictureScreenViewModel.pageItemClicked.value = formPictureScreenViewModel.getFormSubPath(FORM_D, it)
+                                                formPictureScreenViewModel.pageItemClicked.value =
+                                                    formPictureScreenViewModel.getFormSubPath(
+                                                        FORM_D,
+                                                        it
+                                                    )
                                                 formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.pageItemClicked.value),
+                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                        formPictureScreenViewModel.getFormPathKey(
+                                                            formPictureScreenViewModel.pageItemClicked.value
+                                                        ),
                                                         ""
                                                     )?.let { if (it.isNotEmpty()) it else "" }
                                                         .toString()
@@ -347,13 +367,8 @@ fun FormPictureScreen(
                                         },
                                         deleteButtonClicked = {
                                             // TODO
-                                            /*for (i in index..5) {
-                                                formPictureScreenViewModel.formDImageList.value["Page_${i+1}"]?.let {
-                                                    formPictureScreenViewModel.saveFormPath(
-                                                        it, "${FORM_D}_page_${index+1}")
-                                                }
-                                                Collections.replaceAll(formPictureScreenViewModel.formDPageList.value, i, i-1)
-                                            }*/
+                                            formPictureScreenViewModel.formDPageList.value =
+                                                mutableListOf()
                                         }
                                     )
                                 }
@@ -456,7 +471,7 @@ private fun handleImageCapture(
             viewModal.saveFormPath(
                 photoPath,
                 viewModal.getFormSubPath(FORM_C, viewModal.formCPageList.value.size + 1)
-                    /*"${formName}_page_${viewModal.formCPageList.value.size + 1}"*/
+                /*"${formName}_page_${viewModal.formCPageList.value.size + 1}"*/
             )
             viewModal.formCPageList.value.add((viewModal.formCPageList.value.size) + 1)
             viewModal.formCImageList.value = viewModal.formCImageList.value.also {
@@ -680,46 +695,63 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
-            Box(modifier = Modifier
-                .fillMaxWidth()) {
-            Row(
-                Modifier
-                    .padding(vertical = 2.dp)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(horizontal = 26.dp)
-                    .align(Alignment.CenterStart)
-                    .clickable {
-                        addPageClicked()
-                    }
-                    .then(modifier),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically) {
+            ) {
+                Row(
+                    Modifier
+                        .padding(vertical = 2.dp)
+                        .align(Alignment.CenterStart)
+                        .clickable {
+                            addPageClicked()
+                        }
+                        .then(modifier),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically) {
 
-                Icon(
-                    painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
-                    contentDescription = null,
-                    tint = textColorDark,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Add Page",
-                    color = textColorDark,
-                    style = buttonTextStyle,
-                    modifier = Modifier.absolutePadding(bottom = 3.dp)
-                )
+                    Icon(
+                        painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
+                        contentDescription = null,
+                        tint = textColorDark,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Add Page",
+                        color = textColorDark,
+                        style = buttonTextStyle,
+                        modifier = Modifier.absolutePadding(bottom = 3.dp)
+                    )
 
-            }
-                Icon(
-                    painter = painterResource(id = R.drawable.baseline_delete_icon),
-                    contentDescription = "delete form image",
-                    tint = redOffline,
-                    modifier = Modifier
-                        .size(24.dp)
+                }
+
+                Row(
+                    Modifier
+                        .padding(vertical = 2.dp)
                         .align(Alignment.CenterEnd)
                         .clickable {
-                        deleteButtonClicked()
-                    }
-                )
+                            deleteButtonClicked()
+                        }
+                        .then(modifier),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_delete_icon),
+                        contentDescription = "delete form image",
+                        tint = redOffline,
+                        modifier = Modifier
+                            .size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Delete Pages",
+                        color = textColorDark,
+                        style = buttonTextStyle,
+                        modifier = Modifier.absolutePadding(bottom = 3.dp)
+                    )
+                }
             }
             if (pageList.size >= 4) {
                 Text(
@@ -775,8 +807,7 @@ fun PageItem(
         Spacer(modifier = Modifier.width(2.dp))
         Row(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-        , horizontalArrangement = Arrangement.spacedBy(4.dp)
+                .align(Alignment.CenterEnd), horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_retake_24),
