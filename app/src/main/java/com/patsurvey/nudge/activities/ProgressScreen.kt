@@ -465,6 +465,7 @@ fun StepsBox(
                     )
                     .background(Color.White, shape = CircleShape)
                     .padding(6.dp)
+                    .aspectRatio(1f)
                     .constrainAs(step_no) {
                         start.linkTo(parent.start, margin = 16.dp)
                         top.linkTo(parent.top)
@@ -589,6 +590,7 @@ fun VillageSelectorDropDown(
             Text(
                 text = selectedText,
                 color = blueDark,
+                style = mediumTextStyle,
             )
             Icon(
                 painterResource(id = R.drawable.baseline_keyboard_arrow_down),
