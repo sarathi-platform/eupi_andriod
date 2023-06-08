@@ -297,6 +297,18 @@ fun SocialMappingDidiListScreen(
                                             launchSingleTop = true
                                         }
                                     }
+                                },
+                                onDeleteClicked = { didi ->
+                                    didiViewModel.deleteDidiOffline(didi, object : NetworkCallbackListener{
+                                        override fun onSuccess() {
+                                            showCustomToast(context, "Didi Deleted Successfully")
+                                        }
+
+                                        override fun onFailed() {
+                                            TODO("Not yet implemented")
+                                        }
+
+                                    })
                                 }
                             )
 
@@ -334,6 +346,18 @@ fun SocialMappingDidiListScreen(
                                             launchSingleTop = true
                                         }
                                     }
+                                },
+                                onDeleteClicked = { didi ->
+                                    didiViewModel.deleteDidiOffline(didi, object : NetworkCallbackListener{
+                                        override fun onSuccess() {
+                                            showCustomToast(context, "Didi Deleted Successfully")
+                                        }
+
+                                        override fun onFailed() {
+                                            TODO("Not yet implemented")
+                                        }
+
+                                    })
                                 }
                             )
                         }
@@ -370,6 +394,15 @@ fun SocialMappingDidiListScreen(
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 didiViewModel.addDidisToNetwork( object : NetworkCallbackListener {
                                     override fun onSuccess() {
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+                                })
+                                didiViewModel.deleteDidiFromNetwork(object : NetworkCallbackListener {
+                                    override fun onSuccess() {
+                                        showCustomToast(context, "Didi Deleted")
                                     }
 
                                     override fun onFailed() {
@@ -469,6 +502,7 @@ fun ShowDidisFromTola(
     expandedIds: List<Int>,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onNavigate: (DidiEntity) -> Unit
+    onDeleteClicked: (DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -518,6 +552,9 @@ fun ShowDidisFromTola(
                     },
                     onItemClick = { didi ->
                         onNavigate(didi)
+                    },
+                    onDeleteClicked = { didi ->
+                        onDeleteClicked (didi)
                     })
             }
 
@@ -730,7 +767,8 @@ fun DidiItemCard(
     expanded: Boolean,
     modifier: Modifier,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onDeleteClicked: (DidiEntity) -> Unit
 ) {
 
     val transition = updateTransition(expanded, label = "transition")
@@ -877,7 +915,7 @@ fun DidiItemCard(
                                     )
                                 }
                                 DropdownMenuItem(onClick = {
-                                    //TODO Add Delete Functionality after discussion
+                                    onDeleteClicked(didi)
                                 }) {
                                     Text(
                                         text = "Delete",

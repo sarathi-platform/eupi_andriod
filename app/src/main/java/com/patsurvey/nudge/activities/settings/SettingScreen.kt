@@ -13,6 +13,17 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateInt
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,9 +40,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -85,8 +113,24 @@ import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black100Percent
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redOffline
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ButtonNegative
+import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -165,6 +209,14 @@ fun SettingScreen(
     }
     val stepFiveSize = remember {
         mutableStateOf(defaultStepSize)
+    }
+
+    BackHandler() {
+        navController.navigate(Graph.HOME) {
+            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                inclusive = true
+            }
+        }
     }
 
     Scaffold(

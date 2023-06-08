@@ -2,10 +2,8 @@ package com.patsurvey.nudge.database.dao
 
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
-import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -14,13 +12,13 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE ORDER BY id DESC")
     fun getAllDidis(): List<DidiEntity>
 
-    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId ORDER BY createdDate DESC")
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY createdDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
-    @Query("Select * FROM $DIDI_TABLE where id = :id")
+    @Query("Select * FROM $DIDI_TABLE where id = :id and activeStatus = 1")
     fun getDidi(id: Int): DidiEntity
 
-    @Query("Select COUNT(*) FROM $DIDI_TABLE where name = :name AND address=:address AND guardianName=:guardianName AND cohortId=:tolaId AND villageId= :villageId")
+    @Query("Select COUNT(*) FROM $DIDI_TABLE where name = :name AND address=:address AND guardianName=:guardianName AND cohortId=:tolaId AND villageId= :villageId and activeStatus = 1")
     fun getDidiExist(name:String,address:String,guardianName:String,tolaId:Int,villageId:Int):Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
@@ -155,5 +153,17 @@ interface DidiDao {
 
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId")
     fun fetchNotAvailableDidis(villageId: Int) : Int
+
+    @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
+    fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
+
+    @Query("DELETE from $DIDI_TABLE where activeStatus = :activeStatus and id = :id")
+    fun deleteDidiFromDb(id: Int, activeStatus: Int)
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId")
+    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
+    fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
 
 }
