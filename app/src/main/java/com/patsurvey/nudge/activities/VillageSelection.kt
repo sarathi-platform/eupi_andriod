@@ -53,8 +53,8 @@ fun VillageSelectionScreen(
     val villages by viewModel.villageList.collectAsState()
     val context = LocalContext.current
     var showToast by remember { mutableStateOf(false) }
-    if(viewModel.networkErrorMessage.value.isNotEmpty()){
-        showCustomToast(context,viewModel.networkErrorMessage.value)
+    if (viewModel.networkErrorMessage.value.isNotEmpty()) {
+        showCustomToast(context, viewModel.networkErrorMessage.value)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
@@ -62,9 +62,9 @@ fun VillageSelectionScreen(
 //        (context as? Activity)?.finish()
 //    }
 
-    if(showToast){
+    if (showToast) {
         Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast= false
+        showToast = false
     }
 
 
@@ -228,7 +228,9 @@ fun VillageAndVoBoxForBottomSheet(
     voName: String = "",
     index: Int,
     selectedIndex: Int,
-    onVillageSeleted: (Int) -> Unit
+    isVoEndorsementComplete: Boolean = false,
+    onVillageSeleted: (Int) -> Unit,
+
 ) {
     Card(
         modifier = Modifier
@@ -249,88 +251,115 @@ fun VillageAndVoBoxForBottomSheet(
                 onVillageSeleted(index)
             }
             .background(if (index == selectedIndex) dropDownBg else White)
-            .padding(vertical = 4.dp)
             .then(modifier),
         elevation = 10.dp
     ) {
-        Column(
-            modifier = Modifier
-                .background(if (index == selectedIndex) dropDownBg else White)
-                .fillMaxWidth()
-        ) {
-            ConstraintLayout(
+        Column() {
+            Column(
                 modifier = Modifier
-                    .padding(start = 16.dp, end = 16.dp, top = 10.dp)
+                    .background(if (index == selectedIndex) dropDownBg else White)
+                    .padding(vertical = 4.dp)
                     .fillMaxWidth()
             ) {
-                val (iconRef, textRef, radioRef) = createRefs()
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = null,
-                    tint = textColorDark,
-                    modifier = Modifier.constrainAs(iconRef) {
-                        top.linkTo(parent.top)
-                        start.linkTo(parent.start)
-                    }
-                )
-                Text(
-                    text = " $tolaName",
-                    color = textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.constrainAs(textRef) {
-                        top.linkTo(parent.top)
-                        start.linkTo(iconRef.end)
-                        width = Dimension.fillToConstraints
-                    }
-                )
-
-                Canvas(
+                ConstraintLayout(
                     modifier = Modifier
-                        .constrainAs(radioRef) {
-                            top.linkTo(textRef.top)
-                            end.linkTo(parent.end)
-                            bottom.linkTo(textRef.bottom)
-                        }
-                        .size(size = 20.dp)
-                        .border(
-                            width = 1.dp,
-                            color = if (index == selectedIndex) blueDark else greyRadioButton,
-                            shape = CircleShape
-                        )
-                        .padding(3.dp)
-
+                        .padding(start = 16.dp, end = 16.dp, top = 10.dp)
+                        .fillMaxWidth()
                 ) {
-                    drawCircle(
-                        color = if (index == selectedIndex) blueDark else White,
+                    val (iconRef, textRef, radioRef) = createRefs()
+                    Icon(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = null,
+                        tint = textColorDark,
+                        modifier = Modifier.constrainAs(iconRef) {
+                            top.linkTo(parent.top)
+                            start.linkTo(parent.start)
+                        }
+                    )
+                    Text(
+                        text = " $tolaName",
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.constrainAs(textRef) {
+                            top.linkTo(parent.top)
+                            start.linkTo(iconRef.end)
+                            width = Dimension.fillToConstraints
+                        }
+                    )
+
+                    Canvas(
+                        modifier = Modifier
+                            .constrainAs(radioRef) {
+                                top.linkTo(textRef.top)
+                                end.linkTo(parent.end)
+                                bottom.linkTo(textRef.bottom)
+                            }
+                            .size(size = 20.dp)
+                            .border(
+                                width = 1.dp,
+                                color = if (index == selectedIndex) blueDark else greyRadioButton,
+                                shape = CircleShape
+                            )
+                            .padding(3.dp)
+
+                    ) {
+                        drawCircle(
+                            color = if (index == selectedIndex) blueDark else White,
+                        )
+                    }
+                }
+                Row(
+                    modifier = Modifier
+                        .absolutePadding(left = 4.dp)
+                        .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                ) {
+                    Text(
+                        text = "VO: ",
+                        modifier = Modifier,
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = voName,
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
-            Row(
-                modifier = Modifier
-                    .absolutePadding(left = 4.dp)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
-            ) {
-                Text(
-                    text = "VO: ",
-                    modifier = Modifier,
-                    color = textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = voName,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
-                )
+            if (isVoEndorsementComplete) {
+                Row(
+                    Modifier
+                        .background(
+                            greenOnline,
+                            shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
+                        )
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
+                        contentDescription = null,
+                        tint = white
+                    )
+                    Text(
+                        text = "VO Endorsement completed",
+                        color = white,
+                        style = smallerTextStyle,
+                        modifier = Modifier.absolutePadding(bottom = 3.dp)
+                    )
+                }
             }
         }
     }
@@ -343,9 +372,9 @@ private fun BackPressSample() {
     var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
     val context = LocalContext.current
 
-    if(showToast){
+    if (showToast) {
         Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast= false
+        showToast = false
     }
 
 

@@ -11,10 +11,7 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -137,6 +134,11 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+                for (i in 1..5) {
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                }
             }
         }
     }

@@ -177,7 +177,7 @@
     <string name="pat_completed">पीएटी पूरा हुआ</string>
     <string name="didi_not_available">दीदी उपलब्ध नहीं है</string>
     <string name="are_you_sure">क्या आपको यकीन है?</string>
-    <string name="you_are_submitting_wealth_ranking_for_count_didis">आप %1$s दीदियों के लिए धन रैंकिंग सबमिट कर रहे हैं।</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">आप %1$s गरीब दीदियों के लिए धन रैंकिंग सबमिट कर रहे हैं।</string>
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">आप वीओ एंडोर्समेंट के लिए %1$s पीएटी पूर्ण दीदी भेज रहे हैं</string>
     <string name="send_all_for_vo_endorsement">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
     <string name="pat_survey_completed_message">{VILLAGE_NAME} के लिए पैट सर्वेक्षण \nपूर्ण हो गया है</string>
@@ -185,13 +185,14 @@
     <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
     <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
     <string name="pat_completed_box_title">PAT पूरा हो गया है</string>
-    <string name="didi_not_available_text">दीदी उपलब्ध नहीं है</string>
+    <string name="didi_not_available_text_singular">दीदी उपलब्ध नहीं है</string>
+    <string name="didi_not_available_text_plural">दीदीया उपलब्ध नहीं है</string>
     <string name="send_for_vo_text">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
     <string name="didi_pat_complete_text">दीदी का PAT पूरा हुआ</string>
-    <string name="didi_endorsed_text_plural">Didis Endorsed</string>
-    <string name="didi_endorsed_text_singula">Didi Endorsed</string>
-    <string name="didi_rejected_text_plural">Didis Rejected</string>
-    <string name="didi_rejected_text_singula">Didi Rejected</string>
+    <string name="didi_endorsed_text_plural">पृष्ठांकित दीदीया</string>
+    <string name="didi_endorsed_text_singula">पृष्ठांकित दीदी</string>
+    <string name="didi_rejected_text_plural">अस्वीकार दीदीया</string>
+    <string name="didi_rejected_text_singula">अस्वीकार दीदी</string>
     <string name="didi_not_available_sub_heading_text">दीदी उपलब्ध नहीं है</string>
     <string name="accept">स्वीकार करना</string>
     <string name="reject">अस्वीकार करना</string>
@@ -221,4 +222,10 @@
     <string name="form_picture_screen_title">फॉर्म के लिए फोटो जोड़ें</string>
     <string name="view">View Form</string>
     <string name="continue_pat">PAT जारी रखें</string>
+    <string name="pat_inprogresee_status_text">चालू</string>
+    <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नहीं हुई</string>
+    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई</string>
+    <string name="pat_in_progress_status_text">PAT सर्वेक्षण चालू है</string>
+    <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
+    <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
 </resources>

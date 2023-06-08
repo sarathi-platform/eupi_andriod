@@ -7,14 +7,21 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
+import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
+import com.patsurvey.nudge.model.request.EditWorkFlowRequest
+import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.*
@@ -26,7 +33,9 @@ import javax.inject.Inject
 class FormPictureScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val villageListDao: VillageListDao,
-    val stepsListDao: StepsListDao
+    val stepsListDao: StepsListDao,
+    val didiDao: DidiDao,
+    val apiService: ApiService
 ): BaseViewModel() {
 
     lateinit var outputDirectory: File
@@ -108,6 +117,33 @@ class FormPictureScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateDidiVoEndorsementStatus() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
+            didiList.forEach {didi ->
+                if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) {
+                    val existingProcessStatus = didi.beneficiaryProcessStatus
+                    var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
+                    existingProcessStatus?.forEach {
+                        updatedStatus.add(it)
+                    }
+                    updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "ACCEPTED"))
+                    didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+                } else if (didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
+                    val existingProcessStatus = didi.beneficiaryProcessStatus
+                    var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
+                    existingProcessStatus?.forEach {
+                        updatedStatus.add(it)
+                    }
+                    updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "REJECTED"))
+                    didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+                } else {
+                    didiDao.updateNeedToPostVO(false, didiId = didi.id, didi.villageId)
+                }
+            }
+        }
+    }
+
     fun saveVoEndorsementDate() {
         val currentTime = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
@@ -124,6 +160,79 @@ class FormPictureScreenViewModel @Inject constructor(
     }
     fun updateFormDImageCount(size: Int) {
         prefRepo.savePref(PREF_FORM_D_PAGE_COUNT, size)
+    }
+
+    fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.IO){
+                    val needToPostDidiList=didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id)
+                    if(needToPostDidiList.isNotEmpty()){
+                        needToPostDidiList.forEach { didi->
+                            launch {
+                                didi.voEndorsementStatus.let {
+                                    if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                        val updateWealthRankResponse=apiService.updateDidiRanking(
+                                            listOf(
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, ACCEPTED),
+                                            )
+                                        )
+                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                        } else {
+                                            networkCallbackListener.onFailed()
+                                        }
+                                    } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
+                                        val updateWealthRankResponse=apiService.updateDidiRanking(
+                                            listOf(
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name),
+                                            )
+                                        )
+                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                        } else {
+                                            networkCallbackListener.onFailed()
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex)
+                networkCallbackListener.onFailed()
+                onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
+            }
+        }
+    }
+
+    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                if(dbResponse.workFlowId>0){
+                    val response = apiService.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                            }
+                        }else{
+                            networkCallbackListener.onFailed()
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+                networkCallbackListener.onFailed()
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
     }
 
 

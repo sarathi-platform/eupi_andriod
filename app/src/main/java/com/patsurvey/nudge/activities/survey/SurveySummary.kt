@@ -30,7 +30,6 @@ import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.activities.ui.vo_endorsement.DidiItemCardForVo
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
-import com.patsurvey.nudge.navigation.home.VoEndorsmentScreeens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 
@@ -166,34 +165,7 @@ fun SurveySummary(
                                 }"
                             )
                         } else {
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                surveySummaryViewModel.updateVoStatusToNetwork(object : NetworkCallbackListener{
-                                    override fun onSuccess() {
-
-                                    }
-
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-
-                                })
-                                surveySummaryViewModel.callWorkFlowAPI(
-                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                    stepId,
-                                    object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
-                            }
-                            surveySummaryViewModel.updateDidiVoEndorsementStatus()
-                            surveySummaryViewModel.markVoEndorsementComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                            surveySummaryViewModel.saveVoEndorsementDate()
-                            navController.navigate(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route)
+                            navController.navigate("form_picture_screen/$stepId")
                         }
                     } else {
                         showToast(context, "Previous Step Not Complete.")
@@ -288,7 +260,7 @@ fun SurveySummary(
                             contentPadding = PaddingValues(bottom = bottomPadding),
                             modifier = Modifier.padding(bottom = 10.dp)
                         ) {
-                            if (fromScreen == ARG_FROM_PAT_SURVEY)
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 itemsIndexed(didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
                                     DidiItemCardForPat(
                                         didi = didi,
@@ -296,19 +268,21 @@ fun SurveySummary(
                                         onItemClick = {
                                             if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal)
                                                 navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                                        })
+                                        }
+                                    )
                                 }
-                            else
+                            } else {
                                 itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
                                     DidiItemCardForVo(
                                         navController = navController,
                                         didi = didi,
                                         modifier = modifier,
                                         onItemClick = {
-
+                                            navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                         }
                                     )
                                 }
+                            }
                             item { Spacer(modifier = Modifier.height(6.dp)) }
                         }
                     }
@@ -324,7 +298,7 @@ fun SurveySummary(
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size,
                         boxColor = blueLighter,
                         boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(R.string.pat_completed_box_title) else stringResource(
-                            id = R.string.didi_endorsed_text_plural
+                            id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size <= 1) R.string.didi_endorsed_text_singula else R.string.didi_endorsed_text_plural
                         ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {
@@ -339,8 +313,10 @@ fun SurveySummary(
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
-                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = R.string.didi_not_available_text) else stringResource(
-                            id = R.string.didi_rejected_text_plural
+                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = if (didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size <= 1)
+                            R.string.didi_not_available_text_singular else R.string.didi_not_available_text_plural) else stringResource(
+                            id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size <= 1)
+                                R.string.didi_rejected_text_singula else R.string.didi_rejected_text_plural
                         ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {

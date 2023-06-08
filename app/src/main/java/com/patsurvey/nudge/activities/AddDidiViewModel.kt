@@ -367,6 +367,11 @@ class AddDidiViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+                for (i in 1..5) {
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                }
             }
         }
     }

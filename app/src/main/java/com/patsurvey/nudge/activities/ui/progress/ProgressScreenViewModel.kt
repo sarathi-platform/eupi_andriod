@@ -57,10 +57,20 @@ class ProgressScreenViewModel @Inject constructor(
 
     val showLoader = mutableStateOf(false)
 
+    val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
         fetchVillageList()
+        setVoEndorsementCompleteForVillages()
+    }
+
+    private fun setVoEndorsementCompleteForVillages() {
+        villageList.value.forEach { village ->
+            val stepList = stepsListDao.getAllStepsForVillage(village.id)
+            isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+        }
     }
 
     private fun checkAndUpdateCompletedStepsForVillage() {

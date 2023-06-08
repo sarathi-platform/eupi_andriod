@@ -54,6 +54,7 @@ import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -63,7 +64,8 @@ import kotlinx.coroutines.launch
 fun FormPictureScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    formPictureScreenViewModel: FormPictureScreenViewModel
+    formPictureScreenViewModel: FormPictureScreenViewModel,
+    stepId: Int
 ) {
 
     val localContext = LocalContext.current
@@ -351,6 +353,34 @@ fun FormPictureScreen(
                         negativeButtonRequired = false,
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                formPictureScreenViewModel.updateVoStatusToNetwork(object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })
+                                formPictureScreenViewModel.callWorkFlowAPI(
+                                    formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId,
+                                    object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
+                            }
+                            formPictureScreenViewModel.updateDidiVoEndorsementStatus()
+                            formPictureScreenViewModel.markVoEndorsementComplete(formPictureScreenViewModel.prefRepo.getSelectedVillage().id, stepId)
+                            formPictureScreenViewModel.saveVoEndorsementDate()
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     localContext.getString(R.string.vo_endorsement_completed_message)
@@ -615,7 +645,7 @@ fun ExpandableFormPictureCard(
                 )
 
             }
-            if (pageList.size == 4) {
+            if (pageList.size >= 4) {
                 Text(
                     text = "If more than 5 pages, please upload the last page.",
                     style = smallTextStyle,

@@ -173,7 +173,7 @@
     <string name="pat_completed">PAT Completed</string>
     <string name="didi_not_available">Didi not available</string>
     <string name="are_you_sure">Are you sure?</string>
-    <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Didis.</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">You are submitting the wealth ranking for %1$s Poor Didis.</string>
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
     <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
     <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
@@ -181,7 +181,8 @@
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
     <string name="pat_completed_box_title">PAT Completed</string>
-    <string name="didi_not_available_text">Didi not available</string>
+    <string name="didi_not_available_text_singular">Didi not available</string>
+    <string name="didi_not_available_text_plural">Didis not available</string>
     <string name="send_for_vo_text">Send All For VO Endorsement</string>
     <string name="didi_pat_complete_text">Didis PAT completed</string>
     <string name="didi_endorsed_text_plural">Didis Endorsed</string>
@@ -215,5 +216,11 @@
     <string name="vo_endorsement_completion_dialog_message_singular">You are doing the final submission for {COUNT} endorsed didi.</string>
     <string name="form_picture_screen_title">Add Images of Forms</string>
     <string name="view">View Form</string>
+    <string name="pat_inprogresee_status_text">In Progress</string>
+    <string name="wealth_ranking_status_not_started_text">Wealth Ranking Not started</string>
+    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed</string>
+    <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
+    <string name="pat_completed_status_text">PAT Survey Completed</string>
+    <string name="vo_endorsement_status_text">VO Endorsement Completed</string>
 
 </resources>
