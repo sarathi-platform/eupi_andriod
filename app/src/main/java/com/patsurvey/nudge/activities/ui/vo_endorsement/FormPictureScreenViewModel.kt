@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.vo_endorsement
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
@@ -16,7 +17,17 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ACCEPTED
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
+import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -24,7 +35,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -77,7 +88,7 @@ class FormPictureScreenViewModel @Inject constructor(
 //    }
 
     fun setUri(context: Context) {
-        uri.value = if (imagePath.value != null ) uriFromFile(context, File(imagePath.value)) else null
+        uri.value = uriFromFile(context, File(imagePath.value))
     }
 
     fun setCameraExecutor() {
@@ -93,7 +104,9 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun saveFormPath(formPath: String, formName: String){
-        prefRepo.savePref("${PREF_FORM_PATH}_$formName", formPath)
+        Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
+        prefRepo.savePref(getFormPathKey(formName)
+            /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
     }
 
     fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
@@ -235,5 +248,15 @@ class FormPictureScreenViewModel @Inject constructor(
         }
     }
 
+
+    fun getFormPathKey(subPath: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+    }
+
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
+    }
 
 }

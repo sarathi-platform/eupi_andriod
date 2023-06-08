@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.utils.BLANK_STRING
 
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.WealthRank
 
 
@@ -59,6 +60,12 @@ data class DidiEntity(
 
     @ColumnInfo(name = "modifiedDate")
     var modifiedDate: Long,
+
+    @ColumnInfo(name = "activeStatus")
+    var activeStatus: Int = DidiStatus.DIDI_ACTIVE.ordinal,
+
+    @ColumnInfo(name = "needsToPostDeleteStatus")
+    var needsToPostDeleteStatus: Boolean = false,
 
     @ColumnInfo(name = "needsToPostRanking")
     var needsToPostRanking: Boolean = true,
