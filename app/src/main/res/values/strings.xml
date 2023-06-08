@@ -199,8 +199,9 @@
     <string name="confirm_text">Confirm</string>
     <string name="finish">Finish</string>
 
-    <string name="no_internet">No Internet Available</string>
-
+    <string name="no_internet">Not Connected</string>
+    <string name="connected">Connected</string>
+    <string name="sync_your_data">Sync Your Data</string>
     <string name="sync">Sync</string>
     <string name="battery">Battery</string>
     <string name="mobile_data">Mobile Data</string>
@@ -215,5 +216,13 @@
     <string name="vo_endorsement_completion_dialog_message_singular">You are doing the final submission for {COUNT} endorsed didi.</string>
     <string name="form_picture_screen_title">Add Images of Forms</string>
     <string name="view">View Form</string>
+
+    <string name="step_1">Step 1</string>
+    <string name="step_2">Step 2</string>
+    <string name="step_3">Step 3</string>
+    <string name="step_4">Step 4</string>
+    <string name="step_5">Step 5</string>
+    <string name="vo_endorsement">VO Endorsement</string>
+    <string name="close">Close</string>
 
 </resources>

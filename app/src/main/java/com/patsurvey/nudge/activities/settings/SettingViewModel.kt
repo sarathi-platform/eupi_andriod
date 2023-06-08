@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.SyncHelper
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
@@ -36,8 +37,11 @@ class SettingViewModel @Inject constructor(
     var syncPercentage = mutableStateOf(0f)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
-
     val showLoader = mutableStateOf(false)
+
+    val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
+        numericAnswerDao,
+        questionDao)
     fun isFormAAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
@@ -90,11 +94,28 @@ class SettingViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
+    fun getStepOneSize(stepOneSize : MutableState<String>) {
+        syncHelper.getStepOneDataSizeInSync(stepOneSize)
+    }
+
+    fun getStepTwoSize(stepTwoSize : MutableState<String>) {
+        syncHelper.getStepTwoDataSizeInSync(stepTwoSize)
+    }
+
+    fun getStepThreeSize(stepThreeSize : MutableState<String>) {
+        syncHelper.getStepThreeDataSizeInSync(stepThreeSize)
+    }
+
+    fun getStepFourSize(stepFourSize : MutableState<String>) {
+        syncHelper.getStepFourDataSizeInSync(stepFourSize)
+    }
+
+    fun getStepFiveSize(stepFiveSize : MutableState<String>) {
+        syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
+    }
+
     fun syncDataOnServer(context: Context) {
         if(isInternetAvailable(context)){
-            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
-            numericAnswerDao,
-            questionDao)
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {

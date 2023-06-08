@@ -94,11 +94,27 @@ fun SettingScreen(
 
     val optionList = viewModel.optionList.collectAsState()
 
+    val defaultStepSize = "-"
     val expanded = remember {
         mutableStateOf(false)
     }
     val showSyncDialog = remember {
         mutableStateOf(false)
+    }
+    val stepOneSize = remember {
+        mutableStateOf(defaultStepSize)
+    }
+    val stepTwoSize = remember {
+        mutableStateOf(defaultStepSize)
+    }
+    val stepThreeSize = remember {
+        mutableStateOf(defaultStepSize)
+    }
+    val stepFourSize = remember {
+        mutableStateOf(defaultStepSize)
+    }
+    val stepFiveSize = remember {
+        mutableStateOf(defaultStepSize)
     }
 
     Scaffold(
@@ -182,8 +198,6 @@ fun SettingScreen(
                             when (index) {
                                 0 -> {
                                     showSyncDialog.value = true
-//                                    viewModel.syncDataOnServer(context)
-
                                 }
                                 1 -> {
                                     navController.navigate(SettingScreens.PROFILE_SCREEN.route)
@@ -240,19 +254,32 @@ fun SettingScreen(
             if (showSyncDialog.value) {
                 showSyncDialog(setShowDialog = {
                     showSyncDialog.value = it
-                }){
+                }, positiveButtonClicked = {
                     viewModel.showLoader.value = true
-                }
+                },stepOneSize = stepOneSize.value,
+                stepTwoSize = stepTwoSize.value,
+                stepThreeSize = stepThreeSize.value,
+                stepFourSize = stepFourSize.value,
+                stepFiveSize = stepFiveSize.value)
+                viewModel.getStepOneSize(stepOneSize)
+                viewModel.getStepTwoSize(stepTwoSize)
+                viewModel.getStepThreeSize(stepThreeSize)
+                viewModel.getStepFourSize(stepFourSize)
+                viewModel.getStepFiveSize(stepFiveSize)
             }
         }
-
     }
 }
 
 @Composable
 fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
-    positiveButtonClicked: () -> Unit
+    positiveButtonClicked: () -> Unit,
+    stepOneSize : String,
+    stepTwoSize : String,
+    stepThreeSize : String,
+    stepFourSize : String,
+    stepFiveSize : String
 ) {
 
     val context = LocalContext.current
@@ -274,21 +301,153 @@ fun showSyncDialog(
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier
                     ) {
-                        MainTitle(stringResource(R.string.sync), Modifier.weight(1f))
+                        MainTitle(stringResource(R.string.sync_your_data), Modifier.weight(1f))
                     }
                     val batSystemService = LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
                     val batteryLevel = batSystemService.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
                     Row() {
-
+                        Text(
+                            text = stringResource(id = R.string.step_1) + ": ",
+                            style = didiDetailItemStyle,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.transect_wale_title) ,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stepOneSize,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.step_2) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.social_mapping) ,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stepTwoSize,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.step_3) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.particaptory_wealth_ranking_text) ,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stepThreeSize,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.step_4) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.pat_survey_title) ,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stepFourSize,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
+                        Text(
+                            text = stringResource(id = R.string.step_5) + ": ",
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stringResource(id = R.string.vo_endorsement) ,
+                            style = didiDetailItemStyle,
+                            fontSize = 12.sp,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier
+                        )
+                        Text(
+                            text = stepFiveSize,
+                            style = didiDetailItemStyle,
+                            textAlign = TextAlign.Start,
+                            fontWeight = FontWeight.Normal,
+                            fontSize = 12.sp,
+                            modifier = Modifier
+                        )
+                    }
+                    Row() {
                         Text(
                             text = stringResource(id = R.string.battery) + ": ",
                             style = didiDetailItemStyle,
                             textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
                             modifier = Modifier
                         )
                         Text(
                             text = "$batteryLevel%",
                             style = didiDetailItemStyle,
+                            fontSize = 12.sp,
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                         )
@@ -298,18 +457,21 @@ fun showSyncDialog(
                             text = stringResource(id = R.string.mobile_data) + ": ",
                             style = didiDetailItemStyle,
                             textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
                             modifier = Modifier
                         )
 
                         Text(
-                            text = if(isInternetConnected) "Connected" else stringResource(id = R.string.no_internet),
+                            text = if(isInternetConnected) stringResource(id = R.string.connected) else stringResource(id = R.string.no_internet),
                             style = didiDetailItemStyle,
                             textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
                             modifier = Modifier,
                             color = if (isInternetConnected) greenOnline else redOffline
                         )
                     }
-                    Row {
+                    /*Row {
                         Text(
                             text = stringResource(id = R.string.estimated_time_required) + ": ",
                             style = didiDetailItemStyle,
@@ -323,8 +485,8 @@ fun showSyncDialog(
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                         )
-                    }
-                    Row() {
+                    }*/
+                    /*Row() {
                         Text(
                             text = stringResource(id = R.string.size) + ": ",
                             style = didiDetailItemStyle,
@@ -338,23 +500,35 @@ fun showSyncDialog(
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                         )
-                    }
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        ButtonNegative(
-                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
-                            isArrowRequired = false,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            setShowDialog(false)
+                    }*/
+                    if(isInternetConnected) {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ButtonNegative(
+                                buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                isArrowRequired = false,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                setShowDialog(false)
+                            }
+                            Spacer(modifier = Modifier.width(8.dp))
+                            ButtonPositive(
+                                buttonTitle = stringResource(id = R.string.sync),
+                                isArrowRequired = false,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                setShowDialog(false)
+                                positiveButtonClicked()
+                            }
                         }
-                        Spacer(modifier = Modifier.width(8.dp))
-                        ButtonPositive(
-                            buttonTitle = stringResource(id = R.string.sync),
-                            isArrowRequired = false,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            setShowDialog(false)
-                            positiveButtonClicked()
+                    } else {
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            ButtonNegative(
+                                buttonTitle = stringResource(id = R.string.close),
+                                isArrowRequired = false,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                setShowDialog(false)
+                            }
                         }
                     }
                 }
