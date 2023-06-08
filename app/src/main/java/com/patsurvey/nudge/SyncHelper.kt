@@ -78,9 +78,41 @@ class SyncHelper (
                     3 -> {
                         checkDidiWealthStatus(networkCallbackListener)
                     }
+                    4 -> {
+                        checkDidiPatStatus(networkCallbackListener)
+                    }
                 }
             }
         },pendingTimerTime)
+    }
+
+    private fun checkDidiPatStatus(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchPendingPatStatusDidi(true,"")
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { didi ->
+                    didi.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didiDao.updateDidiNeedToPostPat(didi.id,false)
+                                didiDao.updateDidiTransactionId(didi.id,"")
+                            }
+                        }
+                    }
+                    networkCallbackListener.onSuccess()
+//                    savePATSummeryToServer(networkCallbackListener)
+                } else
+                    networkCallbackListener.onFailed()
+            } else {
+//                updateWealthRankingToNetwork(networkCallbackListener)
+                savePATSummeryToServer(networkCallbackListener)
+            }
+        }
     }
 
     private fun checkDidiWealthStatus(networkCallbackListener: NetworkCallbackListener) {
@@ -97,6 +129,7 @@ class SyncHelper (
                         didiList.forEach { didi ->
                             if (transactionIdResponse.transactionId == didi.transactionId) {
                                 didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
+                                didiDao.updateDidiTransactionId(didi.id,"")
                             }
                         }
                     }
@@ -310,6 +343,7 @@ class SyncHelper (
         didiDao.deleteDidiNeedToPost(true)
         oldDidiList.forEach(){ didiEntity ->
             didiEntity.needsToPost = false
+            didiEntity.transactionId = ""
         }
         didiDao.insertAll(oldDidiList)
         updateWealthRankingToNetwork(networkCallbackListener)
@@ -456,9 +490,15 @@ class SyncHelper (
 //                                    networkCallbackListener.onSuccess()
                                         updateVoStatusToNetwork(networkCallbackListener)
                                     } else {
-                                        /*for (didi in didiIDList){
-                                            didi
-                                        }*/
+                                        for (i in didiIDList.indices){
+                                            saveAPIResponse.data?.get(i)?.let {
+                                                didiDao.updateDidiTransactionId(didiIDList[i].id,
+                                                    it.transactionId)
+                                            }
+                                            didiDao.updateDidiNeedToPostPat(didiIDList[i].id,true)
+                                        }
+                                        isPending = 4
+                                        startSyncTimer(networkCallbackListener)
                                     }
                                 } else {
                                     networkCallbackListener.onFailed()
@@ -510,6 +550,7 @@ class SyncHelper (
                                         }
                                     }
                                 }
+                                networkCallbackListener.onFailed()
                             }
                         }
                     }
