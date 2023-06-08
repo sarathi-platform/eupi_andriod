@@ -152,7 +152,8 @@ fun PatSurvaySectionTwoSummaryScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     itemsIndexed(answerSummeryList) { index, answer ->
-                      SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString() )
+                      SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString(),
+                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type)
                     }
                 }
             }
@@ -276,7 +277,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Preview(showBackground = true)
 @Composable
 fun SectionTwoSummeryItemPreview(){
-    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery")
+    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name)
 }
 
 
@@ -285,7 +286,9 @@ fun SectionTwoSummeryItemPreview(){
 fun SectionTwoSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
-    quesSummery:String
+    quesSummery:String,
+    answerValue:String,
+    questionType: String
 ) {
     Column(
         modifier = Modifier
@@ -293,9 +296,12 @@ fun SectionTwoSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth()) {
-
+            var summaryText = "${index+1}. $quesSummery : $answerValue."
+            if(questionType.equals(QuestionType.Numeric_Field.name,true)){
+                summaryText = "${index+1}. $quesSummery."
+            }
             Text(
-                text = "${index+1}. ${quesSummery}.",
+                text = summaryText,
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

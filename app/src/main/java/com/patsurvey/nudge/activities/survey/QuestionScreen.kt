@@ -107,9 +107,10 @@ fun QuestionScreen(
                 SurveyHeader(
                     modifier = Modifier,
                     didiName = viewModel.didiName.value,
-                    questionCount = questionList.size,
+                    questionCount = viewModel.maxQuesCount.value,
                     answeredCount = answerList.size,
-                    partNumber = if(sectionType.equals(TYPE_EXCLUSION,true)) 1 else 2
+                    partNumber = if(sectionType.equals(TYPE_EXCLUSION,true)) 1 else 2,
+                    viewModel = viewModel
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)

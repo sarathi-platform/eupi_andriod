@@ -336,7 +336,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                    optionValue = answersItem?.options?.get(0)?.optionValue,
                                                    totalAssetAmount = answersItem?.totalWeight,
                                                    needsToPost = false,
-                                                   answerValue =  answersItem?.options?.get(0)?.summary?: BLANK_STRING,
+                                                   answerValue =  answersItem?.options?.get(0)?.display?: BLANK_STRING,
                                                    type = answersItem?.questionType?:QuestionType.RadioButton.name))
                                            }
 

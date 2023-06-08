@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -41,7 +42,7 @@ class SurveySummaryViewModel @Inject constructor(
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
-
+    val notAvailableCount = mutableStateOf(0)
     init {
         fetchDidisFromDB()
     }
@@ -50,6 +51,7 @@ class SurveySummaryViewModel @Inject constructor(
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
+                notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }
     }
