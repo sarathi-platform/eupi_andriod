@@ -1230,13 +1230,13 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
 }
 
 fun getLatestStatusText(context: Context, didi: DidiEntity): String {
-    var status = context.getString(R.string.wealth_ranking_status_conplete_text)
+    var status = context.getString(R.string.wealth_ranking_status_complete_text)
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.wealth_ranking_status_not_started_text)
     } else {
         when (didi.patSurveyStatus) {
             PatSurveyStatus.NOT_STARTED.ordinal -> {
-                status = context.getString(R.string.wealth_ranking_status_conplete_text)
+                status = context.getString(R.string.wealth_ranking_status_complete_text)
             }
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
