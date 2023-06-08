@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
@@ -553,6 +554,7 @@ private fun decoupledConstraints(): ConstraintSet {
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
+        val expendArrowImageEnd = createRefFor("expendArrowImageEnd")
         val moreActionIcon = createRefFor("moreActionIcon")
         val moreDropDown = createRefFor("moreDropDown")
         val didiDetailLayout = createRefFor("didiDetailLayout")
@@ -589,13 +591,19 @@ private fun decoupledConstraints(): ConstraintSet {
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
+            end.linkTo(moreActionIcon.start)
+        }
+
+        constrain(expendArrowImageEnd) {
+            top.linkTo(didiName.top)
+            bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
         }
 
         constrain(moreActionIcon) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)
-            end.linkTo(expendArrowImage.start)
+            end.linkTo(parent.end, margin = 10.dp)
         }
 
         constrain(moreDropDown) {
@@ -794,16 +802,22 @@ fun DidiItemCard(
                             ),
                         )
 
-                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_completed_tick),
-                                contentDescription = "home image",
-                                modifier = Modifier
-                                    .width(30.dp)
-                                    .height(30.dp)
+                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                            if (didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_completed_tick),
+                                    contentDescription = "home image",
+                                    modifier = Modifier
+                                        .width(30.dp)
+                                        .height(30.dp)
+                                        .padding(5.dp)
+                                        .layoutId("successImage")
+                                )
+                            } else {
+                                Text(text = stringResource(R.string.pat_inprogresee_status_text), style = smallTextStyle, color = inprogressYellow, modifier = Modifier
                                     .padding(5.dp)
-                                    .layoutId("successImage")
-                            )
+                                    .layoutId("successImage"))
+                            }
                         }
                     }
 
@@ -874,7 +888,8 @@ fun DidiItemCard(
                         }
 
                         CardArrow(
-                            modifier = Modifier.layoutId("expendArrowImage"),
+                            modifier = Modifier.layoutId(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
+                                && !didiViewModel.isSocialMappingComplete.value)"expendArrowImage" else "expendArrowImageEnd"),
                             degrees = arrowRotationDegree,
                             iconColor = animateColor,
                             onClick = { onExpendClick(expanded, didi) }
@@ -1099,6 +1114,9 @@ fun DidiItemCard(
 @Composable
 fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
     val constraintSet = didiDetailConstraints()
+
+    val context = LocalContext.current
+
     val enterTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top,
@@ -1196,7 +1214,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) "Wealth Ranking Not started" else "Wealth Ranking Completed",
+                text = getLatestStatusText(context, didi),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatus")
@@ -1209,6 +1227,30 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
         }
     }
+}
+
+fun getLatestStatusText(context: Context, didi: DidiEntity): String {
+    var status = context.getString(R.string.wealth_ranking_status_complete_text)
+    if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+        status = context.getString(R.string.wealth_ranking_status_not_started_text)
+    } else {
+        when (didi.patSurveyStatus) {
+            PatSurveyStatus.NOT_STARTED.ordinal -> {
+                status = context.getString(R.string.wealth_ranking_status_complete_text)
+            }
+            PatSurveyStatus.INPROGRESS.ordinal -> {
+                status = context.getString(R.string.pat_in_progress_status_text)
+            }
+            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
+                status = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
+                    context.getString(R.string.vo_endorsement_status_text)
+                } else {
+                    context.getString(R.string.pat_completed_status_text)
+                }
+            }
+        }
+    }
+    return status
 }
 
 @Composable

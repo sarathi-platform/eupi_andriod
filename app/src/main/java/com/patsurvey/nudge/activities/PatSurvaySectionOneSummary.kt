@@ -289,9 +289,10 @@ fun PatSummeryScreenDidiDetailBox(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
+                    painter = painterResource(id = R.drawable.pat_sample_icon),
                     contentDescription = "home image",
-                    tint = Color.Black
+                    tint = Color.Black,
+                    modifier = Modifier.size(24.dp)
                 )
                 Text(
                     text = didi.cohortName,

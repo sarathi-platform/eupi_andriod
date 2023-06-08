@@ -90,3 +90,4 @@ val acceptEndorsementTextColor = Color(0xFF439A86)
 val rejectEndorsementTextColor = Color(0xFFE31F06)
 
 val pdfViewerBg = Color(0xFFf1f3f4)
+val inprogressYellow = Color(0xC9D39509)

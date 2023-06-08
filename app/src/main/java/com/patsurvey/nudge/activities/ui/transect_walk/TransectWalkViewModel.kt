@@ -288,6 +288,11 @@ class TransectWalkViewModel @Inject constructor(
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+                prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+                for (i in 1..5) {
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
+                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                }
             }
         }
     }

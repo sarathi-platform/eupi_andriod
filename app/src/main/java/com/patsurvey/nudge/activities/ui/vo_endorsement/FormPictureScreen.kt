@@ -17,6 +17,7 @@ import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
@@ -53,6 +54,7 @@ import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -62,7 +64,8 @@ import kotlinx.coroutines.launch
 fun FormPictureScreen(
     modifier: Modifier = Modifier,
     navController: NavHostController,
-    formPictureScreenViewModel: FormPictureScreenViewModel
+    formPictureScreenViewModel: FormPictureScreenViewModel,
+    stepId: Int
 ) {
 
     val localContext = LocalContext.current
@@ -204,7 +207,7 @@ fun FormPictureScreen(
                                 startPadding = 0.dp
                             )
 
-                            Column(
+                            LazyColumn(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 14.dp, horizontal = 16.dp),
@@ -213,96 +216,122 @@ fun FormPictureScreen(
                             )
                             {
 
-                                Text(
-                                    text = stringResource(R.string.form_picture_screen_title),
-                                    style = mediumTextStyle,
-                                    color = textColorDark
-                                )
-                                Spacer(modifier = Modifier.height(10.dp))
+                                item {
+                                    Text(
+                                        text = stringResource(R.string.form_picture_screen_title),
+                                        style = mediumTextStyle,
+                                        color = textColorDark
+                                    )
+                                }
+                                item {
+                                    Spacer(modifier = Modifier.height(10.dp))
+                                }
 
-                                FormPictureCard(
-                                    modifier = Modifier,
-                                    navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsClicked.value < 1,
-                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(
-                                        R.string.form_c_photo_button_text
-                                    ) else "${stringResource(id = R.string.view)} C",
-                                    contentColor = textColorDark,
-                                    borderColor = textColorDark,
-                                    expanded = formCCardExpanded.value,
-                                    pageList = formPictureScreenViewModel.formCPageList.value,
-                                    pageItemClicked = {
-                                        scope.launch {
-                                            formPictureScreenViewModel.pageItemClicked.value =
-                                                "${FORM_C}_page_$it"
-                                            formPictureScreenViewModel.imagePath.value =
-                                                formPictureScreenViewModel.formCImageList.value["Page_$it"].toString()
-                                            formPictureScreenViewModel.setUri(localContext)
-                                            delay(250)
-                                            if (!scaffoldState.isVisible)
-                                                scaffoldState.show()
-                                            else
-                                                scaffoldState.hide()
-                                        }
-                                    },
-                                    formPictureCardClicked = {
-                                        formCCardExpanded.value = !formCCardExpanded.value
+                                item {
+                                    FormPictureCard(
+                                        modifier = Modifier,
+                                        navController = navController,
+                                        showIcon = formPictureScreenViewModel.formsClicked.value < 1,
+                                        cardTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(
+                                            R.string.form_c_photo_button_text
+                                        ) else "${stringResource(id = R.string.view)} C",
+                                        contentColor = textColorDark,
+                                        borderColor = textColorDark,
+                                        expanded = formCCardExpanded.value,
+                                        pageList = formPictureScreenViewModel.formCPageList.value,
+                                        pageItemClicked = {
+                                            scope.launch {
+                                                formPictureScreenViewModel.pageItemClicked.value =
+                                                    "${FORM_C}_page_$it"
+                                                formPictureScreenViewModel.imagePath.value =
+                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                        "${PREF_FORM_PATH}_${formPictureScreenViewModel.pageItemClicked.value}",
+                                                        ""
+                                                    )?.let { if (it.isNotEmpty()) it else "" }
+                                                        .toString()
+                                                formPictureScreenViewModel.setUri(localContext)
+                                                delay(250)
+                                                if (!scaffoldState.isVisible)
+                                                    scaffoldState.show()
+                                                else
+                                                    scaffoldState.hide()
+                                            }
+                                        },
+                                        formPictureCardClicked = {
+                                            formCCardExpanded.value = !formCCardExpanded.value
 
-                                    },
-                                    addPageClicked = {
-                                        if (formPictureScreenViewModel.formCPageList.value.size <= 5) {
-                                            formPictureScreenViewModel.setCameraExecutor()
-                                            formPictureScreenViewModel.formCPageList.value.size
-                                            formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
-                                        } else {
-                                            showToast(localContext, "Max 5 Pages can be captured")
+                                        },
+                                        addPageClicked = {
+                                            if (formPictureScreenViewModel.formCPageList.value.size < 5) {
+                                                formPictureScreenViewModel.setCameraExecutor()
+                                                formPictureScreenViewModel.formCPageList.value.size
+                                                formPictureScreenViewModel.shouldShowCamera.value =
+                                                    Pair(FORM_C, true)
+                                            } else {
+                                                showToast(
+                                                    localContext,
+                                                    "Max 5 Pages can be captured"
+                                                )
 //                                    navController.navigate("image_viewer/$FORM_C")
-                                        }
-                                    },
-                                    retakeButtonClicked = {
+                                            }
+                                        },
+                                        retakeButtonClicked = {
 
-                                    }
-                                )
-
-                                FormPictureCard(
-                                    modifier = Modifier,
-                                    navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsClicked.value < 2,
-                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(
-                                        R.string.form_d_photo_button_text
-                                    ) else "${stringResource(id = R.string.view)} D",
-                                    contentColor = textColorDark,
-                                    borderColor = textColorDark,
-                                    expanded = formDCardExpanded.value,
-                                    pageList = formPictureScreenViewModel.formDPageList.value,
-                                    pageItemClicked = {
-                                        formPictureScreenViewModel.pageItemClicked.value =
-                                            "${FORM_D}_page_$it"
-                                        formPictureScreenViewModel.setUri(localContext)
-                                        scope.launch {
-                                            if (!scaffoldState.isVisible)
-                                                scaffoldState.show()
-                                            else
-                                                scaffoldState.hide()
                                         }
-                                    },
-                                    formPictureCardClicked = {
-                                        formDCardExpanded.value = !formDCardExpanded.value
-                                    },
-                                    addPageClicked = {
-                                        if (formPictureScreenViewModel.formDPageList.value.size <= 5) {
-                                            formPictureScreenViewModel.setCameraExecutor()
-                                            formPictureScreenViewModel.shouldShowCamera.value =
-                                                Pair(FORM_D, true)
-                                        } else {
-                                            showToast(localContext, "Max 5 Pages can be captured")
-//                                    navController.navigate("image_viewer/$FORM_C")
-                                        }
-                                    },
-                                    retakeButtonClicked = {
+                                    )
+                                }
 
-                                    }
-                                )
+                                item {
+                                    FormPictureCard(
+                                        modifier = Modifier,
+                                        navController = navController,
+                                        showIcon = formPictureScreenViewModel.formsClicked.value < 2,
+                                        cardTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(
+                                            R.string.form_d_photo_button_text
+                                        ) else "${stringResource(id = R.string.view)} D",
+                                        contentColor = textColorDark,
+                                        borderColor = textColorDark,
+                                        expanded = formDCardExpanded.value,
+                                        pageList = formPictureScreenViewModel.formDPageList.value,
+                                        pageItemClicked = {
+
+                                            scope.launch {
+                                                formPictureScreenViewModel.pageItemClicked.value =
+                                                    "${FORM_D}_page_$it"
+                                                formPictureScreenViewModel.imagePath.value =
+                                                    formPictureScreenViewModel.prefRepo.getPref(
+                                                        "${PREF_FORM_PATH}_${formPictureScreenViewModel.pageItemClicked.value}",
+                                                        ""
+                                                    )?.let { if (it.isNotEmpty()) it else "" }
+                                                        .toString()
+                                                formPictureScreenViewModel.setUri(localContext)
+                                                if (!scaffoldState.isVisible)
+                                                    scaffoldState.show()
+                                                else
+                                                    scaffoldState.hide()
+                                            }
+                                        },
+                                        formPictureCardClicked = {
+                                            formDCardExpanded.value = !formDCardExpanded.value
+                                        },
+                                        addPageClicked = {
+                                            if (formPictureScreenViewModel.formDPageList.value.size < 5) {
+                                                formPictureScreenViewModel.setCameraExecutor()
+                                                formPictureScreenViewModel.shouldShowCamera.value =
+                                                    Pair(FORM_D, true)
+                                            } else {
+                                                showToast(
+                                                    localContext,
+                                                    "Max 5 Pages can be captured"
+                                                )
+                                                //                                    navController.navigate("image_viewer/$FORM_C")
+                                            }
+                                        },
+                                        retakeButtonClicked = {
+
+                                        }
+                                    )
+                                }
                             }
                         }
                     }
@@ -324,6 +353,34 @@ fun FormPictureScreen(
                         negativeButtonRequired = false,
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                formPictureScreenViewModel.updateVoStatusToNetwork(object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })
+                                formPictureScreenViewModel.callWorkFlowAPI(
+                                    formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId,
+                                    object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
+                            }
+                            formPictureScreenViewModel.updateDidiVoEndorsementStatus()
+                            formPictureScreenViewModel.markVoEndorsementComplete(formPictureScreenViewModel.prefRepo.getSelectedVillage().id, stepId)
+                            formPictureScreenViewModel.saveVoEndorsementDate()
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     localContext.getString(R.string.vo_endorsement_completed_message)
@@ -367,7 +424,6 @@ private fun handleImageCapture(
         }
 
     } else {
-
         viewModal.saveFormPath(
             photoPath,
             "${formName}_page_${viewModal.formDPageList.value.size + 1}"
@@ -405,7 +461,6 @@ private fun requestCameraPermission(context: Activity, viewModal: FormPictureScr
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun FormPictureCard(
     modifier: Modifier = Modifier,
@@ -587,6 +642,15 @@ fun ExpandableFormPictureCard(
                     color = textColorDark,
                     style = buttonTextStyle,
                     modifier = Modifier.absolutePadding(bottom = 3.dp)
+                )
+
+            }
+            if (pageList.size >= 4) {
+                Text(
+                    text = "If more than 5 pages, please upload the last page.",
+                    style = smallTextStyle,
+                    color = textColorDark80,
+                    modifier = Modifier.padding(horizontal = 26.dp)
                 )
             }
         }

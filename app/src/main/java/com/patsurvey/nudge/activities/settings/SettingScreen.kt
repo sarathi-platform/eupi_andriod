@@ -384,8 +384,12 @@ fun showSyncInProgressDialog(
                         horizontalArrangement = Arrangement.Center,
                         modifier = Modifier
                     ) {
-                        MainTitle(stringResource(R.string.syncing), Modifier.weight(1f).fillMaxWidth(), align = TextAlign.Center)
+                        MainTitle(stringResource(R.string.syncing),
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth(), align = TextAlign.Center)
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                     GradientProgressbar(settingViewModel)
                 }
             }
@@ -398,7 +402,7 @@ fun GradientProgressbar(
     settingViewModel: SettingViewModel
 ) {
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
-    val indicatorPadding = 48.dp
+    val indicatorPadding = 24.dp
     val gradientColors = listOf(Color(0xFF2EE08E),Color(0xFF2EE08E))
     val numberStyle: TextStyle = mediumTextStyle
     val animationDuration = 1000
@@ -419,12 +423,10 @@ fun GradientProgressbar(
             modifier = Modifier.padding(1.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            Column(Modifier.fillMaxWidth()) {
-                Box(contentAlignment = Alignment.Center) {
+            Row(Modifier.fillMaxWidth()) {
                     Canvas(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.CenterStart)
+                            .weight(1f)
                             .height(24.dp)
                             .padding(start = indicatorPadding, end = indicatorPadding)
                     ) {
@@ -463,7 +465,7 @@ fun GradientProgressbar(
                         fontWeight = FontWeight.SemiBold,
                         color = textColorDark,
                         modifier = Modifier
-                            .align(Alignment.CenterEnd)
+                            .weight(0.2f)
                     )
                 }
 
@@ -484,7 +486,7 @@ fun GradientProgressbar(
                     text = "Please don't close the app or switch off the phone.",
                     style = numberStyle,
                     textAlign = TextAlign.Start,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     color = textColorDark,
@@ -494,7 +496,7 @@ fun GradientProgressbar(
                 Log.e("sync","new ->$syncPercentage")
             }
         }
-    }
+
 }
 
 @Composable

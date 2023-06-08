@@ -50,7 +50,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
     var villageId: Int = -1
     var stepId: Int = -1
 
-//    val showLoader = mutableStateOf(false)
+    val showLoader = mutableStateOf(false)
 
     init {
         villageId = prefRepo.getSelectedVillage().id

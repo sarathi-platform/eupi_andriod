@@ -34,7 +34,7 @@ class VideoListViewModel @Inject constructor(
 
     }
 
-    val initialPosition = mutableStateOf(0f)
+    val initialPosition = mutableStateOf(mutableMapOf<Int, Float>())
 
     val currentDownloadingId = mutableStateOf(-1)
 
@@ -143,7 +143,7 @@ class VideoListViewModel @Inject constructor(
                 }
                 val downloadUrl = getVideoPath(context = context, videoItemId = id).absoluteFile
                 val downloadPercentage = if (status == DownloadStatus.UNAVAILABLE) 0F else progress.toFloat()
-                initialPosition.value = downloadPercentage
+                initialPosition.value[id] = downloadPercentage
                 currentDownloadingId.value = -1
             }
 

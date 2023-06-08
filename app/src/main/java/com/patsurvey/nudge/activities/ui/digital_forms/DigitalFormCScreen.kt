@@ -322,7 +322,10 @@ fun DigitalFormCScreen(
                                             ),
                                             color = textColorDark,
                                             modifier = Modifier.clickable {
-                                                navController.navigate("image_viewer/$FORM_C")
+                                                if (fromScreen == ARG_FROM_SETTING)
+                                                    navController.navigate("image_viewer/$FORM_C")
+                                                else
+                                                    navController.navigate("vo_image_viewer/$FORM_C")
                                             }
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
@@ -336,7 +339,10 @@ fun DigitalFormCScreen(
                                             ),
                                             color = textColorDark,
                                             modifier = Modifier.clickable {
-                                                navController.navigate("image_viewer/$FORM_D")
+                                                if (fromScreen == ARG_FROM_SETTING)
+                                                    navController.navigate("image_viewer/$FORM_D")
+                                                else
+                                                    navController.navigate("vo_image_viewer/$FORM_D")
                                             }
                                         )
                                     }
