@@ -376,7 +376,13 @@ fun showSyncDialog(
                         horizontalArrangement = Arrangement.SpaceAround,
                         modifier = Modifier
                     ) {
-                        MainTitle(stringResource(R.string.sync_your_data), Modifier.weight(1f).fillMaxWidth(), align = TextAlign.Center)
+                        MainTitle(
+                            stringResource(R.string.sync_your_data),
+                            Modifier
+                                .weight(1f)
+                                .fillMaxWidth(),
+                            align = TextAlign.Center
+                        )
                     }
                     val batSystemService =
                         LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
@@ -397,7 +403,13 @@ fun showSyncDialog(
                                 modifier = Modifier
                             )
                             if (batteryLevel < 30)
-                                Text(text = "(Min 30% required)", color = redOffline, fontSize = 10.sp, fontWeight = FontWeight.SemiBold, fontFamily = NotoSans)
+                                Text(
+                                    text = "(Min 30% required)",
+                                    color = redOffline,
+                                    fontSize = 10.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
                         }
 
                         Text(
@@ -800,7 +812,7 @@ fun GradientProgressbar(
 ) {
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
     val indicatorPadding = 24.dp
-    val gradientColors = listOf(Color(0xFF2EE08E),Color(0xFF2EE08E))
+    val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
     val numberStyle: TextStyle = mediumTextStyle
     val animationDuration = 1000
     val animationDelay = 0
@@ -895,7 +907,7 @@ fun GradientProgressbar(
                 Log.e("sync", "new ->$syncPercentage")
             }
         }
-
+    }
 }
 
 @Composable
@@ -1027,7 +1039,10 @@ fun ExpandedSettingsList(
             if (formList.isNotEmpty()) {
                 formList.forEachIndexed { index, name ->
 
-                    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+                    Row(
+                        Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
 
                         Text(
                             text = name,
@@ -1095,5 +1110,4 @@ fun ExpandedSettingsList(
             Spacer(modifier = Modifier.height(15.dp))
         }
     }
-
 }
