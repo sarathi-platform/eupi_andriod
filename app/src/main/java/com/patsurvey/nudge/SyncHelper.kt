@@ -40,7 +40,7 @@ class SyncHelper (
     private val pendingTimerTime : Long= 10000
     private var isPending = 0
     fun syncDataToServer(networkCallbackListener: NetworkCallbackListener){
-        showProgressBar(networkCallbackListener)
+//        showProgressBar(networkCallbackListener)
         Log.e("progress","started")
         addTolasToNetwork(networkCallbackListener)
 //        addDidisToNetwork(networkCallbackListener)
@@ -221,11 +221,13 @@ class SyncHelper (
                                 }
                                 updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             }
+                            syncPercentage.value = 20f
                         } else {
                             for (i in 0..response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
                                 updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             }
+                            syncPercentage.value = 10f
                         }
                     }
 //                    addDidisToNetwork(networkCallbackListener)
@@ -317,11 +319,13 @@ class SyncHelper (
                             }
                         }
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
+                        syncPercentage.value = 40f
                     } else {
                         for (i in 0..(response.data?.size ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
                             updateLocalTransactionIdToLocalDidi(didiList,networkCallbackListener)
                         }
+                        syncPercentage.value = 30f
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -381,10 +385,12 @@ class SyncHelper (
                                 }
                                 isPending = 3
                                 startSyncTimer(networkCallbackListener)
+                                syncPercentage.value = 50f
                             } else {
                                 needToPostDidiList.forEach { didi ->
                                     didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
                                 }
+                                syncPercentage.value = 60f
                                 savePATSummeryToServer(networkCallbackListener)
                             }
                         }
@@ -493,6 +499,7 @@ class SyncHelper (
                                             )
                                         }
 //                                    networkCallbackListener.onSuccess()
+                                        syncPercentage.value = 80f
                                         updateVoStatusToNetwork(networkCallbackListener)
                                     } else {
                                         for (i in didiIDList.indices){
@@ -504,6 +511,7 @@ class SyncHelper (
                                         }
                                         isPending = 4
                                         startSyncTimer(networkCallbackListener)
+                                        syncPercentage.value = 70f
                                     }
                                 } else {
                                     networkCallbackListener.onFailed()
@@ -558,6 +566,8 @@ class SyncHelper (
                                 networkCallbackListener.onFailed()
                             }
                         }
+                        syncPercentage.value = 100f
+                        networkCallbackListener.onFailed()
                     }
                 }
             } catch (ex: Exception) {

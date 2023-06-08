@@ -90,6 +90,52 @@ class SettingViewModel @Inject constructor(
             }
         }
     }
+
+    fun isFirstStepNeedToBeSync() : Boolean{
+        if(tolaDao.fetchTolaNeedToPost(true,"").isNotEmpty()){
+            return true
+        } else if(tolaDao.fetchPendingTola(true,"").isNotEmpty()){
+            return true
+        }
+        return false
+    }
+
+    fun isSecondStepNeedToBeSync() : Boolean{
+        if(didiDao.fetchAllDidiNeedToPost(true,"").isNotEmpty()){
+            return true
+        } else if(didiDao.fetchPendingDidi(true,"").isNotEmpty()){
+            return true
+        }
+        return false
+    }
+
+    fun isThirdStepNeedToBeSync() : Boolean{
+        if(didiDao.getAllNeedToPostDidiRanking(true).isNotEmpty()){
+            return true
+        } else if(didiDao.fetchPendingWealthStatusDidi(true,"").isNotEmpty()){
+            return true
+        }
+        return false
+    }
+
+    fun isFourthStepNeedToBeSync() : Boolean{
+        if(answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isNotEmpty()){
+            return true
+        } else if(didiDao.fetchPendingPatStatusDidi(true,"").isNotEmpty()){
+            return true
+        }
+        return false
+    }
+
+    fun isFifthStepNeedToBeSync() : Boolean{
+        if(didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id).isNotEmpty()){
+            return true
+        } else if(didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id).isNotEmpty()){
+            return true
+        }
+        return false
+    }
+
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
     }
