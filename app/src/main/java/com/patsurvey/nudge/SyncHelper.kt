@@ -12,6 +12,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -399,82 +400,86 @@ class SyncHelper (
         }
     }
 
+    fun fetchAnswerDidiList(didiIDList : List<PATDidiStatusModel>) : ArrayList<PATSummarySaveRequest>{
+        var optionList= emptyList<OptionsItem>()
+        val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
+        var surveyId =0
+        didiIDList.forEach { didi->
+            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
+            if(needToPostQuestionsList.isNotEmpty()){
+                needToPostQuestionsList.forEach {
+                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
+                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
+                        optionList= listOf(
+                            OptionsItem(optionId = it.optionId,
+                                optionValue = it.optionValue,
+                                count = 0,
+                                summary = it.summary,
+                                display = it.answerValue,
+                                weight = 0,
+                                isSelected = false)
+                        )
+                    }else{
+                        val numOptionList=numericAnswerDao.getSingleQueOptions(it.questionId,it.didiId)
+                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
+                        if(numOptionList.isNotEmpty()){
+                            numOptionList.forEach { numOption->
+                                tList.add(
+                                    OptionsItem(optionId = numOption.optionId,
+                                        optionValue = 0,
+                                        count = numOption.count,
+                                        summary = it.summary,
+                                        display = it.answerValue,
+                                        weight = numOption.weight,
+                                        isSelected = false)
+                                )
+                            }
+                            optionList=tList
+                        }
+
+                    }
+                    try {
+                        qList.add(
+                            AnswerDetailDTOListItem(
+                                questionId =it.questionId,
+                                section = it.actionType,
+                                options = optionList)
+                        )
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                    }
+                }
+            }
+            answeredDidiList.add(
+                PATSummarySaveRequest(
+                    villageId= prefRepo.getSelectedVillage().id,
+                    surveyId=surveyId,
+                    beneficiaryId = didi.id,
+                    languageId = prefRepo.getAppLanguageId()?:0,
+                    stateId = prefRepo.getSelectedVillage().stateId,
+                    totalScore = 0,
+                    userType = USER_CRP,
+                    beneficiaryName= didi.name,
+                    answerDetailDTOList= qList,
+                    patSurveyStatus = didi.patSurveyStatus,
+                    section2Status = didi.section2Status,
+                    section1Status = didi.section1Status
+                )
+            )
+        }
+        return answeredDidiList
+    }
+
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    var optionList= emptyList<OptionsItem>()
-                    val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
-                    var surveyId =0
-
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
-                        didiIDList.forEach { didi->
-                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
-                            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
-                            if(needToPostQuestionsList.isNotEmpty()){
-                                needToPostQuestionsList.forEach {
-                                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
-                                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
-                                        optionList= listOf(
-                                            OptionsItem(optionId = it.optionId,
-                                                optionValue = it.optionValue,
-                                                count = 0,
-                                                summary = it.summary,
-                                                display = it.answerValue,
-                                                weight = 0,
-                                                isSelected = false)
-                                        )
-                                    }else{
-                                        val numOptionList=numericAnswerDao.getSingleQueOptions(it.questionId,it.didiId)
-                                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
-                                        if(numOptionList.isNotEmpty()){
-                                            numOptionList.forEach { numOption->
-                                                tList.add(
-                                                    OptionsItem(optionId = numOption.optionId,
-                                                        optionValue = 0,
-                                                        count = numOption.count,
-                                                        summary = it.summary,
-                                                        display = it.answerValue,
-                                                        weight = numOption.weight,
-                                                        isSelected = false)
-                                                )
-                                            }
-                                            optionList=tList
-                                        }
-
-                                    }
-                                    try {
-                                        qList.add(
-                                            AnswerDetailDTOListItem(
-                                                questionId =it.questionId,
-                                                section = it.actionType,
-                                                options = optionList)
-                                        )
-                                    }catch (e:Exception){
-                                        e.printStackTrace()
-                                    }
-                                }
-                            }
-                            answeredDidiList.add(
-                                PATSummarySaveRequest(
-                                    villageId= prefRepo.getSelectedVillage().id,
-                                    surveyId=surveyId,
-                                    beneficiaryId = didi.id,
-                                    languageId = prefRepo.getAppLanguageId()?:0,
-                                    stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = 0,
-                                    userType = USER_CRP,
-                                    beneficiaryName= didi.name,
-                                    answerDetailDTOList= qList,
-                                    patSurveyStatus = didi.patSurveyStatus,
-                                    section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status
-                                )
-                            )
-                        }
+                        val answeredDidiList = fetchAnswerDidiList(didiIDList)
                         if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
@@ -581,5 +586,107 @@ class SyncHelper (
                     StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
+    }
+
+    fun getStepOneDataSizeInSync(stepOneMutableString : MutableState<String>){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            var sizeToBeShown = ""
+            val tolaList = tolaDao.fetchTolaNeedToPost(true, "")
+            if (tolaList.isNotEmpty()) {
+                val jsonTola = JsonArray()
+                for (tola in tolaList) {
+                    jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
+                }
+                sizeToBeShown = getSizeToBeShown(jsonTola.toString().toByteArray().size)
+                Log.e("num of step 1", "$tolaList.size")
+                Log.e("size of step 2", sizeToBeShown)
+                stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    fun getStepTwoDataSizeInSync(stepOneMutableString : MutableState<String>){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            var sizeToBeShown = ""
+            val didiList = didiDao.fetchAllDidiNeedToPost(true, "")
+            if (didiList.isNotEmpty()) {
+                val didiJson = JsonArray()
+                for (didi in didiList) {
+                    didiJson.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
+                }
+                sizeToBeShown = getSizeToBeShown(didiJson.toString().toByteArray().size)
+                Log.e("num of step 2", "$didiList.size")
+                Log.e("size of step 2", sizeToBeShown)
+                stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    fun getStepThreeDataSizeInSync(stepOneMutableString : MutableState<String>){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            var sizeToBeShown = ""
+            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true)
+            if (didiWealthList.isNotEmpty()) {
+                val jsonDidi = JsonArray()
+                for (didi in didiWealthList) {
+                    jsonDidi.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking).toJson())
+                }
+                sizeToBeShown = getSizeToBeShown(jsonDidi.toString().toByteArray().size)
+                Log.e("num of step 3", "$didiWealthList.size")
+                Log.e("size of step 3", sizeToBeShown)
+                stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    fun getStepFourDataSizeInSync(stepOneMutableString : MutableState<String>){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            var sizeToBeShown = ""
+            val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+            if(didiIDList.isNotEmpty()) {
+                val answeredDidiList = fetchAnswerDidiList(didiIDList)
+                if (answeredDidiList.isNotEmpty()) {
+                    val jsonDidi = JsonArray()
+                    for (didi in answeredDidiList) {
+                        jsonDidi.add(didi.toJson())
+                    }
+                    sizeToBeShown = getSizeToBeShown(jsonDidi.toString().toByteArray().size)
+                    Log.e("num of step 4", "$answeredDidiList.size")
+                    Log.e("size of step 4", sizeToBeShown)
+                    stepOneMutableString.value = sizeToBeShown
+                }
+            }
+        }
+    }
+
+    fun getStepFiveDataSizeInSync(stepOneMutableString : MutableState<String>){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            var sizeToBeShown = ""
+            val tolaList = didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id)
+            if (tolaList.isNotEmpty()) {
+                val jsonTola = JsonArray()
+                for (didi in tolaList) {
+                    jsonTola.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
+                }
+                sizeToBeShown = getSizeToBeShown(jsonTola.toString().toByteArray().size)
+                Log.e("num of step 5", "$tolaList.size")
+                Log.e("size of step 5", sizeToBeShown)
+                stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    private fun getSizeToBeShown(size : Int) : String{
+        var sizeToBeShown = ""
+        if(size < 1024) {
+            sizeToBeShown = "$size Bytes"
+        } else if(size > 1024 && size < (1024*1024)) {
+            val sizeInKB = size/1024
+            sizeToBeShown = "$sizeInKB Bytes"
+        } else if(size > 1024) {
+            val sizeInMB = size/(1024*1024)
+            sizeToBeShown = "$sizeInMB Bytes"
+        }
+        return sizeToBeShown
     }
 }
