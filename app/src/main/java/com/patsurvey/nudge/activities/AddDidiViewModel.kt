@@ -413,16 +413,24 @@ class AddDidiViewModel @Inject constructor(
                 val response = apiService.addDidis(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        networkCallbackListener.onSuccess()
                         response.data.forEach { didiFromNetwork ->
                             didiList.value.forEach { didi ->
+                                didiDao.updateDidiServerId(villageId = prefRepo.getSelectedVillage().id,
+                                    modifiedDate = didiFromNetwork.modifiedDate,
+                                    createdDate = didiFromNetwork.createdDate,
+                                    cohortId = didiFromNetwork.cohortId,
+                                    castId = didiFromNetwork.castId,
+                                    serverId = didiFromNetwork.id,
+                                    guardianName = didiFromNetwork.guardianName,
+                                    name = didiFromNetwork.name)
                                 if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-                                    didi.id = didiFromNetwork.id
+                                    didi.serverId = didiFromNetwork.id
                                     didi.createdDate = didiFromNetwork.createdDate
                                     didi.modifiedDate = didiFromNetwork.modifiedDate
                                 }
                             }
                         }
+                        networkCallbackListener.onSuccess()
                     }
                 } else {
                     withContext(Dispatchers.Main){

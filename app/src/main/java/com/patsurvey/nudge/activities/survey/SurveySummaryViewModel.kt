@@ -123,7 +123,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
-                                    beneficiaryId = didi.id,
+                                    beneficiaryId = if(didi.serverId == 0) didi.id else didi.serverId,
                                     languageId = prefRepo.getAppLanguageId()?:0,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,

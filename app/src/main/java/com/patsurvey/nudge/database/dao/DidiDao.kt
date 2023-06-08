@@ -126,4 +126,8 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET transactionId = :transactionId WHERE id = :id")
     fun updateDidiTransactionId(id: Int, transactionId: String)
 
+    @Query("UPDATE $DIDI_TABLE SET serverId = :serverId,createdDate = :createdDate,modifiedDate = :modifiedDate,needsToPost = 0 WHERE name = :name AND guardianName =:guardianName AND villageId =:villageId AND castId=:castId AND cohortId =:cohortId")
+    fun updateDidiServerId(name: String, guardianName: String,villageId:Int,castId:Int,cohortId:Int,serverId:Int,createdDate:Long,modifiedDate:Long)
+
+
 }
