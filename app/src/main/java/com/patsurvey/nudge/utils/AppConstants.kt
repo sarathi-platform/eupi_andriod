@@ -47,7 +47,7 @@ const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
-const val ADD_DIDI_BLANK_STRING="add_didi_empty_value"
+const val ADD_DIDI_BLANK_ID=0
 
 // Pref Constants
 const val PREF_KEY_USER_NAME="key_user_name"
@@ -65,7 +65,7 @@ const val ARG_FROM_PROGRESS = "from_progress_screen"
 const val ARG_FROM_PAT_SURVEY = "from_pat_survey"
 const val ARG_VILLAGE_NAME = "villageName"
 const val ARG_VILLAGE_ID = "villageId"
-const val ARG_DIDI_DETAILS = "didi_details"
+const val ARG_DIDI_DETAILS_ID = "didi_details_id"
 const val ARG_STEP_ID = "stepId"
 const val ARG_DIDI_ID = "didiId"
 const val ARG_DIDI_STATUS = "didi_status"

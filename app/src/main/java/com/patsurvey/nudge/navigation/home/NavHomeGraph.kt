@@ -66,7 +66,7 @@ fun NavHomeGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 didiViewModel = hiltViewModel(), -1, -1
             ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
                     launchSingleTop = true
                 }
             }
@@ -148,23 +148,20 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     navigation(
         route = Graph.ADD_DIDI,
         startDestination = DetailsScreen.ADD_DIDI_SCREEN.route,
-        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
-            type = NavType.StringType
-            nullable = true
+        arguments = listOf(navArgument(ARG_DIDI_DETAILS_ID) {
+            type = NavType.IntType
         })
     ) {
         composable(route = DetailsScreen.ADD_DIDI_SCREEN.route,
-            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
+            arguments = listOf(navArgument(ARG_DIDI_DETAILS_ID) {
+                type = NavType.IntType
             })
         ) {
             AddDidiScreen(
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
-                didiDetails = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
+                didiDetailId = it.arguments?.getInt(ARG_DIDI_DETAILS_ID) ?: 0,
                 didiViewModel = hiltViewModel(),
             ) {
                 navController.popBackStack()
@@ -227,7 +224,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
                 stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
             ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
                     launchSingleTop = true
                 }
             }
@@ -374,7 +371,7 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
                 stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
             ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
                     launchSingleTop = true
                 }
             }

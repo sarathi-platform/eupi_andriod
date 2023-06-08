@@ -612,4 +612,16 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
+    fun fetchDidiDetails(didiId: Int){
+            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val didi=didiDao.getDidi(didiId)
+
+               didiName.value=didi.name
+               dadaName.value=didi.guardianName
+               houseNumber.value=didi.address
+               selectedTola.value= Pair(didi.cohortId,didi.cohortName)
+               selectedCast.value= Pair(didi.castId,didi.castName)
+            }
+    }
+
 }

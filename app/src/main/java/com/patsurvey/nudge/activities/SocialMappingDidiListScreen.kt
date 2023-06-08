@@ -199,7 +199,7 @@ fun SocialMappingDidiListScreen(
                                         icon = Icons.Default.Add
                                     ) {
                                         didiViewModel.resetAllFields()
-                                        navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_STRING") {
+                                        navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
                                             launchSingleTop = true
                                         }
                                     }
@@ -288,12 +288,12 @@ fun SocialMappingDidiListScreen(
                                 },
                                 onNavigate = {
                                     if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isSocialMappingComplete.value) {
-                                        navController.navigate("add_didi_graph/$it") {
+                                        navController.navigate("add_didi_graph/${it.id}") {
                                             launchSingleTop = true
                                         }
                                     }else if(didiViewModel.prefRepo.getFromPage().equals(
                                             ARG_FROM_HOME, true)){
-                                        navController.navigate("add_didi_graph/$it") {
+                                        navController.navigate("add_didi_graph/${it.id}") {
                                             launchSingleTop = true
                                         }
                                     }
@@ -325,12 +325,12 @@ fun SocialMappingDidiListScreen(
                                 },
                                 onItemClick = { didi ->
                                     if(!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isSocialMappingComplete.value) {
-                                        navController.navigate("add_didi_graph/${Gson().toJson(didi)}") {
+                                        navController.navigate("add_didi_graph/${didi.id}") {
                                             launchSingleTop = true
                                         }
                                     }else if(didiViewModel.prefRepo.getFromPage().equals(
                                             ARG_FROM_HOME, true)){
-                                        navController.navigate("add_didi_graph/${Gson().toJson(didi)}") {
+                                        navController.navigate("add_didi_graph/${didi.id}") {
                                             launchSingleTop = true
                                         }
                                     }
@@ -468,7 +468,7 @@ fun ShowDidisFromTola(
     modifier: Modifier,
     expandedIds: List<Int>,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onNavigate: (String) -> Unit
+    onNavigate: (DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -517,8 +517,7 @@ fun ShowDidisFromTola(
                         onExpendClick(expand, didiDetailModel)
                     },
                     onItemClick = { didi ->
-                        val jsonDidi = Gson().toJson(didi)
-                        onNavigate(jsonDidi)
+                        onNavigate(didi)
                     })
             }
 
@@ -813,7 +812,9 @@ fun DidiItemCard(
                                         .padding(5.dp)
                                         .layoutId("successImage")
                                 )
-                            } else {
+                            }
+
+                            if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                 Text(text = stringResource(R.string.pat_inprogresee_status_text), style = smallTextStyle, color = inprogressYellow, modifier = Modifier
                                     .padding(5.dp)
                                     .layoutId("successImage"))

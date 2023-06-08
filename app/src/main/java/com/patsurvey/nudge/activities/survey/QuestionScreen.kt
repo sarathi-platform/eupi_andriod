@@ -152,7 +152,7 @@ fun QuestionScreen(
                                     answerOptionModel= sortedOptionList?.get(selectedIndex)!!,
                                     assetAmount = 0,
                                     quesType = QuestionType.RadioButton.name,
-                                    summary = questionList[it].options?.get(selectedIndex)?.summary?: BLANK_STRING,
+                                    summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = selectedIndex
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
@@ -190,7 +190,7 @@ fun QuestionScreen(
                                     answerOptionModel= questionList[it].options[selectedIndex],
                                     assetAmount = 0,
                                     quesType = QuestionType.List.name,
-                                    summary = questionList[it].options[selectedIndex].summary?: BLANK_STRING,
+                                    summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = viewModel.listTypeAnswerIndex.value
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
@@ -233,7 +233,7 @@ fun QuestionScreen(
                                     answerOptionModel= newAnswerOptionModel,
                                     assetAmount = viewModel.totalAmount.value,
                                     quesType = QuestionType.Numeric_Field.name,
-                                    summary = context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
+                                    summary = (questionList[it].questionSummary?: BLANK_STRING) + " " +context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
                                     selIndex = -1
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
