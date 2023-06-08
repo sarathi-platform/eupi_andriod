@@ -187,6 +187,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 didiDao.insertDidi(
                                                     DidiEntity(
                                                         id = didi.id,
+                                                        serverId = didi.id,
                                                         name = didi.name,
                                                         address = didi.address,
                                                         guardianName = didi.guardianName,

@@ -389,7 +389,7 @@ fun SocialMappingDidiListScreen(
                                 didiViewModel.addDidisToNetwork()
                                 didiViewModel.callWorkFlowAPI(villageId, stepId)
                             }*/
-                            didiViewModel.updateDidisNeedTOPostList(villageId)
+//                            didiViewModel.updateDidisNeedTOPostList(villageId)
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${

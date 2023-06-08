@@ -18,6 +18,9 @@ data class DidiEntity(
     @ColumnInfo(name = "id")
     var id: Int,
 
+    @ColumnInfo(name = "serverId")
+    var serverId: Int = 0,
+
     @ColumnInfo(name = "name")
     var name: String,
 
@@ -94,4 +97,8 @@ data class DidiEntity(
     @ColumnInfo(name = "transactionId")
     var transactionId: String? = ""
 
-)
+){
+    companion object{
+        fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId
+    }
+}

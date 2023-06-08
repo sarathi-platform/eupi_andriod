@@ -10,6 +10,10 @@ data class PATDidiStatusModel(
     @Expose
     val id:Int,
 
+    @SerializedName("serverId")
+    @Expose
+    val serverId:Int,
+
     @ColumnInfo(name = "patSurveyStatus")
     var patSurveyStatus: Int=0,
 
