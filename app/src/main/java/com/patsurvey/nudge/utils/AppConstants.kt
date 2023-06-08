@@ -83,6 +83,8 @@ const val ARG_FORM_PATH = "form_path"
 const val ARG_IMAGE_PATH = "image_path"
 const val FORM_C = "form_C"
 const val FORM_D = "form_D"
+const val PREF_FORM_C_PAGE_COUNT = "pref_form_c_page_count"
+const val PREF_FORM_D_PAGE_COUNT = "pref_form_d_page_count"
 const val USER_CRP = "CPR"
 const val USER_BPC = "BPC"
 

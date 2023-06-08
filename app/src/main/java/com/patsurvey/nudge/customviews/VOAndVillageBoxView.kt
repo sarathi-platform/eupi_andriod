@@ -24,7 +24,8 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 fun VOAndVillageBoxView(
  prefRepo: PrefRepo,
  modifier: Modifier,
- startPadding: Dp?=16.dp
+ startPadding: Dp?=16.dp,
+ bottomPadding: Dp = 0.dp
 ){
     Card(
         modifier = Modifier
@@ -57,7 +58,7 @@ fun VOAndVillageBoxView(
             Row(
                 modifier = Modifier
                     .absolutePadding(left = 4.dp)
-                    .padding(start = startPadding?:16.dp, end = 16.dp, bottom = 16.dp)
+                    .padding(start = startPadding?:16.dp, end = 16.dp, bottom = bottomPadding)
             ) {
                 Text(
                     text = "VO: ",

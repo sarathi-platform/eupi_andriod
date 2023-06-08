@@ -90,6 +90,7 @@ fun ProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
+                                isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false
                             ) {
                                 viewModel.showLoader.value = true
                                 viewModel.villageSelected.value = it
@@ -187,6 +188,9 @@ fun ProgressScreen(
                                 var isStepCompleted =
                                     viewModel.isStepComplete(steps[index].id,villageId).observeAsState().value
                                         ?: 0
+                                if (index == 4){
+                                    viewModel.isVoEndorsementComplete.value[villageId] = isStepCompleted == StepStatus.COMPLETED.ordinal
+                                }
                                 if(steps[index].orderNumber==1 && isStepCompleted==0){
                                     isStepCompleted=StepStatus.INPROGRESS.ordinal
                                 }

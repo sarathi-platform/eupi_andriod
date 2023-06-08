@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +12,9 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,6 +47,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     var endPadding by remember { mutableStateOf(16.dp) }
     val snackState= rememberSnackBarState()
     val context = LocalContext.current
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
         delay(200)
@@ -52,10 +56,15 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 
     Column(modifier = modifier
         .fillMaxSize()
-        .padding(top = 14.dp),
+        .padding(top = 14.dp)
+        .pointerInput(true) {
+            detectTapGestures(onTap = {
+                focusManager.clearFocus()
+            })
+        },
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth()) }
+        didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth(), bottomPadding = 14.dp) }
 
         Column(
             modifier = Modifier

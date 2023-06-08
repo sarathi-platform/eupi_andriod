@@ -104,7 +104,7 @@ fun VideoListScreen(
                 ),
                 modifier = Modifier
                     .align(Alignment.Start)
-                    .padding(start = 16.dp, end = 16.dp, top = 20.dp)
+                    .padding(start = 16.dp, end = 16.dp, top = 20.dp, bottom = 8.dp)
             )
 
             LazyColumn(
@@ -217,9 +217,9 @@ fun VideoItemCard(
                 }
                 DownloadStatus.DOWNLOADING -> {
                     CircularProgressBarWithOutText(
-                        modifier = Modifier.size(28.dp),
+                        modifier = Modifier.size(28.dp).absolutePadding(top = 4.dp),
                         circleRadius = 28f,
-                        initialPosition = videoListViewModel.initialPosition.value,
+                        initialPosition = videoListViewModel.initialPosition.value[videoItem.id] ?: 0f,
                         borderThickness = 7.dp
                     )
                 }

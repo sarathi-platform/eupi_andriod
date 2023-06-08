@@ -45,6 +45,8 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import java.io.File
 import kotlin.math.sqrt
 
@@ -87,10 +89,8 @@ fun PdfViewer(
     }
     val imageLoader = LocalContext.current.imageLoader
     val imageLoadingScope = rememberCoroutineScope()
-    val scale = remember { mutableStateOf(1f) }
-    val isZoomedIn = remember {
-        mutableStateOf(false)
-    }
+    val zoomState = rememberZoomState()
+
     val lazyScrollState = rememberLazyListState()
     Scaffold(
         topBar = {
@@ -134,23 +134,7 @@ fun PdfViewer(
         BoxWithConstraints(
             modifier = modifier
                 .fillMaxWidth()
-                .pointerInput(Unit) {
-                    detectTransformGestures { centroid, pan, zoom, rotation ->
-                        scale.value *= zoom
-//                    isZoomedIn.value = scale.value > 2f
-                    }
-                    /*detectTapGestures(onDoubleTap = {
-                        if (scale.value != 1f)
-                            scale.value = 1f
-                        else
-                            scale.value = 2f
-                    })*/
-                }
-                .graphicsLayer(
-                    // adding some zoom limits (min 100%, max 200%)
-                    scaleX = maxOf(0.5f, minOf(3f, scale.value)),
-                    scaleY = maxOf(0.5f, minOf(3f, scale.value)),
-                )
+                .zoomable(zoomState)
                 .background(pdfViewerBg)
                 .padding(it)
                 .padding(horizontal = 10.dp)
@@ -212,6 +196,12 @@ fun PdfViewer(
                             .memoryCacheKey(cacheKey)
                             .data(bitmap)
                             .build()
+                        val painter = rememberImagePainter(request)
+                        painter.state.painter?.intrinsicSize?.let { it1 ->
+                            zoomState.setContentSize(
+                                it1
+                            )
+                        }
                         Card(
                             elevation = 4.dp,
                             contentColor = Color.Transparent,
@@ -223,7 +213,7 @@ fun PdfViewer(
                                     .aspectRatio(sqrt(2f) / 1f)
                                     .fillMaxWidth(),
                                 contentScale = ContentScale.FillBounds,
-                                painter = rememberImagePainter(request),
+                                painter = painter,
                                 contentDescription = "Page ${index + 1} of $pageCount"
                             )
                         }

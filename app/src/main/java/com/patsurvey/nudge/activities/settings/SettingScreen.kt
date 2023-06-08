@@ -427,7 +427,7 @@ fun showSyncDialog(
                             },
                         )
                     }
-                    
+
                     Divider(
                         thickness = 1.dp,
                         color = greyBorder
@@ -720,8 +720,8 @@ fun showSyncDialog(
 
                         }
                     }
-                    
-                    
+
+
                     if (isInternetConnected) {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             ButtonNegative(
@@ -786,6 +786,7 @@ fun showSyncInProgressDialog(
                                 .fillMaxWidth(), align = TextAlign.Center
                         )
                     }
+                    Spacer(modifier = Modifier.height(8.dp))
                     GradientProgressbar(settingViewModel)
                 }
             }
@@ -798,8 +799,8 @@ fun GradientProgressbar(
     settingViewModel: SettingViewModel
 ) {
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
-    val indicatorPadding = 48.dp
-    val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
+    val indicatorPadding = 24.dp
+    val gradientColors = listOf(Color(0xFF2EE08E),Color(0xFF2EE08E))
     val numberStyle: TextStyle = mediumTextStyle
     val animationDuration = 1000
     val animationDelay = 0
@@ -884,7 +885,7 @@ fun GradientProgressbar(
                     text = "Please don't close the app or switch off the phone.",
                     style = numberStyle,
                     textAlign = TextAlign.Start,
-                    fontSize = 14.sp,
+                    fontSize = 12.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     color = textColorDark,
@@ -894,7 +895,7 @@ fun GradientProgressbar(
                 Log.e("sync", "new ->$syncPercentage")
             }
         }
-    }
+
 }
 
 @Composable
