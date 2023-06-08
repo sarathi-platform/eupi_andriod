@@ -5,10 +5,7 @@ import com.patsurvey.nudge.SyncHelper
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -27,7 +24,10 @@ class SettingViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
     val villegeListDao: VillageListDao,
-    val didiDao: DidiDao
+    val didiDao: DidiDao,
+    val answerDao: AnswerDao,
+    val numericAnswerDao: NumericAnswerDao,
+    val questionDao: QuestionListDao
 
 ):BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
@@ -92,7 +92,9 @@ class SettingViewModel @Inject constructor(
 
     fun syncDataOnServer(context: Context) {
         if(isInternetAvailable(context)){
-            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage)
+            val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
+            numericAnswerDao,
+            questionDao)
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
