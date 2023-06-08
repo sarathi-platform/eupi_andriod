@@ -124,6 +124,18 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET transactionId = :transactionId WHERE id = :id")
     fun updateDidiTransactionId(id: Int, transactionId: String)
 
+    @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :didiId")
+    fun updateDidiNeedToPostWealthRank(didiId: Int, needsToPostRanking: Boolean)
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostRanking = :needsToPostRanking and transactionId != :transactionId")
+    fun fetchPendingWealthStatusDidi(needsToPostRanking: Boolean,transactionId : String?) : List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId")
+    fun updateDidiNeedToPostPat(didiId: Int, needsToPostPAT: Boolean)
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostPAT = :needsToPostPAT and transactionId != :transactionId")
+    fun fetchPendingPatStatusDidi(needsToPostPAT: Boolean,transactionId : String?) : List<DidiEntity>
+
     @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
 

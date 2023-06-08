@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.model.request
 
 import androidx.room.ColumnInfo
+import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -42,7 +43,24 @@ data class PATSummarySaveRequest(
 
     @ColumnInfo(name = "section2Status")
     var section2Status: Int=0
-)
+) {
+    fun toJson() : JsonObject {
+        val jsonObject = JsonObject()
+        jsonObject.addProperty("surveyId", surveyId)
+        jsonObject.addProperty("stateId", stateId)
+        jsonObject.addProperty("languageId", languageId)
+        jsonObject.addProperty("answerDetailDTOList", answerDetailDTOList.toString())
+        jsonObject.addProperty("userType", userType)
+        jsonObject.addProperty("totalScore", totalScore)
+        jsonObject.addProperty("villageId", villageId)
+        jsonObject.addProperty("beneficiaryId", beneficiaryId)
+        jsonObject.addProperty("beneficiaryName", beneficiaryName)
+        jsonObject.addProperty("patSurveyStatus", patSurveyStatus)
+        jsonObject.addProperty("section1Status", section1Status)
+        jsonObject.addProperty("section2Status", section2Status)
+        return jsonObject
+    }
+}
 
 data class AnswerDetailDTOListItem(
 
