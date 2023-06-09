@@ -96,10 +96,10 @@ data class DidiEntity(
     var forVoEndorsement: Int = 0,
 
     @ColumnInfo(name = "needsToPostPAT")
-    var needsToPostPAT: Boolean = true,
+    var needsToPostPAT: Boolean = false,
 
     @ColumnInfo(name = "needsToPostVo")
-    var needsToPostVo: Boolean = true,
+    var needsToPostVo: Boolean = false,
 
     @ColumnInfo(name = "transactionId")
     var transactionId: String? = ""
