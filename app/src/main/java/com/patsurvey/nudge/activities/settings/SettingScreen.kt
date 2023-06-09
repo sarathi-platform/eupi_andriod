@@ -43,12 +43,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -144,14 +139,14 @@ fun SettingScreen(
 
     val optionList = viewModel.optionList.collectAsState()
 
-    val defaultStepSize = "-"
+//    val defaultStepSize = "-"
     val expanded = remember {
         mutableStateOf(false)
     }
-    val showSyncDialog = remember {
+    val showSyncDialogStatus = remember {
         mutableStateOf(false)
     }
-    val stepOneSize = remember {
+/*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
     }
     val stepTwoSize = remember {
@@ -165,6 +160,22 @@ fun SettingScreen(
     }
     val stepFiveSize = remember {
         mutableStateOf(defaultStepSize)
+    }*/
+
+    val stepOneStatus = remember {
+        mutableStateOf(0)
+    }
+    val stepTwoStatus = remember {
+        mutableStateOf(0)
+    }
+    val stepThreeStatus = remember {
+        mutableStateOf(0)
+    }
+    val stepFourStatus = remember {
+        mutableStateOf(0)
+    }
+    val stepFiveStatus = remember {
+        mutableStateOf(0)
     }
 
     Scaffold(
@@ -247,7 +258,7 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-                                    showSyncDialog.value = true
+                                    showSyncDialogStatus.value = true
                                 }
 
                                 1 -> {
@@ -276,7 +287,6 @@ fun SettingScreen(
                         }
                     }
                 }
-
             }
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -298,30 +308,31 @@ fun SettingScreen(
                 ) {
                 }
             }
-            if (viewModel.showLoader.value) {
+            /*if (viewModel.showLoader.value) {
                 showSyncInProgressDialog(setShowDialog = {
                     viewModel.showLoader.value = false
                 }, viewModel)
                 viewModel.syncDataOnServer(context)
                 viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
-            }
-            if (showSyncDialog.value) {
+            }*/
+            if (showSyncDialogStatus.value) {
                 showSyncDialog(setShowDialog = {
-                    showSyncDialog.value = it
+                    showSyncDialogStatus.value = it
                 }, positiveButtonClicked = {
                     viewModel.showLoader.value = true
-                }, stepOneSize = stepOneSize.value,
-                    stepTwoSize = stepTwoSize.value,
-                    stepThreeSize = stepThreeSize.value,
-                    stepFourSize = stepFourSize.value,
-                    stepFiveSize = stepFiveSize.value,
-                    settingViewModel = viewModel
+                }, stepOneStatus = stepOneStatus.value,
+                    stepTwoStatus = stepTwoStatus.value,
+                    stepThreeStatus = stepThreeStatus.value,
+                    stepFourStatus = stepFourStatus.value,
+                    stepFiveStatus = stepFiveStatus.value,
+                    settingViewModel = viewModel,
+                    showSyncDialogStatus = showSyncDialogStatus
                 )
-                viewModel.getStepOneSize(stepOneSize)
-                viewModel.getStepTwoSize(stepTwoSize)
-                viewModel.getStepThreeSize(stepThreeSize)
-                viewModel.getStepFourSize(stepFourSize)
-                viewModel.getStepFiveSize(stepFiveSize)
+                viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+                viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+                viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+                viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+                viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
             }
         }
     }
@@ -331,12 +342,13 @@ fun SettingScreen(
 fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit,
-    stepOneSize: String,
-    stepTwoSize: String,
-    stepThreeSize: String,
-    stepFourSize: String,
-    stepFiveSize: String,
-    settingViewModel: SettingViewModel
+    stepOneStatus: Int,
+    stepTwoStatus: Int,
+    stepThreeStatus: Int,
+    stepFourStatus: Int,
+    stepFiveStatus: Int,
+    settingViewModel: SettingViewModel,
+    showSyncDialogStatus : MutableState<Boolean>
 ) {
 
     val context = LocalContext.current
@@ -464,17 +476,16 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )
-                                Text(
+                                /*Text(
                                     text = " $stepOneSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     modifier = Modifier
-                                )
+                                )*/
                             }
-                            //TODO Add condition
-                            if (true)
+                            if (stepOneStatus == 2)
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                     contentDescription = null,
@@ -484,7 +495,7 @@ fun showSyncDialog(
                                         .size(24.dp)
                                         .padding(4.dp)
                                 )
-                            else {
+                            else if (stepOneStatus == 1){
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -513,17 +524,16 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )
-                                Text(
+                                /*Text(
                                     text = " $stepTwoSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     modifier = Modifier
-                                )
+                                )*/
                             }
-                            //TODO Add condition
-                            if (true)
+                            if (stepTwoStatus == 2)
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                     contentDescription = null,
@@ -533,7 +543,7 @@ fun showSyncDialog(
                                         .size(24.dp)
                                         .padding(4.dp)
                                 )
-                            else {
+                            else if (stepTwoStatus == 1){
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -562,17 +572,16 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )
-                                Text(
+                                /*Text(
                                     text = " $stepThreeSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     modifier = Modifier
-                                )
+                                )*/
                             }
-                            //TODO Add condition
-                            if (true)
+                            if (stepThreeStatus == 2)
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                     contentDescription = null,
@@ -582,7 +591,7 @@ fun showSyncDialog(
                                         .size(24.dp)
                                         .padding(4.dp)
                                 )
-                            else {
+                            else if (stepThreeStatus == 1){
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -611,17 +620,16 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )
-                                Text(
+                                /*Text(
                                     text = " $stepFourSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     modifier = Modifier
-                                )
+                                )*/
                             }
-                            //TODO Add condition
-                            if (true)
+                            if (stepFourStatus == 2)
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                     contentDescription = null,
@@ -631,7 +639,7 @@ fun showSyncDialog(
                                         .size(24.dp)
                                         .padding(4.dp)
                                 )
-                            else {
+                            else if (stepFourStatus == 1){
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -661,17 +669,16 @@ fun showSyncDialog(
                                     fontWeight = FontWeight.Normal,
                                     modifier = Modifier
                                 )
-                                Text(
+                                /*Text(
                                     text = " $stepFiveSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
                                     fontWeight = FontWeight.Normal,
                                     fontSize = 12.sp,
                                     modifier = Modifier
-                                )
+                                )*/
                             }
-                            //TODO Add condition
-                            if (true)
+                            if (stepFiveStatus == 2)
                                 Icon(
                                     painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                     contentDescription = null,
@@ -681,7 +688,7 @@ fun showSyncDialog(
                                         .size(24.dp)
                                         .padding(4.dp)
                                 )
-                            else {
+                            else if (stepFiveStatus == 1){
                                 CircularProgressIndicator(
                                     modifier = Modifier
                                         .size(24.dp)
@@ -697,8 +704,7 @@ fun showSyncDialog(
                     Divider(thickness = 1.dp, color = greyBorder)
                     Spacer(modifier = Modifier.height(4.dp))
 
-                    //TODO Add condition
-                    if (false) {
+                    if (settingViewModel.showLoader.value) {
                         Canvas(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -729,12 +735,24 @@ fun showSyncDialog(
                                 start = Offset(x = 0f, y = 0f),
                                 end = Offset(x = progress, y = 0f)
                             )
-
                         }
+                        Text(
+                            text = "Please don't close the app or switch off the phone.",
+                            style = numberStyle,
+                            textAlign = TextAlign.Start,
+                            fontSize = 12.sp,
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            color = redOffline,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                        )
                     }
 
 
-                    if (isInternetConnected) {
+                    if (isInternetConnected
+                        && (batteryLevel > 30)
+                        && !settingViewModel.showLoader.value) {
                         Row(modifier = Modifier.fillMaxWidth()) {
                             ButtonNegative(
                                 buttonTitle = stringResource(id = R.string.cancel_tola_text),
@@ -749,8 +767,11 @@ fun showSyncDialog(
                                 isArrowRequired = false,
                                 modifier = Modifier.weight(1f)
                             ) {
-                                setShowDialog(false)
-                                positiveButtonClicked()
+                                settingViewModel.showLoader.value = true
+                                settingViewModel.syncDataOnServer(context,showSyncDialogStatus)
+                                settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+//                                setShowDialog(false)
+//                                positiveButtonClicked()
                             }
                         }
                     } else {

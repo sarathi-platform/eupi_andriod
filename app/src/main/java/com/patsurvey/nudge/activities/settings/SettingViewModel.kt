@@ -35,11 +35,17 @@ class SettingViewModel @Inject constructor(
     val formBAvailabe = mutableStateOf(false)
     val formCAvailabe = mutableStateOf(false)
     var syncPercentage = mutableStateOf(0f)
+    var stepOneSyncStatus = mutableStateOf(0)
+    var stepTwoSyncStatus = mutableStateOf(0)
+    var stepThreeSyncStatus = mutableStateOf(0)
+    var stepFourSyncStatus = mutableStateOf(0)
+    var stepFifthSyncStatus = mutableStateOf(0)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
+    var showSyncDialog = mutableStateOf(false)
 
-    val syncHelper = SyncHelper(prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
+    var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
         questionDao)
     fun isFormAAvailableForVillage(villageId: Int) {
@@ -91,49 +97,63 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun isFirstStepNeedToBeSync() : Boolean{
-        if(tolaDao.fetchTolaNeedToPost(true,"").isNotEmpty()){
-            return true
-        } else if(tolaDao.fetchPendingTola(true,"").isNotEmpty()){
-            return true
+    fun isFirstStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
+        stepOneSyncStatus = isNeedToBeSync
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
+                && tolaDao.fetchPendingTola(true, "").isEmpty()) {
+                    isNeedToBeSync.value = 2
+            }
         }
-        return false
     }
 
-    fun isSecondStepNeedToBeSync() : Boolean{
-        if(didiDao.fetchAllDidiNeedToPost(true,"").isNotEmpty()){
-            return true
-        } else if(didiDao.fetchPendingDidi(true,"").isNotEmpty()){
-            return true
+    fun isSecondStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
+        stepTwoSyncStatus = isNeedToBeSync
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
+            && didiDao.fetchPendingDidi(true,"").isEmpty()) {
+                isNeedToBeSync.value = 2
+            }
         }
-        return false
     }
 
-    fun isThirdStepNeedToBeSync() : Boolean{
-        if(didiDao.getAllNeedToPostDidiRanking(true).isNotEmpty()){
-            return true
-        } else if(didiDao.fetchPendingWealthStatusDidi(true,"").isNotEmpty()){
-            return true
+    fun isThirdStepNeedToBeSync(isNeedToBeSync : MutableState<Int>){
+        stepThreeSyncStatus = isNeedToBeSync
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
+                && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
+            ) {
+                isNeedToBeSync.value = 2
+            }
         }
-        return false
     }
 
-    fun isFourthStepNeedToBeSync() : Boolean{
-        if(answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isNotEmpty()){
-            return true
-        } else if(didiDao.fetchPendingPatStatusDidi(true,"").isNotEmpty()){
-            return true
+    fun isFourthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
+        stepFourSyncStatus = isNeedToBeSync
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+                && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
+            ) {
+                isNeedToBeSync.value = 2
+            }
         }
-        return false
     }
 
-    fun isFifthStepNeedToBeSync() : Boolean{
-        if(didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id).isNotEmpty()){
-            return true
-        } else if(didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id).isNotEmpty()){
-            return true
+    fun isFifthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
+        stepFifthSyncStatus = isNeedToBeSync
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (didiDao.getAllNeedToPostPATDidi(
+                    needsToPostPAT = true,
+                    villageId = prefRepo.getSelectedVillage().id
+                ).isEmpty()
+                && didiDao.getAllNeedToPostPATDidi(
+                    needsToPostPAT = true,
+                    villageId = prefRepo.getSelectedVillage().id
+                ).isEmpty()
+            ) {
+                isNeedToBeSync.value = 2
+            }
         }
-        return false
     }
 
     override fun onServerError(error: ErrorModel?) {
@@ -160,20 +180,26 @@ class SettingViewModel @Inject constructor(
         syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
     }
 
-    fun syncDataOnServer(context: Context) {
+    fun syncDataOnServer(context: Context,syncDialog : MutableState<Boolean>) {
+        showSyncDialog = syncDialog
+        syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
+            numericAnswerDao,
+            questionDao)
         if(isInternetAvailable(context)){
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
-                        showLoader.value = false
                         showCustomToast(context, SYNC_SUCCESSFULL)
                         syncPercentage.value = 100f
+                        showSyncDialog.value = false
+                        showLoader.value = false
                     }
 
                     override fun onFailed() {
                         showCustomToast(context, SYNC_FAILED)
-                        showLoader.value = false
                         syncPercentage.value = 100f
+                        showSyncDialog.value = false
+                        showLoader.value = false
                     }
             })
         }
