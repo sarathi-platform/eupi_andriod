@@ -104,6 +104,7 @@ class VoEndorsementSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 didiDao.updateVOEndorsementStatus(prefRepo.getSelectedVillage().id,didiId,status)
+                didiDao.updateNeedToPostVO(didiId = didiId, needsToPostVo = true, villageId = prefRepo.getSelectedVillage().id)
             }
         }
     }

@@ -91,7 +91,7 @@ fun VoEndorsementSummaryScreen(
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(10.dp)) {
+        .padding(horizontal = 16.dp, vertical = 10.dp)) {
 
         ConstraintLayout(
             modifier = Modifier
@@ -121,7 +121,6 @@ fun VoEndorsementSummaryScreen(
                     bottom.linkTo(bottomActionBox.top)
                     height = Dimension.fillToConstraints
                 }
-                .padding(top = 14.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally) {
@@ -331,7 +330,7 @@ fun VoEndorsementSummaryScreen(
         }
         val nextButtonVisible = remember {
             derivedStateOf {
-                pagerState.currentPage < voDidiList.size-1 && voDidiList[pagerState.currentPage].voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal
+                pagerState.currentPage < voDidiList.size-1
             }
         }
 

@@ -5,6 +5,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -111,7 +112,8 @@ class AddDidiViewModel @Inject constructor(
                     }
 
                 }
-                pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+                pendingDidiCount.value =
+                    didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
                 filterDidiList = didiList.value
                 filterDidiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEach {
                     getDidiAvailabilityStatus(it.id)
@@ -163,7 +165,8 @@ class AddDidiViewModel @Inject constructor(
                 }
                 _didiList.value = updatedList
                 filterDidiList = didiList.value
-                pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+                pendingDidiCount.value =
+                    didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
                 showLoader.value = false
             }
         }
@@ -175,7 +178,10 @@ class AddDidiViewModel @Inject constructor(
                     || selectedCast.value.first == -1 || selectedTola.value.first == -1)
     }
 
-    fun saveDidiIntoDatabase(localDbListener: LocalDbListener, networkCallbackListener: NetworkCallbackListener) {
+    fun saveDidiIntoDatabase(
+        localDbListener: LocalDbListener,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             val ifDidiExist = didiDao.getDidiExist(
@@ -205,7 +211,7 @@ class AddDidiViewModel @Inject constructor(
 
                 _didiList.value = didiDao.getAllDidisForVillage(villageId)
                 filterDidiList = didiDao.getAllDidisForVillage(villageId)
-                setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener{
+                setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                     override fun onSuccess() {
 
                     }
@@ -233,7 +239,7 @@ class AddDidiViewModel @Inject constructor(
             _didiList.value
             didiList.value
             filterDidiList
-            val updatedDidi =  DidiEntity(
+            val updatedDidi = DidiEntity(
                 id = didiId,
                 name = didiName.value,
                 guardianName = dadaName.value,
@@ -244,13 +250,19 @@ class AddDidiViewModel @Inject constructor(
                 cohortName = selectedTola.value.second,
                 relationship = HUSBAND_STRING,
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
-                createdDate = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).createdDate,
+                createdDate = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).createdDate,
                 modifiedDate = System.currentTimeMillis(),
-                shgFlag = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).shgFlag,
-                beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).beneficiaryProcessStatus,
-                patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).patSurveyStatus,
-                section1Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section1Status,
-                section2Status = _didiList.value.get(_didiList.value.map { it.id }.indexOf(didiId)).section2Status,
+                shgFlag = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).shgFlag,
+                beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).beneficiaryProcessStatus,
+                patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).patSurveyStatus,
+                section1Status = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).section1Status,
+                section2Status = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).section2Status,
                 transactionId = ""
             )
             updatedDidi.guardianName
@@ -259,7 +271,7 @@ class AddDidiViewModel @Inject constructor(
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
 
-            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener{
+            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
 
                 }
@@ -272,7 +284,7 @@ class AddDidiViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
                 isSocialMappingComplete.value = false
-                isPATSurveyComplete.value=false
+                isPATSurveyComplete.value = false
 
             }
 
@@ -394,17 +406,17 @@ class AddDidiViewModel @Inject constructor(
                 isSocialMappingComplete.value = isComplete
                 isPATSurveyComplete.value = isComplete
             }
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
             }
 
         }
     }
 
     fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        val isComplete = prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+        val isComplete =
+            prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
         isVoEndorsementComplete.value = isComplete
     }
-
 
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
@@ -430,14 +442,15 @@ class AddDidiViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    withContext(Dispatchers.Main){
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
                 }
             }
         }
     }
-    fun updateDidisNeedTOPostList(villageId: Int){
+
+    fun updateDidisNeedTOPostList(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateTolaListWithIds(didiList, villageId)
         }
@@ -463,17 +476,23 @@ class AddDidiViewModel @Inject constructor(
                     castName = it.castName,
                     cohortId = it.cohortId,
                     cohortName = it.cohortName,
-                    wealth_ranking = it.beneficiaryProcessStatus?.find { it.name == StepType.WEALTH_RANKING.name }?.status ?: WealthRank.NOT_RANKED.rank,
+                    wealth_ranking = it.beneficiaryProcessStatus?.find { it.name == StepType.WEALTH_RANKING.name }?.status
+                        ?: WealthRank.NOT_RANKED.rank,
                     villageId = this.villageId,
                     needsToPost = false,
                     createdDate = it.createdDate,
-                    needsToPostPAT=oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].needsToPostPAT,
-                    needsToPostRanking =oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].needsToPostRanking,
+                    needsToPostPAT = oldDidiList[oldDidiList.map { it.id }
+                        .indexOf(it.id)].needsToPostPAT,
+                    needsToPostRanking = oldDidiList[oldDidiList.map { it.id }
+                        .indexOf(it.id)].needsToPostRanking,
                     modifiedDate = System.currentTimeMillis(),
                     beneficiaryProcessStatus = it.beneficiaryProcessStatus,
-                    patSurveyStatus = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].patSurveyStatus,
-                    section1Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section1Status,
-                    section2Status = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].section2Status,
+                    patSurveyStatus = oldDidiList[oldDidiList.map { it.id }
+                        .indexOf(it.id)].patSurveyStatus,
+                    section1Status = oldDidiList[oldDidiList.map { it.id }
+                        .indexOf(it.id)].section1Status,
+                    section2Status = oldDidiList[oldDidiList.map { it.id }
+                        .indexOf(it.id)].section2Status,
                     shgFlag = oldDidiList[oldDidiList.map { it.id }.indexOf(it.id)].shgFlag,
                     transactionId = ""
                 )
@@ -482,7 +501,11 @@ class AddDidiViewModel @Inject constructor(
         didiDao.insertAll(didis)
     }
 
-    fun callWorkFlowAPI(villageId: Int, stepId: Int, networkCallbackListener: NetworkCallbackListener) {
+    fun callWorkFlowAPI(
+        villageId: Int,
+        stepId: Int,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
@@ -516,15 +539,27 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun setSocialMappingINProgress(stepId: Int,villageId: Int, networkCallbackListener: NetworkCallbackListener){
+    fun setSocialMappingINProgress(
+        stepId: Int,
+        villageId: Int,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val step=stepsListDao.getStepForVillage(villageId, stepId)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
-            val completeStepList=stepsListDao.getAllCompleteStepsForVillage(villageId)
+            val step = stepsListDao.getStepForVillage(villageId, stepId)
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId,
+                StepStatus.INPROGRESS.ordinal,
+                villageId
+            )
+            val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList?.let {
-                it.forEach { newStep->
-                    if(newStep.orderNumber>step.orderNumber){
-                        stepsListDao.markStepAsCompleteOrInProgress(newStep.id, StepStatus.INPROGRESS.ordinal,villageId)
+                it.forEach { newStep ->
+                    if (newStep.orderNumber > step.orderNumber) {
+                        stepsListDao.markStepAsCompleteOrInProgress(
+                            newStep.id,
+                            StepStatus.INPROGRESS.ordinal,
+                            villageId
+                        )
                     }
                 }
             }
@@ -532,8 +567,13 @@ class AddDidiViewModel @Inject constructor(
                 val apiRequest = mutableListOf<EditWorkFlowRequest>()
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
-                        if (newStep.workFlowId>0) {
-                            apiRequest.add(EditWorkFlowRequest(newStep.workFlowId, StepStatus.INPROGRESS.name))
+                        if (newStep.workFlowId > 0) {
+                            apiRequest.add(
+                                EditWorkFlowRequest(
+                                    newStep.workFlowId,
+                                    StepStatus.INPROGRESS.name
+                                )
+                            )
                         }
                     }
                 }
@@ -541,12 +581,17 @@ class AddDidiViewModel @Inject constructor(
                     launch {
                         val response = apiService.editWorkFlow(apiRequest)
                         if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response->
+                            response.data?.let { response ->
                                 response.forEach { it ->
-                                    stepsListDao.updateWorkflowId(stepId, it.id, villageId, it.status)
+                                    stepsListDao.updateWorkflowId(
+                                        stepId,
+                                        it.id,
+                                        villageId,
+                                        it.status
+                                    )
                                 }
                             }
-                        }else {
+                        } else {
                             networkCallbackListener.onFailed()
                         }
                     }
@@ -561,20 +606,27 @@ class AddDidiViewModel @Inject constructor(
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiPatProgress = didiDao.getDidi(didiId).patSurveyStatus
-            if(didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
-                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
-                didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-            }else{
-                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = PatSurveyStatus.NOT_AVAILABLE.ordinal
+            if (didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus =
+                    PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                didiDao.updateQuesSectionStatus(
+                    didiId,
+                    PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                )
+            } else {
+                _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus =
+                    PatSurveyStatus.NOT_AVAILABLE.ordinal
                 didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
             }
-            didiDao.updateNeedToPostPAT(true,didiId,prefRepo.getSelectedVillage().id)
-            pendingDidiCount.value = didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+            didiDao.updateNeedToPostPAT(true, didiId, prefRepo.getSelectedVillage().id)
+            pendingDidiCount.value =
+                didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
         }
     }
 
     fun updateDidiPatStatus(didiId: Int, patSurveyStatus: PatSurveyStatus) {
-        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus = patSurveyStatus.ordinal
+        _didiList.value[_didiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus =
+            patSurveyStatus.ordinal
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             didiDao.updateQuesSectionStatus(didiId, patSurveyStatus.ordinal)
         }
@@ -592,7 +644,7 @@ class AddDidiViewModel @Inject constructor(
     fun checkIfTolaIsNotDeleted() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tola = tolaDao.fetchSingleTola(selectedTola.value.first)
-            if (tola == null){
+            if (tola == null) {
                 selectedTola.value = Pair(-1, "")
             }
         }
@@ -612,4 +664,53 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
+    fun deleteDidiOffline(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.deleteDidiOffline(
+                id = didi.id,
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = true
+            )
+            _didiList.value = didiDao.getAllDidisForVillage(villageId)
+            filterDidiList = didiDao.getAllDidisForVillage(villageId)
+
+            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
+                override fun onSuccess() {
+                    networkCallbackListener.onSuccess()
+                }
+
+                override fun onFailed() {
+                    networkCallbackListener.onFailed()
+                }
+
+            })
+            withContext(Dispatchers.Main) {
+                prefRepo.savePref(DIDI_COUNT, didiList.value.size)
+                isSocialMappingComplete.value = false
+                isPATSurveyComplete.value = false
+            }
+        }
+    }
+
+    fun deleteDidiFromNetwork(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didisToBeDeleted =
+                didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
+            if (didisToBeDeleted.isNotEmpty()) {
+                val jsonArray = JsonArray()
+                didisToBeDeleted.forEach { didi ->
+                    val jsonObject = JsonObject()
+                    jsonObject.addProperty("id", didi.id)
+                    jsonArray.add(jsonObject)
+                    val deleteDidiApiResponse = apiService.deleteDidi(jsonArray)
+                    if (deleteDidiApiResponse.status.equals(SUCCESS)) {
+                        didiDao.updateDeletedDidiNeedToPostStatus(didi.id, needsToPostDeleteStatus = false)
+                        networkCallbackListener.onSuccess()
+                    } else {
+                        networkCallbackListener.onSuccess()
+                    }
+                }
+            }
+        }
+    }
 }

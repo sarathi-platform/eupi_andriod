@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.settings
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -86,7 +87,9 @@ import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -165,6 +168,14 @@ fun SettingScreen(
     }
     val stepFiveSize = remember {
         mutableStateOf(defaultStepSize)
+    }
+
+    BackHandler() {
+        navController.navigate(Graph.HOME) {
+            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                inclusive = true
+            }
+        }
     }
 
     Scaffold(
