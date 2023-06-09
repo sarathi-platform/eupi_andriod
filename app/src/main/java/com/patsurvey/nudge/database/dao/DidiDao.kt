@@ -166,18 +166,6 @@ interface DidiDao {
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId")
     fun fetchNotAvailableDidis(villageId: Int) : Int
 
-    @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
-    fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
-
-    @Query("DELETE from $DIDI_TABLE where activeStatus = :activeStatus and id = :id")
-    fun deleteDidiFromDb(id: Int, activeStatus: Int)
-
-    @Query("SELECT * from $DIDI_TABLE where needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId")
-    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity>
-
-    @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
-    fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
-
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
 

@@ -180,7 +180,7 @@ fun BpcProgressScreen(
                                 }
                             }
                             item {
-                                Spacer(modifier = Modifier.height(8.dp))
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
 
                             item {
@@ -338,7 +338,7 @@ fun BpcProgressScreen(
                                             color = textColorDark
                                         )
 
-                                        Row() {
+                                        Row(modifier = Modifier.fillMaxWidth()) {
                                             Box(
                                                 modifier = Modifier
                                                     .padding(4.dp)
@@ -365,8 +365,6 @@ fun BpcProgressScreen(
                                                     modifier = Modifier
                                                         .height(1.dp)  //fill the max height
                                                         .width(2.dp)
-
-                                                        .padding(horizontal = 2.dp)
                                                 )
                                             }
                                             Box(
@@ -515,7 +513,6 @@ fun BpcProgressScreen(
                                         }
                                     }
                                 }
-                                
                             }
                             
                             item {

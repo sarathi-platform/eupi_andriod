@@ -39,9 +39,9 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
+import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
-import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS
+import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
 import com.patsurvey.nudge.utils.ARG_FORM_PATH
