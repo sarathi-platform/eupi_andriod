@@ -759,9 +759,6 @@ fun StepsBoxForBpc(
             }
         }
 
-
-
-
         if (isCompleted) {
             Image(
                 painter = painterResource(id = R.drawable.icon_check_circle_green),
@@ -791,6 +788,7 @@ fun StepsBoxForBpc(
                     )
                     .background(Color.White, shape = CircleShape)
                     .padding(6.dp)
+                    .size(25.dp)
                     .aspectRatio(1f)
                     .constrainAs(step_no) {
                         start.linkTo(parent.start, margin = 16.dp)
@@ -801,7 +799,8 @@ fun StepsBoxForBpc(
                     text = "$stepNo",
                     color = textColorDark,
                     style = smallerTextStyleNormalWeight,
-                    modifier = Modifier.padding(vertical = 2.dp, horizontal = 10.dp)
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
 
                 )
             }

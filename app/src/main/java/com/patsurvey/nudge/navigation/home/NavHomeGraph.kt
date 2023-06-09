@@ -2,7 +2,6 @@ package com.patsurvey.nudge.navigation.home
 
 
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -14,12 +13,22 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
-import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.AddDidiScreen
+import com.patsurvey.nudge.activities.DidiScreen
+import com.patsurvey.nudge.activities.PatDidiSummaryScreen
+import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
+import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
+import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
-import com.patsurvey.nudge.activities.ui.digital_forms.*
+import com.patsurvey.nudge.activities.ui.bpc.progress_screen.BpcProgressScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
@@ -30,7 +39,25 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_STRING
+import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
+import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS
+import com.patsurvey.nudge.utils.ARG_DIDI_ID
+import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
+import com.patsurvey.nudge.utils.ARG_FORM_PATH
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.ARG_FROM_SCREEN
+import com.patsurvey.nudge.utils.ARG_FROM_SETTING
+import com.patsurvey.nudge.utils.ARG_FROM_VO_ENDORSEMENT_SCREEN
+import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
+import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
+import com.patsurvey.nudge.utils.ARG_STEP_ID
+import com.patsurvey.nudge.utils.ARG_VIDEO_ID
+import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 
 @Composable
 fun NavHomeGraph(navController: NavHostController) {
@@ -40,7 +67,7 @@ fun NavHomeGraph(navController: NavHostController) {
         startDestination = HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
-            ProgressScreen(
+            /*ProgressScreen(
                 stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
@@ -56,7 +83,8 @@ fun NavHomeGraph(navController: NavHostController) {
                 onNavigateToSetting = {
                     navController.navigate(Graph.SETTING_GRAPH)
                 }
-            )
+            )*/
+            BpcProgressScreen(bpcProgreesScreenViewModel = hiltViewModel())
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {
