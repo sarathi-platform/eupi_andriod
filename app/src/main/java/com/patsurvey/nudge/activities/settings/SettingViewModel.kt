@@ -56,7 +56,6 @@ class SettingViewModel @Inject constructor(
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
-    val dialogHeight = mutableStateOf(if (showLoader.value) 400 else 325)
 
 
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
