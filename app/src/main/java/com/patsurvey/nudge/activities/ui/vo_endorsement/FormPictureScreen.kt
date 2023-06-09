@@ -746,7 +746,7 @@ fun ExpandableFormPictureCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Delete Pages",
+                        text = "Retake Form",
                         color = textColorDark,
                         style = buttonTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)

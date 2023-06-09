@@ -280,7 +280,7 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-                                    showSyncDialogStatus.value = true
+//                                    showSyncDialogStatus.value = true
                                     viewModel.showSyncDialog.value = true
                                 }
 
@@ -340,7 +340,7 @@ fun SettingScreen(
             }*/
             if (viewModel.showSyncDialog.value) {
                 showSyncDialog(setShowDialog = {
-                    showSyncDialogStatus.value = it
+//                    showSyncDialogStatus.value = it
                     viewModel.showSyncDialog.value = it
                 }, positiveButtonClicked = {
                     viewModel.showLoader.value = true
@@ -350,7 +350,7 @@ fun SettingScreen(
                     stepFourStatus = stepFourStatus.value,
                     stepFiveStatus = stepFiveStatus.value,
                     settingViewModel = viewModel,
-                    showSyncDialogStatus = showSyncDialogStatus,
+                    showSyncDialogStatus = viewModel.showSyncDialog,
                     isDataNeedToBeSynced = isDataNeedToBeSynced
                 )
                 viewModel.isFirstStepNeedToBeSync(stepOneStatus)
@@ -358,7 +358,8 @@ fun SettingScreen(
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                isDataNeedToBeSynced.value = !(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
+//                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
     }
@@ -421,7 +422,7 @@ fun showSyncDialog(
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                stringResource(R.string.sync_your_data),
+                                if (isDataNeedToBeSynced.value) stringResource(R.string.sync_your_data) else "Your Data is Synced",
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),

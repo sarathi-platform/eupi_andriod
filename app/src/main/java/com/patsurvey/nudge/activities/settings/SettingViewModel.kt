@@ -114,8 +114,11 @@ class SettingViewModel @Inject constructor(
         stepOneSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
-                && tolaDao.fetchPendingTola(true, "").isEmpty()) {
+                && tolaDao.fetchPendingTola(true, "").isEmpty())
+            {
+                withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
+                }
             }
         }
     }
@@ -125,7 +128,9 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
         if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
             && didiDao.fetchPendingDidi(true,"").isEmpty()) {
+            withContext(Dispatchers.Main) {
                 isNeedToBeSync.value = 2
+            }
             }
         }
     }
@@ -136,7 +141,9 @@ class SettingViewModel @Inject constructor(
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
             ) {
-                isNeedToBeSync.value = 2
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
             }
         }
     }
@@ -147,7 +154,9 @@ class SettingViewModel @Inject constructor(
             if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
             ) {
-                isNeedToBeSync.value = 2
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
             }
         }
     }
@@ -164,7 +173,9 @@ class SettingViewModel @Inject constructor(
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
             ) {
-                isNeedToBeSync.value = 2
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
             }
         }
     }
@@ -223,8 +234,8 @@ class SettingViewModel @Inject constructor(
         stepThreeSyncStatus.value = 0
         stepFourSyncStatus.value = 0
         stepFifthSyncStatus.value = 0
-        showSyncDialog.value = false
-        showLoader.value = false
+//        showSyncDialog.value = false
+//        showLoader.value = false
     }
 
     fun isDataNeedToBeSynced(
