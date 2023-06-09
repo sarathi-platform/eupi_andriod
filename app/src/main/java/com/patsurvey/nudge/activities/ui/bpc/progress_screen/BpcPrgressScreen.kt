@@ -338,183 +338,233 @@ fun BpcProgressScreen(
                                             color = textColorDark
                                         )
 
-                                        Row(modifier = Modifier.fillMaxWidth()) {
+                                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = greenOnline,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
-                                                    .background(greenOnline, shape = CircleShape),
+                                                    .background(
+                                                        greenOnline,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "1",
                                                     color = white,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
-                                            for (i in 0..8) {
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(2.dp)
-                                                )
-                                            }
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = greenOnline,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
-                                                    .background(greenOnline, shape = CircleShape),
+                                                    .background(
+                                                        greenOnline,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "2",
                                                     color = white,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
-                                            for (i in 0..8) {
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(2.dp)
-
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                            }
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = greenOnline,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
-                                                    .background(greenOnline, shape = CircleShape),
+                                                    .background(
+                                                        greenOnline,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "3",
                                                     color = white,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
-                                            for (i in 0..8) {
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(2.dp)
-
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                            }
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = greenOnline,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
-                                                    .background(greenOnline, shape = CircleShape),
+                                                    .background(
+                                                        greenOnline,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "4",
                                                     color = white,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
-                                            for (i in 0..8) {
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(2.dp)
-
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                            }
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = greenOnline,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
-                                                    .background(greenOnline, shape = CircleShape),
+                                                    .background(
+                                                        greenOnline,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "5",
                                                     color = white,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
-                                            for (i in 0..8) {
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(2.dp)
-
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                            }
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
+                                            Divider(
+                                                color = greyBorder,
+                                                modifier = Modifier
+                                                    .height(1.dp)  //fill the max height
+                                                    .width(8.dp)
+                                                    .padding(horizontal = 2.dp)
+                                            )
                                             Box(
                                                 modifier = Modifier
-                                                    .padding(4.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f)
+                                                    .clip(CircleShape)
                                                     .border(
                                                         width = 1.dp,
-                                                        color = stepBoxActiveColor,
+                                                        color = greyBorder,
                                                         shape = CircleShape
                                                     )
                                                     .background(
                                                         stepBoxActiveColor,
                                                         shape = CircleShape
-                                                    ),
+                                                    )
+                                                    .padding(6.dp)
+                                                    .size(24.dp)
+                                                    .aspectRatio(1f),
                                                 contentAlignment = Alignment.Center
                                             ) {
                                                 Text(
                                                     text = "6",
                                                     color = textColorDark,
                                                     textAlign = TextAlign.Center,
+                                                    modifier = Modifier.align(Alignment.Center),
                                                     style = smallerTextStyleNormalWeight,
                                                 )
                                             }
                                         }
+                                        Spacer(modifier = Modifier.height(8.dp))
                                     }
                                 }
                             }
-                            
+
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",
@@ -602,7 +652,7 @@ fun StepsBoxForBpc(
     stepNo: Int,
     index: Int,
     iconId: Int,
-    viewModel: BpcProgressScreenViewModel?=null,
+    viewModel: BpcProgressScreenViewModel,
     isCompleted: Boolean = false,
     shouldBeActive: Boolean = false,
     onclick: (Int) -> Unit
@@ -653,7 +703,9 @@ fun StepsBoxForBpc(
                     Icon(
                         painter = painterResource(id = iconResourceId),
                         contentDescription = null,
-                        tint = if (shouldBeActive) { if (isCompleted) stepIconCompleted else stepIconEnableColor } else stepIconDisableColor,
+                        tint = if (shouldBeActive) {
+                            if (isCompleted) stepIconCompleted else stepIconEnableColor
+                        } else stepIconDisableColor,
                         modifier = Modifier
                             .constrainAs(iconContainer) {
                                 start.linkTo(parent.start)
@@ -681,7 +733,11 @@ fun StepsBoxForBpc(
                         .fillMaxWidth()
                 ) {
                     Text(
-                        text = if (boxTitle.contains("pat ", true)) boxTitle.replace("pat ", "PAT ", true) else boxTitle,
+                        text = if (boxTitle.contains("pat ", true)) boxTitle.replace(
+                            "pat ",
+                            "PAT ",
+                            true
+                        ) else boxTitle,
                         color = if (isCompleted) greenOnline else textColorDark,
                         modifier = Modifier
                             .padding(
@@ -802,32 +858,6 @@ fun StepsBoxForBpc(
                 )
             }
 
-        }
-
-        if (stepNo < 5) {
-            Divider(
-                color = greyBorder,
-                modifier = Modifier
-                    .height(8.dp)  //fill the max height
-                    .width(1.dp)
-                    .constrainAs(divider1) {
-                        start.linkTo(parent.start, margin = dividerMargins)
-                        top.linkTo(stepBox.bottom)
-                    }
-                    .padding(vertical = 2.dp)
-            )
-
-            Divider(
-                color = greyBorder,
-                modifier = Modifier
-                    .height(8.dp)  //fill the max height
-                    .width(1.dp)
-                    .constrainAs(divider2) {
-                        start.linkTo(parent.start, margin = dividerMargins)
-                        top.linkTo(divider1.bottom)
-                    }
-                    .padding(vertical = 2.dp)
-            )
         }
     }
 }
