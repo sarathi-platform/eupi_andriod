@@ -157,6 +157,9 @@ fun SettingScreen(
     val showSyncDialogStatus = remember {
         mutableStateOf(false)
     }
+    val isDataNeedToBeSynced = remember {
+        mutableStateOf(false)
+    }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
     }
@@ -347,13 +350,15 @@ fun SettingScreen(
                     stepFourStatus = stepFourStatus.value,
                     stepFiveStatus = stepFiveStatus.value,
                     settingViewModel = viewModel,
-                    showSyncDialogStatus = showSyncDialogStatus
+                    showSyncDialogStatus = showSyncDialogStatus,
+                    isDataNeedToBeSynced = isDataNeedToBeSynced
                 )
                 viewModel.isFirstStepNeedToBeSync(stepOneStatus)
                 viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
     }
@@ -369,7 +374,8 @@ fun showSyncDialog(
     stepFourStatus: Int,
     stepFiveStatus: Int,
     settingViewModel: SettingViewModel,
-    showSyncDialogStatus : MutableState<Boolean>
+    showSyncDialogStatus : MutableState<Boolean>,
+    isDataNeedToBeSynced : MutableState<Boolean>
 ) {
 
     val context = LocalContext.current
@@ -775,10 +781,10 @@ fun showSyncDialog(
                             )
                         }
 
-
                         if (isInternetConnected
                             && (batteryLevel > 30)
                             && !settingViewModel.showLoader.value
+                            && isDataNeedToBeSynced.value
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(

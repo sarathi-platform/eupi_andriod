@@ -195,9 +195,7 @@ class SettingViewModel @Inject constructor(
 
     fun syncDataOnServer(context: Context,syncDialog : MutableState<Boolean>) {
         showSyncDialog = syncDialog
-        syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
-            numericAnswerDao,
-            questionDao)
+        resetPosition()
         if(isInternetAvailable(context)){
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
@@ -216,6 +214,31 @@ class SettingViewModel @Inject constructor(
                     }
             })
         }
+    }
+
+    private fun resetPosition() {
+        syncPercentage.value = 0f
+        stepOneSyncStatus.value = 0
+        stepTwoSyncStatus.value = 0
+        stepThreeSyncStatus.value = 0
+        stepFourSyncStatus.value = 0
+        stepFifthSyncStatus.value = 0
+        showSyncDialog.value = false
+        showLoader.value = false
+    }
+
+    fun isDataNeedToBeSynced(
+        stepOneStatus: MutableState<Int>,
+        stepTwoStatus: MutableState<Int>,
+        stepThreeStatus: MutableState<Int>,
+        stepFourStatus: MutableState<Int>,
+        stepFiveStatus: MutableState<Int>
+    ) {
+        isFirstStepNeedToBeSync(stepOneSyncStatus)
+        isSecondStepNeedToBeSync(stepTwoSyncStatus)
+        isThirdStepNeedToBeSync(stepThreeSyncStatus)
+        isFourthStepNeedToBeSync(stepFourSyncStatus)
+        isFifthStepNeedToBeSync(stepFifthSyncStatus)
     }
 
 }
