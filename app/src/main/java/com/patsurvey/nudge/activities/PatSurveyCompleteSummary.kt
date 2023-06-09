@@ -193,7 +193,9 @@ fun PatSurveyCompleteSummary(
                         itemsIndexed(answerSummeryList) { index, answer ->
                             SectionTwoSummeryItem(
                                 index = index,
-                                quesSummery = answer.summary.toString()
+                                quesSummery = answer.summary.toString(),
+                                answerValue = answer.answerValue?: BLANK_STRING,
+                                questionType = answer.type
                             )
                         }
                     }

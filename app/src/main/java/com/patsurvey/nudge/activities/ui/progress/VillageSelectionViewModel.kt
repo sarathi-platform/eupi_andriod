@@ -241,6 +241,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 didiDao.insertDidi(
                                                     DidiEntity(
                                                         id = didi.id,
+                                                        serverId = didi.id,
                                                         name = didi.name,
                                                         address = didi.address,
                                                         guardianName = didi.guardianName,
@@ -409,7 +410,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         optionValue = answersItem?.options?.get(0)?.optionValue,
                                                         totalAssetAmount = answersItem?.totalWeight,
                                                         needsToPost = false,
-                                                        answerValue = answersItem?.options?.get(0)?.summary
+                                                        answerValue = answersItem?.options?.get(0)?.display
                                                             ?: BLANK_STRING,
                                                         type = answersItem?.questionType
                                                             ?: QuestionType.RadioButton.name

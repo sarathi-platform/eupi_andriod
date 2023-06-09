@@ -308,12 +308,11 @@ fun SurveySummary(
                         ) else Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
                     }
                     SummaryBox(
-                        count = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size
+                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) surveySummaryViewModel.notAvailableCount.value
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
-                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = if (didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }.size <= 1)
+                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = if (surveySummaryViewModel.notAvailableCount.value <= 1)
                             R.string.didi_not_available_text_singular else R.string.didi_not_available_text_plural) else stringResource(
                             id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size <= 1)
                                 R.string.didi_rejected_text_singula else R.string.didi_rejected_text_plural

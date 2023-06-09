@@ -44,6 +44,8 @@ class QuestionScreenViewModel @Inject constructor(
     val mDidiId = mutableStateOf(0)
 
     val listTypeAnswerIndex = mutableStateOf(-1)
+    val maxQuesCount = mutableStateOf(0)
+    val answeredCount = mutableStateOf(0)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private val _selIndValue = MutableStateFlow<Int>(-1)
@@ -87,6 +89,7 @@ class QuestionScreenViewModel @Inject constructor(
                     }
                     _questionList.value = questionList
                     _answerList.value = localAnswerList
+                    maxQuesCount.value = questionList.size
                     updateAnswerOptions(0, didiId)
                 } catch (ex: Exception) {
                     ex.printStackTrace()

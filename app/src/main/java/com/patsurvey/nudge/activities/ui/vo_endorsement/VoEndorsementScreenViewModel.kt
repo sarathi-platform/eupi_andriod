@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,18 +56,19 @@ class VoEndorsementScreenViewModel @Inject constructor(
 
     init {
         villageId = prefRepo.getSelectedVillage().id
-//        fetchDidisFromDB()
+        fetchDidisFromDB()
     }
 
     @SuppressLint("SuspiciousIndentation")
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
-               val  localDidiList = didiDao.patCompletedDidis(villageId)
-                var passingMark=0
-                val scoredDidiList:ArrayList<DidiEntity> = arrayListOf()
-                if(localDidiList.isNotEmpty()){
-                    localDidiList.forEach {didi->
+//            withContext(Dispatchers.IO) {
+                try {
+                    val  localDidiList = didiDao.patCompletedDidis(villageId)
+                    var passingMark=0
+                    val scoredDidiList = mutableListOf<DidiEntity>()
+                    if(localDidiList.isNotEmpty()){
+                        localDidiList.forEach {didi->
                             _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId = didi.id)
                             if(_inclusiveQueList.value.isNotEmpty()){
                                 var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didi.id)
@@ -76,12 +79,12 @@ class VoEndorsementScreenViewModel @Inject constructor(
                                         passingMark =numQue.surveyPassingMark?:0
                                         if(numQue.questionFlag?.equals(FLAG_WEIGHT,true) == true){
                                             val weightList= toWeightageRatio(numQue.json.toString())
-                                              if(weightList.isNotEmpty()){
-                                                    val newScore= calculateScore(weightList,
-                                                        answer.totalAssetAmount?.toDouble()?:0.0,
-                                                        false)
-                                                  totalWightWithoutNumQue += newScore
-                                              }
+                                            if(weightList.isNotEmpty()){
+                                                val newScore= calculateScore(weightList,
+                                                    answer.totalAssetAmount?.toDouble()?:0.0,
+                                                    false)
+                                                totalWightWithoutNumQue += newScore
+                                            }
                                         }else if(numQue.questionFlag?.equals(FLAG_RATIO,true) == true){
                                             val ratioList= toWeightageRatio(numQue.json.toString())
                                             val newScore= calculateScore(ratioList,
@@ -99,11 +102,27 @@ class VoEndorsementScreenViewModel @Inject constructor(
                             }
 
 
-                    }
-                    _didiList.value = scoredDidiList
-                    pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
-                    _filterDidiList.value = _didiList.value
+                        }
+                        _didiList.value = scoredDidiList
+                        pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
+                        _filterDidiList.value = _didiList.value
 
+                    }
+                }catch (ex:Exception){
+                    ex.printStackTrace()
+                    Log.e(TAG, "fetchDidisFromDB Exception: ${ex.message}", )
+                }
+
+//            }
+        }
+    }
+
+    fun updateFilterDidiList(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if(_filterDidiList.value.isNotEmpty()){
+                _filterDidiList.value.forEach {
+                    val didiDetails = didiDao.fetchDidiDetails(it.id)
+                    it.voEndorsementStatus = didiDetails.voEndorsementStatus
                 }
             }
         }
@@ -124,36 +143,42 @@ class VoEndorsementScreenViewModel @Inject constructor(
     }
 
     fun performQuery(query: String, isTolaFilterSelected: Boolean) {
-        if (!isTolaFilterSelected) {
-            _filterDidiList.value = if (query.isNotEmpty()) {
-                val filteredList = ArrayList<DidiEntity>()
-                didiList.value.forEach { didi ->
-                    if (didi.name.lowercase().contains(query.lowercase())) {
-                        filteredList.add(didi)
-                    }
-                }
-                filteredList
-            } else {
-                didiList.value
-            }
-        } else {
-            if (query.isNotEmpty()) {
-                val fList = mutableMapOf<String, MutableList<DidiEntity>>()
-                tolaMapList.keys.forEach { key ->
-                    val newDidiList = ArrayList<DidiEntity>()
-                    tolaMapList[key]?.forEach { didi ->
+        try {
+            if (!isTolaFilterSelected) {
+                _filterDidiList.value = if (query.isNotEmpty()) {
+                    val filteredList = ArrayList<DidiEntity>()
+                    didiList.value.forEach { didi ->
                         if (didi.name.lowercase().contains(query.lowercase())) {
-                            newDidiList.add(didi)
+                            filteredList.add(didi)
                         }
                     }
-                    if (newDidiList.isNotEmpty())
-                        fList[key] = newDidiList
+                    filteredList
+                } else {
+                    didiList.value
                 }
-                filterTolaMapList = fList
             } else {
-                filterTolaMapList = tolaMapList
+                if (query.isNotEmpty()) {
+                    val fList = mutableMapOf<String, MutableList<DidiEntity>>()
+                    tolaMapList.keys.forEach { key ->
+                        val newDidiList = ArrayList<DidiEntity>()
+                        tolaMapList[key]?.forEach { didi ->
+                            if (didi.name.lowercase().contains(query.lowercase())) {
+                                newDidiList.add(didi)
+                            }
+                        }
+                        if (newDidiList.isNotEmpty())
+                            fList[key] = newDidiList
+                    }
+                    filterTolaMapList = fList
+                } else {
+                    filterTolaMapList = tolaMapList
+                }
             }
+        }catch (ex:Exception){
+            ex.printStackTrace()
+            Log.e(TAG, "Exception1 : performQuery: ${ex.message}" )
         }
+
     }
 
 

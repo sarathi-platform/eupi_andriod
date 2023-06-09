@@ -162,7 +162,7 @@
     <string name="language_text">भाषा</string>
     <string name="productive_asset_owned_by_family"><!--परिवार के स्वामित्व वाली उत्पादक संपत्ति-->कमाई अनुपात</string>
     <string name="complete_pat_survey">पूर्ण पीएटी सर्वेक्षण</string>
-    <string name="total_productive_asset_value">कुल उत्पादक संपत्ति मूल्य  = ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> = ₹ %1$s/-</string>
     <string name="complete">पूर्ण करे</string>
     <string name="complete_section_2">खंड 2 पूर्ण कर</string>
     <string name="show">देखे</string>

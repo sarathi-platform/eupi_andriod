@@ -91,7 +91,14 @@ fun VoEndorsementScreen(
 ) {
 
     LaunchedEffect(key1 = true) {
-        viewModel.fetchDidisFromDB()
+        viewModel.getVoEndorsementStepStatus(stepId) {
+
+            if (it) {
+                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
+            }
+        }
+       delay(100)
+        viewModel.updateFilterDidiList()
     }
 
     val didis by viewModel.didiList.collectAsState()
@@ -105,20 +112,6 @@ fun VoEndorsementScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val localDensity = LocalDensity.current
-
-    LaunchedEffect(key1 = true) {
-        viewModel.showLoader.value = true
-        viewModel.getVoEndorsementStepStatus(stepId) {
-
-            if (it) {
-//                this.launch {
-//                    delay(100)
-//                    viewModel.showLoader.value = false
-//                }
-                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
-            }
-        }
-    }
 
     var bottomPadding by remember {
         mutableStateOf(0.dp)

@@ -132,36 +132,61 @@ class WealthRankingViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiRankInDb(id: Int, rank: String, networkCallbackListener: NetworkCallbackListener) {
+    fun updateDidiRankInDb(didiEntity: DidiEntity, rank: String, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                var didiId=didiEntity.id
                 val updatedDidiList = didiList.value
-                didiDao.updateDidiRank(id, rank)
-                didiDao.updateDidiNeedToPostWealthRank(id,true)
-                didiDao.updateBeneficiaryProcessStatus(
-                    id, listOf(
-                        BeneficiaryProcessStatusModel(
-                            StepType.TRANSECT_WALK.name,
-                            StepStatus.COMPLETED.name
-                        ),
-                        BeneficiaryProcessStatusModel(
-                            StepType.SOCIAL_MAPPING.name,
-                            StepStatus.COMPLETED.name
-                        ),
-                        BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+                if(didiEntity.serverId == 0){
+                    didiDao.updateDidiRank(didiEntity.id, rank)
+                    didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
+                    didiDao.updateBeneficiaryProcessStatus(
+                        didiEntity.id, listOf(
+                            BeneficiaryProcessStatusModel(
+                                StepType.TRANSECT_WALK.name,
+                                StepStatus.COMPLETED.name
+                            ),
+                            BeneficiaryProcessStatusModel(
+                                StepType.SOCIAL_MAPPING.name,
+                                StepStatus.COMPLETED.name
+                            ),
+                            BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+                        )
                     )
-                )
-                updatedDidiList[updatedDidiList.map { it.id }.indexOf(id)].wealth_ranking = rank
+                }else{
+                     didiId=didiEntity.serverId
+                    didiDao.updateDidiRankUsingServerId(didiEntity.serverId, rank)
+                    didiDao.updateDidiNeedToPostWealthRankServerId(didiEntity.serverId,true)
+                    didiDao.updateBeneficiaryProcessStatusServerId(
+                        didiEntity.serverId, listOf(
+                            BeneficiaryProcessStatusModel(
+                                StepType.TRANSECT_WALK.name,
+                                StepStatus.COMPLETED.name
+                            ),
+                            BeneficiaryProcessStatusModel(
+                                StepType.SOCIAL_MAPPING.name,
+                                StepStatus.COMPLETED.name
+                            ),
+                            BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
+                        )
+                    )
+                }
+
+
+                updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
                 withContext(Dispatchers.IO) {
                     val updateWealthRankResponse=apiService.updateDidiRanking(
-                        listOf(EditDidiWealthRankingRequest(id, StepType.WEALTH_RANKING.name, rank),
-                            EditDidiWealthRankingRequest(id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                        listOf(EditDidiWealthRankingRequest(didiId, StepType.WEALTH_RANKING.name, rank),
+                            EditDidiWealthRankingRequest(didiId, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
                         )
                     )
                     if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                        didiDao.setNeedToPostRanking(id,false)
+                        if(didiEntity.serverId == 0){
+                            didiDao.setNeedToPostRanking(didiEntity.id,false)
+                        }else
+                            didiDao.setNeedToPostRankingServerId(didiEntity.serverId,false)
                     } else {
                         networkCallbackListener.onFailed()
                     }

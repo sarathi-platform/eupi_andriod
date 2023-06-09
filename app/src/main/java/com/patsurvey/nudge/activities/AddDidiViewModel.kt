@@ -189,7 +189,12 @@ class AddDidiViewModel @Inject constructor(
                 dadaName.value, selectedTola.value.first, villageId
             )
             if (ifDidiExist == 0) {
-                val newId = didiDao.getAllDidis().size
+                var newId = didiDao.getAllDidis().size
+               val lastDidi= didiDao.fetchLastDidiDetails()
+                if(lastDidi !=null){
+                    newId = lastDidi.id
+                }
+
                 didiDao.insertDidi(
                     DidiEntity(
                         newId + 1,
@@ -430,16 +435,24 @@ class AddDidiViewModel @Inject constructor(
                 val response = apiService.addDidis(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        networkCallbackListener.onSuccess()
                         response.data.forEach { didiFromNetwork ->
                             didiList.value.forEach { didi ->
+                                didiDao.updateDidiServerId(villageId = prefRepo.getSelectedVillage().id,
+                                    modifiedDate = didiFromNetwork.modifiedDate,
+                                    createdDate = didiFromNetwork.createdDate,
+                                    cohortId = didiFromNetwork.cohortId,
+                                    castId = didiFromNetwork.castId,
+                                    serverId = didiFromNetwork.id,
+                                    guardianName = didiFromNetwork.guardianName,
+                                    name = didiFromNetwork.name)
                                 if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-                                    didi.id = didiFromNetwork.id
+                                    didi.serverId = didiFromNetwork.id
                                     didi.createdDate = didiFromNetwork.createdDate
                                     didi.modifiedDate = didiFromNetwork.modifiedDate
                                 }
                             }
                         }
+                        networkCallbackListener.onSuccess()
                     }
                 } else {
                     withContext(Dispatchers.Main) {
@@ -713,4 +726,16 @@ class AddDidiViewModel @Inject constructor(
             }
         }
     }
+    fun fetchDidiDetails(didiId: Int){
+            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                val didi=didiDao.getDidi(didiId)
+
+               didiName.value=didi.name
+               dadaName.value=didi.guardianName
+               houseNumber.value=didi.address
+               selectedTola.value= Pair(didi.cohortId,didi.cohortName)
+               selectedCast.value= Pair(didi.castId,didi.castName)
+            }
+    }
+
 }

@@ -403,7 +403,7 @@ fun ExpandableCard(
                 }
                 ExpandableContent(visible = expanded, didiEntity = didiEntity) {
                     didiEntity.wealth_ranking = it.rank
-                    viewModel.updateDidiRankInDb(didiEntity.id, it.rank, object : NetworkCallbackListener{
+                    viewModel.updateDidiRankInDb(didiEntity,it.rank, object : NetworkCallbackListener{
                             override fun onSuccess() {
 
                             }

@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -36,7 +37,8 @@ import kotlinx.coroutines.delay
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
-                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel?=null,didiDetails:String,onNavigation:()->Unit) {
+                  isOnline: Boolean = true, didiViewModel: AddDidiViewModel?=null,
+                  didiDetailId:Int,onNavigation:()->Unit) {
     var casteExpanded by remember { mutableStateOf(false) }
     var casteTextFieldSize by remember { mutableStateOf(Size.Zero) }
     var editDidiId by remember { mutableStateOf(-1) }
@@ -175,14 +177,14 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 .padding(bottom = dimensionResource(id = R.dimen.dp_20))
         ) {
             ButtonPositive(
-                buttonTitle = if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) stringResource(id = R.string.add_didi)
+                buttonTitle = if(didiDetailId == 0) stringResource(id = R.string.add_didi)
                 else stringResource(id = R.string.update_didi),
                 isArrowRequired = true,
                 isActive = didiViewModel?.isDidiValid?.value == true,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
-                if(didiDetails.equals(ADD_DIDI_BLANK_STRING,true)) {
+                if(didiDetailId == 0) {
                    didiViewModel?.saveDidiIntoDatabase(object :LocalDbListener{
                        override fun onInsertionSuccess() {
                            onNavigation()
@@ -222,16 +224,10 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 
     }
 
-    LaunchedEffect(key1 = Unit){
-        if(!didiDetails.equals(ADD_DIDI_BLANK_STRING,true)){
-            // TODO: Need to improve after using Parcable or Serializable
-            val editDidiDetails=Gson().fromJson(didiDetails,DidiEntity::class.java)
-            editDidiId=editDidiDetails.id
-            didiViewModel?.didiName?.value=editDidiDetails.name
-            didiViewModel?.dadaName?.value=editDidiDetails.guardianName
-            didiViewModel?.houseNumber?.value=editDidiDetails.address
-            didiViewModel?.selectedTola?.value= Pair(editDidiDetails.cohortId,editDidiDetails.cohortName) as Pair<Int, String>
-            didiViewModel?.selectedCast?.value= Pair(editDidiDetails.castId,editDidiDetails.castName) as Pair<Int, String>
+    LaunchedEffect(key1 = true){
+        if(didiDetailId != 0){
+            didiViewModel?.fetchDidiDetails(didiDetailId)
+            editDidiId=didiDetailId
         }
     }
     CustomSnackBarShow(state = snackState)
@@ -241,5 +237,5 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 @Composable
 fun AddDidiPreview() {
     AddDidiScreen(navController = rememberNavController(), modifier = Modifier,
-        isOnline = true, didiDetails = BLANK_STRING, onNavigation = {})
+        isOnline = true, didiDetailId = 0, onNavigation = {})
 }

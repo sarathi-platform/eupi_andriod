@@ -43,9 +43,14 @@ interface DidiDao {
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :id")
     fun setNeedToPostRanking(id:Int, needsToPostRanking: Boolean)
+    @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE serverId = :id")
+    fun setNeedToPostRankingServerId(id:Int, needsToPostRanking: Boolean)
 
     @Query("UPDATE $DIDI_TABLE SET wealth_ranking = :rank WHERE id = :didiId")
     fun updateDidiRank(didiId: Int, rank: String)
+    @Query("UPDATE $DIDI_TABLE SET wealth_ranking = :rank WHERE serverId = :didiId")
+    fun updateDidiRankUsingServerId(didiId: Int, rank: String)
+
     @Query("SELECT COUNT(id) from $DIDI_TABLE where wealth_ranking = :unRankedStatus and villageId = :villageId")
     fun getUnrankedDidiCount(villageId: Int, unRankedStatus: String = WealthRank.NOT_RANKED.rank): Int
 
@@ -66,6 +71,10 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
+
+    @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE serverId = :didiId")
+    fun updateBeneficiaryProcessStatusServerId(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
+
 
     @Query("UPDATE $DIDI_TABLE SET patSurveyStatus = :patSurveyProgress WHERE id = :didiId")
     fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
@@ -127,6 +136,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :didiId")
     fun updateDidiNeedToPostWealthRank(didiId: Int, needsToPostRanking: Boolean)
 
+    @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE serverId = :didiId")
+    fun updateDidiNeedToPostWealthRankServerId(didiId: Int, needsToPostRanking: Boolean)
+
     @Query("SELECT * from $DIDI_TABLE where needsToPostRanking = :needsToPostRanking and transactionId != :transactionId")
     fun fetchPendingWealthStatusDidi(needsToPostRanking: Boolean,transactionId : String?) : List<DidiEntity>
 
@@ -147,5 +159,26 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
+
+    @Query("UPDATE $DIDI_TABLE SET serverId = :serverId,createdDate = :createdDate,modifiedDate = :modifiedDate,needsToPost = 0 WHERE name = :name AND guardianName =:guardianName AND villageId =:villageId AND castId=:castId AND cohortId =:cohortId")
+    fun updateDidiServerId(name: String, guardianName: String,villageId:Int,castId:Int,cohortId:Int,serverId:Int,createdDate:Long,modifiedDate:Long)
+
+    @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId")
+    fun fetchNotAvailableDidis(villageId: Int) : Int
+
+    @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
+    fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
+
+    @Query("DELETE from $DIDI_TABLE where activeStatus = :activeStatus and id = :id")
+    fun deleteDidiFromDb(id: Int, activeStatus: Int)
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId")
+    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
+    fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
+
+    @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
+    fun fetchLastDidiDetails(): DidiEntity
 
 }
