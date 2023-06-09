@@ -501,7 +501,7 @@ fun ShowDidisFromTola(
     modifier: Modifier,
     expandedIds: List<Int>,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onNavigate: (DidiEntity) -> Unit
+    onNavigate: (DidiEntity) -> Unit,
     onDeleteClicked: (DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {

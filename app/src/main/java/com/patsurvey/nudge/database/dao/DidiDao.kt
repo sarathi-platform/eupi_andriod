@@ -166,4 +166,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
 
+    @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
+    fun fetchLastDidiDetails(): DidiEntity
+
 }

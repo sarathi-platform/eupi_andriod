@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -75,6 +76,8 @@ fun VoEndorsementSummaryScreen(
 
 
     LaunchedEffect(key1 = true) {
+        Log.e(TAG, "VoEndorsementSummaryScreen: ")
+
         viewModel?.setDidiDetailsFromDb(didiId)
         delay(200)
         if (viewModel.selPageIndex.value < voDidiList.size) {
@@ -85,7 +88,7 @@ fun VoEndorsementSummaryScreen(
         mutableStateOf(0.dp)
     }
 
-    BackHandler() {
+    BackHandler {
         navController.popBackStack()
     }
 

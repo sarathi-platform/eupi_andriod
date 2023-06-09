@@ -189,7 +189,12 @@ class AddDidiViewModel @Inject constructor(
                 dadaName.value, selectedTola.value.first, villageId
             )
             if (ifDidiExist == 0) {
-                val newId = didiDao.getAllDidis().size
+                var newId = didiDao.getAllDidis().size
+               val lastDidi= didiDao.fetchLastDidiDetails()
+                if(lastDidi !=null){
+                    newId = lastDidi.id
+                }
+
                 didiDao.insertDidi(
                     DidiEntity(
                         newId + 1,
