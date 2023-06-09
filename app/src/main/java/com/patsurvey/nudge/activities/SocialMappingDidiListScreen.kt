@@ -852,7 +852,7 @@ fun DidiItemCard(
                                         .padding(5.dp)
                                         .layoutId("successImage")
                                 )
-                            } else {
+                            } else if (didi.patSurveyStatus.equals(PatSurveyStatus.INPROGRESS.ordinal)) {
                                 Text(text = stringResource(R.string.pat_inprogresee_status_text), style = smallTextStyle, color = inprogressYellow, modifier = Modifier
                                     .padding(5.dp)
                                     .layoutId("successImage"))

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -80,6 +79,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 didiDao.updateQuesSectionStatus(didiId,status)
+                didiDao.updateDidiNeedToPostPat(didiId, true)
             }
         }
     }
