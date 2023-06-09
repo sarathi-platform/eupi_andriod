@@ -2,21 +2,33 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import androidx.compose.runtime.MutableState
-import com.patsurvey.nudge.SyncHelper
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -44,6 +56,8 @@ class SettingViewModel @Inject constructor(
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
+    val dialogHeight = mutableStateOf(if (showLoader.value) 400 else 325)
+
 
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
