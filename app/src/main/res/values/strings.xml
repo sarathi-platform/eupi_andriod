@@ -157,7 +157,7 @@
     <string name="training_videos">Training Videos</string>
     <string name="language_text">Language</string>
     <string name="productive_asset_owned_by_family"><!--Productive asset owned by Family-->Earning ratio</string>
-    <string name="total_productive_asset_value">Total Productive asset value = ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> = ₹ %1$s/-</string>
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>
     <string name="complete_section_2">Complete Section 2</string>

@@ -170,13 +170,25 @@ fun FormPictureScreen(
                         top.linkTo(parent.top)
                     }
                     .padding(horizontal = 16.dp)
+                    .padding(bottom = bottomPadding)
                 ) {
 
                     AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
                         CameraViewForForm(
                             modifier = Modifier.fillMaxSize(),
                             outputDirectory = formPictureScreenViewModel.outputDirectory,
-                            formName = "${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}",
+                            formName = if (formPictureScreenViewModel.retakeImageIndex.value != -1)
+                                formPictureScreenViewModel.getFormSubPath(
+                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                    formPictureScreenViewModel.retakeImageIndex.value + 1
+                                )
+//                                "${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.retakeImageIndex.value + 1}"
+                            else
+                                formPictureScreenViewModel.getFormSubPath(
+                                    formPictureScreenViewModel.shouldShowCamera.value.first,
+                                    formPictureScreenViewModel.formCPageList.value.size + 1
+                                )
+                            /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
                             executor = formPictureScreenViewModel.cameraExecutor,
                             onImageCaptured = { uri, photoPath ->
                                 handleImageCapture(
@@ -242,14 +254,20 @@ fun FormPictureScreen(
                                         pageItemClicked = {
                                             scope.launch {
                                                 formPictureScreenViewModel.pageItemClicked.value =
-                                                    "${FORM_C}_page_$it"
+                                                    formPictureScreenViewModel.getFormSubPath(
+                                                        FORM_C,
+                                                        it
+                                                    )
                                                 formPictureScreenViewModel.imagePath.value =
                                                     formPictureScreenViewModel.prefRepo.getPref(
-                                                        "${PREF_FORM_PATH}_${formPictureScreenViewModel.pageItemClicked.value}",
+                                                        formPictureScreenViewModel.getFormPathKey(
+                                                            formPictureScreenViewModel.pageItemClicked.value
+                                                        ),
                                                         ""
                                                     )?.let { if (it.isNotEmpty()) it else "" }
                                                         .toString()
-                                                formPictureScreenViewModel.setUri(localContext)
+                                                if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                    formPictureScreenViewModel.setUri(localContext)
                                                 delay(250)
                                                 if (!scaffoldState.isVisible)
                                                     scaffoldState.show()
@@ -264,7 +282,6 @@ fun FormPictureScreen(
                                         addPageClicked = {
                                             if (formPictureScreenViewModel.formCPageList.value.size < 5) {
                                                 formPictureScreenViewModel.setCameraExecutor()
-                                                formPictureScreenViewModel.formCPageList.value.size
                                                 formPictureScreenViewModel.shouldShowCamera.value =
                                                     Pair(FORM_C, true)
                                             } else {
@@ -275,8 +292,18 @@ fun FormPictureScreen(
 //                                    navController.navigate("image_viewer/$FORM_C")
                                             }
                                         },
-                                        retakeButtonClicked = {
-
+                                        retakeButtonClicked = { index ->
+                                            formPictureScreenViewModel.retakeImageIndex.value =
+                                                index
+                                            formPictureScreenViewModel.setCameraExecutor()
+                                            formPictureScreenViewModel.shouldShowCamera.value =
+                                                Pair(FORM_C, true)
+                                            val imageToBeReplaced =
+                                                formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
+                                        },
+                                        deleteButtonClicked = {
+                                            formPictureScreenViewModel.formCPageList.value =
+                                                mutableListOf()
                                         }
                                     )
                                 }
@@ -294,13 +321,17 @@ fun FormPictureScreen(
                                         expanded = formDCardExpanded.value,
                                         pageList = formPictureScreenViewModel.formDPageList.value,
                                         pageItemClicked = {
-
                                             scope.launch {
                                                 formPictureScreenViewModel.pageItemClicked.value =
-                                                    "${FORM_D}_page_$it"
+                                                    formPictureScreenViewModel.getFormSubPath(
+                                                        FORM_D,
+                                                        it
+                                                    )
                                                 formPictureScreenViewModel.imagePath.value =
                                                     formPictureScreenViewModel.prefRepo.getPref(
-                                                        "${PREF_FORM_PATH}_${formPictureScreenViewModel.pageItemClicked.value}",
+                                                        formPictureScreenViewModel.getFormPathKey(
+                                                            formPictureScreenViewModel.pageItemClicked.value
+                                                        ),
                                                         ""
                                                     )?.let { if (it.isNotEmpty()) it else "" }
                                                         .toString()
@@ -327,8 +358,17 @@ fun FormPictureScreen(
                                                 //                                    navController.navigate("image_viewer/$FORM_C")
                                             }
                                         },
-                                        retakeButtonClicked = {
-
+                                        retakeButtonClicked = { index ->
+                                            formPictureScreenViewModel.retakeImageIndex.value =
+                                                index
+                                            formPictureScreenViewModel.setCameraExecutor()
+                                            formPictureScreenViewModel.shouldShowCamera.value =
+                                                Pair(FORM_D, true)
+                                        },
+                                        deleteButtonClicked = {
+                                            // TODO
+                                            formPictureScreenViewModel.formDPageList.value =
+                                                mutableListOf()
                                         }
                                     )
                                 }
@@ -379,7 +419,10 @@ fun FormPictureScreen(
                                     })
                             }
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
-                            formPictureScreenViewModel.markVoEndorsementComplete(formPictureScreenViewModel.prefRepo.getSelectedVillage().id, stepId)
+                            formPictureScreenViewModel.markVoEndorsementComplete(
+                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                stepId
+                            )
                             formPictureScreenViewModel.saveVoEndorsementDate()
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
@@ -393,6 +436,8 @@ fun FormPictureScreen(
                         },
                         negativeButtonOnClick = {}
                     )
+                } else {
+                    bottomPadding = 0.dp
                 }
             }
         }
@@ -407,35 +452,59 @@ private fun handleImageCapture(
     viewModal: FormPictureScreenViewModel
 ) {
     viewModal.photoUri = uri
-    viewModal.shouldShowPhoto.value = true
+
     viewModal.cameraExecutor.shutdown()
+
     if (viewModal.shouldShowCamera.value.first == FORM_C) {
-
-        viewModal.saveFormPath(
-            photoPath,
-            "${formName}_page_${viewModal.formCPageList.value.size + 1}"
-        )
-        viewModal.formCPageList.value.add((viewModal.formCPageList.value.size) + 1)
-        viewModal.formCImageList.value = viewModal.formCImageList.value.also {
-            it["Page_${viewModal.formCPageList.value.size}"] = photoPath
+        if (viewModal.retakeImageIndex.value != -1) {
+            Log.d("FormPictureScreen_handleImageCapture", "photoPath: ${photoPath}")
+            viewModal.saveFormPath(
+                photoPath,
+                viewModal.getFormSubPath(FORM_C, viewModal.retakeImageIndex.value + 1)
+                /*"${formName}_page_${viewModal.retakeImageIndex.value + 1}"*/
+            )
+            viewModal.formCImageList.value = viewModal.formCImageList.value.also {
+                it["Page_${viewModal.retakeImageIndex.value}"] = photoPath
+            }
+            viewModal.retakeImageIndex.value = -1
+        } else {
+            viewModal.saveFormPath(
+                photoPath,
+                viewModal.getFormSubPath(FORM_C, viewModal.formCPageList.value.size + 1)
+                /*"${formName}_page_${viewModal.formCPageList.value.size + 1}"*/
+            )
+            viewModal.formCPageList.value.add((viewModal.formCPageList.value.size) + 1)
+            viewModal.formCImageList.value = viewModal.formCImageList.value.also {
+                it["Page_${viewModal.formCPageList.value.size}"] = photoPath
+            }
+            if (viewModal.formsClicked.value < 1) {
+                viewModal.formsClicked.value = viewModal.formsClicked.value + 1
+            }
         }
-        if (viewModal.formsClicked.value < 1) {
-            viewModal.formsClicked.value = viewModal.formsClicked.value + 1
-        }
-
     } else {
-        viewModal.saveFormPath(
-            photoPath,
-            "${formName}_page_${viewModal.formDPageList.value.size + 1}"
-        )
-        viewModal.formDPageList.value.add((viewModal.formDPageList.value.size) + 1)
-        viewModal.formDImageList.value = viewModal.formDImageList.value.also {
-            it["Page_${viewModal.formDPageList.value.size}"] = photoPath
+        if (viewModal.retakeImageIndex.value != -1) {
+            Log.d("FormPictureScreen_handleImageCapture", "photoPath: ${photoPath}")
+            viewModal.saveFormPath(
+                photoPath,
+                viewModal.getFormSubPath(FORM_D, viewModal.retakeImageIndex.value + 1)
+            )
+            viewModal.formDImageList.value = viewModal.formDImageList.value.also {
+                it["Page_${viewModal.retakeImageIndex.value}"] = photoPath
+            }
+            viewModal.retakeImageIndex.value = -1
+        } else {
+            viewModal.saveFormPath(
+                photoPath,
+                viewModal.getFormSubPath(FORM_D, viewModal.formDPageList.value.size + 1)
+            )
+            viewModal.formDPageList.value.add((viewModal.formDPageList.value.size) + 1)
+            viewModal.formDImageList.value = viewModal.formDImageList.value.also {
+                it["Page_${viewModal.formDPageList.value.size}"] = photoPath
+            }
+            if (viewModal.formsClicked.value < 2) {
+                viewModal.formsClicked.value = viewModal.formsClicked.value + 1
+            }
         }
-        if (viewModal.formsClicked.value < 2) {
-            viewModal.formsClicked.value = viewModal.formsClicked.value + 1
-        }
-
     }
     viewModal.shouldShowCamera.value = Pair("", false)
 }
@@ -449,6 +518,7 @@ private fun requestCameraPermission(context: Activity, viewModal: FormPictureScr
             Log.i("FormPictureScreen", "Permission previously granted")
 //            viewModal.shouldShowCamera.value = true
         }
+
         ActivityCompat.shouldShowRequestPermissionRationale(
             context,
             Manifest.permission.CAMERA
@@ -475,7 +545,8 @@ fun FormPictureCard(
     pageItemClicked: (pageNumber: Int) -> Unit,
     formPictureCardClicked: () -> Unit,
     addPageClicked: () -> Unit,
-    retakeButtonClicked: (index: Int) -> Unit
+    retakeButtonClicked: (index: Int) -> Unit,
+    deleteButtonClicked: () -> Unit
 ) {
 
     val transition = updateTransition(expanded, label = "transition")
@@ -546,6 +617,9 @@ fun FormPictureCard(
                 },
                 pageItemClicked = {
                     pageItemClicked(it)
+                },
+                deleteButtonClicked = {
+                    deleteButtonClicked()
                 }
             )
         }
@@ -561,7 +635,8 @@ fun ExpandableFormPictureCard(
     navController: NavController,
     addPageClicked: () -> Unit,
     pageItemClicked: (pageNumber: Int) -> Unit,
-    retakeButtonClicked: (index: Int) -> Unit
+    retakeButtonClicked: (index: Int) -> Unit,
+    deleteButtonClicked: () -> Unit
 ) {
     val enterTransition = remember {
         expandVertically(
@@ -608,9 +683,11 @@ fun ExpandableFormPictureCard(
                         },
                         retakeButtonClicked = {
                             retakeButtonClicked(it)
+                        },
+                        deleteButtonClicked = {
+                            deleteButtonClicked()
                         }
                     )
-
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
@@ -618,32 +695,63 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
-            Row(
-                Modifier
+            Box(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 2.dp)
                     .padding(horizontal = 26.dp)
-                    .clickable {
-                        addPageClicked()
-                    }
-                    .then(modifier),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically) {
+            ) {
+                Row(
+                    Modifier
+                        .padding(vertical = 2.dp)
+                        .align(Alignment.CenterStart)
+                        .clickable {
+                            addPageClicked()
+                        }
+                        .then(modifier),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically) {
 
-                Icon(
-                    painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
-                    contentDescription = null,
-                    tint = textColorDark,
-                    modifier = Modifier.size(20.dp)
-                )
-                Spacer(modifier = Modifier.width(4.dp))
-                Text(
-                    text = "Add Page",
-                    color = textColorDark,
-                    style = buttonTextStyle,
-                    modifier = Modifier.absolutePadding(bottom = 3.dp)
-                )
+                    Icon(
+                        painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
+                        contentDescription = null,
+                        tint = textColorDark,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Add Page",
+                        color = textColorDark,
+                        style = buttonTextStyle,
+                        modifier = Modifier.absolutePadding(bottom = 3.dp)
+                    )
 
+                }
+
+                Row(
+                    Modifier
+                        .padding(vertical = 2.dp)
+                        .align(Alignment.CenterEnd)
+                        .clickable {
+                            deleteButtonClicked()
+                        }
+                        .then(modifier),
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.baseline_delete_icon),
+                        contentDescription = "delete form image",
+                        tint = redOffline,
+                        modifier = Modifier
+                            .size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Delete Pages",
+                        color = textColorDark,
+                        style = buttonTextStyle,
+                        modifier = Modifier.absolutePadding(bottom = 3.dp)
+                    )
+                }
             }
             if (pageList.size >= 4) {
                 Text(
@@ -663,7 +771,8 @@ fun PageItem(
     pageNumber: Int,
     index: Int,
     pageItemClicked: (pageNumber: Int) -> Unit,
-    retakeButtonClicked: (index: Int) -> Unit
+    retakeButtonClicked: (index: Int) -> Unit,
+    deleteButtonClicked: (index: Int) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -684,7 +793,7 @@ fun PageItem(
             fontWeight = FontWeight.SemiBold,
             color = textColorDark,
             modifier = Modifier
-                .padding(top = if (index == 0) 0.dp else 8.dp, bottom = 8.dp, end = 2.dp)
+                .padding(top = if (index == 0) 0.dp else 8.dp, bottom = 8.dp, end = 32.dp)
                 .align(Alignment.CenterStart)
                 .fillMaxWidth()
                 .indication(
@@ -696,15 +805,28 @@ fun PageItem(
                 )
         )
         Spacer(modifier = Modifier.width(2.dp))
-        Icon(
-            painter = painterResource(id = R.drawable.outline_retake_24),
-            contentDescription = null,
-            tint = textColorDark,
+        Row(
             modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .clickable {
+                .align(Alignment.CenterEnd), horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_retake_24),
+                contentDescription = null,
+                tint = textColorDark,
+                modifier = Modifier.clickable {
+                    Log.d("FormPictureScreen", "retakeButtonClicked(index): $index")
                     retakeButtonClicked(index)
                 }
-        )
+            )
+            /*Spacer(modifier = Modifier.width(2.dp))
+            Icon(
+                painter = painterResource(id = R.drawable.baseline_delete_icon),
+                contentDescription = "delete form image",
+                tint = redOffline,
+                modifier = Modifier.size(24.dp).clickable {
+                    deleteButtonClicked(index)
+                }
+            )*/
+        }
     }
 }

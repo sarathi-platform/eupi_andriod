@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.utils.BLANK_STRING
 
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.WealthRank
 
 
@@ -17,6 +18,9 @@ data class DidiEntity(
     @PrimaryKey
     @ColumnInfo(name = "id")
     var id: Int,
+
+    @ColumnInfo(name = "serverId")
+    var serverId: Int = 0,
 
     @ColumnInfo(name = "name")
     var name: String,
@@ -60,6 +64,12 @@ data class DidiEntity(
     @ColumnInfo(name = "modifiedDate")
     var modifiedDate: Long,
 
+    @ColumnInfo(name = "activeStatus")
+    var activeStatus: Int = DidiStatus.DIDI_ACTIVE.ordinal,
+
+    @ColumnInfo(name = "needsToPostDeleteStatus")
+    var needsToPostDeleteStatus: Boolean = false,
+
     @ColumnInfo(name = "needsToPostRanking")
     var needsToPostRanking: Boolean = true,
 
@@ -86,12 +96,16 @@ data class DidiEntity(
     var forVoEndorsement: Int = 0,
 
     @ColumnInfo(name = "needsToPostPAT")
-    var needsToPostPAT: Boolean = true,
+    var needsToPostPAT: Boolean = false,
 
     @ColumnInfo(name = "needsToPostVo")
-    var needsToPostVo: Boolean = true,
+    var needsToPostVo: Boolean = false,
 
     @ColumnInfo(name = "transactionId")
     var transactionId: String? = ""
 
-)
+){
+    companion object{
+        fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId
+    }
+}

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -75,6 +76,8 @@ fun VoEndorsementSummaryScreen(
 
 
     LaunchedEffect(key1 = true) {
+        Log.e(TAG, "VoEndorsementSummaryScreen: ")
+
         viewModel?.setDidiDetailsFromDb(didiId)
         delay(200)
         if (viewModel.selPageIndex.value < voDidiList.size) {
@@ -85,13 +88,13 @@ fun VoEndorsementSummaryScreen(
         mutableStateOf(0.dp)
     }
 
-    BackHandler() {
+    BackHandler {
         navController.popBackStack()
     }
 
     Box(modifier = Modifier
         .fillMaxSize()
-        .padding(10.dp)) {
+        .padding(horizontal = 16.dp, vertical = 10.dp)) {
 
         ConstraintLayout(
             modifier = Modifier
@@ -121,7 +124,6 @@ fun VoEndorsementSummaryScreen(
                     bottom.linkTo(bottomActionBox.top)
                     height = Dimension.fillToConstraints
                 }
-                .padding(top = 14.dp)
             ) {
                 Column(modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally) {
@@ -234,7 +236,9 @@ fun VoEndorsementSummaryScreen(
                                     itemsIndexed(answerSection2List) { index, answer ->
                                         SectionTwoSummeryItem(
                                             index = index,
-                                            quesSummery = answer.summary ?: BLANK_STRING
+                                            quesSummery = answer.summary ?: BLANK_STRING,
+                                            answerValue = answer.answerValue ?: BLANK_STRING,
+                                            questionType = answer.type
                                         )
                                     }
                                 }
@@ -331,7 +335,7 @@ fun VoEndorsementSummaryScreen(
         }
         val nextButtonVisible = remember {
             derivedStateOf {
-                pagerState.currentPage < voDidiList.size-1 && voDidiList[pagerState.currentPage].voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal
+                pagerState.currentPage < voDidiList.size-1
             }
         }
 
@@ -436,75 +440,6 @@ fun ShowAcceptRejectDialogPreview(){
     ShowAcceptRejectDialog(didi,DidiEndorsementStatus.ENDORSED.ordinal,screenHeight)
 }
 
-@Composable
-fun AnimatedTransitionDialog(
-    didi:DidiEntity,
-    action:Int,
-    screenHeight:Int,
-    onDismissRequest: () -> Unit,
-    contentAlignment: Alignment = Alignment.Center,
-) {
-    val animateTrigger = remember { mutableStateOf(false) }
-    LaunchedEffect(key1 = Unit) {
-        launch {
-            animateTrigger.value = true
-        }
-    }
-    Dialog(onDismissRequest = onDismissRequest,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            dismissOnBackPress=true
-        )) {
-        Box(contentAlignment = contentAlignment,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            AnimatedScaleInTransition(visible = animateTrigger.value) {
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = Color.White,
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center) {
-                        Column(
-                            modifier = Modifier
-                                .padding(14.dp)
-                                .align(Alignment.Center),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            PatSummeryScreenDidiDetailBox(
-                                modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
-                                    .background(
-                                        if (action == DidiEndorsementStatus.REJECTED.ordinal)
-                                            rejectEndorsementColor else acceptEndorsementColor
-                                    ),
-                                screenHeight = screenHeight,
-                                didi = didi
-                            )
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(15.dp))
-                            Text(
-                                text = stringResource(id = if(action == DidiEndorsementStatus.REJECTED.ordinal)
-                                    R.string.rejected else R.string.endorsed),
-                                style = TextStyle(
-                                    color = if(action == DidiEndorsementStatus.REJECTED.ordinal)
-                                        rejectEndorsementTextColor else acceptEndorsementTextColor,
-                                    fontSize = 20.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                ),
-                                textAlign = TextAlign.Center,
-                                modifier = Modifier.fillMaxWidth()
-                            )
-
-
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
 @Composable
 fun ShowAcceptRejectDialog(
     didi:DidiEntity,

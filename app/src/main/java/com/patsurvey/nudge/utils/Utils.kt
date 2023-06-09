@@ -5,6 +5,7 @@ import android.content.ContextWrapper
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.util.TypedValue
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
@@ -157,10 +158,15 @@ fun Context.showSystemUi() {
 }
 
 fun uriFromFile(context:Context, file:File): Uri {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
-    } else {
-        Uri.fromFile(file)
+    try {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            FileProvider.getUriForFile(context, BuildConfig.APPLICATION_ID + ".provider", file)
+        } else {
+            Uri.fromFile(file)
+        }
+    } catch (ex: Exception) {
+        return Uri.EMPTY
+        Log.e("uriFromFile", "exception", ex)
     }
 }
 

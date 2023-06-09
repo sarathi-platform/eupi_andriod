@@ -6,6 +6,7 @@ import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import com.google.gson.JsonArray
+import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -22,6 +23,7 @@ import java.util.Timer
 import java.util.TimerTask
 
 class SyncHelper (
+    val settingViewModel: SettingViewModel,
     val prefRepo: PrefRepo,
     val apiService: ApiService,
     val tolaDao: TolaDao,
@@ -197,6 +199,7 @@ class SyncHelper (
     }
 
     fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        settingViewModel.stepOneSyncStatus.value = 1
         Log.e("add tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaList = tolaDao.fetchTolaNeedToPost(true,"")
@@ -295,6 +298,8 @@ class SyncHelper (
     }
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        settingViewModel.stepOneSyncStatus.value = 2
+        settingViewModel.stepTwoSyncStatus.value = 1
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchAllDidiNeedToPost(true,null)
@@ -356,6 +361,8 @@ class SyncHelper (
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         Log.e("add didi","called")
+        settingViewModel.stepTwoSyncStatus.value = 2
+        settingViewModel.stepThreeSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -480,6 +487,8 @@ class SyncHelper (
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        settingViewModel.stepThreeSyncStatus.value = 2
+        settingViewModel.stepFourSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -531,6 +540,8 @@ class SyncHelper (
     }
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        settingViewModel.stepFifthSyncStatus.value = 1
+        settingViewModel.stepFourSyncStatus.value = 2
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){

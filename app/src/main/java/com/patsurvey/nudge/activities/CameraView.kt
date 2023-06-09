@@ -253,6 +253,7 @@ fun CameraViewForForm(
                         color = Color.Black
                     )
                 ) {
+                    Log.d("FormPictureScreen_CameraViewForForm", "formName: $formName" )
                     takeFormPhoto(
                         formName = formName,
                         imageCapture = imageCapture,
@@ -301,6 +302,7 @@ fun takeFormPhoto(
     imageCapture.takePicture(outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val saveUri = Uri.fromFile(photoFile)
+            Log.d("FormPictureScreen_CameraViewForForm", "Take Photo path: ${photoFile.absoluteFile}")
             Log.d("CameraView", "Take Photo path: ${photoFile.absoluteFile}")
             onImageCaptured(saveUri, photoFile.absolutePath)
         }

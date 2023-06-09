@@ -5,15 +5,38 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Card
+import androidx.compose.material.Divider
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -36,11 +59,26 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.circleLayout
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
+import com.patsurvey.nudge.activities.ui.theme.black2
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
+import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ButtonPositiveForVo
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.VoEndorsementStatus
+import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -53,7 +91,14 @@ fun VoEndorsementScreen(
 ) {
 
     LaunchedEffect(key1 = true) {
-        viewModel.fetchDidisFromDB()
+        viewModel.getVoEndorsementStepStatus(stepId) {
+
+            if (it) {
+                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
+            }
+        }
+       delay(100)
+        viewModel.updateFilterDidiList()
     }
 
     val didis by viewModel.didiList.collectAsState()
@@ -67,20 +112,6 @@ fun VoEndorsementScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val localDensity = LocalDensity.current
-
-    LaunchedEffect(key1 = true) {
-        viewModel.showLoader.value = true
-        viewModel.getVoEndorsementStepStatus(stepId) {
-
-            if (it) {
-                this.launch {
-                    delay(100)
-                    viewModel.showLoader.value = false
-                }
-                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
-            }
-        }
-    }
 
     var bottomPadding by remember {
         mutableStateOf(0.dp)
@@ -128,21 +159,21 @@ fun VoEndorsementScreen(
                     startPadding = 0.dp
                 )
 
-                if (viewModel.showLoader.value) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(48.dp)
-                            .padding(top = 30.dp)
-                    ) {
-                        CircularProgressIndicator(
-                            color = blueDark,
-                            modifier = Modifier
-                                .size(28.dp)
-                                .align(Alignment.Center)
-                        )
-                    }
-                } else {
+//                if (viewModel.showLoader.value) {
+//                    Box(
+//                        modifier = Modifier
+//                            .fillMaxWidth()
+//                            .height(48.dp)
+//                            .padding(top = 30.dp)
+//                    ) {
+//                        CircularProgressIndicator(
+//                            color = blueDark,
+//                            modifier = Modifier
+//                                .size(28.dp)
+//                                .align(Alignment.Center)
+//                        )
+//                    }
+//                } else {
 
                     LazyColumn(
                         modifier = Modifier
@@ -251,7 +282,6 @@ fun VoEndorsementScreen(
                         }
                     }
                 }
-            }
         }
         if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }
                 .isEmpty()) {
