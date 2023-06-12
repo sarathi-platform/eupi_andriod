@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -67,6 +68,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,6 +87,9 @@ import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redBgLight
+import com.patsurvey.nudge.activities.ui.theme.redIconColor
+import com.patsurvey.nudge.activities.ui.theme.redMessageColor
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
@@ -769,17 +774,36 @@ fun showSyncDialog(
                                     end = Offset(x = progress, y = 0f)
                                 )
                             }
-                            Text(
-                                text = "Please don't close the app or switch off the phone.",
-                                style = numberStyle,
-                                textAlign = TextAlign.Start,
-                                fontSize = 12.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                color = redOffline,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
+                                .padding(10.dp)) {
+
+                                Box(modifier = Modifier
+                                    .absolutePadding(top = 4.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.info_icn),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                    )
+                                }
+
+
+                                Text(
+                                    text = "Please don't close the app or switch off the phone.",
+                                    style = numberStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Normal,
+                                    color = redMessageColor,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                )
+                            }
                         }
 
                         if (isInternetConnected
