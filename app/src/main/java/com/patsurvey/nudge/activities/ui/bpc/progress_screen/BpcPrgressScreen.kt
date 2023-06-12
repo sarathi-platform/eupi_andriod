@@ -194,373 +194,396 @@ fun BpcProgressScreen(
                                             color = borderGrey
                                         )
                                 ) {
-                                    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+                                    Column(modifier = Modifier) {
                                         Text(
                                             text = "CRP Group Name",
                                             textAlign = TextAlign.Start,
                                             style = mediumTextStyle,
                                             color = textColorDark,
+                                            modifier = Modifier.padding(horizontal = 16.dp)
                                         )
 
                                         Divider(
                                             thickness = 1.dp,
                                             color = borderGrey
                                         )
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append("12")
-                                                }
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 15.sp,
-                                                        fontWeight = FontWeight.Normal,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append(" Tolas Added")
-                                                }
-                                            },
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append("13")
-                                                }
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 15.sp,
-                                                        fontWeight = FontWeight.Normal,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append(" Didis Mobilised")
-                                                }
-                                            },
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append("24")
-                                                }
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 15.sp,
-                                                        fontWeight = FontWeight.Normal,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append(" Didis Marked as poor in PWR")
-                                                }
-                                            },
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append("77")
-                                                }
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 15.sp,
-                                                        fontWeight = FontWeight.Normal,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append(" Didis sent for VO Endorsement")
-                                                }
-                                            },
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
-                                        Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 18.sp,
-                                                        fontWeight = FontWeight.SemiBold,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append("19")
-                                                }
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        color = textColorDark,
-                                                        fontSize = 15.sp,
-                                                        fontWeight = FontWeight.Normal,
-                                                        fontFamily = NotoSans
-                                                    )
-                                                ) {
-                                                    append(" Didis Endorsed by VO")
-                                                }
-                                            },
-                                            modifier = Modifier.padding(vertical = 4.dp)
-                                        )
 
-                                        Text(
-                                            text = "Current Status:",
-                                            style = buttonTextStyle,
-                                            color = textColorDark
-                                        )
+                                        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
-                                        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(2.dp)) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
-                                                    )
-                                                    .background(
-                                                        greenOnline,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 18.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append("12")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" Tolas Added")
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 18.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append("13")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" Didis Mobilised")
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 18.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append("24")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" Didis Marked as poor in PWR")
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 18.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append("77")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" Didis sent for VO Endorsement")
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 18.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append("19")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.Normal,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" Didis Endorsed by VO")
+                                                    }
+                                                },
+                                                modifier = Modifier.padding(vertical = 4.dp)
+                                            )
+
+                                            Text(
+                                                text = "Current Status:",
+                                                style = buttonTextStyle,
+                                                color = textColorDark
+                                            )
+
+                                            Spacer(modifier = Modifier.height(8.dp))
+
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.CenterVertically,
+                                                horizontalArrangement = Arrangement.spacedBy(2.dp)
                                             ) {
-                                                Text(
-                                                    text = "1",
-                                                    color = white,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
+                                                        )
+                                                        .background(
+                                                            greenOnline,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "1",
+                                                        color = white,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        style = smallerTextStyleNormalWeight,
+                                                    )
+                                                }
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
-                                            }
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
-                                                    )
-                                                    .background(
-                                                        greenOnline,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "2",
-                                                    color = white,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
-                                            }
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
+                                                        )
+                                                        .background(
+                                                            greenOnline,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "2",
+                                                        color = white,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        style = smallerTextStyleNormalWeight,
                                                     )
-                                                    .background(
-                                                        greenOnline,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "3",
-                                                    color = white,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                }
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
-                                            }
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
-                                                    )
-                                                    .background(
-                                                        greenOnline,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "4",
-                                                    color = white,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
-                                            }
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
+                                                        )
+                                                        .background(
+                                                            greenOnline,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "3",
+                                                        color = white,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        style = smallerTextStyleNormalWeight,
                                                     )
-                                                    .background(
-                                                        greenOnline,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "5",
-                                                    color = white,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                }
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
-                                            }
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Divider(
-                                                color = greyBorder,
-                                                modifier = Modifier
-                                                    .height(1.dp)  //fill the max height
-                                                    .width(8.dp)
-                                                    .padding(horizontal = 2.dp)
-                                            )
-                                            Box(
-                                                modifier = Modifier
-                                                    .clip(CircleShape)
-                                                    .border(
-                                                        width = 1.dp,
-                                                        color = greyBorder,
-                                                        shape = CircleShape
-                                                    )
-                                                    .background(
-                                                        stepBoxActiveColor,
-                                                        shape = CircleShape
-                                                    )
-                                                    .padding(6.dp)
-                                                    .size(24.dp)
-                                                    .aspectRatio(1f),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = "6",
-                                                    color = textColorDark,
-                                                    textAlign = TextAlign.Center,
-                                                    modifier = Modifier.align(Alignment.Center),
-                                                    style = smallerTextStyleNormalWeight,
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
                                                 )
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
+                                                        )
+                                                        .background(
+                                                            greenOnline,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "4",
+                                                        color = white,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        style = smallerTextStyleNormalWeight,
+                                                    )
+                                                }
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
+                                                )
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
+                                                )
+                                                Box {
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .align(Alignment.TopCenter)
+                                                            .clip(CircleShape)
+                                                            .border(
+                                                                width = 1.dp,
+                                                                color = greyBorder,
+                                                                shape = CircleShape
+                                                            )
+                                                            .background(
+                                                                greenOnline,
+                                                                shape = CircleShape
+                                                            )
+                                                            .padding(6.dp)
+                                                            .size(24.dp)
+                                                            .aspectRatio(1f),
+                                                        contentAlignment = Alignment.Center
+                                                    ) {
+                                                        Text(
+                                                            text = "5",
+                                                            color = white,
+                                                            textAlign = TextAlign.Center,
+                                                            modifier = Modifier.align(Alignment.Center),
+                                                            style = smallerTextStyleNormalWeight,
+                                                        )
+                                                    }
+                                                    Text(
+                                                        text = "VO Endorsement \nComplete",
+                                                        color = white,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.BottomCenter),
+                                                        style = smallerTextStyleNormalWeight,
+                                                    )
+
+                                                }
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
+                                                )
+                                                Divider(
+                                                    color = greyBorder,
+                                                    modifier = Modifier
+                                                        .height(1.dp)  //fill the max height
+                                                        .width(8.dp)
+                                                        .padding(horizontal = 2.dp)
+                                                )
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
+                                                        )
+                                                        .background(
+                                                            stepBoxActiveColor,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
+                                                    Text(
+                                                        text = "6",
+                                                        color = textColorDark,
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.align(Alignment.Center),
+                                                        style = smallerTextStyleNormalWeight,
+                                                    )
+                                                }
                                             }
+                                            Spacer(modifier = Modifier.height(8.dp))
+
                                         }
-                                        Spacer(modifier = Modifier.height(8.dp))
                                     }
                                 }
                             }
