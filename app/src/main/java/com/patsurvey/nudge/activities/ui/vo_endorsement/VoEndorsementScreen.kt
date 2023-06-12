@@ -212,11 +212,10 @@ fun VoEndorsementScreen(
                         }
 
                         item {
+                            val count = newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
                             Text(
-                                text = stringResource(
-                                    id = R.string.count_didis_pending,
-                                    newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
-                                ),
+                                text = if (count <= 1) stringResource(id = R.string.count_didis_pending_singular, count)
+                                else stringResource(id = R.string.count_didis_pending_plural, count),
                                 color = Color.Black,
                                 fontSize = 12.sp,
                                 fontFamily = NotoSans,

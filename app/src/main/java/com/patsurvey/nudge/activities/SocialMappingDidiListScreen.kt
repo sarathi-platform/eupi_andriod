@@ -53,7 +53,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
@@ -907,7 +906,10 @@ fun DidiItemCard(
                                 onDismissRequest = { showMenu.value = false },
                                 modifier = Modifier
                             ) {
-                                DropdownMenuItem(onClick = { onItemClick(didi) }) {
+                                DropdownMenuItem(onClick = {
+                                    showMenu.value = false
+                                    onItemClick(didi)
+                                }) {
                                     Text(
                                         text = "Edit",
                                         style = quesOptionTextStyle,
@@ -915,6 +917,7 @@ fun DidiItemCard(
                                     )
                                 }
                                 DropdownMenuItem(onClick = {
+                                    showMenu.value = false
                                     onDeleteClicked(didi)
                                 }) {
                                     Text(

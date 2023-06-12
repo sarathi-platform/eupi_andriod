@@ -42,7 +42,8 @@
     <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
     <string name="search_didis">Didis অনুসন্ধান</string>
     <string name="search_video">वीडियो को खोजें</string>
-    <string name="count_didis_pending">%1s দিদি পেন্ডিং</string>
+    <string name="count_didis_pending_plural">%1s दीदीया पेंडिंग</string>
+    <string name="count_didis_pending_singular">%1s दीदी पेंडिंग</string>
     <string name="poor_text">দরিদ্র</string>
     <string name="medium_text">মধ্যম</string>
     <string name="rich_text">ধনী</string>
