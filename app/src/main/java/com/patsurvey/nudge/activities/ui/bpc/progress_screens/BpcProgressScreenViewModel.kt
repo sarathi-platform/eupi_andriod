@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities.ui.bpc.progress_screen
+package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope

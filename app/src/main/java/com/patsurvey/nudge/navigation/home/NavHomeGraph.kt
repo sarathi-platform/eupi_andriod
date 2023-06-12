@@ -23,7 +23,7 @@ import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
-import com.patsurvey.nudge.activities.ui.bpc.progress_screen.BpcProgressScreen
+import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
@@ -84,7 +84,7 @@ fun NavHomeGraph(navController: NavHostController) {
                     navController.navigate(Graph.SETTING_GRAPH)
                 }
             )*/
-            BpcProgressScreen(bpcProgreesScreenViewModel = hiltViewModel())
+            BpcProgressScreen(bpcProgreesScreenViewModel = hiltViewModel(), navController = navController)
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {

@@ -37,6 +37,8 @@ import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -460,6 +462,8 @@ class VillageSelectionViewModel @Inject constructor(
                             prefRepo.savePref(PREF_KEY_EMAIL, it.email)
                             prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
                             prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
+                            prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName)
+                            prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName)
                             villageListDao.insertAll(it.villageList)
                             _villagList.emit(villageListDao.getAllVillages())
                             apiSuccess()

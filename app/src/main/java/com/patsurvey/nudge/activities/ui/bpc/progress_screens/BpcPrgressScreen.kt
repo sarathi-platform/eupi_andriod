@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.activities.ui.bpc.progress_screen
+package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -43,7 +44,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun BpcProgressScreen(
     modifier: Modifier = Modifier,
-    bpcProgreesScreenViewModel: BpcProgressScreenViewModel
+    bpcProgreesScreenViewModel: BpcProgressScreenViewModel,
+    navController: NavHostController
 ) {
 
     val scaffoldState =
@@ -505,41 +507,30 @@ fun BpcProgressScreen(
                                                         .width(8.dp)
                                                         .padding(horizontal = 2.dp)
                                                 )
-                                                Box {
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .align(Alignment.TopCenter)
-                                                            .clip(CircleShape)
-                                                            .border(
-                                                                width = 1.dp,
-                                                                color = greyBorder,
-                                                                shape = CircleShape
-                                                            )
-                                                            .background(
-                                                                greenOnline,
-                                                                shape = CircleShape
-                                                            )
-                                                            .padding(6.dp)
-                                                            .size(24.dp)
-                                                            .aspectRatio(1f),
-                                                        contentAlignment = Alignment.Center
-                                                    ) {
-                                                        Text(
-                                                            text = "5",
-                                                            color = white,
-                                                            textAlign = TextAlign.Center,
-                                                            modifier = Modifier.align(Alignment.Center),
-                                                            style = smallerTextStyleNormalWeight,
+                                                Box(
+                                                    modifier = Modifier
+                                                        .clip(CircleShape)
+                                                        .border(
+                                                            width = 1.dp,
+                                                            color = greyBorder,
+                                                            shape = CircleShape
                                                         )
-                                                    }
+                                                        .background(
+                                                            greenOnline,
+                                                            shape = CircleShape
+                                                        )
+                                                        .padding(6.dp)
+                                                        .size(24.dp)
+                                                        .aspectRatio(1f),
+                                                    contentAlignment = Alignment.Center
+                                                ) {
                                                     Text(
-                                                        text = "VO Endorsement \nComplete",
+                                                        text = "5",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.BottomCenter),
+                                                        modifier = Modifier.align(Alignment.Center),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
-
                                                 }
                                                 Divider(
                                                     color = greyBorder,
