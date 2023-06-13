@@ -157,8 +157,9 @@ fun SettingScreen(
     val showSyncDialogStatus = remember {
         mutableStateOf(false)
     }
+    val networkError = viewModel.networkErrorMessage.value
     val isDataNeedToBeSynced = remember {
-        mutableStateOf(false)
+        mutableStateOf(0)
     }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
@@ -339,6 +340,11 @@ fun SettingScreen(
                 viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             }*/
             if (viewModel.showSyncDialog.value) {
+                /*stepOneStatus.value = 0
+                stepTwoStatus.value = 0
+                stepThreeStatus.value = 0
+                stepFourStatus.value = 0
+                stepFiveStatus.value = 0*/
                 showSyncDialog(setShowDialog = {
 //                    showSyncDialogStatus.value = it
                     viewModel.showSyncDialog.value = it
@@ -358,10 +364,18 @@ fun SettingScreen(
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                isDataNeedToBeSynced.value = !(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
-//                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                if(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
+                    isDataNeedToBeSynced.value = 1
+                else if(stepOneStatus.value == 3 && stepTwoStatus.value == 3 && stepThreeStatus.value == 3 && stepFourStatus.value == 3 && stepFiveStatus.value == 3)
+                    isDataNeedToBeSynced.value = 2
+                else
+                    isDataNeedToBeSynced.value = 0
+                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
+    }
+    if(networkError.isNotEmpty()){
+        showCustomToast(context,networkError)
     }
 }
 
@@ -376,7 +390,7 @@ fun showSyncDialog(
     stepFiveStatus: Int,
     settingViewModel: SettingViewModel,
     showSyncDialogStatus : MutableState<Boolean>,
-    isDataNeedToBeSynced : MutableState<Boolean>
+    isDataNeedToBeSynced : MutableState<Int>
 ) {
 
     val context = LocalContext.current
@@ -390,6 +404,7 @@ fun showSyncDialog(
     val animationDuration = 1000
     val animationDelay = 0
 
+    settingViewModel.syncPercentage.value = 0f
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
@@ -422,7 +437,7 @@ fun showSyncDialog(
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                if (isDataNeedToBeSynced.value) stringResource(R.string.sync_your_data) else "Your Data is Synced",
+                                if (isDataNeedToBeSynced.value == 0) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 1 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -785,7 +800,7 @@ fun showSyncDialog(
                         if (isInternetConnected
                             && (batteryLevel > 30)
                             && !settingViewModel.showLoader.value
-                            && isDataNeedToBeSynced.value
+                            && isDataNeedToBeSynced.value == 0
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
@@ -813,7 +828,8 @@ fun showSyncDialog(
 //                                positiveButtonClicked()
                                 }
                             }
-                        } else {
+                        } else if(isDataNeedToBeSynced.value == 1
+                                || isDataNeedToBeSynced.value == 2){
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
                                     buttonTitle = stringResource(id = R.string.close),

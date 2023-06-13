@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.SyncHelper
@@ -52,6 +53,7 @@ class SettingViewModel @Inject constructor(
     var stepThreeSyncStatus = mutableStateOf(0)
     var stepFourSyncStatus = mutableStateOf(0)
     var stepFifthSyncStatus = mutableStateOf(0)
+    var context : Context? = null
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
@@ -119,7 +121,8 @@ class SettingViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -128,10 +131,11 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
         if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
             && didiDao.fetchPendingDidi(true,"").isEmpty()) {
-            withContext(Dispatchers.Main) {
-                isNeedToBeSync.value = 2
-            }
-            }
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -144,7 +148,8 @@ class SettingViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -157,7 +162,8 @@ class SettingViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -176,12 +182,25 @@ class SettingViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        Log.e("server error","called")
+        showLoader.value = false
+        syncPercentage.value = 100f
+        showSyncDialog.value = false
+        networkErrorMessage.value = error?.message.toString()
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (context != null) {
+                showCustomToast(context, SYNC_FAILED)
+                syncPercentage.value = 100f
+                showSyncDialog.value = false
+                showLoader.value = false
+            }
+        }*/
     }
 
     fun getStepOneSize(stepOneSize : MutableState<String>) {
@@ -204,21 +223,24 @@ class SettingViewModel @Inject constructor(
         syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
     }
 
-    fun syncDataOnServer(context: Context,syncDialog : MutableState<Boolean>) {
+    fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
+        context = cxt
         showSyncDialog = syncDialog
         resetPosition()
-        if(isInternetAvailable(context)){
+        if(isInternetAvailable(cxt)){
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
-                        showCustomToast(context, SYNC_SUCCESSFULL)
+                        networkErrorMessage.value = SYNC_SUCCESSFULL
+//                        showCustomToast(cxt, SYNC_SUCCESSFULL)
                         syncPercentage.value = 100f
                         showSyncDialog.value = false
                         showLoader.value = false
                     }
 
                     override fun onFailed() {
-                        showCustomToast(context, SYNC_FAILED)
+//                        showCustomToast(cxt, SYNC_FAILED)
+                        networkErrorMessage.value = SYNC_FAILED
                         syncPercentage.value = 100f
                         showSyncDialog.value = false
                         showLoader.value = false
@@ -245,6 +267,11 @@ class SettingViewModel @Inject constructor(
         stepFourStatus: MutableState<Int>,
         stepFiveStatus: MutableState<Int>
     ) {
+        stepOneSyncStatus = stepOneStatus
+        stepTwoSyncStatus = stepTwoStatus
+        stepThreeSyncStatus = stepThreeStatus
+        stepFourSyncStatus = stepFourStatus
+        stepFifthSyncStatus = stepFiveStatus
         isFirstStepNeedToBeSync(stepOneSyncStatus)
         isSecondStepNeedToBeSync(stepTwoSyncStatus)
         isThirdStepNeedToBeSync(stepThreeSyncStatus)
