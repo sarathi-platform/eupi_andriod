@@ -298,6 +298,7 @@ class SyncHelper (
     }
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        callWorkFlowAPIForStep(1)
         settingViewModel.stepOneSyncStatus.value = 3
         settingViewModel.stepTwoSyncStatus.value = 1
         Log.e("add didi","called")
@@ -343,6 +344,40 @@ class SyncHelper (
         }
     }
 
+    private fun callWorkFlowAPIForStep(step: Int) {
+        Log.e("workflow api"," called")
+        val villageId = prefRepo.getSelectedVillage().id
+        val stepList = stepsListDao.getAllStepsForVillage(villageId)
+        Log.e("workflow api called","$villageId -> $stepList -> $step")
+        when(step){
+            1->{
+                if(stepList[0].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[0].stepId)
+                }
+            }
+            2->{
+                if(stepList[1].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[1].stepId)
+                }
+            }
+            3->{
+                if(stepList[2].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[2].stepId)
+                }
+            }
+            4->{
+                if(stepList[3].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[3].stepId)
+                }
+            }
+            5->{
+                if(stepList[4].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[0].stepId)
+                }
+            }
+        }
+    }
+
     fun updateDidisNeedTOPostList(didiList : List<DidiEntity>,networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateDidiListWithServerIds(didiList,networkCallbackListener)
@@ -361,6 +396,7 @@ class SyncHelper (
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         Log.e("add didi","called")
+        callWorkFlowAPIForStep(2)
         settingViewModel.stepTwoSyncStatus.value = 3
         settingViewModel.stepThreeSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -487,6 +523,7 @@ class SyncHelper (
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        callWorkFlowAPIForStep(3)
         settingViewModel.stepThreeSyncStatus.value = 3
         settingViewModel.stepFourSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -542,6 +579,7 @@ class SyncHelper (
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         settingViewModel.stepFifthSyncStatus.value = 1
         settingViewModel.stepFourSyncStatus.value = 3
+        callWorkFlowAPIForStep(4)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -582,32 +620,13 @@ class SyncHelper (
                     } else {
                         syncPercentage.value = 100f
                         networkCallbackListener.onSuccess()
+                        callWorkFlowAPIForStep(5)
                     }
                 }
             } catch (ex: Exception) {
 //                onCatchError(ex)
                 networkCallbackListener.onFailed()
 //                onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
-            }
-        }
-    }
-
-    fun markTransectWalkComplete(villageId: Int, stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val existingList = villegeListDao.getVillage(villageId).steps_completed
-            val updatedCompletedStepsList = mutableListOf<Int>()
-            if (!existingList.isNullOrEmpty()) {
-                existingList.forEach {
-                    updatedCompletedStepsList.add(it)
-                }
-            }
-            updatedCompletedStepsList.add(stepId)
-            villegeListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
-                    StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
     }
@@ -696,6 +715,35 @@ class SyncHelper (
                 Log.e("num of step 5", "$tolaList.size")
                 Log.e("size of step 5", sizeToBeShown)
                 stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                Log.e("work flow","called")
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                if(dbResponse.workFlowId>0){
+                    val response = apiService.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                            }
+                        }else{
+//                            networkCallbackListener.onFailed()
+//                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+//                networkCallbackListener.onFailed()
+//                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
