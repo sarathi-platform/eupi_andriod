@@ -113,7 +113,7 @@ class SyncHelper (
                     networkCallbackListener.onFailed()
             } else {
 //                updateWealthRankingToNetwork(networkCallbackListener)
-                savePATSummeryToServer(networkCallbackListener)
+                updateVoStatusToNetwork(networkCallbackListener)
             }
         }
     }
@@ -298,7 +298,7 @@ class SyncHelper (
     }
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        settingViewModel.stepOneSyncStatus.value = 2
+        settingViewModel.stepOneSyncStatus.value = 3
         settingViewModel.stepTwoSyncStatus.value = 1
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -361,7 +361,7 @@ class SyncHelper (
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         Log.e("add didi","called")
-        settingViewModel.stepTwoSyncStatus.value = 2
+        settingViewModel.stepTwoSyncStatus.value = 3
         settingViewModel.stepThreeSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -487,7 +487,7 @@ class SyncHelper (
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
-        settingViewModel.stepThreeSyncStatus.value = 2
+        settingViewModel.stepThreeSyncStatus.value = 3
         settingViewModel.stepFourSyncStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -526,9 +526,9 @@ class SyncHelper (
                                     networkCallbackListener.onFailed()
                                 }
                             }
-
                         }
-
+                    } else {
+                        updateVoStatusToNetwork(networkCallbackListener)
                     }
                 }
 
@@ -541,7 +541,7 @@ class SyncHelper (
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         settingViewModel.stepFifthSyncStatus.value = 1
-        settingViewModel.stepFourSyncStatus.value = 2
+        settingViewModel.stepFourSyncStatus.value = 3
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -579,6 +579,9 @@ class SyncHelper (
                         }
                         syncPercentage.value = 100f
                         networkCallbackListener.onFailed()
+                    } else {
+                        syncPercentage.value = 100f
+                        networkCallbackListener.onSuccess()
                     }
                 }
             } catch (ex: Exception) {

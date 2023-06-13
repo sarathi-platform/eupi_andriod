@@ -216,6 +216,8 @@
 
 
     <string name="sync_your_data">Sync Your Data</string>
+    <string name="your_data_already_synced">Your Data is already Synced</string>
+    <string name="data_synced_successfully">Data Synced Successfully</string>
     <string name="sync">Sync</string>
     <string name="battery">Battery</string>
     <string name="mobile_data">Mobile Data</string>
