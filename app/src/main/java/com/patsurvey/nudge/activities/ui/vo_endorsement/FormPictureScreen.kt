@@ -463,7 +463,7 @@ fun FormPictureScreen(
                     }
                 }
 
-                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value > 2) {
+                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value >= 2) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .shadow(10.dp)
@@ -587,7 +587,7 @@ private fun handleImageCapture(
             viewModal.formDImageList.value = viewModal.formDImageList.value.also {
                 it["Page_${viewModal.formDPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value < 2) {
+            if (viewModal.formsClicked.value <= 2) {
                 viewModal.formsClicked.value = viewModal.formsClicked.value + 1
             }
         }

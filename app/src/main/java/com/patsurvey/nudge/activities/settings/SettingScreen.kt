@@ -115,9 +115,8 @@ fun SettingScreen(
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val list = ArrayList<SettingOptionModel>()
-    val lastSyncTimeInMS = viewModel.prefRepo.getPref(
-        LAST_SYNC_TIME, 0L
-    )
+    val lastSyncTimeInMS = viewModel.lastSyncTime.value
+
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
     val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
     list.add(
@@ -837,10 +836,9 @@ fun showSyncDialog(
                                 ) {
                                     settingViewModel.showLoader.value = true
                                     settingViewModel.syncDataOnServer(context, showSyncDialogStatus)
-                                    settingViewModel.prefRepo.savePref(
-                                        LAST_SYNC_TIME,
-                                        System.currentTimeMillis()
-                                    )
+                                    val updatedSyncTime = System.currentTimeMillis()
+                                    settingViewModel.lastSyncTime.value = updatedSyncTime
+                                    settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
 //                                setShowDialog(false)
 //                                positiveButtonClicked()
                                 }

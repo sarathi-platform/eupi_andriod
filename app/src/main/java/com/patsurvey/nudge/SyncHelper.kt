@@ -302,7 +302,7 @@ class SyncHelper (
         settingViewModel.stepTwoSyncStatus.value = 1
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToPost(true,null)
+            val didiList = didiDao.fetchAllDidiNeedToPost(true,"")
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {
