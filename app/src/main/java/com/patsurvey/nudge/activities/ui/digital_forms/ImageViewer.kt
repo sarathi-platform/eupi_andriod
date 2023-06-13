@@ -26,7 +26,6 @@ import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.activities.ui.theme.black20
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
-import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.uriFromFile
 import net.engawapg.lib.zoomable.rememberZoomState
 import net.engawapg.lib.zoomable.zoomable
@@ -55,7 +54,7 @@ fun FormImageViewerScreen(
         for (i in 1..5) {
             imageList.value = imageList.value.also {
                 val imagePath =
-                    viewModel.prefRepo.getPref("${PREF_FORM_PATH}_${fileName}_page_$i", "")
+                    viewModel.prefRepo.getPref(viewModel.getFormPathKey(viewModel.getFormSubPath(fileName, i)), "")
                 if (!imagePath.isNullOrEmpty())
                     it.add(imagePath)
             }
@@ -63,7 +62,8 @@ fun FormImageViewerScreen(
 
 
         imageList.value.forEach {
-            uriList.add(uriFromFile(context, File(it)))
+            if (it.isNotEmpty())
+                uriList.add(uriFromFile(context, File(it)))
         }
     }
 

@@ -40,7 +40,8 @@
     <string name="otp_will_be_sent_to_this_number">इस नंबर पर ओटीपी भेजा जाएगा</string>
     <string name="search_didis">दीदियों को खोजें</string>
     <string name="search_video">वीडियो को खोजें</string>
-    <string name="count_didis_pending">%1s दीदी पेंडिंग</string>
+    <string name="count_didis_pending_plural">%1s दीदीया पेंडिंग</string>
+    <string name="count_didis_pending_singular">%1s दीदी पेंडिंग</string>
     <string name="ranking_text">श्रेणी:</string>
     <string name="poor_text">गरीब</string>
     <string name="medium_text">मध्यम</string>

@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -45,7 +46,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,6 +67,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -85,6 +86,9 @@ import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redBgLight
+import com.patsurvey.nudge.activities.ui.theme.redIconColor
+import com.patsurvey.nudge.activities.ui.theme.redMessageColor
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
@@ -130,23 +134,17 @@ fun SettingScreen(
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
-    LaunchedEffect(key1 = true) {
+    /*LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(villageId)
         viewModel.isFormBAvailableForVillage(villageId)
         viewModel.isFormCAvailableForVillage(villageId)
-    }
+    }*/
 
     val formList = mutableListOf<String>()
-//    if (!viewModel.prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formAAvailabe.value) {
     formList.add("Digital Form A")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formBAvailabe.value){
     formList.add("Digital Form B")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formCAvailabe.value) {
     formList.add("Digital Form C")
-//    }
 
     val optionList = viewModel.optionList.collectAsState()
 
@@ -769,17 +767,36 @@ fun showSyncDialog(
                                     end = Offset(x = progress, y = 0f)
                                 )
                             }
-                            Text(
-                                text = "Please don't close the app or switch off the phone.",
-                                style = numberStyle,
-                                textAlign = TextAlign.Start,
-                                fontSize = 12.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                color = redOffline,
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            )
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
+                                .padding(10.dp)) {
+
+                                Box(modifier = Modifier
+                                    .absolutePadding(top = 4.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.info_icn),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                    )
+                                }
+
+
+                                Text(
+                                    text = "Please don't close the app or switch off the phone.",
+                                    style = numberStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Normal,
+                                    color = redMessageColor,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                )
+                            }
                         }
 
                         if (isInternetConnected

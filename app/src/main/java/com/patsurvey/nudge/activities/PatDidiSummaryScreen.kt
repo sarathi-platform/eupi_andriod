@@ -39,13 +39,18 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.vo_endorsement.openSettings
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
 
 
+@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun PatDidiSummaryScreen(
@@ -72,9 +77,27 @@ fun PatDidiSummaryScreen(
         mutableStateOf(0.dp)
     }
 
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    )
+
     LaunchedEffect(key1 = localContext) {
         patDidiSummaryViewModel.setUpOutputDirectory(localContext as MainActivity)
-        requestCameraPermission(localContext as Activity, patDidiSummaryViewModel)
+        requestCameraPermission(localContext as Activity, patDidiSummaryViewModel) {
+            shouldRequestPermission.value = true
+        }
+    }
+
+    LaunchedEffect(key1 = shouldRequestPermission.value) {
+        permissionsState.launchMultiplePermissionRequest()
     }
 
     ConstraintLayout(
@@ -97,17 +120,23 @@ fun PatDidiSummaryScreen(
             .padding(horizontal = 16.dp)
         ) {
 
-            AnimatedVisibility (patDidiSummaryViewModel.shouldShowCamera.value) {
+            AnimatedVisibility(patDidiSummaryViewModel.shouldShowCamera.value) {
                 CameraView(
                     modifier = Modifier.fillMaxSize(),
                     outputDirectory = patDidiSummaryViewModel.outputDirectory,
                     didiEntity = didi.value,
                     executor = patDidiSummaryViewModel.cameraExecutor,
                     onImageCaptured = { uri, photoPath ->
-                        handleImageCapture(uri = uri, photoPath, context = localContext as Activity, didi.value, patDidiSummaryViewModel)
+                        handleImageCapture(
+                            uri = uri,
+                            photoPath,
+                            context = localContext as Activity,
+                            didi.value,
+                            patDidiSummaryViewModel
+                        )
                     },
                     onCloseButtonClicked = {
-                                           patDidiSummaryViewModel.shouldShowCamera.value = false
+                        patDidiSummaryViewModel.shouldShowCamera.value = false
                     },
                     onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
                 )
@@ -119,6 +148,18 @@ fun PatDidiSummaryScreen(
                         .padding(top = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    if (shouldRequestPermission.value) {
+                        ShowDialog(
+                            title = "Permission Required",
+                            message = "Camera Permission requierd, please grant permission.",
+                            setShowDialog = {
+                                shouldRequestPermission.value = it
+                            }
+                        ) {
+                            openSettings(localContext)
+                        }
+                    }
 
                     VOAndVillageBoxView(
                         prefRepo = patDidiSummaryViewModel.prefRepo,
@@ -137,7 +178,10 @@ fun PatDidiSummaryScreen(
                             horizontalArrangement = Arrangement.SpaceAround,
                             modifier = Modifier
                         ) {
-                            MainTitle(stringResource(R.string.pat_survey_title), Modifier.weight(1f))
+                            MainTitle(
+                                stringResource(R.string.pat_survey_title),
+                                Modifier.weight(1f)
+                            )
                         }
                         Row() {
 
@@ -217,7 +261,11 @@ fun PatDidiSummaryScreen(
                             )
                         }
                         Spacer(modifier = Modifier.height(8.dp))
-                        Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(
@@ -240,9 +288,9 @@ fun PatDidiSummaryScreen(
                                     ) {
                                         append(" *")
                                     }
-                                } ,
+                                },
 
-                            )
+                                )
 
                             Box(
                                 modifier = Modifier
@@ -259,8 +307,11 @@ fun PatDidiSummaryScreen(
                                 Row(Modifier.padding(0.dp)) {
                                     TextButton(
                                         onClick = {
-                                                  shgFlag.value = SHGFlag.YES.value
-                                            patDidiSummaryViewModel.updateDidiShgFlag(didiId, SHGFlag.YES)
+                                            shgFlag.value = SHGFlag.YES.value
+                                            patDidiSummaryViewModel.updateDidiShgFlag(
+                                                didiId,
+                                                SHGFlag.YES
+                                            )
                                         }, modifier = Modifier
                                             .clip(
                                                 RoundedCornerShape(
@@ -276,7 +327,10 @@ fun PatDidiSummaryScreen(
                                                 )
                                             )
                                     ) {
-                                        Text(text = stringResource(id = R.string.option_yes), color = if (shgFlag.value == SHGFlag.YES.value) white else textColorDark)
+                                        Text(
+                                            text = stringResource(id = R.string.option_yes),
+                                            color = if (shgFlag.value == SHGFlag.YES.value) white else textColorDark
+                                        )
                                     }
                                     Spacer(
                                         modifier = Modifier
@@ -287,7 +341,10 @@ fun PatDidiSummaryScreen(
                                     TextButton(
                                         onClick = {
                                             shgFlag.value = SHGFlag.NO.value
-                                            patDidiSummaryViewModel.updateDidiShgFlag(didiId, SHGFlag.NO)
+                                            patDidiSummaryViewModel.updateDidiShgFlag(
+                                                didiId,
+                                                SHGFlag.NO
+                                            )
                                         }, modifier = Modifier
                                             .clip(
                                                 RoundedCornerShape(
@@ -300,14 +357,18 @@ fun PatDidiSummaryScreen(
                                                 RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
                                             )
                                     ) {
-                                        Text(text = stringResource(id = R.string.option_no), color = if (shgFlag.value == SHGFlag.NO.value) white else textColorDark )
+                                        Text(
+                                            text = stringResource(id = R.string.option_no),
+                                            color = if (shgFlag.value == SHGFlag.NO.value) white else textColorDark
+                                        )
                                     }
                                 }
                             }
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
-                            Image(painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
+                            Image(
+                                painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
                                 contentDescription = null,
                                 modifier = Modifier
                                     .height(180.dp)
@@ -350,18 +411,21 @@ fun PatDidiSummaryScreen(
                         Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(
-                                modifier = Modifier.fillMaxWidth().height(45.dp),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(45.dp),
                                 buttonTitle = "Retake Photo"
                             ) {
                                 patDidiSummaryViewModel.setCameraExecutor()
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
-                        }
-                        else {
+                        } else {
                             BlueButtonWithIcon(
                                 buttonText = "Take Photo",
                                 icon = Icons.Default.Add,
-                                modifier = Modifier.fillMaxWidth().height(45.dp)
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(45.dp)
                             ) {
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
@@ -397,7 +461,13 @@ fun PatDidiSummaryScreen(
     }
 }
 
-fun handleImageCapture(uri: Uri, photoPath: String, context: Activity, didiEntity: DidiEntity, viewModal: PatDidiSummaryViewModel) {
+fun handleImageCapture(
+    uri: Uri,
+    photoPath: String,
+    context: Activity,
+    didiEntity: DidiEntity,
+    viewModal: PatDidiSummaryViewModel
+) {
     viewModal.shouldShowCamera.value = false
     viewModal.photoUri = uri
     viewModal.shouldShowPhoto.value = true
@@ -406,7 +476,11 @@ fun handleImageCapture(uri: Uri, photoPath: String, context: Activity, didiEntit
     viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
 }
 
-private fun requestCameraPermission(context: Activity, viewModal: PatDidiSummaryViewModel) {
+private fun requestCameraPermission(
+    context: Activity,
+    viewModal: PatDidiSummaryViewModel,
+    requestPermission: () -> Unit
+) {
     when {
         ContextCompat.checkSelfPermission(
             context,
@@ -415,15 +489,21 @@ private fun requestCameraPermission(context: Activity, viewModal: PatDidiSummary
             Log.i("PatImagePreviewScreen", "Permission previously granted")
 //            viewModal.shouldShowCamera.value = true
         }
+
         ActivityCompat.shouldShowRequestPermissionRationale(
             context,
             Manifest.permission.CAMERA
         ) -> {
+            viewModal.shouldShowCamera.value = false
             Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
 //            viewModal.shouldShowCamera.value = true
         }
 
-        else -> viewModal.shouldShowCamera.value = false
+        else -> {
+            viewModal.shouldShowCamera.value = false
+            Log.d("requestCameraPermission: ", "permission not granted")
+            requestPermission()
+        }
     }
 }
 

@@ -20,7 +20,18 @@ import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.CohortType
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TOLA_COUNT
+import com.patsurvey.nudge.utils.Tola
+import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -156,7 +167,7 @@ class TransectWalkViewModel @Inject constructor(
         tolaDao.insertAll(tolas)
     }
 
-    fun removeTola(tolaId: Int, networkCallbackListener: NetworkCallbackListener) {
+    fun removeTola(tolaId: Int, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
@@ -166,15 +177,29 @@ class TransectWalkViewModel @Inject constructor(
                     if (isTransectWalkComplete.value)
                         isTransectWalkComplete.value = false
                 }
+                deleteDidisForTola(tolaId)
+                val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
+                if (_tolaList.value.isEmpty()){
+                    stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach {
+                        if (stepDetails.orderNumber != it.orderNumber) {
+                            if (it.orderNumber == 2) {
+                                stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
+                            } else {
+                                stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.NOT_STARTED.ordinal, villageId)
+                            }
+                        }
+                    }
+                }
                 withContext(Dispatchers.IO){
                     val jsonArray = JsonArray()
                     jsonArray.add(DeleteTolaRequest(tolaId).toJson())
                     val response = apiInterface.deleteCohort(jsonArray)
                     if (response.status.equals(SUCCESS)) {
                         tolaDao.removeTola(tolaId)
-                        deleteDidisForTola(tolaId)
+//                        deleteDidisForTola(tolaId)
                     } else {
                         tolaDao.setNeedToPost(listOf(tolaId), true)
+                        Log.d("removeTola: ", "delete tola request failed: ${response.message}")
                         networkCallbackListener.onFailed()
                     }
                 }
@@ -188,7 +213,7 @@ class TransectWalkViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val didList = didiDao.getDidisForTola(tolaId)
-                didiDao.deleteDidisForTola(tolaId)
+                didiDao.deleteDidisForTola(tolaId, activeStatus = DidiStatus.DIID_DELETED.ordinal, needsToPostDeleteStatus = true)
                 val jsonArray = JsonArray()
                 didList.forEach {
                     val jsonObject = JsonObject()
@@ -241,6 +266,7 @@ class TransectWalkViewModel @Inject constructor(
 
                 }else{
                     tolaDao.setNeedToPost(listOf(updatedTola.id), true)
+                    Log.d("updateTola: ", "update tola request failed: ${response.message}")
                     networkCallbackListener.onFailed()
                 }
             }
@@ -290,8 +316,8 @@ class TransectWalkViewModel @Inject constructor(
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 }
             }
         }
@@ -383,5 +409,14 @@ class TransectWalkViewModel @Inject constructor(
         networkErrorMessage.value = error?.message.toString()
     }
 
+    fun getFormPathKey(subPath: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+    }
+
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
+    }
 
 }

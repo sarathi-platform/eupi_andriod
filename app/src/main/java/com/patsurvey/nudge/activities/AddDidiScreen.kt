@@ -23,12 +23,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.toSize
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
@@ -184,6 +182,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 modifier = Modifier
                     .fillMaxWidth()
             ) {
+                didiViewModel?.validateDidiDetails()
                 if(didiDetailId == 0) {
                    didiViewModel?.saveDidiIntoDatabase(object :LocalDbListener{
                        override fun onInsertionSuccess() {
@@ -198,7 +197,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                        }
 
                        override fun onFailed() {
-                           showCustomToast(context, SYNC_FAILED)
+                           Log.d("AddDidiScreen saveDidiIntoDatabase onFailed: ", "Online Sync Failed")
+//                           showCustomToast(context, SYNC_FAILED)
                        }
 
                    })
@@ -209,7 +209,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                         }
 
                         override fun onFailed() {
-                            showCustomToast(context, SYNC_FAILED)
+                            Log.d("AddDidiScreen updateDidiIntoDatabase onFailed: ", "Online Sync Failed")
+//                            showCustomToast(context, SYNC_FAILED)
                         }
 
                     })
@@ -218,7 +219,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 }
 
             }
-            didiViewModel?.validateDidiDetails()
         }
 
 

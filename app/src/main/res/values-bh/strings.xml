@@ -40,7 +40,8 @@
     <string name="ranking_text">रैंकिंग:</string>
     <string name="search_didis">खोज दीदीस के बा</string>
     <string name="search_video">वीडियो को खोजें</string>
-    <string name="count_didis_pending">%1s दीदीस लंबित बा</string>
+    <string name="count_didis_pending_plural">%1s दीदीया पेंडिंग</string>
+    <string name="count_didis_pending_singular">%1s दीदी पेंडिंग</string>
     <string name="poor_text">गरीब</string>
     <string name="medium_text">माध्यम</string>
     <string name="rich_text">धनी</string>

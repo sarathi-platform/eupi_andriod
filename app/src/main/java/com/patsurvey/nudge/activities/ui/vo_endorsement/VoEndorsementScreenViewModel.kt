@@ -15,11 +15,11 @@ import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.lang.Exception
 import javax.inject.Inject
 
 @HiltViewModel
@@ -187,8 +187,10 @@ class VoEndorsementScreenViewModel @Inject constructor(
             val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    delay(100)
                     callBack(true)
                 } else {
+                    delay(100)
                     callBack(false)
                 }
             }
