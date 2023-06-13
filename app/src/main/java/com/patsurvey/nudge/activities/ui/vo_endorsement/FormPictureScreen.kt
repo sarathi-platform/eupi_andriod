@@ -2,8 +2,11 @@ package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -88,6 +91,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black20
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -139,6 +143,7 @@ fun FormPictureScreen(
         formPictureScreenViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
             shouldRequestPermission.value = true
+
         }
     }
 
@@ -241,6 +246,18 @@ fun FormPictureScreen(
                     .padding(horizontal = 16.dp)
                     .padding(bottom = bottomPadding)
                 ) {
+
+                    if (shouldRequestPermission.value) {
+                        ShowDialog(
+                            title = "Permission Required",
+                            message = "Camera Permission requierd, please grant permission.",
+                            setShowDialog = {
+                                shouldRequestPermission.value = it
+                            }
+                        ) {
+                            openSettings(localContext)
+                        }
+                    }
 
                     AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
                         CameraViewForForm(
@@ -369,8 +386,10 @@ fun FormPictureScreen(
                                     deleteButtonClicked = {
                                         formPictureScreenViewModel.formCPageList.value =
                                             mutableListOf()
-                                        if (formPictureScreenViewModel.formsClicked.value > 1)
-                                            formPictureScreenViewModel.formsClicked.value = 1
+//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
+                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
+//                                        else
+//                                            formPictureScreenViewModel.formsClicked.value = 0
 
                                     }
                                 )
@@ -435,8 +454,8 @@ fun FormPictureScreen(
                                     deleteButtonClicked = {
                                         formPictureScreenViewModel.formDPageList.value =
                                             mutableListOf()
-                                        if (formPictureScreenViewModel.formsClicked.value > 1)
-                                            formPictureScreenViewModel.formsClicked.value = 1
+//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
+                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
                                     }
                                 )
                             }
@@ -444,7 +463,7 @@ fun FormPictureScreen(
                     }
                 }
 
-                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value == 2) {
+                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value > 2) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .shadow(10.dp)
@@ -544,7 +563,7 @@ private fun handleImageCapture(
             viewModal.formCImageList.value = viewModal.formCImageList.value.also {
                 it["Page_${viewModal.formCPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value < 1) {
+            if (viewModal.formsClicked.value <= 1) {
                 viewModal.formsClicked.value = viewModal.formsClicked.value + 1
             }
         }
@@ -901,4 +920,12 @@ fun PageItem(
             )*/
         }
     }
+}
+
+fun openSettings(context: Context) {
+    val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    (context as MainActivity).startActivity(appSettingsIntent)
 }

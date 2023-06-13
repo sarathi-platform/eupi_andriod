@@ -42,7 +42,9 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.vo_endorsement.openSettings
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
@@ -146,6 +148,18 @@ fun PatDidiSummaryScreen(
                         .padding(top = 14.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
+
+                    if (shouldRequestPermission.value) {
+                        ShowDialog(
+                            title = "Permission Required",
+                            message = "Camera Permission requierd, please grant permission.",
+                            setShowDialog = {
+                                shouldRequestPermission.value = it
+                            }
+                        ) {
+                            openSettings(localContext)
+                        }
+                    }
 
                     VOAndVillageBoxView(
                         prefRepo = patDidiSummaryViewModel.prefRepo,

@@ -23,6 +23,7 @@ import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -386,8 +387,8 @@ class AddDidiViewModel @Inject constructor(
                 )
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 }
             }
         }
@@ -568,11 +569,20 @@ class AddDidiViewModel @Inject constructor(
             completeStepList?.let {
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
-                        stepsListDao.markStepAsCompleteOrInProgress(
-                            newStep.id,
-                            StepStatus.INPROGRESS.ordinal,
-                            villageId
-                        )
+                        if (filterDidiList.isEmpty()) {
+                            stepsListDao.markStepAsCompleteOrInProgress(
+                                newStep.stepId,
+                                StepStatus.NOT_STARTED.ordinal,
+                                villageId = villageId
+                            )
+                        }
+                        else {
+                            stepsListDao.markStepAsCompleteOrInProgress(
+                                newStep.id,
+                                StepStatus.INPROGRESS.ordinal,
+                                villageId
+                            )
+                        }
                     }
                 }
             }
@@ -669,8 +679,10 @@ class AddDidiViewModel @Inject constructor(
             Log.d(TAG, "getPatStepStatus: $stepStatus ")
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    delay(100)
                     callBack(true)
                 } else {
+                    delay(100)
                     callBack(false)
                 }
             }
@@ -736,6 +748,16 @@ class AddDidiViewModel @Inject constructor(
                selectedTola.value= Pair(didi.cohortId,didi.cohortName)
                selectedCast.value= Pair(didi.castId,didi.castName)
             }
+    }
+
+    fun getFormPathKey(subPath: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+    }
+
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
     }
 
 }

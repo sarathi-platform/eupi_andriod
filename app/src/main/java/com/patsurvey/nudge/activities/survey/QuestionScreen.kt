@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -340,7 +339,24 @@ fun QuestionScreen(
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
 //                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
-                    coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                    if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name){
+                        val newAnswerOptionModel = OptionsItem(
+                            BLANK_STRING, 0, 0, 0, BLANK_STRING
+                        )
+                        viewModel.setAnswerToQuestion(
+                            didiId =didiId,
+                            questionId = questionList[pagerState.currentPage].questionId ?: 0,
+                            answerOptionModel = newAnswerOptionModel,
+                            assetAmount = viewModel.totalAmount.value,
+                            quesType = QuestionType.Numeric_Field.name,
+                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
+                            selIndex = -1
+                        ) {
+                            coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                        }
+                    } else {
+                        coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                    }
                 },
                 text = {
                     Text(text = "Q${pagerState.currentPage + 2}",

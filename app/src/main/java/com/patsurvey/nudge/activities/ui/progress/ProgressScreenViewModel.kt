@@ -77,10 +77,12 @@ class ProgressScreenViewModel @Inject constructor(
         setVoEndorsementCompleteForVillages()
     }
 
-    private fun setVoEndorsementCompleteForVillages() {
-        villageList.value.forEach { village ->
-            val stepList = stepsListDao.getAllStepsForVillage(village.id)
-            isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+    fun setVoEndorsementCompleteForVillages() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            villageList.value.forEach { village ->
+                val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+            }
         }
     }
 

@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -90,14 +91,20 @@ fun VoEndorsementScreen(
     stepId: Int
 ) {
 
+    val showLoader = remember {
+        mutableStateOf(false)
+    }
     LaunchedEffect(key1 = true) {
+        showLoader.value = true
         viewModel.getVoEndorsementStepStatus(stepId) {
-
             if (it) {
+                showLoader.value = false
                 navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
+            } else {
+                showLoader.value = false
             }
         }
-       delay(100)
+        delay(100)
         viewModel.updateFilterDidiList()
     }
 
@@ -150,7 +157,7 @@ fun VoEndorsementScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .fillMaxSize()
             ) {
 
                 VOAndVillageBoxView(
@@ -159,22 +166,21 @@ fun VoEndorsementScreen(
                     startPadding = 0.dp
                 )
 
-//                if (viewModel.showLoader.value) {
-//                    Box(
-//                        modifier = Modifier
-//                            .fillMaxWidth()
-//                            .height(48.dp)
-//                            .padding(top = 30.dp)
-//                    ) {
-//                        CircularProgressIndicator(
-//                            color = blueDark,
-//                            modifier = Modifier
-//                                .size(28.dp)
-//                                .align(Alignment.Center)
-//                        )
-//                    }
-//                } else {
-
+                if (showLoader.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(top = 30.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            color = blueDark,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+                } else {
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -212,10 +218,17 @@ fun VoEndorsementScreen(
                         }
 
                         item {
-                            val count = newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
+                            val count =
+                                newFilteredDidiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
                             Text(
-                                text = if (count <= 1) stringResource(id = R.string.count_didis_pending_singular, count)
-                                else stringResource(id = R.string.count_didis_pending_plural, count),
+                                text = if (count <= 1) stringResource(
+                                    id = R.string.count_didis_pending_singular,
+                                    count
+                                )
+                                else stringResource(
+                                    id = R.string.count_didis_pending_plural,
+                                    count
+                                ),
                                 color = Color.Black,
                                 fontSize = 12.sp,
                                 fontFamily = NotoSans,
@@ -281,6 +294,7 @@ fun VoEndorsementScreen(
                         }
                     }
                 }
+            }
         }
         if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }
                 .isEmpty()) {

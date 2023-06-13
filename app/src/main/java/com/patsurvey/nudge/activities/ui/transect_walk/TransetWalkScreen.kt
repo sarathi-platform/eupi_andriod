@@ -342,7 +342,7 @@ fun TransectWalkScreen(
                                                 override fun onFailed() {
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
-                                            })
+                                            }, villageId = villageId, stepId = stepId)
                                             viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
                                                 override fun onSuccess() {
                                                 }

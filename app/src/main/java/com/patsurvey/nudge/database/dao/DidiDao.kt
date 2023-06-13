@@ -69,6 +69,9 @@ interface DidiDao {
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
 
+    @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where cohortId = :tolaId")
+    fun deleteDidisForTola(tolaId: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
+
     @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
 

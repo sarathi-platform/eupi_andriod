@@ -46,7 +46,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -135,23 +134,17 @@ fun SettingScreen(
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
-    LaunchedEffect(key1 = true) {
+    /*LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(villageId)
         viewModel.isFormBAvailableForVillage(villageId)
         viewModel.isFormCAvailableForVillage(villageId)
-    }
+    }*/
 
     val formList = mutableListOf<String>()
-//    if (!viewModel.prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formAAvailabe.value) {
     formList.add("Digital Form A")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formBAvailabe.value){
     formList.add("Digital Form B")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formCAvailabe.value) {
     formList.add("Digital Form C")
-//    }
 
     val optionList = viewModel.optionList.collectAsState()
 
