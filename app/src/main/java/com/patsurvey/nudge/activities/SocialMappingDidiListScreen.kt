@@ -209,7 +209,6 @@ fun SocialMappingDidiListScreen(
                     item {
                         SearchWithFilterView(placeholderString = stringResource(id = R.string.search_didis),
                             modifier = Modifier
-                                .padding(vertical = 10.dp)
                             ,
                             filterSelected = filterSelected,
                             onFilterSelected = {

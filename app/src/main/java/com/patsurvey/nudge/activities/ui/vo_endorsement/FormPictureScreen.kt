@@ -6,23 +6,58 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.*
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -48,17 +83,34 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black20
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redOffline
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun FormPictureScreen(
     modifier: Modifier = Modifier,
@@ -71,11 +123,27 @@ fun FormPictureScreen(
 
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    )
+
     LaunchedEffect(key1 = localContext) {
         formPictureScreenViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
-
+            shouldRequestPermission.value = true
         }
+    }
+
+    LaunchedEffect(key1 = shouldRequestPermission.value) {
+        permissionsState.launchMultiplePermissionRequest()
     }
 
     val localDensity = LocalDensity.current
@@ -523,6 +591,7 @@ private fun requestCameraPermission(context: Activity, viewModal: FormPictureScr
             Manifest.permission.CAMERA
         ) -> {
             Log.i("FormPictureScreen", "Show camera permissions dialog")
+            viewModal.shouldShowCamera.value = Pair("", false)
 //            viewModal.shouldShowCamera.value = true
         }
 

@@ -20,7 +20,17 @@ import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.CohortType
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TOLA_COUNT
+import com.patsurvey.nudge.utils.Tola
+import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -175,6 +185,7 @@ class TransectWalkViewModel @Inject constructor(
                         deleteDidisForTola(tolaId)
                     } else {
                         tolaDao.setNeedToPost(listOf(tolaId), true)
+                        Log.d("removeTola: ", "delete tola request failed: ${response.message}")
                         networkCallbackListener.onFailed()
                     }
                 }
@@ -241,6 +252,7 @@ class TransectWalkViewModel @Inject constructor(
 
                 }else{
                     tolaDao.setNeedToPost(listOf(updatedTola.id), true)
+                    Log.d("updateTola: ", "update tola request failed: ${response.message}")
                     networkCallbackListener.onFailed()
                 }
             }

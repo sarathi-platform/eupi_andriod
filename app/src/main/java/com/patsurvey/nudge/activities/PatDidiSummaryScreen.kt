@@ -6,8 +6,6 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.util.Log
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -42,6 +40,7 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -76,31 +75,27 @@ fun PatDidiSummaryScreen(
         mutableStateOf(0.dp)
     }
 
-    val permissionGranted = remember {
-        mutableStateOf(true)
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
     }
 
-    val permissionsState = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) {isGranted: Boolean ->
-        if (isGranted) {
-            // Permission Accepted: Do something
-            patDidiSummaryViewModel.shouldShowCamera.value = true
-            Log.d("PatDidiSummaryScreen","PERMISSION GRANTED")
-
-        } else {
-            // Permission Denied: Do something
-            showCustomToast(localContext, "Camera Permission not granted")
-            Log.d("PatDidiSummaryScreen","PERMISSION DENIED")
-        }
-    }
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    )
 
     LaunchedEffect(key1 = localContext) {
         patDidiSummaryViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, patDidiSummaryViewModel) {
-            permissionGranted.value = false
-            permissionsState.launch(Manifest.permission.CAMERA)
+            shouldRequestPermission.value = true
         }
+    }
+
+    LaunchedEffect(key1 = shouldRequestPermission.value) {
+        permissionsState.launchMultiplePermissionRequest()
     }
 
     ConstraintLayout(
