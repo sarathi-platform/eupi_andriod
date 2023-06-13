@@ -352,27 +352,27 @@ class SyncHelper (
         when(step){
             1->{
                 if(stepList[0].isComplete ==  StepStatus.COMPLETED.ordinal){
-                    callWorkFlowAPI(villageId,stepList[0].stepId)
+                    callWorkFlowAPI(villageId,stepList[0].id)
                 }
             }
             2->{
                 if(stepList[1].isComplete ==  StepStatus.COMPLETED.ordinal){
-                    callWorkFlowAPI(villageId,stepList[1].stepId)
+                    callWorkFlowAPI(villageId,stepList[1].id)
                 }
             }
             3->{
                 if(stepList[2].isComplete ==  StepStatus.COMPLETED.ordinal){
-                    callWorkFlowAPI(villageId,stepList[2].stepId)
+                    callWorkFlowAPI(villageId,stepList[2].id)
                 }
             }
             4->{
                 if(stepList[3].isComplete ==  StepStatus.COMPLETED.ordinal){
-                    callWorkFlowAPI(villageId,stepList[3].stepId)
+                    callWorkFlowAPI(villageId,stepList[3].id)
                 }
             }
             5->{
                 if(stepList[4].isComplete ==  StepStatus.COMPLETED.ordinal){
-                    callWorkFlowAPI(villageId,stepList[0].stepId)
+                    callWorkFlowAPI(villageId,stepList[4].id)
                 }
             }
         }
