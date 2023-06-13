@@ -60,6 +60,10 @@ fun ProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
 
+    LaunchedEffect(key1 = true) {
+        viewModel.setVoEndorsementCompleteForVillages()
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()

@@ -1,22 +1,35 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.MutableState
-import com.patsurvey.nudge.SyncHelper
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -40,10 +53,12 @@ class SettingViewModel @Inject constructor(
     var stepThreeSyncStatus = mutableStateOf(0)
     var stepFourSyncStatus = mutableStateOf(0)
     var stepFifthSyncStatus = mutableStateOf(0)
+    var context : Context? = null
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
+
 
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
@@ -101,9 +116,13 @@ class SettingViewModel @Inject constructor(
         stepOneSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
-                && tolaDao.fetchPendingTola(true, "").isEmpty()) {
+                && tolaDao.fetchPendingTola(true, "").isEmpty())
+            {
+                withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
-            }
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -112,8 +131,11 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
         if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
             && didiDao.fetchPendingDidi(true,"").isEmpty()) {
-                isNeedToBeSync.value = 2
-            }
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -123,8 +145,11 @@ class SettingViewModel @Inject constructor(
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
             ) {
-                isNeedToBeSync.value = 2
-            }
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -134,8 +159,11 @@ class SettingViewModel @Inject constructor(
             if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
             ) {
-                isNeedToBeSync.value = 2
-            }
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
@@ -151,13 +179,28 @@ class SettingViewModel @Inject constructor(
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
             ) {
-                isNeedToBeSync.value = 2
-            }
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 2
+                }
+            } else
+                isNeedToBeSync.value = 0
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        Log.e("server error","called")
+        showLoader.value = false
+        syncPercentage.value = 100f
+        showSyncDialog.value = false
+        networkErrorMessage.value = error?.message.toString()
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (context != null) {
+                showCustomToast(context, SYNC_FAILED)
+                syncPercentage.value = 100f
+                showSyncDialog.value = false
+                showLoader.value = false
+            }
+        }*/
     }
 
     fun getStepOneSize(stepOneSize : MutableState<String>) {
@@ -180,29 +223,60 @@ class SettingViewModel @Inject constructor(
         syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
     }
 
-    fun syncDataOnServer(context: Context,syncDialog : MutableState<Boolean>) {
+    fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
+        context = cxt
         showSyncDialog = syncDialog
-        syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
-            numericAnswerDao,
-            questionDao)
-        if(isInternetAvailable(context)){
+        resetPosition()
+        if(isInternetAvailable(cxt)){
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
-                        showCustomToast(context, SYNC_SUCCESSFULL)
+                        networkErrorMessage.value = SYNC_SUCCESSFULL
+//                        showCustomToast(cxt, SYNC_SUCCESSFULL)
                         syncPercentage.value = 100f
                         showSyncDialog.value = false
                         showLoader.value = false
                     }
 
                     override fun onFailed() {
-                        showCustomToast(context, SYNC_FAILED)
+//                        showCustomToast(cxt, SYNC_FAILED)
+                        networkErrorMessage.value = SYNC_FAILED
                         syncPercentage.value = 100f
                         showSyncDialog.value = false
                         showLoader.value = false
                     }
             })
         }
+    }
+
+    private fun resetPosition() {
+        syncPercentage.value = 0f
+        stepOneSyncStatus.value = 0
+        stepTwoSyncStatus.value = 0
+        stepThreeSyncStatus.value = 0
+        stepFourSyncStatus.value = 0
+        stepFifthSyncStatus.value = 0
+//        showSyncDialog.value = false
+//        showLoader.value = false
+    }
+
+    fun isDataNeedToBeSynced(
+        stepOneStatus: MutableState<Int>,
+        stepTwoStatus: MutableState<Int>,
+        stepThreeStatus: MutableState<Int>,
+        stepFourStatus: MutableState<Int>,
+        stepFiveStatus: MutableState<Int>
+    ) {
+        stepOneSyncStatus = stepOneStatus
+        stepTwoSyncStatus = stepTwoStatus
+        stepThreeSyncStatus = stepThreeStatus
+        stepFourSyncStatus = stepFourStatus
+        stepFifthSyncStatus = stepFiveStatus
+        isFirstStepNeedToBeSync(stepOneSyncStatus)
+        isSecondStepNeedToBeSync(stepTwoSyncStatus)
+        isThirdStepNeedToBeSync(stepThreeSyncStatus)
+        isFourthStepNeedToBeSync(stepFourSyncStatus)
+        isFifthStepNeedToBeSync(stepFifthSyncStatus)
     }
 
 }

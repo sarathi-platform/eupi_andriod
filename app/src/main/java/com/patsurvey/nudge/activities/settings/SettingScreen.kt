@@ -14,7 +14,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,6 +24,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -42,11 +42,15 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -63,10 +67,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
@@ -80,9 +86,13 @@ import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redBgLight
+import com.patsurvey.nudge.activities.ui.theme.redIconColor
+import com.patsurvey.nudge.activities.ui.theme.redMessageColor
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
@@ -124,23 +134,17 @@ fun SettingScreen(
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
-    LaunchedEffect(key1 = true) {
+    /*LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(villageId)
         viewModel.isFormBAvailableForVillage(villageId)
         viewModel.isFormCAvailableForVillage(villageId)
-    }
+    }*/
 
     val formList = mutableListOf<String>()
-//    if (!viewModel.prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formAAvailabe.value) {
     formList.add("Digital Form A")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formBAvailabe.value){
     formList.add("Digital Form B")
-//    }
-//    if (!viewModel.prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, "").isNullOrEmpty() || viewModel.formCAvailabe.value) {
     formList.add("Digital Form C")
-//    }
 
     val optionList = viewModel.optionList.collectAsState()
 
@@ -150,6 +154,10 @@ fun SettingScreen(
     }
     val showSyncDialogStatus = remember {
         mutableStateOf(false)
+    }
+    val networkError = viewModel.networkErrorMessage.value
+    val isDataNeedToBeSynced = remember {
+        mutableStateOf(0)
     }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
@@ -271,7 +279,8 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-                                    showSyncDialogStatus.value = true
+//                                    showSyncDialogStatus.value = true
+                                    viewModel.showSyncDialog.value = true
                                 }
 
                                 1 -> {
@@ -328,9 +337,15 @@ fun SettingScreen(
                 viewModel.syncDataOnServer(context)
                 viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
             }*/
-            if (showSyncDialogStatus.value) {
+            if (viewModel.showSyncDialog.value) {
+                /*stepOneStatus.value = 0
+                stepTwoStatus.value = 0
+                stepThreeStatus.value = 0
+                stepFourStatus.value = 0
+                stepFiveStatus.value = 0*/
                 showSyncDialog(setShowDialog = {
-                    showSyncDialogStatus.value = it
+//                    showSyncDialogStatus.value = it
+                    viewModel.showSyncDialog.value = it
                 }, positiveButtonClicked = {
                     viewModel.showLoader.value = true
                 }, stepOneStatus = stepOneStatus.value,
@@ -339,15 +354,26 @@ fun SettingScreen(
                     stepFourStatus = stepFourStatus.value,
                     stepFiveStatus = stepFiveStatus.value,
                     settingViewModel = viewModel,
-                    showSyncDialogStatus = showSyncDialogStatus
+                    showSyncDialogStatus = viewModel.showSyncDialog,
+                    isDataNeedToBeSynced = isDataNeedToBeSynced
                 )
                 viewModel.isFirstStepNeedToBeSync(stepOneStatus)
                 viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+                if(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
+                    isDataNeedToBeSynced.value = 1
+                else if(stepOneStatus.value == 3 && stepTwoStatus.value == 3 && stepThreeStatus.value == 3 && stepFourStatus.value == 3 && stepFiveStatus.value == 3)
+                    isDataNeedToBeSynced.value = 2
+                else
+                    isDataNeedToBeSynced.value = 0
+                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
+    }
+    if(networkError.isNotEmpty()){
+        showCustomToast(context,networkError)
     }
 }
 
@@ -361,7 +387,8 @@ fun showSyncDialog(
     stepFourStatus: Int,
     stepFiveStatus: Int,
     settingViewModel: SettingViewModel,
-    showSyncDialogStatus : MutableState<Boolean>
+    showSyncDialogStatus : MutableState<Boolean>,
+    isDataNeedToBeSynced : MutableState<Int>
 ) {
 
     val context = LocalContext.current
@@ -375,6 +402,7 @@ fun showSyncDialog(
     val animationDuration = 1000
     val animationDelay = 0
 
+    settingViewModel.syncPercentage.value = 0f
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
@@ -386,110 +414,115 @@ fun showSyncDialog(
         )
     )
 
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
+
+
+    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
+        dismissOnClickOutside = false
+    )) {
         Surface(
-            shape = RoundedCornerShape(6.dp),
-            color = Color.White
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .background(color = white, shape = RoundedCornerShape(6.dp)),
                 ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceAround,
-                        modifier = Modifier
-                    ) {
-                        MainTitle(
-                            stringResource(R.string.sync_your_data),
-                            Modifier
-                                .weight(1f)
-                                .fillMaxWidth(),
-                            align = TextAlign.Center
-                        )
-                    }
-                    val batSystemService =
-                        LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
-                    val batteryLevel =
-                        batSystemService.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
-
-                    Row(
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Column() {
-                            Text(
-                                text = stringResource(id = R.string.battery) + ": $batteryLevel%",
-                                style = didiDetailItemStyle,
-                                textAlign = TextAlign.Start,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier
+                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                        ) {
+                            MainTitle(
+                                if (isDataNeedToBeSynced.value == 0) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 1 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth(),
+                                align = TextAlign.Center
                             )
-                            if (batteryLevel < 30)
+                        }
+                        val batSystemService =
+                            LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
+                        val batteryLevel =
+                            batSystemService.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
+
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column() {
                                 Text(
-                                    text = "(Min 30% required)",
-                                    color = redOffline,
-                                    fontSize = 10.sp,
+                                    text = stringResource(id = R.string.battery) + ": $batteryLevel%",
+                                    style = didiDetailItemStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
                                     fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
+                                    modifier = Modifier
                                 )
+                                if (batteryLevel < 30)
+                                    Text(
+                                        text = "(Min 30% required)",
+                                        color = redOffline,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    )
+                            }
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = textColorDark80,
+                                        )
+                                    ) {
+                                        append(stringResource(id = R.string.mobile_data) + ": ")
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (isInternetConnected) greenOnline else redOffline,
+                                        )
+                                    ) {
+                                        append(
+                                            if (isInternetConnected) stringResource(id = R.string.connected) else stringResource(
+                                                id = R.string.no_internet
+                                            )
+                                        )
+                                    }
+                                },
+                            )
                         }
 
-                        Text(
-                            text = buildAnnotatedString {
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = textColorDark80,
-                                    )
-                                ) {
-                                    append(stringResource(id = R.string.mobile_data) + ": ")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        fontSize = 12.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        color = if (isInternetConnected) greenOnline else redOffline,
-                                    )
-                                ) {
-                                    append(
-                                        if (isInternetConnected) stringResource(id = R.string.connected) else stringResource(
-                                            id = R.string.no_internet
-                                        )
-                                    )
-                                }
-                            },
+                        Divider(
+                            thickness = 1.dp,
+                            color = greyBorder
                         )
-                    }
 
-                    Divider(
-                        thickness = 1.dp,
-                        color = greyBorder
-                    )
-
-                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
-                        Box(Modifier.fillMaxWidth()) {
-                            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                                Text(
-                                    text = stringResource(id = R.string.step_1) + ": ",
-                                    style = didiDetailItemStyle,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.transect_wale_title),
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                )
-                                /*Text(
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Box(Modifier.fillMaxWidth()) {
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.step_1) + ": ",
+                                        style = didiDetailItemStyle,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.transect_wale_title),
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
                                     text = " $stepOneSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
@@ -497,47 +530,47 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )*/
+                                }
+                                if (stepOneStatus == 2)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                else if (stepOneStatus == 1) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
                             }
-                            if (stepOneStatus == 2)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                    contentDescription = null,
-                                    tint = greenDark,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .size(24.dp)
-                                        .padding(4.dp)
-                                )
-                            else if (stepOneStatus == 1){
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd)
-                                        .padding(4.dp),
-                                    color = textColorDark,
-                                    strokeWidth = 1.dp
-                                )
-                            }
-                        }
-                        Box(Modifier.fillMaxWidth()) {
-                            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                                Text(
-                                    text = stringResource(id = R.string.step_2) + ": ",
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.social_mapping),
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                )
-                                /*Text(
+                            Box(Modifier.fillMaxWidth()) {
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.step_2) + ": ",
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.social_mapping),
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
                                     text = " $stepTwoSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
@@ -545,47 +578,47 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )*/
+                                }
+                                if (stepTwoStatus == 2)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                else if (stepTwoStatus == 1) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
                             }
-                            if (stepTwoStatus == 2)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                    contentDescription = null,
-                                    tint = greenDark,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .size(24.dp)
-                                        .padding(4.dp)
-                                )
-                            else if (stepTwoStatus == 1){
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd)
-                                        .padding(4.dp),
-                                    color = textColorDark,
-                                    strokeWidth = 1.dp
-                                )
-                            }
-                        }
-                        Box(Modifier.fillMaxWidth()) {
-                            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                                Text(
-                                    text = stringResource(id = R.string.step_3) + ": ",
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.particaptory_wealth_ranking_text),
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                )
-                                /*Text(
+                            Box(Modifier.fillMaxWidth()) {
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.step_3) + ": ",
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.particaptory_wealth_ranking_text),
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
                                     text = " $stepThreeSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
@@ -593,47 +626,47 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )*/
+                                }
+                                if (stepThreeStatus == 2)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                else if (stepThreeStatus == 1) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
                             }
-                            if (stepThreeStatus == 2)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                    contentDescription = null,
-                                    tint = greenDark,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .size(24.dp)
-                                        .padding(4.dp)
-                                )
-                            else if (stepThreeStatus == 1){
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd)
-                                        .padding(4.dp),
-                                    color = textColorDark,
-                                    strokeWidth = 1.dp
-                                )
-                            }
-                        }
-                        Box(Modifier.fillMaxWidth()) {
-                            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                                Text(
-                                    text = stringResource(id = R.string.step_4) + ": ",
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.pat_survey_title),
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontWeight = FontWeight.Normal,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier
-                                )
-                                /*Text(
+                            Box(Modifier.fillMaxWidth()) {
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.step_4) + ": ",
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.pat_survey_title),
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
                                     text = " $stepFourSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
@@ -641,48 +674,48 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )*/
+                                }
+                                if (stepFourStatus == 2)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                else if (stepFourStatus == 1) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
                             }
-                            if (stepFourStatus == 2)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                    contentDescription = null,
-                                    tint = greenDark,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .size(24.dp)
-                                        .padding(4.dp)
-                                )
-                            else if (stepFourStatus == 1){
-                                CircularProgressIndicator(
-                                    modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd)
-                                        .padding(4.dp),
-                                    color = textColorDark,
-                                    strokeWidth = 1.dp
-                                )
-                            }
-                        }
-                        Box(Modifier.fillMaxWidth()) {
+                            Box(Modifier.fillMaxWidth()) {
 
-                            Row(modifier = Modifier.align(Alignment.CenterStart)) {
-                                Text(
-                                    text = stringResource(id = R.string.step_5) + ": ",
-                                    style = didiDetailItemStyle,
-                                    textAlign = TextAlign.Start,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    modifier = Modifier
-                                )
-                                Text(
-                                    text = stringResource(id = R.string.vo_endorsement),
-                                    style = didiDetailItemStyle,
-                                    fontSize = 12.sp,
-                                    textAlign = TextAlign.Start,
-                                    fontWeight = FontWeight.Normal,
-                                    modifier = Modifier
-                                )
-                                /*Text(
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.step_5) + ": ",
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        modifier = Modifier
+                                    )
+                                    Text(
+                                        text = stringResource(id = R.string.vo_endorsement),
+                                        style = didiDetailItemStyle,
+                                        fontSize = 12.sp,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
                                     text = " $stepFiveSize",
                                     style = didiDetailItemStyle,
                                     textAlign = TextAlign.Start,
@@ -690,111 +723,138 @@ fun showSyncDialog(
                                     fontSize = 12.sp,
                                     modifier = Modifier
                                 )*/
+                                }
+                                if (stepFiveStatus == 2)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                else if (stepFiveStatus == 1) {
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
                             }
-                            if (stepFiveStatus == 2)
-                                Icon(
-                                    painter = painterResource(id = R.drawable.icon_check_green_without_border),
-                                    contentDescription = null,
-                                    tint = greenDark,
-                                    modifier = Modifier
-                                        .align(Alignment.CenterEnd)
-                                        .size(24.dp)
-                                        .padding(4.dp)
+                        }
+
+                        Divider(thickness = 1.dp, color = greyBorder)
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                        if (settingViewModel.showLoader.value) {
+                            Canvas(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp)
+                                    .padding(start = indicatorPadding, end = indicatorPadding)
+                            ) {
+
+                                // Background indicator
+                                drawLine(
+                                    color = backgroundIndicatorColor,
+                                    cap = StrokeCap.Round,
+                                    strokeWidth = size.height,
+                                    start = Offset(x = 0f, y = 0f),
+                                    end = Offset(x = size.width, y = 0f)
                                 )
-                            else if (stepFiveStatus == 1){
-                                CircularProgressIndicator(
+
+                                // Convert the downloaded percentage into progress (width of foreground indicator)
+                                val progress =
+                                    (animateNumber.value / 100) * size.width // size.width returns the width of the canvas
+
+                                // Foreground indicator
+                                drawLine(
+                                    brush = Brush.linearGradient(
+                                        colors = gradientColors
+                                    ),
+                                    cap = StrokeCap.Round,
+                                    strokeWidth = size.height,
+                                    start = Offset(x = 0f, y = 0f),
+                                    end = Offset(x = progress, y = 0f)
+                                )
+                            }
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
+                                .padding(10.dp)) {
+
+                                Box(modifier = Modifier
+                                    .absolutePadding(top = 4.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.info_icn),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                    )
+                                }
+
+
+                                Text(
+                                    text = "Please don't close the app or switch off the phone.",
+                                    style = numberStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Normal,
+                                    color = redMessageColor,
                                     modifier = Modifier
-                                        .size(24.dp)
-                                        .align(Alignment.CenterEnd)
-                                        .padding(4.dp),
-                                    color = textColorDark,
-                                    strokeWidth = 1.dp
+                                        .fillMaxWidth()
                                 )
                             }
                         }
-                    }
 
-                    Divider(thickness = 1.dp, color = greyBorder)
-                    Spacer(modifier = Modifier.height(4.dp))
-
-                    if (settingViewModel.showLoader.value) {
-                        Canvas(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(24.dp)
-                                .padding(start = indicatorPadding, end = indicatorPadding)
+                        if (isInternetConnected
+                            && (batteryLevel > 30)
+                            && !settingViewModel.showLoader.value
+                            && isDataNeedToBeSynced.value == 0
                         ) {
-
-                            // Background indicator
-                            drawLine(
-                                color = backgroundIndicatorColor,
-                                cap = StrokeCap.Round,
-                                strokeWidth = size.height,
-                                start = Offset(x = 0f, y = 0f),
-                                end = Offset(x = size.width, y = 0f)
-                            )
-
-                            // Convert the downloaded percentage into progress (width of foreground indicator)
-                            val progress =
-                                (animateNumber.value / 100) * size.width // size.width returns the width of the canvas
-
-                            // Foreground indicator
-                            drawLine(
-                                brush = Brush.linearGradient(
-                                    colors = gradientColors
-                                ),
-                                cap = StrokeCap.Round,
-                                strokeWidth = size.height,
-                                start = Offset(x = 0f, y = 0f),
-                                end = Offset(x = progress, y = 0f)
-                            )
-                        }
-                        Text(
-                            text = "Please don't close the app or switch off the phone.",
-                            style = numberStyle,
-                            textAlign = TextAlign.Start,
-                            fontSize = 12.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            color = redOffline,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                        )
-                    }
-
-
-                    if (isInternetConnected
-                        && (batteryLevel > 30)
-                        && !settingViewModel.showLoader.value) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            ButtonNegative(
-                                buttonTitle = stringResource(id = R.string.cancel_tola_text),
-                                isArrowRequired = false,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                setShowDialog(false)
-                            }
-                            Spacer(modifier = Modifier.width(8.dp))
-                            ButtonPositive(
-                                buttonTitle = stringResource(id = R.string.sync),
-                                isArrowRequired = false,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                settingViewModel.showLoader.value = true
-                                settingViewModel.syncDataOnServer(context,showSyncDialogStatus)
-                                settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                ButtonNegative(
+                                    buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    setShowDialog(false)
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                ButtonPositive(
+                                    buttonTitle = stringResource(id = R.string.sync),
+                                    isArrowRequired = false,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(vertical = 2.dp)
+                                ) {
+                                    settingViewModel.showLoader.value = true
+                                    settingViewModel.syncDataOnServer(context, showSyncDialogStatus)
+                                    settingViewModel.prefRepo.savePref(
+                                        LAST_SYNC_TIME,
+                                        System.currentTimeMillis()
+                                    )
 //                                setShowDialog(false)
 //                                positiveButtonClicked()
+                                }
                             }
-                        }
-                    } else {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            ButtonNegative(
-                                buttonTitle = stringResource(id = R.string.close),
-                                isArrowRequired = false,
-                                modifier = Modifier.weight(1f)
-                            ) {
-                                setShowDialog(false)
+                        } else if(isDataNeedToBeSynced.value == 1
+                                || isDataNeedToBeSynced.value == 2){
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                ButtonNegative(
+                                    buttonTitle = stringResource(id = R.string.close),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    setShowDialog(false)
+                                }
                             }
                         }
                     }

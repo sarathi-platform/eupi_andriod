@@ -2,28 +2,65 @@ package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import android.Manifest
 import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.foundation.*
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTransformGestures
 import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -49,17 +86,35 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black20
+import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redOffline
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun FormPictureScreen(
     modifier: Modifier = Modifier,
@@ -72,9 +127,28 @@ fun FormPictureScreen(
 
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE
+        )
+    )
+
     LaunchedEffect(key1 = localContext) {
         formPictureScreenViewModel.setUpOutputDirectory(localContext as MainActivity)
-        requestCameraPermission(localContext as Activity, formPictureScreenViewModel)
+        requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
+            shouldRequestPermission.value = true
+
+        }
+    }
+
+    LaunchedEffect(key1 = shouldRequestPermission.value) {
+        permissionsState.launchMultiplePermissionRequest()
     }
 
     val localDensity = LocalDensity.current
@@ -173,6 +247,18 @@ fun FormPictureScreen(
                     .padding(bottom = bottomPadding)
                 ) {
 
+                    if (shouldRequestPermission.value) {
+                        ShowDialog(
+                            title = "Permission Required",
+                            message = "Camera Permission requierd, please grant permission.",
+                            setShowDialog = {
+                                shouldRequestPermission.value = it
+                            }
+                        ) {
+                            openSettings(localContext)
+                        }
+                    }
+
                     AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
                         CameraViewForForm(
                             modifier = Modifier.fillMaxSize(),
@@ -219,165 +305,165 @@ fun FormPictureScreen(
                                 startPadding = 0.dp
                             )
 
-                            LazyColumn(
+                            Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .verticalScroll(rememberScrollState())
                                     .padding(vertical = 14.dp, horizontal = 16.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             )
                             {
+                                Text(
+                                    text = stringResource(R.string.form_picture_screen_title),
+                                    style = mediumTextStyle,
+                                    color = textColorDark
+                                )
 
-                                item {
-                                    Text(
-                                        text = stringResource(R.string.form_picture_screen_title),
-                                        style = mediumTextStyle,
-                                        color = textColorDark
-                                    )
-                                }
-                                item {
-                                    Spacer(modifier = Modifier.height(10.dp))
-                                }
+                                Spacer(modifier = Modifier.height(10.dp))
 
-                                item {
-                                    FormPictureCard(
-                                        modifier = Modifier,
-                                        navController = navController,
-                                        showIcon = formPictureScreenViewModel.formsClicked.value < 1,
-                                        cardTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(
-                                            R.string.form_c_photo_button_text
-                                        ) else "${stringResource(id = R.string.view)} C",
-                                        contentColor = textColorDark,
-                                        borderColor = textColorDark,
-                                        expanded = formCCardExpanded.value,
-                                        pageList = formPictureScreenViewModel.formCPageList.value,
-                                        pageItemClicked = {
-                                            scope.launch {
-                                                formPictureScreenViewModel.pageItemClicked.value =
-                                                    formPictureScreenViewModel.getFormSubPath(
-                                                        FORM_C,
-                                                        it
-                                                    )
-                                                formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
-                                                        formPictureScreenViewModel.getFormPathKey(
-                                                            formPictureScreenViewModel.pageItemClicked.value
-                                                        ),
-                                                        ""
-                                                    )?.let { if (it.isNotEmpty()) it else "" }
-                                                        .toString()
-                                                if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
-                                                    formPictureScreenViewModel.setUri(localContext)
-                                                delay(250)
-                                                if (!scaffoldState.isVisible)
-                                                    scaffoldState.show()
-                                                else
-                                                    scaffoldState.hide()
-                                            }
-                                        },
-                                        formPictureCardClicked = {
-                                            formCCardExpanded.value = !formCCardExpanded.value
-
-                                        },
-                                        addPageClicked = {
-                                            if (formPictureScreenViewModel.formCPageList.value.size < 5) {
-                                                formPictureScreenViewModel.setCameraExecutor()
-                                                formPictureScreenViewModel.shouldShowCamera.value =
-                                                    Pair(FORM_C, true)
-                                            } else {
-                                                showToast(
-                                                    localContext,
-                                                    "Max 5 Pages can be captured"
+                                FormPictureCard(
+                                    modifier = Modifier,
+                                    navController = navController,
+                                    showIcon = formPictureScreenViewModel.formsClicked.value < 1,
+                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(
+                                        R.string.form_c_photo_button_text
+                                    ) else "${stringResource(id = R.string.view)} C",
+                                    contentColor = textColorDark,
+                                    borderColor = textColorDark,
+                                    expanded = formCCardExpanded.value,
+                                    pageList = formPictureScreenViewModel.formCPageList.value,
+                                    pageItemClicked = {
+                                        scope.launch {
+                                            formPictureScreenViewModel.pageItemClicked.value =
+                                                formPictureScreenViewModel.getFormSubPath(
+                                                    FORM_C,
+                                                    it
                                                 )
-//                                    navController.navigate("image_viewer/$FORM_C")
-                                            }
-                                        },
-                                        retakeButtonClicked = { index ->
-                                            formPictureScreenViewModel.retakeImageIndex.value =
-                                                index
+                                            formPictureScreenViewModel.imagePath.value =
+                                                formPictureScreenViewModel.prefRepo.getPref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.pageItemClicked.value
+                                                    ),
+                                                    ""
+                                                )?.let { if (it.isNotEmpty()) it else "" }
+                                                    .toString()
+                                            if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                formPictureScreenViewModel.setUri(localContext)
+                                            delay(250)
+                                            if (!scaffoldState.isVisible)
+                                                scaffoldState.show()
+                                            else
+                                                scaffoldState.hide()
+                                        }
+                                    },
+                                    formPictureCardClicked = {
+                                        formCCardExpanded.value = !formCCardExpanded.value
+
+                                    },
+                                    addPageClicked = {
+                                        if (formPictureScreenViewModel.formCPageList.value.size < 5) {
                                             formPictureScreenViewModel.setCameraExecutor()
                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                 Pair(FORM_C, true)
-                                            val imageToBeReplaced =
-                                                formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
-                                        },
-                                        deleteButtonClicked = {
-                                            formPictureScreenViewModel.formCPageList.value =
-                                                mutableListOf()
+                                        } else {
+                                            showToast(
+                                                localContext,
+                                                "Max 5 Pages can be captured"
+                                            )
+//                                    navController.navigate("image_viewer/$FORM_C")
                                         }
-                                    )
-                                }
+                                    },
+                                    retakeButtonClicked = { index ->
+                                        formPictureScreenViewModel.retakeImageIndex.value =
+                                            index
+                                        formPictureScreenViewModel.setCameraExecutor()
+                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                            Pair(FORM_C, true)
+                                        val imageToBeReplaced =
+                                            formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
+                                    },
+                                    deleteButtonClicked = {
+                                        formPictureScreenViewModel.formCPageList.value =
+                                            mutableListOf()
+//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
+                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
+//                                        else
+//                                            formPictureScreenViewModel.formsClicked.value = 0
 
-                                item {
-                                    FormPictureCard(
-                                        modifier = Modifier,
-                                        navController = navController,
-                                        showIcon = formPictureScreenViewModel.formsClicked.value < 2,
-                                        cardTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(
-                                            R.string.form_d_photo_button_text
-                                        ) else "${stringResource(id = R.string.view)} D",
-                                        contentColor = textColorDark,
-                                        borderColor = textColorDark,
-                                        expanded = formDCardExpanded.value,
-                                        pageList = formPictureScreenViewModel.formDPageList.value,
-                                        pageItemClicked = {
-                                            scope.launch {
-                                                formPictureScreenViewModel.pageItemClicked.value =
-                                                    formPictureScreenViewModel.getFormSubPath(
-                                                        FORM_D,
-                                                        it
-                                                    )
-                                                formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
-                                                        formPictureScreenViewModel.getFormPathKey(
-                                                            formPictureScreenViewModel.pageItemClicked.value
-                                                        ),
-                                                        ""
-                                                    )?.let { if (it.isNotEmpty()) it else "" }
-                                                        .toString()
-                                                formPictureScreenViewModel.setUri(localContext)
-                                                if (!scaffoldState.isVisible)
-                                                    scaffoldState.show()
-                                                else
-                                                    scaffoldState.hide()
-                                            }
-                                        },
-                                        formPictureCardClicked = {
-                                            formDCardExpanded.value = !formDCardExpanded.value
-                                        },
-                                        addPageClicked = {
-                                            if (formPictureScreenViewModel.formDPageList.value.size < 5) {
-                                                formPictureScreenViewModel.setCameraExecutor()
-                                                formPictureScreenViewModel.shouldShowCamera.value =
-                                                    Pair(FORM_D, true)
-                                            } else {
-                                                showToast(
-                                                    localContext,
-                                                    "Max 5 Pages can be captured"
+                                    }
+                                )
+
+
+                                FormPictureCard(
+                                    modifier = Modifier,
+                                    navController = navController,
+                                    showIcon = formPictureScreenViewModel.formsClicked.value < 2,
+                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(
+                                        R.string.form_d_photo_button_text
+                                    ) else "${stringResource(id = R.string.view)} D",
+                                    contentColor = textColorDark,
+                                    borderColor = textColorDark,
+                                    expanded = formDCardExpanded.value,
+                                    pageList = formPictureScreenViewModel.formDPageList.value,
+                                    pageItemClicked = {
+                                        scope.launch {
+                                            formPictureScreenViewModel.pageItemClicked.value =
+                                                formPictureScreenViewModel.getFormSubPath(
+                                                    FORM_D,
+                                                    it
                                                 )
-                                                //                                    navController.navigate("image_viewer/$FORM_C")
-                                            }
-                                        },
-                                        retakeButtonClicked = { index ->
-                                            formPictureScreenViewModel.retakeImageIndex.value =
-                                                index
+                                            formPictureScreenViewModel.imagePath.value =
+                                                formPictureScreenViewModel.prefRepo.getPref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.pageItemClicked.value
+                                                    ),
+                                                    ""
+                                                )?.let { if (it.isNotEmpty()) it else "" }
+                                                    .toString()
+                                            formPictureScreenViewModel.setUri(localContext)
+                                            if (!scaffoldState.isVisible)
+                                                scaffoldState.show()
+                                            else
+                                                scaffoldState.hide()
+                                        }
+                                    },
+                                    formPictureCardClicked = {
+                                        formDCardExpanded.value = !formDCardExpanded.value
+                                    },
+                                    addPageClicked = {
+                                        if (formPictureScreenViewModel.formDPageList.value.size < 5) {
                                             formPictureScreenViewModel.setCameraExecutor()
                                             formPictureScreenViewModel.shouldShowCamera.value =
                                                 Pair(FORM_D, true)
-                                        },
-                                        deleteButtonClicked = {
-                                            // TODO
-                                            formPictureScreenViewModel.formDPageList.value =
-                                                mutableListOf()
+                                        } else {
+                                            showToast(
+                                                localContext,
+                                                "Max 5 Pages can be captured"
+                                            )
+                                            //                                    navController.navigate("image_viewer/$FORM_C")
                                         }
-                                    )
-                                }
+                                    },
+                                    retakeButtonClicked = { index ->
+                                        formPictureScreenViewModel.retakeImageIndex.value =
+                                            index
+                                        formPictureScreenViewModel.setCameraExecutor()
+                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                            Pair(FORM_D, true)
+                                    },
+                                    deleteButtonClicked = {
+                                        formPictureScreenViewModel.formDPageList.value =
+                                            mutableListOf()
+//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
+                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
+                                    }
+                                )
                             }
                         }
                     }
                 }
 
-                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value == 2) {
+                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value > 2) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .shadow(10.dp)
@@ -477,7 +563,7 @@ private fun handleImageCapture(
             viewModal.formCImageList.value = viewModal.formCImageList.value.also {
                 it["Page_${viewModal.formCPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value < 1) {
+            if (viewModal.formsClicked.value <= 1) {
                 viewModal.formsClicked.value = viewModal.formsClicked.value + 1
             }
         }
@@ -509,7 +595,7 @@ private fun handleImageCapture(
     viewModal.shouldShowCamera.value = Pair("", false)
 }
 
-private fun requestCameraPermission(context: Activity, viewModal: FormPictureScreenViewModel) {
+private fun requestCameraPermission(context: Activity, viewModal: FormPictureScreenViewModel, requestPermission: () -> Unit) {
     when {
         ContextCompat.checkSelfPermission(
             context,
@@ -524,10 +610,15 @@ private fun requestCameraPermission(context: Activity, viewModal: FormPictureScr
             Manifest.permission.CAMERA
         ) -> {
             Log.i("FormPictureScreen", "Show camera permissions dialog")
+            viewModal.shouldShowCamera.value = Pair("", false)
 //            viewModal.shouldShowCamera.value = true
         }
 
-        else -> viewModal.shouldShowCamera.value = Pair("", false)
+        else -> {
+            viewModal.shouldShowCamera.value = Pair("", false)
+            Log.d("requestCameraPermission: ", "permission not granted")
+            requestPermission()
+        }
     }
 }
 
@@ -746,7 +837,7 @@ fun ExpandableFormPictureCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Delete Pages",
+                        text = "Delete & Retake",
                         color = textColorDark,
                         style = buttonTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -829,4 +920,12 @@ fun PageItem(
             )*/
         }
     }
+}
+
+fun openSettings(context: Context) {
+    val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    (context as MainActivity).startActivity(appSettingsIntent)
 }

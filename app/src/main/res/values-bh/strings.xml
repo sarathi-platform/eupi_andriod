@@ -40,7 +40,8 @@
     <string name="ranking_text">रैंकिंग:</string>
     <string name="search_didis">खोज दीदीस के बा</string>
     <string name="search_video">वीडियो को खोजें</string>
-    <string name="count_didis_pending">%1s दीदीस लंबित बा</string>
+    <string name="count_didis_pending_plural">%1s दीदीया पेंडिंग</string>
+    <string name="count_didis_pending_singular">%1s दीदी पेंडिंग</string>
     <string name="poor_text">गरीब</string>
     <string name="medium_text">माध्यम</string>
     <string name="rich_text">धनी</string>
@@ -156,6 +157,8 @@
     <string name="this_section_is_in_progress">ई खंड InProgress अवस्था में बा</string>
     <string name="sync_up">डेटा सिंक करें</string>
     <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: {LAST_SYNC_TIME}</string>
+    <string name="your_data_already_synced">Your Data is already Synced</string>
+    <string name="data_synced_successfully">Data Synced Successfully</string>
     <string name="profile">प्रोफाइल</string>
     <string name="forms">फार्म</string>
     <string name="training_videos">प्रशिक्षण वीडियो</string>

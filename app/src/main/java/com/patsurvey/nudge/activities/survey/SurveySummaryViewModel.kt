@@ -210,8 +210,8 @@ class SurveySummaryViewModel @Inject constructor(
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_C}_page_$i", "")
-                    prefRepo.savePref("${PREF_FORM_PATH}_${FORM_D}_page_$i", "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 }
             }
         }
@@ -402,4 +402,15 @@ class SurveySummaryViewModel @Inject constructor(
             }
         }
     }
+
+    fun getFormPathKey(subPath: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+    }
+
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
+    }
+
 }

@@ -9,7 +9,7 @@ import com.patsurvey.nudge.utils.WealthRank
 @Dao
 interface DidiDao {
 
-    @Query("SELECT * FROM $DIDI_TABLE ORDER BY id DESC")
+    @Query("SELECT * FROM $DIDI_TABLE where activeStatus = 1 ORDER BY id DESC")
     fun getAllDidis(): List<DidiEntity>
 
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY createdDate DESC")
@@ -51,10 +51,10 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET wealth_ranking = :rank WHERE serverId = :didiId")
     fun updateDidiRankUsingServerId(didiId: Int, rank: String)
 
-    @Query("SELECT COUNT(id) from $DIDI_TABLE where wealth_ranking = :unRankedStatus and villageId = :villageId")
+    @Query("SELECT COUNT(id) from $DIDI_TABLE where wealth_ranking = :unRankedStatus and villageId = :villageId and activeStatus = 1")
     fun getUnrankedDidiCount(villageId: Int, unRankedStatus: String = WealthRank.NOT_RANKED.rank): Int
 
-    @Query("SELECT * FROM $DIDI_TABLE where wealth_ranking = :rank and villageId = :villageId")
+    @Query("SELECT * FROM $DIDI_TABLE where wealth_ranking = :rank and villageId = :villageId and activeStatus = 1")
     fun getAllPoorDidisForVillage(villageId: Int, rank: String = WealthRank.POOR.rank): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET localPath = :path WHERE id = :didiId")
@@ -68,6 +68,9 @@ interface DidiDao {
 
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
+
+    @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where cohortId = :tolaId")
+    fun deleteDidisForTola(tolaId: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
 
     @Query("UPDATE $DIDI_TABLE SET beneficiaryProcessStatus = :status WHERE id = :didiId")
     fun updateBeneficiaryProcessStatus(didiId: Int, status: List<BeneficiaryProcessStatusModel>)
@@ -87,7 +90,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET section2Status = :section2 WHERE id = :didiId")
     fun updatePatSection2Status(didiId: Int, section2: Int)
 
-    @Query("select * from $DIDI_TABLE where id = :didiId")
+    @Query("select * from $DIDI_TABLE where id = :didiId and activeStatus = 1")
     fun fetchDidiDetails(didiId: Int): DidiEntity
 
     @Query("update $DIDI_TABLE set shgFlag =:shgFlag where id = :didiId")
@@ -104,7 +107,7 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
     fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>
 
-    @Query("select COUNT(*) from $DIDI_TABLE where villageId =:villageId AND patSurveyStatus=0 AND wealth_ranking='POOR'")
+    @Query("select COUNT(*) from $DIDI_TABLE where villageId =:villageId AND patSurveyStatus=0 AND wealth_ranking='POOR' AND activeStatus = 1")
     fun fetchPendingDidiCount(villageId: Int): Int
 
     @Query("UPDATE $DIDI_TABLE set voEndorsementStatus =:status WHERE id =:didiId AND villageId = :villageId")
@@ -113,7 +116,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set forVoEndorsement = 1 WHERE id =:didiId AND villageId = :villageId")
     fun updateVOEndorsementDidiStatus(villageId: Int,didiId:Int)
 
-    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 ORDER BY createdDate DESC")
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 AND activeStatus = 1 ORDER BY createdDate DESC")
     fun patCompletedDidis(villageId: Int): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status,needsToPostPAT=0 WHERE id =:didiId")
@@ -124,7 +127,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int,villageId: Int)
 
-    @Query("SELECT COUNT(*) FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus< 2 AND wealth_ranking='POOR' ORDER BY createdDate DESC")
+    @Query("SELECT COUNT(*) FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus< 2 AND wealth_ranking='POOR' AND activeStatus = 1 ORDER BY createdDate DESC")
     fun getAllPendingPATDidisCount(villageId: Int): Int
 
     @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
@@ -163,7 +166,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET serverId = :serverId,createdDate = :createdDate,modifiedDate = :modifiedDate,needsToPost = 0 WHERE name = :name AND guardianName =:guardianName AND villageId =:villageId AND castId=:castId AND cohortId =:cohortId")
     fun updateDidiServerId(name: String, guardianName: String,villageId:Int,castId:Int,cohortId:Int,serverId:Int,createdDate:Long,modifiedDate:Long)
 
-    @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId")
+    @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
     fun fetchNotAvailableDidis(villageId: Int) : Int
 
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
