@@ -96,7 +96,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -133,7 +133,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -162,7 +162,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -191,7 +191,7 @@ class SyncHelper (
                 didiList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -219,7 +219,7 @@ class SyncHelper (
                 tolaList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         tolaList.forEach { tola ->
@@ -267,7 +267,7 @@ class SyncHelper (
                             }
                             syncPercentage.value = 20f
                         } else {
-                            for (i in 0..response.data.size){
+                            for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
                                 updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             }
@@ -367,7 +367,7 @@ class SyncHelper (
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
                         syncPercentage.value = 40f
                     } else {
-                        for (i in 0..(response.data?.size ?: 0)){
+                        for (i in 0..(response.data?.size?.minus(1) ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
                         }
                         updateLocalTransactionIdToLocalDidi(didiList,networkCallbackListener)
