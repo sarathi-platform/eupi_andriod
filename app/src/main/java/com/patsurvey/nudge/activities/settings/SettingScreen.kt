@@ -361,13 +361,17 @@ fun SettingScreen(
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                if(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
+                if(stepOneStatus.value == 0
+                    || stepTwoStatus.value == 0
+                    || stepThreeStatus.value == 0
+                    || stepFourStatus.value == 0
+                    || stepFiveStatus.value == 0)
                     isDataNeedToBeSynced.value = 1
-                else if((stepOneStatus.value == 3 || stepOneStatus.value == 0)
-                        && (stepTwoStatus.value == 3 || stepTwoStatus.value == 0)
-                        && (stepThreeStatus.value == 3 || stepThreeStatus.value == 0)
-                        && (stepFourStatus.value == 3 || stepFourStatus.value == 0)
-                        && (stepFiveStatus.value == 3 || stepFiveStatus.value == 0))
+                else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                        && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                        && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                        && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                        && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
                     isDataNeedToBeSynced.value = 2
                 else
                     isDataNeedToBeSynced.value = 0
@@ -438,7 +442,7 @@ fun showSyncDialog(
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                if (isDataNeedToBeSynced.value == 0) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 1 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                if (isDataNeedToBeSynced.value == 1) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 0 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -820,7 +824,7 @@ fun showSyncDialog(
                         if (isInternetConnected
                             && (batteryLevel > 30)
                             && !settingViewModel.showLoader.value
-                            && isDataNeedToBeSynced.value == 0
+                            && isDataNeedToBeSynced.value == 1
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
@@ -847,7 +851,7 @@ fun showSyncDialog(
 //                                positiveButtonClicked()
                                 }
                             }
-                        } else if(isDataNeedToBeSynced.value == 1
+                        } else if(isDataNeedToBeSynced.value == 0
                                 || isDataNeedToBeSynced.value == 2
                                 || !isInternetConnected
                                 || batteryLevel < 30){
