@@ -132,7 +132,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("PAT",ids))
+                val response = apiService.getPendingStatusForPat(TransactionIdRequest("PAT",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
