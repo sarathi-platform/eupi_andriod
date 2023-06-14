@@ -195,7 +195,7 @@ class SyncHelper (
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
                             if (transactionIdResponse.transactionId == didi.transactionId) {
-                                didi.id = transactionIdResponse.referenceId
+                                didi.serverId = transactionIdResponse.referenceId
                             }
                         }
                     }
@@ -262,14 +262,14 @@ class SyncHelper (
                                     }
                                     Log.e("tola after update", "$tolaList.size")
                                 }
-                                updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             }
+                            updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             syncPercentage.value = 20f
                         } else {
                             for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
-                                updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             }
+                            updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             syncPercentage.value = 10f
                         }
                     }

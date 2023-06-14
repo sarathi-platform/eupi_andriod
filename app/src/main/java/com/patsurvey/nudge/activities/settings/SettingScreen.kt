@@ -534,7 +534,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepOneStatus == 2)
+                                if (stepOneStatus == 2 || stepOneStatus == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -582,7 +582,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepTwoStatus == 2)
+                                if (stepTwoStatus == 2 || stepTwoStatus == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -630,7 +630,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepThreeStatus == 2)
+                                if (stepThreeStatus == 2 || stepThreeStatus == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -678,7 +678,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFourStatus == 2)
+                                if (stepFourStatus == 2 || stepFourStatus == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -727,7 +727,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFiveStatus == 2)
+                                if (stepFiveStatus == 2 || stepFiveStatus == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
