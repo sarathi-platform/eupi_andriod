@@ -363,7 +363,11 @@ fun SettingScreen(
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
                 if(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
                     isDataNeedToBeSynced.value = 1
-                else if(stepOneStatus.value == 3 && stepTwoStatus.value == 3 && stepThreeStatus.value == 3 && stepFourStatus.value == 3 && stepFiveStatus.value == 3)
+                else if((stepOneStatus.value == 3 || stepOneStatus.value == 0)
+                        && (stepTwoStatus.value == 3 || stepTwoStatus.value == 0)
+                        && (stepThreeStatus.value == 3 || stepThreeStatus.value == 0)
+                        && (stepFourStatus.value == 3 || stepFourStatus.value == 0)
+                        && (stepFiveStatus.value == 3 || stepFiveStatus.value == 0))
                     isDataNeedToBeSynced.value = 2
                 else
                     isDataNeedToBeSynced.value = 0

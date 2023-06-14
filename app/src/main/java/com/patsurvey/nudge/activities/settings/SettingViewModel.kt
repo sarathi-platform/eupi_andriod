@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -232,11 +233,18 @@ class SettingViewModel @Inject constructor(
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
-                        networkErrorMessage.value = SYNC_SUCCESSFULL
+                        object: CountDownTimer(0, 1000){
+                            override fun onTick(p0: Long) {
+
+                            }
+                            override fun onFinish() {
+                                networkErrorMessage.value = SYNC_SUCCESSFULL
 //                        showCustomToast(cxt, SYNC_SUCCESSFULL)
-                        syncPercentage.value = 100f
-                        showSyncDialog.value = false
-                        showLoader.value = false
+                                syncPercentage.value = 100f
+//                        showSyncDialog.value = false
+                                showLoader.value = false
+                            }
+                        }.start()
                     }
 
                     override fun onFailed() {
