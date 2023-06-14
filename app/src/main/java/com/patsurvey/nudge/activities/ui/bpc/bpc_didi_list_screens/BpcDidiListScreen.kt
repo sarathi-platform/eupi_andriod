@@ -3,11 +3,11 @@ package com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
@@ -39,9 +39,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,6 +104,8 @@ fun BpcDidiListScreen(
 
     val localDensity = LocalDensity.current
 
+    val focusManager = LocalFocusManager.current
+
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -130,36 +134,38 @@ fun BpcDidiListScreen(
         ) {
             Column(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
+                    .align(Alignment.TopCenter)
             ) {
 
-/*                VOAndVillageBoxView(
-                    prefRepo = bpcDidiListViewModel.prefRepo,
-                    modifier = Modifier.fillMaxWidth(),
-                    startPadding = 0.dp
-                )*/
+                Text(
+                    text = stringResource(id = R.string.bpc_didi_screen_title),
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_6), horizontal = 32.dp)
+                        .fillMaxWidth()
+                )
+
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
                         .background(color = white)
+                        .pointerInput(true) {
+                            detectTapGestures(onTap = {
+                                focusManager.clearFocus()
+                            })
+                        }
                         .weight(1f),
-                    contentPadding = PaddingValues(vertical = 10.dp)
                 ) {
 
                     item {
-                        Text(
-                            text = stringResource(id = R.string.bpc_didi_screen_title),
-                            color = Color.Black,
-                            fontSize = 16.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier
-                                .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                                .fillMaxWidth()
-                        )
+                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
                     }
+
                     item {
                         SearchWithFilterView(
                             placeholderString = stringResource(id = R.string.search_didis),
@@ -199,6 +205,7 @@ fun BpcDidiListScreen(
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                    .padding(start = 4.dp)
                                     .weight(0.75f)
                             )
 
@@ -211,6 +218,10 @@ fun BpcDidiListScreen(
 
                             }
                         }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
                     }
 
                     if (filterSelected) {

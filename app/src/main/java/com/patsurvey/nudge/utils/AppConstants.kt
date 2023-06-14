@@ -101,6 +101,7 @@ const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
 const val PAT_SURVEY_CONSTANT = "PAT SURVEY"
+const val BPC_SURVEY_CONSTANT = "BPC_SURVEY"
 const val FLAG_WEIGHT = "weight"
 const val FLAG_RATIO = "ratio"
 

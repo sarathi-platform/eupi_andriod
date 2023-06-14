@@ -30,6 +30,7 @@ import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
@@ -258,13 +259,13 @@ class VillageSelectionViewModel @Inject constructor(
                             }*/
                         }
                     }
-                   /* localLanguageList?.let {
+                    localLanguageList?.let {
                         localLanguageList.forEach { languageEntity ->
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
-                                    languageEntity.id,
-                                    stateId.value,
-                                    PAT_SURVEY_CONSTANT
+                                    languageId = languageEntity.id,
+                                    stateId = stateId.value,
+                                    surveyName = BPC_SURVEY_CONSTANT
                                 )
                             )
                             // Fetch QuestionList from Server
@@ -381,7 +382,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 }
                             }
                         }
-                    }*/
+                    }
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)

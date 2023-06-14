@@ -206,7 +206,7 @@ fun BpcProgressScreen(
                                             textAlign = TextAlign.Start,
                                             style = mediumTextStyle,
                                             color = textColorDark,
-                                            modifier = Modifier.padding(horizontal = 16.dp)
+                                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
                                         )
 
                                         Divider(
