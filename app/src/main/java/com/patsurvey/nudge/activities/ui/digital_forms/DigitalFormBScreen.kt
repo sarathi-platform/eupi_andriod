@@ -1,11 +1,21 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -15,7 +25,12 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Card
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,12 +47,21 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ARG_FROM_SETTING
+import com.patsurvey.nudge.utils.ButtonNegative
+import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
+import com.patsurvey.nudge.utils.OutlineButtonCustom
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.openSettings
+import com.patsurvey.nudge.utils.showToast
+import com.patsurvey.nudge.utils.uriFromFile
 import java.io.File
 
 @Composable
@@ -82,6 +106,16 @@ fun DigitalFormBScreen(
         mutableStateOf(false)
     }
 
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = context) {
+        viewModel.requestStoragePermission(context as Activity, viewModel) {
+            shouldRequestPermission.value = true
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -104,6 +138,18 @@ fun DigitalFormBScreen(
                     .background(Color.White)
                     .verticalScroll(rememberScrollState())
             ) {
+
+                if (shouldRequestPermission.value) {
+                    ShowDialog(
+                        title = "Permission Required",
+                        message = "Camera Permission requierd, please grant permission.",
+                        setShowDialog = {
+                            shouldRequestPermission.value = it
+                        }
+                    ) {
+                        openSettings(context)
+                    }
+                }
 
                 Text(
                     text = "Digital Form B",

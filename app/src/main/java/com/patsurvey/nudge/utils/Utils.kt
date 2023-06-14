@@ -2,9 +2,11 @@ package com.patsurvey.nudge.utils
 
 import android.content.Context
 import android.content.ContextWrapper
+import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
 import androidx.activity.ComponentActivity
@@ -37,6 +39,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
@@ -168,6 +171,14 @@ fun uriFromFile(context:Context, file:File): Uri {
         return Uri.EMPTY
         Log.e("uriFromFile", "exception", ex)
     }
+}
+
+fun openSettings(context: Context) {
+    val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")).apply {
+        addCategory(Intent.CATEGORY_DEFAULT)
+    }
+    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    (context as MainActivity).startActivity(appSettingsIntent)
 }
 
 var videoList = listOf(

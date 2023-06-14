@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Environment
 import android.util.Log
@@ -28,6 +29,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +53,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -66,6 +69,7 @@ import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.uriFromFile
 import java.io.File
@@ -113,6 +117,16 @@ fun DigitalFormCScreen(
         mutableStateOf(false)
     }
 
+    val shouldRequestPermission = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = context) {
+        viewModel.requestStoragePermission(context as Activity, viewModel) {
+            shouldRequestPermission.value = true
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -135,6 +149,18 @@ fun DigitalFormCScreen(
                     .background(Color.White)
                     .verticalScroll(rememberScrollState())
             ) {
+
+                if (shouldRequestPermission.value) {
+                    ShowDialog(
+                        title = "Permission Required",
+                        message = "Camera Permission requierd, please grant permission.",
+                        setShowDialog = {
+                            shouldRequestPermission.value = it
+                        }
+                    ) {
+                        openSettings(context)
+                    }
+                }
 
                 Text(
                     text = "Digital Form C",
@@ -263,7 +289,7 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.patSurveyStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size.toString(),
+                                text = didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
