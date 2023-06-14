@@ -1,7 +1,6 @@
 package com.patsurvey.nudge
 
 import android.annotation.SuppressLint
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -428,7 +427,8 @@ class SyncHelper (
         oldDidiList.forEach(){ didiEntity ->
             didiEntity.needsToPost = false
             didiEntity.transactionId = ""
-            didiDao.updateDidi(didiEntity)
+            didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate, modifiedDate = didiEntity.modifiedDate)
+//            didiDao.updateDidi(didiEntity)
         }
         updateWealthRankingToNetwork(networkCallbackListener)
     }
