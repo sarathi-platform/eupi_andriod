@@ -52,8 +52,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where villageId = :villageId AND needsToPost = 1")
     fun getAllNeedToPostQues(villageId: Int): List<SectionAnswerEntity>
 
-    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND needsToPost = 1")
-    fun getAllNeedToPostQuesForDidi(didiId: Int): List<SectionAnswerEntity>
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :id AND needsToPost = 1")
+    fun getAllNeedToPostQuesForDidi(id: Int): List<SectionAnswerEntity>
 
 
     @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
