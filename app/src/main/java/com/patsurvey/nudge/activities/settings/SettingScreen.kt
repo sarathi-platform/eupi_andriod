@@ -38,6 +38,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -53,6 +54,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -405,20 +407,18 @@ fun showSyncDialog(
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
     val indicatorPadding = 48.dp
     val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
+    val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
     val animationDuration = 1000
     val animationDelay = 0
 
-    settingViewModel.syncPercentage.value = 0f
+//    settingViewModel.syncPercentage.value = 0f
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
-        targetValue = syncPercentage,
-        animationSpec = tween(
-            durationMillis = animationDuration,
-            delayMillis = animationDelay
-        )
+        targetValue =  settingViewModel.syncPercentage.value,
+        animationSpec = tween()
     )
 
 
@@ -538,7 +538,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepOneStatus == 2 || stepOneStatus == 3)
+                                if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -548,7 +548,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepOneStatus == 1) {
+                                else if (settingViewModel.stepOneSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -586,7 +586,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepTwoStatus == 2 || stepTwoStatus == 3)
+                                if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -596,7 +596,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepTwoStatus == 1) {
+                                else if (settingViewModel.stepTwoSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -634,7 +634,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepThreeStatus == 2 || stepThreeStatus == 3)
+                                if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -644,7 +644,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepThreeStatus == 1) {
+                                else if (settingViewModel.stepThreeSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -682,7 +682,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFourStatus == 2 || stepFourStatus == 3)
+                                if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -692,7 +692,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepFourStatus == 1) {
+                                else if (settingViewModel.stepFourSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -731,7 +731,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFiveStatus == 2 || stepFiveStatus == 3)
+                                if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -741,7 +741,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepFiveStatus == 1) {
+                                else if (settingViewModel.stepFifthSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -758,7 +758,16 @@ fun showSyncDialog(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         if (settingViewModel.showLoader.value) {
-                            Canvas(
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp)
+                                    .clip(RoundedCornerShape(14.dp)),
+                                color = progressIndicatorColor,
+                                backgroundColor = backgroundIndicatorColor,
+                                progress = animateNumber.value
+                            )
+                            /*Canvas(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(24.dp)
@@ -788,7 +797,7 @@ fun showSyncDialog(
                                     start = Offset(x = 0f, y = 0f),
                                     end = Offset(x = progress, y = 0f)
                                 )
-                            }
+                            }*/
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
                                 .fillMaxWidth()
                                 .background(color = redBgLight, shape = RoundedCornerShape(6.dp))

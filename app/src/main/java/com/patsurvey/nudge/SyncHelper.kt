@@ -340,6 +340,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(1)
         settingViewModel.stepOneSyncStatus.value = 3
         settingViewModel.stepTwoSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.2f
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchAllDidiNeedToPost(true,"")
@@ -438,6 +439,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(2)
         settingViewModel.stepTwoSyncStatus.value = 3
         settingViewModel.stepThreeSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.4f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -568,6 +570,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(3)
         settingViewModel.stepThreeSyncStatus.value = 3
         settingViewModel.stepFourSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.6f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -626,6 +629,7 @@ class SyncHelper (
         settingViewModel.stepFifthSyncStatus.value = 1
         settingViewModel.stepFourSyncStatus.value = 3
         callWorkFlowAPIForStep(4)
+        settingViewModel.syncPercentage.value = 0.8f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
