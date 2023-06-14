@@ -249,5 +249,5 @@
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
     <string name="add_more">अधिक जोड़ें</string>
-
+    <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
 </resources>

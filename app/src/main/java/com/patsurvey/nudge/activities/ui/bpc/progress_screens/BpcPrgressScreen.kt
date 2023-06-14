@@ -45,7 +45,9 @@ import kotlinx.coroutines.launch
 fun BpcProgressScreen(
     modifier: Modifier = Modifier,
     bpcProgreesScreenViewModel: BpcProgressScreenViewModel,
-    navController: NavHostController
+    navController: NavHostController,
+    onNavigateToStep:(Int, Int) ->Unit,
+    onNavigateToSetting:()->Unit
 ) {
 
     val scaffoldState =
@@ -54,6 +56,8 @@ fun BpcProgressScreen(
 
 //    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
     val villages by bpcProgreesScreenViewModel.villageList.collectAsState()
+
+    val summaryData = bpcProgreesScreenViewModel.summaryData.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -124,7 +128,7 @@ fun BpcProgressScreen(
                 topBar = {
                     ProgressScreenTopBar() {
                         bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-//                        onNavigateToSetting()
+                        onNavigateToSetting()
                     }
                 }
             ) { it ->
@@ -222,7 +226,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append("12")
+                                                        append(summaryData.value.cohortCount.toString())
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -247,7 +251,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append("13")
+                                                        append(summaryData.value.mobilisedCount.toString())
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -272,7 +276,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append("24")
+                                                        append(summaryData.value.poorDidiCount.toString())
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -297,7 +301,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append("77")
+                                                        append(summaryData.value.sentVoEndorsementCount.toString())
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -322,7 +326,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append("19")
+                                                        append(summaryData.value.voEndorsedCount.toString())
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -372,7 +376,7 @@ fun BpcProgressScreen(
                                                         text = "1",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -411,7 +415,7 @@ fun BpcProgressScreen(
                                                         text = "2",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -450,7 +454,7 @@ fun BpcProgressScreen(
                                                         text = "3",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -489,7 +493,7 @@ fun BpcProgressScreen(
                                                         text = "4",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -528,7 +532,7 @@ fun BpcProgressScreen(
                                                         text = "5",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -567,12 +571,12 @@ fun BpcProgressScreen(
                                                         text = "6",
                                                         color = textColorDark,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center),
+                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
                                             }
-                                            Spacer(modifier = Modifier.height(8.dp))
+                                            Spacer(modifier = Modifier.height(16.dp))
 
                                         }
                                     }
@@ -589,7 +593,7 @@ fun BpcProgressScreen(
                                     shouldBeActive = true,
                                     isCompleted = false,
                                     onclick = {
-
+                                        onNavigateToStep(bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, 6)
                                     }
                                 )
                             }

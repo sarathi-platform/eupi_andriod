@@ -6,6 +6,7 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -13,6 +14,7 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
@@ -28,6 +30,7 @@ import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
@@ -75,7 +78,8 @@ class VillageSelectionViewModel @Inject constructor(
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao,
     val numericAnswerDao: NumericAnswerDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val bpcSummaryDao: BpcSummaryDao
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
@@ -95,11 +99,297 @@ class VillageSelectionViewModel @Inject constructor(
                         0L
                     )) > TimeUnit.DAYS.toMillis(5)
                 )
-                    fetchVillageList()
+                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
+                        fetchVillageList()
+                    } else {
+                        fetchDataForBpc()
+                    }
 //                else
 //                    showLoader.value = false
-            } else
-                fetchVillageList()
+            } else {
+                if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
+                    fetchVillageList()
+                } else {
+                    fetchDataForBpc()
+                }
+            }
+        }
+    }
+
+    private fun fetchDataForBpc() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.IO){
+                    val villageList = villageListDao.getAllVillages()
+                    val localLanguageList = languageListDao.getAllLanguages()
+                    val villageIdList: ArrayList<Int> = arrayListOf()
+                    villageList.forEach { village ->
+                        villageIdList.add(village.id)
+                        launch {
+                            stateId.value = village.stateId
+                            val bpcSummaryResponse = apiService.getBpcSummary(villageId = village.id)
+//                            val cohortResponse = apiService.getCohortFromNetwork(villageId = village.id)
+//                            val didiResponse = apiService.getDidiForBpcFromNetwork(villageId = village.id)
+//                            val didiRankingResponse = apiService.getDidisWithRankingFromNetwork(
+//                                villageId = village.id, "Category",
+//                                StepResultTypeRequest(
+//                                    StepType.WEALTH_RANKING.name,
+//                                    ResultType.ALL.name
+//                                )
+//                            )
+                            if (bpcSummaryResponse.status.equals(SUCCESS, true)) {
+                                bpcSummaryResponse.data?.let {
+                                    val bpcSummary = BpcSummaryEntity(
+                                        cohortCount = it.cohortCount,
+                                        mobilisedCount = it.mobilisedCount,
+                                        poorDidiCount = it.poorDidiCount,
+                                        sentVoEndorsementCount = it.sentVoEndorsementCount,
+                                        voEndorsedCount = it.voEndorsedCount,
+                                        villageId = village.id
+                                    )
+                                    bpcSummaryDao.insert(bpcSummary)
+                                }
+                            }
+
+                            /*if (cohortResponse.status.equals(SUCCESS, true)) {
+                                cohortResponse.data?.let {
+                                    tolaDao.insertAll(it)
+                                }
+                            }*/
+
+                            /*if (didiResponse.status.equals(SUCCESS, true)) {
+                                didiResponse.data?.let {
+                                    try {
+                                        it.didiList.forEach { didi ->
+                                            var tolaName = BLANK_STRING
+                                            var casteName = BLANK_STRING
+                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
+                                            val singleCaste = casteListDao.getCaste(didi.castId)
+                                            singleTola?.let {
+                                                tolaName = it.name
+                                            }
+                                            singleCaste?.let {
+                                                casteName = it.casteName
+                                            }
+                                            if (singleTola != null) {
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.WEALTH_RANKING.name))
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                    else
+                                                        WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.PAT_SURVEY.name))
+                                                        PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.VO_ENDORSEMENT.name))
+                                                        DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        DidiEndorsementStatus.NOT_STARTED.ordinal
+
+                                                didiDao.insertDidi(
+                                                    DidiEntity(
+                                                        id = didi.id,
+                                                        serverId = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = village.id,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        wealth_ranking = wealthRanking,
+                                                        patSurveyStatus = patSurveyStatus,
+                                                        voEndorsementStatus = voEndorsementStatus,
+                                                        needsToPostRanking = false,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        transactionId = ""
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    } catch (ex: Exception) {
+                                        onError(
+                                            tag = "VillageSelectionViewModel",
+                                            "Error : ${didiResponse.message}"
+                                        )
+                                        showLoader.value = false
+                                    }
+                                }
+                            }
+                            if (didiRankingResponse.status.equals(SUCCESS, true)) {
+                                didiRankingResponse.data?.let { didiRank ->
+                                    didiRank.beneficiaryList?.richDidi?.forEach { richDidi ->
+                                        richDidi?.id?.let { didiId ->
+                                            didiDao.updateDidiRank(didiId, WealthRank.RICH.rank)
+                                        }
+                                    }
+                                    didiRank.beneficiaryList?.mediumDidi?.forEach { mediumDidi ->
+                                        mediumDidi?.id?.let { didiId ->
+                                            didiDao.updateDidiRank(didiId, WealthRank.MEDIUM.rank)
+                                        }
+                                    }
+                                    didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi ->
+                                        poorDidi?.id?.let { didiId ->
+                                            didiDao.updateDidiRank(didiId, WealthRank.POOR.rank)
+                                        }
+
+                                    }
+                                }
+                            } else {
+                                onError(
+                                    tag = "VillageSelectionViewModel",
+                                    "Error : ${didiRankingResponse.message}"
+                                )
+                                showLoader.value = false
+                            }*/
+                        }
+                    }
+                   /* localLanguageList?.let {
+                        localLanguageList.forEach { languageEntity ->
+                            val quesListResponse = apiService.fetchQuestionListFromServer(
+                                GetQuestionListRequest(
+                                    languageEntity.id,
+                                    stateId.value,
+                                    PAT_SURVEY_CONSTANT
+                                )
+                            )
+                            // Fetch QuestionList from Server
+                            if (quesListResponse.status.equals(SUCCESS, true)) {
+                                quesListResponse.data?.let { questionList ->
+                                    questionList.listOfQuestionSectionList?.forEach { list ->
+                                        list?.questionList?.forEach { question ->
+                                            question?.sectionOrderNumber = list.orderNumber
+                                            question?.actionType = list.actionType
+                                            question?.languageId = languageEntity.id
+                                            question?.surveyId = questionList.surveyId
+                                            question?.thresholdScore = questionList.thresholdScore
+                                            question?.surveyPassingMark =
+                                                questionList.surveyPassingMark
+                                        }
+                                        list?.questionList?.let {
+                                            questionListDao.insertAll(it as List<QuestionEntity>)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    answerDao.deleteAnswerTable()
+                    numericAnswerDao.deleteNumericTable()
+                    villageIdList?.let {
+                        val answerApiResponse = apiService.fetchPATSurveyToServer(it)
+                        if (answerApiResponse.status.equals(SUCCESS, true)) {
+                            answerApiResponse.data?.let {
+                                val answerList: ArrayList<SectionAnswerEntity> = arrayListOf()
+                                val numAnswerList: ArrayList<NumericAnswerEntity> = arrayListOf()
+                                it.forEach { item ->
+                                    didiDao.updatePATProgressStatus(
+                                        patSurveyStatus = item.patSurveyStatus ?: 0,
+                                        section1Status = item.section1Status ?: 0,
+                                        section2Status = item.section2Status ?: 0,
+                                        didiId = item.beneficiaryId ?: 0
+                                    )
+                                    if (item?.answers?.isNotEmpty() == true) {
+                                        item?.answers?.forEach { answersItem ->
+                                            if (answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true) {
+                                                answerList.add(
+                                                    SectionAnswerEntity(
+                                                        id = 0,
+                                                        optionId = 0,
+                                                        didiId = item.beneficiaryId ?: 0,
+                                                        questionId = answersItem?.questionId ?: 0,
+                                                        villageId = item.villageId ?: 0,
+                                                        actionType = answersItem?.section
+                                                            ?: TYPE_EXCLUSION,
+                                                        weight = 0,
+                                                        summary = answersItem?.summary,
+                                                        optionValue = answersItem?.options?.get(0)?.optionValue,
+                                                        totalAssetAmount = answersItem?.totalWeight,
+                                                        needsToPost = false,
+                                                        answerValue = answersItem?.options?.get(0)?.summary
+                                                            ?: BLANK_STRING,
+                                                        type = answersItem?.questionType
+                                                            ?: QuestionType.RadioButton.name
+                                                    )
+                                                )
+
+                                                if (answersItem?.options?.isNotEmpty() == true) {
+
+                                                    answersItem?.options?.forEach { optionItem ->
+                                                        numAnswerList.add(
+                                                            NumericAnswerEntity(
+                                                                id = 0,
+                                                                optionId = optionItem?.optionId
+                                                                    ?: 0,
+                                                                questionId = answersItem?.questionId
+                                                                    ?: 0,
+                                                                weight = optionItem?.weight ?: 0,
+                                                                didiId = item.beneficiaryId ?: 0,
+                                                                count = optionItem?.count ?: 0
+                                                            )
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                answerList.add(
+                                                    SectionAnswerEntity(
+                                                        id = 0,
+                                                        optionId = answersItem?.options?.get(0)?.optionId
+                                                            ?: 0,
+                                                        didiId = item.beneficiaryId ?: 0,
+                                                        questionId = answersItem?.questionId ?: 0,
+                                                        villageId = item.villageId ?: 0,
+                                                        actionType = answersItem?.section
+                                                            ?: TYPE_EXCLUSION,
+                                                        weight = 0,
+                                                        summary = answersItem?.summary,
+                                                        optionValue = answersItem?.options?.get(0)?.optionValue,
+                                                        totalAssetAmount = answersItem?.totalWeight,
+                                                        needsToPost = false,
+                                                        answerValue = answersItem?.options?.get(0)?.display
+                                                            ?: BLANK_STRING,
+                                                        type = answersItem?.questionType
+                                                            ?: QuestionType.RadioButton.name
+                                                    )
+                                                )
+                                            }
+
+                                        }
+                                    }
+
+                                }
+                                if (answerList.isNotEmpty()) {
+                                    answerDao.insertAll(answerList)
+                                }
+                                if (numAnswerList.isNotEmpty()) {
+                                    numericAnswerDao.insertAll(numAnswerList)
+                                }
+                            }
+                        }
+                    }*/
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex)
+                showLoader.value = false
+            } finally {
+                prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
+                showLoader.value = false
+            }
         }
     }
 

@@ -48,6 +48,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -70,7 +71,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
-import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
@@ -89,6 +89,7 @@ fun BpcDidiListScreen(
     modifier: Modifier = Modifier,
     bpcDidiListViewModel: BpcDidiListViewModel,
     navController: NavHostController,
+    villageId: Int,
     stepId: Int
 ) {
 
@@ -132,11 +133,11 @@ fun BpcDidiListScreen(
                     .align(Alignment.BottomCenter)
             ) {
 
-                VOAndVillageBoxView(
+/*                VOAndVillageBoxView(
                     prefRepo = bpcDidiListViewModel.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
-                )
+                )*/
                 LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -147,14 +148,16 @@ fun BpcDidiListScreen(
 
                     item {
                         Text(
-                            text = stringResource(id = R.string.vo_endorsement_screen_title),
+                            text = stringResource(id = R.string.bpc_didi_screen_title),
                             color = Color.Black,
                             fontSize = 16.sp,
                             fontFamily = NotoSans,
                             fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
                             modifier = Modifier
                                 .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                .fillMaxWidth()
                         )
                     }
                     item {
@@ -172,6 +175,10 @@ fun BpcDidiListScreen(
                             }
                         )
                     }
+                    
+                    item { 
+                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
+                    }
 
                     item {
                         Row(
@@ -179,10 +186,11 @@ fun BpcDidiListScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
+                            val count = bpcDidiListViewModel.pendingDidiCount.value
                             Text(
                                 text = stringResource(
-                                    id = R.string.count_didis_pending,
-                                    bpcDidiListViewModel.pendingDidiCount.value
+                                    id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
+                                    count
                                 ),
                                 color = Color.Black,
                                 fontSize = 12.sp,
@@ -191,6 +199,7 @@ fun BpcDidiListScreen(
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
                                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                    .weight(0.75f)
                             )
 
                             BlueButtonWithIconWithFixedWidth(
@@ -219,13 +228,7 @@ fun BpcDidiListScreen(
                                     ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {
-                                    navController.navigate(
-                                        "vo_endorsement_summary_screen/${
-                                            newFilteredTolaDidiList[didiKey]?.get(
-                                                index
-                                            )?.id
-                                        }/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}"
-                                    )
+
                                 }
                             )
                             if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -260,8 +263,7 @@ fun BpcDidiListScreen(
                 }
             }
         }
-        if (didis.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }
-                .isEmpty()) {
+        if (didis.isNotEmpty()) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -277,8 +279,7 @@ fun BpcDidiListScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    val stepStatus = false
-                    navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
+
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )

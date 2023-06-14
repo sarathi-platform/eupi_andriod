@@ -2,6 +2,7 @@ package com.patsurvey.nudge.navigation.home
 
 
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -18,11 +19,13 @@ import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.PatDidiSummaryScreen
 import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
+import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
+import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
@@ -38,6 +41,7 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
@@ -57,17 +61,19 @@ import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 
 @Composable
-fun NavHomeGraph(navController: NavHostController) {
+fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = HomeScreens.PROGRESS_SCREEN.route
+        startDestination = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) HomeScreens.BPC_PROGRESS_SCREEN.route else HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
-            /*ProgressScreen(
+            ProgressScreen(
                 stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
@@ -83,8 +89,21 @@ fun NavHomeGraph(navController: NavHostController) {
                 onNavigateToSetting = {
                     navController.navigate(Graph.SETTING_GRAPH)
                 }
-            )*/
-            BpcProgressScreen(bpcProgreesScreenViewModel = hiltViewModel(), navController = navController)
+            )
+        }
+
+        composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
+            BpcProgressScreen(
+                bpcProgreesScreenViewModel = hiltViewModel(),
+                navController = navController,
+                modifier = Modifier.fillMaxWidth(),
+                onNavigateToStep = { villageId, stepId ->
+                    navController.navigate("bpc_didi_list_screen_graph/$villageId/$stepId")
+                },
+                onNavigateToSetting = {
+                    navController.navigate(Graph.SETTING_GRAPH)
+                }
+            )
         }
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {
@@ -106,11 +125,14 @@ fun NavHomeGraph(navController: NavHostController) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
+        bpcDidiListNavGraph(navController = navController)
     }
 }
 
 sealed class HomeScreens(val route: String) {
     object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
+
+    object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
     object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
 }
 
@@ -744,5 +766,55 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : VoEndorsmentScreeens(route = "vo_endorsement_digital_form_c_screen")
     object IMAGE_VIEWER : VoEndorsmentScreeens(route = "vo_image_viewer/{$ARG_IMAGE_PATH}")
+
+}
+
+fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
+
+    navigation(
+        route = Graph.BPC_DIDI_LIST_SCREEN_GRAPH,
+        startDestination = BpcDidiListScreens.BPC_DID_LIST.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ) {
+        composable(
+            route = BpcDidiListScreens.BPC_DID_LIST.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            BpcDidiListScreen(
+                bpcDidiListViewModel = hiltViewModel(),
+                navController = navController,
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            )
+        }
+    }
+}
+
+sealed class BpcDidiListScreens(val route: String) {
+    object BPC_DID_LIST : BpcDidiListScreens(route = "bpc_did_list")
+
+    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
+
+    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object STEP_COMPLETION_SCREEN :
+        BpcDidiListScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object PAT_SECTION_ONE_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_SECTION_TWO_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+
+    object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
 }

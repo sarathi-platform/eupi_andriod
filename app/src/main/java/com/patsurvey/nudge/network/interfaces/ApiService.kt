@@ -106,4 +106,10 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getPendingStatus(@Body transactionIdRequest: TransactionIdRequest): ApiResponseModel<List<TransactionIdResponse>>
 
+    @GET("/read-api/bpc/view-summary")
+    suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
+    @GET("/write-api/bpc/beneficiary-list")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getDidiForBpcFromNetwork(villageId: Int): ApiResponseModel<BeneficiaryApiResponse>
+
 }

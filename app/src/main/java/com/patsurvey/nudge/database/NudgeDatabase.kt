@@ -6,10 +6,22 @@ import androidx.room.TypeConverters
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.TrainingVideoDao
+import com.patsurvey.nudge.database.dao.UserDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
-    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class], version = 1, exportSchema = false)
+    TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class, BpcSummaryEntity::class], version = 1, exportSchema = false)
 @TypeConverters(IntConverter::class, BeneficiaryStepConverter::class,QuestionsOptionsConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
@@ -24,7 +36,7 @@ abstract class NudgeDatabase: RoomDatabase()  {
     abstract fun questionListDao(): QuestionListDao
     abstract fun answerDao(): AnswerDao
     abstract fun numericAnswerDao(): NumericAnswerDao
-
     abstract fun trainingVideoDao(): TrainingVideoDao
+    abstract fun bpcSummaryDao(): BpcSummaryDao
 
 }

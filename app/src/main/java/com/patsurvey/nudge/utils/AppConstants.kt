@@ -42,6 +42,7 @@ const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
 const val QUESTION_TABLE = "question_table"
 const val TRAINING_VIDEO_TABLE = "training_video_table"
+const val BPC_SUMMARY_TABLE = "bpc_summary_table"
 
 const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
@@ -167,5 +168,9 @@ const val ACCEPTED = "ACCEPTED"
 const val FORM_A_PDF_NAME = "Digital_Form_A"
 const val FORM_B_PDF_NAME = "Digital_Form_B"
 const val FORM_C_PDF_NAME = "Digital_Form_C"
+
+const val BPC_USER_TYPE = "Project Coordinator"
+const val CRP_USER_TYPE = "Community Resource Person"
+const val ARG_USER_TYPE = "user_type"
 
 

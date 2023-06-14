@@ -243,4 +243,4 @@
     <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
     <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
     <string name="add_more">अधिक जोड़ें</string>
-</resources>
+    <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string></resources>
