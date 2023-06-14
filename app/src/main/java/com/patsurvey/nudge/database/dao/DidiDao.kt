@@ -169,8 +169,15 @@ interface DidiDao {
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
     fun fetchNotAvailableDidis(villageId: Int) : Int
 
+    @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId ")
+    fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int)
 
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
 
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId")
+    fun fetchAllVONeedToPostStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
+    fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
 }

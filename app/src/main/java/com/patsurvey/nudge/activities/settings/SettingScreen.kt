@@ -848,7 +848,9 @@ fun showSyncDialog(
                                 }
                             }
                         } else if(isDataNeedToBeSynced.value == 1
-                                || isDataNeedToBeSynced.value == 2){
+                                || isDataNeedToBeSynced.value == 2
+                                || !isInternetConnected
+                                || batteryLevel < 30){
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
                                     buttonTitle = stringResource(id = R.string.close),
