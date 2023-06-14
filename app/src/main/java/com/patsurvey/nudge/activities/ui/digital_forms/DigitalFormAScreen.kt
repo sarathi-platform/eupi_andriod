@@ -63,6 +63,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.uriFromFile
@@ -281,7 +282,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.size.toString(),
+                                text = didiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -323,7 +324,7 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList) { card ->
+                        items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank }) { card ->
                             DidiVillageItem(card)
                         }
                     }
