@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Dao
@@ -24,5 +25,8 @@ interface VillageListDao {
 
     @Query("UPDATE $VILLAGE_TABLE_NAME SET steps_completed = :stepId where id = :villageId")
     fun updateLastCompleteStep(villageId: Int, stepId: List<Int>)
+
+    @Query("DELETE from $VILLAGE_TABLE_NAME")
+    fun deleteAllVilleges()
 
 }

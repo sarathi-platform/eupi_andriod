@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.UserEntity
 import com.patsurvey.nudge.database.VillageEntity
+import com.patsurvey.nudge.utils.DIDI_TABLE
 
 @Dao
 interface UserDao {
@@ -15,5 +16,8 @@ interface UserDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertUser(user: UserEntity)
+
+    @Query("DELETE from user_table")
+    fun deleteAllUserDetail()
 
 }

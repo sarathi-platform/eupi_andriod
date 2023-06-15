@@ -53,4 +53,7 @@ interface TolaDao {
 
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
     fun fetchPendingTola(needsToPost: Boolean,transactionId : String?) : List<TolaEntity>
+
+    @Query("DELETE from $TOLA_TABLE")
+    fun deleteAllTola()
 }

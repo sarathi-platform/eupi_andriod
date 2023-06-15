@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.TOLA_TABLE
 
 @Dao
 interface AnswerDao {
@@ -72,4 +73,6 @@ interface AnswerDao {
     @Query("SELECT SUM(weight)FROM ques_answer_table where didiId=:didiId AND type !='Numeric_Field'")
     fun getTotalWeightWithoutNumQues(didiId: Int): Double
 
+    @Query("DELETE from $ANSWER_TABLE")
+    fun deleteAllAnswers()
 }
