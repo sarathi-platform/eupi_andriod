@@ -42,7 +42,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id =:id")
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
 
-    @Query("Update $DIDI_TABLE set serverId = :serverId, needsToPost = :needsToPost, transactionId = :transactionId, createdDate = :createdDate, modifiedDate =:modifiedDate where id = :id")
+    @Query("Update $DIDI_TABLE SET serverId = :serverId, needsToPost = :needsToPost, transactionId = :transactionId, createdDate = :createdDate, modifiedDate =:modifiedDate where id = :id")
     fun updateDidiDetailAfterSync(id: Int, serverId: Int, needsToPost: Boolean, transactionId: String, createdDate: Long, modifiedDate: Long)
 
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :id")

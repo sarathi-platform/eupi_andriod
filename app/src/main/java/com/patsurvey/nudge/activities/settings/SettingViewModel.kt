@@ -192,7 +192,7 @@ class SettingViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         Log.e("server error","called")
         showLoader.value = false
-        syncPercentage.value = 100f
+        syncPercentage.value = 1f
         showSyncDialog.value = false
         networkErrorMessage.value = error?.message.toString()
         /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -240,7 +240,7 @@ class SettingViewModel @Inject constructor(
                             override fun onFinish() {
                                 networkErrorMessage.value = SYNC_SUCCESSFULL
 //                        showCustomToast(cxt, SYNC_SUCCESSFULL)
-                                syncPercentage.value = 100f
+                                syncPercentage.value = 1f
 //                        showSyncDialog.value = false
                                 showLoader.value = false
                             }
@@ -250,7 +250,7 @@ class SettingViewModel @Inject constructor(
                     override fun onFailed() {
 //                        showCustomToast(cxt, SYNC_FAILED)
                         networkErrorMessage.value = SYNC_FAILED
-                        syncPercentage.value = 100f
+                        syncPercentage.value = 1f
                         showSyncDialog.value = false
                         showLoader.value = false
                     }

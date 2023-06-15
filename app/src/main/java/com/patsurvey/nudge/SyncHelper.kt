@@ -132,7 +132,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("PAT",ids))
+                val response = apiService.getPendingStatusForPat(TransactionIdRequest("PAT",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -195,7 +195,7 @@ class SyncHelper (
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
                             if (transactionIdResponse.transactionId == didi.transactionId) {
-                                didi.id = transactionIdResponse.referenceId
+                                didi.serverId = transactionIdResponse.referenceId
                             }
                         }
                     }
@@ -262,14 +262,14 @@ class SyncHelper (
                                     }
                                     Log.e("tola after update", "$tolaList.size")
                                 }
-                                updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             }
+                            updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             syncPercentage.value = 20f
                         } else {
                             for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
-                                updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             }
+                            updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             syncPercentage.value = 10f
                         }
                     }
@@ -340,6 +340,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(1)
         settingViewModel.stepOneSyncStatus.value = 3
         settingViewModel.stepTwoSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.2f
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchAllDidiNeedToPost(true,"")
@@ -438,6 +439,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(2)
         settingViewModel.stepTwoSyncStatus.value = 3
         settingViewModel.stepThreeSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.4f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -568,6 +570,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(3)
         settingViewModel.stepThreeSyncStatus.value = 3
         settingViewModel.stepFourSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.6f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -626,6 +629,7 @@ class SyncHelper (
         settingViewModel.stepFifthSyncStatus.value = 1
         settingViewModel.stepFourSyncStatus.value = 3
         callWorkFlowAPIForStep(4)
+        settingViewModel.syncPercentage.value = 0.8f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
