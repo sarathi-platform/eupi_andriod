@@ -20,6 +20,7 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
@@ -203,6 +204,10 @@ class SettingViewModel @Inject constructor(
                 showLoader.value = false
             }
         }*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+
     }
 
     fun getStepOneSize(stepOneSize : MutableState<String>) {
