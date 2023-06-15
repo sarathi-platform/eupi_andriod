@@ -226,6 +226,7 @@
     <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
     <string name="pat_completed_status_text">PAT Survey Completed</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed</string>
+    <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
 
     <string name="step_1">Step 1</string>
     <string name="step_2">Step 2</string>

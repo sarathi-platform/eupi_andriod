@@ -126,7 +126,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
                                     beneficiaryId = if(didi.serverId == 0) didi.id else didi.serverId,
-                                    languageId = prefRepo.getAppLanguageId()?:0,
+                                    languageId = prefRepo.getAppLanguageId()?:2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
                                     userType = USER_CRP,

@@ -550,7 +550,7 @@ class SyncHelper (
                     villageId= prefRepo.getSelectedVillage().id,
                     surveyId=surveyId,
                     beneficiaryId = didi.serverId,
-                    languageId = prefRepo.getAppLanguageId()?:0,
+                    languageId = prefRepo.getAppLanguageId()?:2,
                     stateId = prefRepo.getSelectedVillage().stateId,
                     totalScore = 0,
                     userType = USER_CRP,

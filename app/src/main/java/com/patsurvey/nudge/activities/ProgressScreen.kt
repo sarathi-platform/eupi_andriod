@@ -41,7 +41,7 @@ fun ProgressScreen(
     modifier: Modifier = Modifier,
     viewModel: ProgressScreenViewModel,
     stepsNavHostController: NavHostController,
-    onNavigateToStep:(Int, Int, Int) ->Unit,
+    onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
     onNavigateToSetting:()->Unit
 ) {
 
@@ -230,7 +230,7 @@ fun ProgressScreen(
                                         4 -> {}
                                         5 -> {}
                                     }
-                                    onNavigateToStep(villageId,step.id,index)
+                                    onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))
                                 }
                             }
                         }

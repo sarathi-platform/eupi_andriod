@@ -1,14 +1,15 @@
-package com.patsurvey.nudge.activities
+package com.patsurvey.nudge.activities.ui.vo_endorsement
+
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -29,43 +30,31 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
-import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
-import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
-import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
-import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun DidiScreen(
-    navController: NavHostController,
+fun VoEndorsementStepScreen(
     modifier: Modifier = Modifier,
-    didiViewModel: AddDidiViewModel,
-    villageId:Int,
-    stepId:Int,
-    onNavigateToAddDidi:()-> Unit,
+    navController: NavHostController,
+    viewModel: VoEndorsementScreenViewModel,
+    stepId: Int,
+    isStepComplete:Boolean,
     onNavigateToSummary:()-> Unit
 ) {
-
-    LaunchedEffect(key1 = true) {
-        didiViewModel.checkIfTolaIsNotDeleted()
-        didiViewModel.prefRepo.saveStepId(stepId)
-        didiViewModel.isSocialMappingComplete(stepId)
-    }
     val openSummaryPage = remember {
         mutableStateOf(false)
     }
-
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    if(didiViewModel.showLoader.value){
+
+    if(viewModel.showLoader.value){
         CustomProgressBar(modifier = Modifier)
     }else {
-        if (didiViewModel.didiList.value.isEmpty()) {
+        if (viewModel.didiList.value.isEmpty()) {
             ConstraintLayout(
                 modifier = Modifier
                     .background(Color.White)
-                    .fillMaxSize()
+                    .fillMaxSize().padding(top = 16.dp)
                     .border(
                         width = 0.dp,
                         color = Color.Transparent,
@@ -73,7 +62,7 @@ fun DidiScreen(
             ) {
                 Column(modifier = Modifier) {
                     VOAndVillageBoxView(
-                        prefRepo = didiViewModel.prefRepo,
+                        prefRepo = viewModel.prefRepo,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -95,59 +84,29 @@ fun DidiScreen(
                                             fontFamily = NotoSans
                                         )
                                     ) {
-                                        append(stringResource(R.string.empty_didis_string))
+                                        append(stringResource(R.string.no_didis_availble_for_vo_endorsement))
                                     }
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
-                            Log.d("arg",didiViewModel.prefRepo.getFromPage())
-                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
-                                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
-                                BlueButtonWithDrawableIcon(
-                                    buttonText = stringResource(id = R.string.add_didi),
-                                    icon = Icons.Default.Add,
-                                    imageIcon = R.drawable.didi_icon,
-                                    modifier = Modifier.padding(top = 16.dp)
-                                ) {
-                                    didiViewModel.resetAllFields()
-                                    onNavigateToAddDidi()
-                                }
-                            }
                         }
                     }
                 }
             }
         }
 
-
-            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                if(didiViewModel.isPATSurveyComplete.value){
-                    if(!openSummaryPage.value)
-                        onNavigateToSummary()
-                     openSummaryPage.value = true
-                }else{
-                    SocialMappingDidiListScreen(
-                        navController,
-                        modifier = modifier,
-                        didiViewModel = didiViewModel,
-                        villageId = villageId,
-                        stepId = stepId
-                    )
-                }
-            }else{
-                if(didiViewModel.didiList.value.isNotEmpty()) {
-                    SocialMappingDidiListScreen(
-                        navController,
-                        modifier = modifier,
-                        didiViewModel = didiViewModel,
-                        villageId = villageId,
-                        stepId = stepId
-                    )
-                }
+        if(isStepComplete){
+            if(!openSummaryPage.value)
+                onNavigateToSummary()
+            openSummaryPage.value=true
+        }else{
+            if(viewModel.didiList.value.isNotEmpty()){
+                VoEndorsementScreen(viewModel = viewModel,
+                    navController = navController,
+                    modifier = modifier,
+                    stepId = stepId)
             }
+        }
 
-    }
-    LaunchedEffect(key1 = Unit){
-        didiViewModel.fetchDidisFrommDB()
     }
 }

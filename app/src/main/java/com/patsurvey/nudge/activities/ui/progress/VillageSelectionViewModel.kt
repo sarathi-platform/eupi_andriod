@@ -451,7 +451,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchUserDetails(apiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 1)
+                val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 2)
                 withContext(Dispatchers.IO) {
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
