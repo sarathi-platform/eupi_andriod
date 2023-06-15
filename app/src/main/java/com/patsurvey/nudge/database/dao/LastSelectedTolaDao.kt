@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
+import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.LAST_SELECTED_TOLA_TABLE
 
 @Dao
@@ -24,4 +25,7 @@ interface LastSelectedTolaDao {
 
     @Query("SELECT COUNT(*) FROM $LAST_SELECTED_TOLA_TABLE where villageId = :villageId")
     fun getTolaCountForVillage(villageId:Int): Long
+
+    @Query("DELETE from $LAST_SELECTED_TOLA_TABLE")
+    fun deleteAllLastSelectedTola()
 }

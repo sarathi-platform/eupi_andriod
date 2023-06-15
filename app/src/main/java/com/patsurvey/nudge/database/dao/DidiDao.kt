@@ -4,6 +4,7 @@ import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -184,4 +185,7 @@ interface DidiDao {
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
     fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+
+    @Query("DELETE from $DIDI_TABLE")
+    fun deleteAllDidi()
 }

@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
+import com.patsurvey.nudge.utils.TOLA_TABLE
 
 @Dao
 interface StepsListDao {
