@@ -136,8 +136,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
                 downloader = AndroidDownloader(applicationContext)
 
-                }
-
                 RetryHelper.init(
                     mViewModel.prefRepo,
                     mViewModel.apiService,
@@ -165,6 +163,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             }
         }
     }
+
     fun exitApplication(){
         this.finish()
     }
