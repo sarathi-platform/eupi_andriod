@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -32,6 +33,7 @@ import javax.inject.Inject
 class SurveySummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
+    val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
     val answerDao: AnswerDao,
     val numericAnswerDao: NumericAnswerDao,
@@ -43,14 +45,23 @@ class SurveySummaryViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
     val notAvailableCount = mutableStateOf(0)
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
+    val isDidiRankingSynced = mutableStateOf(0)
+    val isDidiPATSynced = mutableStateOf(0)
     init {
         fetchDidisFromDB()
+
     }
 
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(isDidiRankingSynced,didiDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(isDidiPATSynced,answerDao, didiDao, prefRepo)
                 notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }

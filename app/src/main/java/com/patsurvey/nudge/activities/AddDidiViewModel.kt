@@ -73,6 +73,7 @@ class AddDidiViewModel @Inject constructor(
     val isPATSurveyComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
     val pendingDidiCount = mutableStateOf(0)
+    val isTolaSynced = mutableStateOf(0)
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 

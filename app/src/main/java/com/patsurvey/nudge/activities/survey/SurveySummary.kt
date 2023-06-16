@@ -58,6 +58,7 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
+import com.patsurvey.nudge.utils.SyncStatus
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
@@ -142,31 +143,39 @@ fun SurveySummary(
                 surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            surveySummaryViewModel.updatePatStatusToNetwork(object : NetworkCallbackListener {
-                                override fun onSuccess() {
+                            if (surveySummaryViewModel.isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                                && surveySummaryViewModel.isDidiSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                                && surveySummaryViewModel.isDidiRankingSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                            ){
+                                if(surveySummaryViewModel.isDidiPATSynced.value == SyncStatus.NEED_TO_SYNC.ordinal){
+                                    surveySummaryViewModel.updatePatStatusToNetwork(object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
 
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+
+                                    })
+                                    surveySummaryViewModel.callWorkFlowAPI(
+                                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                        stepId,
+                                        object :
+                                            NetworkCallbackListener {
+                                            override fun onSuccess() {
+                                            }
+
+                                            override fun onFailed() {
+                                                showCustomToast(context, SYNC_FAILED)
+                                            }
+                                        })
                                 }
-
-                                override fun onFailed() {
-                                    showCustomToast(context, SYNC_FAILED)
-                                }
-
-                            })
-                            surveySummaryViewModel.callWorkFlowAPI(
-                                surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                stepId,
-                                object :
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                surveySummaryViewModel.savePATSummeryToServer(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
-                                    }
-
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
-                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
-                                    override fun onSuccess() {
 
                                     }
 
@@ -175,7 +184,21 @@ fun SurveySummary(
                                     }
 
                                 })
+
+                                surveySummaryViewModel.callWorkFlowAPI(
+                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId,
+                                    object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
                             }
+                          }
                         }
                         if (fromScreen == ARG_FROM_PAT_SURVEY) {
                             surveySummaryViewModel.updateDidiPatStatus()

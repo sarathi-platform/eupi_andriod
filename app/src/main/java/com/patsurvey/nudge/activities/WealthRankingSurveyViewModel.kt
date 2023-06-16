@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -58,13 +59,16 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     var villageId: Int = -1
     var stepId: Int = -1
-
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
     var selectedVillage: VillageEntity? = null
 
     init {
         selectedVillage = prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
     }
 
     fun fetchDidisFromDB() {

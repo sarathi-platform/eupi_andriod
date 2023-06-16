@@ -77,6 +77,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -99,9 +100,11 @@ import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.home.DetailsScreen
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -119,8 +122,12 @@ fun SettingScreen(
 ) {
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
+    val rootNavController= rememberNavController()
     val list = ArrayList<SettingOptionModel>()
     val lastSyncTimeInMS = viewModel.lastSyncTime.value
+    val changeGraph = remember {
+        mutableStateOf(false)
+    }
 
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
     val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -340,13 +347,17 @@ fun SettingScreen(
                         || isDataNeedToBeSynced.value == 2){
                         viewModel.performLogout(object : NetworkCallbackListener{
                             override fun onFailed() {
-                                logout(viewModel,logout,navController)
+                                logout(viewModel,logout,rootNavController)
+                                changeGraph.value=true
                             }
 
                             override fun onSuccess() {
-                                logout(viewModel,logout,navController)
+                                logout(viewModel,logout,rootNavController)
+                                changeGraph.value=true
                             }
                         })
+
+//                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
                     }
                 }
             }
@@ -407,7 +418,13 @@ fun SettingScreen(
         CustomProgressBar(modifier = Modifier)
     }
     if(viewModel.onLogoutError.value){
-        logout(viewModel,logout,navController)
+        logout(viewModel,logout,rootNavController)
+        changeGraph.value=true
+    }
+
+    if(changeGraph.value){
+        navController.navigate(Graph.LOGOUT_GRAPH)
+        changeGraph.value=false
     }
 }
 
@@ -415,11 +432,7 @@ private fun logout(viewModel: SettingViewModel,
                    logout : MutableState<Boolean>,
                    navController: NavController){
     viewModel.clearLocalDB(logout)
-    navController.navigate(Graph.ROOT) {
-        popUpTo(AuthScreen.LOGIN.route) {
-            inclusive = true
-        }
-    }
+
 }
 
 @Composable

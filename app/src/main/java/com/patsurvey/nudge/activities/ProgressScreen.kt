@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -51,7 +53,7 @@ fun ProgressScreen(
 
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
-
+    val context = LocalContext.current
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
 
@@ -63,7 +65,9 @@ fun ProgressScreen(
     LaunchedEffect(key1 = true) {
         viewModel.setVoEndorsementCompleteForVillages()
     }
-
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
     Surface(
         modifier = Modifier
             .fillMaxSize()
