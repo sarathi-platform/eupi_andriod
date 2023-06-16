@@ -492,9 +492,9 @@ class SyncHelper (
 
     private fun deleteTolaToNetwork(networkCallbackListener: NetworkCallbackListener) {
 //        settingViewModel.stepOneSyncStatus.value = 1
-        Log.e("add tola","called")
+        Log.e("delete tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val tolaList = tolaDao.fetchAllTolaNeedToDelete(1)
+            val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
                 for (tola in tolaList) {
@@ -688,7 +688,7 @@ class SyncHelper (
 //        settingViewModel.stepOneSyncStatus.value = 1
         Log.e("add tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToDelete(1)
+            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {
