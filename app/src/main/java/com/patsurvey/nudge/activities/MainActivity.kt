@@ -35,6 +35,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
@@ -143,6 +144,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                     mViewModel.casteListDao
                 )
 
+                AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo)
+
                 connectionLiveData = ConnectionMonitor(this)
                 connectionLiveData.observe(this) { isNetworkAvailable ->
                     onlineStatus.value = isNetworkAvailable
@@ -160,6 +163,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     }
 
     override fun onDestroy() {
+        AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
         super.onDestroy()
     }

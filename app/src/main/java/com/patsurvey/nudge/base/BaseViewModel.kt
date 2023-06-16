@@ -4,6 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
+import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiResponseFailException
@@ -30,6 +32,11 @@ import java.io.IOException
 import java.net.SocketTimeoutException
 
 abstract class BaseViewModel : ViewModel(){
+
+    val tokenExpired = RetryHelper.tokenExpired
+
+    val baseOtpNumber = mutableStateOf("")
+
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
@@ -113,6 +120,7 @@ abstract class BaseViewModel : ViewModel(){
     }
     open fun onCatchError(e:Exception, api: ApiType) {
         Log.d(TAG, "onCatchError: ${e.message}")
+        AnalyticsHelper.logServiceFailedEvent(exception = e, apiType = api)
         when (e) {
             is HttpException -> {
                 Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")

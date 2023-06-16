@@ -4,6 +4,7 @@ package com.patsurvey.nudge.activities.ui.progress
 import android.content.Context
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -86,6 +87,8 @@ class VillageSelectionViewModel @Inject constructor(
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
 
+    val shouldRetry = mutableStateOf(false)
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
@@ -100,8 +103,10 @@ class VillageSelectionViewModel @Inject constructor(
                     fetchVillageList()
 //                else
 //                    showLoader.value = false
-            } else
+            } else {
                 fetchVillageList()
+            }
+            shouldRetry.value = true
         }
     }
 
@@ -190,13 +195,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(response.message)
-                                    RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.STEP_LIST_API)
                                 }
                             } catch (ex: Exception) {
-                                RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
-                                RetryHelper.stepListApiVillageId.add(village.id)
+                                if (ex !is JsonSyntaxException) {
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
+                                }
                                 onCatchError(ex, ApiType.STEP_LIST_API)
                             }
                             try {
@@ -208,11 +217,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(cohortResponse.message)
-                                    RetryHelper.retryApiList.add(ApiType.TOLA_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.TOLA_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.TOLA_LIST_API)
                                 }
                             } catch (ex: Exception) {
-                                RetryHelper.retryApiList.add(ApiType.TOLA_LIST_API)
+                                if (ex !is JsonSyntaxException) {
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.TOLA_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
+                                }
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
                             }
                             try {
@@ -296,11 +311,16 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse.message)
-                                    RetryHelper.retryApiList.add(ApiType.DIDI_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.DIDI_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.DIDI_LIST_API)
                                 }
                             } catch (ex: Exception) {
-                                RetryHelper.retryApiList.add(ApiType.DIDI_LIST_API)
+                                if (ex !is JsonSyntaxException)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.DIDI_LIST_API)
+                                RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.DIDI_LIST_API)
                             }
                             try {
@@ -336,11 +356,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     val ex = ApiResponseFailException(
                                         didiRankingResponse.message ?: "Didi Ranking Api Failed"
                                     )
-                                    RetryHelper.retryApiList.add(ApiType.DIDI_RANKING_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API))
+                                        RetryHelper.retryApiList.add(ApiType.DIDI_RANKING_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.DIDI_RANKING_API)
                                 }
                             } catch (ex: Exception) {
-                                RetryHelper.retryApiList.add(ApiType.DIDI_RANKING_API)
+                                if (ex !is JsonSyntaxException) {
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API))
+                                        RetryHelper.retryApiList.add(ApiType.DIDI_RANKING_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
+                                }
                                 onCatchError(ex, ApiType.DIDI_RANKING_API)
                             }
                         }
@@ -377,13 +403,17 @@ class VillageSelectionViewModel @Inject constructor(
                                         }
                                     } else {
                                         val ex = ApiResponseFailException(quesListResponse.message)
-                                        RetryHelper.retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API))
+                                            RetryHelper.retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
                                         RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                                         onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
                                     }
                                 } catch (ex: Exception) {
-                                    RetryHelper.retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
-                                    RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
+                                    if (ex !is JsonSyntaxException) {
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API))
+                                            RetryHelper.retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
+                                        RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
+                                    }
                                     onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
                                 }
 
@@ -400,7 +430,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 val answerApiResponse = apiService.fetchPATSurveyToServer(it)
                                 if (answerApiResponse.status.equals(SUCCESS, true)) {
                                     answerApiResponse.data?.let {
-                                        val answerList: ArrayList<SectionAnswerEntity> = arrayListOf()
+                                        val answerList: ArrayList<SectionAnswerEntity> =
+                                            arrayListOf()
                                         val numAnswerList: ArrayList<NumericAnswerEntity> =
                                             arrayListOf()
                                         it.forEach { item ->
@@ -412,7 +443,10 @@ class VillageSelectionViewModel @Inject constructor(
                                             )
                                             if (item?.answers?.isNotEmpty() == true) {
                                                 item?.answers?.forEach { answersItem ->
-                                                    if (answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true) {
+                                                    if (answersItem?.questionType?.equals(
+                                                            QuestionType.Numeric_Field.name
+                                                        ) == true
+                                                    ) {
                                                         answerList.add(
                                                             SectionAnswerEntity(
                                                                 id = 0,
@@ -453,7 +487,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             ?: 0,
                                                                         didiId = item.beneficiaryId
                                                                             ?: 0,
-                                                                        count = optionItem?.count ?: 0
+                                                                        count = optionItem?.count
+                                                                            ?: 0
                                                                     )
                                                                 )
                                                             }
@@ -463,7 +498,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                         answerList.add(
                                                             SectionAnswerEntity(
                                                                 id = 0,
-                                                                optionId = answersItem?.options?.get(0)?.optionId
+                                                                optionId = answersItem?.options?.get(
+                                                                    0
+                                                                )?.optionId
                                                                     ?: 0,
                                                                 didiId = item.beneficiaryId ?: 0,
                                                                 questionId = answersItem?.questionId
@@ -500,16 +537,16 @@ class VillageSelectionViewModel @Inject constructor(
                                         }
                                     }
                                 } else {
-                                    val ex =ApiResponseFailException(answerApiResponse.message)
+                                    val ex = ApiResponseFailException(answerApiResponse.message)
                                     RetryHelper.retryApiList.add(ApiType.PAT_CRP_SURVEY_SUMMARY)
                                     onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                                 }
                             } catch (ex: Exception) {
-                                RetryHelper.retryApiList.add(ApiType.PAT_CRP_SURVEY_SUMMARY)
+                                if (ex !is JsonSyntaxException) {
+                                    RetryHelper.retryApiList.add(ApiType.PAT_CRP_SURVEY_SUMMARY)
+                                }
                                 onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                             }
-
-
                         }
                     }
                 }
@@ -578,6 +615,12 @@ class VillageSelectionViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         networkErrorMessage.value = errorModel?.message.toString()
 
+    }
+
+    fun startRetryIfAny() {
+        RetryHelper.retryApiList.forEach { apiType ->
+            RetryHelper.retryApi(apiType)
+        }
     }
 
 }

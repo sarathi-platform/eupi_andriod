@@ -6,10 +6,15 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
@@ -275,5 +280,9 @@ class QuestionScreenViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 }

@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.showToast
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -32,6 +33,10 @@ class VideoListViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
 
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     val initialPosition = mutableStateOf(mutableMapOf<Int, Float>())

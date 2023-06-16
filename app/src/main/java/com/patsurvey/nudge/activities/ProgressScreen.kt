@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.content.Context
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -25,12 +26,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.activities.ui.login.OtpInputFieldForDialog
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.customviews.CustomSnackBarViewState
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -49,6 +57,8 @@ fun ProgressScreen(
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
+    val snackState = rememberSnackBarState()
+
     val steps by viewModel.stepList.collectAsState()
     val villages by viewModel.villageList.collectAsState()
 
@@ -62,6 +72,10 @@ fun ProgressScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.setVoEndorsementCompleteForVillages()
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.startRetryIfAny()
     }
 
     Surface(
@@ -144,6 +158,28 @@ fun ProgressScreen(
                     }
                 } else {
                     Column(modifier = Modifier) {
+
+                        if (viewModel.tokenExpired.value) {
+                            ShowOptDialog(
+                                modifier = Modifier,
+                                context = LocalContext.current,
+                                viewModel = viewModel,
+                                snackState = snackState,
+                                setShowDialog = {
+                                    viewModel.tokenExpired.value = false
+                                },
+                                positiveButtonClicked = {
+                                    RetryHelper.updateOtp(viewModel.baseOtpNumber) { success, message ->
+                                        if (success){
+                                            viewModel.tokenExpired.value = false
+                                        }
+                                        else {
+                                            snackState.addMessage(message = message, isSuccess = false, isCustomIcon = false)
+                                        }
+                                    }
+                                }
+                            )
+                        }
 
                     LazyColumn(
                         Modifier
@@ -650,6 +686,87 @@ fun ProgressScreenTopBar(
                         onHamburgerClick()
                     }
             )
+        }
+    }
+}
+
+@Composable
+fun ShowOptDialog(
+    modifier: Modifier = Modifier,
+    context: Context,
+    viewModel: BaseViewModel,
+    snackState: CustomSnackBarViewState,
+    setShowDialog: (Boolean) -> Unit,
+    positiveButtonClicked: () -> Unit
+) {
+    var otpValue by remember {
+        mutableStateOf("")
+    }
+
+    LaunchedEffect(key1 = viewModel.baseOtpNumber.value) {
+        RetryHelper.generateOtp() { success, message, mobileNumber ->
+            if (success) {
+                snackState.addMessage(message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
+                    isSuccess = true, isCustomIcon = false)
+            } else {
+                snackState.addMessage(
+                    message = message,
+                    isSuccess = false,
+                    isCustomIcon = false
+                )
+            }
+        }
+    }
+
+    Dialog(onDismissRequest = { setShowDialog(false) }, DialogProperties(
+        dismissOnBackPress = false,
+        dismissOnClickOutside = false
+    )) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Session Expired",
+                        textAlign = TextAlign.Center,
+                        style = buttonTextStyle,
+                        maxLines = 1,
+                        color = textColorDark,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = "Please enter OTP to relogin",
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyleMediumWeight,
+                        maxLines = 2,
+                        color = textColorDark,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+
+                    OtpInputFieldForDialog(otpLength = 6, onOtpChanged = { otp ->
+                        otpValue = otp
+                        viewModel.baseOtpNumber.value = otpValue
+                    })
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.submit),
+                            isArrowRequired = false,
+                            isActive = otpValue.length == OTP_LENGTH,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            positiveButtonClicked()
+                            setShowDialog(false)
+                        }
+                    }
+                }
+            }
         }
     }
 }

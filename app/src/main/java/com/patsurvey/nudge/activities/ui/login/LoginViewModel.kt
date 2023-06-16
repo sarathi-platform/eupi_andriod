@@ -7,11 +7,14 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -54,5 +57,9 @@ class LoginViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
         networkErrorMessage.value= error?.message.toString()
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 }

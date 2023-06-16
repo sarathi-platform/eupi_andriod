@@ -16,6 +16,7 @@ import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -58,6 +59,10 @@ class SurveySummaryViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     @SuppressLint("SuspiciousIndentation")
