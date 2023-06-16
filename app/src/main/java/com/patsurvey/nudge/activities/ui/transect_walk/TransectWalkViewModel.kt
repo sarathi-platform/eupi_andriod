@@ -73,7 +73,7 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = tola.location.lat ?: 0.0,
                 longitude = tola.location.long ?: 0.0,
-                villageEntity.value?.id ?: 0,
+                villageId = villageEntity.value?.id ?: 0,
                 status = 1,
                 createdDate = System.currentTimeMillis(),
                 modifiedDate = System.currentTimeMillis(),

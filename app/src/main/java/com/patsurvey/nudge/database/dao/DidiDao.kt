@@ -2,10 +2,8 @@ package com.patsurvey.nudge.database.dao
 
 import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
-import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -190,18 +188,18 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE")
     fun deleteAllDidi()
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = serverId")
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId")
     fun fetchAllDidiNeedToAdd( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != serverId")
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllDidiNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where status = :status")
-    fun fetchAllDidiNeedToDelete(status: Int) : List<TolaEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status")
+    fun fetchAllDidiNeedToDelete(status: Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where status = :status and transactionId = :transactionId")
-    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?) : List<TolaEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId = :transactionId")
+    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?) : List<DidiEntity>
 
-    @Query("DELETE from $DIDI_TABLE where id = id")
+    @Query("DELETE from $DIDI_TABLE where id = :id")
     fun deleteDidi(id : Int)
 }
