@@ -19,6 +19,7 @@ import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -471,6 +472,10 @@ class AddDidiViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {

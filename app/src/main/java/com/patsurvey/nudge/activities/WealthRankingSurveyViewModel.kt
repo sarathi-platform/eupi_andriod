@@ -17,6 +17,7 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -178,6 +179,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {

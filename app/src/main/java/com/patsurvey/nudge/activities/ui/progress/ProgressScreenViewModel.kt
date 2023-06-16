@@ -21,6 +21,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
@@ -212,4 +213,7 @@ class ProgressScreenViewModel @Inject constructor(
         showLoader.value = false
     }
 
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
+    }
 }

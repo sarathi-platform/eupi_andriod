@@ -8,11 +8,16 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
@@ -215,6 +220,10 @@ class WealthRankingViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     fun closeLastCard(cardId: Int) {

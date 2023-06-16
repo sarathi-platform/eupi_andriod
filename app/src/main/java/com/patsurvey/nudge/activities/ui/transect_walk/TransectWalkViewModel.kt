@@ -20,6 +20,7 @@ import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
@@ -407,6 +408,10 @@ class TransectWalkViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
         networkErrorMessage.value = error?.message.toString()
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     fun getFormPathKey(subPath: String): String {

@@ -32,8 +32,10 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
@@ -58,6 +60,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     val isOnline = mutableStateOf(false)
 
     var downloader: AndroidDownloader? = null
+
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         localizationDelegate.addOnLocaleChangedListener(this)
@@ -133,6 +136,23 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
                 downloader = AndroidDownloader(applicationContext)
 
+                }
+
+                RetryHelper.init(
+                    mViewModel.prefRepo,
+                    mViewModel.apiService,
+                    mViewModel.tolaDao,
+                    mViewModel.stepsListDao,
+                    mViewModel.villegeListDao,
+                    mViewModel.didiDao,
+                    mViewModel.answerDao,
+                    mViewModel.numericAnswerDao,
+                    mViewModel.questionDao,
+                    mViewModel.casteListDao
+                )
+
+                AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo)
+
                 connectionLiveData = ConnectionMonitor(this)
                 connectionLiveData.observe(this) { isNetworkAvailable ->
                     onlineStatus.value = isNetworkAvailable
@@ -144,14 +164,13 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
-
-
     }
     fun exitApplication(){
         this.finish()
     }
 
     override fun onDestroy() {
+        AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
         super.onDestroy()
     }
