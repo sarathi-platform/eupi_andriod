@@ -35,6 +35,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.setKeyboardToReadjust
@@ -193,7 +194,10 @@ fun LoginScreen(
                     } else {
                         viewModel.generateOtp { success, message ->
                             if (success) {
-                                navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                                if(navController.graph.route?.equals(Graph.HOME,true) == true){
+                                    navController.navigate(route = "log_otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                                }else
+                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                             } else {
                                 snackState.addMessage(
                                     message = message,

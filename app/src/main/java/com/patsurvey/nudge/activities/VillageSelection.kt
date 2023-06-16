@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
@@ -80,29 +81,10 @@ fun VillageSelectionScreen(
         showCustomToast(context, viewModel.networkErrorMessage.value)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
-    var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
-//    BackHandler {
-//        (context as? Activity)?.finish()
-//    }
-
-    if (showToast) {
-        Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast = false
+    BackHandler {
+        (context as? Activity)?.finish()
     }
 
-
-    LaunchedEffect(key1 = backPressState) {
-        if (backPressState == BackPress.InitialTouch) {
-            delay(2000)
-            backPressState = BackPress.Idle
-            (context.findActivity() as MainActivity).exitApplication()
-        }
-    }
-
-    BackHandler(backPressState == BackPress.Idle) {
-        backPressState = BackPress.InitialTouch
-        showToast = true
-    }
 
     LaunchedEffect(key1 = true) {
         viewModel.saveVideosToDb(context)
@@ -386,31 +368,5 @@ fun VillageAndVoBoxForBottomSheet(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun BackPressSample() {
-    var showToast by remember { mutableStateOf(false) }
-
-    var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
-    val context = LocalContext.current
-
-    if (showToast) {
-        Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast = false
-    }
-
-
-    LaunchedEffect(key1 = backPressState) {
-        if (backPressState == BackPress.InitialTouch) {
-            delay(2000)
-            backPressState = BackPress.Idle
-        }
-    }
-
-    BackHandler(backPressState == BackPress.Idle) {
-        backPressState = BackPress.InitialTouch
-        showToast = true
     }
 }

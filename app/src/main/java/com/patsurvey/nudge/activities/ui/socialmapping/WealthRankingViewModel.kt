@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -21,6 +22,7 @@ import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.SyncStatus
 import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -59,6 +61,8 @@ class WealthRankingViewModel @Inject constructor(
 
     var villageId: Int = -1
     var stepId: Int = -1
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
 
     val showLoader = mutableStateOf(false)
 
@@ -181,19 +185,32 @@ class WealthRankingViewModel @Inject constructor(
                 updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
-                withContext(Dispatchers.IO) {
-                    val updateWealthRankResponse=apiService.updateDidiRanking(
-                        listOf(EditDidiWealthRankingRequest(didiId, StepType.WEALTH_RANKING.name, rank),
-                            EditDidiWealthRankingRequest(didiId, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                CheckDBStatus(this@WealthRankingViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
+                CheckDBStatus(this@WealthRankingViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
+                if(isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal && isDidiSynced.value == SyncStatus.NEED_TO_SYNC.ordinal) {
+                    withContext(Dispatchers.IO) {
+                        val updateWealthRankResponse = apiService.updateDidiRanking(
+                            listOf(
+                                EditDidiWealthRankingRequest(
+                                    didiId,
+                                    StepType.WEALTH_RANKING.name,
+                                    rank
+                                ),
+                                EditDidiWealthRankingRequest(
+                                    didiId,
+                                    StepType.SOCIAL_MAPPING.name,
+                                    StepStatus.COMPLETED.name
+                                )
+                            )
                         )
-                    )
-                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                        if(didiEntity.serverId == 0){
-                            didiDao.setNeedToPostRanking(didiEntity.id,false)
-                        }else
-                            didiDao.setNeedToPostRankingServerId(didiEntity.serverId,false)
-                    } else {
-                        networkCallbackListener.onFailed()
+                        if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                            if (didiEntity.serverId == 0) {
+                                didiDao.setNeedToPostRanking(didiEntity.id, false)
+                            } else
+                                didiDao.setNeedToPostRankingServerId(didiEntity.serverId, false)
+                        } else {
+                            networkCallbackListener.onFailed()
+                        }
                     }
                 }
             } catch (ex: Exception) {
