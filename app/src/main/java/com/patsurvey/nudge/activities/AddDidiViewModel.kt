@@ -102,7 +102,7 @@ class AddDidiViewModel @Inject constructor(
                 _didiList.value = updatedList
                 _casteList.emit(
                     casteListDao.getAllCasteForLanguage(
-                        prefRepo.getAppLanguageId() ?: 0
+                        prefRepo.getAppLanguageId() ?: 2
                     )
                 )
                 _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
@@ -413,8 +413,6 @@ class AddDidiViewModel @Inject constructor(
                 isSocialMappingComplete.value = isComplete
                 isPATSurveyComplete.value = isComplete
             }
-            withContext(Dispatchers.IO) {
-            }
 
         }
     }
@@ -690,7 +688,6 @@ class AddDidiViewModel @Inject constructor(
     fun getPatStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
-            Log.d(TAG, "getPatStepStatus: $stepStatus ")
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     delay(100)

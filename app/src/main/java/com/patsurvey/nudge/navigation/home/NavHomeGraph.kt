@@ -26,6 +26,7 @@ import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
+import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementStepScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
@@ -44,13 +45,13 @@ fun NavHomeGraph(navController: NavHostController) {
                 stepsNavHostController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxWidth(),
-                onNavigateToStep = { villageId, stepId, index ->
+                onNavigateToStep = { villageId, stepId, index, isStepComplete ->
                     when (index) {
                         0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
                         1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
                         2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
                         3 -> navController.navigate("pat_screens/$villageId/$stepId")
-                        4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId")
+                        4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId/$isStepComplete")
                     }
                 },
                 onNavigateToSetting = {
@@ -64,12 +65,16 @@ fun NavHomeGraph(navController: NavHostController) {
                 navController = navController,
                 modifier = Modifier
                     .fillMaxSize(),
-                didiViewModel = hiltViewModel(), -1, -1
-            ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
-                    launchSingleTop = true
+                didiViewModel = hiltViewModel(), -1, -1,
+                onNavigateToAddDidi = {
+                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToSummary = {
+
                 }
-            }
+            )
         }
         detailsNavGraph(navController = navController)
         addDidiNavGraph(navController = navController)
@@ -170,34 +175,6 @@ fun NavGraphBuilder.addDidiNavGraph(navController: NavHostController) {
     }
 }
 
-/*fun NavGraphBuilder.didiPatSurveyNavGraph(navController: NavHostController) {
-    navigation(
-        route = Graph.DIDI_PAT_SUMMARY,
-        startDestination = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
-        arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
-            type = NavType.StringType
-            nullable = true
-        })
-    ) {
-        composable(route = PatScreens.PAT_IMAGE_PREVIEW_SCREEN.route,
-            arguments = listOf(navArgument(ARG_DIDI_DETAILS) {
-                type = NavType.StringType
-                nullable = true
-                defaultValue = null
-            })
-        ) {
-            PatDidiSummaryScreen(
-                navController = navController,
-                modifier = Modifier
-                    .fillMaxSize(),
-                didiId = it.arguments?.getString(ARG_DIDI_DETAILS) ?: BLANK_STRING,
-                patDidiSummaryViewModel = hiltViewModel(),
-            ) {
-                navController.popBackStack()
-            }
-        }
-    }
-}*/
 
 fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
     navigation(
@@ -222,12 +199,16 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 didiViewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
-                    launchSingleTop = true
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                onNavigateToAddDidi = {
+                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToSummary = {
+
                 }
-            }
+            )
         }
 
         composable(
@@ -369,12 +350,16 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 didiViewModel = hiltViewModel(),
                 villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
-                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
-            ) {
-                navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
-                    launchSingleTop = true
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1,
+                onNavigateToAddDidi = {
+                    navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
+                        launchSingleTop = true
+                    }
+                },
+                onNavigateToSummary = {
+                    navController.navigate("pat_survey_summary/${it.arguments?.getInt(ARG_STEP_ID)}/true")
                 }
-            }
+            )
         }
 
         composable(route = PatScreens.DIDI_PAT_SUMMARY_SCREEN.route,
@@ -624,12 +609,20 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
             type = NavType.IntType
+        }, navArgument(ARG_IS_STEP_COMPLETE) {
+            type = NavType.BoolType
         })
     ) {
         composable(
             route = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route
         ) {
-            VoEndorsementScreen(viewModel = hiltViewModel(), navController = navController, modifier = Modifier.fillMaxSize(), stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1)
+            VoEndorsementStepScreen(viewModel = hiltViewModel(),
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1){
+                navController.navigate("vo_endorsement_survey_summary/${ it.arguments?.getInt(ARG_STEP_ID) ?: -1}/true")
+            }
         }
 
         composable(VoEndorsmentScreeens.FORM_PICTURE_SCREEN.route,

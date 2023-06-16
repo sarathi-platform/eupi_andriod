@@ -9,6 +9,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -42,17 +44,21 @@ fun DidiScreen(
     didiViewModel: AddDidiViewModel,
     villageId:Int,
     stepId:Int,
-    onNavigateToAddDidi:()-> Unit
+    onNavigateToAddDidi:()-> Unit,
+    onNavigateToSummary:()-> Unit
 ) {
 
     LaunchedEffect(key1 = true) {
         didiViewModel.checkIfTolaIsNotDeleted()
         didiViewModel.prefRepo.saveStepId(stepId)
+        didiViewModel.isSocialMappingComplete(stepId)
+    }
+    val openSummaryPage = remember {
+        mutableStateOf(false)
     }
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-    val fromPage = didiViewModel.prefRepo.getFromPage()
     if(didiViewModel.showLoader.value){
         CustomProgressBar(modifier = Modifier)
     }else {
@@ -121,15 +127,34 @@ fun DidiScreen(
                 }
             }
         }
-        if (didiViewModel.didiList.value.isNotEmpty()) {
-            SocialMappingDidiListScreen(
-                navController,
-                modifier = modifier,
-                didiViewModel = didiViewModel,
-                villageId = villageId,
-                stepId = stepId
-            )
-        }
+
+
+            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                if(didiViewModel.isPATSurveyComplete.value){
+                    if(!openSummaryPage.value)
+                        onNavigateToSummary()
+                     openSummaryPage.value = true
+                }else{
+                    SocialMappingDidiListScreen(
+                        navController,
+                        modifier = modifier,
+                        didiViewModel = didiViewModel,
+                        villageId = villageId,
+                        stepId = stepId
+                    )
+                }
+            }else{
+                if(didiViewModel.didiList.value.isNotEmpty()) {
+                    SocialMappingDidiListScreen(
+                        navController,
+                        modifier = modifier,
+                        didiViewModel = didiViewModel,
+                        villageId = villageId,
+                        stepId = stepId
+                    )
+                }
+            }
+
     }
     LaunchedEffect(key1 = Unit){
         didiViewModel.fetchDidisFrommDB()

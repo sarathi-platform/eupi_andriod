@@ -89,17 +89,8 @@ fun SocialMappingDidiListScreen(
     }
 
     LaunchedEffect(key1 = true) {
-        if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-            showLoader.value = true
-            didiViewModel.getPatStepStatus(stepId) {
-                if (it) {
-                    showLoader.value = false
-                    navController.navigate("pat_survey_summary/$stepId/$it")
-                } else{
-                    showLoader.value = false
-                }
-            }
-        }
+        didiViewModel.isSocialMappingComplete(stepId)
+        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
     LaunchedEffect(key1 = true) {
