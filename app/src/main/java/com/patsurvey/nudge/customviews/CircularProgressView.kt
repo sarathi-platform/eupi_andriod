@@ -8,7 +8,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -48,7 +53,7 @@ fun CircularProgressBar(
     }
 
     var animationPlayed by remember {
-        mutableStateOf(false)
+        mutableStateOf(true)
     }
 
     val curPercentage = animateFloatAsState(
@@ -138,18 +143,18 @@ fun CircularProgressBarWithOutText(
         mutableStateOf(Offset.Zero)
     }
 
-    var animationPlayed by remember {
-        mutableStateOf(false)
-    }
+//    var animationPlayed by remember {
+//        mutableStateOf(true)
+//    }
 
     val curPercentage = animateFloatAsState(
-        targetValue = if (animationPlayed) initialPosition else 0f,
+        targetValue = initialPosition,
         animationSpec = tween()
     )
 
-    LaunchedEffect(key1 = initialPosition) {
-        animationPlayed = true
-    }
+//    LaunchedEffect(key1 = initialPosition) {
+//        animationPlayed = true
+//    }
 
     Box(modifier = modifier) {
         Canvas(modifier = Modifier.fillMaxSize()) {
@@ -205,6 +210,17 @@ fun Preview() {
         initialPosition = 4,
         borderThickness = 10.dp,
         centerTextSize = 15.sp
+    )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun Preview2(
+    modifier: Modifier = Modifier
+) {
+    CircularProgressBarWithOutText(
+        modifier = modifier,
+        initialPosition = 50f
     )
 }
 
