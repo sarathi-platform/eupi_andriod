@@ -12,7 +12,11 @@ import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -84,7 +88,7 @@ class ConfigViewModel @Inject constructor(
     fun addDefaultLanguage() {
         languageListDao.insertLanguage(
             LanguageEntity(
-                id = 1,
+                id = 2,
                 language = "English",
                 langCode = "en",
                 orderNumber = 1,
