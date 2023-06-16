@@ -5,18 +5,18 @@ import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.TOLA_TABLE
-import com.patsurvey.nudge.utils.Tola
 
 @Entity(tableName = TOLA_TABLE)
 data class TolaEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int,
+    @ColumnInfo(name = "serverId")
+    var serverId: Int = 0,
     @ColumnInfo(name = "name")
     var name : String,
     @ColumnInfo(name = "type")

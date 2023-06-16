@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.database.dao
 
 import androidx.room.*
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.utils.DIDI_TABLE
@@ -56,4 +57,22 @@ interface TolaDao {
 
     @Query("DELETE from $TOLA_TABLE")
     fun deleteAllTola()
+
+    @Query("SELECT * from $TOLA_TABLE where status = :status")
+    fun fetchAllTolaNeedToDelete(status: Int) : List<TolaEntity>
+
+    @Query("SELECT * from $TOLA_TABLE where status = :status and transactionId = transactionId")
+    fun fetchAllPendingTolaNeedToDelete(status: Int,transactionId: String?) : List<TolaEntity>
+
+    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId != transactionId")
+    fun fetchAllPendingTolaNeedToUpdate(needsToPost: Boolean,transactionId: String?) : List<TolaEntity>
+
+    @Query("DELETE from $TOLA_TABLE where id = :id")
+    fun deleteTola(id: Int)
+
+    @Query("Update $TOLA_TABLE SET serverId = :serverId, needsToPost = :needsToPost, transactionId = :transactionId, createdDate = :createdDate, modifiedDate =:modifiedDate where id = :id")
+    fun updateTolaDetailAfterSync(id: Int, serverId: Int, needsToPost: Boolean, transactionId: String, createdDate: Long, modifiedDate: Long)
+
+    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != serverId")
+    fun fetchAllTolaNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<TolaEntity>
 }
