@@ -683,7 +683,7 @@ object RetryHelper {
 
     fun onServerError(errorModel: ErrorModelWithApi?) {
         if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(RESPONSE_CODE_CONFLICT) == true) {
-            tokenExpired.value = true
+//            tokenExpired.value = true
         }
     }
 

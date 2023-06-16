@@ -87,6 +87,8 @@
     <string name="otp_send_to_mobile_number_message">%1$ के मोबाइल नंबर पर भेजल गइल OTP</string>
     <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} के मोबाइल नंबर पर भेजल गइल OTP</string>
     <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">ओटीपी resent to {MOBILE_NUMBER}</string>
+
 
     <string name="complete_didi_addition">पूरा दीदी जोड़ल</string>
 

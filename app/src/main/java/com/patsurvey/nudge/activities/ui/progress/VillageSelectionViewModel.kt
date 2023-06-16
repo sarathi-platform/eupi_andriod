@@ -47,6 +47,8 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
+import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
@@ -62,6 +64,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import retrofit2.HttpException
 import java.io.File
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -602,6 +605,11 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
+                if (ex is HttpException) {
+                    if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()?.code() == RESPONSE_CODE_CONFLICT) {
+                        tokenExpired.value = true
+                    }
+                }
                 withContext(Dispatchers.Main) {
                     showLoader.value = false
                 }

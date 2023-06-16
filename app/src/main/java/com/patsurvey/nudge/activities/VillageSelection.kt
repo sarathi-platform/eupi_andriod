@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities
 
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -51,6 +50,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -61,12 +61,11 @@ import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BackPress
-import com.patsurvey.nudge.utils.findActivity
+import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.showCustomToast
-import kotlinx.coroutines.delay
 
 @Composable
 fun VillageSelectionScreen(
@@ -75,12 +74,24 @@ fun VillageSelectionScreen(
     viewModel: VillageSelectionViewModel
 ) {
     val villages by viewModel.villageList.collectAsState()
+
+    val snackState = rememberSnackBarState()
+
     val context = LocalContext.current
     var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         showCustomToast(context, viewModel.networkErrorMessage.value)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
+
+    val isResendOTPEnable = remember { mutableStateOf(false) }
+    val formattedTime = remember {
+        mutableStateOf(SEC_30_STRING)
+    }
+    var isResendOTPVisible by remember {
+        mutableStateOf(true)
+    }
+
     BackHandler {
         (context as? Activity)?.finish()
     }
@@ -90,6 +101,20 @@ fun VillageSelectionScreen(
         viewModel.saveVideosToDb(context)
     }
 
+    LaunchedEffect(key1 = viewModel.tokenExpired.value) {
+        RetryHelper.generateOtp() { success, message, mobileNumber ->
+            if (success) {
+                snackState.addMessage(message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
+                    isSuccess = true, isCustomIcon = false)
+            } else {
+                snackState.addMessage(
+                    message = message,
+                    isSuccess = false,
+                    isCustomIcon = false
+                )
+            }
+        }
+    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -120,6 +145,31 @@ fun VillageSelectionScreen(
                         .align(Alignment.Center)
                 )
             }
+
+            if (viewModel.tokenExpired.value) {
+                ShowOptDialog(
+                    modifier = Modifier,
+                    context = LocalContext.current,
+                    viewModel = viewModel,
+                    snackState = snackState,
+                    /*isResendOTPEnable = isResendOTPEnable,
+                    formattedTime = formattedTime,*/
+                    setShowDialog = {
+                        viewModel.tokenExpired.value = false
+                    },
+                    positiveButtonClicked = {
+                        RetryHelper.updateOtp(viewModel.baseOtpNumber) { success, message ->
+                            if (success){
+                                viewModel.tokenExpired.value = false
+                            }
+                            else {
+                                snackState.addMessage(message = message, isSuccess = false, isCustomIcon = false)
+                            }
+                        }
+                    }
+                )
+            }
+
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }

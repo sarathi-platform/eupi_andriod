@@ -1,8 +1,8 @@
 package com.patsurvey.nudge.activities
 
 import android.app.Activity
-import androidx.activity.compose.BackHandler
 import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -161,7 +161,7 @@ fun ProgressScreen(
                 } else {
                     Column(modifier = Modifier) {
 
-                        if (viewModel.tokenExpired.value) {
+                        if (/*viewModel.tokenExpired.value*/false) {
                             ShowOptDialog(
                                 modifier = Modifier,
                                 context = LocalContext.current,
@@ -699,13 +699,16 @@ fun ShowOptDialog(
     viewModel: BaseViewModel,
     snackState: CustomSnackBarViewState,
     setShowDialog: (Boolean) -> Unit,
-    positiveButtonClicked: () -> Unit
+    positiveButtonClicked: () -> Unit,
+    /*isResendOTPEnable: MutableState<Boolean>,
+    formattedTime: MutableState<String>,
+    isResendOTPVisible: MutableState<Boolean>*/
 ) {
     var otpValue by remember {
         mutableStateOf("")
     }
 
-    LaunchedEffect(key1 = viewModel.baseOtpNumber.value) {
+    LaunchedEffect(key1 = viewModel.tokenExpired.value) {
         RetryHelper.generateOtp() { success, message, mobileNumber ->
             if (success) {
                 snackState.addMessage(message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
@@ -755,6 +758,78 @@ fun ShowOptDialog(
                         otpValue = otp
                         viewModel.baseOtpNumber.value = otpValue
                     })
+
+                /*    AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                        Row(
+                            horizontalArrangement = Arrangement.End,
+                            modifier = Modifier.fillMaxWidth(),
+
+                            ) {
+                            val countDownTimer =
+                                object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                                    @SuppressLint("SimpleDateFormat")
+                                    override fun onTick(millisUntilFinished: Long) {
+                                        val dateTimeFormat= SimpleDateFormat("00:ss")
+                                        formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
+
+                                    }
+
+                                    override fun onFinish() {
+                                        isResendOTPEnable.value = true
+                                        isResendOTPVisible = !isResendOTPVisible
+                                    }
+
+                                }
+                            DisposableEffect(key1 = !isResendOTPEnable.value) {
+                                countDownTimer.start()
+                                onDispose {
+                                    countDownTimer.cancel()
+                                }
+                            }
+                            Text(
+                                text = stringResource(
+                                    id = R.string.expiry_login_verify_otp,
+                                    formattedTime.value
+                                ),
+                                color = textColorDark,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimensionResource(id = R.dimen.dp_8))
+                                    .background(Color.Transparent)
+                            )
+                        }
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+
+                        Text(
+                            text = stringResource(id = R.string.resend_otp),
+                            color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
+                            fontSize = 14.sp,
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            textAlign = TextAlign.Center,
+                            textDecoration = TextDecoration.Underline,
+                            modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
+                                RetryHelper.generateOtp() { success, message, mobileNumber ->
+                                    snackState.addMessage(
+                                        message = context.getString(R.string.otp_resend_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
+                                        isSuccess = true, isCustomIcon = false)
+                                }
+                                formattedTime.value = SEC_30_STRING
+                                isResendOTPEnable.value = false
+                            }
+                        )
+                    }*/
+
+
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     Row(modifier = Modifier.fillMaxWidth()) {
                         ButtonPositive(
