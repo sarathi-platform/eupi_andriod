@@ -74,10 +74,6 @@ fun ProgressScreen(
         viewModel.setVoEndorsementCompleteForVillages()
     }
 
-    LaunchedEffect(key1 = Unit) {
-        viewModel.startRetryIfAny()
-    }
-
     Surface(
         modifier = Modifier
             .fillMaxSize()

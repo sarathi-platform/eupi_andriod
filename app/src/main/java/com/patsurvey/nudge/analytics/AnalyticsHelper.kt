@@ -7,6 +7,7 @@ import android.util.Log.i
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.network.ApiServicesHelper
 import com.patsurvey.nudge.utils.API_FAILED_EXCEPTION
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
@@ -33,7 +34,9 @@ object AnalyticsHelper {
     fun init(context: Context, prefRepo: PrefRepo) {
         appContext = context
         mPrefRepo = prefRepo
-        if (firebaseAnalytics == null) firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        if (firebaseAnalytics == null)
+            firebaseAnalytics = FirebaseAnalytics.getInstance(context)
+        firebaseAnalytics?.setUserProperty(EventParams.USER_NAME.eventParam, mPrefRepo?.getMobileNumber())
 //        coroutineScope = scope
     }
 
@@ -53,7 +56,8 @@ object AnalyticsHelper {
         val params = Bundle()
         params.putString(EventParams.EXCEPTION.eventParam, getExceptionName(exception = exception))
         params.putInt(EventParams.ERRORCODE.eventParam, getErrorCode(exception))
-        params.putString(EventParams.SERVICECALL.eventParam, apiType.name)
+        params.putString(EventParams.SERVICE_CALL_TYPE.eventParam, apiType.name)
+        params.putString(EventParams.API_PATH.eventParam, ApiServicesHelper.getApiSubPath(apiType))
         params.putString(EventParams.USER_NAME.eventParam, mPrefRepo?.getPref(PREF_KEY_USER_NAME, "") ?: "")
         params.putString(EventParams.SDK_INT.eventParam, EventValues.SDK_INT_VALUE.eventValue)
         params.putString(EventParams.BUILD_VERSION_NAME.eventParam, EventValues.BUILD_VERSION_NAME.eventValue)

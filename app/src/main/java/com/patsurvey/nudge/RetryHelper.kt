@@ -193,6 +193,7 @@ object RetryHelper {
     }
 
     fun retryApi(apiType: ApiType) {
+        Log.d("retryApi: ", "retryApi: ${apiType.name}")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val initialCount = if (retryCount.containsKey(apiType)) retryCount[apiType] else 0
             if ((initialCount ?: 0) <= MAX_RETRY_COUNT) {

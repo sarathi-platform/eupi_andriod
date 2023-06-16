@@ -108,11 +108,6 @@ fun VillageSelectionScreen(
         viewModel.saveVideosToDb(context)
     }
 
-    LaunchedEffect(key1 = viewModel.shouldRetry.value) {
-        viewModel.showLoader.value = true
-        viewModel.startRetryIfAny()
-        viewModel.showLoader.value = false
-    }
 
     Column(
         verticalArrangement = Arrangement.spacedBy(16.dp),

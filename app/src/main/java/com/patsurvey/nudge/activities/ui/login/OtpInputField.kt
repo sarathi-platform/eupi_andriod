@@ -114,8 +114,8 @@ fun OtpCell(
 //    }
 
     Surface(modifier = Modifier
-        .height(dimensionResource(id = R.dimen.otp_box_height_for_dialog))
-        .width(dimensionResource(id = R.dimen.otp_box_width_for_dialog))
+        .height(dimensionResource(id = R.dimen.otp_box_height))
+        .width(dimensionResource(id = R.dimen.otp_box_width))
         .padding(dimensionResource(id = R.dimen.dp_4))
         .border(
             width = 1.dp,
@@ -245,8 +245,8 @@ fun OtpCellForDialog(
 //    }
 
     Surface(modifier = Modifier
-        .height(dimensionResource(id = R.dimen.otp_box_height))
-        .width(dimensionResource(id = R.dimen.otp_box_width))
+        .height(dimensionResource(id = R.dimen.otp_box_height_for_dialog))
+        .width(dimensionResource(id = R.dimen.otp_box_width_for_dialog))
         .padding(dimensionResource(id = R.dimen.dp_4))
         .border(
             width = 1.dp,

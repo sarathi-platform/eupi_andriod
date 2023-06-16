@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.progress
 
 import android.content.Context
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
@@ -106,7 +107,6 @@ class VillageSelectionViewModel @Inject constructor(
             } else {
                 fetchVillageList()
             }
-            shouldRetry.value = true
         }
     }
 
@@ -161,6 +161,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchVillageList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                showLoader.value = true
                 withContext(Dispatchers.IO) {
                     val villageList = villageListDao.getAllVillages()
                     val localStepsList = stepsListDao.getAllSteps()
@@ -383,6 +384,9 @@ class VillageSelectionViewModel @Inject constructor(
                                             PAT_SURVEY_CONSTANT
                                         )
                                     )
+//                                    to explicitly throw exception
+//                                    throw ApiResponseFailException("Api Failed for testing")
+
                                     if (quesListResponse.status.equals(SUCCESS, true)) {
                                         quesListResponse.data?.let { questionList ->
                                             questionList.listOfQuestionSectionList?.forEach { list ->
@@ -550,12 +554,13 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                     }
                 }
-            } catch (ex: Exception) {
+            }
+            catch (ex: Exception) {
                 onCatchError(ex)
                 showLoader.value = false
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
-                showLoader.value = false
+                startRetryIfAny()
             }
         }
     }
@@ -609,15 +614,20 @@ class VillageSelectionViewModel @Inject constructor(
 //        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            _villagList.value = villageListDao.getAllVillages()
 //        }
-        networkErrorMessage.value = error?.message.toString()
+        job = CoroutineScope(Dispatchers.Main).launch {
+            networkErrorMessage.value = error?.message.toString()
+        }
+
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        networkErrorMessage.value = errorModel?.message.toString()
-
+        job = CoroutineScope(Dispatchers.Main).launch {
+            networkErrorMessage.value = errorModel?.message.toString()
+        }
     }
 
     fun startRetryIfAny() {
+        Log.d("startRetryIfAny: ", "shouldRetyCalled")
         RetryHelper.retryApiList.forEach { apiType ->
             RetryHelper.retryApi(apiType)
         }
