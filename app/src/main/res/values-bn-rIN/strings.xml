@@ -248,5 +248,6 @@
     <string name="step_5">Step 5</string>
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
+    <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনের জন্য কোন Didis উপলব্ধ.</string>
 
 </resources>
