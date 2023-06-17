@@ -189,6 +189,7 @@ class AddDidiViewModel @Inject constructor(
                 didiName.value, houseNumber.value,
                 dadaName.value, selectedTola.value.first, villageId
             )
+            val selectedTolaFromDb = tolaDao.fetchSingleTola(selectedTola.value.first)
             if (ifDidiExist == 0) {
                 var newId = didiDao.getAllDidis().size
                val lastDidi= didiDao.fetchLastDidiDetails()
@@ -204,8 +205,8 @@ class AddDidiViewModel @Inject constructor(
                         address = houseNumber.value,
                         castId = selectedCast.value.first,
                         castName = selectedCast.value.second,
-                        cohortId = selectedTola.value.first,
-                        cohortName = selectedTola.value.second,
+                        cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
+                        cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
                         relationship = HUSBAND_STRING,
                         villageId = prefRepo.getSelectedVillage().id,
                         createdDate = System.currentTimeMillis(),
@@ -666,6 +667,19 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tola = tolaDao.fetchSingleTola(selectedTola.value.first)
             if (tola == null) {
+                selectedTola.value = Pair(-1, "")
+            }
+        }
+    }
+
+
+    fun checkIfTolaIsUpdated() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        val selectedTolaId = selectedTola.value.first
+            val tola = tolaDao.fetchSingleTola(selectedTolaId)
+            if (tola != null && tola.name != selectedTola.value.second) {
+                selectedTola.value = Pair(tola.id ?: -1, tola.name ?: "")
+            } else {
                 selectedTola.value = Pair(-1, "")
             }
         }

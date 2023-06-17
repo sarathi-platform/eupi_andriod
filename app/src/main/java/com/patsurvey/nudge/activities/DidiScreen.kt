@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -26,14 +27,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
-import com.patsurvey.nudge.utils.ARG_FROM_PROGRESS
 import com.patsurvey.nudge.utils.BlueButtonWithDrawableIcon
-import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -85,6 +86,14 @@ fun DidiScreen(
                                 ),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Text(text = stringResource(id = R.string.social_mapping),
+                                style = largeTextStyle,
+                                color = blueDark,
+                                modifier = Modifier,
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis,
+                            )
+
                             Text(
                                 text = buildAnnotatedString {
                                     withStyle(

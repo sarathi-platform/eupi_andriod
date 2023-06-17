@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -98,7 +99,8 @@ class DigitalFormViewModel @Inject constructor(
         viewModel: DigitalFormViewModel,
         requestPermission: () -> Unit
     ) {
-        when{
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            when{
             ContextCompat.checkSelfPermission(
                 context,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE
@@ -130,6 +132,7 @@ class DigitalFormViewModel @Inject constructor(
                 Log.d("requestCameraPermission: ", "permission not granted")
                 requestPermission()
             }
+        }
         }
     }
 

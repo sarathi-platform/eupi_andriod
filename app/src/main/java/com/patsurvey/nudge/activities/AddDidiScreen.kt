@@ -52,6 +52,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     LaunchedEffect(key1 = true) {
         delay(200)
         didiViewModel?.checkIfTolaIsNotDeleted()
+        didiViewModel?.checkIfTolaIsUpdated()
     }
 
     Column(modifier = modifier
