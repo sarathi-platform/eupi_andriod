@@ -184,4 +184,22 @@ interface DidiDao {
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
     fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+
+    @Query("DELETE from $DIDI_TABLE")
+    fun deleteAllDidi()
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId")
+    fun fetchAllDidiNeedToAdd( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
+    fun fetchAllDidiNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status")
+    fun fetchAllDidiNeedToDelete(status: Int) : List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId = :transactionId")
+    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?) : List<DidiEntity>
+
+    @Query("DELETE from $DIDI_TABLE where id = :id")
+    fun deleteDidi(id : Int)
 }

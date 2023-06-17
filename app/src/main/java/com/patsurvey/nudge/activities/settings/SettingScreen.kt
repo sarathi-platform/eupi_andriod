@@ -95,7 +95,10 @@ import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.CustomProgressBar
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -159,6 +162,9 @@ fun SettingScreen(
     val networkError = viewModel.networkErrorMessage.value
     val isDataNeedToBeSynced = remember {
         mutableStateOf(0)
+    }
+    val logout = remember {
+        mutableStateOf(false)
     }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
@@ -329,6 +335,19 @@ fun SettingScreen(
                         .height(45.dp)
 
                 ) {
+                    viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                    if(isDataNeedToBeSynced.value == 0
+                        || isDataNeedToBeSynced.value == 2){
+                        viewModel.performLogout(object : NetworkCallbackListener{
+                            override fun onFailed() {
+                                logout(viewModel,logout,navController)
+                            }
+
+                            override fun onSuccess() {
+                                logout(viewModel,logout,navController)
+                            }
+                        })
+                    }
                 }
             }
             /*if (viewModel.showLoader.value) {
@@ -383,6 +402,23 @@ fun SettingScreen(
     }
     if(networkError.isNotEmpty()){
         showCustomToast(context,networkError)
+    }
+    if(viewModel.showAPILoader.value){
+        CustomProgressBar(modifier = Modifier)
+    }
+    if(viewModel.onLogoutError.value){
+        logout(viewModel,logout,navController)
+    }
+}
+
+private fun logout(viewModel: SettingViewModel,
+                   logout : MutableState<Boolean>,
+                   navController: NavController){
+    viewModel.clearLocalDB(logout)
+    navController.navigate(Graph.ROOT) {
+        popUpTo(AuthScreen.LOGIN.route) {
+            inclusive = true
+        }
     }
 }
 

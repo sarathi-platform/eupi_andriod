@@ -93,7 +93,7 @@ interface ApiService {
 
     @POST("/write-api/beneficiary/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
+    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<List<DidiEntity>>
 
     @POST("/pat-api/pat/save")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -111,4 +111,7 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getPendingStatusForPat(@Body transactionIdRequest: TransactionIdRequest): ApiResponseModel<List<TransactionIdResponseForPatStatus>>
 
+    @POST("/auth-api/user/logout")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun performLogout() : ApiResponseModel<String>
 }
