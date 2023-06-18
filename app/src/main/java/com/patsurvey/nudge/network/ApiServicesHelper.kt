@@ -3,10 +3,14 @@ package com.patsurvey.nudge.network
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
+import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_QUESTION_API
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_SURVEY_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.STEP_LIST_API
 import com.patsurvey.nudge.utils.ApiType.TOLA_LIST_API
+import com.patsurvey.nudge.utils.ApiType.VALIDATE_OTP_API
+import com.patsurvey.nudge.utils.ApiType.VILLAGE_LIST_API
+import com.patsurvey.nudge.utils.ApiType.WORK_FLOW_API
 
 object ApiServicesHelper {
 
@@ -46,6 +50,10 @@ object ApiServicesHelper {
             DIDI_RANKING_API -> SUBPATH_GET_DIDI
             PAT_CRP_QUESTION_API -> SUBPATH_GET_PAT_QUESTION
             PAT_CRP_SURVEY_SUMMARY -> SUBPATH_GET_PAT_SUMMARY
+            WORK_FLOW_API -> SUBPATH_EDIT_WORKFLOW
+            VILLAGE_LIST_API -> SUBPATH_USER_VILLAGE_LIST
+            VALIDATE_OTP_API -> SUBPATH_AUTH_VALIDATE_OTP
+            GENERATE_OTP_API -> SUBPATH_AUTH_GENERATE_OTP
         }
     }
 

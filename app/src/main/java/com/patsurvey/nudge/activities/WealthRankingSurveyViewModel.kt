@@ -19,6 +19,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -98,6 +99,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
                 if (dbResponse.workFlowId > 0) {
                     val response = apiService.editWorkFlow(
                         listOf(
@@ -120,7 +122,34 @@ class WealthRankingSurveyViewModel @Inject constructor(
                         }
                     }
                 }
-
+                launch {
+                    try {
+                        stepList.forEach { step ->
+                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                                val inProgressStepResponse = apiService.editWorkFlow(
+                                    listOf(
+                                        EditWorkFlowRequest(
+                                            step.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
+                                    )
+                                )
+                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                    inProgressStepResponse.data?.let {
+                                        stepsListDao.updateWorkflowId(
+                                            step.id,
+                                            step.workFlowId,
+                                            villageId,
+                                            it[0].status
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        onCatchError(ex, ApiType.WORK_FLOW_API)
+                    }
+                }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")

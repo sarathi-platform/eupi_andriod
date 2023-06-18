@@ -8,15 +8,24 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.UserDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
@@ -315,7 +324,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(logout: MutableState<Boolean>) {
+    fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
@@ -328,6 +337,8 @@ class SettingViewModel @Inject constructor(
             userDao.deleteAllUserDetail()
             villegeListDao.deleteAllVilleges()
             clearSharedPreference()
+            //cleared cache in case of logout
+            context.cacheDir.deleteRecursively()
             withContext(Dispatchers.Main){
                 showAPILoader.value = false
                 logout.value = true

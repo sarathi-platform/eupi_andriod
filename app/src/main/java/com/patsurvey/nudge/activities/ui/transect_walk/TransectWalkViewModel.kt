@@ -21,6 +21,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
@@ -311,10 +312,18 @@ class TransectWalkViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId,
+                StepStatus.COMPLETED.ordinal,
+                villageId
+            )
+            val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
+            if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
+                stepsListDao.markStepAsInProgress(
+                    (stepDetails.orderNumber + 1),
+                    StepStatus.INPROGRESS.ordinal,
+                    villageId
+                )
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -324,15 +333,27 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun markTransectWalkIncomplete(stepId: Int,villageId:Int, networkCallbackListener: NetworkCallbackListener) {
+    fun markTransectWalkIncomplete(
+        stepId: Int,
+        villageId: Int,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val step=stepsListDao.getStepForVillage(villageId, stepId)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.INPROGRESS.ordinal,villageId)
-            val completeStepList=stepsListDao.getAllCompleteStepsForVillage(villageId)
+            val step = stepsListDao.getStepForVillage(villageId, stepId)
+            stepsListDao.markStepAsCompleteOrInProgress(
+                stepId,
+                StepStatus.INPROGRESS.ordinal,
+                villageId
+            )
+            val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList?.let {
-                it.forEach { newStep->
-                    if(newStep.orderNumber>step.orderNumber){
-                        stepsListDao.markStepAsCompleteOrInProgress(newStep.id, StepStatus.INPROGRESS.ordinal,villageId)
+                it.forEach { newStep ->
+                    if (newStep.orderNumber > step.orderNumber) {
+                        stepsListDao.markStepAsCompleteOrInProgress(
+                            newStep.id,
+                            StepStatus.INPROGRESS.ordinal,
+                            villageId
+                        )
                     }
                 }
             }
@@ -340,8 +361,13 @@ class TransectWalkViewModel @Inject constructor(
                 val apiRequest = mutableListOf<EditWorkFlowRequest>()
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
-                        if (newStep.workFlowId>0) {
-                            apiRequest.add(EditWorkFlowRequest(newStep.workFlowId, StepStatus.INPROGRESS.name))
+                        if (newStep.workFlowId > 0) {
+                            apiRequest.add(
+                                EditWorkFlowRequest(
+                                    newStep.workFlowId,
+                                    StepStatus.INPROGRESS.name
+                                )
+                            )
                         }
                     }
                 }
@@ -349,12 +375,17 @@ class TransectWalkViewModel @Inject constructor(
                     launch {
                         val response = apiInterface.editWorkFlow(apiRequest)
                         if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response->
+                            response.data?.let { response ->
                                 response.forEach { it ->
-                                    stepsListDao.updateWorkflowId(stepId, it.id, villageId, it.status)
+                                    stepsListDao.updateWorkflowId(
+                                        stepId,
+                                        it.id,
+                                        villageId,
+                                        it.status
+                                    )
                                 }
                             }
-                        }else {
+                        } else {
                             networkCallbackListener.onFailed()
                         }
                     }
@@ -363,9 +394,12 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun isTransectWalkComplete(stepId: Int,villageId: Int) {
+    fun isTransectWalkComplete(stepId: Int, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val isComplete = stepsListDao.isStepComplete(stepId, villageId = villageId) == StepStatus.COMPLETED.ordinal
+            val isComplete = stepsListDao.isStepComplete(
+                stepId,
+                villageId = villageId
+            ) == StepStatus.COMPLETED.ordinal
             withContext(Dispatchers.Main) {
                 isTransectWalkComplete.value = isComplete
             }
@@ -373,32 +407,71 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        val isComplete = prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+        val isComplete =
+            prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
         isVoEndorsementComplete.value = isComplete
     }
 
-    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
+    fun callWorkFlowAPI(
+        villageId: Int,
+        stepId: Int,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                if(dbResponse.workFlowId>0){
+                val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                if (dbResponse.workFlowId > 0) {
                     val response = apiInterface.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
-                        ) )
-                    withContext(Dispatchers.IO){
-                        if (response.status.equals(SUCCESS, true)) {
+                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
+                        )
+                    )
+                    withContext(Dispatchers.IO) {
+                        if (response.status.equals(com.patsurvey.nudge.utils.SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateWorkflowId(
+                                    stepId,
+                                    dbResponse.workFlowId,
+                                    villageId,
+                                    it[0].status
+                                )
                             }
-                        }else{
+                        } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
-
-            }catch (ex:Exception){
+                launch {
+                    try {
+                        stepList.forEach { step ->
+                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                                val inProgressStepResponse = apiInterface.editWorkFlow(
+                                    listOf(
+                                        EditWorkFlowRequest(
+                                            step.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
+                                    )
+                                )
+                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                    inProgressStepResponse.data?.let {
+                                        stepsListDao.updateWorkflowId(
+                                            step.id,
+                                            step.workFlowId,
+                                            villageId,
+                                            it[0].status
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        onCatchError(ex, ApiType.WORK_FLOW_API)
+                    }
+                }
+            } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }

@@ -202,7 +202,7 @@ fun OtpInputFieldForDialog(
                     }
 
                     val isFocus = index == otpValue.length
-                    OtpCell(
+                    OtpCellForDialog(
                         char = char,
                         isFocus = isFocus,
                         isShowWarning = isShowWarning,
