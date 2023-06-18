@@ -112,7 +112,11 @@
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
 
     <string name="otp_send_to_mobile_number_message">" %1$s मोबाइल नंबर पर OTP भेजा गया"</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} मोबाइल नंबर पर OTP भेजा गया</string>
+
     <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">ओटीपी resent to {MOBILE_NUMBER}</string>
+
     <string name="complete_didi_addition">पूरा दीदी जोड़े</string>
     <string name="pat_survey">PAT सर्वेक्षण</string>
     <string name="didi">दीदी</string>

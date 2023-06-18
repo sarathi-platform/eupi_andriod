@@ -155,5 +155,113 @@ fun OtpCellFocusPreview(
             OtpCell(char = "7", isFocus = true, isShowWarning = false)
         }
     }
+}
 
+@OptIn(ExperimentalComposeUiApi::class)
+@Composable
+fun OtpInputFieldForDialog(
+    otpLength: Int,
+    onOtpChanged: (String) -> Unit
+){
+    var otpValue by remember { mutableStateOf("") }
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    val keyboardState = keyboardAsState(KeyboardStatus.Closed)
+    val isShowWarning by remember(keyboardState) {
+        derivedStateOf {
+            if (keyboardState.value == KeyboardStatus.Closed) {
+                if (otpValue.length != otpLength) {
+                    return@derivedStateOf true
+                }
+            }
+            false
+
+        }
+    }
+
+//    val focusRequester = remember {
+//        FocusRequester()
+//    }
+
+    BasicTextField(
+        modifier = Modifier/*.focusRequester(focusRequester)*/,
+        value = otpValue,
+        onValueChange = { value->
+            if(value.length<=otpLength){
+                otpValue=value
+                onOtpChanged(otpValue)
+            }
+
+        }, decorationBox ={
+            Row (horizontalArrangement = Arrangement.spacedBy(5.dp), modifier = Modifier.fillMaxWidth()){
+                repeat(otpLength){ index->
+
+                    val char = when{
+                        index>=otpValue.length->""
+                        else -> otpValue[index].toString()
+                    }
+
+                    val isFocus = index == otpValue.length
+                    OtpCell(
+                        char = char,
+                        isFocus = isFocus,
+                        isShowWarning = isShowWarning,
+                        modifier = Modifier.weight(
+                            1f
+                        )
+                    )
+
+                }
+            }
+        },
+
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions(onDone = {
+            keyboardController?.hide()
+
+        }
+        )
+    )
+
+    LaunchedEffect(key1 = true) {
+//        focusRequester.requestFocus()
+//        keyboardController?.show()
+    }
+}
+
+@Composable
+fun OtpCellForDialog(
+    char: String,
+    isFocus: Boolean,
+    isShowWarning: Boolean,
+    modifier: Modifier=Modifier
+){
+//    val borderColor = if(isShowWarning){
+//        MaterialTheme.colors.error
+//    }else if(isFocus){
+//        MaterialTheme.colors.primary
+//    }else {
+//        MaterialTheme.colors.secondary
+//    }
+
+    Surface(modifier = Modifier
+        .height(dimensionResource(id = R.dimen.otp_box_height_for_dialog))
+        .width(dimensionResource(id = R.dimen.otp_box_width_for_dialog))
+        .padding(dimensionResource(id = R.dimen.dp_4))
+        .border(
+            width = 1.dp,
+            color = if (isFocus) textColorDark else otpBorderColor,
+            shape = MaterialTheme.shapes.small
+        ))
+    {
+        Text(
+            text = char,
+            style = mediumTextStyle,
+            color = blueDark,
+            modifier = Modifier
+                .wrapContentSize(align = Alignment.Center)
+
+        )
+
+    }
 }

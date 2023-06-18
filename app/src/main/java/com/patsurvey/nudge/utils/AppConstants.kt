@@ -138,6 +138,13 @@ const val RESPONSE_CODE_OTP_ERROR = 100014
 const val RESPONSE_CODE_RATE_LIMIT = 429
 const val ERROR_CODE_CONCURRENCY = 130401
 const val ERROR_CODE_SUBSCRIBER_NOT_FOUND = 20022
+const val ERROR_CODE_JSON_SYNTAX_ERROR = 10000
+const val HTTP_EXCEPTION = "HttpException"
+const val SOCKET_TIMEOUT_EXCEPTION = "SocketTimeoutException"
+const val IO_EXCEPTION = "IOException"
+const val JSON_SYNTAX_EXCEPTION = "JsonSyntaxException"
+const val API_FAILED_EXCEPTION = "ApiResponseFailException"
+const val UNKNOWN_EXCEPTION = "UnknownException"
 
 val UNREACHABLE_ERROR_MSG =
     "There seems to be a problem accessing details on this screen. Please try again."
@@ -165,5 +172,9 @@ const val ACCEPTED = "ACCEPTED"
 const val FORM_A_PDF_NAME = "Digital_Form_A"
 const val FORM_B_PDF_NAME = "Digital_Form_B"
 const val FORM_C_PDF_NAME = "Digital_Form_C"
+
+const val PREF_RETRY_API_LIST = "pref_retry_api_list"
+const val PREF_VILLAGE_ID_TO_RETRY = "pref_village_id_to_retry"
+const val PREF_LANGUAGE_ID_TO_RETRY = "pref_language_id_to_retry"
 
 

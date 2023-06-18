@@ -1,13 +1,22 @@
 package com.patsurvey.nudge.activities
 
-import android.widget.Toast
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -17,7 +26,13 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -35,14 +50,22 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.dropDownBg
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BackPress
-import com.patsurvey.nudge.utils.findActivity
+import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.showCustomToast
-import kotlinx.coroutines.delay
 
 @Composable
 fun VillageSelectionScreen(
@@ -51,38 +74,46 @@ fun VillageSelectionScreen(
     viewModel: VillageSelectionViewModel
 ) {
     val villages by viewModel.villageList.collectAsState()
+
+    val snackState = rememberSnackBarState()
+
     val context = LocalContext.current
     var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         showCustomToast(context, viewModel.networkErrorMessage.value)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
-    var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
-//    BackHandler {
-//        (context as? Activity)?.finish()
-//    }
 
-    if (showToast) {
-        Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast = false
+    val isResendOTPEnable = remember { mutableStateOf(false) }
+    val formattedTime = remember {
+        mutableStateOf(SEC_30_STRING)
+    }
+    var isResendOTPVisible by remember {
+        mutableStateOf(true)
     }
 
-
-    LaunchedEffect(key1 = backPressState) {
-        if (backPressState == BackPress.InitialTouch) {
-            delay(2000)
-            backPressState = BackPress.Idle
-            (context.findActivity() as MainActivity).exitApplication()
-        }
+    BackHandler {
+        (context as? Activity)?.finish()
     }
 
-    BackHandler(backPressState == BackPress.Idle) {
-        backPressState = BackPress.InitialTouch
-        showToast = true
-    }
 
     LaunchedEffect(key1 = true) {
         viewModel.saveVideosToDb(context)
+    }
+
+    LaunchedEffect(key1 = viewModel.tokenExpired.value) {
+        RetryHelper.generateOtp() { success, message, mobileNumber ->
+            if (success) {
+                snackState.addMessage(message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
+                    isSuccess = true, isCustomIcon = false)
+            } else {
+                snackState.addMessage(
+                    message = message,
+                    isSuccess = false,
+                    isCustomIcon = false
+                )
+            }
+        }
     }
 
     Column(
@@ -114,6 +145,31 @@ fun VillageSelectionScreen(
                         .align(Alignment.Center)
                 )
             }
+
+            if (viewModel.tokenExpired.value) {
+                ShowOptDialog(
+                    modifier = Modifier,
+                    context = LocalContext.current,
+                    viewModel = viewModel,
+                    snackState = snackState,
+                    /*isResendOTPEnable = isResendOTPEnable,
+                    formattedTime = formattedTime,*/
+                    setShowDialog = {
+                        viewModel.tokenExpired.value = false
+                    },
+                    positiveButtonClicked = {
+                        RetryHelper.updateOtp(viewModel.baseOtpNumber) { success, message ->
+                            if (success){
+                                viewModel.tokenExpired.value = false
+                            }
+                            else {
+                                snackState.addMessage(message = message, isSuccess = false, isCustomIcon = false)
+                            }
+                        }
+                    }
+                )
+            }
+
         } else {
             LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
@@ -362,31 +418,5 @@ fun VillageAndVoBoxForBottomSheet(
                 }
             }
         }
-    }
-}
-
-@Composable
-private fun BackPressSample() {
-    var showToast by remember { mutableStateOf(false) }
-
-    var backPressState by remember { mutableStateOf<BackPress>(BackPress.Idle) }
-    val context = LocalContext.current
-
-    if (showToast) {
-        Toast.makeText(context, "Press again to exit", Toast.LENGTH_SHORT).show()
-        showToast = false
-    }
-
-
-    LaunchedEffect(key1 = backPressState) {
-        if (backPressState == BackPress.InitialTouch) {
-            delay(2000)
-            backPressState = BackPress.Idle
-        }
-    }
-
-    BackHandler(backPressState == BackPress.Idle) {
-        backPressState = BackPress.InitialTouch
-        showToast = true
     }
 }

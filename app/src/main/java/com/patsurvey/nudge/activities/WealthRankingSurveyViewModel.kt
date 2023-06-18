@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -17,6 +18,7 @@ import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -58,13 +60,16 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     var villageId: Int = -1
     var stepId: Int = -1
-
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
     var selectedVillage: VillageEntity? = null
 
     init {
         selectedVillage = prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
     }
 
     fun fetchDidisFromDB() {
@@ -178,6 +183,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {

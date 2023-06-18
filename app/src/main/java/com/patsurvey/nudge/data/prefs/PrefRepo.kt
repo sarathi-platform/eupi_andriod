@@ -56,4 +56,5 @@ interface PrefRepo {
    fun getStepId():Int
    fun saveStepId(stepId:Int
    )
+   fun clearSharedPreference()
 }

@@ -1,0 +1,752 @@
+package com.patsurvey.nudge
+
+import android.util.Log
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import com.google.gson.JsonSyntaxException
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.request.GetQuestionListRequest
+import com.patsurvey.nudge.model.request.LoginRequest
+import com.patsurvey.nudge.model.request.OtpRequest
+import com.patsurvey.nudge.model.request.StepResultTypeRequest
+import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.ApiResponseFailException
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.PREF_LANGUAGE_ID_TO_RETRY
+import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
+import com.patsurvey.nudge.utils.PREF_RETRY_API_LIST
+import com.patsurvey.nudge.utils.PREF_VILLAGE_ID_TO_RETRY
+import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.RESPONSE_CODE_500
+import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
+import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
+import com.patsurvey.nudge.utils.RESPONSE_CODE_DEACTIVATED
+import com.patsurvey.nudge.utils.RESPONSE_CODE_NETWORK_ERROR
+import com.patsurvey.nudge.utils.RESPONSE_CODE_NOT_FOUND
+import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
+import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
+import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
+import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
+import com.patsurvey.nudge.utils.ResultType
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.TAG
+import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
+import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
+import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.findCompleteValue
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import retrofit2.HttpException
+import java.io.IOException
+import java.net.SocketTimeoutException
+
+object RetryHelper {
+
+    private const val MAX_RETRY_COUNT = 2
+
+    var retryApiList = mutableListOf<ApiType>()
+    var crpPatQuestionApiLanguageId = mutableSetOf<Int>()
+    var stepListApiVillageId = mutableSetOf<Int>()
+    var stateId = -1
+
+    var retryCount = mutableMapOf<ApiType, Int>()
+
+    private var prefRepo: PrefRepo? = null
+    private var apiService: ApiService? = null
+    private var tolaDao: TolaDao? = null
+    private var stepsListDao: StepsListDao? = null
+    private var villageListDao: VillageListDao? = null
+    private var didiDao: DidiDao? = null
+    private var answerDao: AnswerDao? = null
+    private var numericAnswerDao: NumericAnswerDao? = null
+    private var questionDao: QuestionListDao? = null
+    private var castListDao: CasteListDao? = null
+
+    val tokenExpired = mutableStateOf(false)
+
+    fun init(
+        prefRepo: PrefRepo,
+        apiService: ApiService,
+        tolaDao: TolaDao,
+        stepsListDao: StepsListDao,
+        villageListDao: VillageListDao,
+        didiDao: DidiDao,
+        answerDao: AnswerDao,
+        numericAnswerDao: NumericAnswerDao,
+        questionDao: QuestionListDao,
+        castListDao: CasteListDao
+    ) {
+        setPrefRepo(prefRepo)
+        setApiServices(apiService)
+        setTolaDao(tolaDao)
+        setDidiDao(didiDao)
+        setStepListDao(stepsListDao)
+        setVillageListDao(villageListDao)
+        setAnswerDao(answerDao)
+        setNumericAnswerDao(numericAnswerDao)
+        setQuestionDao(questionDao)
+        setCastListDao(castListDao)
+    }
+
+    fun cleanUp() {
+        var retryApiListToSave = ""
+        var villageListToSave = ""
+        var crpPatQuestionLangIdToSave = ""
+        if (retryApiList.isNotEmpty()) {
+            retryApiList.forEach {
+                retryApiListToSave = retryApiListToSave + "|" + it.name
+            }
+            prefRepo?.savePref(PREF_RETRY_API_LIST, retryApiListToSave)
+        }
+        if (stepListApiVillageId.isNotEmpty()) {
+            stepListApiVillageId.forEach {
+                villageListToSave = "$villageListToSave|$it"
+            }
+            prefRepo?.savePref(PREF_VILLAGE_ID_TO_RETRY, villageListToSave)
+        }
+        if (crpPatQuestionApiLanguageId.isNotEmpty()) {
+            crpPatQuestionApiLanguageId.forEach {
+                crpPatQuestionLangIdToSave = "$crpPatQuestionLangIdToSave|$it"
+            }
+            prefRepo?.savePref(PREF_LANGUAGE_ID_TO_RETRY, crpPatQuestionLangIdToSave)
+        }
+
+        prefRepo = null
+        apiService = null
+        tolaDao = null
+        stepsListDao = null
+        villageListDao = null
+        didiDao = null
+        answerDao = null
+        numericAnswerDao = null
+        questionDao = null
+        castListDao = null
+
+    }
+
+    private fun setPrefRepo(mPrefRepo: PrefRepo) {
+        prefRepo = mPrefRepo
+    }
+
+    private fun setApiServices(mApiService: ApiService) {
+        apiService = mApiService
+    }
+
+    private fun setTolaDao(mTolaDao: TolaDao) {
+        tolaDao = mTolaDao
+    }
+
+    private fun setStepListDao(mStepsListDao: StepsListDao) {
+        stepsListDao = mStepsListDao
+    }
+
+    private fun setVillageListDao(mVillageListDao: VillageListDao) {
+        villageListDao = mVillageListDao
+    }
+
+    private fun setDidiDao(mDidiDao: DidiDao) {
+        didiDao = mDidiDao
+    }
+
+    private fun setQuestionDao(mQuestionListDao: QuestionListDao) {
+        questionDao = mQuestionListDao
+    }
+
+    private fun setAnswerDao(mAnswerDao: AnswerDao) {
+        answerDao = mAnswerDao
+    }
+
+    private fun setNumericAnswerDao(mNumericAnswerDao: NumericAnswerDao) {
+        numericAnswerDao = mNumericAnswerDao
+    }
+
+    private fun setCastListDao(mCasteListDao: CasteListDao) {
+        castListDao = mCasteListDao
+    }
+
+    fun retryApi(apiType: ApiType) {
+        Log.d("retryApi: ", "retryApi: ${apiType.name}")
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val initialCount = if (retryCount.containsKey(apiType)) retryCount[apiType] else 0
+            if ((initialCount ?: 0) <= MAX_RETRY_COUNT) {
+                when (apiType) {
+                    ApiType.STEP_LIST_API -> {
+                        stepListApiVillageId.forEach { id ->
+                            try {
+                                val response = apiService?.getStepsList(id)
+                                if (response?.status.equals(SUCCESS, true)) {
+                                    response?.data?.let {
+
+                                        it.stepList.forEach { steps ->
+                                            steps.villageId = id
+                                            steps.isComplete =
+                                                findCompleteValue(steps.status).ordinal
+                                        }
+                                        stepsListDao?.insertAll(it.stepList)
+                                        prefRepo?.savePref(
+                                            PREF_PROGRAM_NAME,
+                                            it.programName
+                                        )
+                                    }
+                                    retryApiList.remove(ApiType.STEP_LIST_API)
+                                } else {
+                                    val ex = ApiResponseFailException(response?.message!!)
+                                    onCatchError(ex, ApiType.STEP_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.STEP_LIST_API)
+                            }
+                        }
+                    }
+
+                    ApiType.TOLA_LIST_API -> {
+                        stepListApiVillageId.forEach { id ->
+                            try {
+                                val cohortResponse =
+                                    apiService?.getCohortFromNetwork(villageId = id)
+                                if (cohortResponse?.status.equals(SUCCESS, true)) {
+                                    cohortResponse?.data?.let {
+                                        tolaDao?.insertAll(it)
+                                    }
+                                    retryApiList.remove(ApiType.TOLA_LIST_API)
+                                } else {
+                                    val ex = ApiResponseFailException(cohortResponse?.message!!)
+                                    onCatchError(ex, ApiType.TOLA_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.TOLA_LIST_API)
+                            }
+                        }
+                    }
+
+                    ApiType.DIDI_LIST_API -> {
+                        stepListApiVillageId.forEach { id ->
+                            try {
+                                val didiResponse =
+                                    apiService?.getDidisFromNetwork(villageId = id)
+                                if (didiResponse?.status.equals(SUCCESS, true)) {
+                                    didiResponse?.data?.let {
+                                        it.didiList.forEach { didi ->
+                                            var tolaName = BLANK_STRING
+                                            var casteName = BLANK_STRING
+                                            val singleTola =
+                                                tolaDao?.fetchSingleTola(didi.cohortId)
+                                            val singleCaste = castListDao?.getCaste(didi.castId)
+                                            singleTola?.let {
+                                                tolaName = it.name
+                                            }
+                                            singleCaste?.let {
+                                                casteName = it.casteName
+                                            }
+                                            if (singleTola != null) {
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.WEALTH_RANKING.name))
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                    else
+                                                        WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.PAT_SURVEY.name))
+                                                        PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.VO_ENDORSEMENT.name))
+                                                        DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                didiDao?.insertDidi(
+                                                    DidiEntity(
+                                                        id = didi.id,
+                                                        serverId = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = id,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        wealth_ranking = wealthRanking,
+                                                        patSurveyStatus = patSurveyStatus,
+                                                        voEndorsementStatus = voEndorsementStatus,
+                                                        needsToPostRanking = false,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        transactionId = ""
+                                                    )
+                                                )
+                                            }
+                                        }
+
+                                    }
+                                } else {
+                                    val ex = ApiResponseFailException(didiResponse?.message!!)
+                                    onCatchError(ex, ApiType.DIDI_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.DIDI_LIST_API)
+                            }
+                        }
+                    }
+
+                    ApiType.DIDI_RANKING_API -> {
+                        stepListApiVillageId.forEach { id ->
+                            try {
+                                val didiRankingResponse =
+                                    apiService?.getDidisWithRankingFromNetwork(
+                                        villageId = id, "Category",
+                                        StepResultTypeRequest(
+                                            StepType.WEALTH_RANKING.name,
+                                            ResultType.ALL.name
+                                        )
+                                    )
+                                if (didiRankingResponse?.status.equals(SUCCESS, true)) {
+                                    didiRankingResponse?.data?.let { didiRank ->
+                                        didiRank.beneficiaryList?.richDidi?.forEach { richDidi ->
+                                            richDidi?.id?.let { didiId ->
+                                                didiDao?.updateDidiRank(
+                                                    didiId,
+                                                    WealthRank.RICH.rank
+                                                )
+                                            }
+                                        }
+                                        didiRank.beneficiaryList?.mediumDidi?.forEach { mediumDidi ->
+                                            mediumDidi?.id?.let { didiId ->
+                                                didiDao?.updateDidiRank(
+                                                    didiId,
+                                                    WealthRank.MEDIUM.rank
+                                                )
+                                            }
+                                        }
+                                        didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi ->
+                                            poorDidi?.id?.let { didiId ->
+                                                didiDao?.updateDidiRank(
+                                                    didiId,
+                                                    WealthRank.POOR.rank
+                                                )
+                                            }
+                                        }
+                                    }
+                                    retryApiList.remove(ApiType.DIDI_RANKING_API)
+                                } else {
+                                    val ex = ApiResponseFailException(
+                                        didiRankingResponse?.message ?: "Didi Ranking Api Failed"
+                                    )
+                                    onCatchError(ex, ApiType.DIDI_RANKING_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.DIDI_RANKING_API)
+                            }
+                        }
+                    }
+
+                    ApiType.PAT_CRP_QUESTION_API -> {
+                        crpPatQuestionApiLanguageId.forEach { id ->
+                            try {
+                                val quesListResponse = apiService?.fetchQuestionListFromServer(
+                                    GetQuestionListRequest(
+                                        id,
+                                        stateId,
+                                        PAT_SURVEY_CONSTANT
+                                    )
+                                )
+                                if (quesListResponse?.status.equals(SUCCESS, true)) {
+                                    quesListResponse?.data?.let { questionList ->
+                                        questionList.listOfQuestionSectionList?.forEach { list ->
+                                            list?.questionList?.forEach { question ->
+                                                question?.sectionOrderNumber = list.orderNumber
+                                                question?.actionType = list.actionType
+                                                question?.languageId = id
+                                                question?.surveyId = questionList.surveyId
+                                                question?.thresholdScore =
+                                                    questionList.thresholdScore
+                                                question?.surveyPassingMark =
+                                                    questionList.surveyPassingMark
+                                            }
+                                            list?.questionList?.let {
+                                                questionDao?.insertAll(it as List<QuestionEntity>)
+                                            }
+                                        }
+                                    }
+                                    retryApiList.remove(ApiType.PAT_CRP_QUESTION_API)
+                                } else {
+                                    val ex = ApiResponseFailException(quesListResponse?.message!!)
+                                    onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
+                            }
+                        }
+                    }
+
+                    ApiType.PAT_CRP_SURVEY_SUMMARY -> {
+                        try {
+                            val villageIds = mutableListOf<Int>()
+                            stepListApiVillageId.forEach {
+                                villageIds.add(it)
+                            }
+                            val answerApiResponse =
+                                apiService?.fetchPATSurveyToServer(villageIds)
+                            if (answerApiResponse?.status.equals(SUCCESS, true)) {
+                                answerApiResponse?.data?.let {
+                                    val answerList: ArrayList<SectionAnswerEntity> = arrayListOf()
+                                    val numAnswerList: ArrayList<NumericAnswerEntity> =
+                                        arrayListOf()
+                                    it.forEach { item ->
+                                        didiDao?.updatePATProgressStatus(
+                                            patSurveyStatus = item.patSurveyStatus ?: 0,
+                                            section1Status = item.section1Status ?: 0,
+                                            section2Status = item.section2Status ?: 0,
+                                            didiId = item.beneficiaryId ?: 0
+                                        )
+                                        if (item?.answers?.isNotEmpty() == true) {
+                                            item?.answers?.forEach { answersItem ->
+                                                if (answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true) {
+                                                    answerList.add(
+                                                        SectionAnswerEntity(
+                                                            id = 0,
+                                                            optionId = 0,
+                                                            didiId = item.beneficiaryId ?: 0,
+                                                            questionId = answersItem?.questionId
+                                                                ?: 0,
+                                                            villageId = item.villageId ?: 0,
+                                                            actionType = answersItem?.section
+                                                                ?: TYPE_EXCLUSION,
+                                                            weight = 0,
+                                                            summary = answersItem?.summary,
+                                                            optionValue = answersItem?.options?.get(
+                                                                0
+                                                            )?.optionValue,
+                                                            totalAssetAmount = answersItem?.totalWeight,
+                                                            needsToPost = false,
+                                                            answerValue = answersItem?.options?.get(
+                                                                0
+                                                            )?.summary
+                                                                ?: BLANK_STRING,
+                                                            type = answersItem?.questionType
+                                                                ?: QuestionType.RadioButton.name
+                                                        )
+                                                    )
+
+                                                    if (answersItem?.options?.isNotEmpty() == true) {
+
+                                                        answersItem?.options?.forEach { optionItem ->
+                                                            numAnswerList.add(
+                                                                NumericAnswerEntity(
+                                                                    id = 0,
+                                                                    optionId = optionItem?.optionId
+                                                                        ?: 0,
+                                                                    questionId = answersItem?.questionId
+                                                                        ?: 0,
+                                                                    weight = optionItem?.weight
+                                                                        ?: 0,
+                                                                    didiId = item.beneficiaryId
+                                                                        ?: 0,
+                                                                    count = optionItem?.count ?: 0
+                                                                )
+                                                            )
+                                                        }
+
+                                                    }
+                                                } else {
+                                                    answerList.add(
+                                                        SectionAnswerEntity(
+                                                            id = 0,
+                                                            optionId = answersItem?.options?.get(0)?.optionId
+                                                                ?: 0,
+                                                            didiId = item.beneficiaryId ?: 0,
+                                                            questionId = answersItem?.questionId
+                                                                ?: 0,
+                                                            villageId = item.villageId ?: 0,
+                                                            actionType = answersItem?.section
+                                                                ?: TYPE_EXCLUSION,
+                                                            weight = 0,
+                                                            summary = answersItem?.summary,
+                                                            optionValue = answersItem?.options?.get(
+                                                                0
+                                                            )?.optionValue,
+                                                            totalAssetAmount = answersItem?.totalWeight,
+                                                            needsToPost = false,
+                                                            answerValue = answersItem?.options?.get(
+                                                                0
+                                                            )?.display
+                                                                ?: BLANK_STRING,
+                                                            type = answersItem?.questionType
+                                                                ?: QuestionType.RadioButton.name
+                                                        )
+                                                    )
+                                                }
+
+                                            }
+                                        }
+
+                                    }
+                                    if (answerList.isNotEmpty()) {
+                                        answerDao?.insertAll(answerList)
+                                    }
+                                    if (numAnswerList.isNotEmpty()) {
+                                        numericAnswerDao?.insertAll(numAnswerList)
+                                    }
+                                }
+                            } else {
+                                val ex = ApiResponseFailException(answerApiResponse?.message!!)
+                                onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
+                            }
+                        } catch (ex: Exception) {
+                            onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
+                        }
+                    }
+                }
+                retryCount[apiType] = (initialCount ?: 0) + 1
+            }
+        }
+    }
+
+
+    var job: Job? = null
+
+    val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
+        when (e) {
+            is HttpException -> {
+                when (e.response()?.code() ?: 0) {
+                    RESPONSE_CODE_UNAUTHORIZED ->
+                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+
+                    RESPONSE_CODE_NOT_FOUND ->
+                        onServerError(
+                            ErrorModel(
+                                message = UNREACHABLE_ERROR_MSG,
+                                statusCode = e.response()?.code() ?: -1
+                            )
+                        )
+
+                    RESPONSE_CODE_DEACTIVATED,
+                    RESPONSE_CODE_500,
+                    RESPONSE_CODE_BAD_GATEWAY,
+                    RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
+                        onServerError(ErrorModel(statusCode = e.response()?.code() ?: -1))
+
+                    else ->
+                        onServerError(
+                            ErrorModel(
+                                statusCode = e.response()?.code() ?: -1,
+                                message = e.message ?: COMMON_ERROR_MSG
+                            )
+                        )
+                }
+            }
+
+            is SocketTimeoutException -> {
+                onServerError(
+                    ErrorModel(
+                        statusCode = RESPONSE_CODE_TIMEOUT,
+                        message = TIMEOUT_ERROR_MSG
+                    )
+                )
+            }
+
+            is IOException -> {
+                onServerError(ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR))
+            }
+
+            is JsonSyntaxException -> {
+                onServerError(ErrorModel(-1, e.message, statusCode = RESPONSE_CODE_NO_DATA))
+            }
+
+            else -> onServerError(ErrorModel(-1, e.message))
+        }
+    }
+
+    private fun onCatchError(e: Exception, api: ApiType) {
+        Log.d(TAG, "onCatchError: ${e.message}")
+        when (e) {
+            is HttpException -> {
+                Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                when (e.response()?.code() ?: 0) {
+                    RESPONSE_CODE_UNAUTHORIZED ->
+                        onServerError(
+                            ErrorModelWithApi(
+                                e.response()?.code() ?: 0,
+                                apiName = api,
+                                UNAUTHORISED_MESSAGE
+                            )
+                        )
+
+                    RESPONSE_CODE_NOT_FOUND ->
+                        onServerError(
+                            ErrorModelWithApi(
+                                apiName = api, message = UNREACHABLE_ERROR_MSG,
+                                statusCode = e.response()?.code() ?: -1
+                            )
+                        )
+
+                    RESPONSE_CODE_DEACTIVATED,
+                    RESPONSE_CODE_500,
+                    RESPONSE_CODE_BAD_GATEWAY,
+                    RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
+                        onServerError(
+                            ErrorModelWithApi(
+                                apiName = api,
+                                statusCode = e.response()?.code() ?: -1
+                            )
+                        )
+
+                    else ->
+                        onServerError(
+                            ErrorModelWithApi(
+                                apiName = api, statusCode = e.response()?.code() ?: -1,
+                                message = e.message ?: COMMON_ERROR_MSG
+                            )
+                        )
+                }
+            }
+
+            is SocketTimeoutException -> {
+                onServerError(
+                    ErrorModelWithApi(
+                        apiName = api,
+                        statusCode = RESPONSE_CODE_TIMEOUT,
+                        message = TIMEOUT_ERROR_MSG
+                    )
+                )
+            }
+
+            is IOException -> {
+                onServerError(
+                    ErrorModelWithApi(
+                        apiName = api,
+                        statusCode = RESPONSE_CODE_NETWORK_ERROR
+                    )
+                )
+            }
+
+            is JsonSyntaxException -> {
+                onServerError(
+                    ErrorModelWithApi(
+                        -1,
+                        apiName = api,
+                        e.message,
+                        statusCode = RESPONSE_CODE_NO_DATA
+                    )
+                )
+            }
+
+            is ApiResponseFailException -> {
+                onServerError(ErrorModelWithApi(code = -1, apiName = api, e.message))
+            }
+
+            else -> onServerError(ErrorModelWithApi(-1, apiName = api, e.message))
+        }
+    }
+
+    fun onServerError(error: ErrorModel?) {
+
+    }
+
+    fun onServerError(errorModel: ErrorModelWithApi?) {
+        if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(RESPONSE_CODE_CONFLICT) == true) {
+//            tokenExpired.value = true
+        }
+    }
+
+    fun updateOtp(
+        otpNumber: MutableState<String>,
+        onOtpResponse: (success: Boolean, message: String) -> Unit
+    ) {
+        val otpRequest =
+            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiService?.validateOtp(otpRequest)
+            withContext(Dispatchers.IO) {
+                if (response?.status.equals(SUCCESS, true)) {
+                    response?.data?.let {
+                        prefRepo?.saveAccessToken(it.token)
+                    }
+                    withContext(Dispatchers.Main) {
+                        onOtpResponse(true, response?.message ?: "Login Successful")
+                    }
+                } else if (response?.status.equals(FAIL, true)) {
+                    withContext(Dispatchers.Main) {
+                        onOtpResponse(false, response?.message ?: "Something went wrong")
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onOtpResponse(false, response?.message ?: "Something went wrong")
+                    }
+                }
+            }
+        }
+    }
+
+    fun generateOtp(onLoginResponse: (success: Boolean, message: String, mobileNumber: String) -> Unit) {
+        val mobileNumber = prefRepo?.getMobileNumber() ?: ""
+        val loginRequest = LoginRequest(mobileNumber = mobileNumber)
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiService?.generateOtp(loginRequest)
+            withContext(Dispatchers.IO) {
+                if (response?.status.equals(SUCCESS, true)) {
+                    withContext(Dispatchers.Main) {
+                        prefRepo?.saveMobileNumber(mobileNumber)
+                        onLoginResponse(true, response?.message ?: "OTP Send", mobileNumber)
+                    }
+                } else if (response?.status.equals(FAIL, true)) {
+                    withContext(Dispatchers.Main) {
+                        onLoginResponse(
+                            false,
+                            response?.message ?: "Something went wrong",
+                            mobileNumber
+                        )
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        onLoginResponse(
+                            false,
+                            response?.message ?: "Something went wrong",
+                            mobileNumber
+                        )
+                    }
+
+                }
+            }
+        }
+    }
+
+}

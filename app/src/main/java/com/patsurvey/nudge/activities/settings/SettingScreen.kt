@@ -77,6 +77,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -95,10 +96,15 @@ import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.CustomProgressBar
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.home.DetailsScreen
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -116,8 +122,12 @@ fun SettingScreen(
 ) {
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
+    val rootNavController= rememberNavController()
     val list = ArrayList<SettingOptionModel>()
     val lastSyncTimeInMS = viewModel.lastSyncTime.value
+    val changeGraph = remember {
+        mutableStateOf(false)
+    }
 
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
     val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -159,6 +169,9 @@ fun SettingScreen(
     val networkError = viewModel.networkErrorMessage.value
     val isDataNeedToBeSynced = remember {
         mutableStateOf(0)
+    }
+    val logout = remember {
+        mutableStateOf(false)
     }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
@@ -329,6 +342,23 @@ fun SettingScreen(
                         .height(45.dp)
 
                 ) {
+                    viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                    if(isDataNeedToBeSynced.value == 0
+                        || isDataNeedToBeSynced.value == 2){
+                        viewModel.performLogout(object : NetworkCallbackListener{
+                            override fun onFailed() {
+                                logout(viewModel,logout,rootNavController)
+                                changeGraph.value=true
+                            }
+
+                            override fun onSuccess() {
+                                logout(viewModel,logout,rootNavController)
+                                changeGraph.value=true
+                            }
+                        })
+
+//                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                    }
                 }
             }
             /*if (viewModel.showLoader.value) {
@@ -384,6 +414,25 @@ fun SettingScreen(
     if(networkError.isNotEmpty()){
         showCustomToast(context,networkError)
     }
+    if(viewModel.showAPILoader.value){
+        CustomProgressBar(modifier = Modifier)
+    }
+    if(viewModel.onLogoutError.value){
+        logout(viewModel,logout,rootNavController)
+        changeGraph.value=true
+    }
+
+    if(changeGraph.value){
+        navController.navigate(Graph.LOGOUT_GRAPH)
+        changeGraph.value=false
+    }
+}
+
+private fun logout(viewModel: SettingViewModel,
+                   logout : MutableState<Boolean>,
+                   navController: NavController){
+    viewModel.clearLocalDB(logout)
+
 }
 
 @Composable
