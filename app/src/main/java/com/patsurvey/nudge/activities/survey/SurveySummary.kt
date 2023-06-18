@@ -59,6 +59,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
 import com.patsurvey.nudge.utils.SyncStatus
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
@@ -313,9 +314,9 @@ fun SurveySummary(
                         ) {
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                    didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }
+                                    didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
                                 else
-                                    didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
+                                    didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
                                     DidiItemCardForPat(
                                         didi = didi,
                                         modifier = modifier,
@@ -347,7 +348,7 @@ fun SurveySummary(
                 ) {
                     SummaryBox(
                         count = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+                            didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size,
                         boxColor = blueLighter,
@@ -362,7 +363,7 @@ fun SurveySummary(
                         ) else Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
                     }
                     SummaryBox(
-                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }.size
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
