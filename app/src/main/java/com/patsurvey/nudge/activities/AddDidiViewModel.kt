@@ -6,6 +6,7 @@ import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -128,6 +129,17 @@ class AddDidiViewModel @Inject constructor(
 
         validateDidiDetails()
         getSocialMappingStepId()
+        CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync(tolaDao){
+            Log.d(TAG, "CheckDBStatus: $it")
+            try {
+                isTolaSynced.value = it
+                Log.d(TAG, "CheckDBStatus Detial: $it :: ${isTolaSynced.value}")
+            }catch (ex:Exception){
+                ex.printStackTrace()
+            }
+
+
+        }
 
     }
 
@@ -211,8 +223,8 @@ class AddDidiViewModel @Inject constructor(
                         cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
                         relationship = HUSBAND_STRING,
                         villageId = prefRepo.getSelectedVillage().id,
-                        createdDate = System.currentTimeMillis(),
-                        modifiedDate = System.currentTimeMillis(),
+                        localCreatedDate = System.currentTimeMillis(),
+                        localModifiedDate = System.currentTimeMillis(),
                         shgFlag = SHGFlag.NOT_MARKED.value,
                         transactionId = ""
                     )
@@ -260,8 +272,12 @@ class AddDidiViewModel @Inject constructor(
                 relationship = HUSBAND_STRING,
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
                 createdDate = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).createdDate,
-                modifiedDate = System.currentTimeMillis(),
+                    .indexOf(didiId)).createdDate ?:0,
+                modifiedDate = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).modifiedDate ?:0,
+                localCreatedDate = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).localCreatedDate?:0,
+                localModifiedDate = System.currentTimeMillis(),
                 shgFlag = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).shgFlag,
                 beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }
@@ -646,6 +662,7 @@ class AddDidiViewModel @Inject constructor(
                     PatSurveyStatus.NOT_AVAILABLE.ordinal
                 didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
             }
+            didiDao.updateModifiedDate(System.currentTimeMillis(),didiId)
             didiDao.updateNeedToPostPAT(true, didiId, prefRepo.getSelectedVillage().id)
             pendingDidiCount.value =
                 didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
@@ -743,6 +760,7 @@ class AddDidiViewModel @Inject constructor(
                 didisToBeDeleted.forEach { didi ->
                     val jsonObject = JsonObject()
                     jsonObject.addProperty("id", didi.id)
+                    jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
                     jsonArray.add(jsonObject)
                     val deleteDidiApiResponse = apiService.deleteDidi(jsonArray)
                     if (deleteDidiApiResponse.status.equals(SUCCESS)) {

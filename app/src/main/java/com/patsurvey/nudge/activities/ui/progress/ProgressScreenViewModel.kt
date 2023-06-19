@@ -119,7 +119,7 @@ class ProgressScreenViewModel @Inject constructor(
                 tolaCount.value=_tolaList.value.size
                 didiCount.value=didiList.value.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
-                ultrPoorDidiCount.value = didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }.size
+                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1}.size
                 endorsedDidiCount.value = didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             }
         }

@@ -58,7 +58,6 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
-import com.patsurvey.nudge.utils.SyncStatus
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
@@ -143,11 +142,11 @@ fun SurveySummary(
                 surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            if (surveySummaryViewModel.isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
-                                && surveySummaryViewModel.isDidiSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
-                                && surveySummaryViewModel.isDidiRankingSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                            if (surveySummaryViewModel.isTolaSynced.value == 2
+                                && surveySummaryViewModel.isDidiSynced.value == 2
+                                && surveySummaryViewModel.isDidiRankingSynced.value == 2
                             ){
-                                if(surveySummaryViewModel.isDidiPATSynced.value == SyncStatus.NEED_TO_SYNC.ordinal){
+                                if(surveySummaryViewModel.isDidiPATSynced.value == 2){
                                     surveySummaryViewModel.updatePatStatusToNetwork(object :
                                         NetworkCallbackListener {
                                         override fun onSuccess() {

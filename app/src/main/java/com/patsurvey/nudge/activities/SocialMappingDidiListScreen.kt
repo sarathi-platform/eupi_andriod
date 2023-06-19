@@ -453,9 +453,7 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                CheckDBStatus(didiViewModel).isFirstStepNeedToBeSync(didiViewModel.isTolaSynced,didiViewModel.tolaDao)
-                                Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.isTolaSynced.value}")
-                                if(didiViewModel.isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal) {
+                                 if(didiViewModel.isTolaSynced.value == 2) {
                                     didiViewModel.addDidisToNetwork(object :
                                         NetworkCallbackListener {
                                         override fun onSuccess() {
@@ -1348,6 +1346,9 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
             }
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
+            }
+            PatSurveyStatus.NOT_AVAILABLE.ordinal,PatSurveyStatus.NOT_AVAILABLE.ordinal -> {
+                status = context.getString(R.string.not_avaliable)
             }
             PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
                 status = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {

@@ -76,9 +76,9 @@ class TransectWalkViewModel @Inject constructor(
                 longitude = tola.location.long ?: 0.0,
                 villageEntity.value?.id ?: 0,
                 status = 1,
-                createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis(),
-                transactionId = ""
+                localCreatedDate = System.currentTimeMillis(),
+                localModifiedDate = System.currentTimeMillis(),
+                transactionId = "",
             )
             tolaDao.insert(tolaItem)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
@@ -161,6 +161,8 @@ class TransectWalkViewModel @Inject constructor(
                     status = it.status,
                     createdDate = it.createdDate,
                     modifiedDate = it.modifiedDate,
+                    localModifiedDate = it.localModifiedDate,
+                    localCreatedDate = it.localCreatedDate,
                     transactionId = ""
                 )
             )
@@ -193,14 +195,12 @@ class TransectWalkViewModel @Inject constructor(
                 }
                 withContext(Dispatchers.IO){
                     val jsonArray = JsonArray()
-                    jsonArray.add(DeleteTolaRequest(tolaId).toJson())
+                    jsonArray.add(DeleteTolaRequest(tolaId, localModifiedDate = System.currentTimeMillis()).toJson())
                     val response = apiInterface.deleteCohort(jsonArray)
                     if (response.status.equals(SUCCESS)) {
                         tolaDao.removeTola(tolaId)
-//                        deleteDidisForTola(tolaId)
                     } else {
                         tolaDao.setNeedToPost(listOf(tolaId), true)
-                        Log.d("removeTola: ", "delete tola request failed: ${response.message}")
                         networkCallbackListener.onFailed()
                     }
                 }
@@ -219,6 +219,7 @@ class TransectWalkViewModel @Inject constructor(
                 didList.forEach {
                     val jsonObject = JsonObject()
                     jsonObject.addProperty("id", it.id)
+                    jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
                     jsonArray.add(jsonObject)
                 }
                 val deleteDidiApiRespone = apiInterface.deleteDidi(jsonArray)
@@ -245,8 +246,10 @@ class TransectWalkViewModel @Inject constructor(
                 villageId = tolaList.value[getIndexOfTola(id)].villageId,
                 needsToPost = true,
                 status = tolaList.value[getIndexOfTola(id)].status,
-                createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
-                modifiedDate = System.currentTimeMillis(),
+                createdDate = tolaList.value[getIndexOfTola(id)].createdDate ?:0,
+                modifiedDate = tolaList.value[getIndexOfTola(id)].modifiedDate ?:0,
+                localCreatedDate=tolaList.value[getIndexOfTola(id)].localCreatedDate,
+                localModifiedDate=System.currentTimeMillis(),
                 transactionId = ""
             )
             tolaDao.insert(updatedTola)

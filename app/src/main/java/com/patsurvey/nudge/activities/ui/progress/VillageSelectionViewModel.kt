@@ -34,6 +34,8 @@ import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
@@ -261,13 +263,13 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 .indexOf(StepType.WEALTH_RANKING.name)].status
                                                         else
                                                             WealthRank.NOT_RANKED.rank
-                                                    val patSurveyStatus =
+                                                    val patSurveyAcceptedRejected =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.PAT_SURVEY.name))
-                                                            PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
                                                         else
-                                                            PatSurveyStatus.NOT_STARTED.ordinal
+                                                            DIDI_REJECTED
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.VO_ENDORSEMENT.name))
@@ -275,6 +277,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
+
                                                     didiDao.insertDidi(
                                                         DidiEntity(
                                                             id = didi.id,
@@ -290,14 +293,20 @@ class VillageSelectionViewModel @Inject constructor(
                                                             cohortName = tolaName,
                                                             needsToPost = false,
                                                             wealth_ranking = wealthRanking,
-                                                            patSurveyStatus = patSurveyStatus,
+                                                            forVoEndorsement = if(patSurveyAcceptedRejected.equals(
+                                                                    COMPLETED_STRING,true)) 1 else 0,
                                                             voEndorsementStatus = voEndorsementStatus,
                                                             needsToPostRanking = false,
                                                             createdDate = didi.createdDate,
                                                             modifiedDate = didi.modifiedDate,
                                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                             shgFlag = SHGFlag.NOT_MARKED.value,
-                                                            transactionId = ""
+                                                            transactionId = "",
+                                                            localCreatedDate = didi.localCreatedDate,
+                                                            localModifiedDate = didi.localModifiedDate,
+                                                            score = didi.score,
+                                                            comment = didi.comment,
+
                                                         )
                                                     )
                                                 }

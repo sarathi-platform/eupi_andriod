@@ -13,7 +13,7 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where activeStatus = 1 ORDER BY id DESC")
     fun getAllDidis(): List<DidiEntity>
 
-    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY createdDate DESC")
+    @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId and activeStatus = 1 ORDER BY localCreatedDate DESC")
     fun getAllDidisForVillage(villageId: Int): List<DidiEntity>
 
     @Query("Select * FROM $DIDI_TABLE where id = :id and activeStatus = 1")
@@ -188,4 +188,17 @@ interface DidiDao {
 
     @Query("DELETE from $DIDI_TABLE")
     fun deleteAllDidi()
+
+    @Query("UPDATE $DIDI_TABLE set score =:score, comment=:comment,isDidiAccepted=:isDidiAccepted  WHERE id=:didiId ")
+    fun updateDidiScore(score: Double,comment:String,isDidiAccepted:Boolean,didiId: Int)
+
+    @Query("SELECT * from $DIDI_TABLE where forVoEndorsement = 1 and villageId=:villageId")
+    fun fetchVOEndorseStatusDidi(villageId: Int): List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE set localModifiedDate =:localModifiedDate WHERE id=:didiId ")
+    fun updateModifiedDate(localModifiedDate: Long,didiId: Int)
+
+    @Query("UPDATE $DIDI_TABLE set localModifiedDate =:localModifiedDate WHERE serverId=:didiId ")
+    fun updateModifiedDateServerId(localModifiedDate: Long,didiId: Int)
+
 }

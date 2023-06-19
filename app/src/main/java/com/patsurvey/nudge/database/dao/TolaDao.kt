@@ -16,7 +16,7 @@ interface TolaDao {
     @Query("SELECT * FROM $TOLA_TABLE where id = :id AND status = 1")
     fun getTola(id: Int): TolaEntity
 
-    @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId and status = 1 ORDER BY createdDate DESC")
+    @Query("SELECT * FROM $TOLA_TABLE where villageId = :villageId and status = 1 ORDER BY localCreatedDate DESC")
     fun getAllTolasForVillage(villageId: Int): List<TolaEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
