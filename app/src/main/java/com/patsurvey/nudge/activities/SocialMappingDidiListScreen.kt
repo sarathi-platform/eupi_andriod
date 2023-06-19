@@ -53,6 +53,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
@@ -84,22 +85,15 @@ fun SocialMappingDidiListScreen(
         mutableStateOf(false)
     }
 
+
+
     val showLoader = remember {
         mutableStateOf(false)
     }
 
     LaunchedEffect(key1 = true) {
-        if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-            showLoader.value = true
-            didiViewModel.getPatStepStatus(stepId) {
-                if (it) {
-                    showLoader.value = false
-                    navController.navigate("pat_survey_summary/$stepId/$it")
-                } else{
-                    showLoader.value = false
-                }
-            }
-        }
+        didiViewModel.isSocialMappingComplete(stepId)
+        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
     LaunchedEffect(key1 = true) {
@@ -459,37 +453,41 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                didiViewModel.addDidisToNetwork( object : NetworkCallbackListener {
-                                    override fun onSuccess() {
-                                    }
+                                CheckDBStatus(didiViewModel).isFirstStepNeedToBeSync(didiViewModel.isTolaSynced,didiViewModel.tolaDao)
+                                Log.d(TAG, "SocialMappingDidiListScreen: ${didiViewModel.isTolaSynced.value}")
+                                if(didiViewModel.isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal) {
+                                    didiViewModel.addDidisToNetwork(object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
 
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
-                                didiViewModel.deleteDidiFromNetwork(object : NetworkCallbackListener {
-                                    override fun onSuccess() {
-                                        showCustomToast(context, "Didi Deleted")
-                                    }
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
+                                    didiViewModel.deleteDidiFromNetwork(object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                            showCustomToast(context, "Didi Deleted")
+                                        }
 
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
-                                didiViewModel.callWorkFlowAPI(villageId, stepId,  object : NetworkCallbackListener{
-                                    override fun onSuccess() {
-                                    }
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
+                                    didiViewModel.callWorkFlowAPI(
+                                        villageId,
+                                        stepId,
+                                        object : NetworkCallbackListener {
+                                            override fun onSuccess() {
+                                            }
 
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
+                                            override fun onFailed() {
+                                                showCustomToast(context, SYNC_FAILED)
+                                            }
+                                        })
+                                }
                             }
-                            /*if ((context as MainActivity).isOnline.value ?: false) {
-                                didiViewModel.addDidisToNetwork()
-                                didiViewModel.callWorkFlowAPI(villageId, stepId)
-                            }*/
-//                            didiViewModel.updateDidisNeedTOPostList(villageId)
                             didiViewModel.markSocialMappingComplete(villageId, stepId)
                             navController.navigate(
                                 "sm_step_completion_screen/${

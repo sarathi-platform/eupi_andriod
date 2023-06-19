@@ -90,7 +90,11 @@
     <string name="enter_mobile_text">মোবাইলে প্রবেশ করুন</string>
     <string name="enter_otp_text">OTP লিখুন</string>
     <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
+
     <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">ओटीपी resent to {MOBILE_NUMBER}</string>
+
     <string name="complete_didi_addition">দিদি সংযোজন সম্পূর্ণ করুন</string>
 
     <string name="user_id_text">"সনাক্ত করা: "</string>
@@ -248,6 +252,8 @@
     <string name="step_5">Step 5</string>
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
+    <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনের জন্য কোন Didis উপলব্ধ.</string>
+
     <string name="add_more">अधिक जोड़ें</string>
     <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
 </resources>

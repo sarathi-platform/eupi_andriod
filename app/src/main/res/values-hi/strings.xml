@@ -112,7 +112,11 @@
     <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
 
     <string name="otp_send_to_mobile_number_message">" %1$s मोबाइल नंबर पर OTP भेजा गया"</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} मोबाइल नंबर पर OTP भेजा गया</string>
+
     <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">ओटीपी resent to {MOBILE_NUMBER}</string>
+
     <string name="complete_didi_addition">पूरा दीदी जोड़े</string>
     <string name="pat_survey">PAT सर्वेक्षण</string>
     <string name="didi">दीदी</string>
@@ -242,6 +246,7 @@
     <string name="pat_in_progress_status_text">PAT सर्वेक्षण चालू है</string>
     <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
     <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
+    <string name="no_didis_availble_for_vo_endorsement">वीओ एंडोर्समेंट के लिए कोई दीदी उपलब्ध नहीं है।</string>
     <string name="add_more">अधिक जोड़ें</string>
     <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
 </resources>

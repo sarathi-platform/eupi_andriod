@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.settings
 
+import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
@@ -38,6 +39,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
@@ -53,6 +55,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -75,6 +78,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -93,6 +97,11 @@ import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.CustomProgressBar
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
+import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
+import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
@@ -114,10 +123,15 @@ fun SettingScreen(
 ) {
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
+    val rootNavController= rememberNavController()
+
+    val snackState = rememberSnackBarState()
     val list = ArrayList<SettingOptionModel>()
-    val lastSyncTimeInMS = viewModel.prefRepo.getPref(
-        LAST_SYNC_TIME, 0L
-    )
+    val lastSyncTimeInMS = viewModel.lastSyncTime.value
+    val changeGraph = remember {
+        mutableStateOf(false)
+    }
+
     val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
     val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
     list.add(
@@ -158,6 +172,9 @@ fun SettingScreen(
     val networkError = viewModel.networkErrorMessage.value
     val isDataNeedToBeSynced = remember {
         mutableStateOf(0)
+    }
+    val logout = remember {
+        mutableStateOf(false)
     }
 /*    val stepOneSize = remember {
         mutableStateOf(defaultStepSize)
@@ -222,33 +239,6 @@ fun SettingScreen(
                 },
                 backgroundColor = Color.White
             )
-            /*Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back press",
-                    tint = textColorDark,
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                        .clickable {
-                            navController.navigate(Graph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                )
-                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .weight(1f), textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier
-                    .size(24.dp)
-                    .padding(vertical = 10.dp))
-            }*/
         }
     ) {
         ConstraintLayout(
@@ -328,6 +318,34 @@ fun SettingScreen(
                         .height(45.dp)
 
                 ) {
+                    if ((context as MainActivity).isOnline.value) {
+                        viewModel.isDataNeedToBeSynced(
+                            stepOneStatus,
+                            stepTwoStatus,
+                            stepThreeStatus,
+                            stepFourStatus,
+                            stepFiveStatus
+                        )
+                        if (isDataNeedToBeSynced.value == 0
+                            || isDataNeedToBeSynced.value == 2
+                        ) {
+                            viewModel.performLogout(object : NetworkCallbackListener {
+                                override fun onFailed() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+
+                                override fun onSuccess() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+                            })
+
+//                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                        }
+                    } else {
+                        snackState.addMessage(message = "Sync is required before logout, Please connect to internet before logging out.", isSuccess = false, isCustomIcon = false)
+                    }
                 }
             }
             /*if (viewModel.showLoader.value) {
@@ -362,19 +380,49 @@ fun SettingScreen(
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                if(stepOneStatus.value == 2 && stepTwoStatus.value == 2 && stepThreeStatus.value == 2 && stepFourStatus.value == 2 && stepFiveStatus.value == 2)
+                if(stepOneStatus.value == 0
+                    || stepTwoStatus.value == 0
+                    || stepThreeStatus.value == 0
+                    || stepFourStatus.value == 0
+                    || stepFiveStatus.value == 0)
                     isDataNeedToBeSynced.value = 1
-                else if(stepOneStatus.value == 3 && stepTwoStatus.value == 3 && stepThreeStatus.value == 3 && stepFourStatus.value == 3 && stepFiveStatus.value == 3)
+                else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                        && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                        && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                        && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                        && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
                     isDataNeedToBeSynced.value = 2
                 else
                     isDataNeedToBeSynced.value = 0
                 viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
+        CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
     }
     if(networkError.isNotEmpty()){
         showCustomToast(context,networkError)
     }
+    if(viewModel.showAPILoader.value){
+        CustomProgressBar(modifier = Modifier)
+    }
+    if(viewModel.onLogoutError.value){
+        logout(context, viewModel,logout,rootNavController)
+        changeGraph.value=true
+    }
+
+    if(changeGraph.value){
+        navController.navigate(Graph.LOGOUT_GRAPH)
+        changeGraph.value=false
+    }
+}
+
+private fun logout(
+    context: Context,
+    viewModel: SettingViewModel,
+    logout: MutableState<Boolean>,
+    navController: NavController
+){
+    viewModel.clearLocalDB(context, logout)
 }
 
 @Composable
@@ -398,20 +446,18 @@ fun showSyncDialog(
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
     val indicatorPadding = 48.dp
     val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
+    val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
     val animationDuration = 1000
     val animationDelay = 0
 
-    settingViewModel.syncPercentage.value = 0f
+//    settingViewModel.syncPercentage.value = 0f
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
-        targetValue = syncPercentage,
-        animationSpec = tween(
-            durationMillis = animationDuration,
-            delayMillis = animationDelay
-        )
+        targetValue =  settingViewModel.syncPercentage.value,
+        animationSpec = tween()
     )
 
 
@@ -435,7 +481,7 @@ fun showSyncDialog(
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                if (isDataNeedToBeSynced.value == 0) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 1 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                if (isDataNeedToBeSynced.value == 1) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 0 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -531,7 +577,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepOneStatus == 2)
+                                if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -541,7 +587,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepOneStatus == 1) {
+                                else if (settingViewModel.stepOneSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -579,7 +625,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepTwoStatus == 2)
+                                if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -589,7 +635,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepTwoStatus == 1) {
+                                else if (settingViewModel.stepTwoSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -627,7 +673,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepThreeStatus == 2)
+                                if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -637,7 +683,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepThreeStatus == 1) {
+                                else if (settingViewModel.stepThreeSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -675,7 +721,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFourStatus == 2)
+                                if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -685,7 +731,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepFourStatus == 1) {
+                                else if (settingViewModel.stepFourSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -724,7 +770,7 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (stepFiveStatus == 2)
+                                if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3)
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -734,7 +780,7 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                else if (stepFiveStatus == 1) {
+                                else if (settingViewModel.stepFifthSyncStatus.value == 1) {
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -751,7 +797,16 @@ fun showSyncDialog(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         if (settingViewModel.showLoader.value) {
-                            Canvas(
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp)
+                                    .clip(RoundedCornerShape(14.dp)),
+                                color = progressIndicatorColor,
+                                backgroundColor = backgroundIndicatorColor,
+                                progress = animateNumber.value
+                            )
+                            /*Canvas(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(24.dp)
@@ -781,7 +836,7 @@ fun showSyncDialog(
                                     start = Offset(x = 0f, y = 0f),
                                     end = Offset(x = progress, y = 0f)
                                 )
-                            }
+                            }*/
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
                                 .fillMaxWidth()
                                 .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
@@ -817,7 +872,7 @@ fun showSyncDialog(
                         if (isInternetConnected
                             && (batteryLevel > 30)
                             && !settingViewModel.showLoader.value
-                            && isDataNeedToBeSynced.value == 0
+                            && isDataNeedToBeSynced.value == 1
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
@@ -837,16 +892,17 @@ fun showSyncDialog(
                                 ) {
                                     settingViewModel.showLoader.value = true
                                     settingViewModel.syncDataOnServer(context, showSyncDialogStatus)
-                                    settingViewModel.prefRepo.savePref(
-                                        LAST_SYNC_TIME,
-                                        System.currentTimeMillis()
-                                    )
+                                    val updatedSyncTime = System.currentTimeMillis()
+                                    settingViewModel.lastSyncTime.value = updatedSyncTime
+                                    settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
 //                                setShowDialog(false)
 //                                positiveButtonClicked()
                                 }
                             }
-                        } else if(isDataNeedToBeSynced.value == 1
-                                || isDataNeedToBeSynced.value == 2){
+                        } else if(isDataNeedToBeSynced.value == 0
+                                || isDataNeedToBeSynced.value == 2
+                                || !isInternetConnected
+                                || batteryLevel < 30){
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
                                     buttonTitle = stringResource(id = R.string.close),

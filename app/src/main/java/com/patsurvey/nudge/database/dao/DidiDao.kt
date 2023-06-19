@@ -4,6 +4,7 @@ import androidx.room.*
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.utils.DIDI_TABLE
+import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.WealthRank
 
 @Dao
@@ -41,6 +42,10 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET needsToPost = :needsToPost WHERE id =:id")
     fun updateNeedToPost(id:Int, needsToPost: Boolean)
+
+    @Query("Update $DIDI_TABLE SET serverId = :serverId, needsToPost = :needsToPost, transactionId = :transactionId, createdDate = :createdDate, modifiedDate =:modifiedDate where id = :id")
+    fun updateDidiDetailAfterSync(id: Int, serverId: Int, needsToPost: Boolean, transactionId: String, createdDate: Long, modifiedDate: Long)
+
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :id")
     fun setNeedToPostRanking(id:Int, needsToPostRanking: Boolean)
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE serverId = :id")
@@ -169,7 +174,18 @@ interface DidiDao {
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
     fun fetchNotAvailableDidis(villageId: Int) : Int
 
+    @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId ")
+    fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int)
+
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
 
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId")
+    fun fetchAllVONeedToPostStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
+    fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+
+    @Query("DELETE from $DIDI_TABLE")
+    fun deleteAllDidi()
 }

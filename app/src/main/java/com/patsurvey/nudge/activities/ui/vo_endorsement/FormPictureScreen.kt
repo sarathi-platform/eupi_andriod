@@ -2,11 +2,9 @@ package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import android.Manifest
 import android.app.Activity
-import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.provider.Settings
+import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -78,6 +76,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -87,7 +86,6 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
@@ -109,6 +107,7 @@ import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
@@ -131,25 +130,13 @@ fun FormPictureScreen(
         mutableStateOf(false)
     }
 
-    val permissionsState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-    )
-
     LaunchedEffect(key1 = localContext) {
         formPictureScreenViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
             shouldRequestPermission.value = true
-
         }
     }
 
-    LaunchedEffect(key1 = shouldRequestPermission.value) {
-        permissionsState.launchMultiplePermissionRequest()
-    }
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
@@ -247,18 +234,6 @@ fun FormPictureScreen(
                     .padding(bottom = bottomPadding)
                 ) {
 
-                    if (shouldRequestPermission.value) {
-                        ShowDialog(
-                            title = "Permission Required",
-                            message = "Camera Permission requierd, please grant permission.",
-                            setShowDialog = {
-                                shouldRequestPermission.value = it
-                            }
-                        ) {
-                            openSettings(localContext)
-                        }
-                    }
-
                     AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
                         CameraViewForForm(
                             modifier = Modifier.fillMaxSize(),
@@ -298,6 +273,18 @@ fun FormPictureScreen(
                                 .padding(top = 14.dp),
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+
+                            if (shouldRequestPermission.value) {
+                                ShowDialog(
+                                    title = "Permission Required",
+                                    message = "Camera Permission requierd, please grant permission.",
+                                    setShowDialog = {
+                                        shouldRequestPermission.value = it
+                                    }
+                                ) {
+                                    openSettings(localContext)
+                                }
+                            }
 
                             VOAndVillageBoxView(
                                 prefRepo = formPictureScreenViewModel.prefRepo,
@@ -452,8 +439,7 @@ fun FormPictureScreen(
                                             Pair(FORM_D, true)
                                     },
                                     deleteButtonClicked = {
-                                        formPictureScreenViewModel.formDPageList.value =
-                                            mutableListOf()
+                                        formPictureScreenViewModel.formDPageList.value = mutableListOf()
 //                                        if (formPictureScreenViewModel.formsClicked.value > 1)
                                             formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
                                     }
@@ -463,7 +449,7 @@ fun FormPictureScreen(
                     }
                 }
 
-                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formsClicked.value > 2) {
+                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formCImageList.value.isNotEmpty() && formPictureScreenViewModel.formDImageList.value.isNotEmpty()) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .shadow(10.dp)
@@ -587,7 +573,7 @@ private fun handleImageCapture(
             viewModal.formDImageList.value = viewModal.formDImageList.value.also {
                 it["Page_${viewModal.formDPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value < 2) {
+            if (viewModal.formsClicked.value <= 2) {
                 viewModal.formsClicked.value = viewModal.formsClicked.value + 1
             }
         }
@@ -596,28 +582,85 @@ private fun handleImageCapture(
 }
 
 private fun requestCameraPermission(context: Activity, viewModal: FormPictureScreenViewModel, requestPermission: () -> Unit) {
-    when {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED -> {
-            Log.i("FormPictureScreen", "Permission previously granted")
-//            viewModal.shouldShowCamera.value = true
-        }
 
-        ActivityCompat.shouldShowRequestPermissionRationale(
-            context,
-            Manifest.permission.CAMERA
-        ) -> {
-            Log.i("FormPictureScreen", "Show camera permissions dialog")
-            viewModal.shouldShowCamera.value = Pair("", false)
-//            viewModal.shouldShowCamera.value = true
-        }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
 
-        else -> {
-            viewModal.shouldShowCamera.value = Pair("", false)
-            Log.d("requestCameraPermission: ", "permission not granted")
-            requestPermission()
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("FormPictureScreen", "Permission previously granted")
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.CAMERA
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) -> {
+                Log.i("FormPictureScreen", "Show camera permissions dialog")
+                viewModal.shouldShowCamera.value = Pair("", false)
+                ActivityCompat.requestPermissions(
+                    context,
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ),
+                    1
+                )
+            }
+
+            else -> {
+                viewModal.shouldShowCamera.value = Pair("", false)
+                Log.d("requestCameraPermission: ", "permission not granted")
+                requestPermission()
+            }
+        }
+    } else {
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("FormPictureScreen", "Permission previously granted")
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.CAMERA
+            ) -> {
+                Log.i("FormPictureScreen", "Show camera permissions dialog")
+                viewModal.shouldShowCamera.value = Pair("", false)
+                ActivityCompat.requestPermissions(
+                    context,
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ),
+                    1
+                )
+            }
+
+            else -> {
+                viewModal.shouldShowCamera.value = Pair("", false)
+                Log.d("requestCameraPermission: ", "permission not granted")
+                requestPermission()
+            }
         }
     }
 }
@@ -786,15 +829,17 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
-            Box(
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 26.dp)
+            ,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
                     Modifier
                         .padding(vertical = 2.dp)
-                        .align(Alignment.CenterStart)
+                        .weight(1f)
                         .clickable {
                             addPageClicked()
                         }
@@ -817,11 +862,11 @@ fun ExpandableFormPictureCard(
                     )
 
                 }
-
+                Spacer(modifier = Modifier.width(8.dp))
                 Row(
                     Modifier
                         .padding(vertical = 2.dp)
-                        .align(Alignment.CenterEnd)
+                        .weight(1f)
                         .clickable {
                             deleteButtonClicked()
                         }
@@ -840,6 +885,8 @@ fun ExpandableFormPictureCard(
                         text = "Delete & Retake",
                         color = textColorDark,
                         style = buttonTextStyle,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 2,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
                 }
@@ -920,12 +967,4 @@ fun PageItem(
             )*/
         }
     }
-}
-
-fun openSettings(context: Context) {
-    val appSettingsIntent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${context.packageName}")).apply {
-        addCategory(Intent.CATEGORY_DEFAULT)
-    }
-    appSettingsIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-    (context as MainActivity).startActivity(appSettingsIntent)
 }

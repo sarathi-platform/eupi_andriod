@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
+import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
@@ -8,21 +9,26 @@ import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +42,9 @@ class SettingViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val apiInterface: ApiService,
     val tolaDao: TolaDao,
+    val casteListDao: CasteListDao,
+    val lastSelectedTolaDao: LastSelectedTolaDao,
+    val userDao: UserDao,
     val stepsListDao: StepsListDao,
     val villegeListDao: VillageListDao,
     val didiDao: DidiDao,
@@ -47,18 +56,21 @@ class SettingViewModel @Inject constructor(
     val formAAvailabe = mutableStateOf(false)
     val formBAvailabe = mutableStateOf(false)
     val formCAvailabe = mutableStateOf(false)
+    val onLogoutError = mutableStateOf(false)
     var syncPercentage = mutableStateOf(0f)
     var stepOneSyncStatus = mutableStateOf(0)
     var stepTwoSyncStatus = mutableStateOf(0)
     var stepThreeSyncStatus = mutableStateOf(0)
     var stepFourSyncStatus = mutableStateOf(0)
     var stepFifthSyncStatus = mutableStateOf(0)
-    var context : Context? = null
+    var hitApiStatus = mutableStateOf(0)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
+    val showAPILoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
 
+    val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
 
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
@@ -189,10 +201,15 @@ class SettingViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         Log.e("server error","called")
-        showLoader.value = false
-        syncPercentage.value = 100f
-        showSyncDialog.value = false
-        networkErrorMessage.value = error?.message.toString()
+        if(hitApiStatus.value == 1)
+            onLogoutError.value = true
+        else if(hitApiStatus.value == 2){
+            showLoader.value = false
+            syncPercentage.value = 1f
+            showSyncDialog.value = false
+            showAPILoader.value = false
+            networkErrorMessage.value = error?.message.toString()
+        }
         /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (context != null) {
                 showCustomToast(context, SYNC_FAILED)
@@ -201,6 +218,10 @@ class SettingViewModel @Inject constructor(
                 showLoader.value = false
             }
         }*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+
     }
 
     fun getStepOneSize(stepOneSize : MutableState<String>) {
@@ -224,24 +245,31 @@ class SettingViewModel @Inject constructor(
     }
 
     fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
-        context = cxt
+        hitApiStatus.value = 2
         showSyncDialog = syncDialog
         resetPosition()
         if(isInternetAvailable(cxt)){
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
-                        networkErrorMessage.value = SYNC_SUCCESSFULL
+                        object: CountDownTimer(0, 1000){
+                            override fun onTick(p0: Long) {
+
+                            }
+                            override fun onFinish() {
+                                networkErrorMessage.value = SYNC_SUCCESSFULL
 //                        showCustomToast(cxt, SYNC_SUCCESSFULL)
-                        syncPercentage.value = 100f
-                        showSyncDialog.value = false
-                        showLoader.value = false
+                                syncPercentage.value = 1f
+//                        showSyncDialog.value = false
+                                showLoader.value = false
+                            }
+                        }.start()
                     }
 
                     override fun onFailed() {
 //                        showCustomToast(cxt, SYNC_FAILED)
                         networkErrorMessage.value = SYNC_FAILED
-                        syncPercentage.value = 100f
+                        syncPercentage.value = 1f
                         showSyncDialog.value = false
                         showLoader.value = false
                     }
@@ -279,4 +307,50 @@ class SettingViewModel @Inject constructor(
         isFifthStepNeedToBeSync(stepFifthSyncStatus)
     }
 
+    fun performLogout(networkCallbackListener: NetworkCallbackListener){
+        showAPILoader.value = true
+        hitApiStatus.value = 1
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val response = apiInterface.performLogout()
+            if (response.status.equals(SUCCESS, true)) {
+                withContext(Dispatchers.Main) {
+                    networkCallbackListener.onSuccess()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    networkCallbackListener.onFailed()
+                }
+            }
+        }
+    }
+
+    fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            casteListDao.deleteCasteTable()
+            tolaDao.deleteAllTola()
+            didiDao.deleteAllDidi()
+            lastSelectedTolaDao.deleteAllLastSelectedTola()
+            numericAnswerDao.deleteAllNumericAnswers()
+            answerDao.deleteAllAnswers()
+            questionDao.deleteQuestionTable()
+            stepsListDao.deleteAllStepsFromDB()
+            userDao.deleteAllUserDetail()
+            villegeListDao.deleteAllVilleges()
+            clearSharedPreference()
+            //cleared cache in case of logout
+            context.cacheDir.deleteRecursively()
+            withContext(Dispatchers.Main){
+                showAPILoader.value = false
+                logout.value = true
+            }
+        }
+    }
+
+    private fun clearSharedPreference() {
+        val languageId = prefRepo.getAppLanguageId()
+        val language = prefRepo.getAppLanguage()
+        prefRepo.clearSharedPreference()
+        prefRepo.saveAppLanguage(language)
+        prefRepo.saveAppLanguageId(languageId)
+    }
 }

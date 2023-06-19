@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -16,6 +17,7 @@ import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -32,6 +34,7 @@ import javax.inject.Inject
 class SurveySummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
+    val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
     val answerDao: AnswerDao,
     val numericAnswerDao: NumericAnswerDao,
@@ -43,14 +46,23 @@ class SurveySummaryViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
     val notAvailableCount = mutableStateOf(0)
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
+    val isDidiRankingSynced = mutableStateOf(0)
+    val isDidiPATSynced = mutableStateOf(0)
     init {
         fetchDidisFromDB()
+
     }
 
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(isDidiRankingSynced,didiDao)
+                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(isDidiPATSynced,answerDao, didiDao, prefRepo)
                 notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }
@@ -58,6 +70,10 @@ class SurveySummaryViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     @SuppressLint("SuspiciousIndentation")
@@ -126,7 +142,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     villageId= prefRepo.getSelectedVillage().id,
                                     surveyId=surveyId,
                                     beneficiaryId = if(didi.serverId == 0) didi.id else didi.serverId,
-                                    languageId = prefRepo.getAppLanguageId()?:0,
+                                    languageId = prefRepo.getAppLanguageId()?:2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
                                     userType = USER_CRP,
@@ -169,6 +185,7 @@ class SurveySummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
                 if(dbResponse.workFlowId>0){
                     val response = apiService.editWorkFlow(
                         listOf(
@@ -185,7 +202,34 @@ class SurveySummaryViewModel @Inject constructor(
                         }
                     }
                 }
-
+                launch {
+                    try {
+                        stepList.forEach { step ->
+                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                                val inProgressStepResponse = apiService.editWorkFlow(
+                                    listOf(
+                                        EditWorkFlowRequest(
+                                            step.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
+                                    )
+                                )
+                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                    inProgressStepResponse.data?.let {
+                                        stepsListDao.updateWorkflowId(
+                                            step.id,
+                                            step.workFlowId,
+                                            villageId,
+                                            it[0].status
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        onCatchError(ex, ApiType.WORK_FLOW_API)
+                    }
+                }
             }catch (ex:Exception){
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")

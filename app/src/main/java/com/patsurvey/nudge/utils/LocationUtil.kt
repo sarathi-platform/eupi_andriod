@@ -64,8 +64,7 @@ object LocationUtil {
                 return null
             }
 
-        } else {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
                     context,
                     Manifest.permission.ACCESS_FINE_LOCATION
                 )
@@ -74,30 +73,17 @@ object LocationUtil {
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             ) {
-                val locationProvider =
-                    mLocationManager.getBestProvider(
-                        getCriteria(
-                            if (batteryLevel > 30)
-                                Criteria.ACCURACY_FINE
-                            else
-                                Criteria.ACCURACY_COARSE
-                        ), true
-                    )
-                val location = locationProvider?.let { mLocationManager.getLastKnownLocation(it) }
-                Log.d(
-                    "LocationUtil",
-                    "location: lat-${location?.latitude}, long-${location?.longitude}"
-                )
-                return LocationCoordinates(location?.latitude ?: 0.0, location?.longitude ?: 0.0)
+                ActivityCompat.requestPermissions(context, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 1)
+                return null
             } else {
                 context.runOnUiThread{
                     Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
                 }
+                showPermissionDialog = true
                 return null
             }
         }
 
-    }
 
     private fun isLocationEnabled(context: Activity, mLocationManager: LocationManager): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -120,5 +106,7 @@ object LocationUtil {
 
         return criteria
     }
+
+    var showPermissionDialog = false
 
 }

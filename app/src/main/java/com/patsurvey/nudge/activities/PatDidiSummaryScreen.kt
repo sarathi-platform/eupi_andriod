@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
@@ -44,7 +45,6 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
-import com.patsurvey.nudge.activities.ui.vo_endorsement.openSettings
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
@@ -96,9 +96,6 @@ fun PatDidiSummaryScreen(
         }
     }
 
-    LaunchedEffect(key1 = shouldRequestPermission.value) {
-        permissionsState.launchMultiplePermissionRequest()
-    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -481,28 +478,83 @@ private fun requestCameraPermission(
     viewModal: PatDidiSummaryViewModel,
     requestPermission: () -> Unit
 ) {
-    when {
-        ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED -> {
-            Log.i("PatImagePreviewScreen", "Permission previously granted")
-//            viewModal.shouldShowCamera.value = true
-        }
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED
+                    && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("PatImagePreviewScreen", "Permission previously granted")
+            }
 
-        ActivityCompat.shouldShowRequestPermissionRationale(
-            context,
-            Manifest.permission.CAMERA
-        ) -> {
-            viewModal.shouldShowCamera.value = false
-            Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
-//            viewModal.shouldShowCamera.value = true
-        }
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.CAMERA
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            ) -> {
+                viewModal.shouldShowCamera.value = false
+                Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
+                ActivityCompat.requestPermissions(
+                    context,
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ),
+                    1
+                )
+            }
 
-        else -> {
-            viewModal.shouldShowCamera.value = false
-            Log.d("requestCameraPermission: ", "permission not granted")
-            requestPermission()
+            else -> {
+                viewModal.shouldShowCamera.value = false
+                Log.d("requestCameraPermission: ", "permission not granted")
+                requestPermission()
+            }
+        }
+    } else {
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                Log.i("PatImagePreviewScreen", "Permission previously granted")
+            }
+
+            ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.CAMERA
+            ) -> {
+                viewModal.shouldShowCamera.value = false
+                Log.i("PatImagePreviewScreen", "Show camera permissions dialog")
+                ActivityCompat.requestPermissions(
+                    context,
+                    arrayOf(
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                    ),
+                    1
+                )
+            }
+
+            else -> {
+                viewModal.shouldShowCamera.value = false
+                Log.d("requestCameraPermission: ", "permission not granted")
+                requestPermission()
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ package com.patsurvey.nudge.network.interfaces
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
+import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -105,6 +106,14 @@ interface ApiService {
     @POST("/read-api/callback/status")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getPendingStatus(@Body transactionIdRequest: TransactionIdRequest): ApiResponseModel<List<TransactionIdResponse>>
+
+    @POST("/read-api/callback/status")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getPendingStatusForPat(@Body transactionIdRequest: TransactionIdRequest): ApiResponseModel<List<TransactionIdResponseForPatStatus>>
+
+    @POST("/auth-api/user/logout")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun performLogout() : ApiResponseModel<String>
 
     @GET("/read-api/bpc/view-summary")
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>

@@ -1,7 +1,6 @@
 package com.patsurvey.nudge
 
 import android.annotation.SuppressLint
-import android.os.CountDownTimer
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
@@ -42,15 +41,11 @@ class SyncHelper (
     private val pendingTimerTime : Long= 10000
     private var isPending = 0
     fun syncDataToServer(networkCallbackListener: NetworkCallbackListener){
-//        showProgressBar(networkCallbackListener)
         Log.e("progress","started")
         addTolasToNetwork(networkCallbackListener)
-//        addDidisToNetwork(networkCallbackListener)
-//        updateWealthRankingToNetwork(networkCallbackListener)
-//        checkTolaStatus()
     }
 
-    private fun showProgressBar(networkCallbackListener: NetworkCallbackListener){
+/*    private fun showProgressBar(networkCallbackListener: NetworkCallbackListener){
         val totalTimer : Long = 3000
         val interval : Long = 1000
         object: CountDownTimer(totalTimer, interval){
@@ -65,7 +60,7 @@ class SyncHelper (
                 syncPercentage.value = 0f
             }
         }.start()
-    }
+    }*/
 
     private fun startSyncTimer(networkCallbackListener: NetworkCallbackListener){
         val timer = Timer()
@@ -84,9 +79,49 @@ class SyncHelper (
                     4 -> {
                         checkDidiPatStatus(networkCallbackListener)
                     }
+                    5 -> {
+                        checkVOStatus(networkCallbackListener)
+                    }
                 }
             }
         },pendingTimerTime)
+    }
+
+    private fun checkVOStatus(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchPendingVOStatusStatusDidi(true,"")
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { didi ->
+                    didi.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didiDao.updateNeedToPostVO(false,didi.id)
+                                didiDao.updateDidiTransactionId(didi.id,"")
+                            }
+                        }
+                    }
+                    syncPercentage.value = 100f
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onSuccess()
+                    }
+                } else {
+                    syncPercentage.value = 100f
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
+                }
+            } else {
+                syncPercentage.value = 100f
+                withContext(Dispatchers.Main){
+                    networkCallbackListener.onSuccess()
+                }
+            }
+        }
     }
 
     private fun checkDidiPatStatus(networkCallbackListener: NetworkCallbackListener) {
@@ -97,7 +132,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatusForPat(TransactionIdRequest("PAT",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -107,12 +142,12 @@ class SyncHelper (
                             }
                         }
                     }
-                    networkCallbackListener.onSuccess()
-//                    savePATSummeryToServer(networkCallbackListener)
+                    updateVoStatusToNetwork(networkCallbackListener)
                 } else
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
             } else {
-//                updateWealthRankingToNetwork(networkCallbackListener)
                 updateVoStatusToNetwork(networkCallbackListener)
             }
         }
@@ -126,7 +161,7 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -138,9 +173,10 @@ class SyncHelper (
                     }
                     savePATSummeryToServer(networkCallbackListener)
                 } else
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
             } else {
-//                updateWealthRankingToNetwork(networkCallbackListener)
                 savePATSummeryToServer(networkCallbackListener)
             }
         }
@@ -154,18 +190,20 @@ class SyncHelper (
                 didiList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
                             if (transactionIdResponse.transactionId == didi.transactionId) {
-                                didi.id = transactionIdResponse.referenceId
+                                didi.serverId = transactionIdResponse.referenceId
                             }
                         }
                     }
                     updateDidisNeedTOPostList(didiList,networkCallbackListener)
                 } else
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
             } else {
                 updateWealthRankingToNetwork(networkCallbackListener)
             }
@@ -180,7 +218,7 @@ class SyncHelper (
                 tolaList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest(ids))
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         tolaList.forEach { tola ->
@@ -191,7 +229,9 @@ class SyncHelper (
                     }
                     updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                 } else
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main){
+                        networkCallbackListener.onFailed()
+                    }
             } else {
                 addDidisToNetwork(networkCallbackListener)
             }
@@ -222,18 +262,17 @@ class SyncHelper (
                                     }
                                     Log.e("tola after update", "$tolaList.size")
                                 }
-                                updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             }
+                            updateTolaNeedTOPostList(tolaList,networkCallbackListener)
                             syncPercentage.value = 20f
                         } else {
-                            for (i in 0..response.data.size){
+                            for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
-                                updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             }
+                            updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             syncPercentage.value = 10f
                         }
                     }
-//                    addDidisToNetwork(networkCallbackListener)
                 }
                 else {
                     withContext(Dispatchers.Main){
@@ -298,11 +337,13 @@ class SyncHelper (
     }
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        callWorkFlowAPIForStep(1)
         settingViewModel.stepOneSyncStatus.value = 3
         settingViewModel.stepTwoSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.2f
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToPost(true,null)
+            val didiList = didiDao.fetchAllDidiNeedToPost(true,"")
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {
@@ -310,13 +351,13 @@ class SyncHelper (
                 }
                 val response = apiService.addDidis(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
-                    if((response.data?.get(0)?.transactionId.isNullOrEmpty())) {
+                    if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
 //                        networkCallbackListener.onSuccess()
                             response.data.forEach { didiFromNetwork ->
                                 didiList.forEach { didi ->
                                     if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-                                        didi.id = didiFromNetwork.id
+                                        didi.serverId = didiFromNetwork.id
                                         didi.createdDate = didiFromNetwork.createdDate
                                         didi.modifiedDate = didiFromNetwork.modifiedDate
                                     }
@@ -326,10 +367,10 @@ class SyncHelper (
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
                         syncPercentage.value = 40f
                     } else {
-                        for (i in 0..(response.data?.size ?: 0)){
+                        for (i in 0..(response.data?.size?.minus(1) ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
-                            updateLocalTransactionIdToLocalDidi(didiList,networkCallbackListener)
                         }
+                        updateLocalTransactionIdToLocalDidi(didiList,networkCallbackListener)
                         syncPercentage.value = 30f
                     }
                 } else {
@@ -343,6 +384,40 @@ class SyncHelper (
         }
     }
 
+    private fun callWorkFlowAPIForStep(step: Int) {
+        Log.e("workflow api"," called")
+        val villageId = prefRepo.getSelectedVillage().id
+        val stepList = stepsListDao.getAllStepsForVillage(villageId)
+        Log.e("workflow api called","$villageId -> $stepList -> $step")
+        when(step){
+            1->{
+                if(stepList[0].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[0].id)
+                }
+            }
+            2->{
+                if(stepList[1].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[1].id)
+                }
+            }
+            3->{
+                if(stepList[2].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[2].id)
+                }
+            }
+            4->{
+                if(stepList[3].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[3].id)
+                }
+            }
+            5->{
+                if(stepList[4].isComplete ==  StepStatus.COMPLETED.ordinal){
+                    callWorkFlowAPI(villageId,stepList[4].id)
+                }
+            }
+        }
+    }
+
     fun updateDidisNeedTOPostList(didiList : List<DidiEntity>,networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateDidiListWithServerIds(didiList,networkCallbackListener)
@@ -350,19 +425,21 @@ class SyncHelper (
     }
 
     private fun updateDidiListWithServerIds(oldDidiList: List<DidiEntity>,networkCallbackListener: NetworkCallbackListener) {
-        didiDao.deleteDidiNeedToPost(true)
         oldDidiList.forEach(){ didiEntity ->
             didiEntity.needsToPost = false
             didiEntity.transactionId = ""
+            didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate, modifiedDate = didiEntity.modifiedDate)
+//            didiDao.updateDidi(didiEntity)
         }
-        didiDao.insertAll(oldDidiList)
         updateWealthRankingToNetwork(networkCallbackListener)
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         Log.e("add didi","called")
+        callWorkFlowAPIForStep(2)
         settingViewModel.stepTwoSyncStatus.value = 3
         settingViewModel.stepThreeSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.4f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -371,8 +448,7 @@ class SyncHelper (
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             launch {
-                                didiRequestList.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking))
-//                                didiRequestList.add(EditDidiWealthRankingRequest(didi.id, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name))
+                                didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking))
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
@@ -400,15 +476,19 @@ class SyncHelper (
                                 syncPercentage.value = 60f
                                 savePATSummeryToServer(networkCallbackListener)
                             }
-                        }
+                        } else
+                            withContext(Dispatchers.Main){
+                                networkCallbackListener.onFailed()
+                            }
                     } else {
                         checkDidiWealthStatus(networkCallbackListener)
                     }
 
                 }
             } catch (ex: Exception) {
-                networkCallbackListener.onFailed()
-//                onError("WealthRankingSurveyViewModel", "onError: ${ex.message}, \n${ex.stackTrace}")
+                withContext(Dispatchers.Main){
+                    networkCallbackListener.onFailed()
+                }
             }
         }
     }
@@ -469,8 +549,8 @@ class SyncHelper (
                 PATSummarySaveRequest(
                     villageId= prefRepo.getSelectedVillage().id,
                     surveyId=surveyId,
-                    beneficiaryId = didi.id,
-                    languageId = prefRepo.getAppLanguageId()?:0,
+                    beneficiaryId = didi.serverId,
+                    languageId = prefRepo.getAppLanguageId()?:2,
                     stateId = prefRepo.getSelectedVillage().stateId,
                     totalScore = 0,
                     userType = USER_CRP,
@@ -487,8 +567,10 @@ class SyncHelper (
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        callWorkFlowAPIForStep(3)
         settingViewModel.stepThreeSyncStatus.value = 3
         settingViewModel.stepFourSyncStatus.value = 1
+        settingViewModel.syncPercentage.value = 0.6f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -507,7 +589,6 @@ class SyncHelper (
                                                 prefRepo.getSelectedVillage().id
                                             )
                                         }
-//                                    networkCallbackListener.onSuccess()
                                         syncPercentage.value = 80f
                                         updateVoStatusToNetwork(networkCallbackListener)
                                     } else {
@@ -523,17 +604,22 @@ class SyncHelper (
                                         syncPercentage.value = 70f
                                     }
                                 } else {
-                                    networkCallbackListener.onFailed()
+                                    withContext(Dispatchers.Main){
+                                        networkCallbackListener.onFailed()
+                                    }
                                 }
                             }
-                        }
+                        } else
+                            updateVoStatusToNetwork(networkCallbackListener)
                     } else {
                         updateVoStatusToNetwork(networkCallbackListener)
                     }
                 }
 
             }  catch (ex:Exception){
-                networkCallbackListener.onFailed()
+                withContext(Dispatchers.Main){
+                    networkCallbackListener.onFailed()
+                }
                 ex.printStackTrace()
             }
         }
@@ -542,72 +628,64 @@ class SyncHelper (
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         settingViewModel.stepFifthSyncStatus.value = 1
         settingViewModel.stepFourSyncStatus.value = 3
+        callWorkFlowAPIForStep(4)
+        settingViewModel.syncPercentage.value = 0.8f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id)
+                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "")
                     if(needToPostDidiList.isNotEmpty()){
+                        val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             launch {
                                 didi.voEndorsementStatus.let {
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        val updateWealthRankResponse=apiService.updateDidiRanking(
-                                            listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, ACCEPTED),
-                                            )
-                                        )
-                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
-                                        } else {
-                                            networkCallbackListener.onFailed()
-                                        }
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, ACCEPTED))
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        val updateWealthRankResponse=apiService.updateDidiRanking(
-                                            listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name),
-                                            )
-                                        )
-                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
-                                        } else {
-                                            networkCallbackListener.onFailed()
-                                        }
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name))
                                     }
                                 }
+                            }
+                        }
+                        val updateWealthRankResponse=apiService.updateDidiRanking(didiRequestList)
+                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
+                            val didiListResponse = updateWealthRankResponse.data
+                            if (didiListResponse?.get(0)?.transactionId != null) {
+                                for (i in didiListResponse.indices) {
+                                    val didiResponse = didiListResponse.get(i)
+                                    val didi = didiRequestList[i]
+                                    didiResponse.transactionId?.let {
+                                        didiDao.updateDidiTransactionId(didi.id,
+                                            it
+                                        )
+                                    }
+                                }
+                                isPending = 5
+                                startSyncTimer(networkCallbackListener)
+                            } else {
+                                if (didiListResponse != null) {
+                                    for (i in didiRequestList.indices) {
+                                        val didi = didiRequestList[i]
+                                        didiDao.updateNeedToPostVO(false,didi.id)
+                                        didiDao.updateDidiTransactionId(didi.id,"")
+                                    }
+                                }
+                                checkVOStatus(networkCallbackListener)
+                            }
+                        } else {
+                            withContext(Dispatchers.Main){
                                 networkCallbackListener.onFailed()
                             }
                         }
-                        syncPercentage.value = 100f
-                        networkCallbackListener.onFailed()
                     } else {
-                        syncPercentage.value = 100f
-                        networkCallbackListener.onSuccess()
+                        checkVOStatus(networkCallbackListener)
+                        callWorkFlowAPIForStep(5)
                     }
                 }
             } catch (ex: Exception) {
-//                onCatchError(ex)
-                networkCallbackListener.onFailed()
-//                onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
-            }
-        }
-    }
-
-    fun markTransectWalkComplete(villageId: Int, stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val existingList = villegeListDao.getVillage(villageId).steps_completed
-            val updatedCompletedStepsList = mutableListOf<Int>()
-            if (!existingList.isNullOrEmpty()) {
-                existingList.forEach {
-                    updatedCompletedStepsList.add(it)
+                withContext(Dispatchers.Main){
+                    networkCallbackListener.onFailed()
                 }
-            }
-            updatedCompletedStepsList.add(stepId)
-            villegeListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
-                    StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
     }
@@ -696,6 +774,31 @@ class SyncHelper (
                 Log.e("num of step 5", "$tolaList.size")
                 Log.e("size of step 5", sizeToBeShown)
                 stepOneMutableString.value = sizeToBeShown
+            }
+        }
+    }
+
+    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                Log.e("work flow","called")
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                if(dbResponse.workFlowId>0){
+                    val response = apiService.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                            }
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+//                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }

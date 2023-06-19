@@ -10,6 +10,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.authNavGraph
 import com.patsurvey.nudge.navigation.home.HomeNavScreen
 import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
+import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
 import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_STEP_INDEX
 import com.patsurvey.nudge.utils.ARG_USER_TYPE
@@ -45,6 +46,7 @@ object Graph {
     const val WEALTH_RANKING = "wealth_ranking/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val PAT_SCREENS = "pat_screens/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val SETTING_GRAPH = "setting_graph"
-    const val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
+    const val LOGOUT_GRAPH = "logout_graph"
+    const val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}"
     const val BPC_DIDI_LIST_SCREEN_GRAPH = "bpc_didi_list_screen_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
 }

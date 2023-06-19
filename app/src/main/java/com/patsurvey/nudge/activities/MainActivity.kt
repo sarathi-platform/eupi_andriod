@@ -1,10 +1,13 @@
 package com.patsurvey.nudge.activities
 
+import android.Manifest
 import android.content.Context
 import android.content.res.Resources
+import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -13,28 +16,29 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
-import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
-import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
-import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import android.Manifest
-import android.os.Build
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
+import androidx.navigation.compose.rememberNavController
+import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
+import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import dagger.hilt.android.AndroidEntryPoint
@@ -55,6 +59,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(false)
+
+    var downloader: AndroidDownloader? = null
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -127,8 +133,25 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                            RootNavigationGraph(navController = rememberNavController(),sharedPrefs)
                         }
                     }
-
                 }
+
+                downloader = AndroidDownloader(applicationContext)
+
+                RetryHelper.init(
+                    mViewModel.prefRepo,
+                    mViewModel.apiService,
+                    mViewModel.tolaDao,
+                    mViewModel.stepsListDao,
+                    mViewModel.villegeListDao,
+                    mViewModel.didiDao,
+                    mViewModel.answerDao,
+                    mViewModel.numericAnswerDao,
+                    mViewModel.questionDao,
+                    mViewModel.casteListDao
+                )
+
+                AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo)
+
                 connectionLiveData = ConnectionMonitor(this)
                 connectionLiveData.observe(this) { isNetworkAvailable ->
                     onlineStatus.value = isNetworkAvailable
@@ -140,15 +163,17 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
-
-
     }
+
     fun exitApplication(){
         this.finish()
     }
 
     override fun onDestroy() {
+        Log.d("MainActivity", "onDestroy: called")
+        AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
+        applicationContext.cacheDir.deleteRecursively()
         super.onDestroy()
     }
 

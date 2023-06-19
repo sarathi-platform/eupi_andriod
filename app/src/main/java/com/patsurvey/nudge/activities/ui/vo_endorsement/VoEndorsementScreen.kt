@@ -95,15 +95,6 @@ fun VoEndorsementScreen(
         mutableStateOf(false)
     }
     LaunchedEffect(key1 = true) {
-        showLoader.value = true
-        viewModel.getVoEndorsementStepStatus(stepId) {
-            if (it) {
-                showLoader.value = false
-                navController.navigate("vo_endorsement_survey_summary/$stepId/$it")
-            } else {
-                showLoader.value = false
-            }
-        }
         delay(100)
         viewModel.updateFilterDidiList()
     }

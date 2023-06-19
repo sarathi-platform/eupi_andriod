@@ -20,7 +20,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import javax.net.ssl.HostnameVerifier
 
 /**
  * created by anil on 18/05/22
@@ -67,7 +66,7 @@ object NetworkModule {
         /*.hostnameVerifier(HostnameVerifier { hostname, session -> true })*/
         .connectTimeout(timeout, TimeUnit.SECONDS)
         .readTimeout(timeout, TimeUnit.SECONDS)
-        .cache(cache)
+//        .cache(cache)
     clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
     clientBuilder.addInterceptor(
       getHeaderInterceptor(

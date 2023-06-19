@@ -1,20 +1,47 @@
 package com.patsurvey.nudge.download
 
+import android.annotation.SuppressLint
 import android.app.DownloadManager
 import android.content.Context
+import android.database.Cursor
 import android.os.Build
 import android.os.Environment
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.utils.DownloadStatus
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import java.io.File
 
 class AndroidDownloader(
     private val context: Context
 ) : Downloader {
 
+    var job: Job? = null
+
+    val _downloadStatus = MutableStateFlow<Map<Int, DownloadStatus>>(mapOf())
+    val downloadStatus: StateFlow<Map<Int, DownloadStatus>> get() = _downloadStatus
+
+    val initialPosition = mutableStateMapOf<Int, Float>()
+
+    val currentDownloadingId = mutableStateOf(-1)
+
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
+
+    fun init(mTrainingVideos: List<TrainingVideoEntity>) {
+        mTrainingVideos.forEach { videoEntity ->
+            _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
+                it[videoEntity.id] = DownloadStatus.fromInt(videoEntity.isDownload)
+            }
+        }
+    }
 
     override fun downloadFile(videoItem: TrainingVideoEntity, fileType: FileType): Long {
         val request = DownloadManager.Request(videoItem.url.toUri())
@@ -26,6 +53,74 @@ class AndroidDownloader(
             .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, "${videoItem.id}.mp4")
         return downloadManager.enqueue(request)
 
+    }
+
+    @SuppressLint("Range")
+    fun monitorDownloadStatus(
+        context: Context,
+        downloadId: Long,
+        id: Int,
+        downloadManager: DownloadManager
+    ) {
+        var progress = 0
+        var isDownloadFinished = false
+        var status: DownloadStatus = DownloadStatus.DOWNLOADING
+        GlobalScope.launch {
+            while (!isDownloadFinished) {
+                val cursor: Cursor? =
+                    downloadManager.query(DownloadManager.Query().setFilterById(downloadId))
+                cursor?.let {
+                    if (cursor.moveToFirst()) {
+                        when (cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS))) {
+                            DownloadManager.STATUS_RUNNING -> {
+                                val totalBytes: Long =
+                                    cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES))
+                                if (totalBytes > 0) {
+                                    val downloadedBytes: Long =
+                                        cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR))
+                                    progress = (downloadedBytes * 100 / totalBytes).toInt()
+                                }
+                                status = DownloadStatus.DOWNLOADING
+                                _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
+                                    it[id] = status
+                                }
+                            }
+
+                            DownloadManager.STATUS_SUCCESSFUL -> {
+                                progress = 100
+                                isDownloadFinished = true
+                                status = DownloadStatus.DOWNLOADED
+                                _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
+                                    it[id] = status
+                                }
+                            }
+
+                            DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {
+                                status = DownloadStatus.DOWNLOAD_PAUSED
+                                _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
+                                    it[id] = status
+                                }
+                            }
+
+                            DownloadManager.STATUS_FAILED -> {
+                                isDownloadFinished = true
+                                status = DownloadStatus.UNAVAILABLE
+                                _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
+                                    it[id] = status
+                                }
+                            }
+                        }
+                    }
+                    cursor.close()
+                }
+//                val downloadUrl = getVideoPath(context = context, videoItemId = id).absoluteFile
+                val downloadPercentage =
+                    if (status == DownloadStatus.UNAVAILABLE) 0F else progress.toFloat()
+                initialPosition[id] = downloadPercentage
+                currentDownloadingId.value = -1
+            }
+
+        }
     }
 
     private fun getOutputDirectory(activity: MainActivity): File {

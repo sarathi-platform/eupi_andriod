@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
+import com.patsurvey.nudge.utils.TOLA_TABLE
 
 @Dao
 interface NumericAnswerDao {
@@ -39,4 +40,7 @@ interface NumericAnswerDao {
 
     @Query("SELECT SUM(weight * count) FROM $NUMERIC_TABLE_NAME where didiId =:didiId AND questionId = :questionId")
     fun fetchTotalAmount(questionId:Int,didiId:Int):Int
+
+    @Query("DELETE from $NUMERIC_TABLE_NAME")
+    fun deleteAllNumericAnswers()
 }

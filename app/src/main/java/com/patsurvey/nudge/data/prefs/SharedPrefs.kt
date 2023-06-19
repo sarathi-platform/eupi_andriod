@@ -153,4 +153,10 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun saveStepId(stepId: Int) {
         prefs.edit().putInt(PREF_KEY_STEP_ID,stepId).apply()
     }
+
+    override fun clearSharedPreference() {
+        val editor = prefs.edit()
+        editor.clear()
+        editor.apply()
+    }
 }

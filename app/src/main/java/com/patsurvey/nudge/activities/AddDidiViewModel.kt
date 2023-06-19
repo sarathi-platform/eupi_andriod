@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -19,6 +18,7 @@ import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -73,6 +73,7 @@ class AddDidiViewModel @Inject constructor(
     val isPATSurveyComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
     val pendingDidiCount = mutableStateOf(0)
+    val isTolaSynced = mutableStateOf(0)
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
@@ -102,7 +103,7 @@ class AddDidiViewModel @Inject constructor(
                 _didiList.value = updatedList
                 _casteList.emit(
                     casteListDao.getAllCasteForLanguage(
-                        prefRepo.getAppLanguageId() ?: 0
+                        prefRepo.getAppLanguageId() ?: 2
                     )
                 )
                 _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
@@ -189,6 +190,7 @@ class AddDidiViewModel @Inject constructor(
                 didiName.value, houseNumber.value,
                 dadaName.value, selectedTola.value.first, villageId
             )
+            val selectedTolaFromDb = tolaDao.fetchSingleTola(selectedTola.value.first)
             if (ifDidiExist == 0) {
                 var newId = didiDao.getAllDidis().size
                val lastDidi= didiDao.fetchLastDidiDetails()
@@ -204,8 +206,8 @@ class AddDidiViewModel @Inject constructor(
                         address = houseNumber.value,
                         castId = selectedCast.value.first,
                         castName = selectedCast.value.second,
-                        cohortId = selectedTola.value.first,
-                        cohortName = selectedTola.value.second,
+                        cohortId = selectedTolaFromDb?.id ?: selectedTola.value.first,
+                        cohortName = selectedTolaFromDb?.name ?: selectedTola.value.second,
                         relationship = HUSBAND_STRING,
                         villageId = prefRepo.getSelectedVillage().id,
                         createdDate = System.currentTimeMillis(),
@@ -412,8 +414,6 @@ class AddDidiViewModel @Inject constructor(
                 isSocialMappingComplete.value = isComplete
                 isPATSurveyComplete.value = isComplete
             }
-            withContext(Dispatchers.IO) {
-            }
 
         }
     }
@@ -474,6 +474,10 @@ class AddDidiViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
+    }
+
     private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
         val oldDidiList = didiDao.getAllDidisForVillage(villageId)
         didiDao.deleteDidiForVillage(villageId)
@@ -523,6 +527,7 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
                 if (dbResponse.workFlowId > 0) {
                     val response = apiService.editWorkFlow(
                         listOf(
@@ -545,7 +550,34 @@ class AddDidiViewModel @Inject constructor(
                         }
                     }
                 }
-
+                launch {
+                    try {
+                        stepList.forEach { step ->
+                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                                val inProgressStepResponse = apiService.editWorkFlow(
+                                    listOf(
+                                        EditWorkFlowRequest(
+                                            step.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
+                                    )
+                                )
+                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                    inProgressStepResponse.data?.let {
+                                        stepsListDao.updateWorkflowId(
+                                            step.id,
+                                            step.workFlowId,
+                                            villageId,
+                                            it[0].status
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        onCatchError(ex, ApiType.WORK_FLOW_API)
+                    }
+                }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
@@ -673,10 +705,22 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
+
+    fun checkIfTolaIsUpdated() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        val selectedTolaId = selectedTola.value.first
+            val tola = tolaDao.fetchSingleTola(selectedTolaId)
+            if (tola != null && tola.name != selectedTola.value.second) {
+                selectedTola.value = Pair(tola.id ?: -1, tola.name ?: "")
+            } else {
+                selectedTola.value = Pair(-1, "")
+            }
+        }
+    }
+
     fun getPatStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
-            Log.d(TAG, "getPatStepStatus: $stepStatus ")
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     delay(100)
