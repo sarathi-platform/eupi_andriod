@@ -37,5 +37,6 @@ object Graph {
     const val WEALTH_RANKING = "wealth_ranking/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val PAT_SCREENS = "pat_screens/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
     const val SETTING_GRAPH = "setting_graph"
+    const val LOGOUT_GRAPH = "logout_graph"
     const val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}"
 }

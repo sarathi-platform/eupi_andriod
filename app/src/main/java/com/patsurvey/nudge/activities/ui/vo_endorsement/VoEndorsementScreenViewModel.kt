@@ -11,6 +11,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -197,6 +198,10 @@ class VoEndorsementScreenViewModel @Inject constructor(
         }
     }
     override fun onServerError(error: ErrorModel?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
 }

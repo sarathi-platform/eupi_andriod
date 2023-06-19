@@ -58,6 +58,8 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
+import com.patsurvey.nudge.utils.SyncStatus
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
@@ -142,31 +144,39 @@ fun SurveySummary(
                 surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            surveySummaryViewModel.updatePatStatusToNetwork(object : NetworkCallbackListener {
-                                override fun onSuccess() {
+                            if (surveySummaryViewModel.isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                                && surveySummaryViewModel.isDidiSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                                && surveySummaryViewModel.isDidiRankingSynced.value == SyncStatus.NEED_TO_SYNC.ordinal
+                            ){
+                                if(surveySummaryViewModel.isDidiPATSynced.value == SyncStatus.NEED_TO_SYNC.ordinal){
+                                    surveySummaryViewModel.updatePatStatusToNetwork(object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
 
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+
+                                    })
+                                    surveySummaryViewModel.callWorkFlowAPI(
+                                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                        stepId,
+                                        object :
+                                            NetworkCallbackListener {
+                                            override fun onSuccess() {
+                                            }
+
+                                            override fun onFailed() {
+                                                showCustomToast(context, SYNC_FAILED)
+                                            }
+                                        })
                                 }
-
-                                override fun onFailed() {
-                                    showCustomToast(context, SYNC_FAILED)
-                                }
-
-                            })
-                            surveySummaryViewModel.callWorkFlowAPI(
-                                surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                stepId,
-                                object :
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                surveySummaryViewModel.savePATSummeryToServer(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
-                                    }
-
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
-                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                surveySummaryViewModel.savePATSummeryToServer(object : NetworkCallbackListener {
-                                    override fun onSuccess() {
 
                                     }
 
@@ -175,7 +185,21 @@ fun SurveySummary(
                                     }
 
                                 })
+
+                                surveySummaryViewModel.callWorkFlowAPI(
+                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId,
+                                    object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
                             }
+                          }
                         }
                         if (fromScreen == ARG_FROM_PAT_SURVEY) {
                             surveySummaryViewModel.updateDidiPatStatus()
@@ -290,9 +314,9 @@ fun SurveySummary(
                         ) {
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                    didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }
+                                    didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
                                 else
-                                    didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second }) { index, didi ->
+                                    didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
                                     DidiItemCardForPat(
                                         didi = didi,
                                         modifier = modifier,
@@ -324,7 +348,7 @@ fun SurveySummary(
                 ) {
                     SummaryBox(
                         count = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+                            didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size,
                         boxColor = blueLighter,
@@ -339,7 +363,7 @@ fun SurveySummary(
                         ) else Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
                     }
                     SummaryBox(
-                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }.size
                         else
                             didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
                         boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,

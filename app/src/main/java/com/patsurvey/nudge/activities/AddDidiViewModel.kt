@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -19,6 +18,7 @@ import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -73,6 +73,7 @@ class AddDidiViewModel @Inject constructor(
     val isPATSurveyComplete = mutableStateOf(false)
     val showLoader = mutableStateOf(false)
     val pendingDidiCount = mutableStateOf(0)
+    val isTolaSynced = mutableStateOf(0)
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
@@ -473,6 +474,10 @@ class AddDidiViewModel @Inject constructor(
         /*TODO("Not yet implemented")*/
     }
 
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
+    }
+
     private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
         val oldDidiList = didiDao.getAllDidisForVillage(villageId)
         didiDao.deleteDidiForVillage(villageId)
@@ -522,6 +527,7 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
                 if (dbResponse.workFlowId > 0) {
                     val response = apiService.editWorkFlow(
                         listOf(
@@ -544,7 +550,34 @@ class AddDidiViewModel @Inject constructor(
                         }
                     }
                 }
-
+                launch {
+                    try {
+                        stepList.forEach { step ->
+                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                                val inProgressStepResponse = apiService.editWorkFlow(
+                                    listOf(
+                                        EditWorkFlowRequest(
+                                            step.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
+                                    )
+                                )
+                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                    inProgressStepResponse.data?.let {
+                                        stepsListDao.updateWorkflowId(
+                                            step.id,
+                                            step.workFlowId,
+                                            villageId,
+                                            it[0].status
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    } catch (ex: Exception) {
+                        onCatchError(ex, ApiType.WORK_FLOW_API)
+                    }
+                }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
