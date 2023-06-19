@@ -39,6 +39,8 @@ import com.patsurvey.nudge.activities.ui.login.OtpInputFieldForDialog
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
+import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.*
@@ -160,7 +162,6 @@ fun ProgressScreen(
                     }
                 } else {
                     Column(modifier = Modifier) {
-
                         if (/*viewModel.tokenExpired.value*/false) {
                             ShowOptDialog(
                                 modifier = Modifier,
@@ -278,6 +279,7 @@ fun ProgressScreen(
                             .height(100.dp)
                             .fillMaxWidth())
                     }
+                    CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
                 }
             }
         }
@@ -708,17 +710,23 @@ fun ShowOptDialog(
         mutableStateOf("")
     }
 
-    LaunchedEffect(key1 = viewModel.tokenExpired.value) {
-        RetryHelper.generateOtp() { success, message, mobileNumber ->
-            if (success) {
-                snackState.addMessage(message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
-                    isSuccess = true, isCustomIcon = false)
-            } else {
-                snackState.addMessage(
-                    message = message,
-                    isSuccess = false,
-                    isCustomIcon = false
-                )
+    LaunchedEffect(key1 = Unit) {
+        if (RetryHelper.tokenExpired.value) {
+            viewModel.tokenExpired.value = true
+            RetryHelper.generateOtp() { success, message, mobileNumber ->
+                if (success) {
+                    snackState.addMessage(
+                        message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin)
+                            .replace("{MOBILE_NUMBER}", mobileNumber, true),
+                        isSuccess = true, isCustomIcon = false
+                    )
+                } else {
+                    snackState.addMessage(
+                        message = message,
+                        isSuccess = false,
+                        isCustomIcon = false
+                    )
+                }
             }
         }
     }

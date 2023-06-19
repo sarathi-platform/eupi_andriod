@@ -185,13 +185,14 @@ class VillageSelectionViewModel @Inject constructor(
                                 val response = apiService.getStepsList(village.id)
                                 if (response.status.equals(SUCCESS, true)) {
                                     response.data?.let {
-
-                                        it.stepList.forEach { steps ->
-                                            steps.villageId = village.id
-                                            steps.isComplete =
-                                                findCompleteValue(steps.status).ordinal
+                                        if (it.stepList.isNotEmpty()) {
+                                            it.stepList.forEach { steps ->
+                                                steps.villageId = village.id
+                                                steps.isComplete =
+                                                    findCompleteValue(steps.status).ordinal
+                                            }
+                                            stepsListDao.insertAll(it.stepList)
                                         }
-                                        stepsListDao.insertAll(it.stepList)
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME,
                                             it.programName
@@ -219,7 +220,9 @@ class VillageSelectionViewModel @Inject constructor(
                                     apiService.getCohortFromNetwork(villageId = village.id)
                                 if (cohortResponse.status.equals(SUCCESS, true)) {
                                     cohortResponse.data?.let {
-                                        tolaDao.insertAll(it)
+                                        if (it.isNotEmpty()) {
+                                            tolaDao.insertAll(it)
+                                        }
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(cohortResponse.message)
@@ -241,35 +244,36 @@ class VillageSelectionViewModel @Inject constructor(
                                     apiService.getDidisFromNetwork(villageId = village.id)
                                 if (didiResponse.status.equals(SUCCESS, true)) {
                                     didiResponse.data?.let {
-                                        try {
-
-                                            it.didiList.forEach { didi ->
-                                                var tolaName = BLANK_STRING
-                                                var casteName = BLANK_STRING
-                                                val singleTola =
-                                                    tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = casteListDao.getCaste(didi.castId)
-                                                singleTola?.let {
-                                                    tolaName = it.name
-                                                }
-                                                singleCaste?.let {
-                                                    casteName = it.casteName
-                                                }
-                                                if (singleTola != null) {
-                                                    val wealthRanking =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.WEALTH_RANKING.name))
-                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                        else
-                                                            WealthRank.NOT_RANKED.rank
-                                                    val patSurveyAcceptedRejected =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.PAT_SURVEY.name))
-                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                        else
-                                                            DIDI_REJECTED
+                                        if (it.didiList.isNotEmpty()) {
+                                            try {
+                                                it.didiList.forEach { didi ->
+                                                    var tolaName = BLANK_STRING
+                                                    var casteName = BLANK_STRING
+                                                    val singleTola =
+                                                        tolaDao.fetchSingleTola(didi.cohortId)
+                                                    val singleCaste =
+                                                        casteListDao.getCaste(didi.castId)
+                                                    singleTola?.let {
+                                                        tolaName = it.name
+                                                    }
+                                                    singleCaste?.let {
+                                                        casteName = it.casteName
+                                                    }
+                                                    if (singleTola != null) {
+                                                        val wealthRanking =
+                                                            if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                    .contains(StepType.WEALTH_RANKING.name))
+                                                                didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                    .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                            else
+                                                                WealthRank.NOT_RANKED.rank
+                                                        val patSurveyAcceptedRejected =
+                                                            if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                    .contains(StepType.PAT_SURVEY.name))
+                                                                didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                    .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                            else
+                                                                DIDI_REJECTED
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.VO_ENDORSEMENT.name))
@@ -295,13 +299,13 @@ class VillageSelectionViewModel @Inject constructor(
                                                             wealth_ranking = wealthRanking,
                                                             forVoEndorsement = if(patSurveyAcceptedRejected.equals(
                                                                     COMPLETED_STRING,true)) 1 else 0,
-                                                            voEndorsementStatus = voEndorsementStatus,
-                                                            needsToPostRanking = false,
-                                                            createdDate = didi.createdDate,
-                                                            modifiedDate = didi.modifiedDate,
-                                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                            shgFlag = SHGFlag.NOT_MARKED.value,
-                                                            transactionId = "",
+                                                                voEndorsementStatus = voEndorsementStatus,
+                                                                needsToPostRanking = false,
+                                                                createdDate = didi.createdDate,
+                                                                modifiedDate = didi.modifiedDate,
+                                                                beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                                shgFlag = SHGFlag.NOT_MARKED.value,
+                                                                transactionId = "",
                                                             localCreatedDate = didi.localCreatedDate,
                                                             localModifiedDate = didi.localModifiedDate,
                                                             score = didi.score,
@@ -320,7 +324,7 @@ class VillageSelectionViewModel @Inject constructor(
                                         }
                                     }
                                     withContext(Dispatchers.Main) {
-                                        showLoader.value = false
+                                        showLoader.value = false}
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse.message)
@@ -346,22 +350,34 @@ class VillageSelectionViewModel @Inject constructor(
                                 )
                                 if (didiRankingResponse.status.equals(SUCCESS, true)) {
                                     didiRankingResponse.data?.let { didiRank ->
-                                        didiRank.beneficiaryList?.richDidi?.forEach { richDidi ->
-                                            richDidi?.id?.let { didiId ->
-                                                didiDao.updateDidiRank(didiId, WealthRank.RICH.rank)
+                                        if (didiRank.beneficiaryList?.richDidi?.isNotEmpty() == true) {
+                                            didiRank.beneficiaryList?.richDidi?.forEach { richDidi ->
+                                                richDidi?.id?.let { didiId ->
+                                                    didiDao.updateDidiRank(
+                                                        didiId,
+                                                        WealthRank.RICH.rank
+                                                    )
+                                                }
                                             }
                                         }
-                                        didiRank.beneficiaryList?.mediumDidi?.forEach { mediumDidi ->
-                                            mediumDidi?.id?.let { didiId ->
-                                                didiDao.updateDidiRank(
-                                                    didiId,
-                                                    WealthRank.MEDIUM.rank
-                                                )
+                                        if (didiRank.beneficiaryList?.mediumDidi?.isNotEmpty() == true) {
+                                            didiRank.beneficiaryList?.mediumDidi?.forEach { mediumDidi ->
+                                                mediumDidi?.id?.let { didiId ->
+                                                    didiDao.updateDidiRank(
+                                                        didiId,
+                                                        WealthRank.MEDIUM.rank
+                                                    )
+                                                }
                                             }
                                         }
-                                        didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi ->
-                                            poorDidi?.id?.let { didiId ->
-                                                didiDao.updateDidiRank(didiId, WealthRank.POOR.rank)
+                                        if (didiRank.beneficiaryList?.poorDidi?.isNotEmpty() == true) {
+                                            didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi ->
+                                                poorDidi?.id?.let { didiId ->
+                                                    didiDao.updateDidiRank(
+                                                        didiId,
+                                                        WealthRank.POOR.rank
+                                                    )
+                                                }
                                             }
                                         }
                                     }
@@ -401,19 +417,22 @@ class VillageSelectionViewModel @Inject constructor(
 
                                     if (quesListResponse.status.equals(SUCCESS, true)) {
                                         quesListResponse.data?.let { questionList ->
-                                            questionList.listOfQuestionSectionList?.forEach { list ->
-                                                list?.questionList?.forEach { question ->
-                                                    question?.sectionOrderNumber = list.orderNumber
-                                                    question?.actionType = list.actionType
-                                                    question?.languageId = languageEntity.id
-                                                    question?.surveyId = questionList.surveyId
-                                                    question?.thresholdScore =
-                                                        questionList.thresholdScore
-                                                    question?.surveyPassingMark =
-                                                        questionList.surveyPassingMark
-                                                }
-                                                list?.questionList?.let {
-                                                    questionListDao.insertAll(it as List<QuestionEntity>)
+                                            if (questionList.listOfQuestionSectionList?.isNotEmpty() == true) {
+                                                questionList.listOfQuestionSectionList?.forEach { list ->
+                                                    list?.questionList?.forEach { question ->
+                                                        question?.sectionOrderNumber =
+                                                            list.orderNumber
+                                                        question?.actionType = list.actionType
+                                                        question?.languageId = languageEntity.id
+                                                        question?.surveyId = questionList.surveyId
+                                                        question?.thresholdScore =
+                                                            questionList.thresholdScore
+                                                        question?.surveyPassingMark =
+                                                            questionList.surveyPassingMark
+                                                    }
+                                                    list?.questionList?.let {
+                                                        questionListDao.insertAll(it as List<QuestionEntity>)
+                                                    }
                                                 }
                                             }
                                         }
@@ -613,17 +632,21 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
+                Log.d("VillageSelectionViewModel", "fetchUserDetails: catch called")
+                onCatchError(ex, ApiType.VILLAGE_LIST_API)
                 if (ex is HttpException) {
                     if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()?.code() == RESPONSE_CODE_CONFLICT) {
-                        tokenExpired.value = true
+                        withContext(Dispatchers.Main) {
+                            RetryHelper.tokenExpired.value = true
+                        }
                     }
-                }
-                withContext(Dispatchers.Main) {
-                    showLoader.value = false
                 }
             }
         }
+    }
+
+    fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {
+        _villagList.value = villageList
     }
 
     override fun onServerError(error: ErrorModel?) {

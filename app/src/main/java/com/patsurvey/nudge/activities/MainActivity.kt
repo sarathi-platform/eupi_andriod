@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
 import android.os.StrictMode.VmPolicy
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -169,8 +170,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     }
 
     override fun onDestroy() {
+        Log.d("MainActivity", "onDestroy: called")
         AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
+        applicationContext.cacheDir.deleteRecursively()
         super.onDestroy()
     }
 

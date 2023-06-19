@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -31,6 +32,11 @@ import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_LANGUAGE_ID_TO_RETRY
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PREF_RETRY_API_LIST
@@ -534,8 +540,48 @@ object RetryHelper {
                             onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                         }
                     }
+                    ApiType.VILLAGE_LIST_API -> {
+
+                    }
+                    else -> {
+                        //TODO check if retry required for workflow api.
+                    }
                 }
                 retryCount[apiType] = (initialCount ?: 0) + 1
+            }
+        }
+    }
+
+    fun retryVillageListApi(saveVillageList: (success: Boolean , villageList: List<VillageEntity>?) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val response = apiService?.userAndVillageListAPI(prefRepo?.getAppLanguageId() ?: 2)
+                withContext(Dispatchers.IO) {
+                    if (response?.status.equals(SUCCESS, true)) {
+                        response?.data?.let {
+                            prefRepo?.savePref(PREF_KEY_USER_NAME, it.username)
+                            prefRepo?.savePref(PREF_KEY_NAME, it.name)
+                            prefRepo?.savePref(PREF_KEY_EMAIL, it.email)
+                            prefRepo?.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
+                            prefRepo?.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
+                            if (it.villageList.isNotEmpty()) {
+                                villageListDao?.insertAll(it.villageList)
+                                saveVillageList(true, villageListDao?.getAllVillages())
+                            } else{
+                                saveVillageList(false, listOf())
+                            }
+                        }
+                        if (response?.data == null)
+                            saveVillageList(false, listOf())
+                    } else if (response?.status.equals(FAIL, true)) {
+                        withContext(Dispatchers.Main) {
+                            saveVillageList(false, listOf())
+                        }
+                    }
+                }
+            } catch (ex: Exception) {
+                Log.d("RetryHelper", "retryVillageListApi: ex -> ${ex.stackTrace}")
+                onCatchError(ex, ApiType.VILLAGE_LIST_API)
             }
         }
     }
@@ -691,26 +737,28 @@ object RetryHelper {
         otpNumber: MutableState<String>,
         onOtpResponse: (success: Boolean, message: String) -> Unit
     ) {
-        val otpRequest =
-            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
+        val otpRequest = OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiService?.validateOtp(otpRequest)
-            withContext(Dispatchers.IO) {
-                if (response?.status.equals(SUCCESS, true)) {
-                    response?.data?.let {
-                        prefRepo?.saveAccessToken(it.token)
+            try {
+                launch {
+                    val response = apiService?.validateOtp(otpRequest)
+                    if (response?.status.equals(SUCCESS, true)) {
+                        response?.data?.let {
+                            prefRepo?.saveAccessToken(it.token)
+                        }
+                        withContext(Dispatchers.Main) {
+                            onOtpResponse(true, response?.message ?: "Login Successful")
+                        }
+                    } else if (response?.status.equals(FAIL, true)) {
+                        withContext(Dispatchers.Main) {
+                            onOtpResponse(false, response?.message ?: "Something went wrong")
+                        }
                     }
-                    withContext(Dispatchers.Main) {
-                        onOtpResponse(true, response?.message ?: "Login Successful")
-                    }
-                } else if (response?.status.equals(FAIL, true)) {
-                    withContext(Dispatchers.Main) {
-                        onOtpResponse(false, response?.message ?: "Something went wrong")
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onOtpResponse(false, response?.message ?: "Something went wrong")
-                    }
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.VALIDATE_OTP_API)
+                withContext(Dispatchers.Main) {
+                    onOtpResponse(false, "Something went wrong, exception: ${ex.message}")
                 }
             }
         }
@@ -720,32 +768,35 @@ object RetryHelper {
         val mobileNumber = prefRepo?.getMobileNumber() ?: ""
         val loginRequest = LoginRequest(mobileNumber = mobileNumber)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiService?.generateOtp(loginRequest)
-            withContext(Dispatchers.IO) {
-                if (response?.status.equals(SUCCESS, true)) {
-                    withContext(Dispatchers.Main) {
-                        prefRepo?.saveMobileNumber(mobileNumber)
-                        onLoginResponse(true, response?.message ?: "OTP Send", mobileNumber)
+            try {
+                launch {
+                val response = apiService?.generateOtp(loginRequest)
+                    if (response?.status.equals(SUCCESS, true)) {
+                        withContext(Dispatchers.Main) {
+                            prefRepo?.saveMobileNumber(mobileNumber)
+                            onLoginResponse(true, response?.message ?: "OTP Send", mobileNumber)
+                        }
+                    } else if (response?.status.equals(FAIL, true)) {
+                        withContext(Dispatchers.Main) {
+                            onLoginResponse(
+                                false,
+                                response?.message ?: "Something went wrong",
+                                mobileNumber
+                            )
+                        }
                     }
-                } else if (response?.status.equals(FAIL, true)) {
-                    withContext(Dispatchers.Main) {
-                        onLoginResponse(
-                            false,
-                            response?.message ?: "Something went wrong",
-                            mobileNumber
-                        )
-                    }
-                } else {
-                    withContext(Dispatchers.Main) {
-                        onLoginResponse(
-                            false,
-                            response?.message ?: "Something went wrong",
-                            mobileNumber
-                        )
-                    }
-
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.GENERATE_OTP_API)
+                withContext(Dispatchers.Main) {
+                    onLoginResponse(
+                        false,
+                        "Something went wrong, exception: ${ex.message}",
+                        mobileNumber
+                    )
                 }
             }
+
         }
     }
 

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.settings
 
+import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
@@ -97,14 +98,14 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomProgressBar
+import com.patsurvey.nudge.customviews.CustomSnackBarShow
+import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.home.DetailsScreen
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -123,6 +124,8 @@ fun SettingScreen(
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val rootNavController= rememberNavController()
+
+    val snackState = rememberSnackBarState()
     val list = ArrayList<SettingOptionModel>()
     val lastSyncTimeInMS = viewModel.lastSyncTime.value
     val changeGraph = remember {
@@ -236,33 +239,6 @@ fun SettingScreen(
                 },
                 backgroundColor = Color.White
             )
-            /*Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "back press",
-                    tint = textColorDark,
-                    modifier = Modifier
-                        .padding(vertical = 10.dp, horizontal = 16.dp)
-                        .clickable {
-                            navController.navigate(Graph.HOME) {
-                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                    inclusive = true
-                                }
-                            }
-                        }
-                )
-                Text(text = "Settings", style = mediumTextStyle, color = textColorDark, modifier = Modifier
-                    .padding(vertical = 10.dp)
-                    .weight(1f), textAlign = TextAlign.Center)
-                Spacer(modifier = Modifier
-                    .size(24.dp)
-                    .padding(vertical = 10.dp))
-            }*/
         }
     ) {
         ConstraintLayout(
@@ -342,22 +318,33 @@ fun SettingScreen(
                         .height(45.dp)
 
                 ) {
-                    viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
-                    if(isDataNeedToBeSynced.value == 0
-                        || isDataNeedToBeSynced.value == 2){
-                        viewModel.performLogout(object : NetworkCallbackListener{
-                            override fun onFailed() {
-                                logout(viewModel,logout,rootNavController)
-                                changeGraph.value=true
-                            }
+                    if ((context as MainActivity).isOnline.value) {
+                        viewModel.isDataNeedToBeSynced(
+                            stepOneStatus,
+                            stepTwoStatus,
+                            stepThreeStatus,
+                            stepFourStatus,
+                            stepFiveStatus
+                        )
+                        if (isDataNeedToBeSynced.value == 0
+                            || isDataNeedToBeSynced.value == 2
+                        ) {
+                            viewModel.performLogout(object : NetworkCallbackListener {
+                                override fun onFailed() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
 
-                            override fun onSuccess() {
-                                logout(viewModel,logout,rootNavController)
-                                changeGraph.value=true
-                            }
-                        })
+                                override fun onSuccess() {
+                                    logout(context, viewModel, logout, rootNavController)
+                                    changeGraph.value = true
+                                }
+                            })
 
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                        }
+                    } else {
+                        snackState.addMessage(message = "Sync is required before logout, Please connect to internet before logging out.", isSuccess = false, isCustomIcon = false)
                     }
                 }
             }
@@ -410,6 +397,7 @@ fun SettingScreen(
                 viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
             }
         }
+        CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
     }
     if(networkError.isNotEmpty()){
         showCustomToast(context,networkError)
@@ -418,7 +406,7 @@ fun SettingScreen(
         CustomProgressBar(modifier = Modifier)
     }
     if(viewModel.onLogoutError.value){
-        logout(viewModel,logout,rootNavController)
+        logout(context, viewModel,logout,rootNavController)
         changeGraph.value=true
     }
 
@@ -428,11 +416,13 @@ fun SettingScreen(
     }
 }
 
-private fun logout(viewModel: SettingViewModel,
-                   logout : MutableState<Boolean>,
-                   navController: NavController){
-    viewModel.clearLocalDB(logout)
-
+private fun logout(
+    context: Context,
+    viewModel: SettingViewModel,
+    logout: MutableState<Boolean>,
+    navController: NavController
+){
+    viewModel.clearLocalDB(context, logout)
 }
 
 @Composable
