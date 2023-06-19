@@ -42,8 +42,8 @@ interface TolaDao {
     @Query("DELETE from $TOLA_TABLE where needsToPost = :needsToPost")
     fun deleteTolaNeedToPost( needsToPost: Boolean)
 
-    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId = :transactionId")
-    fun fetchTolaNeedToPost( needsToPost: Boolean,transactionId : String?) : List<TolaEntity>
+    @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId")
+    fun fetchTolaNeedToPost( needsToPost: Boolean,transactionId : String?, serverId: Int) : List<TolaEntity>
 
     @Query("UPDATE $TOLA_TABLE SET transactionId = :transactionId WHERE id = :id")
     fun updateTolaTransactionId(id: Int, transactionId: String)
@@ -71,4 +71,7 @@ interface TolaDao {
 
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllTolaNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<TolaEntity>
+
+    @Query("SELECT * from $TOLA_TABLE where serverId = :serverId")
+    fun fetchSingleTolaFromServerId(serverId: Int): TolaEntity?
 }

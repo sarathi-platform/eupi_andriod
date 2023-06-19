@@ -270,7 +270,9 @@ class AddDidiViewModel @Inject constructor(
                     .indexOf(didiId)).section1Status,
                 section2Status = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).section2Status,
-                transactionId = ""
+                transactionId = "",
+                serverId = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).serverId
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)

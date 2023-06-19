@@ -170,6 +170,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET serverId = :serverId,createdDate = :createdDate,modifiedDate = :modifiedDate,needsToPost = 0 WHERE name = :name AND guardianName =:guardianName AND villageId =:villageId AND castId=:castId AND cohortId =:cohortId")
     fun updateDidiServerId(name: String, guardianName: String,villageId:Int,castId:Int,cohortId:Int,serverId:Int,createdDate:Long,modifiedDate:Long)
 
+    @Query("UPDATE $DIDI_TABLE SET cohortId = :cohortId WHERE id =:id")
+    fun updateTolaIdForDidi(cohortId:Int,id:Int)
+
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
     fun fetchNotAvailableDidis(villageId: Int) : Int
 
@@ -197,8 +200,11 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where activeStatus = :status")
     fun fetchAllDidiNeedToDelete(status: Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId = :transactionId")
-    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId and serverId != :serverId")
+    fun fetchAllPendingDidiNeedToUpdate(  needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and transactionId != :transactionId and serverId != :serverId")
+    fun fetchAllPendingDidiNeedToDelete(status: Int,transactionId: String?,serverId : Int) : List<DidiEntity>
 
     @Query("DELETE from $DIDI_TABLE where id = :id")
     fun deleteDidi(id : Int)

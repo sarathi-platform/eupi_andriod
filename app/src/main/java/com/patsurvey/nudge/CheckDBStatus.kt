@@ -15,7 +15,7 @@ class CheckDBStatus (val viewModel : BaseViewModel){
 
     fun isFirstStepNeedToBeSync(isNeedToBeSync : MutableState<Int>, tolaDao : TolaDao) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
-            if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
+            if (tolaDao.fetchTolaNeedToPost(true, "",0).isEmpty()
                 && tolaDao.fetchPendingTola(true, "").isEmpty())
             {
                 withContext(Dispatchers.Main) {

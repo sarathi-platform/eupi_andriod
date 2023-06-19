@@ -195,9 +195,11 @@ class VillageSelectionViewModel @Inject constructor(
 
 
                             }
-
                             if (cohortResponse.status.equals(SUCCESS, true)) {
                                 cohortResponse.data?.let {
+                                    for (tola in cohortResponse.data) {
+                                        tola.serverId = tola.id
+                                    }
                                     tolaDao.insertAll(it)
                                 }
                             }
