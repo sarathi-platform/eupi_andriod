@@ -58,7 +58,6 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
-import com.patsurvey.nudge.utils.SyncStatus
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
