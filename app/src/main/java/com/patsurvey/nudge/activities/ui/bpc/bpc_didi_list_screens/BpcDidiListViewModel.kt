@@ -172,4 +172,35 @@ class BpcDidiListViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    fun replaceDidi(index: Int, callBack: (Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            val nonSelectedDidi = bpcNonSelectedDidiDao.fetchAllNonSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
+//            if (nonSelectedDidi.isNotEmpty()) {
+//                if (nonSelectedDidi.size > 1) {
+//                    val randomElement = nonSelectedDidi.random()
+//                    _selectedDidiList.value.toMutableList().also {
+//                        it.removeAt(index = index)
+//                        it.add(index = index, BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(randomElement))
+//                    }
+//                }
+//                else {
+//                    _selectedDidiList.value.toMutableList().also {
+//                        it.removeAt(index = index)
+//                        it.add(
+//                            index = index,
+//                            BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
+//                                nonSelectedDidi[0]
+//                            )
+//                        )
+//                    }
+//                }
+//                filterDidiList = selectedDidiList.value
+//                callBack(true)
+//            }
+//            else{
+//                callBack(false)
+//            }
+        }
+    }
+
 }

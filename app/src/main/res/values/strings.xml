@@ -242,5 +242,6 @@
 
     <string name="didi_selected_text_singular">Didi Selected</string>
     <string name="didi_selected_text_plural">Didis Selected</string>
+    <string name="didi_replace_button">Replace</string>
 
 </resources>

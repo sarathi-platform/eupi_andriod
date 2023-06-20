@@ -251,4 +251,6 @@
 
     <string name="didi_selected_text_singular">दीदी को चुना गया</string>
     <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
+    <string name="didi_replace_button">दीदी को बदलो</string>
+
 </resources>

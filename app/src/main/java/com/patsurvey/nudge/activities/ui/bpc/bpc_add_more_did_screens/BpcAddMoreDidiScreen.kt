@@ -36,6 +36,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -127,6 +129,10 @@ fun BpcAddMoreDidiScreen(
 
     val isCheckedIds = remember {
         mutableStateListOf<Int>()
+    }
+
+    val isSelectedId = remember {
+        mutableStateOf<Int>(-1)
     }
 
     LaunchedEffect(key1 = Unit) {
@@ -257,8 +263,10 @@ fun BpcAddMoreDidiScreen(
                                 didiTola = didiKey,
                                 didiList = newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                 modifier = modifier,
+                                isForReplace = forReplace,
                                 expandedIds = expandedIds,
                                 isCheckedIds = isCheckedIds,
+                                isSelectedId = isSelectedId.value,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)){
                                         expandedIds.remove(didiDetailModel.id)
@@ -267,10 +275,14 @@ fun BpcAddMoreDidiScreen(
                                     }
                                 },
                                 onItemClick = { isChecked, didi ->
-                                if (isCheckedIds.contains(didi.id)){
-                                        isCheckedIds.remove(didi.id)
+                                    if (forReplace) {
+                                        isSelectedId.value = didi.id
                                     } else {
-                                        isCheckedIds.add(didi.id)
+                                        if (isCheckedIds.contains(didi.id)) {
+                                            isCheckedIds.remove(didi.id)
+                                        } else {
+                                            isCheckedIds.add(didi.id)
+                                        }
                                     }
                                 }
                             )
@@ -295,6 +307,8 @@ fun BpcAddMoreDidiScreen(
                                 expanded = expandedIds.contains(didi.id),
                                 modifier = modifier,
                                 isChecked = isCheckedIds.contains(didi.id),
+                                isSelectedForReplace = isSelectedId.value == didi.id,
+                                isForReplace = forReplace,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)){
                                         expandedIds.remove(didiDetailModel.id)
@@ -303,11 +317,16 @@ fun BpcAddMoreDidiScreen(
                                     }
                                 },
                                 onItemClick = { isChecked, didi ->
-                                    if (isCheckedIds.contains(didi.id)){
-                                        isCheckedIds.remove(didi.id)
+                                    if (forReplace) {
+                                        isSelectedId.value = didi.id
                                     } else {
-                                        isCheckedIds.add(didi.id)
+                                        if (isCheckedIds.contains(didi.id)){
+                                            isCheckedIds.remove(didi.id)
+                                        } else {
+                                            isCheckedIds.add(didi.id)
+                                        }
                                     }
+
                                 }
                             )
                         }
@@ -332,7 +351,11 @@ fun BpcAddMoreDidiScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = stringResource(id = R.string.confirm_text),
                 positiveButtonOnClick = {
-                    bpcAddMoreDidiViewModel.markCheckedDidisSelected(isCheckedIds)
+                    if (forReplace) {
+                        //
+                    } else {
+                        bpcAddMoreDidiViewModel.markCheckedDidisSelected(isCheckedIds)
+                    }
                     navController.popBackStack()
                 },
                 negativeButtonOnClick = {}
@@ -347,11 +370,17 @@ fun ExpandableDidiItemCardForBpc(
     expanded: Boolean,
     modifier: Modifier,
     isChecked: Boolean,
+    isSelectedForReplace: Boolean,
+    isForReplace: Boolean,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
 
     val isChecked = remember { mutableStateOf(isChecked) }
+
+    val isSelected = remember {
+        mutableStateOf(isSelectedForReplace)
+    }
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -448,21 +477,36 @@ fun ExpandableDidiItemCardForBpc(
             }
         }
 
-        Checkbox(
-            modifier = Modifier
-                .size(48.dp),
-            checked = isChecked.value,
-            onCheckedChange = {
-                isChecked.value = it
-                onItemClick(it, didi)
-            },
-            enabled = true,
-            colors = CheckboxDefaults.colors(
-                checkedColor = blueDark,
-                checkmarkColor = Color.White,
-                uncheckedColor = checkBoxUncheckedColor
+        if (isForReplace) {
+            RadioButton(
+                selected = isSelected.value,
+                onClick = {
+                          isSelected.value = !isSelected.value
+                    onItemClick(isSelected.value, didi)
+                },
+                enabled = true,
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = blueDark,
+                    unselectedColor = checkBoxUncheckedColor
+                )
             )
-        )
+        } else {
+            Checkbox(
+                modifier = Modifier
+                    .size(48.dp),
+                checked = isChecked.value,
+                onCheckedChange = {
+                    isChecked.value = it
+                    onItemClick(it, didi)
+                },
+                enabled = true,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = blueDark,
+                    checkmarkColor = Color.White,
+                    uncheckedColor = checkBoxUncheckedColor
+                )
+            )
+        }
     }
 }
 
@@ -771,8 +815,10 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
     didiTola: String,
     didiList: List<BpcNonSelectedDidiEntity>,
     modifier: Modifier,
+    isForReplace: Boolean,
     expandedIds: List<Int>,
     isCheckedIds: List<Int>,
+    isSelectedId: Int,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
@@ -822,7 +868,9 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
                     didi = didi,
                     expanded = expandedIds.contains(didi.id),
                     modifier = modifier,
+                    isForReplace = isForReplace,
                     isChecked = isCheckedIds.contains(didi.id),
+                    isSelectedForReplace = isSelectedId == didi.id,
                     onExpendClick = { expand, didiDetailModel ->
                        onExpendClick(expand, didiDetailModel)
                     },
