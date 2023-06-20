@@ -11,6 +11,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -62,58 +63,18 @@ class VoEndorsementScreenViewModel @Inject constructor(
     @SuppressLint("SuspiciousIndentation")
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            withContext(Dispatchers.IO) {
+            withContext(Dispatchers.IO) {
                 try {
-                    val  localDidiList = didiDao.patCompletedDidis(villageId)
-                    var passingMark=0
-                    val scoredDidiList = mutableListOf<DidiEntity>()
-                    if(localDidiList.isNotEmpty()){
-                        localDidiList.forEach {didi->
-                            _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId = didi.id)
-                            if(_inclusiveQueList.value.isNotEmpty()){
-                                var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didi.id)
-                                val numQueList= _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
-                                if(numQueList.isNotEmpty()){
-                                    numQueList.forEach { answer->
-                                        val numQue=questionListDao.getQuestion(answer.questionId)
-                                        passingMark =numQue.surveyPassingMark?:0
-                                        if(numQue.questionFlag?.equals(FLAG_WEIGHT,true) == true){
-                                            val weightList= toWeightageRatio(numQue.json.toString())
-                                            if(weightList.isNotEmpty()){
-                                                val newScore= calculateScore(weightList,
-                                                    answer.totalAssetAmount?.toDouble()?:0.0,
-                                                    false)
-                                                totalWightWithoutNumQue += newScore
-                                            }
-                                        }else if(numQue.questionFlag?.equals(FLAG_RATIO,true) == true){
-                                            val ratioList= toWeightageRatio(numQue.json.toString())
-                                            val newScore= calculateScore(ratioList,
-                                                answer.totalAssetAmount?.toDouble()?:0.0,
-                                                true)
-                                            totalWightWithoutNumQue += newScore
-                                        }
-                                    }
-                                }
-                                if(totalWightWithoutNumQue>=passingMark){
-                                    didiDao.updateVOEndorsementDidiStatus(prefRepo.getSelectedVillage().id,didi.id)
-                                    scoredDidiList.add(didi)
+                    _didiList.value = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id)
+                    _filterDidiList.value = _didiList.value
+                    pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
 
-                                }
-                            }
-
-
-                        }
-                        _didiList.value = scoredDidiList
-                        pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
-                        _filterDidiList.value = _didiList.value
-
-                    }
                 }catch (ex:Exception){
                     ex.printStackTrace()
                     Log.e(TAG, "fetchDidisFromDB Exception: ${ex.message}", )
                 }
 
-//            }
+            }
         }
     }
 
@@ -197,6 +158,10 @@ class VoEndorsementScreenViewModel @Inject constructor(
         }
     }
     override fun onServerError(error: ErrorModel?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
 }

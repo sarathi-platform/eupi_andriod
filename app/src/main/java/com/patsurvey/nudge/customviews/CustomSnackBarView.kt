@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.patsurvey.nudge.R
@@ -100,10 +99,10 @@ fun SnackBarCustom(
 }
 
 @Composable
-fun CustomSnackBarShow(state: CustomSnackBarViewState){
+fun CustomSnackBarShow(state: CustomSnackBarViewState, position: CustomSnackBarViewPosition = CustomSnackBarViewPosition.Top){
     SnackBarCustom(
         state = state,
-        position = CustomSnackBarViewPosition.Top,
+        position = position,
         duration = 3000L,
         icon = R.drawable.ic_completed_tick,
         containerColor = Color.Gray,

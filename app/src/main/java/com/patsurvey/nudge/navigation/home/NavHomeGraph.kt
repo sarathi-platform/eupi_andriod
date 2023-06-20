@@ -20,12 +20,13 @@ import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.digital_forms.*
+import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
-import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementStepScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
@@ -59,7 +60,6 @@ fun NavHomeGraph(navController: NavHostController) {
                 }
             )
         }
-
         composable(route = HomeScreens.DIDI_SCREEN.route) {
             DidiScreen(
                 navController = navController,
@@ -83,6 +83,7 @@ fun NavHomeGraph(navController: NavHostController) {
         patNavGraph(navController = navController)
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
+        logoutGraph(navController =navController)
     }
 }
 
@@ -709,5 +710,43 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : VoEndorsmentScreeens(route = "vo_endorsement_digital_form_c_screen")
     object IMAGE_VIEWER : VoEndorsmentScreeens(route = "vo_image_viewer/{$ARG_IMAGE_PATH}")
+
+}
+
+fun NavGraphBuilder.logoutGraph(navController: NavHostController){
+    navigation(route = Graph.LOGOUT_GRAPH,
+        startDestination = LogoutScreens.LOG_LOGIN_SCREEN.route,
+    ) {
+        composable(route = LogoutScreens.LOG_LOGIN_SCREEN.route) {
+            LoginScreen(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+        composable(
+            route = LogoutScreens.LOG_OTP_VERIFICATION.route,
+            arguments = listOf(navArgument(ARG_MOBILE_NUMBER) {
+                type = NavType.StringType
+            })
+        ) {
+            OtpVerificationScreen(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+            )
+        }
+
+        composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
+            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+    }
+}
+
+sealed class LogoutScreens(val route: String) {
+    object LOG_LOGIN_SCREEN : LogoutScreens(route = "log_login_screen")
+    object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "log_village_selection_screen")
+    object LOG_OTP_VERIFICATION : LogoutScreens(route = "log_otp_verification_screen/{$ARG_MOBILE_NUMBER}")
 
 }

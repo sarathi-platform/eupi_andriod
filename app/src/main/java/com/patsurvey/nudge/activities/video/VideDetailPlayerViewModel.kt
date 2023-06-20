@@ -13,6 +13,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.DownloadStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -85,6 +86,10 @@ class VideDetailPlayerViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
 

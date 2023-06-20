@@ -4,15 +4,21 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
@@ -54,6 +60,8 @@ class WealthRankingViewModel @Inject constructor(
 
     var villageId: Int = -1
     var stepId: Int = -1
+    val isTolaSynced = mutableStateOf(0)
+    val isDidiSynced = mutableStateOf(0)
 
     val showLoader = mutableStateOf(false)
 
@@ -140,6 +148,7 @@ class WealthRankingViewModel @Inject constructor(
                 if(didiEntity.serverId == 0){
                     didiDao.updateDidiRank(didiEntity.id, rank)
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
+                    didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
                     didiDao.updateBeneficiaryProcessStatus(
                         didiEntity.id, listOf(
                             BeneficiaryProcessStatusModel(
@@ -157,6 +166,7 @@ class WealthRankingViewModel @Inject constructor(
                      didiId=didiEntity.serverId
                     didiDao.updateDidiRankUsingServerId(didiEntity.serverId, rank)
                     didiDao.updateDidiNeedToPostWealthRankServerId(didiEntity.serverId,true)
+                    didiDao.updateModifiedDateServerId(System.currentTimeMillis(),didiEntity.serverId)
                     didiDao.updateBeneficiaryProcessStatusServerId(
                         didiEntity.serverId, listOf(
                             BeneficiaryProcessStatusModel(
@@ -176,19 +186,38 @@ class WealthRankingViewModel @Inject constructor(
                 updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
-                withContext(Dispatchers.IO) {
-                    val updateWealthRankResponse=apiService.updateDidiRanking(
-                        listOf(EditDidiWealthRankingRequest(didiId, StepType.WEALTH_RANKING.name, rank),
-                            EditDidiWealthRankingRequest(didiId, StepType.SOCIAL_MAPPING.name, StepStatus.COMPLETED.name)
+                CheckDBStatus(this@WealthRankingViewModel).isFirstStepNeedToBeSync(tolaDao){
+                    isTolaSynced.value=it
+                }
+                CheckDBStatus(this@WealthRankingViewModel).isSecondStepNeedToBeSync(didiDao){
+                    isDidiSynced.value=it
+                }
+                if(isTolaSynced.value == 2 && isDidiSynced.value == 2) {
+                    withContext(Dispatchers.IO) {
+                        val updateWealthRankResponse = apiService.updateDidiRanking(
+                            listOf(
+                                EditDidiWealthRankingRequest(
+                                    didiId,
+                                    StepType.WEALTH_RANKING.name,
+                                    rank,
+                                    localModifiedDate = System.currentTimeMillis() ?:0
+                                ),
+                                EditDidiWealthRankingRequest(
+                                    didiId,
+                                    StepType.SOCIAL_MAPPING.name,
+                                    StepStatus.COMPLETED.name,
+                                    localModifiedDate = System.currentTimeMillis() ?:0
+                                )
+                            )
                         )
-                    )
-                    if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                        if(didiEntity.serverId == 0){
-                            didiDao.setNeedToPostRanking(didiEntity.id,false)
-                        }else
-                            didiDao.setNeedToPostRankingServerId(didiEntity.serverId,false)
-                    } else {
-                        networkCallbackListener.onFailed()
+                        if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                            if (didiEntity.serverId == 0) {
+                                didiDao.setNeedToPostRanking(didiEntity.id, false)
+                            } else
+                                didiDao.setNeedToPostRankingServerId(didiEntity.serverId, false)
+                        } else {
+                            networkCallbackListener.onFailed()
+                        }
                     }
                 }
             } catch (ex: Exception) {
@@ -215,6 +244,10 @@ class WealthRankingViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
     fun closeLastCard(cardId: Int) {

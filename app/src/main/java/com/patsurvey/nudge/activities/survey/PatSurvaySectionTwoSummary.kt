@@ -57,6 +57,7 @@ fun PatSurvaySectionTwoSummaryScreen(
 ) {
 
     LaunchedEffect(key1 = true) {
+        patSectionSummaryViewModel.sectionType.value= TYPE_INCLUSION
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
     }
     val configuration = LocalConfiguration.current
@@ -298,7 +299,11 @@ fun SectionTwoSummeryItem(
         Row(Modifier.fillMaxWidth()) {
             var summaryText = "${index+1}. $quesSummery : $answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
-                summaryText = "${index+1}. $quesSummery."
+                if(quesSummery.contains("=")){
+                    summaryText = "${index+1}. $quesSummery."
+                }else{
+                    summaryText = "${index+1}. $answerValue."
+                }
             }
             Text(
                 text = summaryText,

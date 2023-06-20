@@ -117,5 +117,10 @@ interface ApiService {
 
     @POST("/write-api/beneficiary/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun updateDidiScore(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>
+
+
+    @POST("/write-api/beneficiary/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun updateDidis(@Body didiWealthRankingRequest: List<EditDidiRequest>): ApiResponseModel<List<DidiEntity>>
 }

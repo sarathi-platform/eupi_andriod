@@ -8,6 +8,7 @@ import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
@@ -99,6 +100,13 @@ class ConfigViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         networkErrorMessage.value= error?.message.toString()
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            addDefaultLanguage()
+        }
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        networkErrorMessage.value= errorModel?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             addDefaultLanguage()
         }
