@@ -19,16 +19,18 @@ import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TolaStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -127,8 +129,12 @@ class SettingViewModel @Inject constructor(
     fun isFirstStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepOneSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
-                && tolaDao.fetchPendingTola(true, "").isEmpty())
+            if (tolaDao.fetchTolaNeedToPost(true, "",0).isEmpty()
+                && tolaDao.fetchPendingTola(true, "").isEmpty()
+                && tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal).isEmpty()
+                && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
+                && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
+                && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty())
             {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -142,7 +148,11 @@ class SettingViewModel @Inject constructor(
         stepTwoSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
         if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
-            && didiDao.fetchPendingDidi(true,"").isEmpty()) {
+            && didiDao.fetchPendingDidi(true,"").isEmpty()
+            && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal).isEmpty()
+            && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
+            && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
+            && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
@@ -258,16 +268,13 @@ class SettingViewModel @Inject constructor(
                             }
                             override fun onFinish() {
                                 networkErrorMessage.value = SYNC_SUCCESSFULL
-//                        showCustomToast(cxt, SYNC_SUCCESSFULL)
                                 syncPercentage.value = 1f
-//                        showSyncDialog.value = false
                                 showLoader.value = false
                             }
                         }.start()
                     }
 
                     override fun onFailed() {
-//                        showCustomToast(cxt, SYNC_FAILED)
                         networkErrorMessage.value = SYNC_FAILED
                         syncPercentage.value = 1f
                         showSyncDialog.value = false

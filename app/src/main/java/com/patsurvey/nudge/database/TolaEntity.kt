@@ -15,6 +15,8 @@ data class TolaEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int,
+    @ColumnInfo(name = "serverId")
+    var serverId: Int = 0,
     @ColumnInfo(name = "name")
     var name : String,
     @ColumnInfo(name = "type")

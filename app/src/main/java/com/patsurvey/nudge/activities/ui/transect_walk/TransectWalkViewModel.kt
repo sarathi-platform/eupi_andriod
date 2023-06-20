@@ -14,13 +14,13 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
@@ -75,7 +75,7 @@ class TransectWalkViewModel @Inject constructor(
                 type = CohortType.TOLA.type,
                 latitude = tola.location.lat ?: 0.0,
                 longitude = tola.location.long ?: 0.0,
-                villageEntity.value?.id ?: 0,
+                villageId = villageEntity.value?.id ?: 0,
                 status = 1,
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
@@ -147,28 +147,17 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun updateTolaListWithIds(tolaList: List<TolaEntity>, villageId: Int) {
-        tolaDao.deleteTolaTable(villageId)
-        val tolas = mutableListOf<TolaEntity>()
-        tolaList.forEach {
-            tolas.add(
-                TolaEntity(
-                    id = it.id,
-                    name = it.name,
-                    type = it.type,
-                    latitude = it.latitude,
-                    longitude = it.longitude,
-                    villageId = it.villageId,
-                    needsToPost = false,
-                    status = it.status,
-                    createdDate = it.createdDate,
-                    modifiedDate = it.modifiedDate,
-                    localModifiedDate = it.localModifiedDate,
-                    localCreatedDate = it.localCreatedDate,
-                    transactionId = ""
-                )
+        tolaList.forEach{ tola ->
+            tolaDao.updateTolaDetailAfterSync(
+                id = tola.id,
+                serverId = tola.serverId,
+                needsToPost = false,
+                transactionId = "",
+                createdDate = tola.createdDate?:0L,
+                modifiedDate = tola.modifiedDate?:0L
+
             )
         }
-        tolaDao.insertAll(tolas)
     }
 
     fun removeTola(tolaId: Int, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
@@ -247,11 +236,12 @@ class TransectWalkViewModel @Inject constructor(
                 villageId = tolaList.value[getIndexOfTola(id)].villageId,
                 needsToPost = true,
                 status = tolaList.value[getIndexOfTola(id)].status,
-                createdDate = tolaList.value[getIndexOfTola(id)].createdDate ?:0,
-                modifiedDate = tolaList.value[getIndexOfTola(id)].modifiedDate ?:0,
+                createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
+                modifiedDate = System.currentTimeMillis(),
+                transactionId = "",
+                serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate=tolaList.value[getIndexOfTola(id)].localCreatedDate,
-                localModifiedDate=System.currentTimeMillis(),
-                transactionId = ""
+                localModifiedDate=System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)

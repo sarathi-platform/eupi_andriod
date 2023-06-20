@@ -14,7 +14,7 @@ import kotlinx.coroutines.withContext
 class CheckDBStatus (val viewModel : BaseViewModel){
     fun isFirstStepNeedToBeSync(tolaDao : TolaDao, onResult:(Int)->Unit) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
-            if (tolaDao.fetchTolaNeedToPost(true, "").isEmpty()
+            if (tolaDao.fetchTolaNeedToPost(true, "",0).isEmpty()
                 && tolaDao.fetchPendingTola(true, "").isEmpty())
             {
                 withContext(Dispatchers.Main){
