@@ -264,12 +264,14 @@ fun ProgressScreen(
                                         }
                                         2 -> {}
                                         3 -> {
-                                            viewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
+                                            if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
+                                                viewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
                                         }
                                         4 -> {}
                                         5 -> {}
                                     }
-                                    onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))
+                                    if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
+                                        onNavigateToStep(villageId,step.id,index,(viewModel.stepList.value[index].isComplete == StepStatus.COMPLETED.ordinal))
                                 }
                             }
                         }

@@ -399,9 +399,9 @@ fun ExpandableCard(
             }
             //Expandable Content
             Column {
-                Box {
-                    CardTitle(title = didiEntity.name)
-                }
+                Spacer(modifier = Modifier
+                    .height(10.dp)
+                    .fillMaxWidth())
                 ExpandableContent(visible = expanded, didiEntity = didiEntity) {
                     didiEntity.wealth_ranking = it.rank
                     viewModel.updateDidiRankInDb(didiEntity,it.rank, object : NetworkCallbackListener{
