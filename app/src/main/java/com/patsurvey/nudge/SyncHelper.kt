@@ -46,23 +46,6 @@ class SyncHelper (
         addTolasToNetwork(networkCallbackListener)
     }
 
-/*    private fun showProgressBar(networkCallbackListener: NetworkCallbackListener){
-        val totalTimer : Long = 3000
-        val interval : Long = 1000
-        object: CountDownTimer(totalTimer, interval){
-            override fun onTick(p0: Long) {
-                val progress = ((((totalTimer-p0)*100)/totalTimer))
-                syncPercentage.value = progress.toFloat()
-                Log.e("progress","->$progress")
-                Log.e("po","->$p0")
-            }
-            override fun onFinish() {
-                networkCallbackListener.onSuccess()
-                syncPercentage.value = 0f
-            }
-        }.start()
-    }*/
-
     private fun startSyncTimer(networkCallbackListener: NetworkCallbackListener){
         val timer = Timer()
         timer.schedule(object : TimerTask(){
@@ -203,19 +186,19 @@ class SyncHelper (
                             }
                         }
                     }
-                    syncPercentage.value = 100f
                     withContext(Dispatchers.Main){
+                        syncPercentage.value = 1f
                         networkCallbackListener.onSuccess()
                     }
                 } else {
-                    syncPercentage.value = 100f
                     withContext(Dispatchers.Main){
+                        syncPercentage.value = 1f
                         networkCallbackListener.onFailed()
                     }
                 }
             } else {
-                syncPercentage.value = 100f
                 withContext(Dispatchers.Main){
+                    syncPercentage.value = 1f
                     networkCallbackListener.onSuccess()
                 }
             }
@@ -367,9 +350,11 @@ class SyncHelper (
     }
 
     fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        settingViewModel.stepOneSyncStatus.value = 1
         Log.e("add tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.stepOneSyncStatus.value = 1
+            }
             val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
@@ -446,8 +431,10 @@ class SyncHelper (
     }
 
     private fun updateTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        settingViewModel.syncPercentage.value = 0.14f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.syncPercentage.value = 0.14f
+            }
             val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
@@ -490,9 +477,11 @@ class SyncHelper (
     }
 
     private fun deleteTolaToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        settingViewModel.syncPercentage.value = 0.07f
         Log.e("delete tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.syncPercentage.value = 0.07f
+            }
             val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
@@ -536,11 +525,13 @@ class SyncHelper (
 
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
         callWorkFlowAPIForStep(1)
-        settingViewModel.stepOneSyncStatus.value = 3
-        settingViewModel.stepTwoSyncStatus.value = 1
-        settingViewModel.syncPercentage.value = 0.2f
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.stepOneSyncStatus.value = 3
+                settingViewModel.stepTwoSyncStatus.value = 1
+                settingViewModel.syncPercentage.value = 0.2f
+            }
             val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0)
             for(didi in didiList){
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
@@ -595,8 +586,10 @@ class SyncHelper (
     }
 
     fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener){
-        settingViewModel.syncPercentage.value = 0.34f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.syncPercentage.value = 0.34f
+            }
             val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
@@ -692,10 +685,10 @@ class SyncHelper (
     }
 
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
-//        settingViewModel.stepOneSyncStatus.value = 1
-        settingViewModel.syncPercentage.value = 0.27f
-        Log.e("add tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.syncPercentage.value = 0.27f
+            }
             val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
@@ -742,10 +735,12 @@ class SyncHelper (
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener){
         Log.e("add didi","called")
         callWorkFlowAPIForStep(2)
-        settingViewModel.stepTwoSyncStatus.value = 3
-        settingViewModel.stepThreeSyncStatus.value = 1
-        settingViewModel.syncPercentage.value = 0.4f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.Main) {
+                settingViewModel.stepTwoSyncStatus.value = 3
+                settingViewModel.stepThreeSyncStatus.value = 1
+                settingViewModel.syncPercentage.value = 0.4f
+            }
             try {
                 withContext(Dispatchers.IO){
                     val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
@@ -880,11 +875,13 @@ class SyncHelper (
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         callWorkFlowAPIForStep(3)
-        settingViewModel.stepThreeSyncStatus.value = 3
-        settingViewModel.stepFourSyncStatus.value = 1
-        settingViewModel.syncPercentage.value = 0.6f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                withContext(Dispatchers.Main) {
+                    settingViewModel.stepThreeSyncStatus.value = 3
+                    settingViewModel.stepFourSyncStatus.value = 1
+                    settingViewModel.syncPercentage.value = 0.6f
+                }
                 withContext(Dispatchers.IO){
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
@@ -938,12 +935,14 @@ class SyncHelper (
     }
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        settingViewModel.stepFifthSyncStatus.value = 1
-        settingViewModel.stepFourSyncStatus.value = 3
         callWorkFlowAPIForStep(4)
-        settingViewModel.syncPercentage.value = 0.8f
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
+                withContext(Dispatchers.Main) {
+                    settingViewModel.stepFifthSyncStatus.value = 1
+                    settingViewModel.stepFourSyncStatus.value = 3
+                    settingViewModel.syncPercentage.value = 0.8f
+                }
                 withContext(Dispatchers.IO){
                     val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "")
                     if(needToPostDidiList.isNotEmpty()){

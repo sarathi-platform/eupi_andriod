@@ -268,16 +268,13 @@ class SettingViewModel @Inject constructor(
                             }
                             override fun onFinish() {
                                 networkErrorMessage.value = SYNC_SUCCESSFULL
-//                        showCustomToast(cxt, SYNC_SUCCESSFULL)
                                 syncPercentage.value = 1f
-//                        showSyncDialog.value = false
                                 showLoader.value = false
                             }
                         }.start()
                     }
 
                     override fun onFailed() {
-//                        showCustomToast(cxt, SYNC_FAILED)
                         networkErrorMessage.value = SYNC_FAILED
                         syncPercentage.value = 1f
                         showSyncDialog.value = false
