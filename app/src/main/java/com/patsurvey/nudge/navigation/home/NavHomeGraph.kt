@@ -21,10 +21,12 @@ import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
+import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
@@ -32,7 +34,6 @@ import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
-import com.patsurvey.nudge.activities.ui.digital_forms.*
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -52,12 +53,14 @@ import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_ID
 import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
 import com.patsurvey.nudge.utils.ARG_FORM_PATH
+import com.patsurvey.nudge.utils.ARG_FOR_REPLACEMENT
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.ARG_FROM_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.ARG_FROM_VO_ENDORSEMENT_SCREEN
 import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
 import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
+import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
 import com.patsurvey.nudge.utils.ARG_STEP_ID
@@ -831,11 +834,25 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
             )
         }
+        composable(
+            route = BpcDidiListScreens.BPC_ADD_MORE_DIDI_LIST.route,
+            arguments = listOf(navArgument(ARG_FOR_REPLACEMENT){
+                type = NavType.BoolType
+            })
+        ) {
+            BpcAddMoreDidiScreen(
+                bpcAddMoreDidiViewModel = hiltViewModel(),
+                navController = navController,
+                forReplace = it.arguments?.getBoolean(ARG_FOR_REPLACEMENT) ?: false
+            )
+        }
     }
 }
 
 sealed class BpcDidiListScreens(val route: String) {
     object BPC_DID_LIST : BpcDidiListScreens(route = "bpc_did_list")
+
+    object BPC_ADD_MORE_DIDI_LIST : BpcDidiListScreens(route = "bpc_add_more_didi_list/{$ARG_FOR_REPLACEMENT}")
 
     object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
 

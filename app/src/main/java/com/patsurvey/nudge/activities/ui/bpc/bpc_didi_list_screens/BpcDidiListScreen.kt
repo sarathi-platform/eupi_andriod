@@ -29,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,6 +74,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
+import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
@@ -81,9 +83,6 @@ import com.patsurvey.nudge.utils.ButtonPositiveForPAT
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
-import com.patsurvey.nudge.utils.TYPE_INCLUSION
-import com.patsurvey.nudge.utils.VoEndorsementStatus
 import com.patsurvey.nudge.utils.WealthRank
 
 @Composable
@@ -95,10 +94,10 @@ fun BpcDidiListScreen(
     stepId: Int
 ) {
 
-    val didis by bpcDidiListViewModel.didiList.collectAsState()
+    val didis by bpcDidiListViewModel.selectedDidiList.collectAsState()
 
     val newFilteredTolaDidiList = bpcDidiListViewModel.filterTolaMapList
-    val newFilteredDidiList = bpcDidiListViewModel.filterDidiList.collectAsState()
+    val newFilteredDidiList = bpcDidiListViewModel.filterDidiList
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -112,6 +111,10 @@ fun BpcDidiListScreen(
 
     var filterSelected by remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        bpcDidiListViewModel.fetchDidiFromDb()
     }
 
     ConstraintLayout(
@@ -146,7 +149,10 @@ fun BpcDidiListScreen(
                     textAlign = TextAlign.Center,
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_6), horizontal = 32.dp)
+                        .padding(
+                            vertical = dimensionResource(id = R.dimen.dp_6),
+                            horizontal = 32.dp
+                        )
                         .fillMaxWidth()
                 )
 
@@ -163,7 +169,9 @@ fun BpcDidiListScreen(
                 ) {
 
                     item {
-                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
+                        Spacer(modifier = Modifier
+                            .height(14.dp)
+                            .fillMaxWidth())
                     }
 
                     item {
@@ -183,7 +191,9 @@ fun BpcDidiListScreen(
                     }
                     
                     item { 
-                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
+                        Spacer(modifier = Modifier
+                            .height(14.dp)
+                            .fillMaxWidth())
                     }
 
                     item {
@@ -215,22 +225,22 @@ fun BpcDidiListScreen(
                                 buttonText = stringResource(R.string.add_more),
                                 icon = Icons.Default.Add
                             ) {
-
+                                val forReplace = false
+                                navController.navigate("bpc_add_more_didi_list/$forReplace")
                             }
                         }
                     }
 
                     item {
-                        Spacer(modifier = Modifier.height(14.dp).fillMaxWidth())
+                        Spacer(modifier = Modifier
+                            .height(14.dp)
+                            .fillMaxWidth())
                     }
 
                     if (filterSelected) {
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, didiKey ->
-                            if (newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus == VoEndorsementStatus.NOT_STARTED.ordinal) {
-                                bpcDidiListViewModel.pendingDidiCount.value++
-                            }
                             ShowDidisFromTolaForBpc(
                                 navController = navController,
                                 viewModel = bpcDidiListViewModel,
@@ -256,7 +266,7 @@ fun BpcDidiListScreen(
                             }
                         }
                     } else {
-                        itemsIndexed(newFilteredDidiList.value) { index, didi ->
+                        itemsIndexed(newFilteredDidiList) { index, didi ->
                             if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
                                 bpcDidiListViewModel.pendingDidiCount.value++
                             }
@@ -301,7 +311,7 @@ fun BpcDidiListScreen(
 @Composable
 fun DidiItemCardForBpc(
     navController: NavHostController,
-    didi: DidiEntity,
+    didi: BpcSelectedDidiEntity,
     modifier: Modifier,
     viewModel: BpcDidiListViewModel,
     onItemClick: (DidiEntity) -> Unit
@@ -427,8 +437,8 @@ fun DidiItemCardForBpc(
                                 ) blueDark else languageItemActiveBg
                             )
                     ) {
-                        didiMarkedNotAvailable.value = true
-                        viewModel.setDidiAsUnavailable(didi.id)
+//                        didiMarkedNotAvailable.value = true
+//                        viewModel.setDidiAsUnavailable(didi.id)
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     ButtonPositiveForPAT(
@@ -455,7 +465,7 @@ fun DidiItemCardForBpc(
                         iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                     ) {
 
-                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                        /*if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
                         ) {
                             if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
@@ -469,7 +479,7 @@ fun DidiItemCardForBpc(
                             else if (didi.section2Status == 0 || didi.section2Status == 1) navController.navigate(
                                 "yes_no_question_screen/${didi.id}/$TYPE_INCLUSION"
                             )
-                        }
+                        }*/
                     }
                 }
             } else {
@@ -507,7 +517,7 @@ fun ShowDidisFromTolaForBpc(
     navController: NavHostController,
     viewModel: BpcDidiListViewModel,
     didiTola: String,
-    didiList: List<DidiEntity>,
+    didiList: List<BpcSelectedDidiEntity>,
     modifier: Modifier,
     onNavigate: (String) -> Unit
 ) {

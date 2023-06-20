@@ -12,11 +12,14 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,43 +28,64 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.selection.toggleable
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
-import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
+import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black2
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.checkBoxUncheckedColor
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CardArrow
-import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.customviews.SearchWithFilterView
+import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
@@ -70,21 +94,238 @@ import com.patsurvey.nudge.utils.WealthRank
 
 @Composable
 fun BpcAddMoreDidiScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    bpcAddMoreDidiViewModel: BpcAddMoreDidiViewModel,
+    navController: NavHostController,
+    forReplace: Boolean = false
 ) {
+    val didis by bpcAddMoreDidiViewModel.nonSelectedDidiList.collectAsState()
 
+    val newFilteredTolaDidiList = bpcAddMoreDidiViewModel.filterTolaMapList
+    val newFilteredDidiList = bpcAddMoreDidiViewModel.filterDidiList
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val localDensity = LocalDensity.current
+
+    val focusManager = LocalFocusManager.current
+
+    var bottomPadding by remember {
+        mutableStateOf(0.dp)
+    }
+
+    var filterSelected by remember {
+        mutableStateOf(false)
+    }
+
+    val expandedIds = remember {
+        mutableStateListOf<Int>()
+    }
+
+    val isCheckedIds = remember {
+        mutableStateListOf<Int>()
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        bpcAddMoreDidiViewModel.fetchDidiFromDb()
+    }
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color.White)
+            .then(modifier)
+    ) {
+        val (bottomActionBox, mainBox) = createRefs()
+
+        Box(modifier = Modifier
+            .constrainAs(mainBox) {
+                start.linkTo(parent.start)
+                top.linkTo(parent.top)
+                bottom.linkTo(bottomActionBox.top)
+                height = Dimension.fillToConstraints
+            }
+            .padding(top = 14.dp)
+        ) {
+            Column(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+            ) {
+
+                Text(
+                    text = stringResource(id = R.string.bpc_didi_screen_title),
+                    color = Color.Black,
+                    fontSize = 20.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(
+                            vertical = dimensionResource(id = R.dimen.dp_6),
+                            horizontal = 32.dp
+                        )
+                        .fillMaxWidth()
+                )
+
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(color = white)
+                        .pointerInput(true) {
+                            detectTapGestures(onTap = {
+                                focusManager.clearFocus()
+                            })
+                        }
+                        .weight(1f),
+                    contentPadding = PaddingValues(bottom = 10.dp, start = 16.dp, end = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+
+                    item {
+                        Spacer(
+                            modifier = Modifier
+                                .height(14.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+
+                    item {
+                        SearchWithFilterView(
+                            placeholderString = stringResource(id = R.string.search_didis),
+                            filterSelected = filterSelected,
+                            onFilterSelected = {
+                                if (didis.isNotEmpty()) {
+                                    filterSelected = !it
+                                    bpcAddMoreDidiViewModel.filterList()
+                                }
+                            },
+                            onSearchValueChange = {
+                                bpcAddMoreDidiViewModel.performQuery(it, filterSelected)
+                            }
+                        )
+                    }
+
+                    item {
+                        Spacer(
+                            modifier = Modifier
+                                .height(14.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+
+                    item {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val count = newFilteredDidiList.size
+                            Text(
+                                text = stringResource(
+                                    id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
+                                    count
+                                ),
+                                color = Color.Black,
+                                fontSize = 12.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                    .padding(start = 4.dp)
+                                    .weight(0.75f)
+                            )
+                        }
+                    }
+
+                    item {
+                        Spacer(modifier = Modifier
+                            .height(14.dp)
+                            .fillMaxWidth())
+                    }
+
+                    if (filterSelected) {
+                        itemsIndexed(
+                            newFilteredTolaDidiList.keys.toList().reversed()
+                        ) { index, didiKey ->
+
+                            ShowDidisFromTolaForBpcAddMoreScreen(
+                                didiTola = didiKey,
+                                didiList = newFilteredTolaDidiList[didiKey] ?: emptyList(),
+                                modifier = modifier,
+                                expandedIds = expandedIds,
+                                isCheckedIds = isCheckedIds,
+                                onExpendClick = { expand, didiDetailModel ->
+                                    if (expandedIds.contains(didiDetailModel.id)){
+                                        expandedIds.remove(didiDetailModel.id)
+                                    } else {
+                                        expandedIds.add(didiDetailModel.id)
+                                    }
+                                },
+                                onItemClick = { isChecked, didi ->
+                                if (isCheckedIds.contains(didi.id)){
+                                        isCheckedIds.remove(didi.id)
+                                    } else {
+                                        isCheckedIds.add(didi.id)
+                                    }
+                                }
+                            )
+
+                            if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                Divider(
+                                    color = borderGreyLight,
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(
+                                        start = 16.dp,
+                                        end = 16.dp,
+                                        top = 22.dp,
+                                        bottom = 1.dp
+                                    )
+                                )
+                            }
+                        }
+                    } else {
+                        itemsIndexed(newFilteredDidiList) { index, didi ->
+                            ExpandableDidiItemCardForBpc(
+                                didi = didi,
+                                expanded = expandedIds.contains(didi.id),
+                                modifier = modifier,
+                                isChecked = isCheckedIds.contains(didi.id),
+                                onExpendClick = { expand, didiDetailModel ->
+                                    if (expandedIds.contains(didiDetailModel.id)){
+                                        expandedIds.remove(didiDetailModel.id)
+                                    } else {
+                                        expandedIds.add(didiDetailModel.id)
+                                    }
+                                },
+                                onItemClick = { isChecked, didi ->
+                                    if (isCheckedIds.contains(didi.id)){
+                                        isCheckedIds.remove(didi.id)
+                                    } else {
+                                        isCheckedIds.add(didi.id)
+                                    }
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @Composable
 fun ExpandableDidiItemCardForBpc(
-    didi: DidiEntity,
+    didi: BpcNonSelectedDidiEntity,
     expanded: Boolean,
     modifier: Modifier,
-    onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onItemClick: (DidiEntity) -> Unit
+    isChecked: Boolean,
+    onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
+    onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
 
-    val isChecked = remember { mutableStateOf(false) }
+    val isChecked = remember { mutableStateOf(isChecked) }
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -115,8 +356,9 @@ fun ExpandableDidiItemCardForBpc(
             shape = RoundedCornerShape(6.dp),
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .clickable {
-                    onItemClick(didi)
+                    onExpendClick(expanded, didi)
                 }
                 .then(modifier)
         ) {
@@ -180,31 +422,26 @@ fun ExpandableDidiItemCardForBpc(
             }
         }
 
-        Box(
+        Checkbox(
             modifier = Modifier
-                .size(48.dp)
-                .padding()
-                .toggleable(
-                    value = isChecked.value,
-                    role = Role.Checkbox,
-                    onValueChange = {
-                        isChecked.value = it
-                    }
-                )) {
-            Icon(painter = if (isChecked.value)
-                painterResource(id = R.drawable.ic_selected_check)
-            else
-                painterResource(id = R.drawable.ic_unselected_check),
-                contentDescription = "checkbox",
-                modifier = Modifier
-                    .align(Alignment.Center))
-        }
-
+                .size(48.dp),
+            checked = isChecked.value,
+            onCheckedChange = {
+                isChecked.value = it
+                onItemClick(it, didi)
+            },
+            enabled = true,
+            colors = CheckboxDefaults.colors(
+                checkedColor = blueDark,
+                checkmarkColor = Color.White,
+                uncheckedColor = checkBoxUncheckedColor
+            )
+        )
     }
 }
 
 @Composable
-fun DidiDetailExpendableContentForBpc(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
+fun DidiDetailExpendableContentForBpc(modifier: Modifier, didi: BpcNonSelectedDidiEntity, expended: Boolean) {
     val constraintSet = didiDetailConstraints()
 
     val context = LocalContext.current
@@ -479,7 +716,7 @@ private fun didiDetailConstraints(): ConstraintSet {
     }
 }
 
-fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity): String {
+fun getLatestStatusTextForBpc(context: Context, didi: BpcNonSelectedDidiEntity): String {
     var status = context.getString(R.string.wealth_ranking_status_complete_text)
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.wealth_ranking_status_not_started_text)
@@ -501,4 +738,73 @@ fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity): String {
         }
     }
     return status
+}
+
+@Composable
+fun ShowDidisFromTolaForBpcAddMoreScreen(
+    didiTola: String,
+    didiList: List<BpcNonSelectedDidiEntity>,
+    modifier: Modifier,
+    expandedIds: List<Int>,
+    isCheckedIds: List<Int>,
+    onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
+    onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
+) {
+    Column(modifier = Modifier) {
+        Row(
+            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.home_icn),
+                contentDescription = "home image",
+                modifier = Modifier
+                    .size(18.dp),
+                colorFilter = ColorFilter.tint(textColorBlueLight)
+            )
+
+            Text(
+                text = didiTola,
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                textAlign = TextAlign.Start,
+                modifier = Modifier.padding(end = 10.dp)
+            )
+            Text(
+                text = "${didiList.size}",
+                style = TextStyle(
+                    color = black2,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans
+                ),
+                modifier = Modifier
+                    .background(yellowBg, shape = CircleShape)
+                    .circleLayout()
+                    .padding(3.dp),
+                textAlign = TextAlign.Start
+            )
+        }
+
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            didiList.forEachIndexed { index, didi ->
+                ExpandableDidiItemCardForBpc(
+                    didi = didi,
+                    expanded = expandedIds.contains(didi.id),
+                    modifier = modifier,
+                    isChecked = isCheckedIds.contains(didi.id),
+                    onExpendClick = { expand, didiDetailModel ->
+                       onExpendClick(expand, didiDetailModel)
+                    },
+                    onItemClick = { isChecked, didi ->
+                        onItemClick(isChecked, didi)
+                    }
+                )
+            }
+        }
+    }
 }

@@ -94,3 +94,5 @@ val inprogressYellow = Color(0xC9D39509)
 val redBgLight = Color(0xFFFDEBEB)
 val redMessageColor = Color(0xFFE30707)
 val redIconColor = Color(0xFFe3051a)
+
+val checkBoxUncheckedColor = Color(0xFFC6C6C6)

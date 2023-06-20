@@ -10,6 +10,7 @@ import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.model.ErrorModel
+import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -43,12 +44,12 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     init {
         fetchVillageList()
-        fetchBpcSummaryData()
+        fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
     }
 
-    private fun fetchBpcSummaryData() {
+    fun fetchBpcSummaryData(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val summary = bpcSummaryDao.getBpcSummaryForVillage(prefRepo.getSelectedVillage().id)
+            val summary = bpcSummaryDao.getBpcSummaryForVillage(villageId)
             _summaryData.value = summary
         }
     }
@@ -76,8 +77,16 @@ class BpcProgressScreenViewModel @Inject constructor(
         }
     }
 
+    fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
+        prefRepo.saveSelectedVillage(selectedVillageEntity)
+    }
+
     override fun onServerError(error: ErrorModel?) {
         /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        TODO("Not yet implemented")
     }
 
 }

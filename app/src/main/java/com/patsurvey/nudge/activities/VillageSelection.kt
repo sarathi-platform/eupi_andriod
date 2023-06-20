@@ -75,22 +75,10 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.dropDownBg
-import com.patsurvey.nudge.activities.ui.theme.greenOnline
-import com.patsurvey.nudge.activities.ui.theme.greyBorder
-import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
-import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BackPress
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
-import com.patsurvey.nudge.utils.findActivity
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.OTP_LENGTH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 
@@ -108,7 +96,7 @@ fun VillageSelectionScreen(
     var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         if (BuildConfig.DEBUG) showCustomToast(context, viewModel.networkErrorMessage.value)
-        RetryHelper.tokenExpired.value =true
+//        RetryHelper.tokenExpired.value =true
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
 

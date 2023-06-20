@@ -102,8 +102,9 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it/*
                                 bpcProgreesScreenViewModel.getStepsList(village.id)
-                                bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
+                                bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
+                                bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.selectedText.value =
                                     bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
