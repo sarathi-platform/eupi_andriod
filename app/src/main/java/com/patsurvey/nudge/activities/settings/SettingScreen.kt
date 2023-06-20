@@ -106,12 +106,7 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ButtonNegative
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.*
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -340,11 +335,12 @@ fun SettingScreen(
                                     changeGraph.value = true
                                 }
                             })
-
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                        } else {
+                            showToast(context,"Sync is required before logout,Please sync your data before logout.")
                         }
                     } else {
-                        snackState.addMessage(message = "Sync is required before logout, Please connect to internet before logging out.", isSuccess = false, isCustomIcon = false)
+                        showToast(context,"No Internet Available, Please connect with internet")
                     }
                 }
             }

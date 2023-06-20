@@ -77,7 +77,7 @@ data class DidiEntity(
     var needsToPostDeleteStatus: Boolean = false,
 
     @ColumnInfo(name = "needsToPostRanking")
-    var needsToPostRanking: Boolean = true,
+    var needsToPostRanking: Boolean = false,
 
     @TypeConverters(BeneficiaryStepConverter::class)
     @ColumnInfo(name = "beneficiaryProcessStatus")

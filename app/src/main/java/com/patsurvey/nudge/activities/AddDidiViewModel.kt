@@ -217,7 +217,8 @@ class AddDidiViewModel @Inject constructor(
                         localCreatedDate = System.currentTimeMillis(),
                         localModifiedDate = System.currentTimeMillis(),
                         shgFlag = SHGFlag.NOT_MARKED.value,
-                        transactionId = ""
+                        transactionId = "",
+                        needsToPostRanking = false
                     )
                 )
 
@@ -281,7 +282,9 @@ class AddDidiViewModel @Inject constructor(
                     .indexOf(didiId)).section2Status,
                 transactionId = "",
                 serverId = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).serverId
+                    .indexOf(didiId)).serverId,
+                needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).needsToPostRanking
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
