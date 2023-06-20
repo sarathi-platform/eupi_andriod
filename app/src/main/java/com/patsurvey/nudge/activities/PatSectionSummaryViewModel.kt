@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity

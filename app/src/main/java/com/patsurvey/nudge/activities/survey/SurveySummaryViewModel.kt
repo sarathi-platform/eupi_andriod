@@ -93,7 +93,7 @@ class SurveySummaryViewModel @Inject constructor(
                     var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
                     var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     var surveyId =0
-
+                    val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
@@ -159,7 +159,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     languageId = prefRepo.getAppLanguageId()?:2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
-                                    userType = USER_CRP,
+                                    userType = userType,
                                     beneficiaryName= didi.name,
                                     answerDetailDTOList= qList,
                                     patSurveyStatus = didi.patSurveyStatus,

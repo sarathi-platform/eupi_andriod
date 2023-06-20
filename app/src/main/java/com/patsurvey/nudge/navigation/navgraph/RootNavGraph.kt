@@ -48,5 +48,5 @@ object Graph {
     const val SETTING_GRAPH = "setting_graph"
     const val LOGOUT_GRAPH = "logout_graph"
     const val VO_ENDORSEMENT_GRAPH = "vo_endorsement_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}"
-    const val BPC_DIDI_LIST_SCREEN_GRAPH = "bpc_didi_list_screen_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
+    const val BPC_GRAPH = "bpc_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"
 }

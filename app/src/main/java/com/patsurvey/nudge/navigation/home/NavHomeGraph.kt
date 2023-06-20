@@ -104,7 +104,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 navController = navController,
                 modifier = Modifier.fillMaxWidth(),
                 onNavigateToStep = { villageId, stepId ->
-                    navController.navigate("bpc_didi_list_screen_graph/$villageId/$stepId")
+                    navController.navigate("bpc_graph/$villageId/$stepId")
                 },
                 onNavigateToSetting = {
                     navController.navigate(Graph.SETTING_GRAPH)
@@ -430,7 +430,6 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
             ) {
-//                navController.popBackStack()
                 navController.popBackStack()
             }
         }
@@ -811,8 +810,8 @@ sealed class LogoutScreens(val route: String) {
 fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
 
     navigation(
-        route = Graph.BPC_DIDI_LIST_SCREEN_GRAPH,
-        startDestination = BpcDidiListScreens.BPC_DID_LIST.route,
+        route = Graph.BPC_GRAPH,
+        startDestination = BpcDidiListScreens.BPC_DIDI_LIST.route,
         arguments = listOf(navArgument(ARG_VILLAGE_ID) {
             type = NavType.IntType
         }, navArgument(ARG_STEP_ID) {
@@ -820,7 +819,7 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         })
     ) {
         composable(
-            route = BpcDidiListScreens.BPC_DID_LIST.route,
+            route = BpcDidiListScreens.BPC_DIDI_LIST.route,
             arguments = listOf(navArgument(ARG_VILLAGE_ID) {
                 type = NavType.IntType
             }, navArgument(ARG_STEP_ID) {
@@ -846,24 +845,119 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 forReplace = it.arguments?.getBoolean(ARG_FOR_REPLACEMENT) ?: false
             )
         }
+
+        composable(
+            route = BpcDidiListScreens.YES_NO_QUESTION_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
+            })
+        ) {
+            QuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SECTION_TWO_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionTwoSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(route = BpcDidiListScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
+        ) {
+            PatSurveyCompleteSummary(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_PAT_SURVEY, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
+        }
+
+        composable(route = BpcDidiListScreens.DIDI_PAT_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })){
+            PatDidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                patDidiSummaryViewModel = hiltViewModel(),
+            ) {
+                navController.popBackStack()
+            }
+        }
+
+
     }
 }
 
 sealed class BpcDidiListScreens(val route: String) {
-    object BPC_DID_LIST : BpcDidiListScreens(route = "bpc_did_list")
+    object BPC_DIDI_LIST : BpcDidiListScreens(route = "bpc_did_list")
 
     object BPC_ADD_MORE_DIDI_LIST : BpcDidiListScreens(route = "bpc_add_more_didi_list/{$ARG_FOR_REPLACEMENT}")
 
-    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
+    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
 
-    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
     object STEP_COMPLETION_SCREEN :
         BpcDidiListScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
     object PAT_SECTION_ONE_SUMMARY_SCREEN :
-        BpcDidiListScreens(route = "pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+        BpcDidiListScreens(route = "bpc_pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
-        BpcDidiListScreens(route = "pat_section_two_summary_screen/{$ARG_DIDI_ID}")
+        BpcDidiListScreens(route = "bpc_pat_section_two_summary_screen/{$ARG_DIDI_ID}")
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
     object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")

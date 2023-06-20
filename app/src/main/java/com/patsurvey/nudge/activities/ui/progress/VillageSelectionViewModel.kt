@@ -41,6 +41,7 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_REJECTED
@@ -66,6 +67,9 @@ import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CPR
+import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.videoList
@@ -430,6 +434,7 @@ class VillageSelectionViewModel @Inject constructor(
                                         val numAnswerList: ArrayList<NumericAnswerEntity> =
                                             arrayListOf()
                                         it.forEach { item ->
+                                            if (item.userType.equals(USER_BPC, true)) {
                                             didiDao.updatePATProgressStatus(
                                                 patSurveyStatus = item.patSurveyStatus ?: 0,
                                                 section1Status = item.section1Status ?: 0,
@@ -442,52 +447,62 @@ class VillageSelectionViewModel @Inject constructor(
                                                             QuestionType.Numeric_Field.name
                                                         ) == true
                                                     ) {
-                                                        answerList.add(
-                                                            SectionAnswerEntity(
-                                                                id = 0,
-                                                                optionId = 0,
-                                                                didiId = item.beneficiaryId ?: 0,
-                                                                questionId = answersItem?.questionId
-                                                                    ?: 0,
-                                                                villageId = item.villageId ?: 0,
-                                                                actionType = answersItem?.section
-                                                                    ?: TYPE_EXCLUSION,
-                                                                weight = 0,
-                                                                summary = answersItem?.summary,
-                                                                optionValue = answersItem?.options?.get(
-                                                                    0
-                                                                )?.optionValue,
-                                                                totalAssetAmount = answersItem?.totalWeight,
-                                                                needsToPost = false,
-                                                                answerValue = answersItem?.options?.get(
-                                                                    0
-                                                                )?.summary
-                                                                    ?: BLANK_STRING,
-                                                                type = answersItem?.questionType
-                                                                    ?: QuestionType.RadioButton.name
+
+                                                        if ((prefRepo.getPref(
+                                                                PREF_KEY_TYPE_NAME,
+                                                                ""
+                                                            ) ?: "").equals(
+                                                                BPC_USER_TYPE, true
                                                             )
-                                                        )
-
-                                                        if (answersItem?.options?.isNotEmpty() == true) {
-
-                                                            answersItem?.options?.forEach { optionItem ->
-                                                                numAnswerList.add(
-                                                                    NumericAnswerEntity(
-                                                                        id = 0,
-                                                                        optionId = optionItem?.optionId
-                                                                            ?: 0,
-                                                                        questionId = answersItem?.questionId
-                                                                            ?: 0,
-                                                                        weight = optionItem?.weight
-                                                                            ?: 0,
-                                                                        didiId = item.beneficiaryId
-                                                                            ?: 0,
-                                                                        count = optionItem?.count
-                                                                            ?: 0
-                                                                    )
+                                                        ) {
+                                                            answerList.add(
+                                                                SectionAnswerEntity(
+                                                                    id = 0,
+                                                                    optionId = 0,
+                                                                    didiId = item.beneficiaryId
+                                                                        ?: 0,
+                                                                    questionId = answersItem?.questionId
+                                                                        ?: 0,
+                                                                    villageId = item.villageId ?: 0,
+                                                                    actionType = answersItem?.section
+                                                                        ?: TYPE_EXCLUSION,
+                                                                    weight = 0,
+                                                                    summary = answersItem?.summary,
+                                                                    optionValue = answersItem?.options?.get(
+                                                                        0
+                                                                    )?.optionValue,
+                                                                    totalAssetAmount = answersItem?.totalWeight,
+                                                                    needsToPost = false,
+                                                                    answerValue = answersItem?.options?.get(
+                                                                        0
+                                                                    )?.summary
+                                                                        ?: BLANK_STRING,
+                                                                    type = answersItem?.questionType
+                                                                        ?: QuestionType.RadioButton.name
                                                                 )
-                                                            }
+                                                            )
 
+                                                            if (answersItem?.options?.isNotEmpty() == true) {
+
+                                                                answersItem?.options?.forEach { optionItem ->
+                                                                    numAnswerList.add(
+                                                                        NumericAnswerEntity(
+                                                                            id = 0,
+                                                                            optionId = optionItem?.optionId
+                                                                                ?: 0,
+                                                                            questionId = answersItem?.questionId
+                                                                                ?: 0,
+                                                                            weight = optionItem?.weight
+                                                                                ?: 0,
+                                                                            didiId = item.beneficiaryId
+                                                                                ?: 0,
+                                                                            count = optionItem?.count
+                                                                                ?: 0
+                                                                        )
+                                                                    )
+                                                                }
+
+                                                            }
                                                         }
                                                     } else {
                                                         answerList.add(
@@ -522,7 +537,7 @@ class VillageSelectionViewModel @Inject constructor(
 
                                                 }
                                             }
-
+                                        }
                                         }
                                         if (answerList.isNotEmpty()) {
                                             answerDao.insertAll(answerList)
@@ -1075,6 +1090,9 @@ class VillageSelectionViewModel @Inject constructor(
                             prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName)
                             villageListDao.insertAll(it.villageList)
                             _villagList.emit(villageListDao.getAllVillages())
+                            if (it.typeName.equals(BPC_USER_TYPE, true)){
+                                prefRepo.setIsUserBPC(true)
+                            }
                             apiSuccess()
                         }
 
