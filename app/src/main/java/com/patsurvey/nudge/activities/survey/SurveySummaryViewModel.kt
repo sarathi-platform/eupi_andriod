@@ -59,10 +59,18 @@ class SurveySummaryViewModel @Inject constructor(
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
-                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(isDidiRankingSynced,didiDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(isDidiPATSynced,answerDao, didiDao, prefRepo)
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
+                    isTolaSynced.value =it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao){
+                    isDidiPATSynced.value=it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao){
+                    isDidiRankingSynced.value=it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(answerDao, didiDao, prefRepo){
+                    isDidiPATSynced.value=it
+                }
                 notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }
@@ -83,6 +91,7 @@ class SurveySummaryViewModel @Inject constructor(
                 withContext(Dispatchers.IO){
                     var optionList= emptyList<OptionsItem>()
                     var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     var surveyId =0
 
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
@@ -137,6 +146,11 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
 
                             }
+                            scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment = didi.comment,
+                                type = PAT_SURVEY,
+                                result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
                             answeredDidiList.add(
                                 PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
@@ -166,7 +180,9 @@ class SurveySummaryViewModel @Inject constructor(
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
+                                apiService.updateDidiScore(scoreDidiList)
                             }
+
 
                         }
 

@@ -114,4 +114,9 @@ interface ApiService {
     @POST("/auth-api/user/logout")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun performLogout() : ApiResponseModel<String>
+
+    @POST("/write-api/beneficiary/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun updateDidiScore(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>
+
 }

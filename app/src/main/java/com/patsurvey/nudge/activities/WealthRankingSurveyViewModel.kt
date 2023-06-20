@@ -69,8 +69,12 @@ class WealthRankingSurveyViewModel @Inject constructor(
         selectedVillage = prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
-        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
-        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(tolaDao){
+            isTolaSynced.value=it
+        }
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(didiDao){
+            isDidiSynced.value = it
+        }
     }
 
     fun fetchDidisFromDB() {
@@ -233,12 +237,14 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                             EditDidiWealthRankingRequest(
                                                 didi.id,
                                                 StepType.WEALTH_RANKING.name,
-                                                didi.wealth_ranking
+                                                didi.wealth_ranking,
+                                                localModifiedDate = System.currentTimeMillis()?:0
                                             ),
                                             EditDidiWealthRankingRequest(
                                                 didi.id,
                                                 StepType.SOCIAL_MAPPING.name,
-                                                StepStatus.COMPLETED.name
+                                                StepStatus.COMPLETED.name,
+                                                localModifiedDate = System.currentTimeMillis()?:0
                                             )
                                         )
                                     )

@@ -11,6 +11,7 @@ data class EditCohortRequest(
     @SerializedName("name") var name: String,
     @SerializedName("type") var type : String,
     @SerializedName("villageId") var villageId : Int,
+    @SerializedName("localModifiedDate") var localModifiedDate : Long,
 ) {
 
     companion object {
@@ -21,7 +22,8 @@ data class EditCohortRequest(
                 name = tola.name,
                 type = tola.type,
                 villageId = tola.villageId,
-                id = tola.id
+                id = tola.id,
+                localModifiedDate = tola.localModifiedDate ?:0
             )
         }
     }
@@ -34,6 +36,7 @@ data class EditCohortRequest(
         jsonObject.addProperty("type", type)
         jsonObject.addProperty("villageId", villageId)
         jsonObject.addProperty("id", id)
+        jsonObject.addProperty("localModifiedDate", localModifiedDate)
         return jsonObject
     }
 }

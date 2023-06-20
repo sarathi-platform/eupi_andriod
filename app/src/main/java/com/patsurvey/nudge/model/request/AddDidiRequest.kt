@@ -12,7 +12,9 @@ data class AddDidiRequest(
     @SerializedName("relationship") var relationship : String,
     @SerializedName("castName") var castName : String,
     @SerializedName("castId") var castId : Int,
-    @SerializedName("cohortId") var cohortId : Int
+    @SerializedName("cohortId") var cohortId : Int,
+    @SerializedName("localCreatedDate") var localCreatedDate : Long,
+    @SerializedName("localModifiedDate") var localModifiedDate : Long,
 ) {
 
     companion object {
@@ -24,7 +26,9 @@ data class AddDidiRequest(
                 relationship=didi.relationship,
                 castName=didi.castName?: BLANK_STRING,
                 castId=didi.castId,
-                cohortId=didi.cohortId
+                cohortId=didi.cohortId,
+                localModifiedDate = didi.localModifiedDate?:0,
+                localCreatedDate = didi.localCreatedDate ?:0
             )
         }
     }
@@ -38,6 +42,8 @@ data class AddDidiRequest(
         jsonObject.addProperty("castName", castName)
         jsonObject.addProperty("castId", castId)
         jsonObject.addProperty("cohortId", cohortId)
+        jsonObject.addProperty("localCreatedDate", localCreatedDate)
+        jsonObject.addProperty("localModifiedDate", localModifiedDate)
         return jsonObject
     }
 
