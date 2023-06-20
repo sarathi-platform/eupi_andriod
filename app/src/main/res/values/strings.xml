@@ -237,5 +237,7 @@
     <string name="step_5">Step 5</string>
     <string name="vo_endorsement">VO Endorsement</string>
     <string name="close">Close</string>
+    <string name="add_more">Add More</string>
+    <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
 
 </resources>

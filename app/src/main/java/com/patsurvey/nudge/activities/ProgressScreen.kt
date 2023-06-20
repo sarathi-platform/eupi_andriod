@@ -633,6 +633,7 @@ fun VillageSelectorDropDown(
             Text(
                 text = selectedText,
                 color = blueDark,
+                style = mediumTextStyle,
             )
             Icon(
                 painterResource(id = R.drawable.baseline_keyboard_arrow_down),

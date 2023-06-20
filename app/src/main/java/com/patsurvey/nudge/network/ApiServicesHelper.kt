@@ -1,9 +1,13 @@
 package com.patsurvey.nudge.network
 
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.ApiType.BPC_DIDI_LIST_API
+import com.patsurvey.nudge.utils.ApiType.BPC_SUMMARY_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
 import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
+import com.patsurvey.nudge.utils.ApiType.PAT_BPC_QUESTION_API
+import com.patsurvey.nudge.utils.ApiType.PAT_BPC_SURVEY_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_QUESTION_API
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_SURVEY_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.STEP_LIST_API
@@ -11,6 +15,7 @@ import com.patsurvey.nudge.utils.ApiType.TOLA_LIST_API
 import com.patsurvey.nudge.utils.ApiType.VALIDATE_OTP_API
 import com.patsurvey.nudge.utils.ApiType.VILLAGE_LIST_API
 import com.patsurvey.nudge.utils.ApiType.WORK_FLOW_API
+
 
 object ApiServicesHelper {
 
@@ -42,18 +47,24 @@ object ApiServicesHelper {
 
     const val SUBPATH_CALLBACK_STATUS = "/read-api/callback/status"
 
+    const val SUBPATH_GET_BPC_SUMMARY = "/read-api/bpc/view-summary"
+    const val SUBPATH_GET_BPC_DIDI_LIST = "/write-api/bpc/beneficiary-list"
+
     fun getApiSubPath (api: ApiType): String {
         return when(api) {
             STEP_LIST_API -> SUBPATH_STEP_LIST
             TOLA_LIST_API -> SUBPATH_GET_COHORT
             DIDI_LIST_API -> SUBPATH_GET_DIDI
             DIDI_RANKING_API -> SUBPATH_GET_DIDI
-            PAT_CRP_QUESTION_API -> SUBPATH_GET_PAT_QUESTION
-            PAT_CRP_SURVEY_SUMMARY -> SUBPATH_GET_PAT_SUMMARY
+            PAT_CRP_QUESTION_API, PAT_BPC_QUESTION_API -> SUBPATH_GET_PAT_QUESTION
+            PAT_CRP_SURVEY_SUMMARY, PAT_BPC_SURVEY_SUMMARY -> SUBPATH_GET_PAT_SUMMARY
             WORK_FLOW_API -> SUBPATH_EDIT_WORKFLOW
             VILLAGE_LIST_API -> SUBPATH_USER_VILLAGE_LIST
             VALIDATE_OTP_API -> SUBPATH_AUTH_VALIDATE_OTP
             GENERATE_OTP_API -> SUBPATH_AUTH_GENERATE_OTP
+            BPC_SUMMARY_API -> SUBPATH_GET_BPC_SUMMARY
+            BPC_DIDI_LIST_API -> SUBPATH_GET_BPC_DIDI_LIST
+
         }
     }
 

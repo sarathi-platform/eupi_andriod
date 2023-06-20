@@ -138,16 +138,19 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 downloader = AndroidDownloader(applicationContext)
 
                 RetryHelper.init(
-                    mViewModel.prefRepo,
-                    mViewModel.apiService,
-                    mViewModel.tolaDao,
-                    mViewModel.stepsListDao,
-                    mViewModel.villegeListDao,
-                    mViewModel.didiDao,
-                    mViewModel.answerDao,
-                    mViewModel.numericAnswerDao,
-                    mViewModel.questionDao,
-                    mViewModel.casteListDao
+                    prefRepo = mViewModel.prefRepo,
+                    apiService = mViewModel.apiService,
+                    tolaDao = mViewModel.tolaDao,
+                    stepsListDao = mViewModel.stepsListDao,
+                    villageListDao = mViewModel.villegeListDao,
+                    didiDao = mViewModel.didiDao,
+                    answerDao = mViewModel.answerDao,
+                    numericAnswerDao = mViewModel.numericAnswerDao,
+                    questionDao = mViewModel.questionDao,
+                    castListDao = mViewModel.casteListDao,
+                    bpcSummaryDao = mViewModel.bpcSummaryDao,
+                    bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
+                    bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
                 )
 
                 AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo)
