@@ -266,7 +266,6 @@ fun BpcAddMoreDidiScreen(
                                 isForReplace = forReplace,
                                 expandedIds = expandedIds,
                                 isCheckedIds = isCheckedIds,
-                                isSelectedId = isSelectedId.value,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)){
                                         expandedIds.remove(didiDetailModel.id)
@@ -276,7 +275,9 @@ fun BpcAddMoreDidiScreen(
                                 },
                                 onItemClick = { isChecked, didi ->
                                     if (forReplace) {
-                                        isSelectedId.value = didi.id
+                                        isCheckedIds.clear()
+                                        isCheckedIds.add(didi.id)
+
                                     } else {
                                         if (isCheckedIds.contains(didi.id)) {
                                             isCheckedIds.remove(didi.id)
@@ -307,7 +308,6 @@ fun BpcAddMoreDidiScreen(
                                 expanded = expandedIds.contains(didi.id),
                                 modifier = modifier,
                                 isChecked = isCheckedIds.contains(didi.id),
-                                isSelectedForReplace = isSelectedId.value == didi.id,
                                 isForReplace = forReplace,
                                 onExpendClick = { expand, didiDetailModel ->
                                     if (expandedIds.contains(didiDetailModel.id)){
@@ -318,7 +318,8 @@ fun BpcAddMoreDidiScreen(
                                 },
                                 onItemClick = { isChecked, didi ->
                                     if (forReplace) {
-                                        isSelectedId.value = didi.id
+                                        isCheckedIds.clear()
+                                        isCheckedIds.add(didi.id)
                                     } else {
                                         if (isCheckedIds.contains(didi.id)){
                                             isCheckedIds.remove(didi.id)
@@ -370,7 +371,6 @@ fun ExpandableDidiItemCardForBpc(
     expanded: Boolean,
     modifier: Modifier,
     isChecked: Boolean,
-    isSelectedForReplace: Boolean,
     isForReplace: Boolean,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
@@ -378,9 +378,6 @@ fun ExpandableDidiItemCardForBpc(
 
     val isChecked = remember { mutableStateOf(isChecked) }
 
-    val isSelected = remember {
-        mutableStateOf(isSelectedForReplace)
-    }
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -479,10 +476,10 @@ fun ExpandableDidiItemCardForBpc(
 
         if (isForReplace) {
             RadioButton(
-                selected = isSelected.value,
+                selected = isChecked.value,
                 onClick = {
-                          isSelected.value = !isSelected.value
-                    onItemClick(isSelected.value, didi)
+                    isChecked.value = true
+                    onItemClick(isChecked.value, didi)
                 },
                 enabled = true,
                 colors = RadioButtonDefaults.colors(
@@ -818,7 +815,6 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
     isForReplace: Boolean,
     expandedIds: List<Int>,
     isCheckedIds: List<Int>,
-    isSelectedId: Int,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
@@ -870,7 +866,6 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
                     modifier = modifier,
                     isForReplace = isForReplace,
                     isChecked = isCheckedIds.contains(didi.id),
-                    isSelectedForReplace = isSelectedId == didi.id,
                     onExpendClick = { expand, didiDetailModel ->
                        onExpendClick(expand, didiDetailModel)
                     },
