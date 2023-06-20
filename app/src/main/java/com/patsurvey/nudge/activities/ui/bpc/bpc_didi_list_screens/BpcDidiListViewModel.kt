@@ -65,8 +65,22 @@ class BpcDidiListViewModel @Inject constructor(
     fun fetchDidiFromDb() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localSeletctedDidiList = bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-//            val localUnselectedDidiList = bpcNonSelectedDidiDao.fetchAllNonSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
+            val localUnselectedDidiList = bpcNonSelectedDidiDao.fetchAllNonSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
             _selectedDidiList.value = localSeletctedDidiList
+            val filterdNonSelectedList = localUnselectedDidiList.filter { it.isAlsoSelected }
+            if (filterdNonSelectedList.isNotEmpty()) {
+                _selectedDidiList.value = _selectedDidiList.value.toMutableList().also { selectedList ->
+                    val selectedDidisFromBackupList = mutableListOf<BpcSelectedDidiEntity>()
+                    filterdNonSelectedList.forEach {
+                        selectedDidisFromBackupList.add(
+                            BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
+                                it
+                            )
+                        )
+                    }
+                    selectedList.addAll(selectedDidisFromBackupList)
+                }
+            }
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
             filterDidiList = selectedDidiList.value
             pendingDidiCount.value = bpcSelectedDidiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)

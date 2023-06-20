@@ -48,10 +48,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -88,6 +90,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -220,10 +223,10 @@ fun BpcAddMoreDidiScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.fillMaxWidth()
                         ) {
-                            val count = newFilteredDidiList.size
+                            val count = isCheckedIds.size
                             Text(
                                 text = stringResource(
-                                    id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
+                                    id = if (count > 1) R.string.didi_selected_text_plural else R.string.didi_selected_text_singular,
                                     count
                                 ),
                                 color = Color.Black,
@@ -311,6 +314,29 @@ fun BpcAddMoreDidiScreen(
                     }
                 }
             }
+        }
+
+        if (isCheckedIds.isNotEmpty()) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .shadow(10.dp)
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                negativeButtonRequired = false,
+                positiveButtonText = stringResource(id = R.string.confirm_text),
+                positiveButtonOnClick = {
+                    bpcAddMoreDidiViewModel.markCheckedDidisSelected(isCheckedIds)
+                    navController.popBackStack()
+                },
+                negativeButtonOnClick = {}
+            )
         }
     }
 }

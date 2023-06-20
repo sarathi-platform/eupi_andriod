@@ -95,4 +95,38 @@ data class BpcSelectedDidiEntity(
 
     @ColumnInfo(name = "transactionId")
     var transactionId: String? = ""
-)
+) {
+    companion object {
+        fun getSelectedDidiEntityFromNonSelectedEntity(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): BpcSelectedDidiEntity {
+            return BpcSelectedDidiEntity(
+                id = nonSelectedDidiEntity.id,
+                serverId = nonSelectedDidiEntity.serverId,
+                name = nonSelectedDidiEntity.name,
+                castName = nonSelectedDidiEntity.castName,
+                castId = nonSelectedDidiEntity.castId,
+                address = nonSelectedDidiEntity.address,
+                guardianName = nonSelectedDidiEntity.guardianName,
+                relationship = nonSelectedDidiEntity.relationship,
+                cohortId = nonSelectedDidiEntity.cohortId,
+                cohortName = nonSelectedDidiEntity.cohortName,
+                villageId = nonSelectedDidiEntity.villageId,
+                wealth_ranking = nonSelectedDidiEntity.wealth_ranking,
+                needsToPost = nonSelectedDidiEntity.needsToPost,
+                localPath = nonSelectedDidiEntity.localPath,
+                createdDate = nonSelectedDidiEntity.createdDate,
+                modifiedDate = nonSelectedDidiEntity.modifiedDate,
+                activeStatus = nonSelectedDidiEntity.activeStatus,
+                needsToPostDeleteStatus = nonSelectedDidiEntity.needsToPostDeleteStatus,
+                beneficiaryProcessStatus = nonSelectedDidiEntity.beneficiaryProcessStatus,
+                patSurveyStatus = nonSelectedDidiEntity.patSurveyStatus,
+                section1Status = nonSelectedDidiEntity.section1Status,
+                section2Status = nonSelectedDidiEntity.section2Status,
+                shgFlag = nonSelectedDidiEntity.shgFlag,
+                voEndorsementStatus = nonSelectedDidiEntity.voEndorsementStatus,
+                forVoEndorsement = nonSelectedDidiEntity.forVoEndorsement,
+                needsToPostPAT = nonSelectedDidiEntity.needsToPostPAT,
+                transactionId = nonSelectedDidiEntity.transactionId
+            )
+        }
+    }
+}

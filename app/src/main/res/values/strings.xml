@@ -240,4 +240,7 @@
     <string name="add_more">Add More</string>
     <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
 
+    <string name="didi_selected_text_singular">Didi Selected</string>
+    <string name="didi_selected_text_plural">Didis Selected</string>
+
 </resources>

@@ -207,7 +207,7 @@
     <string name="endorse">समर्थन</string>
 
     <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
-    <string name="confirm_text">पुष्टि करना</string>
+    <string name="confirm_text">पुष्टि करें</string>
     <string name="finish">समाप्त करें</string>
 
 
@@ -248,4 +248,7 @@
     <string name="no_didis_availble_for_vo_endorsement">वीओ एंडोर्समेंट के लिए कोई दीदी उपलब्ध नहीं है।</string>
     <string name="add_more">अधिक जोड़ें</string>
     <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
+
+    <string name="didi_selected_text_singular">दीदी को चुना गया</string>
+    <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
 </resources>
