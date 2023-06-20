@@ -192,7 +192,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set score =:score, comment=:comment,isDidiAccepted=:isDidiAccepted  WHERE id=:didiId ")
     fun updateDidiScore(score: Double,comment:String,isDidiAccepted:Boolean,didiId: Int)
 
-    @Query("SELECT * from $DIDI_TABLE where forVoEndorsement = 1 and villageId=:villageId")
+    @Query("SELECT * from $DIDI_TABLE where forVoEndorsement = 1 AND villageId=:villageId ORDER BY localCreatedDate DESC ")
     fun fetchVOEndorseStatusDidi(villageId: Int): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE set localModifiedDate =:localModifiedDate WHERE id=:didiId ")
