@@ -14,13 +14,13 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.DidiStatus
@@ -153,8 +153,8 @@ class TransectWalkViewModel @Inject constructor(
                 serverId = tola.serverId,
                 needsToPost = false,
                 transactionId = "",
-                createdDate = tola.createdDate,
-                modifiedDate = tola.modifiedDate,
+                createdDate = tola.createdDate?:0L,
+                modifiedDate = tola.modifiedDate?:0L
 
             )
         }
@@ -239,10 +239,9 @@ class TransectWalkViewModel @Inject constructor(
                 createdDate = tolaList.value[getIndexOfTola(id)].createdDate,
                 modifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                serverId = tolaList.value[getIndexOfTola(id)].serverId
+                serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate=tolaList.value[getIndexOfTola(id)].localCreatedDate,
-                localModifiedDate=System.currentTimeMillis(),
-                transactionId = ""
+                localModifiedDate=System.currentTimeMillis()
             )
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)

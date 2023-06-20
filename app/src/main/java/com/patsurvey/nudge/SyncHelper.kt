@@ -438,8 +438,8 @@ class SyncHelper (
                 serverId = tola.serverId,
                 needsToPost = false,
                 transactionId = "",
-                createdDate = tola.createdDate,
-                modifiedDate = tola.modifiedDate
+                createdDate = tola.createdDate?:0L,
+                modifiedDate = tola.modifiedDate?:0L
             )
         }
         deleteTolaToNetwork(networkCallbackListener)
@@ -497,7 +497,7 @@ class SyncHelper (
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
                 for (tola in tolaList) {
-                    jsonTola.add(DeleteTolaRequest(tola.id).toJson())
+                    jsonTola.add(DeleteTolaRequest(tola.serverId, localModifiedDate = System.currentTimeMillis()).toJson())
                 }
                 Log.e("tola need to post","$tolaList.size")
                 val response = apiService.deleteCohort(jsonTola)
@@ -803,65 +803,71 @@ class SyncHelper (
         var optionList= emptyList<OptionsItem>()
         val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
         var surveyId =0
-        didiIDList.forEach { didi->
+        didiIDList.forEachIndexed { index, didi ->
             Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
             val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
-            if(needToPostQuestionsList.isNotEmpty()){
+            val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
+            if (needToPostQuestionsList.isNotEmpty()) {
                 needToPostQuestionsList.forEach {
-                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
-                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
-                        optionList= listOf(
-                            OptionsItem(optionId = it.optionId,
+                    surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
+                    if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
+                        optionList = listOf(
+                            OptionsItem(
+                                optionId = it.optionId,
                                 optionValue = it.optionValue,
                                 count = 0,
                                 summary = it.summary,
                                 display = it.answerValue,
                                 weight = 0,
-                                isSelected = false)
+                                isSelected = false
+                            )
                         )
-                    }else{
-                        val numOptionList=numericAnswerDao.getSingleQueOptions(it.questionId,it.didiId)
+                    } else {
+                        val numOptionList =
+                            numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
                         val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
-                        if(numOptionList.isNotEmpty()){
-                            numOptionList.forEach { numOption->
+                        if (numOptionList.isNotEmpty()) {
+                            numOptionList.forEach { numOption ->
                                 tList.add(
-                                    OptionsItem(optionId = numOption.optionId,
+                                    OptionsItem(
+                                        optionId = numOption.optionId,
                                         optionValue = 0,
                                         count = numOption.count,
                                         summary = it.summary,
                                         display = it.answerValue,
                                         weight = numOption.weight,
-                                        isSelected = false)
+                                        isSelected = false
+                                    )
                                 )
                             }
-                            optionList=tList
+                            optionList = tList
                         }
 
                     }
                     try {
                         qList.add(
                             AnswerDetailDTOListItem(
-                                questionId =it.questionId,
+                                questionId = it.questionId,
                                 section = it.actionType,
-                                options = optionList)
+                                options = optionList
+                            )
                         )
-                    }catch (e:Exception){
+                    } catch (e: Exception) {
                         e.printStackTrace()
                     }
                 }
             }
             answeredDidiList.add(
                 PATSummarySaveRequest(
-                    villageId= prefRepo.getSelectedVillage().id,
-                    surveyId=surveyId,
+                    villageId = prefRepo.getSelectedVillage().id,
+                    surveyId = surveyId,
                     beneficiaryId = didi.serverId,
-                    languageId = prefRepo.getAppLanguageId()?:2,
+                    languageId = prefRepo.getAppLanguageId() ?: 2,
                     stateId = prefRepo.getSelectedVillage().stateId,
                     totalScore = 0,
                     userType = USER_CRP,
-                    beneficiaryName= didi.name,
-                    answerDetailDTOList= qList,
+                    beneficiaryName = didi.name,
+                    answerDetailDTOList = qList,
                     patSurveyStatus = didi.patSurveyStatus,
                     section2Status = didi.section2Status,
                     section1Status = didi.section1Status

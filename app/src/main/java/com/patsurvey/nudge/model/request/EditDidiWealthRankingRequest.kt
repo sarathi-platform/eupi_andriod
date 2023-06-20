@@ -4,6 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.utils.BLANK_STRING
 
+
 data class EditDidiWealthRankingRequest(
     @SerializedName("id") var id: Int,
     @SerializedName("type") var type: String,
