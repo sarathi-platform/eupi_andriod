@@ -958,9 +958,9 @@ sealed class BpcDidiListScreens(val route: String) {
         BpcDidiListScreens(route = "bpc_pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         BpcDidiListScreens(route = "bpc_pat_section_two_summary_screen/{$ARG_DIDI_ID}")
-    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
-    object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+    object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
     object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 

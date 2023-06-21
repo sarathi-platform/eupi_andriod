@@ -307,7 +307,7 @@ fun BpcDidiListScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-
+                    navController.navigate("bpc_pat_survey_summary/$stepId/true")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
@@ -511,7 +511,7 @@ fun DidiItemCardForBpc(
                     .padding(vertical = 10.dp)
                     .padding(horizontal = 20.dp)
                     .clickable {
-                        navController.navigate("pat_complete_didi_summary_screen/${didi.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
+                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
                     }
                     .then(modifier),
                     horizontalArrangement = Arrangement.SpaceBetween

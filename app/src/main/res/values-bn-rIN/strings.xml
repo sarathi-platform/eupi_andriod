@@ -256,9 +256,11 @@
 
     <string name="add_more">अधिक जोड़ें</string>
     <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
+    <string name="do_you_want_to_submit_list_for_final_vo_submission">আপনি কি চূড়ান্ত VO জমা দেওয়ার জন্য তালিকা জমা দিতে চান?</string>
 
     <string name="didi_selected_text_singular">दीदी को चुना गया</string>
     <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
     <string name="didi_replace_button">दीदी को बदलो</string>
+    <string name="submit_pat_verification">PAT যাচাইকরণ জমা দিন</string>
 
 </resources>

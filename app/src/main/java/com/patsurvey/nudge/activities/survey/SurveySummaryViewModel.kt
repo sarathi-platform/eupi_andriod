@@ -52,7 +52,6 @@ class SurveySummaryViewModel @Inject constructor(
     val isDidiPATSynced = mutableStateOf(0)
     init {
         fetchDidisFromDB()
-
     }
 
     fun fetchDidisFromDB(){
@@ -93,11 +92,9 @@ class SurveySummaryViewModel @Inject constructor(
                     var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
                     var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     var surveyId =0
-                    val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
-                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -130,7 +127,6 @@ class SurveySummaryViewModel @Inject constructor(
                                             }
                                             optionList=tList
                                         }
-
                                     }
                                     try {
                                         qList.add(
@@ -142,14 +138,12 @@ class SurveySummaryViewModel @Inject constructor(
                                     }catch (e:Exception){
                                         e.printStackTrace()
                                     }
-
                                 }
-
                             }
                             scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
                                 score = didi.score,
                                 comment = didi.comment,
-                                type = PAT_SURVEY,
+                                type = if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                 result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
                             answeredDidiList.add(
                                 PATSummarySaveRequest(
@@ -159,7 +153,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     languageId = prefRepo.getAppLanguageId()?:2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
-                                    userType = userType,
+                                    userType = if(prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     beneficiaryName= didi.name,
                                     answerDetailDTOList= qList,
                                     patSurveyStatus = didi.patSurveyStatus,

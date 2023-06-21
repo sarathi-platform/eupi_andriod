@@ -249,9 +249,11 @@
     <string name="no_didis_availble_for_vo_endorsement">वीओ एंडोर्समेंट के लिए कोई दीदी उपलब्ध नहीं है।</string>
     <string name="add_more">अधिक जोड़ें</string>
     <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
+    <string name="do_you_want_to_submit_list_for_final_vo_submission">क्या आप सूची सबमिट करना चाहते हैं अंतिम वीओ सबमिशन के लिए?</string>
 
     <string name="didi_selected_text_singular">दीदी को चुना गया</string>
     <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
     <string name="didi_replace_button">दीदी को बदलो</string>
+    <string name="submit_pat_verification">पीएटी सत्यापन जमा करें</string>
 
 </resources>

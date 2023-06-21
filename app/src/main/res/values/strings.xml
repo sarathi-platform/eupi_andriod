@@ -239,9 +239,11 @@
     <string name="close">Close</string>
     <string name="add_more">Add More</string>
     <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
+    <string name="do_you_want_to_submit_list_for_final_vo_submission">Do you want to submit the list for final VO submission ?</string>
 
     <string name="didi_selected_text_singular">Didi Selected</string>
     <string name="didi_selected_text_plural">Didis Selected</string>
     <string name="didi_replace_button">Replace</string>
+    <string name="submit_pat_verification">Submit PAT Verification</string>
 
 </resources>

@@ -113,6 +113,18 @@ data class DidiEntity(
     @ColumnInfo(name = "score")
     var score: Double? = 0.0,
 
+    @ColumnInfo(name = "crpScore")
+    var crpScore: Double? = 0.0,
+
+    @ColumnInfo(name = "bpcScore")
+    var bpcScore: Double? = 0.0,
+
+    @ColumnInfo(name = "bpcComment")
+    var bpcComment: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "crpComment")
+    var crpComment: String? = BLANK_STRING,
+
     @ColumnInfo(name = "comment")
     var comment: String? = BLANK_STRING,
 
