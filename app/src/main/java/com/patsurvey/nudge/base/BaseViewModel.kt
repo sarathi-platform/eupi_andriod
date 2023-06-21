@@ -6,6 +6,8 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
+import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiResponseFailException
@@ -26,7 +28,10 @@ import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -35,6 +40,9 @@ abstract class BaseViewModel : ViewModel(){
 
     val tokenExpired = RetryHelper.tokenExpired
     val baseOtpNumber = mutableStateOf("")
+
+    var didiToBeReplaced: Pair<Int, Int> = Pair(-1, -1)
+    var didiForReplacement: BpcNonSelectedDidiEntity? = null
 
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
@@ -156,5 +164,15 @@ abstract class BaseViewModel : ViewModel(){
             else -> onServerError(ErrorModelWithApi(-1, apiName = api, e.message))
         }
     }
+
+    open fun removeDidiFromSelectedList(bpcSelectedDidiDao: BpcSelectedDidiDao, ){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
+                bpcSelectedDidiDao.markDidiSelected(didiToBeReplaced.second, false)
+            }
+        }
+    }
+
+
 }
 

@@ -84,6 +84,9 @@ data class BpcNonSelectedDidiEntity(
     @ColumnInfo(name = "shgFlag")
     var shgFlag: Int,
 
+    @ColumnInfo(name = "isAlsoSelected")
+    var isAlsoSelected: Boolean = false,
+
     @ColumnInfo(name = "voEndorsementStatus")
     var voEndorsementStatus: Int = 0,
 

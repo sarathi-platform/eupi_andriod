@@ -36,6 +36,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.Checkbox
 import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.Divider
+import androidx.compose.material.RadioButton
+import androidx.compose.material.RadioButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -48,10 +50,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
@@ -79,6 +84,7 @@ import com.patsurvey.nudge.activities.ui.theme.checkBoxUncheckedColor
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
@@ -88,6 +94,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -125,6 +132,13 @@ fun BpcAddMoreDidiScreen(
     val isCheckedIds = remember {
         mutableStateListOf<Int>()
     }
+
+    val isSelectedId = remember {
+        mutableStateOf<Int>(-1)
+    }
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
 
     LaunchedEffect(key1 = Unit) {
         bpcAddMoreDidiViewModel.fetchDidiFromDb()
@@ -214,103 +228,161 @@ fun BpcAddMoreDidiScreen(
                         )
                     }
 
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            val count = newFilteredDidiList.size
+                    if (newFilteredDidiList.isEmpty()) {
+                        item {
                             Text(
-                                text = stringResource(
-                                    id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
-                                    count
-                                ),
-                                color = Color.Black,
-                                fontSize = 12.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Start,
+                                text = "No more Didi's available to add or replace.",
+                                textAlign = TextAlign.Center,
+                                style = largeTextStyle,
+                                color = textColorDark,
                                 modifier = Modifier
-                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                                    .padding(start = 4.dp)
-                                    .weight(0.75f)
+                                    .fillMaxWidth()
+                                    .padding(vertical = (screenHeight / 4).dp)
                             )
                         }
-                    }
+                    } else {
 
-                    item {
-                        Spacer(modifier = Modifier
-                            .height(14.dp)
-                            .fillMaxWidth())
-                    }
-
-                    if (filterSelected) {
-                        itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
-                        ) { index, didiKey ->
-
-                            ShowDidisFromTolaForBpcAddMoreScreen(
-                                didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey] ?: emptyList(),
-                                modifier = modifier,
-                                expandedIds = expandedIds,
-                                isCheckedIds = isCheckedIds,
-                                onExpendClick = { expand, didiDetailModel ->
-                                    if (expandedIds.contains(didiDetailModel.id)){
-                                        expandedIds.remove(didiDetailModel.id)
-                                    } else {
-                                        expandedIds.add(didiDetailModel.id)
-                                    }
-                                },
-                                onItemClick = { isChecked, didi ->
-                                if (isCheckedIds.contains(didi.id)){
-                                        isCheckedIds.remove(didi.id)
-                                    } else {
-                                        isCheckedIds.add(didi.id)
-                                    }
-                                }
-                            )
-
-                            if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        top = 22.dp,
-                                        bottom = 1.dp
-                                    )
+                        item {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                val count = isCheckedIds.size
+                                Text(
+                                    text = stringResource(
+                                        id = if (count > 1) R.string.didi_selected_text_plural else R.string.didi_selected_text_singular,
+                                        count
+                                    ),
+                                    color = Color.Black,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier
+                                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                        .padding(start = 4.dp)
+                                        .weight(0.75f)
                                 )
                             }
                         }
-                    } else {
-                        itemsIndexed(newFilteredDidiList) { index, didi ->
-                            ExpandableDidiItemCardForBpc(
-                                didi = didi,
-                                expanded = expandedIds.contains(didi.id),
-                                modifier = modifier,
-                                isChecked = isCheckedIds.contains(didi.id),
-                                onExpendClick = { expand, didiDetailModel ->
-                                    if (expandedIds.contains(didiDetailModel.id)){
-                                        expandedIds.remove(didiDetailModel.id)
-                                    } else {
-                                        expandedIds.add(didiDetailModel.id)
-                                    }
-                                },
-                                onItemClick = { isChecked, didi ->
-                                    if (isCheckedIds.contains(didi.id)){
-                                        isCheckedIds.remove(didi.id)
-                                    } else {
-                                        isCheckedIds.add(didi.id)
-                                    }
-                                }
+
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(14.dp)
+                                    .fillMaxWidth()
                             )
+                        }
+
+                        if (filterSelected) {
+                            itemsIndexed(
+                                newFilteredTolaDidiList.keys.toList().reversed()
+                            ) { index, didiKey ->
+
+                                ShowDidisFromTolaForBpcAddMoreScreen(
+                                    didiTola = didiKey,
+                                    didiList = newFilteredTolaDidiList[didiKey] ?: emptyList(),
+                                    modifier = modifier,
+                                    isForReplace = forReplace,
+                                    expandedIds = expandedIds,
+                                    isCheckedIds = isCheckedIds,
+                                    onExpendClick = { expand, didiDetailModel ->
+                                        if (expandedIds.contains(didiDetailModel.id)) {
+                                            expandedIds.remove(didiDetailModel.id)
+                                        } else {
+                                            expandedIds.add(didiDetailModel.id)
+                                        }
+                                    },
+                                    onItemClick = { isChecked, didi ->
+                                        if (forReplace) {
+                                            isCheckedIds.clear()
+                                            isCheckedIds.add(didi.id)
+
+                                        } else {
+                                            if (isCheckedIds.contains(didi.id)) {
+                                                isCheckedIds.remove(didi.id)
+                                            } else {
+                                                isCheckedIds.add(didi.id)
+                                            }
+                                        }
+                                    }
+                                )
+
+                                if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                    Divider(
+                                        color = borderGreyLight,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            top = 22.dp,
+                                            bottom = 1.dp
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            itemsIndexed(newFilteredDidiList) { index, didi ->
+                                ExpandableDidiItemCardForBpc(
+                                    didi = didi,
+                                    expanded = expandedIds.contains(didi.id),
+                                    modifier = modifier,
+                                    isChecked = isCheckedIds.contains(didi.id),
+                                    isForReplace = forReplace,
+                                    onExpendClick = { expand, didiDetailModel ->
+                                        if (expandedIds.contains(didiDetailModel.id)) {
+                                            expandedIds.remove(didiDetailModel.id)
+                                        } else {
+                                            expandedIds.add(didiDetailModel.id)
+                                        }
+                                    },
+                                    onItemClick = { isChecked, didi ->
+                                        if (forReplace) {
+                                            isCheckedIds.clear()
+                                            isCheckedIds.add(didi.id)
+                                        } else {
+                                            if (isCheckedIds.contains(didi.id)) {
+                                                isCheckedIds.remove(didi.id)
+                                            } else {
+                                                isCheckedIds.add(didi.id)
+                                            }
+                                        }
+
+                                    }
+                                )
+                            }
                         }
                     }
                 }
             }
+        }
+
+        if (isCheckedIds.isNotEmpty()) {
+            DoubleButtonBox(
+                modifier = Modifier
+                    .shadow(10.dp)
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    },
+                negativeButtonRequired = false,
+                positiveButtonText = stringResource(id = R.string.confirm_text),
+                positiveButtonOnClick = {
+                    if (forReplace) {
+                        bpcAddMoreDidiViewModel.replaceDidi(isCheckedIds)
+                    } else {
+                        bpcAddMoreDidiViewModel.markCheckedDidisSelected(isCheckedIds)
+                    }
+                    navController.popBackStack()
+                },
+                negativeButtonOnClick = {}
+            )
         }
     }
 }
@@ -321,11 +393,13 @@ fun ExpandableDidiItemCardForBpc(
     expanded: Boolean,
     modifier: Modifier,
     isChecked: Boolean,
+    isForReplace: Boolean,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
 
-    val isChecked = remember { mutableStateOf(isChecked) }
+    val mIsChecked = remember { mutableStateOf(isChecked) }
+
 
     val transition = updateTransition(expanded, label = "transition")
 
@@ -350,7 +424,11 @@ fun ExpandableDidiItemCardForBpc(
     }, label = "rotationDegreeTransition") {
         if (it) 180f else 0f
     }
-    Row(horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+    Row(
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
         Card(
             elevation = 10.dp,
             shape = RoundedCornerShape(6.dp),
@@ -422,26 +500,44 @@ fun ExpandableDidiItemCardForBpc(
             }
         }
 
-        Checkbox(
-            modifier = Modifier
-                .size(48.dp),
-            checked = isChecked.value,
-            onCheckedChange = {
-                isChecked.value = it
-                onItemClick(it, didi)
-            },
-            enabled = true,
-            colors = CheckboxDefaults.colors(
-                checkedColor = blueDark,
-                checkmarkColor = Color.White,
-                uncheckedColor = checkBoxUncheckedColor
+        if (isForReplace) {
+            RadioButton(
+                selected = isChecked,
+                onClick = {
+                    onItemClick(isChecked, didi)
+                },
+                enabled = true,
+                colors = RadioButtonDefaults.colors(
+                    selectedColor = blueDark,
+                    unselectedColor = checkBoxUncheckedColor
+                )
             )
-        )
+        } else {
+            Checkbox(
+                modifier = Modifier
+                    .size(48.dp),
+                checked = mIsChecked.value,
+                onCheckedChange = {
+                    mIsChecked.value = it
+                    onItemClick(it, didi)
+                },
+                enabled = true,
+                colors = CheckboxDefaults.colors(
+                    checkedColor = blueDark,
+                    checkmarkColor = Color.White,
+                    uncheckedColor = checkBoxUncheckedColor
+                )
+            )
+        }
     }
 }
 
 @Composable
-fun DidiDetailExpendableContentForBpc(modifier: Modifier, didi: BpcNonSelectedDidiEntity, expended: Boolean) {
+fun DidiDetailExpendableContentForBpc(
+    modifier: Modifier,
+    didi: BpcNonSelectedDidiEntity,
+    expended: Boolean
+) {
     val constraintSet = didiDetailConstraints()
 
     val context = LocalContext.current
@@ -515,7 +611,7 @@ fun DidiDetailExpendableContentForBpc(modifier: Modifier, didi: BpcNonSelectedDi
             )
 
             Text(
-                text = didi.castName?: BLANK_STRING,
+                text = didi.castName ?: BLANK_STRING,
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")
@@ -725,15 +821,18 @@ fun getLatestStatusTextForBpc(context: Context, didi: BpcNonSelectedDidiEntity):
             PatSurveyStatus.NOT_STARTED.ordinal -> {
                 status = context.getString(R.string.wealth_ranking_status_complete_text)
             }
+
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
             }
+
             PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
-                status = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
-                    context.getString(R.string.vo_endorsement_status_text)
-                } else {
-                    context.getString(R.string.pat_completed_status_text)
-                }
+                status =
+                    if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
+                        context.getString(R.string.vo_endorsement_status_text)
+                    } else {
+                        context.getString(R.string.pat_completed_status_text)
+                    }
             }
         }
     }
@@ -745,6 +844,7 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
     didiTola: String,
     didiList: List<BpcNonSelectedDidiEntity>,
     modifier: Modifier,
+    isForReplace: Boolean,
     expandedIds: List<Int>,
     isCheckedIds: List<Int>,
     onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
@@ -796,9 +896,10 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
                     didi = didi,
                     expanded = expandedIds.contains(didi.id),
                     modifier = modifier,
+                    isForReplace = isForReplace,
                     isChecked = isCheckedIds.contains(didi.id),
                     onExpendClick = { expand, didiDetailModel ->
-                       onExpendClick(expand, didiDetailModel)
+                        onExpendClick(expand, didiDetailModel)
                     },
                     onItemClick = { isChecked, didi ->
                         onItemClick(isChecked, didi)

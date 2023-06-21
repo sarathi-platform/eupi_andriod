@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
@@ -129,5 +130,26 @@ class BpcAddMoreDidiViewModel @Inject constructor(
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
+    }
+
+    fun markCheckedDidisSelected(checkedIds: SnapshotStateList<Int>) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            checkedIds.forEach {  didiId ->
+                bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
+            }
+        }
+    }
+
+    fun replaceDidi(checkedIds: SnapshotStateList<Int>) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            checkedIds.forEach {  didiId ->
+                bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
+                didiForReplacement = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
+//                if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
+                bpcSelectedDidiDao.markDidiSelected(didiToBeReplaced.second, false)
+//                }
+//                removeDidiFromSelectedList(bpcSelectedDidiDao)
+            }
+        }
     }
 }

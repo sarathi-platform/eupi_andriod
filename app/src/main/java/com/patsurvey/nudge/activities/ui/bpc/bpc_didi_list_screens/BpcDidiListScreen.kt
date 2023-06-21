@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
@@ -229,6 +230,7 @@ fun BpcDidiListScreen(
                                 buttonText = stringResource(R.string.add_more),
                                 icon = Icons.Default.Add
                             ) {
+                                bpcDidiListViewModel.didiToBeReplaced = Pair(-1, -1)
                                 val forReplace = false
                                 navController.navigate("bpc_add_more_didi_list/$forReplace")
                             }
@@ -277,6 +279,7 @@ fun BpcDidiListScreen(
                             DidiItemCardForBpc(
                                 navController = navController,
                                 didi = didi,
+                                index = index,
                                 modifier = Modifier,
                                 viewModel = bpcDidiListViewModel
                             ) {
@@ -316,14 +319,17 @@ fun BpcDidiListScreen(
 fun DidiItemCardForBpc(
     navController: NavHostController,
     didi: BpcSelectedDidiEntity,
+    index: Int,
     modifier: Modifier,
     viewModel: BpcDidiListViewModel,
     onItemClick: (DidiEntity) -> Unit
 ) {
 
-    val didiMarkedNotAvailable = remember {
+    /*val didiMarkedNotAvailable = remember {
         mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-    }
+    }*/
+
+    val context = LocalContext.current
 
     Card(
         elevation = 10.dp,
@@ -430,19 +436,23 @@ fun DidiItemCardForBpc(
                     ButtonNegativeForPAT(
                         buttonTitle = stringResource(id = R.string.not_avaliable),
                         isArrowRequired = false,
-                        color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
-                        textColor = if (didiMarkedNotAvailable.value) white else blueDark,
+                        color = /*if (didiMarkedNotAvailable.value) blueDark else */languageItemActiveBg,
+                        textColor = /*if (didiMarkedNotAvailable.value) white else */blueDark,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(45.dp)
                             .weight(1f)
                             .background(
-                                if (didiMarkedNotAvailable.value
-                                ) blueDark else languageItemActiveBg
+                                /*if (didiMarkedNotAvailable.value
+                                ) blueDark else */languageItemActiveBg
                             )
                     ) {
 //                        didiMarkedNotAvailable.value = true
 //                        viewModel.setDidiAsUnavailable(didi.id)
+                        val forReplace = true
+                        viewModel.replaceDidi(index, didi.id)
+                        navController.navigate("bpc_add_more_didi_list/$forReplace")
+
                     }
                     Spacer(modifier = Modifier.width(6.dp))
                     ButtonPositiveForPAT(
@@ -451,8 +461,8 @@ fun DidiItemCardForBpc(
                             .height(45.dp)
                             .weight(1f)
                             .background(
-                                if (didiMarkedNotAvailable.value
-                                ) languageItemActiveBg else blueDark
+                                /* if (didiMarkedNotAvailable.value
+                                ) languageItemActiveBg else*/ blueDark
                             ),
                         buttonTitle = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
@@ -464,10 +474,14 @@ fun DidiItemCardForBpc(
                             stringResource(id = R.string.continue_pat)
                         else "",
                         true,
-                        color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
-                        textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
-                        iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
+                        color = /*if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg*/ blueDark,
+                        textColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white,
+                        iconTintColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white
                     ) {
+                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) {
+                            viewModel.addDidiForPat(didi.id)
+                        }
+
                         Log.d("TAG", "DidiItemCardForBpc: ${Gson().toJson(didi)} :: ${navController.graph.route} ")
                         if(didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
@@ -576,6 +590,7 @@ fun ShowDidisFromTolaForBpc(
                     navController = navController,
                     didi = didi,
                     modifier = modifier,
+                    index = index,
                     viewModel = viewModel,
                     onItemClick = {
                         //TODO navigate to summary screen for Endorsement
