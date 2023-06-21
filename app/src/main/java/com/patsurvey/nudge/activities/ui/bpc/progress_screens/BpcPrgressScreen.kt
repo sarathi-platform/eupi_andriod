@@ -237,7 +237,9 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(summaryData.value.cohortCount.toString())
+
+
+                                                        append(String.format("%02d", summaryData.value.cohortCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -247,7 +249,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(" Tolas Added")
+                                                        append(stringResource(R.string.summary_tolas_added_text))
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -262,7 +264,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(summaryData.value.mobilisedCount.toString())
+                                                        append(String.format("%02d", summaryData.value.mobilisedCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -272,7 +274,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(" Didis Mobilised")
+                                                        append(stringResource(R.string.summary_didis_mobilised_text))
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -287,7 +289,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(summaryData.value.poorDidiCount.toString())
+                                                        append(String.format("%02d", summaryData.value.poorDidiCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -297,7 +299,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(" Didis Marked as poor in PWR")
+                                                        append(stringResource(R.string.summary_wealth_ranking_text))
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -312,7 +314,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(summaryData.value.sentVoEndorsementCount.toString())
+                                                        append(String.format("%02d", summaryData.value.sentVoEndorsementCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -322,7 +324,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(" Didis sent for VO Endorsement")
+                                                        append(stringResource(R.string.summary_vo_endoresement_text))
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -337,7 +339,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(summaryData.value.voEndorsedCount.toString())
+                                                        append(String.format("%02d", summaryData.value.voEndorsedCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(

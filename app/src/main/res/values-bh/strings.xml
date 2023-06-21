@@ -259,4 +259,8 @@
     <string name="crp_score_text">सीआरपी स्कोर:</string>
     <string name="bpc_score_text">बीपीसी स्कोर:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% मिलान PAT सत्यापन पर हुआ मिलान PAT सत्यापन पर हुआ|</string>
+    <string name="summary_tolas_added_text">" टोला जोड़ा गया"</string>
+    <string name="summary_didis_mobilised_text">" दीदियों को मोबिलाइज किया"</string>
+    <string name="summary_wealth_ranking_text">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
+    <string name="summary_vo_endoresement_text">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
 </resources>

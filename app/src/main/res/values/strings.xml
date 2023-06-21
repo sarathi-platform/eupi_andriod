@@ -250,6 +250,10 @@
     <string name="crp_score_text">CRP Score:</string>
     <string name="bpc_score_text">BPC Score:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
+    <string name="summary_tolas_added_text">" Tolas Added"</string>
+    <string name="summary_didis_mobilised_text">" Didis Mobilised"</string>
+    <string name="summary_wealth_ranking_text">" Didis Marked as poor in PWR"</string>
+    <string name="summary_vo_endoresement_text">" Didis sent for VO Endorsement"</string>
 
 
 </resources>

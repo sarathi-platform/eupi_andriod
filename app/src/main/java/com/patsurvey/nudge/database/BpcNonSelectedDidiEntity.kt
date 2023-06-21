@@ -85,13 +85,13 @@ data class BpcNonSelectedDidiEntity(
     var bpcScore: Double? = 0.0,
 
     @ColumnInfo(name = "bpcComment")
-    var bpcComment: String,
+    var bpcComment: String? = BLANK_STRING,
 
     @ColumnInfo(name = "crpScore")
     var crpScore: Double? = 0.0,
 
     @ColumnInfo(name = "crpComment")
-    var crpComment: String,
+    var crpComment: String? = BLANK_STRING,
 
     @ColumnInfo(name = "shgFlag")
     var shgFlag: Int,
