@@ -62,6 +62,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.circleLayout
+import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black2
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -226,7 +227,7 @@ fun BpcDidiListScreen(
                                 buttonText = stringResource(R.string.add_more),
                                 icon = Icons.Default.Add
                             ) {
-                                bpcDidiListViewModel.didiToBeReplaced = Pair(-1, -1)
+                                ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
                                 val forReplace = false
                                 navController.navigate("bpc_add_more_didi_list/$forReplace")
                             }

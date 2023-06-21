@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
@@ -82,8 +83,8 @@ class BpcDidiListViewModel @Inject constructor(
                                 )
                             )
                         }
-                        if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1)
-                            selectedList.add(didiToBeReplaced.first, selectedDidisFromBackupList[0])
+                        if (ReplaceHelper.didiToBeReplaced.value.first != -1 && ReplaceHelper.didiToBeReplaced.value.second != -1)
+                            selectedList.add(ReplaceHelper.didiToBeReplaced.value.first, selectedDidisFromBackupList[0])
                         else {
                             selectedList.addAll(selectedDidisFromBackupList)
                         }
@@ -184,7 +185,7 @@ class BpcDidiListViewModel @Inject constructor(
     }
 
     fun replaceDidi(index: Int, didiId: Int) {
-        didiToBeReplaced = Pair(index, didiId)
+        ReplaceHelper.didiToBeReplaced.value = Pair(index, didiId)
     }
 
     fun addDidiForPat(didiId: Int) {
