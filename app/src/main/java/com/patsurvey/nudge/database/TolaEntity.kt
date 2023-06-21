@@ -5,12 +5,10 @@ import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.TOLA_TABLE
-import com.patsurvey.nudge.utils.Tola
 
 @Entity(tableName = TOLA_TABLE)
 data class TolaEntity(
@@ -30,9 +28,13 @@ data class TolaEntity(
     @ColumnInfo(name = "status")
     val status: Int,
     @ColumnInfo(name = "createdDate")
-    var createdDate: Long,
+    var createdDate: Long?=0,
     @ColumnInfo(name = "modifiedDate")
-    var modifiedDate: Long,
+    var modifiedDate: Long?=0,
+    @ColumnInfo(name = "localCreatedDate")
+    var localCreatedDate: Long?=0,
+    @ColumnInfo(name = "localModifiedDate")
+    var localModifiedDate: Long?=0,
     @ColumnInfo(name = "needsToPost")
     var needsToPost: Boolean = true,
     @ColumnInfo(name = "transactionId")
@@ -40,11 +42,8 @@ data class TolaEntity(
 ) {
 
     fun compare(other: GetCohortResponseModel, ignoreIds: Boolean = false): Boolean {
-        var same = (ignoreIds || id == other.id) &&
-                TextUtils.equals(name, other.name) /*&&
-                orderNumber == other.orderNumber*/
-
-        return same
+        return (ignoreIds || id == other.id) &&
+                TextUtils.equals(name, other.name)
     }
     companion object {
         fun createEmptyTolaForVillageId(villageId: Int): TolaEntity {
@@ -56,8 +55,8 @@ data class TolaEntity(
                 longitude = 0.0,
                 villageId = villageId,
                 status = 1,
-                createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis(),
+                localCreatedDate = System.currentTimeMillis(),
+                localModifiedDate = System.currentTimeMillis(),
                 transactionId = ""
             )
         }

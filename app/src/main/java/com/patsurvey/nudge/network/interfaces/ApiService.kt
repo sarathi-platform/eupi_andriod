@@ -115,6 +115,11 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun performLogout() : ApiResponseModel<String>
 
+    @POST("/write-api/beneficiary/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun updateDidiScore(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>
+
+
     @GET("/read-api/bpc/view-summary")
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
     @GET("/write-api/bpc/beneficiary-list")

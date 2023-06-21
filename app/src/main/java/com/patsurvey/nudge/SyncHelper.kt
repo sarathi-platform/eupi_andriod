@@ -428,7 +428,7 @@ class SyncHelper (
         oldDidiList.forEach(){ didiEntity ->
             didiEntity.needsToPost = false
             didiEntity.transactionId = ""
-            didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate, modifiedDate = didiEntity.modifiedDate)
+            didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
 //            didiDao.updateDidi(didiEntity)
         }
         updateWealthRankingToNetwork(networkCallbackListener)
@@ -448,7 +448,8 @@ class SyncHelper (
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
                             launch {
-                                didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking))
+                                didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
+                                    localModifiedDate = System.currentTimeMillis()))
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
@@ -497,6 +498,7 @@ class SyncHelper (
         var optionList= emptyList<OptionsItem>()
         val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
         var surveyId =0
+        val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
         didiIDList.forEach { didi->
             Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
             val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
@@ -553,7 +555,7 @@ class SyncHelper (
                     languageId = prefRepo.getAppLanguageId()?:2,
                     stateId = prefRepo.getSelectedVillage().stateId,
                     totalScore = 0,
-                    userType = USER_CRP,
+                    userType = userType,
                     beneficiaryName= didi.name,
                     answerDetailDTOList= qList,
                     patSurveyStatus = didi.patSurveyStatus,
@@ -640,9 +642,11 @@ class SyncHelper (
                             launch {
                                 didi.voEndorsementStatus.let {
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, ACCEPTED))
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, ACCEPTED,
+                                            localModifiedDate = System.currentTimeMillis()))
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name))
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name,
+                                            localModifiedDate = System.currentTimeMillis()))
                                     }
                                 }
                             }
@@ -731,7 +735,8 @@ class SyncHelper (
             if (didiWealthList.isNotEmpty()) {
                 val jsonDidi = JsonArray()
                 for (didi in didiWealthList) {
-                    jsonDidi.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking).toJson())
+                    jsonDidi.add(EditDidiWealthRankingRequest(didi.id, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
+                        localModifiedDate = System.currentTimeMillis()).toJson())
                 }
                 sizeToBeShown = getSizeToBeShown(jsonDidi.toString().toByteArray().size)
                 Log.e("num of step 3", "$didiWealthList.size")

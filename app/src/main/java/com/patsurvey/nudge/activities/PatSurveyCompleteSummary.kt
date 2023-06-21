@@ -31,6 +31,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -221,8 +222,14 @@ fun PatSurveyCompleteSummary(
             positiveButtonOnClick = {
                 if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
                     navController.popBackStack()
-                else
-                    navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                else{
+                    if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                        navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
+
+                    }else{
+                        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                    }
+                }
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )

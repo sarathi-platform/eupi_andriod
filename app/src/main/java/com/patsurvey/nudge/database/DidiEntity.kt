@@ -59,10 +59,16 @@ data class DidiEntity(
     var localPath: String = BLANK_STRING,
 
     @ColumnInfo(name = "createdDate")
-    var createdDate: Long,
+    var createdDate: Long?=0,
 
     @ColumnInfo(name = "modifiedDate")
-    var modifiedDate: Long,
+    var modifiedDate: Long?=0,
+
+    @ColumnInfo(name = "localCreatedDate")
+    var localCreatedDate: Long?=0,
+
+    @ColumnInfo(name = "localModifiedDate")
+    var localModifiedDate: Long?=0,
 
     @ColumnInfo(name = "activeStatus")
     var activeStatus: Int = DidiStatus.DIDI_ACTIVE.ordinal,
@@ -102,7 +108,28 @@ data class DidiEntity(
     var needsToPostVo: Boolean = false,
 
     @ColumnInfo(name = "transactionId")
-    var transactionId: String? = ""
+    var transactionId: String? = "",
+
+    @ColumnInfo(name = "score")
+    var score: Double? = 0.0,
+
+    @ColumnInfo(name = "crpScore")
+    var crpScore: Double? = 0.0,
+
+    @ColumnInfo(name = "bpcScore")
+    var bpcScore: Double? = 0.0,
+
+    @ColumnInfo(name = "bpcComment")
+    var bpcComment: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "crpComment")
+    var crpComment: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "comment")
+    var comment: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "isDidiAccepted")
+    var isDidiAccepted: Boolean = false,
 
 ){
     companion object{

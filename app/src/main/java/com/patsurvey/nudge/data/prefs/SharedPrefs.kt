@@ -22,6 +22,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_LAST_TOLA_NAME = "last_tola_name"
         const val SELECTED_VILLAGE_ID = "selected_village_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
+        const val PREF_KEY_USER_BPC = "is_user_bpc"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -158,5 +159,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         val editor = prefs.edit()
         editor.clear()
         editor.apply()
+    }
+
+    override fun setIsUserBPC(isOnline: Boolean) {
+       prefs.edit().putBoolean(PREF_KEY_USER_BPC,isOnline).apply()
+    }
+
+    override fun isUserBPC(): Boolean {
+       return prefs.getBoolean(PREF_KEY_USER_BPC,false)
     }
 }

@@ -29,4 +29,12 @@ interface BpcNonSelectedDidiDao {
     @Query("SELECT * from $BPC_NON_SELECTED_DIDI_TABLE where id = :didiId")
     fun getNonSelectedDidi(didiId: Int): BpcNonSelectedDidiEntity
 
+    @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET patSurveyStatus = :patSurveyProgress,needsToPostPAT=0 WHERE id = :didiId")
+    fun updateNonSelDidiPatSurveyStatus(didiId: Int, patSurveyProgress: Int)
+
+    @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET section1Status = :section1 WHERE id = :didiId")
+    fun updateNonSelDidiPatSection1Status(didiId: Int, section1: Int)
+
+    @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET section2Status = :section2 WHERE id = :didiId")
+    fun updateNonSelDidiPatSection2Status(didiId: Int, section2: Int)
 }

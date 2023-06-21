@@ -22,7 +22,6 @@ import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
-import com.patsurvey.nudge.utils.SyncStatus
 import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -149,6 +148,7 @@ class WealthRankingViewModel @Inject constructor(
                 if(didiEntity.serverId == 0){
                     didiDao.updateDidiRank(didiEntity.id, rank)
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
+                    didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
                     didiDao.updateBeneficiaryProcessStatus(
                         didiEntity.id, listOf(
                             BeneficiaryProcessStatusModel(
@@ -166,6 +166,7 @@ class WealthRankingViewModel @Inject constructor(
                      didiId=didiEntity.serverId
                     didiDao.updateDidiRankUsingServerId(didiEntity.serverId, rank)
                     didiDao.updateDidiNeedToPostWealthRankServerId(didiEntity.serverId,true)
+                    didiDao.updateModifiedDateServerId(System.currentTimeMillis(),didiEntity.serverId)
                     didiDao.updateBeneficiaryProcessStatusServerId(
                         didiEntity.serverId, listOf(
                             BeneficiaryProcessStatusModel(
@@ -185,21 +186,27 @@ class WealthRankingViewModel @Inject constructor(
                 updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
-                CheckDBStatus(this@WealthRankingViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
-                CheckDBStatus(this@WealthRankingViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
-                if(isTolaSynced.value == SyncStatus.NEED_TO_SYNC.ordinal && isDidiSynced.value == SyncStatus.NEED_TO_SYNC.ordinal) {
+                CheckDBStatus(this@WealthRankingViewModel).isFirstStepNeedToBeSync(tolaDao){
+                    isTolaSynced.value=it
+                }
+                CheckDBStatus(this@WealthRankingViewModel).isSecondStepNeedToBeSync(didiDao){
+                    isDidiSynced.value=it
+                }
+                if(isTolaSynced.value == 2 && isDidiSynced.value == 2) {
                     withContext(Dispatchers.IO) {
                         val updateWealthRankResponse = apiService.updateDidiRanking(
                             listOf(
                                 EditDidiWealthRankingRequest(
                                     didiId,
                                     StepType.WEALTH_RANKING.name,
-                                    rank
+                                    rank,
+                                    localModifiedDate = System.currentTimeMillis() ?:0
                                 ),
                                 EditDidiWealthRankingRequest(
                                     didiId,
                                     StepType.SOCIAL_MAPPING.name,
-                                    StepStatus.COMPLETED.name
+                                    StepStatus.COMPLETED.name,
+                                    localModifiedDate = System.currentTimeMillis() ?:0
                                 )
                             )
                         )

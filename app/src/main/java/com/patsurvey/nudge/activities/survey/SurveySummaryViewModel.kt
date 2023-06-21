@@ -52,17 +52,24 @@ class SurveySummaryViewModel @Inject constructor(
     val isDidiPATSynced = mutableStateOf(0)
     init {
         fetchDidisFromDB()
-
     }
 
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
-                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(isTolaSynced,tolaDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(isDidiSynced,didiDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(isDidiRankingSynced,didiDao)
-                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(isDidiPATSynced,answerDao, didiDao, prefRepo)
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
+                    isTolaSynced.value =it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao){
+                    isDidiPATSynced.value=it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao){
+                    isDidiRankingSynced.value=it
+                }
+                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(answerDao, didiDao, prefRepo){
+                    isDidiPATSynced.value=it
+                }
                 notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }
@@ -83,12 +90,11 @@ class SurveySummaryViewModel @Inject constructor(
                 withContext(Dispatchers.IO){
                     var optionList= emptyList<OptionsItem>()
                     var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     var surveyId =0
-
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
-                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -121,7 +127,6 @@ class SurveySummaryViewModel @Inject constructor(
                                             }
                                             optionList=tList
                                         }
-
                                     }
                                     try {
                                         qList.add(
@@ -133,10 +138,13 @@ class SurveySummaryViewModel @Inject constructor(
                                     }catch (e:Exception){
                                         e.printStackTrace()
                                     }
-
                                 }
-
                             }
+                            scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment = didi.comment,
+                                type = if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
                             answeredDidiList.add(
                                 PATSummarySaveRequest(
                                     villageId= prefRepo.getSelectedVillage().id,
@@ -145,7 +153,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     languageId = prefRepo.getAppLanguageId()?:2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
                                     totalScore = 0,
-                                    userType = USER_CRP,
+                                    userType = if(prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     beneficiaryName= didi.name,
                                     answerDetailDTOList= qList,
                                     patSurveyStatus = didi.patSurveyStatus,
@@ -166,7 +174,9 @@ class SurveySummaryViewModel @Inject constructor(
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
+                                apiService.updateDidiScore(scoreDidiList)
                             }
+
 
                         }
 

@@ -34,7 +34,6 @@ import java.net.SocketTimeoutException
 abstract class BaseViewModel : ViewModel(){
 
     val tokenExpired = RetryHelper.tokenExpired
-
     val baseOtpNumber = mutableStateOf("")
 
 

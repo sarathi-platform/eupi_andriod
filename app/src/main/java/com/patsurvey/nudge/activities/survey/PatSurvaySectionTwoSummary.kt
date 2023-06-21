@@ -43,6 +43,7 @@ import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
@@ -57,6 +58,7 @@ fun PatSurvaySectionTwoSummaryScreen(
 ) {
 
     LaunchedEffect(key1 = true) {
+        patSectionSummaryViewModel.sectionType.value= TYPE_INCLUSION
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
     }
     val configuration = LocalConfiguration.current
@@ -86,9 +88,13 @@ fun PatSurvaySectionTwoSummaryScreen(
             ShowDialog(title = stringResource(R.string.confirmation_dialog_titile), message = stringResource(R.string.didi_pat_comption_dialog).replace("{DIDI_NAME}", didi.value.name), setShowDialog = {
                 showDialog.value = it
             }, positiveButtonClicked = {
+
                 patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
-                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+
+                    navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
+                }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             })
         }
 
@@ -298,7 +304,11 @@ fun SectionTwoSummeryItem(
         Row(Modifier.fillMaxWidth()) {
             var summaryText = "${index+1}. $quesSummery : $answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
-                summaryText = "${index+1}. $quesSummery."
+                if(quesSummery.contains("=")){
+                    summaryText = "${index+1}. $quesSummery."
+                }else{
+                    summaryText = "${index+1}. $answerValue."
+                }
             }
             Text(
                 text = summaryText,

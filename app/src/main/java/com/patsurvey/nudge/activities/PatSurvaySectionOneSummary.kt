@@ -42,6 +42,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import java.io.File
@@ -209,16 +210,21 @@ fun PatSurvaySectionSummaryScreen(
                 )
                 if (patSectionSummaryViewModel.isYesSelected.value) {
                     if (showPatCompletion.value) {
+                        patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
                             PatSurveyStatus.COMPLETED.ordinal
                         )
-                        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+                        if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                            navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
+                        }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
                     } else {
                         showPatCompletion.value = true
                     }
                 } else {
-                    navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
+                    if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
+                    }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
                 }
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }

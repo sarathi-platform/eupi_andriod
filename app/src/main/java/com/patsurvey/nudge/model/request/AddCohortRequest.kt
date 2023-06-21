@@ -10,6 +10,8 @@ data class AddCohortRequest(
     @SerializedName("name") var name: String,
     @SerializedName("type") var type : String,
     @SerializedName("villageId") var villageId : Int,
+    @SerializedName("localCreatedDate") var localCreatedDate : Long,
+    @SerializedName("localModifiedDate") var localModifiedDate : Long,
 ) {
 
     companion object {
@@ -19,7 +21,9 @@ data class AddCohortRequest(
                 longitude = tola.longitude,
                 name = tola.name,
                 type = tola.type,
-                villageId = tola.villageId
+                villageId = tola.villageId,
+                localCreatedDate = tola.localCreatedDate ?: 0,
+                localModifiedDate = tola.localModifiedDate ?: 0
             )
         }
     }
@@ -31,6 +35,8 @@ data class AddCohortRequest(
         jsonObject.addProperty("name", name)
         jsonObject.addProperty("type", type)
         jsonObject.addProperty("villageId", villageId)
+        jsonObject.addProperty("localCreatedDate", localCreatedDate)
+        jsonObject.addProperty("localModifiedDate", localModifiedDate)
         return jsonObject
     }
 

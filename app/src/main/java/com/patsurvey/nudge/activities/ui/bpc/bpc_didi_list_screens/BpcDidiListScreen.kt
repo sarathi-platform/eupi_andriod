@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -60,6 +61,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.circleLayout
@@ -86,6 +88,8 @@ import com.patsurvey.nudge.utils.ButtonPositiveForPAT
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 
@@ -312,7 +316,7 @@ fun BpcDidiListScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-
+                    navController.navigate("bpc_pat_survey_summary/$stepId/true")
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
@@ -487,13 +491,19 @@ fun DidiItemCardForBpc(
                             viewModel.addDidiForPat(didi.id)
                         }
 
+                        Log.d("TAG", "DidiItemCardForBpc: ${Gson().toJson(didi)} :: ${navController.graph.route} ")
+                        if(didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
+                            navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                        }
                         /*if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
                         ) {
                             if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                                 didiMarkedNotAvailable.value = false
                             }
-                            navController.navigate("didi_pat_summary/${didi.id}")
+                            navController.navigate("bcp_didi_pat_summary/${didi.id}")
 
                         } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                             if (didi.section1Status == 0 || didi.section1Status == 1)
@@ -510,7 +520,7 @@ fun DidiItemCardForBpc(
                     .padding(vertical = 10.dp)
                     .padding(horizontal = 20.dp)
                     .clickable {
-                        navController.navigate("pat_complete_didi_summary_screen/${didi.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
+                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
                     }
                     .then(modifier),
                     horizontalArrangement = Arrangement.SpaceBetween

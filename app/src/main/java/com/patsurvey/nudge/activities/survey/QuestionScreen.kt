@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -32,6 +33,7 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
+import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
@@ -81,7 +83,9 @@ fun QuestionScreen(
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
     BackHandler() {
-        navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
+            navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
+        else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
 
     Box(modifier = Modifier
@@ -383,8 +387,16 @@ fun QuestionScreen(
 }
 
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
-    if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true))
-            navController.navigate("pat_section_one_summary_screen/$didiId")
-    else     navController.navigate("pat_section_two_summary_screen/$didiId")
+    Log.d(TAG, "navigateToSummeryPage: ${quesViewModel.prefRepo.isUserBPC()} ")
+    if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true)){
+        if(quesViewModel.prefRepo.isUserBPC())
+            navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
+        else navController.navigate("pat_section_one_summary_screen/$didiId")
+    }else{
+        if(quesViewModel.prefRepo.isUserBPC())
+            navController.navigate("bpc_pat_section_two_summary_screen/$didiId")
+         else  navController.navigate("pat_section_two_summary_screen/$didiId")
+
+    }
 }
 

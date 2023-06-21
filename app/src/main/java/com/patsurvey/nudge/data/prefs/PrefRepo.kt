@@ -57,4 +57,9 @@ interface PrefRepo {
    fun saveStepId(stepId:Int
    )
    fun clearSharedPreference()
+
+   fun setIsUserBPC(isOnline: Boolean)
+
+   fun isUserBPC(): Boolean
+
 }

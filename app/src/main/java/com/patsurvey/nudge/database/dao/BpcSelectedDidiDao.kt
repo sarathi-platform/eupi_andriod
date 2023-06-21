@@ -28,4 +28,16 @@ interface BpcSelectedDidiDao {
 
     @Query("Update $BPC_SELECTED_DIDI_TABLE set isAlsoSelected = :selected where id = :didiId")
     fun markDidiSelected(didiId: Int, selected: Boolean)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET patSurveyStatus = :patSurveyProgress,needsToPostPAT=0 WHERE id = :didiId")
+    fun updateSelDidiPatSurveyStatus(didiId: Int, patSurveyProgress: Int)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET section1Status = :section1 WHERE id = :didiId")
+    fun updateSelDidiPatSection1Status(didiId: Int, section1: Int)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET section2Status = :section2 WHERE id = :didiId")
+    fun updateSelDidiPatSection2Status(didiId: Int, section2: Int)
+
+    @Query("SELECT * FROM $BPC_SELECTED_DIDI_TABLE WHERE id =:didiId")
+    fun fetchSelectedDidi(didiId: Int) :BpcSelectedDidiEntity
 }
