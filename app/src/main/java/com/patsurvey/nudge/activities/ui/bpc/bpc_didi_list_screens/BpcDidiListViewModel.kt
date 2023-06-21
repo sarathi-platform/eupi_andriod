@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
@@ -44,7 +45,7 @@ class BpcDidiListViewModel @Inject constructor(
     var filterDidiList by mutableStateOf(listOf<BpcSelectedDidiEntity>())
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
-    val  inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
+    val inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
 
     var tolaMapList by mutableStateOf(mapOf<String, List<BpcSelectedDidiEntity>>())
         private set
@@ -64,26 +65,34 @@ class BpcDidiListViewModel @Inject constructor(
 
     fun fetchDidiFromDb() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localSeletctedDidiList = bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-            val localUnselectedDidiList = bpcNonSelectedDidiDao.fetchAllNonSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
+            val localSeletctedDidiList =
+                bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
+            val localUnselectedDidiList =
+                bpcNonSelectedDidiDao.fetchAllDidisForVillage(prefRepo.getSelectedVillage().id)
             _selectedDidiList.value = localSeletctedDidiList
             val filterdNonSelectedList = localUnselectedDidiList.filter { it.isAlsoSelected }
             if (filterdNonSelectedList.isNotEmpty()) {
-                _selectedDidiList.value = _selectedDidiList.value.toMutableList().also { selectedList ->
-                    val selectedDidisFromBackupList = mutableListOf<BpcSelectedDidiEntity>()
-                    filterdNonSelectedList.forEach {
-                        selectedDidisFromBackupList.add(
-                            BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
-                                it
+                _selectedDidiList.value =
+                    _selectedDidiList.value.toMutableList().also { selectedList ->
+                        val selectedDidisFromBackupList = mutableListOf<BpcSelectedDidiEntity>()
+                        filterdNonSelectedList.forEach {
+                            selectedDidisFromBackupList.add(
+                                BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
+                                    it
+                                )
                             )
-                        )
+                        }
+                        if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1)
+                            selectedList.add(didiToBeReplaced.first, selectedDidisFromBackupList[0])
+                        else {
+                            selectedList.addAll(selectedDidisFromBackupList)
+                        }
                     }
-                    selectedList.addAll(selectedDidisFromBackupList)
-                }
             }
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
             filterDidiList = selectedDidiList.value
-            pendingDidiCount.value = bpcSelectedDidiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+            pendingDidiCount.value =
+                bpcSelectedDidiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
         }
     }
 
@@ -133,9 +142,9 @@ class BpcDidiListViewModel @Inject constructor(
                     filterTolaMapList = tolaMapList
                 }
             }
-        }catch (ex: Exception){
+        } catch (ex: Exception) {
             ex.printStackTrace()
-            Log.e(TAG, "Exception1 : performQuery: ${ex.message}" )
+            Log.e(TAG, "Exception1 : performQuery: ${ex.message}")
         }
 
     }
@@ -147,14 +156,16 @@ class BpcDidiListViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiPatProgress = didiDao.getDidi(didiId).patSurveyStatus
             if (didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                _selectedDidiList.value[_selectedDidiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus =
+                _selectedDidiList.value[_selectedDidiList.value.map { it.id }
+                    .indexOf(didiId)].patSurveyStatus =
                     PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
                 didiDao.updateQuesSectionStatus(
                     didiId,
                     PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
                 )
             } else {
-                _selectedDidiList.value[_selectedDidiList.value.map { it.id }.indexOf(didiId)].patSurveyStatus =
+                _selectedDidiList.value[_selectedDidiList.value.map { it.id }
+                    .indexOf(didiId)].patSurveyStatus =
                     PatSurveyStatus.NOT_AVAILABLE.ordinal
                 didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
             }
@@ -172,34 +183,36 @@ class BpcDidiListViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    fun replaceDidi(index: Int, callBack: (Boolean) -> Unit) {
+    fun replaceDidi(index: Int, didiId: Int) {
+        didiToBeReplaced = Pair(index, didiId)
+    }
+
+    fun addDidiForPat(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val nonSelectedDidi = bpcNonSelectedDidiDao.fetchAllNonSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-//            if (nonSelectedDidi.isNotEmpty()) {
-//                if (nonSelectedDidi.size > 1) {
-//                    val randomElement = nonSelectedDidi.random()
-//                    _selectedDidiList.value.toMutableList().also {
-//                        it.removeAt(index = index)
-//                        it.add(index = index, BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(randomElement))
-//                    }
-//                }
-//                else {
-//                    _selectedDidiList.value.toMutableList().also {
-//                        it.removeAt(index = index)
-//                        it.add(
-//                            index = index,
-//                            BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
-//                                nonSelectedDidi[0]
-//                            )
-//                        )
-//                    }
-//                }
-//                filterDidiList = selectedDidiList.value
-//                callBack(true)
-//            }
-//            else{
-//                callBack(false)
-//            }
+            val didiEntity = filterDidiList[filterDidiList.map { it.id }.indexOf(didiId)]
+            didiDao.insertDidi(
+                DidiEntity(
+                    id = didiEntity.id,
+                    serverId = didiEntity.serverId,
+                    name = didiEntity.name,
+                    address = didiEntity.address,
+                    guardianName = didiEntity.guardianName,
+                    relationship = didiEntity.relationship,
+                    castId = didiEntity.castId,
+                    castName = didiEntity.castName,
+                    cohortId = didiEntity.cohortId,
+                    cohortName = didiEntity.cohortName,
+                    villageId = didiEntity.villageId,
+                    wealth_ranking = didiEntity.wealth_ranking,
+                    needsToPost = didiEntity.needsToPost,
+                    localPath = didiEntity.localPath,
+                    createdDate = didiEntity.createdDate,
+                    modifiedDate = didiEntity.modifiedDate,
+                    activeStatus = didiEntity.activeStatus,
+                    beneficiaryProcessStatus = didiEntity.beneficiaryProcessStatus,
+                    shgFlag = didiEntity.shgFlag
+                )
+            )
         }
     }
 

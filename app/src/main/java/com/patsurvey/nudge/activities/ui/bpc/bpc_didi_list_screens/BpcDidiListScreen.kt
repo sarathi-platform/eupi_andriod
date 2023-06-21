@@ -226,6 +226,7 @@ fun BpcDidiListScreen(
                                 buttonText = stringResource(R.string.add_more),
                                 icon = Icons.Default.Add
                             ) {
+                                bpcDidiListViewModel.didiToBeReplaced = Pair(-1, -1)
                                 val forReplace = false
                                 navController.navigate("bpc_add_more_didi_list/$forReplace")
                             }
@@ -445,6 +446,7 @@ fun DidiItemCardForBpc(
 //                        didiMarkedNotAvailable.value = true
 //                        viewModel.setDidiAsUnavailable(didi.id)
                         val forReplace = true
+                        viewModel.replaceDidi(index, didi.id)
                         navController.navigate("bpc_add_more_didi_list/$forReplace")
 
                     }
@@ -472,6 +474,7 @@ fun DidiItemCardForBpc(
                         textColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white,
                         iconTintColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white
                     ) {
+                        viewModel.addDidiForPat(didi.id)
 
                         /*if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal

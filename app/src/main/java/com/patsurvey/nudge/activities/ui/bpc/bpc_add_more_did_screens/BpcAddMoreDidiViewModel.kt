@@ -139,4 +139,17 @@ class BpcAddMoreDidiViewModel @Inject constructor(
             }
         }
     }
+
+    fun replaceDidi(checkedIds: SnapshotStateList<Int>) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            checkedIds.forEach {  didiId ->
+                bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
+                didiForReplacement = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
+//                if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
+                bpcSelectedDidiDao.markDidiSelected(didiToBeReplaced.second, false)
+//                }
+//                removeDidiFromSelectedList(bpcSelectedDidiDao)
+            }
+        }
+    }
 }

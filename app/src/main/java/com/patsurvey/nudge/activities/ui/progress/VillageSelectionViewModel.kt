@@ -225,8 +225,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             it.selected.forEach { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
-                                                val singleTola =
-                                                    tolaDao.fetchSingleTola(didi.cohortId)
+                                                val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
                                                 val singleCaste = casteListDao.getCaste(didi.castId)
                                                 singleTola?.let {
                                                     tolaName = it.name
@@ -281,6 +280,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        isAlsoSelected = true,
                                                         transactionId = ""
                                                     )
                                                 )
