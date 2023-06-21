@@ -42,8 +42,8 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
-import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
@@ -68,8 +68,6 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
-import com.patsurvey.nudge.utils.USER_CPR
-import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.videoList
@@ -150,13 +148,49 @@ class VillageSelectionViewModel @Inject constructor(
             try {
                 withContext(Dispatchers.IO) {
                     val villageList = villageListDao.getAllVillages()
+                    val localStepsList = stepsListDao.getAllSteps()
                     val localLanguageList = languageListDao.getAllLanguages()
                     val villageIdList: ArrayList<Int> = arrayListOf()
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
+
                         launch {
                             stateId.value = village.stateId
                             RetryHelper.stateId = stateId.value
+                            try {
+                                val response = apiService.getStepsList(village.id)
+                                if (response.status.equals(SUCCESS, true)) {
+                                    response.data?.let {
+                                        if (it.stepList.isNotEmpty()) {
+                                            it.stepList.forEach { steps ->
+                                                steps.villageId = village.id
+                                                steps.isComplete =
+                                                    findCompleteValue(steps.status).ordinal
+                                            }
+                                            stepsListDao.insertAll(it.stepList)
+                                        }
+                                        prefRepo.savePref(
+                                            PREF_PROGRAM_NAME,
+                                            it.programName
+                                        )
+                                        showLoader.value = false
+
+                                    }
+                                } else {
+                                    val ex = ApiResponseFailException(response.message)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
+                                    onCatchError(ex, ApiType.STEP_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                if (ex !is JsonSyntaxException) {
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
+                                        RetryHelper.retryApiList.add(ApiType.STEP_LIST_API)
+                                    RetryHelper.stepListApiVillageId.add(village.id)
+                                }
+                                onCatchError(ex, ApiType.STEP_LIST_API)
+                            }
                             try {
                                 val bpcSummaryResponse =
                                     apiService.getBpcSummary(villageId = village.id)

@@ -82,13 +82,13 @@ data class BpcSelectedDidiEntity(
     var section2Status: Int = 0,
 
     @ColumnInfo(name = "bpcScore")
-    var bpcScore: Int,
+    var bpcScore: Double? = 0.0,
 
     @ColumnInfo(name = "bpcComment")
     var bpcComment: String,
 
     @ColumnInfo(name = "crpScore")
-    var crpScore: Int,
+    var crpScore: Double? = 0.0,
 
     @ColumnInfo(name = "crpComment")
     var crpComment: String,

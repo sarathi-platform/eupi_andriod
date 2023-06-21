@@ -1,10 +1,12 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -25,9 +27,11 @@ class BpcProgressScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
-    val bpcSummaryDao: BpcSummaryDao
+    val bpcSummaryDao: BpcSummaryDao,
 ): BaseViewModel() {
 
+    private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
+    val stepList: StateFlow<List<StepListEntity>> get() = _stepsList
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
@@ -59,6 +63,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
                 val villageList=villageListDao.getAllVillages()
+                val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
 //                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
 //                _tolaList.emit(tolaDBList)
@@ -69,12 +74,17 @@ class BpcProgressScreenViewModel @Inject constructor(
                             villageSelected.value=index
                         }
                     }
+                    _stepsList.value = stepList
                     selectedText.value = prefRepo.getSelectedVillage().name
 //                    getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
             }
         }
+    }
+
+    fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
+        return stepsListDao.isStepCompleteLive(stepId,villageId)
     }
 
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {

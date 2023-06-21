@@ -29,6 +29,7 @@ import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
+import com.patsurvey.nudge.activities.ui.bpc.score_comparision.ScoreComparisionScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
@@ -939,6 +940,10 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
             }
         }
 
+        composable(route = BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route){
+            ScoreComparisionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
 
     }
 }
@@ -961,6 +966,8 @@ sealed class BpcDidiListScreens(val route: String) {
     object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
 
     object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object BPC_SCORE_COMPARISION_SCREEN: BpcDidiListScreens(route = "bpc_score_comparison_screen")
 
     object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 

@@ -27,4 +27,7 @@ interface QuestionListDao {
 
     @Query("DELETE from $QUESTION_TABLE")
     fun deleteQuestionTable()
+
+    @Query("SELECT surveyPassingMark from $QUESTION_TABLE LIMIT 1")
+    fun getPassingScore(): Int
 }

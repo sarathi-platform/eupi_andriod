@@ -247,6 +247,9 @@
     <string name="submit_pat_verification">Submit PAT Verification</string>
 
     <string name="comparison_screen_heading">Summary of {COUNT} PAT verified Didis</string>
+    <string name="crp_score_text">CRP Score:</string>
+    <string name="bpc_score_text">BPC Score:</string>
+    <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
 
 
 </resources>

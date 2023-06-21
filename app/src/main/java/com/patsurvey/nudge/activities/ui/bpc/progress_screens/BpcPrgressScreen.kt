@@ -13,6 +13,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,6 +57,8 @@ fun BpcProgressScreen(
 
 //    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
     val villages by bpcProgreesScreenViewModel.villageList.collectAsState()
+    val steps by bpcProgreesScreenViewModel.stepList.collectAsState()
+
 
     val summaryData = bpcProgreesScreenViewModel.summaryData.collectAsState()
 
@@ -148,6 +151,13 @@ fun BpcProgressScreen(
                         )
                     }
                 } else {
+
+                    var isStepCompleted =
+                        bpcProgreesScreenViewModel.isStepComplete(
+                            steps.sortedBy { it.orderNumber }.last().id,
+                            bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id
+                        ).observeAsState().value ?: 0
+
                     Column(modifier = Modifier) {
 
                         LazyColumn(
@@ -560,7 +570,7 @@ fun BpcProgressScreen(
                                                             shape = CircleShape
                                                         )
                                                         .background(
-                                                            stepBoxActiveColor,
+                                                            if (isStepCompleted == StepStatus.COMPLETED.ordinal) greenOnline else stepBoxActiveColor,
                                                             shape = CircleShape
                                                         )
                                                         .padding(6.dp)
@@ -570,7 +580,7 @@ fun BpcProgressScreen(
                                                 ) {
                                                     Text(
                                                         text = "6",
-                                                        color = textColorDark,
+                                                        color = if (isStepCompleted == StepStatus.COMPLETED.ordinal) white else textColorDark,
                                                         textAlign = TextAlign.Center,
                                                         modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
@@ -591,8 +601,8 @@ fun BpcProgressScreen(
                                     index = 1,
                                     iconId = 6,
                                     viewModel = bpcProgreesScreenViewModel,
-                                    shouldBeActive = true,
-                                    isCompleted = false,
+                                    shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
+                                    isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     onclick = {
                                         onNavigateToStep(bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, 6)
                                     }

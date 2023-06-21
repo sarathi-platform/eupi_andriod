@@ -190,30 +190,37 @@ class BpcDidiListViewModel @Inject constructor(
 
     fun addDidiForPat(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiEntityList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             val didiEntity = filterDidiList[filterDidiList.map { it.id }.indexOf(didiId)]
-            didiDao.insertDidi(
-                DidiEntity(
-                    id = didiEntity.id,
-                    serverId = didiEntity.serverId,
-                    name = didiEntity.name,
-                    address = didiEntity.address,
-                    guardianName = didiEntity.guardianName,
-                    relationship = didiEntity.relationship,
-                    castId = didiEntity.castId,
-                    castName = didiEntity.castName,
-                    cohortId = didiEntity.cohortId,
-                    cohortName = didiEntity.cohortName,
-                    villageId = didiEntity.villageId,
-                    wealth_ranking = didiEntity.wealth_ranking,
-                    needsToPost = didiEntity.needsToPost,
-                    localPath = didiEntity.localPath,
-                    createdDate = didiEntity.createdDate,
-                    modifiedDate = didiEntity.modifiedDate,
-                    activeStatus = didiEntity.activeStatus,
-                    beneficiaryProcessStatus = didiEntity.beneficiaryProcessStatus,
-                    shgFlag = didiEntity.shgFlag
+            if (!didiEntityList.map { it.id }.contains(didiEntity.id)) {
+                didiDao.insertDidi(
+                    DidiEntity(
+                        id = didiEntity.id,
+                        serverId = didiEntity.serverId,
+                        name = didiEntity.name,
+                        address = didiEntity.address,
+                        guardianName = didiEntity.guardianName,
+                        relationship = didiEntity.relationship,
+                        castId = didiEntity.castId,
+                        castName = didiEntity.castName,
+                        cohortId = didiEntity.cohortId,
+                        cohortName = didiEntity.cohortName,
+                        villageId = didiEntity.villageId,
+                        wealth_ranking = didiEntity.wealth_ranking,
+                        needsToPost = didiEntity.needsToPost,
+                        localPath = didiEntity.localPath,
+                        createdDate = didiEntity.createdDate,
+                        modifiedDate = didiEntity.modifiedDate,
+                        activeStatus = didiEntity.activeStatus,
+                        beneficiaryProcessStatus = didiEntity.beneficiaryProcessStatus,
+                        shgFlag = didiEntity.shgFlag,
+                        bpcComment = didiEntity.bpcComment,
+                        bpcScore = didiEntity.bpcScore,
+                        crpScore = didiEntity.crpScore,
+                        crpComment = didiEntity.crpComment
+                    )
                 )
-            )
+            }
         }
     }
 

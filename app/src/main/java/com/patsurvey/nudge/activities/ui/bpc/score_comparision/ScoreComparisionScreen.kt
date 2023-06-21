@@ -35,6 +35,8 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,11 +63,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -83,18 +85,25 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.unmatchedOrangeColor
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.navigation.home.HomeScreens
+import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
 import java.io.File
 
 @Composable
 fun ScoreComparisionScreen(
     modifier: Modifier = Modifier,
-//    navController: NavHostController,
-//    viewModel: ScoreComparisonViewModel
+    navController: NavHostController,
+    viewModel: ScoreComparisonViewModel
 ) {
+
+    val filterdDidiList = viewModel.filterDidiList
+
+    val passingScore = viewModel.questionPassingScore.collectAsState()
 
     val coroutineScope = rememberCoroutineScope()
 
@@ -115,6 +124,10 @@ fun ScoreComparisionScreen(
 
     val isValidPercentage = remember {
         mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        isValidPercentage.value = viewModel.calculateMatchPercentage() >= MATCH_PERCENTAGE
     }
 
     val transition = updateTransition(expandBox.value, label = "transition")
@@ -171,7 +184,7 @@ fun ScoreComparisionScreen(
             ) {
 
                 Text(
-                    text = stringResource(id = R.string.comparison_screen_heading),
+                    text = stringResource(id = R.string.comparison_screen_heading).replace("{COUNT}", filterdDidiList.size.toString(), true),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -225,7 +238,8 @@ fun ScoreComparisionScreen(
                                         .padding(16.dp),
                                 ) {
                                     Text(
-                                        text = "60% Ultrapoor match on PAT verification",
+                                        text = stringResource(R.string.match_percentage_box_text)
+                                            .replace("{PERCENTAGE}", viewModel.calculateMatchPercentage().toString(), true),
                                         color = animateColor,
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -252,6 +266,14 @@ fun ScoreComparisionScreen(
                     }
 
                     item {
+                        Spacer(
+                            modifier = Modifier
+                                .height(10.dp)
+                                .fillMaxWidth()
+                        )
+                    }
+
+                    item {
                         Text(
                             text = buildAnnotatedString
                             {
@@ -273,7 +295,7 @@ fun ScoreComparisionScreen(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append("12")
+                                    append("${filterdDidiList.size}")
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -292,136 +314,14 @@ fun ScoreComparisionScreen(
                     item {
                         Spacer(
                             modifier = Modifier
-                                .height(14.dp)
+                                .height(10.dp)
                                 .fillMaxWidth()
                         )
                     }
 
-                    val didiList = listOf<DidiEntity>(DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ), DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ), DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ), DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ), DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ), DidiEntity(
-                        0,
-                        0,
-                        "Didi1",
-                        "Hno 123",
-                        BLANK_STRING,
-                        "Husband",
-                        castId = 0,
-                        castName = "OBC",
-                        cohortId = 0,
-                        cohortName = "Tola1",
-                        createdDate = 457874,
-                        localPath = BLANK_STRING,
-                        villageId = 40,
-                        wealth_ranking = "POOR",
-                        needsToPost = false,
-                        modifiedDate = 654789,
-                        needsToPostRanking = false,
-                        patSurveyStatus = 0,
-                        shgFlag = SHGFlag.NOT_MARKED.value
-                    ))
+                    itemsIndexed(filterdDidiList) { index, didi ->
 
-                    itemsIndexed(didiList) { index, didi ->
-
-                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi)
+                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, passingScore = passingScore.value)
 
                         Spacer(modifier = Modifier.height(10.dp))
                     }
@@ -444,7 +344,11 @@ fun ScoreComparisionScreen(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
@@ -455,7 +359,7 @@ fun ScoreComparisionScreen(
 fun ScoreComparisonDidiCard(
     modifier: Modifier = Modifier,
     didiEntity: DidiEntity,
-//    questionEntity: QuestionEntity,
+    passingScore: Int,
 ) {
 
     Card(
@@ -544,16 +448,19 @@ fun ScoreComparisonDidiCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                ScoreItem(didiEntity = didiEntity, itemName = "CRP Score:")
+                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.crp_score_text), itemType = CRP_USER_TYPE)
 
-                ScoreItem(didiEntity = didiEntity, itemName = "BPC Score:")
+                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE)
 
             }
 
             Row(
                 Modifier
                     .background(
-                        /*greenOnline*/ unmatchedOrangeColor,
+                        if ((didiEntity.crpScore
+                                ?: 0.0) >= passingScore.toDouble() && (didiEntity.bpcScore
+                                ?: 0.0) >= passingScore.toDouble()
+                        ) greenOnline else unmatchedOrangeColor,
                         shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                     )
                     .fillMaxWidth()
@@ -562,7 +469,11 @@ fun ScoreComparisonDidiCard(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Icon(
-                    painter = /*painterResource(id = R.drawable.icon_feather_check_circle_white)*/ painterResource(
+                    painter = if ((didiEntity.crpScore
+                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.bpcScore
+                            ?: 0.0) >= passingScore.toDouble()
+                    ) painterResource(id = R.drawable.icon_feather_check_circle_white)
+                    else painterResource(
                         id = R.drawable.ic_cross_circle_white
                     ),
                     contentDescription = null,
@@ -625,7 +536,8 @@ fun ExpandableSummaryBox(
 fun ScoreItem(
     modifier: Modifier = Modifier,
     didiEntity: DidiEntity,
-    itemName: String
+    itemName: String,
+    itemType: String
 ) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
@@ -654,7 +566,7 @@ fun ScoreItem(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "7",
+                text = if (itemType.equals(CRP_USER_TYPE, true)) didiEntity.crpScore?.toString() ?: "0.0" else didiEntity.bpcScore?.toString() ?: "0.0",
                 color = textColorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),
@@ -669,42 +581,5 @@ fun ScoreItem(
     }
 }
 
-
-@Preview
-@Composable
-fun ScoreComparisonDidiCardPreview(
-    modifier: Modifier = Modifier
-) {
-    val didi = DidiEntity(
-        0,
-        0,
-        "Didi1",
-        "Hno 123",
-        BLANK_STRING,
-        "Husband",
-        castId = 0,
-        castName = "OBC",
-        cohortId = 0,
-        cohortName = "Tola1",
-        createdDate = 457874,
-        localPath = BLANK_STRING,
-        villageId = 40,
-        wealth_ranking = "POOR",
-        needsToPost = false,
-        modifiedDate = 654789,
-        needsToPostRanking = false,
-        patSurveyStatus = 0,
-        shgFlag = SHGFlag.NOT_MARKED.value
-    )
-    ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi)
-}
-
-@Preview
-@Composable
-fun ScoreComparisonScreenPreview(
-    modifier: Modifier = Modifier
-) {
-    ScoreComparisionScreen()
-}
 
 
