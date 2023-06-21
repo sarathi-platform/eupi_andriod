@@ -81,6 +81,18 @@ data class BpcSelectedDidiEntity(
     @ColumnInfo(name = "section2Status")
     var section2Status: Int = 0,
 
+    @ColumnInfo(name = "bpcScore")
+    var bpcScore: Int,
+
+    @ColumnInfo(name = "bpcComment")
+    var bpcComment: String,
+
+    @ColumnInfo(name = "crpScore")
+    var crpScore: Int,
+
+    @ColumnInfo(name = "crpComment")
+    var crpComment: String,
+
     @ColumnInfo(name = "shgFlag")
     var shgFlag: Int,
 
@@ -128,7 +140,11 @@ data class BpcSelectedDidiEntity(
                 voEndorsementStatus = nonSelectedDidiEntity.voEndorsementStatus,
                 forVoEndorsement = nonSelectedDidiEntity.forVoEndorsement,
                 needsToPostPAT = nonSelectedDidiEntity.needsToPostPAT,
-                transactionId = nonSelectedDidiEntity.transactionId
+                transactionId = nonSelectedDidiEntity.transactionId,
+                bpcScore = nonSelectedDidiEntity.bpcScore,
+                bpcComment = nonSelectedDidiEntity.bpcComment,
+                crpComment = nonSelectedDidiEntity.crpComment,
+                crpScore = nonSelectedDidiEntity.crpScore
             )
         }
     }

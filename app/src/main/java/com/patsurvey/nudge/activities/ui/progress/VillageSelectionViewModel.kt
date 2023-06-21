@@ -281,7 +281,11 @@ class VillageSelectionViewModel @Inject constructor(
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
                                                         isAlsoSelected = true,
-                                                        transactionId = ""
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
                                                     )
                                                 )
                                             }
@@ -343,7 +347,11 @@ class VillageSelectionViewModel @Inject constructor(
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
-                                                        transactionId = ""
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
                                                     )
                                                 )
                                             }

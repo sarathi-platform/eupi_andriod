@@ -244,4 +244,7 @@
     <string name="didi_selected_text_plural">Didis Selected</string>
     <string name="didi_replace_button">Replace</string>
 
+    <string name="comparison_screen_heading">Summary of {COUNT} PAT verified Didis</string>
+
+
 </resources>

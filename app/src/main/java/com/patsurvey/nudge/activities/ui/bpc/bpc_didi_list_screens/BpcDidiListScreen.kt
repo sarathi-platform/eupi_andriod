@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -86,6 +87,7 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
+import kotlinx.coroutines.delay
 
 @Composable
 fun BpcDidiListScreen(
@@ -115,8 +117,13 @@ fun BpcDidiListScreen(
         mutableStateOf(false)
     }
 
+    val listState = rememberLazyListState()
+
     LaunchedEffect(key1 = Unit) {
         bpcDidiListViewModel.fetchDidiFromDb()
+        delay(100)
+        if (ReplaceHelper.didiToBeReplaced.value.first != -1)
+            listState.animateScrollToItem(ReplaceHelper.didiToBeReplaced.value.first)
     }
 
     ConstraintLayout(
@@ -168,6 +175,7 @@ fun BpcDidiListScreen(
                             })
                         }
                         .weight(1f),
+                    state = listState
                 ) {
 
                     item {
@@ -431,7 +439,7 @@ fun DidiItemCardForBpc(
                         .padding(vertical = 10.dp, horizontal = 16.dp)
                 ) {
                     ButtonNegativeForPAT(
-                        buttonTitle = stringResource(id = R.string.not_avaliable),
+                        buttonTitle = stringResource(id = R.string.didi_replace_button),
                         isArrowRequired = false,
                         color = /*if (didiMarkedNotAvailable.value) blueDark else */languageItemActiveBg,
                         textColor = /*if (didiMarkedNotAvailable.value) white else */blueDark,

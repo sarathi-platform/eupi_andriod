@@ -14,5 +14,8 @@ data class DidiDetailList(
     @SerializedName("createdDate") var createdDate: Long,
     @SerializedName("modifiedDate") var modifiedDate: Long,
     @SerializedName("beneficiaryProcessStatus") var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>,
-
+    @SerializedName("bpcScore") var bpcScore: Int,
+    @SerializedName("bpcComment") var bpcComment: String,
+    @SerializedName("crpScore") var crpScore: Int,
+    @SerializedName("crpComment") var crpComment: String
 )

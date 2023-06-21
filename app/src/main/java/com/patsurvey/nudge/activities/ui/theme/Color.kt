@@ -96,3 +96,8 @@ val redMessageColor = Color(0xFFE30707)
 val redIconColor = Color(0xFFe3051a)
 
 val checkBoxUncheckedColor = Color(0xFFC6C6C6)
+val comparisonCardDividerColor = Color(0xFFD8C7BE)
+val unmatchedOrangeColor = Color(0xFFDD6541)
+val brownLightBorderColor = Color(0xFFE0D9D7)
+val greyLightBgColor = Color(0xffFFFCFC)
+val greenBgLight = Color(0xFFFCFFFD)

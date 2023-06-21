@@ -673,7 +673,11 @@ object RetryHelper {
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
-                                                        transactionId = ""
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
                                                     )
                                                 )
                                             }
@@ -734,7 +738,11 @@ object RetryHelper {
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
-                                                        transactionId = ""
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
                                                     )
                                                 )
                                             }

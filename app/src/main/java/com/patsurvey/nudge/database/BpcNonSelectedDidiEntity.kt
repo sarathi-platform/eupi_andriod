@@ -81,6 +81,18 @@ data class BpcNonSelectedDidiEntity(
     @ColumnInfo(name = "section2Status")
     var section2Status: Int = 0,
 
+    @ColumnInfo(name = "bpcScore")
+    var bpcScore: Int,
+
+    @ColumnInfo(name = "bpcComment")
+    var bpcComment: String,
+
+    @ColumnInfo(name = "crpScore")
+    var crpScore: Int,
+
+    @ColumnInfo(name = "crpComment")
+    var crpComment: String,
+
     @ColumnInfo(name = "shgFlag")
     var shgFlag: Int,
 
