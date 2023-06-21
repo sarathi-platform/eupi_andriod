@@ -457,7 +457,7 @@ fun DidiItemCardForBpc(
                             .height(45.dp)
                             .weight(1f)
                             .background(
-                               /* if (didiMarkedNotAvailable.value
+                                /* if (didiMarkedNotAvailable.value
                                 ) languageItemActiveBg else*/ blueDark
                             ),
                         buttonTitle = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
@@ -474,7 +474,9 @@ fun DidiItemCardForBpc(
                         textColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white,
                         iconTintColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white
                     ) {
-                        viewModel.addDidiForPat(didi.id)
+                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) {
+                            viewModel.addDidiForPat(didi.id)
+                        }
 
                         /*if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
