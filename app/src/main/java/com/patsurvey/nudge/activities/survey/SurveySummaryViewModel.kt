@@ -40,7 +40,9 @@ class SurveySummaryViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
     val villageListDao: VillageListDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val bpcSelectedDidiDao: BpcSelectedDidiDao,
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 ): BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -168,6 +170,17 @@ class SurveySummaryViewModel @Inject constructor(
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
                                     didiIDList.forEach { didiItem->
                                         didiDao.updateNeedToPostPAT(false,didiItem.id,prefRepo.getSelectedVillage().id)
+                                        if(prefRepo.isUserBPC()){
+                                            val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiItem.id)
+                                            selectedDidi?.let {
+                                                bpcSelectedDidiDao.updateSelDidiNeedToPostPAT(didiItem.id)
+                                            }
+                                            val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiItem.id)
+                                            nonSelectedDidi?.let {
+                                                bpcNonSelectedDidiDao.updateNonSelDidiNeedToPostPAT(didiItem.id)
+
+                                            }
+                                        }
                                     }
                                     networkCallbackListener.onSuccess()
 
@@ -314,7 +327,7 @@ class SurveySummaryViewModel @Inject constructor(
                     existingProcessStatus?.forEach {
                         updatedStatus.add(it)
                     }
-                    updatedStatus.add(BeneficiaryProcessStatusModel("PAT_SURVEY", "COMPLETED"))
+                    updatedStatus.add(BeneficiaryProcessStatusModel(if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY, "COMPLETED"))
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
                 } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
@@ -322,7 +335,7 @@ class SurveySummaryViewModel @Inject constructor(
                     existingProcessStatus?.forEach {
                         updatedStatus.add(it)
                     }
-                    updatedStatus.add(BeneficiaryProcessStatusModel("PAT_SURVEY", "NOT_AVAILABLE"))
+                    updatedStatus.add(BeneficiaryProcessStatusModel(if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY, "NOT_AVAILABLE"))
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
                 } else {
                     didiDao.updateNeedToPostPAT(false, didi.id, didi.villageId)

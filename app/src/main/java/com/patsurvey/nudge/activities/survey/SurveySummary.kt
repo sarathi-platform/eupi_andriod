@@ -171,6 +171,22 @@ fun SurveySummary(
                                     showCustomToast(context, SYNC_FAILED)
                                 }
                             })
+
+                        surveySummaryViewModel.updateDidiPatStatus()
+                        surveySummaryViewModel.markPatComplete(
+                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                            stepId
+                        )
+                        surveySummaryViewModel.savePatCompletionDate()
+                        navController.navigate(
+                            "bpc_pat_step_completion_screen/${
+                                context.getString(R.string.pat_survey_completed_message)
+                                    .replace(
+                                        "{VILLAGE_NAME}",
+                                        surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                                    )
+                            }"
+                        )
                     }
                 }else {
                     surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
