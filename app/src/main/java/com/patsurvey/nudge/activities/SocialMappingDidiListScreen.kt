@@ -17,7 +17,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -53,7 +52,6 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
@@ -213,7 +211,17 @@ fun SocialMappingDidiListScreen(
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) {
                                     if (!didiViewModel.isVoEndorsementComplete.value) {
-                                        BlueButtonWithIconWithFixedWidth(
+                                        ButtonOutline(
+                                            modifier = Modifier
+                                                .weight(0.5f)
+                                                .height(45.dp),
+                                        ) {
+                                            didiViewModel.resetAllFields()
+                                            navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
+                                                launchSingleTop = true
+                                            }
+                                        }
+                                        /*BlueButtonWithIconWithFixedWidth(
                                             modifier = Modifier
                                                 .weight(0.5f),
                                             buttonText = stringResource(id = R.string.add_didi),
@@ -223,7 +231,7 @@ fun SocialMappingDidiListScreen(
                                             navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {
                                                 launchSingleTop = true
                                             }
-                                        }
+                                        }*/
                                     }
                                 }
                             }

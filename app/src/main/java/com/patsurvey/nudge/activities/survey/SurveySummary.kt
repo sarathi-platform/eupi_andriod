@@ -173,10 +173,7 @@ fun SurveySummary(
                             })
 
                         surveySummaryViewModel.updateDidiPatStatus()
-                        surveySummaryViewModel.markPatComplete(
-                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                            stepId
-                        )
+                        surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
                         surveySummaryViewModel.savePatCompletionDate()
                         navController.navigate(
                             "bpc_pat_step_completion_screen/${
@@ -438,23 +435,32 @@ fun SurveySummary(
         }
 
         if(surveySummaryViewModel.prefRepo.isUserBPC()){
-            BottomButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
+            if (!isStepComplete || showDidiListForStatus.first) {
+                BottomButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
                         }
-                    },
-                positiveButtonText =stringResource(id = R.string.submit_pat_verification),
-                isArrowRequired = true,
-                positiveButtonOnClick = {
-                        showDialog.value = true
-                }
-            )
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+                    positiveButtonText = if (showDidiListForStatus.first)
+                        stringResource(id = R.string.done_text)
+                    else
+                        stringResource(id = R.string.confirm_text),
+                    isArrowRequired = !showDidiListForStatus.first,
+                    positiveButtonOnClick = {
+                        if (showDidiListForStatus.first) {
+                            showDidiListForStatus = Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
+                        } else {
+                            showDialog.value = true
+                        }
+                    }
+                )
+            }
         }else{
             if (!isStepComplete || showDidiListForStatus.first) {
                 BottomButtonBox(

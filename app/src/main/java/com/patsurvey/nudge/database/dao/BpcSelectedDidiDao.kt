@@ -4,7 +4,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
-import com.patsurvey.nudge.utils.BPC_NON_SELECTED_DIDI_TABLE
 import com.patsurvey.nudge.utils.BPC_SELECTED_DIDI_TABLE
 
 @Dao
@@ -44,4 +43,7 @@ interface BpcSelectedDidiDao {
 
     @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET needsToPostPAT=0 WHERE id = :didiId")
     fun updateSelDidiNeedToPostPAT(didiId: Int)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET patSurveyStatus = :patSurveyProgress WHERE id = :didiId")
+    fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
 }

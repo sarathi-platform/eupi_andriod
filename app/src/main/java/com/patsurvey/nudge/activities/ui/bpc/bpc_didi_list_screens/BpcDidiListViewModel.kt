@@ -14,17 +14,21 @@ import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -32,6 +36,7 @@ class BpcDidiListViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val tolaDao: TolaDao,
+    val stepsListDao: StepsListDao,
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val bpcSelectedDidiDao: BpcSelectedDidiDao
 ): BaseViewModel() {
@@ -220,6 +225,21 @@ class BpcDidiListViewModel @Inject constructor(
                         crpComment = didiEntity.crpComment
                     )
                 )
+            }
+        }
+    }
+
+    fun getPatStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            withContext(Dispatchers.Main) {
+                if (stepStatus == StepStatus.COMPLETED.ordinal) {
+                    delay(100)
+                    callBack(true)
+                } else {
+                    delay(100)
+                    callBack(false)
+                }
             }
         }
     }

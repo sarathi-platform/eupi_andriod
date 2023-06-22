@@ -7,6 +7,8 @@ import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -16,8 +18,6 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
@@ -38,7 +38,9 @@ class QuestionScreenViewModel @Inject constructor(
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
     val apiService: ApiService,
-    val numericAnswerDao: NumericAnswerDao
+    val numericAnswerDao: NumericAnswerDao,
+    val bpcSelectedDidiDao: BpcSelectedDidiDao,
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0)
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
@@ -134,11 +136,36 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun updateDidiQuesSection(didiId: Int, status: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            didiDao.updateQuesSectionStatus(didiId, status)
-            if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
-                didiDao.updatePatSection1Status(didiId, status)
-            } else didiDao.updatePatSection2Status(didiId, status)
+            if(prefRepo.isUserBPC()){
+                didiDao.updateQuesSectionStatus(didiId, status)
+                if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
+                    didiDao.updatePatSection1Status(didiId, status)
+                } else didiDao.updatePatSection2Status(didiId, status)
 
+                val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
+                selectedDidi?.let {
+                    bpcSelectedDidiDao.updateQuesSectionStatus(didiId, status)
+                    if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
+                        bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId,status)
+                    } else {
+                        bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId,status)
+                    }
+                }
+                val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
+                nonSelectedDidi?.let {
+                    bpcNonSelectedDidiDao.updateQuesSectionStatus(didiId, status)
+                    if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
+                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection1Status(didiId,status)
+                    } else{
+                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection2Status(didiId, status)
+                    }
+                }
+            } else {
+                didiDao.updateQuesSectionStatus(didiId, status)
+                if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
+                    didiDao.updatePatSection1Status(didiId, status)
+                } else didiDao.updatePatSection2Status(didiId, status)
+            }
         }
     }
 

@@ -458,7 +458,7 @@ fun ScoreComparisonDidiCard(
                 Modifier
                     .background(
                         if ((didiEntity.crpScore
-                                ?: 0.0) >= passingScore.toDouble() && (didiEntity.bpcScore
+                                ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
                                 ?: 0.0) >= passingScore.toDouble()
                         ) greenOnline else unmatchedOrangeColor,
                         shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
@@ -470,7 +470,7 @@ fun ScoreComparisonDidiCard(
             ) {
                 Icon(
                     painter = if ((didiEntity.crpScore
-                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.bpcScore
+                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
                             ?: 0.0) >= passingScore.toDouble()
                     ) painterResource(id = R.drawable.icon_feather_check_circle_white)
                     else painterResource(
@@ -566,7 +566,7 @@ fun ScoreItem(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (itemType.equals(CRP_USER_TYPE, true)) didiEntity.crpScore?.toString() ?: "0.0" else didiEntity.bpcScore?.toString() ?: "0.0",
+                text = if (itemType.equals(CRP_USER_TYPE, true)) didiEntity.crpScore?.toString() ?: "0.0" else didiEntity.score?.toString() ?: "0.0",
                 color = textColorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),

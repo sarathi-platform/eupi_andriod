@@ -28,7 +28,6 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -82,8 +81,8 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
-import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
 import com.patsurvey.nudge.utils.ButtonNegativeForPAT
+import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -233,7 +232,17 @@ fun BpcDidiListScreen(
                                     .weight(0.75f)
                             )
 
-                            BlueButtonWithIconWithFixedWidth(
+                            ButtonOutline(
+                                modifier = Modifier
+                                    .weight(0.5f)
+                                    .height(45.dp),
+                            ) {
+                                ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
+                                val forReplace = false
+                                navController.navigate("bpc_add_more_didi_list/$forReplace")
+                            }
+
+                            /*BlueButtonWithIconWithFixedWidth(
                                 modifier = Modifier
                                     .weight(0.5f),
                                 buttonText = stringResource(R.string.add_more),
@@ -242,7 +251,7 @@ fun BpcDidiListScreen(
                                 ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
                                 val forReplace = false
                                 navController.navigate("bpc_add_more_didi_list/$forReplace")
-                            }
+                            }*/
                         }
                     }
 
@@ -316,7 +325,9 @@ fun BpcDidiListScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
-                    navController.navigate("bpc_pat_survey_summary/$stepId/true")
+                    bpcDidiListViewModel.getPatStepStatus(stepId = stepId) {
+                        navController.navigate("bpc_pat_survey_summary/$stepId/$it")
+                    }
                 },
                 negativeButtonOnClick = {/*Nothing to do here*/ }
             )
@@ -358,11 +369,11 @@ fun DidiItemCardForBpc(
                     CircularDidiImage(
                         modifier = Modifier.layoutId("didiImage")
                     )
-                    Row(
+                    Box(
                         modifier = Modifier
                             .layoutId("didiRow")
                             .fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
+                        /*horizontalArrangement = Arrangement.SpaceBetween*/
                     ) {
                         Text(
                             text = didi.name,
@@ -373,6 +384,7 @@ fun DidiItemCardForBpc(
                                 fontFamily = NotoSans,
                                 textAlign = TextAlign.Start
                             ),
+                            modifier = Modifier.align(Alignment.CenterStart)
                         )
 
                         if (didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
@@ -383,6 +395,7 @@ fun DidiItemCardForBpc(
                                     .width(30.dp)
                                     .height(30.dp)
                                     .padding(5.dp)
+                                    .align(Alignment.CenterEnd)
                                     .layoutId("successImage")
                             )
                         }
@@ -394,6 +407,7 @@ fun DidiItemCardForBpc(
                                 color = inprogressYellow,
                                 modifier = Modifier
                                     .padding(5.dp)
+                                    .align(Alignment.CenterEnd)
                                     .layoutId("successImage")
                             )
                         }
@@ -492,10 +506,16 @@ fun DidiItemCardForBpc(
                         }
 
                         Log.d("TAG", "DidiItemCardForBpc: ${Gson().toJson(didi)} :: ${navController.graph.route} ")
-                        if(didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
-                            || didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
-                            || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
-                            navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal){
+                            navController.navigate("bcp_didi_pat_summary/${didi.id}")
+                        } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
+                            if (didi.section1Status == 0 || didi.section1Status == 1) {
+                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                            }
+                            else if (didi.section2Status == 0 || didi.section2Status == 1){
+                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$$TYPE_INCLUSION")
+                            }
+
                         }
                         /*if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
                             || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
@@ -633,6 +653,7 @@ private fun decoupledConstraints(): ConstraintSet {
         constrain(didiRow) {
             start.linkTo(didiImage.end, 10.dp)
             top.linkTo(parent.top, 10.dp)
+            end.linkTo(parent.end, 10.dp)
             width = Dimension.fillToConstraints
         }
         constrain(village) {

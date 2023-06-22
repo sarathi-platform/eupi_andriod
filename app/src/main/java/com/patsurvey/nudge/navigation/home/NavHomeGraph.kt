@@ -951,11 +951,12 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
-                navController.navigate(Graph.HOME) {
+                navController.navigate(BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route)
+                /*navController.navigate(Graph.HOME) {
                     popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
                         inclusive = true
                     }
-                }
+                }*/
 
             }
         }

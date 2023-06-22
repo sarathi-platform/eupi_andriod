@@ -58,7 +58,7 @@ class ScoreComparisonViewModel @Inject constructor(
 
     fun calculateMatchPercentage(): Int {
         val matchedCount = filterDidiList.filter {
-            (it.bpcScore ?: 0.0) >= questionPassingScore.value.toDouble()
+            (it.score ?: 0.0) >= questionPassingScore.value.toDouble()
                     && (it.crpScore ?: 0.0) >= questionPassingScore.value.toDouble() }.size
 
         return ((matchedCount/filterDidiList.size) * 100).toInt()

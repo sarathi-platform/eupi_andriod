@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
@@ -281,6 +280,12 @@ class SurveySummaryViewModel @Inject constructor(
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 }
             }
+        }
+    }
+
+    fun markBpcVerificationComplete(villageId: Int, stepId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            //TODO finish this.
         }
     }
 
