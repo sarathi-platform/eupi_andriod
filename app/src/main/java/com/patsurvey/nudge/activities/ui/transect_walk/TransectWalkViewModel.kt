@@ -83,6 +83,7 @@ class TransectWalkViewModel @Inject constructor(
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
+                needsToPost = true,
             )
             tolaDao.insert(tolaItem)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
@@ -113,9 +114,10 @@ class TransectWalkViewModel @Inject constructor(
     fun addTolasToNetwork(villageId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
-            val filteredTolaList = tolaList.value.filter { it.needsToPost }
-            if (filteredTolaList.isNotEmpty()) {
-                for (tola in filteredTolaList) {
+            val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
+//            val filteredTolaList = tolaList
+            if (tolaList.isNotEmpty()) {
+                for (tola in tolaList) {
                     jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
                 }
                 Log.d("TransectWalkViewModel", "$jsonTola")
@@ -123,10 +125,9 @@ class TransectWalkViewModel @Inject constructor(
                 val response = apiInterface.addCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        networkCallbackListener.onSuccess()
                         if(response.data[0].transactionId.isNullOrEmpty()) {
                             response.data.forEach { tolaDataFromNetwork ->
-                                tolaList.value.forEach { tola ->
+                                tolaList.forEach { tola ->
                                     if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
                                         tola.id = tolaDataFromNetwork.id
                                         tola.createdDate = tolaDataFromNetwork.createdDate
@@ -135,10 +136,10 @@ class TransectWalkViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            tolaList.value.forEach { tola ->
-                                for(i in tolaList.value.indices){
-                                    tolaList.value[i].transactionId?.let { it1 ->
-                                        tolaDao.updateTolaTransactionId(tolaList.value[i].id,
+                            response.data.forEach { tola ->
+                                for(i in response.data.indices){
+                                    response.data[i].transactionId.let { it1 ->
+                                        tolaDao.updateTolaTransactionId(tolaList[i].id,
                                             it1
                                         )
                                     }
@@ -146,6 +147,7 @@ class TransectWalkViewModel @Inject constructor(
                             }
                             startSyncTimerForTolaStatus()
                         }
+                        networkCallbackListener.onSuccess()
                     }
                 }
                 else {

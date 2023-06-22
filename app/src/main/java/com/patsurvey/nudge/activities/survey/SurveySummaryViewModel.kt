@@ -417,7 +417,7 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-    fun updatePatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+    /*fun updatePatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
@@ -504,7 +504,7 @@ class SurveySummaryViewModel @Inject constructor(
                 onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
             }
         }
-    }
+    }*/
 
     fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

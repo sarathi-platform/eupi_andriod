@@ -424,7 +424,7 @@ fun TransectWalkScreen(
 //                                    showCustomToast(context, SYNC_FAILED)
                                 }
                             })
-                            viewModel.updateTolaNeedTOPostList(villageId)
+//                            viewModel.updateTolaNeedTOPostList(villageId)
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
                         navController.navigate(
