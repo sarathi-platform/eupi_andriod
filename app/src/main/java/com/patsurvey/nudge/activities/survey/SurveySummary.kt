@@ -122,7 +122,8 @@ fun SurveySummary(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
-            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
+            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+            else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             ShowDialog(
                 title = "Are you sure?",
                 message = if (fromScreen == ARG_FROM_PAT_SURVEY) {
@@ -160,7 +161,7 @@ fun SurveySummary(
 
                                 })
 
-                                surveySummaryViewModel.updatePatStatusToNetwork(object :
+                                /*surveySummaryViewModel.updatePatStatusToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
 
@@ -170,7 +171,7 @@ fun SurveySummary(
                                         showCustomToast(context, SYNC_FAILED)
                                     }
 
-                                })
+                                })*/
 
                                 surveySummaryViewModel.callWorkFlowAPI(
                                     surveySummaryViewModel.prefRepo.getSelectedVillage().id,
