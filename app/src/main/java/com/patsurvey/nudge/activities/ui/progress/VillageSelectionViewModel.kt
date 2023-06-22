@@ -274,14 +274,14 @@ class VillageSelectionViewModel @Inject constructor(
                                                             if (didi.beneficiaryProcessStatus.map { it.name }
                                                                     .contains(StepType.PAT_SURVEY.name))
                                                                 didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                    .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                                    .indexOf(StepType.PAT_SURVEY.name)].status
                                                             else
                                                                 DIDI_REJECTED
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.VO_ENDORSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                                .indexOf(StepType.VO_ENDORSEMENT.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
 

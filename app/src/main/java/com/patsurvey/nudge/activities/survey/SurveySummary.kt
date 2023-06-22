@@ -147,33 +147,20 @@ fun SurveySummary(
                                 && surveySummaryViewModel.isDidiSynced.value == 2
                                 && surveySummaryViewModel.isDidiRankingSynced.value == 2
                             ){
-                                if(surveySummaryViewModel.isDidiPATSynced.value == 2){
-                                    surveySummaryViewModel.updatePatStatusToNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-
-                                    })
-                                    surveySummaryViewModel.callWorkFlowAPI(
-                                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                        stepId,
-                                        object :
-                                            NetworkCallbackListener {
-                                            override fun onSuccess() {
-                                            }
-
-                                            override fun onFailed() {
-                                                showCustomToast(context, SYNC_FAILED)
-                                            }
-                                        })
-                                }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 surveySummaryViewModel.savePATSummeryToServer(object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })
+
+                                surveySummaryViewModel.updatePatStatusToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
 
