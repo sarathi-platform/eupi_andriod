@@ -106,7 +106,7 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = stringResource(id = R.string.are_you_sure),
                 message = context.getString(
                     R.string.you_are_submitting_wealth_ranking_for_count_didis,
-                    didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size.toString()
+                    didids.value.size.toString()
                 ),
                 setShowDialog = {
                     showDialog.value = it

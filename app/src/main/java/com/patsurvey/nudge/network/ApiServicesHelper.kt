@@ -5,6 +5,7 @@ import com.patsurvey.nudge.utils.ApiType.BPC_DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.BPC_SUMMARY_API
 import com.patsurvey.nudge.utils.ApiType.BPC_UPDATE_DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_EDIT_API
+import com.patsurvey.nudge.utils.ApiType.CAST_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
 import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
@@ -65,6 +66,7 @@ object ApiServicesHelper {
             VILLAGE_LIST_API -> SUBPATH_USER_VILLAGE_LIST
             VALIDATE_OTP_API -> SUBPATH_AUTH_VALIDATE_OTP
             GENERATE_OTP_API -> SUBPATH_AUTH_GENERATE_OTP
+            CAST_LIST_API -> SUBPATH_CONFIG_GET_CASTE_LIST
             BPC_SUMMARY_API -> SUBPATH_GET_BPC_SUMMARY
             BPC_DIDI_LIST_API -> SUBPATH_GET_BPC_DIDI_LIST
             DIDI_EDIT_API -> SUBPATH_EDIT_DIDI

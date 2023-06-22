@@ -716,7 +716,6 @@ object RetryHelper {
                                                             .indexOf(StepType.PAT_SURVEY.name)].status)
                                                     else
                                                         DidiEndorsementStatus.NOT_STARTED.ordinal
-
                                                 bpcNonSelectedDidiDao?.insertNonSelectedDidi(
                                                     BpcNonSelectedDidiEntity(
                                                         id = didi.id,
@@ -767,7 +766,27 @@ object RetryHelper {
                     ApiType.PAT_BPC_SURVEY_SUMMARY -> {
 
                     }
+                    ApiType.CAST_LIST_API -> {
+                        crpPatQuestionApiLanguageId.forEach { language ->
+                            try {
+                                val casteResponse = apiService?.getCasteList(language)
+                                if (casteResponse?.status.equals(SUCCESS, true)) {
+                                    casteResponse?.data?.let { casteList ->
+                                        casteList.forEach { casteEntity ->
+                                            casteEntity.languageId = language
+                                        }
+                                        castListDao?.insertAll(casteList)
+                                    }
+                                } else {
+                                    val ex = ApiResponseFailException(casteResponse?.message!!)
 
+                                    onCatchError(ex, ApiType.CAST_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.CAST_LIST_API)
+                            }
+                        }
+                    }
                     else -> {
                         //TODO check if retry required for workflow api.
                     }

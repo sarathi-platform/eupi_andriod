@@ -12,6 +12,7 @@ enum class ApiType {
     VILLAGE_LIST_API,
     VALIDATE_OTP_API,
     GENERATE_OTP_API,
+    CAST_LIST_API,
     BPC_SUMMARY_API,
     BPC_DIDI_LIST_API,
     PAT_BPC_QUESTION_API,
@@ -19,10 +20,10 @@ enum class ApiType {
     PAT_BPC_SURVEY_SUMMARY,
     BPC_UPDATE_DIDI_LIST_API;
 
-/*    fun fromString(apiName: String): ApiType {
-        when (apiName) {
+    /*    fun fromString(apiName: String): ApiType {
+            when (apiName) {
 
-        }
-    }*/
+            }
+        }*/
 
 }

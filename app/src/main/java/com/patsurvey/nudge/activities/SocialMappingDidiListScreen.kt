@@ -215,7 +215,7 @@ fun SocialMappingDidiListScreen(
                                             modifier = Modifier
                                                 .weight(0.5f)
                                                 .height(45.dp),
-                                            buttonTitle = stringResource(id = R.string.add_didi)
+                                            buttonTitle = stringResource(id = R.string.add_didi),
                                         ) {
                                             didiViewModel.resetAllFields()
                                             navController.navigate("add_didi_graph/$ADD_DIDI_BLANK_ID") {

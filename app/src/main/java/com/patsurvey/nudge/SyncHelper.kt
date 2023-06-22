@@ -657,27 +657,27 @@ class SyncHelper (
         Log.e("workflow api called","$villageId -> $stepList -> $step")
         when(step){
             1->{
-                if(stepList[0].status != getStepStatusFromOrdinal(stepList[0].isComplete)){
+                if(stepList[0].needToPost){
                     callWorkFlowAPI(villageId,stepList[0].id)
                 }
             }
             2->{
-                if(stepList[1].status != getStepStatusFromOrdinal(stepList[1].isComplete)){
+                if(stepList[1].needToPost){
                     callWorkFlowAPI(villageId,stepList[1].id)
                 }
             }
             3->{
-                if(stepList[2].status != getStepStatusFromOrdinal(stepList[2].isComplete)){
+                if(stepList[2].needToPost){
                     callWorkFlowAPI(villageId,stepList[2].id)
                 }
             }
             4->{
-                if(stepList[3].status != getStepStatusFromOrdinal(stepList[3].isComplete)){
+                if(stepList[3].needToPost){
                     callWorkFlowAPI(villageId,stepList[3].id)
                 }
             }
             5->{
-                if(stepList[4].status != getStepStatusFromOrdinal(stepList[4].isComplete)){
+                if(stepList[4].needToPost){
                     callWorkFlowAPI(villageId,stepList[4].id)
                 }
             }
