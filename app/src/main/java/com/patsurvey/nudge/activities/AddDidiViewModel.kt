@@ -446,7 +446,7 @@ class AddDidiViewModel @Inject constructor(
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonDidi = JsonArray()
-            val filteredDidiList = didiList.value.filter { it.needsToPost }
+            val filteredDidiList = didiDao.getAllNeedToPostDidiRanking(true)
             if (filteredDidiList.isNotEmpty()) {
                 for (didi in filteredDidiList) {
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
@@ -475,8 +475,8 @@ class AddDidiViewModel @Inject constructor(
                                 }
                             }
                         } else {
-                            for(i in didiList.value.indices){
-                                didiList.value[i].transactionId?.let { it1 ->
+                            for(i in filteredDidiList.indices){
+                                response.data[i].transactionId.let { it1 ->
                                     didiDao.updateDidiTransactionId(didiList.value[i].id,
                                         it1
                                     )

@@ -243,7 +243,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiRequestList)
                         if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
                             if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
-                                updateWealthRankResponse.data?.forEach{didi ->
+                                needToPostDidiList.forEach{didi ->
                                     didiDao.setNeedToPostRanking(didi.id, false)
                                 }
                             } else {
