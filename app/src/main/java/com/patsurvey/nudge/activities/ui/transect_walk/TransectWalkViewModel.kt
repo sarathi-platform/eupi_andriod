@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TolaEntity
@@ -41,7 +42,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class TransectWalkViewModel @Inject constructor(
@@ -121,14 +124,27 @@ class TransectWalkViewModel @Inject constructor(
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         networkCallbackListener.onSuccess()
-                        response.data.forEach { tolaDataFromNetwork ->
-                            tolaList.value.forEach { tola ->
-                                if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
-                                    tola.id = tolaDataFromNetwork.id
-                                    tola.createdDate = tolaDataFromNetwork.createdDate
-                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
+                        if(response.data[0].transactionId.isNullOrEmpty()) {
+                            response.data.forEach { tolaDataFromNetwork ->
+                                tolaList.value.forEach { tola ->
+                                    if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
+                                        tola.id = tolaDataFromNetwork.id
+                                        tola.createdDate = tolaDataFromNetwork.createdDate
+                                        tola.modifiedDate = tolaDataFromNetwork.modifiedDate
+                                    }
                                 }
                             }
+                        } else {
+                            tolaList.value.forEach { tola ->
+                                for(i in tolaList.value.indices){
+                                    tolaList.value[i].transactionId?.let { it1 ->
+                                        tolaDao.updateTolaTransactionId(tolaList.value[i].id,
+                                            it1
+                                        )
+                                    }
+                                }
+                            }
+                            startSyncTimerForTolaStatus()
                         }
                     }
                 }
@@ -140,6 +156,44 @@ class TransectWalkViewModel @Inject constructor(
             }
         }
     }
+
+    private fun startSyncTimerForTolaStatus(){
+        val timer = Timer()
+        timer.schedule(object : TimerTask(){
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    val tolaList = tolaDao.fetchPendingTola(true,"")
+                    if(tolaList.isNotEmpty()) {
+                        val ids: ArrayList<String> = arrayListOf()
+                        tolaList.forEach { tola ->
+                            tola.transactionId?.let { ids.add(it) }
+                        }
+                        val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.forEach { transactionIdResponse ->
+                                tolaList.forEach { tola ->
+                                    if (transactionIdResponse.transactionId == tola.transactionId) {
+                                        tola.serverId = transactionIdResponse.referenceId
+                                    }
+                                }
+                            }
+                            for(tola in tolaList) {
+                                tolaDao.updateTolaDetailAfterSync(
+                                    id = tola.id,
+                                    serverId = tola.serverId,
+                                    needsToPost = false,
+                                    transactionId = "",
+                                    createdDate = tola.createdDate?:0L,
+                                    modifiedDate = tola.modifiedDate?:0L
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        },10000)
+    }
+
     fun updateTolaNeedTOPostList(villageId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             updateTolaListWithIds(tolaList.value, villageId)
@@ -177,8 +231,10 @@ class TransectWalkViewModel @Inject constructor(
                         if (stepDetails.orderNumber != it.orderNumber) {
                             if (it.orderNumber == 2) {
                                 stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
+                                stepsListDao.updateNeedToPost(it.id, true)
                             } else {
                                 stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.NOT_STARTED.ordinal, villageId)
+                                stepsListDao.updateNeedToPost(it.id, true)
                             }
                         }
                     }
@@ -310,6 +366,7 @@ class TransectWalkViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -338,8 +395,9 @@ class TransectWalkViewModel @Inject constructor(
                 StepStatus.INPROGRESS.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId, true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
-            completeStepList?.let {
+            completeStepList.let {
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
                         stepsListDao.markStepAsCompleteOrInProgress(
@@ -347,10 +405,11 @@ class TransectWalkViewModel @Inject constructor(
                             StepStatus.INPROGRESS.ordinal,
                             villageId
                         )
+                        stepsListDao.updateNeedToPost(newStep.id, true)
                     }
                 }
             }
-            completeStepList?.let {
+            completeStepList.let {
                 val apiRequest = mutableListOf<EditWorkFlowRequest>()
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
@@ -378,6 +437,7 @@ class TransectWalkViewModel @Inject constructor(
                                     )
                                 }
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         } else {
                             networkCallbackListener.onFailed()
                         }
@@ -430,6 +490,7 @@ class TransectWalkViewModel @Inject constructor(
                                     it[0].status
                                 )
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -457,6 +518,7 @@ class TransectWalkViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(step.id, false)
                                 }
                             }
                         }

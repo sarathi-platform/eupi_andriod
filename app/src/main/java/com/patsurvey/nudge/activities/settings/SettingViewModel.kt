@@ -24,13 +24,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.SYNC_FAILED
-import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -134,14 +128,23 @@ class SettingViewModel @Inject constructor(
                 && tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal).isEmpty()
                 && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
                 && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
-                && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty())
-            {
+                && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()
+                && isStatusStepStatusSync(0)) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
             } else
                 isNeedToBeSync.value = 0
         }
+    }
+
+    fun isStatusStepStatusSync(step : Int) : Boolean{
+        Log.e("step","->$step")
+        val villageId = prefRepo.getSelectedVillage().id
+        val stepList = stepsListDao.getAllStepsForVillage(villageId)
+        Log.e("status","-> "+stepList[step].status)
+        Log.e("iscomplete","-> "+getStepStatusFromOrdinal(stepList[step].isComplete))
+        return !stepList[step].needToPost
     }
 
     fun isSecondStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
@@ -152,7 +155,8 @@ class SettingViewModel @Inject constructor(
             && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal).isEmpty()
             && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
             && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
-            && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()) {
+            && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()
+            && isStatusStepStatusSync(1)) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
@@ -166,6 +170,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
+                && isStatusStepStatusSync(2)
             ) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -180,6 +185,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
+                && isStatusStepStatusSync(3)
             ) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -200,6 +206,7 @@ class SettingViewModel @Inject constructor(
                     needsToPostPAT = true,
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
+                && isStatusStepStatusSync(4)
             ) {
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2

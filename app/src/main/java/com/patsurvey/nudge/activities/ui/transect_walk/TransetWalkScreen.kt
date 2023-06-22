@@ -182,7 +182,7 @@ fun TransectWalkScreen(
                                         )
                                     ) {
                                         //TODO if required uncomment this to hide add tola button.
-//                                        if (!viewModel.isVoEndorsementComplete.value) {
+                                        if (!viewModel.isVoEndorsementComplete.value) {
                                             ButtonOutline(
                                                 modifier = Modifier
                                                     .weight(0.9f)
@@ -191,7 +191,7 @@ fun TransectWalkScreen(
                                                 if (!showAddTolaBox)
                                                     showAddTolaBox = true
                                             }
-//                                        }
+                                        }
                                     }
                                 }
                             }

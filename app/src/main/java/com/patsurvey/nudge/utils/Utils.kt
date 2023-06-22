@@ -76,6 +76,17 @@ fun findCompleteValue(status:String): StepStatus {
         else -> {StepStatus.NOT_STARTED}
     }
 }
+
+fun getStepStatusFromOrdinal(status : Int) : String{
+    return when(status){
+        StepStatus.NOT_STARTED.ordinal -> StepStatus.NOT_STARTED.name
+        StepStatus.INPROGRESS.ordinal -> StepStatus.INPROGRESS.name
+        StepStatus.COMPLETED.ordinal -> StepStatus.COMPLETED.name
+        else -> {
+            StepStatus.NOT_STARTED.name
+        }
+    }
+}
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
     is ContextWrapper -> baseContext.findActivity()

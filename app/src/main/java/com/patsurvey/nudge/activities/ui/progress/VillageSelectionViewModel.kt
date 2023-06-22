@@ -198,6 +198,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 steps.villageId = village.id
                                                 steps.isComplete =
                                                     findCompleteValue(steps.status).ordinal
+                                                steps.needToPost = false
                                             }
                                             stepsListDao.insertAll(it.stepList)
                                         }
@@ -666,7 +667,7 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.Main).launch {
             networkErrorMessage.value = error?.message.toString()
         }
-
+        Log.e("server error","villege screen")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
