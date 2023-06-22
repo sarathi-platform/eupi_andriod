@@ -7,6 +7,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
+import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -112,6 +114,48 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchVillageList()
             }
         }
+        fetchCastList()
+    }
+
+    private fun fetchCastList() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val localCasteList = casteListDao.getAllCaste()
+            if (localCasteList.isNotEmpty()) {
+                casteListDao.deleteCasteTable()
+            }
+
+            val languageList = languageListDao.getAllLanguages()
+            languageList.forEach { language ->
+                try {
+                    val casteResponse = apiService.getCasteList(language.id)
+                    if (casteResponse.status.equals(SUCCESS, true)) {
+                        casteResponse.data?.let { casteList ->
+                            casteList.forEach { casteEntity ->
+                                casteEntity.languageId = language.id
+                            }
+                            casteListDao.insertAll(casteList)
+                        }
+                    } else {
+                        val ex = ApiResponseFailException(casteResponse.message)
+                        if (!RetryHelper.retryApiList.contains(ApiType.CAST_LIST_API)) {
+                            RetryHelper.retryApiList.add(ApiType.CAST_LIST_API)
+                            crpPatQuestionApiLanguageId.add(language.id)
+                        }
+                        onCatchError(ex, ApiType.CAST_LIST_API)
+                    }
+                } catch (ex: Exception) {
+                    if (!RetryHelper.retryApiList.contains(ApiType.CAST_LIST_API)) {
+                        RetryHelper.retryApiList.add(ApiType.CAST_LIST_API)
+                        crpPatQuestionApiLanguageId.add(language.id)
+                    }
+                    onCatchError(ex, ApiType.CAST_LIST_API)
+                } finally {
+                    if (retryApiList.contains(ApiType.CAST_LIST_API))
+                        RetryHelper.retryApi(ApiType.CAST_LIST_API)
+                }
+            }
+        }
+
     }
 
     fun saveVideosToDb(context: Context) {
@@ -175,12 +219,12 @@ class VillageSelectionViewModel @Inject constructor(
                     if (localStepsList.isNotEmpty()) {
                         stepsListDao.deleteAllStepsFromDB()
                     }
-                    val localAnswerList=answerDao.getAllAnswer()
-                    if(localAnswerList.isNotEmpty()){
+                    val localAnswerList = answerDao.getAllAnswer()
+                    if (localAnswerList.isNotEmpty()) {
                         answerDao.deleteAnswerTable()
                     }
-                    val localNumAnswerList=numericAnswerDao.getAllNumericAnswers()
-                    if(localNumAnswerList.isNotEmpty()){
+                    val localNumAnswerList = numericAnswerDao.getAllNumericAnswers()
+                    if (localNumAnswerList.isNotEmpty()) {
                         numericAnswerDao.deleteNumericTable()
                     }
 
@@ -286,31 +330,33 @@ class VillageSelectionViewModel @Inject constructor(
                                                                     .indexOf(StepType.PAT_SURVEY.name)].status
                                                             else
                                                                 DIDI_REJECTED
-                                                    val voEndorsementStatus =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDROSEMENT.name))
-                                                            DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
-                                                        else
-                                                            DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                        val voEndorsementStatus =
+                                                            if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                    .contains(StepType.VO_ENDROSEMENT.name))
+                                                                DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                    .indexOf(StepType.VO_ENDROSEMENT.name)].status)
+                                                            else
+                                                                DidiEndorsementStatus.NOT_STARTED.ordinal
 
-                                                    didiDao.insertDidi(
-                                                        DidiEntity(
-                                                            id = didi.id,
-                                                            serverId = didi.id,
-                                                            name = didi.name,
-                                                            address = didi.address,
-                                                            guardianName = didi.guardianName,
-                                                            relationship = didi.relationship,
-                                                            castId = didi.castId,
-                                                            castName = casteName,
-                                                            cohortId = didi.cohortId,
-                                                            villageId = village.id,
-                                                            cohortName = tolaName,
-                                                            needsToPost = false,
-                                                            wealth_ranking = wealthRanking,
-                                                            forVoEndorsement = if(patSurveyAcceptedRejected.equals(
-                                                                    COMPLETED_STRING,true)) 1 else 0,
+                                                        didiDao.insertDidi(
+                                                            DidiEntity(
+                                                                id = didi.id,
+                                                                serverId = didi.id,
+                                                                name = didi.name,
+                                                                address = didi.address,
+                                                                guardianName = didi.guardianName,
+                                                                relationship = didi.relationship,
+                                                                castId = didi.castId,
+                                                                castName = casteName,
+                                                                cohortId = didi.cohortId,
+                                                                villageId = village.id,
+                                                                cohortName = tolaName,
+                                                                needsToPost = false,
+                                                                wealth_ranking = wealthRanking,
+                                                                forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                                        COMPLETED_STRING, true
+                                                                    )
+                                                                ) 1 else 0,
                                                                 voEndorsementStatus = voEndorsementStatus,
                                                                 needsToPostRanking = false,
                                                                 createdDate = didi.createdDate,
@@ -318,28 +364,29 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                                 shgFlag = SHGFlag.NOT_MARKED.value,
                                                                 transactionId = "",
-                                                            localCreatedDate = didi.localCreatedDate,
-                                                            localModifiedDate = didi.localModifiedDate,
-                                                            score = didi.score,
-                                                            comment = didi.comment,
+                                                                localCreatedDate = didi.localCreatedDate,
+                                                                localModifiedDate = didi.localModifiedDate,
+                                                                score = didi.score,
+                                                                comment = didi.comment,
 
+                                                                )
                                                         )
-                                                    )
+                                                    }
                                                 }
+                                            } catch (ex: Exception) {
+                                                onError(
+                                                    tag = "VillageSelectionViewModel",
+                                                    "Error : ${didiResponse.message}"
+                                                )
+                                                showLoader.value = false
                                             }
-                                        } catch (ex: Exception) {
-                                            onError(
-                                                tag = "VillageSelectionViewModel",
-                                                "Error : ${didiResponse.message}"
-                                            )
-                                            showLoader.value = false
                                         }
-                                    }
 
                                         try {
-                                            val answerApiResponse = apiService.fetchPATSurveyToServer(
-                                                listOf(village.id)
-                                            )
+                                            val answerApiResponse =
+                                                apiService.fetchPATSurveyToServer(
+                                                    listOf(village.id)
+                                                )
                                             if (answerApiResponse.status.equals(SUCCESS, true)) {
                                                 answerApiResponse.data?.let {
                                                     val answerList: ArrayList<SectionAnswerEntity> =
@@ -348,9 +395,12 @@ class VillageSelectionViewModel @Inject constructor(
                                                         arrayListOf()
                                                     it.forEach { item ->
                                                         didiDao.updatePATProgressStatus(
-                                                            patSurveyStatus = item.patSurveyStatus ?: 0,
-                                                            section1Status = item.section1Status ?: 0,
-                                                            section2Status = item.section2Status ?: 0,
+                                                            patSurveyStatus = item.patSurveyStatus
+                                                                ?: 0,
+                                                            section1Status = item.section1Status
+                                                                ?: 0,
+                                                            section2Status = item.section2Status
+                                                                ?: 0,
                                                             didiId = item.beneficiaryId ?: 0
                                                         )
                                                         if (item?.answers?.isNotEmpty() == true) {
@@ -363,10 +413,12 @@ class VillageSelectionViewModel @Inject constructor(
                                                                         SectionAnswerEntity(
                                                                             id = 0,
                                                                             optionId = 0,
-                                                                            didiId = item.beneficiaryId ?: 0,
+                                                                            didiId = item.beneficiaryId
+                                                                                ?: 0,
                                                                             questionId = answersItem?.questionId
                                                                                 ?: 0,
-                                                                            villageId = item.villageId ?: 0,
+                                                                            villageId = item.villageId
+                                                                                ?: 0,
                                                                             actionType = answersItem?.section
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
@@ -414,10 +466,12 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 0
                                                                             )?.optionId
                                                                                 ?: 0,
-                                                                            didiId = item.beneficiaryId ?: 0,
+                                                                            didiId = item.beneficiaryId
+                                                                                ?: 0,
                                                                             questionId = answersItem?.questionId
                                                                                 ?: 0,
-                                                                            villageId = item.villageId ?: 0,
+                                                                            villageId = item.villageId
+                                                                                ?: 0,
                                                                             actionType = answersItem?.section
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
@@ -449,7 +503,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                     }
                                                 }
                                             } else {
-                                                val ex = ApiResponseFailException(answerApiResponse.message)
+                                                val ex =
+                                                    ApiResponseFailException(answerApiResponse.message)
                                                 RetryHelper.retryApiList.add(ApiType.PAT_CRP_SURVEY_SUMMARY)
                                                 onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                                             }
@@ -459,8 +514,9 @@ class VillageSelectionViewModel @Inject constructor(
                                             }
                                             onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                                         }
-                                    withContext(Dispatchers.Main) {
-                                        showLoader.value = false}
+                                        withContext(Dispatchers.Main) {
+                                            showLoader.value = false
+                                        }
 
                                     }
                                 } else {
@@ -595,8 +651,7 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                     }
                 }
-            }
-            catch (ex: Exception) {
+            } catch (ex: Exception) {
                 onCatchError(ex)
                 showLoader.value = false
             } finally {
@@ -645,7 +700,9 @@ class VillageSelectionViewModel @Inject constructor(
                 Log.d("VillageSelectionViewModel", "fetchUserDetails: catch called")
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)
                 if (ex is HttpException) {
-                    if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()?.code() == RESPONSE_CODE_CONFLICT) {
+                    if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()
+                            ?.code() == RESPONSE_CODE_CONFLICT
+                    ) {
                         withContext(Dispatchers.Main) {
                             RetryHelper.tokenExpired.value = true
                         }
@@ -667,7 +724,7 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.Main).launch {
             networkErrorMessage.value = error?.message.toString()
         }
-        Log.e("server error","villege screen")
+        Log.e("server error", "villege screen")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
