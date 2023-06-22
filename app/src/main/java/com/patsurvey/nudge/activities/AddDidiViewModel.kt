@@ -6,6 +6,7 @@ import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -29,7 +30,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class AddDidiViewModel @Inject constructor(
@@ -384,6 +387,7 @@ class AddDidiViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(mStepId,true)
             val existingList = villageListDao.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
             if (!existingList.isNullOrEmpty()) {
@@ -400,6 +404,7 @@ class AddDidiViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -449,22 +454,35 @@ class AddDidiViewModel @Inject constructor(
                 val response = apiService.addDidis(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
-                        response.data.forEach { didiFromNetwork ->
-                            didiList.value.forEach { didi ->
-                                didiDao.updateDidiServerId(villageId = prefRepo.getSelectedVillage().id,
-                                    modifiedDate = didiFromNetwork.modifiedDate,
-                                    createdDate = didiFromNetwork.createdDate,
-                                    cohortId = didiFromNetwork.cohortId,
-                                    castId = didiFromNetwork.castId,
-                                    serverId = didiFromNetwork.id,
-                                    guardianName = didiFromNetwork.guardianName,
-                                    name = didiFromNetwork.name)
-                                if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
-                                    didi.serverId = didiFromNetwork.id
-                                    didi.createdDate = didiFromNetwork.createdDate
-                                    didi.modifiedDate = didiFromNetwork.modifiedDate
+                        if(response.data[0].transactionId.isNullOrEmpty()) {
+                            response.data.forEach { didiFromNetwork ->
+                                didiList.value.forEach { didi ->
+                                    didiDao.updateDidiServerId(
+                                        villageId = prefRepo.getSelectedVillage().id,
+                                        modifiedDate = didiFromNetwork.modifiedDate,
+                                        createdDate = didiFromNetwork.createdDate,
+                                        cohortId = didiFromNetwork.cohortId,
+                                        castId = didiFromNetwork.castId,
+                                        serverId = didiFromNetwork.id,
+                                        guardianName = didiFromNetwork.guardianName,
+                                        name = didiFromNetwork.name
+                                    )
+                                    if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
+                                        didi.serverId = didiFromNetwork.id
+                                        didi.createdDate = didiFromNetwork.createdDate
+                                        didi.modifiedDate = didiFromNetwork.modifiedDate
+                                    }
                                 }
                             }
+                        } else {
+                            for(i in didiList.value.indices){
+                                didiList.value[i].transactionId?.let { it1 ->
+                                    didiDao.updateDidiTransactionId(didiList.value[i].id,
+                                        it1
+                                    )
+                                }
+                            }
+                            startSyncTimerForDidiStatus()
                         }
                         networkCallbackListener.onSuccess()
                     }
@@ -477,10 +495,36 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun updateDidisNeedTOPostList(villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            updateTolaListWithIds(didiList, villageId)
-        }
+    private fun startSyncTimerForDidiStatus(){
+        val timer = Timer()
+        timer.schedule(object : TimerTask(){
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    val didiList = didiDao.fetchPendingDidi(true,"")
+                    if(didiList.isNotEmpty()) {
+                        val ids: ArrayList<String> = arrayListOf()
+                        didiList.forEach { tola ->
+                            tola.transactionId?.let { ids.add(it) }
+                        }
+                        val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.forEach { transactionIdResponse ->
+                                didiList.forEach { didi ->
+                                    if (transactionIdResponse.transactionId == didi.transactionId) {
+                                        didi.serverId = transactionIdResponse.referenceId
+                                    }
+                                }
+                            }
+                            didiList.forEach{ didiEntity ->
+                                didiEntity.needsToPost = false
+                                didiEntity.transactionId = ""
+                                didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
+                            }
+                        }
+                    }
+                }
+            }
+        },10000)
     }
 
     override fun onServerError(error: ErrorModel?) {
@@ -491,7 +535,7 @@ class AddDidiViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
+    /*private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
         val oldDidiList = didiDao.getAllDidisForVillage(villageId)
         didiDao.deleteDidiForVillage(villageId)
         val didis = mutableListOf<DidiEntity>()
@@ -530,7 +574,7 @@ class AddDidiViewModel @Inject constructor(
             )
         }
         didiDao.insertAll(didis)
-    }
+    }*/
 
     fun callWorkFlowAPI(
         villageId: Int,
@@ -556,6 +600,7 @@ class AddDidiViewModel @Inject constructor(
                                     villageId,
                                     it[0].status
                                 )
+                                stepsListDao.updateNeedToPost(stepId, false)
                             }
                         } else {
                             networkCallbackListener.onFailed()
@@ -584,6 +629,7 @@ class AddDidiViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(stepId, false)
                                 }
                             }
                         }
@@ -610,8 +656,9 @@ class AddDidiViewModel @Inject constructor(
                 StepStatus.INPROGRESS.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId,true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
-            completeStepList?.let {
+            completeStepList.let {
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
                         if (filterDidiList.isEmpty()) {
@@ -628,10 +675,11 @@ class AddDidiViewModel @Inject constructor(
                                 villageId
                             )
                         }
+                        stepsListDao.updateNeedToPost(newStep.stepId,true)
                     }
                 }
             }
-            completeStepList?.let {
+            completeStepList.let {
                 val apiRequest = mutableListOf<EditWorkFlowRequest>()
                 it.forEach { newStep ->
                     if (newStep.orderNumber > step.orderNumber) {
@@ -657,6 +705,7 @@ class AddDidiViewModel @Inject constructor(
                                         villageId,
                                         it.status
                                     )
+                                    stepsListDao.updateNeedToPost(stepId,false)
                                 }
                             }
                         } else {

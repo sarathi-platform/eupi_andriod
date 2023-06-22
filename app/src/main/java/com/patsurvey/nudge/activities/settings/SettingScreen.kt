@@ -573,7 +573,8 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3)
+                                if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3) {
+                                    Log.e("sync dialog", "step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -583,7 +584,9 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
+                                }
                                 else if (settingViewModel.stepOneSyncStatus.value == 1) {
+                                    Log.e("sync dialog","step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -621,7 +624,8 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3)
+                                if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3) {
+                                    Log.e("sync dialog","step two tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -631,7 +635,9 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
+                                }
                                 else if (settingViewModel.stepTwoSyncStatus.value == 1) {
+                                    Log.e("sync dialog","step two circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -669,7 +675,8 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3)
+                                if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3) {
+                                    Log.e("sync dialog","step three tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -679,7 +686,9 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
+                                }
                                 else if (settingViewModel.stepThreeSyncStatus.value == 1) {
+                                    Log.e("sync dialog","step three circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -717,7 +726,8 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3)
+                                if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3) {
+                                    Log.e("sync dialog","step four tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -727,7 +737,9 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
+                                }
                                 else if (settingViewModel.stepFourSyncStatus.value == 1) {
+                                    Log.e("sync dialog","step four circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -739,7 +751,6 @@ fun showSyncDialog(
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
-
                                 Row(modifier = Modifier.align(Alignment.CenterStart)) {
                                     Text(
                                         text = stringResource(id = R.string.step_5) + ": ",
@@ -766,7 +777,8 @@ fun showSyncDialog(
                                     modifier = Modifier
                                 )*/
                                 }
-                                if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3)
+                                if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3) {
+                                    Log.e("sync dialog","step fifth tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -776,7 +788,9 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
+                                }
                                 else if (settingViewModel.stepFifthSyncStatus.value == 1) {
+                                    Log.e("sync dialog","step fifth circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)

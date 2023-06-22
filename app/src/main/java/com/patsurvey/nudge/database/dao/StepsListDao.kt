@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.StepListEntity
+import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 import com.patsurvey.nudge.utils.TOLA_TABLE
 
@@ -52,4 +53,6 @@ interface StepsListDao {
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId AND isComplete = 2 ORDER BY orderNumber ASC")
     fun getAllCompleteStepsForVillage(villageId: Int): List<StepListEntity>
 
+    @Query("UPDATE $STEPS_LIST_TABLE SET needToPost = :needsToPost WHERE id =:id")
+    fun updateNeedToPost(id:Int, needsToPost: Boolean)
 }

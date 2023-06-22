@@ -766,7 +766,7 @@ class SyncHelper (
                         needToPostDidiList.forEach { didi->
                             launch {
                                 didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                                    localModifiedDate = System.currentTimeMillis()))
+                                    localModifiedDate = didi.localModifiedDate))
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
@@ -1135,22 +1135,21 @@ class SyncHelper (
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 Log.e("work flow","called")
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                if(dbResponse.workFlowId>0){
+                val step=stepsListDao.getStepForVillage(villageId, stepId)
+                if(step.workFlowId>0 && step.needToPost){
                     val response = apiService.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                            EditWorkFlowRequest(step.workFlowId,step.status)
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
-                                stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal, villageId)
+                                stepsListDao.updateWorkflowId(stepId,step.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateNeedToPost(stepId,false)
                             }
                         }
                     }
                 }
-
             }catch (ex:Exception){
 //                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }

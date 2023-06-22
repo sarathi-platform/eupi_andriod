@@ -139,9 +139,12 @@ class SettingViewModel @Inject constructor(
     }
 
     fun isStatusStepStatusSync(step : Int) : Boolean{
+        Log.e("step","->$step")
         val villageId = prefRepo.getSelectedVillage().id
         val stepList = stepsListDao.getAllStepsForVillage(villageId)
-        return stepList[step].status == getStepStatusFromOrdinal(stepList[step].isComplete)
+        Log.e("status","-> "+stepList[step].status)
+        Log.e("iscomplete","-> "+getStepStatusFromOrdinal(stepList[step].isComplete))
+        return !stepList[step].needToPost
     }
 
     fun isSecondStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
