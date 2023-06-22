@@ -246,7 +246,7 @@ class SurveySummaryViewModel @Inject constructor(
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
                 val stepList = stepsListDao.getAllStepsForVillage(villageId)
                 val bpcStep = stepList.sortedBy { it.orderNumber }.last()
-                if (dbResponse.workFlowId > 0) {
+                if (bpcStep.workFlowId > 0) {
                     val response = apiService.editWorkFlow(
                         listOf(
                             EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
@@ -257,7 +257,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(
                                     stepId,
-                                    dbResponse.workFlowId,
+                                    bpcStep.workFlowId,
                                     villageId,
                                     it[0].status
                                 )
