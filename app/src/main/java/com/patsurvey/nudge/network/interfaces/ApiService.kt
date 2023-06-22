@@ -42,7 +42,7 @@ interface ApiService {
 
     @POST("/write-api/cohort/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun editCohort(@Body updatedCohort: JsonArray): ApiResponseModel<String?>
+    suspend fun editCohort(@Body updatedCohort: JsonArray): ApiResponseModel<List<TolaApiResponse>>
 
     @POST("/write-api/cohort/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -93,7 +93,7 @@ interface ApiService {
 
     @POST("/write-api/beneficiary/delete")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<DidiEntity>
+    suspend fun deleteDidi(@Body didiId: JsonArray): ApiResponseModel<List<DidiEntity>>
 
     @POST("/pat-api/pat/save")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -119,6 +119,10 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun updateDidiScore(@Body didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>
 
+
+    @POST("/write-api/beneficiary/edit")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun updateDidis(@Body didiWealthRankingRequest: List<EditDidiRequest>): ApiResponseModel<List<DidiEntity>>
 
     @GET("/read-api/bpc/view-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

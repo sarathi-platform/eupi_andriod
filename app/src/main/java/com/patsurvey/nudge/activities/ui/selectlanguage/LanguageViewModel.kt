@@ -6,8 +6,8 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.LanguageListDao
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

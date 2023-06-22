@@ -18,10 +18,10 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
@@ -109,8 +109,13 @@ class ProgressScreenViewModel @Inject constructor(
             _didiList.emit(mDidiList)
             val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
             if(dbInProgressStep!=null){
-                if(stepList.size>dbInProgressStep.orderNumber)
-                    stepsListDao.markStepAsInProgress((dbInProgressStep.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+                if(stepList.size>dbInProgressStep.orderNumber) {
+                    stepsListDao.markStepAsInProgress(
+                        (dbInProgressStep.orderNumber + 1),
+                        StepStatus.INPROGRESS.ordinal,
+                        villageId
+                    )
+                }
             }else{
                 stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
             }
@@ -178,6 +183,7 @@ class ProgressScreenViewModel @Inject constructor(
             if(dbInProgressStep!=null){
                 if(stepList.value.size>dbInProgressStep.orderNumber)
                     stepsListDao.markStepAsInProgress((dbInProgressStep.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+//                stepsListDao.updateNeedToPost(dbInProgressStep.id, true)
             }else{
                 stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
             }
@@ -197,6 +203,7 @@ class ProgressScreenViewModel @Inject constructor(
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,it[0].id,villageId,it[0].status)
+                                stepsListDao.updateNeedToPost(stepId,false)
                             }
                         }else{
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")

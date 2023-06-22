@@ -97,10 +97,9 @@ fun PatDidiSummaryScreen(
         }
     }
 
-    var yesNoButtonViewHeight = remember {
+    val yesNoButtonViewHeight = remember {
         mutableStateOf(0.dp)
     }
-
 
     ConstraintLayout(
         modifier = Modifier

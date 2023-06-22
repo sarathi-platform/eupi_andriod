@@ -31,7 +31,7 @@ data class StepListEntity(
     var isComplete: Int = 0,
 
     @ColumnInfo(name = "needToPost")
-    var needToPost: Boolean = true,
+    var needToPost: Boolean = false,
 
     @ColumnInfo(name = "villageId")
     var villageId: Int = 0,

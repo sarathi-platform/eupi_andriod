@@ -95,33 +95,9 @@ fun VillageSelectionScreen(
     val context = LocalContext.current
     var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
-        if (BuildConfig.DEBUG) showCustomToast(context, viewModel.networkErrorMessage.value)
-//        RetryHelper.tokenExpired.value =true
+        if (BuildConfig.DEBUG)
+            showCustomToast(context, viewModel.networkErrorMessage.value)
         viewModel.networkErrorMessage.value = BLANK_STRING
-    }
-
-    val isResendOTPEnable = remember { mutableStateOf(false) }
-    val formattedTime = remember {
-        mutableStateOf(SEC_30_STRING)
-    }
-    var isResendOTPVisible by remember {
-        mutableStateOf(true)
-    }
-
-    LaunchedEffect(key1 = RetryHelper.tokenExpired.value) {
-        if (RetryHelper.tokenExpired.value) {
-            viewModel.tokenExpired.value = true
-            RetryHelper.generateOtp { success, message, mobileNumber ->
-                if (success) {
-                    viewModel.tokenExpired.value = true
-                    snackState.addMessage(
-                        message = context.getString(R.string.otp_send_to_mobile_number_message_for_relogin)
-                            .replace("{MOBILE_NUMBER}", mobileNumber, true),
-                        isSuccess = true, isCustomIcon = false
-                    )
-                }
-            }
-        }
     }
 
     BackHandler {
@@ -134,34 +110,6 @@ fun VillageSelectionScreen(
     }
 
     Box() {
-        if (viewModel.tokenExpired.value) {
-            ShowOptDialogForVillageScreen(
-                modifier = Modifier,
-                context = LocalContext.current,
-                viewModel = viewModel,
-                snackState = snackState,
-                /*isResendOTPEnable = isResendOTPEnable,
-                formattedTime = formattedTime,*/
-                setShowDialog = {
-                    viewModel.tokenExpired.value = false
-                },
-                positiveButtonClicked = {
-                    RetryHelper.updateOtp(viewModel.baseOtpNumber) { success, message ->
-                        if (success){
-                            RetryHelper.tokenExpired.value = false
-                            RetryHelper.retryVillageListApi { success, villageList ->
-                                if (success && !villageList?.isNullOrEmpty()!!) {
-                                    viewModel.saveVillageListAfterTokenRefresh(villageList)
-                                }
-                            }
-                        }
-                        else {
-                            snackState.addMessage(message = message, isSuccess = false, isCustomIcon = false)
-                        }
-                    }
-                }
-            )
-        }
         Column(
             verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -445,147 +393,6 @@ fun VillageAndVoBoxForBottomSheet(
                         style = smallerTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun ShowOptDialogForVillageScreen(
-    modifier: Modifier = Modifier,
-    context: Context,
-    viewModel: BaseViewModel,
-    snackState: CustomSnackBarViewState,
-    setShowDialog: (Boolean) -> Unit,
-    positiveButtonClicked: () -> Unit,
-    /*isResendOTPEnable: MutableState<Boolean>,
-    formattedTime: MutableState<String>,
-    isResendOTPVisible: MutableState<Boolean>*/
-) {
-    var otpValue by remember {
-        mutableStateOf("")
-    }
-
-    Dialog(onDismissRequest = { setShowDialog(false) }, DialogProperties(
-        dismissOnBackPress = false,
-        dismissOnClickOutside = false
-    )
-    ) {
-        Surface(
-            shape = RoundedCornerShape(6.dp),
-            color = White
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Text(
-                        text = "Session Expired!",
-                        textAlign = TextAlign.Start,
-                        style = buttonTextStyle,
-                        maxLines = 1,
-                        color = textColorDark,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-                    Text(
-                        text = "Please enter OTP to relogin",
-                        textAlign = TextAlign.Start,
-                        style = smallTextStyleMediumWeight,
-                        maxLines = 2,
-                        color = textColorDark,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OtpInputFieldForDialog(otpLength = 6, onOtpChanged = { otp ->
-                        otpValue = otp
-                        viewModel.baseOtpNumber.value = otpValue
-                    })
-
-                    /*    AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
-                            Row(
-                                horizontalArrangement = Arrangement.End,
-                                modifier = Modifier.fillMaxWidth(),
-
-                                ) {
-                                val countDownTimer =
-                                    object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
-                                        @SuppressLint("SimpleDateFormat")
-                                        override fun onTick(millisUntilFinished: Long) {
-                                            val dateTimeFormat= SimpleDateFormat("00:ss")
-                                            formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
-
-                                        }
-
-                                        override fun onFinish() {
-                                            isResendOTPEnable.value = true
-                                            isResendOTPVisible = !isResendOTPVisible
-                                        }
-
-                                    }
-                                DisposableEffect(key1 = !isResendOTPEnable.value) {
-                                    countDownTimer.start()
-                                    onDispose {
-                                        countDownTimer.cancel()
-                                    }
-                                }
-                                Text(
-                                    text = stringResource(
-                                        id = R.string.expiry_login_verify_otp,
-                                        formattedTime.value
-                                    ),
-                                    color = textColorDark,
-                                    fontSize = 14.sp,
-                                    fontFamily = NotoSans,
-                                    fontWeight = FontWeight.SemiBold,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = dimensionResource(id = R.dimen.dp_8))
-                                        .background(Color.Transparent)
-                                )
-                            }
-                        }
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-
-                            Text(
-                                text = stringResource(id = R.string.resend_otp),
-                                color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
-                                fontSize = 14.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
-                                textDecoration = TextDecoration.Underline,
-                                modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                                    RetryHelper.generateOtp() { success, message, mobileNumber ->
-                                        snackState.addMessage(
-                                            message = context.getString(R.string.otp_resend_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
-                                            isSuccess = true, isCustomIcon = false)
-                                    }
-                                    formattedTime.value = SEC_30_STRING
-                                    isResendOTPEnable.value = false
-                                }
-                            )
-                        }*/
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Row(modifier = Modifier.fillMaxWidth()) {
-                        ButtonPositive(
-                            buttonTitle = stringResource(id = R.string.submit),
-                            isArrowRequired = false,
-                            isActive = otpValue.length == OTP_LENGTH,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            positiveButtonClicked()
-                            setShowDialog(false)
-                        }
-                    }
                 }
             }
         }

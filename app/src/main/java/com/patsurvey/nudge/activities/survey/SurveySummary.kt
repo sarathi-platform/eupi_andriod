@@ -122,7 +122,8 @@ fun SurveySummary(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
-            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
+            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+            else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),
                 message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
@@ -206,7 +207,7 @@ fun SurveySummary(
                             }"
                         )
                     }
-                }else {
+                } else {
                     surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                         if (isPreviousStepComplete) {
                             if ((context as MainActivity).isOnline.value ?: false) {
@@ -214,31 +215,6 @@ fun SurveySummary(
                                     && surveySummaryViewModel.isDidiSynced.value == 2
                                     && surveySummaryViewModel.isDidiRankingSynced.value == 2
                                 ) {
-                                    if (surveySummaryViewModel.isDidiPATSynced.value == 2) {
-                                        surveySummaryViewModel.updatePatStatusToNetwork(object :
-                                            NetworkCallbackListener {
-                                            override fun onSuccess() {
-
-                                            }
-
-                                            override fun onFailed() {
-                                                showCustomToast(context, SYNC_FAILED)
-                                            }
-
-                                        })
-                                        surveySummaryViewModel.callWorkFlowAPI(
-                                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                            stepId,
-                                            object :
-                                                NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                }
-
-                                                override fun onFailed() {
-                                                    showCustomToast(context, SYNC_FAILED)
-                                                }
-                                            })
-                                    }
                                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                         surveySummaryViewModel.savePATSummeryToServer(object :
                                             NetworkCallbackListener {
@@ -251,6 +227,18 @@ fun SurveySummary(
                                             }
 
                                         })
+
+                                        /*surveySummaryViewModel.updatePatStatusToNetwork(object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })*/
 
                                         surveySummaryViewModel.callWorkFlowAPI(
                                             surveySummaryViewModel.prefRepo.getSelectedVillage().id,

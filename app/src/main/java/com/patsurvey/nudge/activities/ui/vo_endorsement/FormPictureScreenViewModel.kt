@@ -13,11 +13,11 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -123,10 +123,12 @@ class FormPictureScreenViewModel @Inject constructor(
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
                     StepStatus.INPROGRESS.ordinal,villageId)
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
@@ -185,7 +187,7 @@ class FormPictureScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostPATDidi(needsToPostPAT = true, villageId = prefRepo.getSelectedVillage().id)
+                    val needToPostDidiList=didiDao.getAllNeedToPostVoDidi(needsToPostVo = true, villageId = prefRepo.getSelectedVillage().id)
                     if(needToPostDidiList.isNotEmpty()){
                         needToPostDidiList.forEach { didi->
                             launch {
@@ -193,7 +195,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, ACCEPTED),
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, ACCEPTED),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
@@ -204,7 +206,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name),
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
@@ -241,6 +243,7 @@ class FormPictureScreenViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -268,6 +271,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(stepId, false)
                                 }
                             }
                         }

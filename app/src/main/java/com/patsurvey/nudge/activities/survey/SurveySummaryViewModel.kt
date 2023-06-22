@@ -4,12 +4,15 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.BpcUpdateSelectedDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
@@ -17,8 +20,6 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -58,28 +59,24 @@ class SurveySummaryViewModel @Inject constructor(
         fetchDidisFromDB()
     }
 
-    fun fetchDidisFromDB() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO) {
+    fun fetchDidisFromDB(){
+        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                Log.d("TAG", "fetchDidisFromDB: Called")
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
-                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao) {
-                    isTolaSynced.value = it
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
+                    isTolaSynced.value =it
                 }
-                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao) {
-                    isDidiPATSynced.value = it
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao){
+                    isDidiSynced.value=it
                 }
-                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao) {
-                    isDidiRankingSynced.value = it
+                CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao){
+                    isDidiRankingSynced.value=it
                 }
-                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(
-                    answerDao,
-                    didiDao,
-                    prefRepo
-                ) {
-                    isDidiPATSynced.value = it
+                CheckDBStatus(this@SurveySummaryViewModel).isFourthStepNeedToBeSync(answerDao, didiDao, prefRepo){
+                    isDidiPATSynced.value=it
                 }
-                notAvailableCount.value =
-                    didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
+                notAvailableCount.value = didiDao.fetchNotAvailableDidis(prefRepo.getSelectedVillage().id)
             }
         }
     }
@@ -93,28 +90,27 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     @SuppressLint("SuspiciousIndentation")
-    fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener) {
+    fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                withContext(Dispatchers.IO) {
-                    var optionList = emptyList<OptionsItem>()
-                    var answeredDidiList: ArrayList<PATSummarySaveRequest> = arrayListOf()
-                    var scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
-                    var surveyId = 0
-                    val didiIDList =
-                        answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
-                    if (didiIDList.isNotEmpty()) {
-                        didiIDList.forEach { didi ->
-                            var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                            val needToPostQuestionsList =
-                                answerDao.getAllNeedToPostQuesForDidi(didi.id)
-                            if (needToPostQuestionsList.isNotEmpty()) {
+                withContext(Dispatchers.IO){
+                    var optionList= emptyList<OptionsItem>()
+                    var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                    var surveyId =0
+
+                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                    if(didiIDList.isNotEmpty()){
+                        didiIDList.forEach { didi->
+                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                            var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                            if(needToPostQuestionsList.isNotEmpty()){
                                 needToPostQuestionsList.forEach {
-                                    surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
-                                    if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
-                                        optionList = listOf(
-                                            OptionsItem(
-                                                optionId = it.optionId,
+                                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
+                                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
+                                        optionList= listOf(
+                                            OptionsItem(optionId = it.optionId,
                                                 optionValue = it.optionValue,
                                                 count = 0,
                                                 summary = it.summary,
@@ -159,11 +155,15 @@ class SurveySummaryViewModel @Inject constructor(
                                     }
                                 }
                             }
+                            val passingMark=questionDao.getPassingScore()
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
                                     id = if (didi.serverId == 0) didi.id else didi.serverId,
                                     score = didi.score,
-                                    comment = didi.comment,
+                                    comment = if(didi.score< passingMark) LOW_SCORE else {
+                                                 if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                                        TYPE_EXCLUSION
+                                                            }else BLANK_STRING},
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                     result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
                                 )
@@ -185,55 +185,75 @@ class SurveySummaryViewModel @Inject constructor(
                                 )
                             )
                         }
-                        if (answeredDidiList.isNotEmpty()) {
-                            withContext(Dispatchers.IO) {
-                                val saveAPIResponse =
-                                    apiService.savePATSurveyToServer(answeredDidiList)
-                                if (saveAPIResponse.status.equals(SUCCESS, true)) {
-                                    didiIDList.forEach { didiItem ->
-                                        didiDao.updateNeedToPostPAT(
-                                            false,
-                                            didiItem.id,
-                                            prefRepo.getSelectedVillage().id
-                                        )
-                                        if (prefRepo.isUserBPC()) {
-                                            val selectedDidi =
-                                                bpcSelectedDidiDao.fetchSelectedDidi(didiItem.id)
-                                            selectedDidi?.let {
-                                                bpcSelectedDidiDao.updateSelDidiNeedToPostPAT(
-                                                    didiItem.id
+                        if(answeredDidiList.isNotEmpty()){
+                            withContext(Dispatchers.IO){
+                                val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
+                                if(saveAPIResponse.status.equals(SUCCESS,true)){
+                                    if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                        didiIDList.forEach { didiItem ->
+                                            didiDao.updateNeedToPostPAT(
+                                                false,
+                                                didiItem.id,
+                                                prefRepo.getSelectedVillage().id
+                                            )
+                                        }
+                                    } else {
+                                        for(i in didiIDList.indices) {
+                                            saveAPIResponse.data?.get(i)?.let {
+                                                didiDao.updateDidiTransactionId(
+                                                    didiIDList[i].id,
+                                                    it.transactionId
                                                 )
-                                            }
-                                            val nonSelectedDidi =
-                                                bpcNonSelectedDidiDao.getNonSelectedDidi(didiItem.id)
-                                            nonSelectedDidi?.let {
-                                                bpcNonSelectedDidiDao.updateNonSelDidiNeedToPostPAT(
-                                                    didiItem.id
-                                                )
-
                                             }
                                         }
+
                                     }
                                     networkCallbackListener.onSuccess()
-
+                                    checkDidiPatStatus()
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
                                 apiService.updateDidiScore(scoreDidiList)
                             }
-
-
                         }
-
                     }
                 }
-
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 ex.printStackTrace()
                 onCatchError(ex)
             }
         }
+    }
+
+    private fun checkDidiPatStatus() {
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    val didiList = didiDao.fetchPendingPatStatusDidi(true, "")
+                    if (didiList.isNotEmpty()) {
+                        val ids: ArrayList<String> = arrayListOf()
+                        didiList.forEach { didi ->
+                            didi.transactionId?.let { ids.add(it) }
+                        }
+                        val response =
+                            apiService.getPendingStatusForPat(TransactionIdRequest("PAT", ids))
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.forEach { transactionIdResponse ->
+                                didiList.forEach { didi ->
+                                    if (transactionIdResponse.transactionId == didi.transactionId) {
+                                        didiDao.updateDidiNeedToPostPat(didi.id, false)
+                                        didiDao.updateDidiTransactionId(didi.id, "")
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        },10000)
     }
 
     fun callWorkFlowAPI(
@@ -262,6 +282,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     it[0].status
                                 )
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -289,6 +310,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(step.id, false)
                                 }
                             }
                         }
@@ -319,6 +341,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -326,6 +349,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -376,6 +400,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -383,6 +408,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
@@ -541,7 +567,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             listOf(
                                                 EditDidiWealthRankingRequest(
                                                     didi.id,
-                                                    StepType.VO_ENDORSEMENT.name,
+                                                    StepType.VO_ENDROSEMENT.name,
                                                     ACCEPTED
                                                 ),
                                             )
@@ -560,7 +586,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             listOf(
                                                 EditDidiWealthRankingRequest(
                                                     didi.id,
-                                                    StepType.VO_ENDORSEMENT.name,
+                                                    StepType.VO_ENDROSEMENT.name,
                                                     DidiEndorsementStatus.REJECTED.name
                                                 ),
                                             )

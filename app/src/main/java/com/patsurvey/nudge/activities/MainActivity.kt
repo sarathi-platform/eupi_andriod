@@ -17,9 +17,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -37,10 +39,12 @@ import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -74,7 +78,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         super.onCreate(savedInstanceState)
         setContent {
             Nudge_Theme {
-
+                val snackState = rememberSnackBarState()
                 val onlineStatus = remember { mutableStateOf(false) }
 
                 val permissionsState = rememberMultiplePermissionsState(
@@ -163,6 +167,50 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
                 isLoggedInLive.observe(this) { isLoggedIn ->
                     mViewModel.isLoggedIn.value = isLoggedIn
+                }
+                LaunchedEffect(key1 = RetryHelper.tokenExpired.value) {
+                    if (RetryHelper.tokenExpired.value) {
+                        mViewModel.tokenExpired.value = true
+                        RetryHelper.generateOtp { success, message, mobileNumber ->
+                            if (success) {
+                                mViewModel.tokenExpired.value = true
+                                snackState.addMessage(
+                                    message = getString(R.string.otp_send_to_mobile_number_message_for_relogin)
+                                        .replace("{MOBILE_NUMBER}", mobileNumber, true),
+                                    isSuccess = true, isCustomIcon = false
+                                )
+                            }
+                        }
+                    }
+                }
+                if (mViewModel.tokenExpired.value) {
+                    ShowOptDialogForVillageScreen(
+                        modifier = Modifier,
+                        context = LocalContext.current,
+                        viewModel = mViewModel,
+                        snackState = snackState,
+                        /*isResendOTPEnable = isResendOTPEnable,
+                        formattedTime = formattedTime,*/
+                        setShowDialog = {
+                            mViewModel.tokenExpired.value = false
+                        },
+                        positiveButtonClicked = {
+                            RetryHelper.updateOtp(mViewModel.baseOtpNumber) { success, message ->
+                                if (success){
+                                    RetryHelper.tokenExpired.value = false
+                                    /*RetryHelper.retryVillageListApi { success, villageList ->
+                                        if (success && !villageList?.isNullOrEmpty()!!) {
+                                            mViewModel.saveVillageListAfterTokenRefresh(villageList)
+                                        }
+                                    }*/
+                                    showCustomToast(this,"Session Restored")
+                                }
+                                else {
+                                    showCustomToast(this, message)
+                                }
+                            }
+                        }
+                    )
                 }
             }
         }
