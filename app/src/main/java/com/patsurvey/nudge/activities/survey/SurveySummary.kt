@@ -122,7 +122,8 @@ fun SurveySummary(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
-            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
+            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+            else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             ShowDialog(
                 title = "Are you sure?",
                 message = if (fromScreen == ARG_FROM_PAT_SURVEY) {
@@ -147,31 +148,6 @@ fun SurveySummary(
                                 && surveySummaryViewModel.isDidiSynced.value == 2
                                 && surveySummaryViewModel.isDidiRankingSynced.value == 2
                             ){
-                                if(surveySummaryViewModel.isDidiPATSynced.value == 2){
-                                    surveySummaryViewModel.updatePatStatusToNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-
-                                    })
-                                    surveySummaryViewModel.callWorkFlowAPI(
-                                        surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                        stepId,
-                                        object :
-                                            NetworkCallbackListener {
-                                            override fun onSuccess() {
-                                            }
-
-                                            override fun onFailed() {
-                                                showCustomToast(context, SYNC_FAILED)
-                                            }
-                                        })
-                                }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 surveySummaryViewModel.savePATSummeryToServer(object :
                                     NetworkCallbackListener {
@@ -184,6 +160,18 @@ fun SurveySummary(
                                     }
 
                                 })
+
+                                /*surveySummaryViewModel.updatePatStatusToNetwork(object :
+                                    NetworkCallbackListener {
+                                    override fun onSuccess() {
+
+                                    }
+
+                                    override fun onFailed() {
+                                        showCustomToast(context, SYNC_FAILED)
+                                    }
+
+                                })*/
 
                                 surveySummaryViewModel.callWorkFlowAPI(
                                     surveySummaryViewModel.prefRepo.getSelectedVillage().id,

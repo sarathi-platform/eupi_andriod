@@ -541,19 +541,6 @@ fun SocialMappingDidiListScreen(
     }
 }
 
-@Composable
-fun ShowFilteredList(
-    filteredDidiList: Map<String, List<DidiEntity>>,
-    expandedIds: List<Int>,
-    modifier: Modifier,
-    onExpendClick: (Boolean, DidiEntity) -> Unit
-) {
-    Log.i("ShowFilteredList", "show tolaa :")
-    filteredDidiList.entries.forEach {
-        Log.i("ShowFilteredList", "show tola : ${it.key}")
-//        ShowDidisFromTola(it.key, it.value, modifier, expandedIds, onExpendClick)
-    }
-}
 
 @Composable
 fun ShowDidisFromTola(

@@ -58,12 +58,13 @@ class SurveySummaryViewModel @Inject constructor(
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
+                Log.d("TAG", "fetchDidisFromDB: Called")
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
                     isTolaSynced.value =it
                 }
                 CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao){
-                    isDidiPATSynced.value=it
+                    isDidiSynced.value=it
                 }
                 CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao){
                     isDidiRankingSynced.value=it
@@ -146,9 +147,13 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
 
                             }
+                            val passingMark=questionDao.getPassingScore()
                             scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
                                 score = didi.score,
-                                comment = didi.comment,
+                                comment = if(didi.score< passingMark) LOW_SCORE else {
+                                                 if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                                        TYPE_EXCLUSION
+                                                            }else BLANK_STRING},
                                 type = PAT_SURVEY,
                                 result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
                             answeredDidiList.add(
