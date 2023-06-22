@@ -40,14 +40,14 @@ class ScoreComparisonViewModel @Inject constructor(
         fetchDidiList()
     }
 
-    private fun fetchDidiList() {
+    fun fetchDidiList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localDidList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             val filterdLocalList = localDidList.filter { it.section1Status == PatSurveyStatus.COMPLETED.ordinal
                     && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
                     && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal
             }
-            _didiList.value = filterdLocalList
+            _didiList.value = localDidList
 
             val passingScore = questionListDao.getPassingScore()
             _questionPassingScore.value = passingScore

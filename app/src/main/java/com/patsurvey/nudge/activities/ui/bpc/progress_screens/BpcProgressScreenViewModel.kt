@@ -11,8 +11,12 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
+import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.model.ErrorModel
 import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +29,7 @@ import javax.inject.Inject
 @HiltViewModel
 class BpcProgressScreenViewModel @Inject constructor(
     val prefRepo: PrefRepo,
+    val apiService: ApiService,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
     val bpcSummaryDao: BpcSummaryDao,
@@ -89,6 +94,35 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
         prefRepo.saveSelectedVillage(selectedVillageEntity)
+    }
+
+    fun callWorkFlowAPI(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val dbResponse=stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+                val bpcStep = dbResponse.sortedBy { it.orderNumber }.last()
+                if(bpcStep.workFlowId==0){
+                    val response = apiService.addWorkFlow(
+                        listOf(
+                            AddWorkFlowRequest(
+                                StepStatus.INPROGRESS.name,prefRepo.getSelectedVillage().id,
+                                bpcStep.programId,bpcStep.id)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(bpcStep.id, it[0].id, prefRepo.getSelectedVillage().id, it[0].status)
+                            }
+                        }else{
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+
+            }catch (ex:Exception){
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
     }
 
     override fun onServerError(error: ErrorModel?) {

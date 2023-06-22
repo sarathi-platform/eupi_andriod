@@ -70,6 +70,8 @@ fun BpcProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
 
+    val context = LocalContext.current
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -389,7 +391,9 @@ fun BpcProgressScreen(
                                                         text = "1",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -428,7 +432,9 @@ fun BpcProgressScreen(
                                                         text = "2",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -467,7 +473,9 @@ fun BpcProgressScreen(
                                                         text = "3",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -506,7 +514,9 @@ fun BpcProgressScreen(
                                                         text = "4",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -545,7 +555,9 @@ fun BpcProgressScreen(
                                                         text = "5",
                                                         color = white,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -584,7 +596,9 @@ fun BpcProgressScreen(
                                                         text = "6",
                                                         color = if (isStepCompleted == StepStatus.COMPLETED.ordinal) white else textColorDark,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier.align(Alignment.Center).absolutePadding(bottom = 3.dp),
+                                                        modifier = Modifier
+                                                            .align(Alignment.Center)
+                                                            .absolutePadding(bottom = 3.dp),
                                                         style = smallerTextStyleNormalWeight,
                                                     )
                                                 }
@@ -596,6 +610,9 @@ fun BpcProgressScreen(
                                 }
                             }
 
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                bpcProgreesScreenViewModel.callWorkFlowAPI()
+                            }
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",

@@ -92,6 +92,7 @@ import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
+import kotlinx.coroutines.delay
 import java.io.File
 
 @Composable
@@ -100,6 +101,23 @@ fun ScoreComparisionScreen(
     navController: NavHostController,
     viewModel: ScoreComparisonViewModel
 ) {
+
+
+    val isValidPercentage = remember {
+        mutableStateOf(false)
+    }
+
+    val percentage = remember {
+        mutableStateOf(0)
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchDidiList()
+        delay(100)
+        percentage.value = viewModel.calculateMatchPercentage()
+        isValidPercentage.value = percentage.value >= MATCH_PERCENTAGE
+
+    }
 
     val filterdDidiList = viewModel.filterDidiList
 
@@ -122,13 +140,9 @@ fun ScoreComparisionScreen(
         mutableStateOf(false)
     }
 
-    val isValidPercentage = remember {
-        mutableStateOf(false)
-    }
 
-    LaunchedEffect(key1 = Unit) {
-        isValidPercentage.value = viewModel.calculateMatchPercentage() >= MATCH_PERCENTAGE
-    }
+
+
 
     val transition = updateTransition(expandBox.value, label = "transition")
     val colorTransistion = updateTransition(targetState = isValidPercentage.value, label = "colorTransistion")
@@ -239,7 +253,7 @@ fun ScoreComparisionScreen(
                                 ) {
                                     Text(
                                         text = stringResource(R.string.match_percentage_box_text)
-                                            .replace("{PERCENTAGE}", viewModel.calculateMatchPercentage().toString(), true),
+                                            .replace("{PERCENTAGE}", percentage.value.toString(), true),
                                         color = animateColor,
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,

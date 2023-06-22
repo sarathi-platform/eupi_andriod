@@ -121,6 +121,7 @@ interface ApiService {
 
 
     @GET("/read-api/bpc/view-summary")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
     @GET("/write-api/bpc/beneficiary-list")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
