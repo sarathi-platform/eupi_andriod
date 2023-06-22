@@ -424,7 +424,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, ACCEPTED),
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, ACCEPTED),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
@@ -435,7 +435,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name),
+                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){

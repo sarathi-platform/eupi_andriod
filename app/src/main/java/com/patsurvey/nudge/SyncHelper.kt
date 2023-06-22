@@ -951,10 +951,10 @@ class SyncHelper (
                             launch {
                                 didi.voEndorsementStatus.let {
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, ACCEPTED,
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
                                             localModifiedDate = System.currentTimeMillis()))
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDORSEMENT.name, DidiEndorsementStatus.REJECTED.name,
+                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
                                             localModifiedDate = System.currentTimeMillis()))
                                     }
                                 }

@@ -221,4 +221,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set localModifiedDate =:localModifiedDate WHERE serverId=:didiId ")
     fun updateModifiedDateServerId(localModifiedDate: Long,didiId: Int)
 
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostVo = :needsToPostVo AND villageId = :villageId")
+    fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity>
+
 }
