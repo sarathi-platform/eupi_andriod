@@ -11,12 +11,13 @@ enum class ApiType {
     WORK_FLOW_API,
     VILLAGE_LIST_API,
     VALIDATE_OTP_API,
-    GENERATE_OTP_API;
+    GENERATE_OTP_API,
+    CAST_LIST_API;
 
-/*    fun fromString(apiName: String): ApiType {
-        when (apiName) {
+    /*    fun fromString(apiName: String): ApiType {
+            when (apiName) {
 
-        }
-    }*/
+            }
+        }*/
 
 }
