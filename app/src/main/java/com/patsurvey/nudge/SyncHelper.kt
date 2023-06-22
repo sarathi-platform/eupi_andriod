@@ -187,6 +187,7 @@ class SyncHelper (
                     }
                     withContext(Dispatchers.Main){
                         syncPercentage.value = 1f
+                        settingViewModel.stepFifthSyncStatus.value = 2
                         networkCallbackListener.onSuccess()
                     }
                 } else {
@@ -1019,9 +1020,16 @@ class SyncHelper (
                                 if (didiListResponse != null) {
                                     for (i in didiRequestList.indices) {
                                         val didi = didiRequestList[i]
-                                        didiDao.updateNeedToPostVO(false,didi.id)
-                                        didiDao.updateDidiTransactionId(didi.id,"")
+                                        didiDao.updateNeedToPostVOWithServerId(false, didi.id)
+                                        didiDao.updateDidiTransactionIdWithServerId(didi.id, "")
+                                        //commenting for now since it was having some issues.
+                                        /*didiDao.updateNeedToPostVO(false, didi.id)
+                                        didiDao.updateDidiTransactionId(didi.id, "")*/
                                     }
+                                }
+                                settingViewModel.stepFifthSyncStatus.value = 2
+                                withContext(Dispatchers.Main) {
+                                    syncPercentage.value = 1f
                                 }
                                 checkVOStatus(networkCallbackListener)
                             }
