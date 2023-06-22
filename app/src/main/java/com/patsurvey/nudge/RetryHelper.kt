@@ -289,7 +289,7 @@ object RetryHelper {
                                                         PatSurveyStatus.NOT_STARTED.ordinal
                                                 val voEndorsementStatus =
                                                     if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.VO_ENDORSEMENT.name))
+                                                            .contains(StepType.VO_ENDROSEMENT.name))
                                                         DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                             .indexOf(StepType.PAT_SURVEY.name)].status)
                                                     else

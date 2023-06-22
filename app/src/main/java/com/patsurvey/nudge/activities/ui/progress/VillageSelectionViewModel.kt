@@ -47,7 +47,6 @@ import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -279,7 +278,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 DIDI_REJECTED
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDORSEMENT.name))
+                                                                .contains(StepType.VO_ENDROSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
