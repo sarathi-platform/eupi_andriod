@@ -8,25 +8,11 @@ import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.utils.ApiResponseFailException
-import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
-import com.patsurvey.nudge.utils.RESPONSE_CODE_500
-import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
-import com.patsurvey.nudge.utils.RESPONSE_CODE_DEACTIVATED
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NETWORK_ERROR
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NOT_FOUND
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
-import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
-import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
-import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
-import com.patsurvey.nudge.utils.TAG
-import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
-import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
-import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
+import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
@@ -43,8 +29,18 @@ abstract class BaseViewModel : ViewModel(){
         when (e) {
             is HttpException -> {
                 when (e.response()?.code() ?: 0) {
-                    RESPONSE_CODE_UNAUTHORIZED ->
+                    RESPONSE_CODE_UNAUTHORIZED -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
+                    RESPONSE_CODE_CONFLICT -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
                     RESPONSE_CODE_NOT_FOUND ->
                         onServerError(ErrorModel(message = UNREACHABLE_ERROR_MSG,
                             statusCode = e.response()?.code() ?: -1))
@@ -89,8 +85,18 @@ abstract class BaseViewModel : ViewModel(){
             is HttpException -> {
                 Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
-                    RESPONSE_CODE_UNAUTHORIZED ->
+                    RESPONSE_CODE_UNAUTHORIZED -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
+                    RESPONSE_CODE_CONFLICT -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
                     RESPONSE_CODE_NOT_FOUND ->
                         onServerError(ErrorModel(message = UNREACHABLE_ERROR_MSG,
                             statusCode = e.response()?.code() ?: -1))
@@ -125,8 +131,18 @@ abstract class BaseViewModel : ViewModel(){
             is HttpException -> {
                 Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
-                    RESPONSE_CODE_UNAUTHORIZED ->
-                        onServerError(ErrorModelWithApi(e.response()?.code() ?: 0, apiName = api, UNAUTHORISED_MESSAGE))
+                    RESPONSE_CODE_UNAUTHORIZED -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
+                    RESPONSE_CODE_CONFLICT -> {
+                        if(!RetryHelper.tokenExpired.value) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                        onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
+                    }
                     RESPONSE_CODE_NOT_FOUND ->
                         onServerError(ErrorModelWithApi(apiName = api, message = UNREACHABLE_ERROR_MSG,
                             statusCode = e.response()?.code() ?: -1))

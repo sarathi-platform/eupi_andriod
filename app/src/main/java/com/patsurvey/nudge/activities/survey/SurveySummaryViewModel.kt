@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -177,29 +178,71 @@ class SurveySummaryViewModel @Inject constructor(
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
-                                    didiIDList.forEach { didiItem->
-                                        didiDao.updateNeedToPostPAT(false,didiItem.id,prefRepo.getSelectedVillage().id)
+                                    if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                        didiIDList.forEach { didiItem ->
+                                            didiDao.updateNeedToPostPAT(
+                                                false,
+                                                didiItem.id,
+                                                prefRepo.getSelectedVillage().id
+                                            )
+                                        }
+                                    } else {
+                                        for(i in didiIDList.indices) {
+                                            saveAPIResponse.data?.get(i)?.let {
+                                                didiDao.updateDidiTransactionId(
+                                                    didiIDList[i].id,
+                                                    it.transactionId
+                                                )
+                                            }
+                                        }
+
                                     }
                                     networkCallbackListener.onSuccess()
-
+                                    checkDidiPatStatus()
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
                                 apiService.updateDidiScore(scoreDidiList)
                             }
-
-
                         }
-
                     }
                 }
-
             }  catch (ex:Exception){
                 networkCallbackListener.onFailed()
                 ex.printStackTrace()
                 onCatchError(ex)
             }
         }
+    }
+
+    private fun checkDidiPatStatus() {
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    val didiList = didiDao.fetchPendingPatStatusDidi(true, "")
+                    if (didiList.isNotEmpty()) {
+                        val ids: ArrayList<String> = arrayListOf()
+                        didiList.forEach { didi ->
+                            didi.transactionId?.let { ids.add(it) }
+                        }
+                        val response =
+                            apiService.getPendingStatusForPat(TransactionIdRequest("PAT", ids))
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.forEach { transactionIdResponse ->
+                                didiList.forEach { didi ->
+                                    if (transactionIdResponse.transactionId == didi.transactionId) {
+                                        didiDao.updateDidiNeedToPostPat(didi.id, false)
+                                        didiDao.updateDidiTransactionId(didi.id, "")
+                                    }
+                                }
+                            }
+
+                        }
+                    }
+                }
+            }
+        },10000)
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
@@ -217,6 +260,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -244,6 +288,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(step.id, false)
                                 }
                             }
                         }
@@ -270,9 +315,11 @@ class SurveySummaryViewModel @Inject constructor(
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -301,9 +348,11 @@ class SurveySummaryViewModel @Inject constructor(
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
+            stepsListDao.updateNeedToPost(stepId, true)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+                stepsListDao.updateNeedToPost(stepDetails.id, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }

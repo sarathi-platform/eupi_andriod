@@ -13,7 +13,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -377,13 +376,17 @@ class SyncHelper (
                                 }
                             }
                             updateTolaNeedTOPostList(tolaList,networkCallbackListener)
-                            syncPercentage.value = 20f
+                            withContext(Dispatchers.Main) {
+                                syncPercentage.value = 0.2f
+                            }
                         } else {
                             for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
                             }
                             updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
-                            syncPercentage.value = 10f
+                            withContext(Dispatchers.Main) {
+                                syncPercentage.value = 0.1f
+                            }
                         }
                     }
                 } else {
@@ -461,7 +464,9 @@ class SyncHelper (
                             }
                             isPending = 3
                             startSyncTimer(networkCallbackListener)
-                            syncPercentage.value = 10f
+                            withContext(Dispatchers.Main) {
+                                syncPercentage.value = 0.1f
+                            }
                         }
                     }
                 }
@@ -508,7 +513,9 @@ class SyncHelper (
                             }
                             isPending = 2
                             startSyncTimer(networkCallbackListener)
-                            syncPercentage.value = 10f
+                            withContext(Dispatchers.Main) {
+                                syncPercentage.value = 0.1f
+                            }
                         }
                     }
                 }
@@ -560,7 +567,9 @@ class SyncHelper (
                             }
                         }
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
-                        syncPercentage.value = 40f
+                        withContext(Dispatchers.Main) {
+                            syncPercentage.value = 0.4f
+                        }
                     } else {
                         for (i in 0..(response.data?.size?.minus(1) ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
@@ -572,7 +581,9 @@ class SyncHelper (
                         }
                         isPending = 4
                         startSyncTimer(networkCallbackListener)
-                        syncPercentage.value = 30f
+                        withContext(Dispatchers.Main) {
+                            syncPercentage.value = 0.3f
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -610,7 +621,9 @@ class SyncHelper (
                             }
                         }
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
-                        syncPercentage.value = 40f
+                        withContext(Dispatchers.Main) {
+                            syncPercentage.value = 0.4f
+                        }
                     } else {
                         for (i in 0..(response.data?.size?.minus(1) ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
@@ -622,7 +635,9 @@ class SyncHelper (
                         }
                         isPending = 6
                         startSyncTimer(networkCallbackListener)
-                        syncPercentage.value = 30f
+                        withContext(Dispatchers.Main) {
+                            syncPercentage.value = 0.3f
+                        }
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -642,29 +657,29 @@ class SyncHelper (
         Log.e("workflow api called","$villageId -> $stepList -> $step")
         when(step){
             1->{
-//                if(stepList[0].isComplete ==  StepStatus.COMPLETED.ordinal){
+                if(stepList[0].status != getStepStatusFromOrdinal(stepList[0].isComplete)){
                     callWorkFlowAPI(villageId,stepList[0].id)
-//                }
+                }
             }
             2->{
-//                if(stepList[1].isComplete ==  StepStatus.COMPLETED.ordinal){
+                if(stepList[1].status != getStepStatusFromOrdinal(stepList[1].isComplete)){
                     callWorkFlowAPI(villageId,stepList[1].id)
-//                }
+                }
             }
             3->{
-//                if(stepList[2].isComplete ==  StepStatus.COMPLETED.ordinal){
+                if(stepList[2].status != getStepStatusFromOrdinal(stepList[2].isComplete)){
                     callWorkFlowAPI(villageId,stepList[2].id)
-//                }
+                }
             }
             4->{
-//                if(stepList[3].isComplete ==  StepStatus.COMPLETED.ordinal){
+                if(stepList[3].status != getStepStatusFromOrdinal(stepList[3].isComplete)){
                     callWorkFlowAPI(villageId,stepList[3].id)
-//                }
+                }
             }
             5->{
-//                if(stepList[4].isComplete ==  StepStatus.COMPLETED.ordinal){
+                if(stepList[4].status != getStepStatusFromOrdinal(stepList[4].isComplete)){
                     callWorkFlowAPI(villageId,stepList[4].id)
-//                }
+                }
             }
         }
     }
@@ -717,7 +732,9 @@ class SyncHelper (
                             }
                             isPending = 5
                             startSyncTimer(networkCallbackListener)
-                            syncPercentage.value = 10f
+                            withContext(Dispatchers.Main) {
+                                syncPercentage.value = 0.1f
+                            }
                         }
                     }
                 }
@@ -749,7 +766,7 @@ class SyncHelper (
                         needToPostDidiList.forEach { didi->
                             launch {
                                 didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                                    localModifiedDate = System.currentTimeMillis()))
+                                    localModifiedDate = didi.localModifiedDate))
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
@@ -769,12 +786,16 @@ class SyncHelper (
                                 }
                                 isPending = 7
                                 startSyncTimer(networkCallbackListener)
-                                syncPercentage.value = 50f
+                                withContext(Dispatchers.Main) {
+                                    syncPercentage.value = 0.5f
+                                }
                             } else {
                                 needToPostDidiList.forEach { didi ->
                                     didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
                                 }
-                                syncPercentage.value = 60f
+                                withContext(Dispatchers.Main) {
+                                    syncPercentage.value = 0.6f
+                                }
                                 savePATSummeryToServer(networkCallbackListener)
                             }
                         } else
@@ -794,84 +815,6 @@ class SyncHelper (
         }
     }
 
-    fun fetchAnswerDidiList(didiIDList : List<PATDidiStatusModel>) : ArrayList<PATSummarySaveRequest>{
-        var optionList= emptyList<OptionsItem>()
-        val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
-        var surveyId =0
-        didiIDList.forEachIndexed { index, didi ->
-            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
-            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-            val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
-            if (needToPostQuestionsList.isNotEmpty()) {
-                needToPostQuestionsList.forEach {
-                    surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
-                    if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
-                        optionList = listOf(
-                            OptionsItem(
-                                optionId = it.optionId,
-                                optionValue = it.optionValue,
-                                count = 0,
-                                summary = it.summary,
-                                display = it.answerValue,
-                                weight = 0,
-                                isSelected = false
-                            )
-                        )
-                    } else {
-                        val numOptionList =
-                            numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
-                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
-                        if (numOptionList.isNotEmpty()) {
-                            numOptionList.forEach { numOption ->
-                                tList.add(
-                                    OptionsItem(
-                                        optionId = numOption.optionId,
-                                        optionValue = 0,
-                                        count = numOption.count,
-                                        summary = it.summary,
-                                        display = it.answerValue,
-                                        weight = numOption.weight,
-                                        isSelected = false
-                                    )
-                                )
-                            }
-                            optionList = tList
-                        }
-
-                    }
-                    try {
-                        qList.add(
-                            AnswerDetailDTOListItem(
-                                questionId = it.questionId,
-                                section = it.actionType,
-                                options = optionList
-                            )
-                        )
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    }
-                }
-            }
-            answeredDidiList.add(
-                PATSummarySaveRequest(
-                    villageId = prefRepo.getSelectedVillage().id,
-                    surveyId = surveyId,
-                    beneficiaryId = didi.serverId,
-                    languageId = prefRepo.getAppLanguageId() ?: 2,
-                    stateId = prefRepo.getSelectedVillage().stateId,
-                    totalScore = 0,
-                    userType = USER_CRP,
-                    beneficiaryName = didi.name,
-                    answerDetailDTOList = qList,
-                    patSurveyStatus = didi.patSurveyStatus,
-                    section2Status = didi.section2Status,
-                    section1Status = didi.section1Status
-                )
-            )
-        }
-        return answeredDidiList
-    }
-
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         callWorkFlowAPIForStep(3)
@@ -885,7 +828,87 @@ class SyncHelper (
                 withContext(Dispatchers.IO){
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
-                        val answeredDidiList = fetchAnswerDidiList(didiIDList)
+                        var optionList= emptyList<OptionsItem>()
+                        val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
+                        var surveyId =0
+                        var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                        didiIDList.forEachIndexed { index, didi ->
+                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                            val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                            if (needToPostQuestionsList.isNotEmpty()) {
+                                needToPostQuestionsList.forEach {
+                                    surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
+                                    if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
+                                        optionList = listOf(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = it.optionValue,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = 0,
+                                                isSelected = false
+                                            )
+                                        )
+                                    } else {
+                                        val numOptionList =
+                                            numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
+                                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
+                                        if (numOptionList.isNotEmpty()) {
+                                            numOptionList.forEach { numOption ->
+                                                tList.add(
+                                                    OptionsItem(
+                                                        optionId = numOption.optionId,
+                                                        optionValue = 0,
+                                                        count = numOption.count,
+                                                        summary = it.summary,
+                                                        display = it.answerValue,
+                                                        weight = numOption.weight,
+                                                        isSelected = false
+                                                    )
+                                                )
+                                            }
+                                            optionList = tList
+                                        }
+
+                                    }
+                                    try {
+                                        qList.add(
+                                            AnswerDetailDTOListItem(
+                                                questionId = it.questionId,
+                                                section = it.actionType,
+                                                options = optionList
+                                            )
+                                        )
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }
+                                }
+                            }
+                            scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment = didi.comment,
+                                type = PAT_SURVEY,
+                                result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
+
+                            answeredDidiList.add(
+                                PATSummarySaveRequest(
+                                    villageId = prefRepo.getSelectedVillage().id,
+                                    surveyId = surveyId,
+                                    beneficiaryId = didi.serverId,
+                                    languageId = prefRepo.getAppLanguageId() ?: 2,
+                                    stateId = prefRepo.getSelectedVillage().stateId,
+                                    totalScore = 0,
+                                    userType = USER_CRP,
+                                    beneficiaryName = didi.name,
+                                    answerDetailDTOList = qList,
+                                    patSurveyStatus = didi.patSurveyStatus,
+                                    section2Status = didi.section2Status,
+                                    section1Status = didi.section1Status
+                                )
+                            )
+                        }
                         if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
@@ -898,7 +921,10 @@ class SyncHelper (
                                                 prefRepo.getSelectedVillage().id
                                             )
                                         }
-                                        syncPercentage.value = 80f
+                                        withContext(Dispatchers.Main) {
+                                            syncPercentage.value = 0.8f
+                                        }
+                                        savePatScoreToServer(scoreDidiList)
                                         updateVoStatusToNetwork(networkCallbackListener)
                                     } else {
                                         for (i in didiIDList.indices){
@@ -910,16 +936,21 @@ class SyncHelper (
                                         }
                                         isPending = 8
                                         startSyncTimer(networkCallbackListener)
-                                        syncPercentage.value = 70f
+                                        withContext(Dispatchers.Main) {
+                                            syncPercentage.value = 0.7f
+                                        }
                                     }
+                                    savePatScoreToServer(scoreDidiList)
                                 } else {
                                     withContext(Dispatchers.Main){
                                         networkCallbackListener.onFailed()
                                     }
                                 }
                             }
-                        } else
+                        } else {
                             updateVoStatusToNetwork(networkCallbackListener)
+                            savePatScoreToServer(scoreDidiList)
+                        }
                     } else {
                         updateVoStatusToNetwork(networkCallbackListener)
                     }
@@ -930,6 +961,14 @@ class SyncHelper (
                     networkCallbackListener.onFailed()
                 }
                 ex.printStackTrace()
+            }
+        }
+    }
+
+    private fun savePatScoreToServer(scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest>) {
+        if(scoreDidiList.isNotEmpty()) {
+            job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                apiService.updateDidiScore(scoreDidiList)
             }
         }
     }
@@ -1060,7 +1099,7 @@ class SyncHelper (
             var sizeToBeShown = ""
             val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
             if(didiIDList.isNotEmpty()) {
-                val answeredDidiList = fetchAnswerDidiList(didiIDList)
+                /*val answeredDidiList = fetchAnswerDidiList(didiIDList)
                 if (answeredDidiList.isNotEmpty()) {
                     val jsonDidi = JsonArray()
                     for (didi in answeredDidiList) {
@@ -1070,7 +1109,7 @@ class SyncHelper (
                     Log.e("num of step 4", "$answeredDidiList.size")
                     Log.e("size of step 4", sizeToBeShown)
                     stepOneMutableString.value = sizeToBeShown
-                }
+                }*/
             }
         }
     }
@@ -1096,21 +1135,21 @@ class SyncHelper (
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 Log.e("work flow","called")
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                if(dbResponse.workFlowId>0){
+                val step=stepsListDao.getStepForVillage(villageId, stepId)
+                if(step.workFlowId>0 && step.needToPost){
                     val response = apiService.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId,StepStatus.COMPLETED.name)
+                            EditWorkFlowRequest(step.workFlowId,step.status)
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateWorkflowId(stepId,step.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateNeedToPost(stepId,false)
                             }
                         }
                     }
                 }
-
             }catch (ex:Exception){
 //                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }

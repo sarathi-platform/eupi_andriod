@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -36,8 +37,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class WealthRankingSurveyViewModel @Inject constructor(
@@ -120,6 +122,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                     it[0].status
                                 )
                             }
+                            stepsListDao.updateNeedToPost(stepId, false)
                         } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -147,6 +150,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    stepsListDao.updateNeedToPost(step.id, false)
                                 }
                             }
                         }
@@ -178,6 +182,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
+            stepsListDao.updateNeedToPost(stepId,true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -185,6 +190,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
+                stepsListDao.updateNeedToPost(stepDetails.id,true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -229,33 +235,34 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val needToPostDidiList =
                         didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
                     if (needToPostDidiList.isNotEmpty()) {
+                        val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            launch {
-                                didi.wealth_ranking.let {
-                                    val updateWealthRankResponse = apiService.updateDidiRanking(
-                                        listOf(
-                                            EditDidiWealthRankingRequest(
-                                                didi.id,
-                                                StepType.WEALTH_RANKING.name,
-                                                didi.wealth_ranking,
-                                                localModifiedDate = System.currentTimeMillis()?:0
-                                            ),
-                                            EditDidiWealthRankingRequest(
-                                                didi.id,
-                                                StepType.SOCIAL_MAPPING.name,
-                                                StepStatus.COMPLETED.name,
-                                                localModifiedDate = System.currentTimeMillis()?:0
-                                            )
-                                        )
-                                    )
-                                    if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
-                                        didiDao.setNeedToPostRanking(didi.id, false)
-                                    } else {
-                                        networkCallbackListener.onFailed()
-                                    }
+                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
+                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
+                        }
+                        val updateWealthRankResponse = apiService.updateDidiRanking(didiRequestList)
+                        if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                            if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                updateWealthRankResponse.data?.forEach{didi ->
+                                    didiDao.setNeedToPostRanking(didi.id, false)
                                 }
-
+                            } else {
+                                val size = updateWealthRankResponse.data?.indices
+                                if (size != null) {
+                                    for(i in size) {
+                                        val serverResponseDidi = updateWealthRankResponse.data.get(i)
+                                        val localDidi = needToPostDidiList[i]
+                                        serverResponseDidi.transactionId?.let {
+                                            didiDao.updateDidiTransactionId(localDidi.id,
+                                                it
+                                            )
+                                        }
+                                    }
+                                    checkDidiWealthStatus()
+                                }
                             }
+                        } else {
+                            networkCallbackListener.onFailed()
                         }
                     }
                 }
@@ -268,6 +275,34 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    private fun checkDidiWealthStatus() {
+        val timer = Timer()
+        timer.schedule(object : TimerTask() {
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    val didiList = didiDao.fetchPendingWealthStatusDidi(true, "")
+                    if (didiList.isNotEmpty()) {
+                        val ids: ArrayList<String> = arrayListOf()
+                        didiList.forEach { didi ->
+                            didi.transactionId?.let { ids.add(it) }
+                        }
+                        val response = apiService.getPendingStatus(TransactionIdRequest("", ids))
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.forEach { transactionIdResponse ->
+                                didiList.forEach { didi ->
+                                    if (transactionIdResponse.transactionId == didi.transactionId) {
+                                        didiDao.updateDidiNeedToPostWealthRank(didi.id, false)
+                                        didiDao.updateDidiTransactionId(didi.id, "")
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },10000)
     }
 
     fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {

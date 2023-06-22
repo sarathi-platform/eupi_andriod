@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.network
 
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.ApiType.CAST_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
 import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
@@ -54,6 +55,7 @@ object ApiServicesHelper {
             VILLAGE_LIST_API -> SUBPATH_USER_VILLAGE_LIST
             VALIDATE_OTP_API -> SUBPATH_AUTH_VALIDATE_OTP
             GENERATE_OTP_API -> SUBPATH_AUTH_GENERATE_OTP
+            CAST_LIST_API -> SUBPATH_CONFIG_GET_CASTE_LIST
         }
     }
 

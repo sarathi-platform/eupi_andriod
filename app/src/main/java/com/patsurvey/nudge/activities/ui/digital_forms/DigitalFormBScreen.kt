@@ -436,7 +436,7 @@ fun DigitalFormBScreen(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                        .padding(bottom = dimensionResource(id = R.dimen.dp_6), top = 3.5.dp)
                 )
             }
         }

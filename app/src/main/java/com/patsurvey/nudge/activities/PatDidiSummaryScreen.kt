@@ -96,6 +96,9 @@ fun PatDidiSummaryScreen(
         }
     }
 
+    val yesNoButtonViewHeight = remember {
+        mutableStateOf(0.dp)
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -294,14 +297,21 @@ fun PatDidiSummaryScreen(
                                     .clip(RoundedCornerShape(6.dp))
                                     .border(
                                         1.dp,
-                                        color = languageItemActiveBg,
+                                        color = lightGray2,
                                         RoundedCornerShape(6.dp)
                                     )
                                     .background(white, shape = RoundedCornerShape(6.dp))
                                     .padding(0.dp)
                             ) {
 //                                shgFlag.value = didi.value.shgFlag
-                                Row(Modifier.padding(0.dp)) {
+                                Row(
+                                    Modifier
+                                        .padding(0.dp)
+                                        .onGloballyPositioned { coordinates ->
+                                            yesNoButtonViewHeight.value = with(localDensity) { coordinates.size.height.toDp() }
+
+                                        }
+                                ) {
                                     TextButton(
                                         onClick = {
                                             shgFlag.value = SHGFlag.YES.value

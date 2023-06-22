@@ -23,6 +23,7 @@ import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +63,7 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormAPdf(context = context, villageEntity = villageEntity,
-                didiDetailList = didiDetailList.value, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "") ?: "")
+                didiDetailList = didiDetailList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "") ?: "")
             withContext(Dispatchers.Main) {
                 delay(500)
                 val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.name) else null
