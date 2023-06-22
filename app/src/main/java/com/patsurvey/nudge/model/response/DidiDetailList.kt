@@ -18,5 +18,8 @@ data class DidiDetailList(
     @SerializedName("score") var score: Double,
     @SerializedName("comment") var comment: String,
     @SerializedName("beneficiaryProcessStatus") var beneficiaryProcessStatus: List<BeneficiaryProcessStatusModel>,
-
+    @SerializedName("bpcScore") var bpcScore: Double,
+    @SerializedName("bpcComment") var bpcComment: String,
+    @SerializedName("crpScore") var crpScore: Double,
+    @SerializedName("crpComment") var crpComment: String
 )

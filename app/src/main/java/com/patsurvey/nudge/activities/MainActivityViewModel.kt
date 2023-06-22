@@ -4,6 +4,9 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
@@ -30,7 +33,10 @@ class MainActivityViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
     val casteListDao: CasteListDao,
-    val trainingVideoDao: TrainingVideoDao
+    val trainingVideoDao: TrainingVideoDao,
+    val bpcSummaryDao: BpcSummaryDao,
+    val bpcSelectedDidiDao: BpcSelectedDidiDao,
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)

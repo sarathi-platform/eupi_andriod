@@ -25,6 +25,14 @@ data class UserDetailsResponse(
     @Expose
     val profileImage:String,
 
+    @SerializedName("roleName")
+    @Expose
+    val roleName:String,
+
+    @SerializedName("typeName")
+    @Expose
+    val typeName:String,
+
     @SerializedName("villageList")
     @Expose
     val villageList:List<VillageEntity>

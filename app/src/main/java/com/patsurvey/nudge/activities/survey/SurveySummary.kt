@@ -125,43 +125,110 @@ fun SurveySummary(
             val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
             else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
             ShowDialog(
-                title = "Are you sure?",
-                message = if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                    if (count > 1)
-                        stringResource(R.string.pat_completion_dialog_message_plural).replace("{COUNT}", count.toString())
-                    else
-                        stringResource(R.string.pat_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                title = stringResource(id = R.string.are_you_sure),
+                message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
+                    stringResource(id = R.string.bpc_final_pat_submition_message)
+                }else{
+                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                        if (count > 1)
+                            stringResource(R.string.pat_completion_dialog_message_plural).replace("{COUNT}", count.toString())
+                        else
+                            stringResource(R.string.pat_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                    }
+                    else {
+                        if (count > 1)
+                            stringResource(id = R.string.vo_endorsement_completion_dialog_message_plural).replace("{COUNT}", count.toString())
+                        else
+                            stringResource(id = R.string.vo_endorsement_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                    }
                 }
-                 else {
-                     if (count > 1)
-                         stringResource(id = R.string.vo_endorsement_completion_dialog_message_plural).replace("{COUNT}", count.toString())
-                    else
-                         stringResource(id = R.string.vo_endorsement_completion_dialog_message_singular).replace("{COUNT}", count.toString())
-                },
+                   ,
                 setShowDialog = {
                     showDialog.value = it
                 }) {
-                surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
-                    if (isPreviousStepComplete) {
-                        if ((context as MainActivity).isOnline.value ?: false) {
-                            if (surveySummaryViewModel.isTolaSynced.value == 2
-                                && surveySummaryViewModel.isDidiSynced.value == 2
-                                && surveySummaryViewModel.isDidiRankingSynced.value == 2
-                            ){
-                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                surveySummaryViewModel.savePATSummeryToServer(object :
-                                    NetworkCallbackListener {
-                                    override fun onSuccess() {
+                if(surveySummaryViewModel.prefRepo.isUserBPC()){
+                    if ((context as MainActivity).isOnline.value ?: false) {
+                        surveySummaryViewModel.sendBpcUpdatedDidiList(object : NetworkCallbackListener{
+                            override fun onSuccess() {
 
-                                    }
+                            }
 
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
+                            override fun onFailed() {
 
-                                })
+                            }
 
-                                /*surveySummaryViewModel.updatePatStatusToNetwork(object :
+                        })
+                        surveySummaryViewModel.savePATSummeryToServer(object :
+                            NetworkCallbackListener {
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
+
+                        surveySummaryViewModel.updateBpcPatStatusToNetwork(object :
+                            NetworkCallbackListener {
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
+                        surveySummaryViewModel.callWorkFlowAPIForBpc(
+                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                            stepId,
+                            object :
+                                NetworkCallbackListener {
+                                override fun onSuccess() {
+                                }
+
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
+                            })
+
+                        surveySummaryViewModel.updateDidiPatStatus()
+                        surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                        surveySummaryViewModel.saveBpcPatCompletionDate()
+                        navController.navigate(
+                            "bpc_pat_step_completion_screen/${
+                                context.getString(R.string.pat_survey_completed_message)
+                                    .replace(
+                                        "{VILLAGE_NAME}",
+                                        surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                                    )
+                            }"
+                        )
+                    }
+                } else {
+                    surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+                        if (isPreviousStepComplete) {
+                            if ((context as MainActivity).isOnline.value ?: false) {
+                                if (surveySummaryViewModel.isTolaSynced.value == 2
+                                    && surveySummaryViewModel.isDidiSynced.value == 2
+                                    && surveySummaryViewModel.isDidiRankingSynced.value == 2
+                                ) {
+                                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                        surveySummaryViewModel.savePATSummeryToServer(object :
+                                            NetworkCallbackListener {
+                                            override fun onSuccess() {
+
+                                            }
+
+                                            override fun onFailed() {
+                                                showCustomToast(context, SYNC_FAILED)
+                                            }
+
+                                        })
+
+                                        /*surveySummaryViewModel.updatePatStatusToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
 
@@ -173,44 +240,45 @@ fun SurveySummary(
 
                                 })*/
 
-                                surveySummaryViewModel.callWorkFlowAPI(
-                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                    stepId,
-                                    object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                        }
+                                        surveySummaryViewModel.callWorkFlowAPI(
+                                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                            stepId,
+                                            object :
+                                                NetworkCallbackListener {
+                                                override fun onSuccess() {
+                                                }
 
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
+                                                override fun onFailed() {
+                                                    showCustomToast(context, SYNC_FAILED)
+                                                }
+                                            })
+                                    }
+                                }
                             }
-                          }
-                        }
-                        if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                            surveySummaryViewModel.updateDidiPatStatus()
-                            surveySummaryViewModel.markPatComplete(
-                                surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                stepId
-                            )
-                            surveySummaryViewModel.savePatCompletionDate()
-                            navController.navigate(
-                                "pat_step_completion_screen/${
-                                    context.getString(R.string.pat_survey_completed_message).replace(
-                                        "{VILLAGE_NAME}",
-                                        surveySummaryViewModel.prefRepo.getSelectedVillage().name
-                                    )
-                                }"
-                            )
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                surveySummaryViewModel.updateDidiPatStatus()
+                                surveySummaryViewModel.markPatComplete(
+                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId
+                                )
+                                surveySummaryViewModel.savePatCompletionDate()
+                                navController.navigate(
+                                    "pat_step_completion_screen/${
+                                        context.getString(R.string.pat_survey_completed_message)
+                                            .replace(
+                                                "{VILLAGE_NAME}",
+                                                surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                                            )
+                                    }"
+                                )
+                            } else {
+                                navController.navigate("form_picture_screen/$stepId")
+                            }
                         } else {
-                            navController.navigate("form_picture_screen/$stepId")
+                            showToast(context, "Previous Step Not Complete.")
                         }
-                    } else {
-                        showToast(context, "Previous Step Not Complete.")
                     }
                 }
-
             }
         }
 
@@ -308,8 +376,12 @@ fun SurveySummary(
                                         didi = didi,
                                         modifier = modifier,
                                         onItemClick = {
-                                            if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal)
-                                                navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                            if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal){
+                                                if(surveySummaryViewModel.prefRepo.isUserBPC()){
+                                                    navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                                }else navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+
+                                            }
                                         }
                                     )
                                 }
@@ -371,44 +443,74 @@ fun SurveySummary(
             }
         }
 
-        if (!isStepComplete || showDidiListForStatus.first) {
-            BottomButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
+        if(surveySummaryViewModel.prefRepo.isUserBPC()){
+            if (!isStepComplete || showDidiListForStatus.first) {
+                BottomButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
                         }
-                    },
-                positiveButtonText =
-                if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                    if (showDidiListForStatus.first)
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+                    positiveButtonText = if (showDidiListForStatus.first)
                         stringResource(id = R.string.done_text)
                     else
-                        stringResource(id = R.string.send_for_vo_text)
-                } else {
-                    if (showDidiListForStatus.first)
-                        stringResource(id = R.string.done_text)
-                    else
-                        stringResource(id = R.string.confirm_text)
-                       },
-                isArrowRequired = !showDidiListForStatus.first,
-                positiveButtonOnClick = {
-                    if (showDidiListForStatus.first) {
-                        showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
+                        stringResource(id = R.string.confirm_text),
+                    isArrowRequired = !showDidiListForStatus.first,
+                    positiveButtonOnClick = {
+                        if (showDidiListForStatus.first) {
+                            showDidiListForStatus = Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
+                        } else {
+                            showDialog.value = true
+                        }
+                    }
+                )
+            }
+        }else{
+            if (!isStepComplete || showDidiListForStatus.first) {
+                BottomButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+                    positiveButtonText =
+                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                        if (showDidiListForStatus.first)
+                            stringResource(id = R.string.done_text)
                         else
-                            Pair(false, DidiEndorsementStatus.NOT_STARTED.ordinal)
-                    }else
-                        showDialog.value = true
-                }
-            )
-        } else {
-            bottomPadding = 0.dp
+                            stringResource(id = R.string.send_for_vo_text)
+                    } else {
+                        if (showDidiListForStatus.first)
+                            stringResource(id = R.string.done_text)
+                        else
+                            stringResource(id = R.string.confirm_text)
+                    },
+                    isArrowRequired = !showDidiListForStatus.first,
+                    positiveButtonOnClick = {
+                        if (showDidiListForStatus.first) {
+                            showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY)
+                                Pair(false, PatSurveyStatus.NOT_STARTED.ordinal)
+                            else
+                                Pair(false, DidiEndorsementStatus.NOT_STARTED.ordinal)
+                        }else
+                            showDialog.value = true
+                    }
+                )
+            } else {
+                bottomPadding = 0.dp
+            }
         }
+
     }
 
 }

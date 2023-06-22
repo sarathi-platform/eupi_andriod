@@ -207,7 +207,7 @@
     <string name="endorse">समर्थन</string>
 
     <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
-    <string name="confirm_text">पुष्टि करना</string>
+    <string name="confirm_text">पुष्टि करें</string>
     <string name="finish">समाप्त करें</string>
 
 
@@ -246,4 +246,21 @@
     <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
     <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
     <string name="no_didis_availble_for_vo_endorsement">वीओ एंडोर्समेंट के लिए कोई दीदी उपलब्ध नहीं है।</string>
+    <string name="add_more">अधिक जोड़ें</string>
+    <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
+    <string name="bpc_final_pat_submition_message">क्या आप सूची सबमिट करना चाहते हैं अंतिम वीओ सबमिशन के लिए?</string>
+
+    <string name="didi_selected_text_singular">दीदी को चुना गया</string>
+    <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
+    <string name="didi_replace_button">दीदी को बदलो</string>
+    <string name="submit_pat_verification">पीएटी सत्यापन जमा करें</string>
+
+    <string name="comparison_screen_heading">{COUNT} पैट सत्यापित दीदियों का सारांश</string>
+    <string name="crp_score_text">सीआरपी स्कोर:</string>
+    <string name="bpc_score_text">बीपीसी स्कोर:</string>
+    <string name="match_percentage_box_text">{PERCENTAGE}% मिलान PAT सत्यापन पर हुआ मिलान PAT सत्यापन पर हुआ|</string>
+    <string name="summary_tolas_added_text">" टोला जोड़ा गया"</string>
+    <string name="summary_didis_mobilised_text">" दीदियों को मोबिलाइज किया"</string>
+    <string name="summary_wealth_ranking_text">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
+    <string name="summary_vo_endoresement_text">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
 </resources>

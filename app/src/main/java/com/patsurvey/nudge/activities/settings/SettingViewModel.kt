@@ -9,6 +9,8 @@ import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
@@ -46,7 +48,9 @@ class SettingViewModel @Inject constructor(
     val didiDao: DidiDao,
     val answerDao: AnswerDao,
     val numericAnswerDao: NumericAnswerDao,
-    val questionDao: QuestionListDao
+    val questionDao: QuestionListDao,
+    val bpcSelectedDidiDao: BpcSelectedDidiDao,
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 
 ):BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
@@ -340,7 +344,7 @@ class SettingViewModel @Inject constructor(
 
     fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            casteListDao.deleteCasteTable()
+//            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()
@@ -350,6 +354,8 @@ class SettingViewModel @Inject constructor(
             stepsListDao.deleteAllStepsFromDB()
             userDao.deleteAllUserDetail()
             villegeListDao.deleteAllVilleges()
+            bpcSelectedDidiDao.deleteAllDidis()
+            bpcNonSelectedDidiDao.deleteAllDidis()
             clearSharedPreference()
             //cleared cache in case of logout
             context.cacheDir.deleteRecursively()

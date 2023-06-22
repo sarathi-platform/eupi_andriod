@@ -75,10 +75,10 @@ import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.customviews.rememberSnackBarState
-import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.OTP_LENGTH
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 
@@ -154,7 +154,13 @@ fun VillageSelectionScreen(
                             viewModel.villageSelected.value = it
                             viewModel.updateSelectedVillage()
                             navController.popBackStack()
-                            navController.navigate(Graph.HOME)
+                            navController.navigate(
+                                "home_graph/${
+                                    viewModel.prefRepo.getPref(
+                                        PREF_KEY_TYPE_NAME, ""
+                                    ) ?: ""
+                                }"
+                            )
                         }
                     }
                     item { Spacer(modifier = Modifier.height(16.dp)) }

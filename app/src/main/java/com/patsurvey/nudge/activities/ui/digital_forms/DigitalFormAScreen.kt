@@ -96,12 +96,14 @@ fun DigitalFormAScreen(
     }
 
     val formPathState = remember {
-        mutableStateOf(File(
-            "${
-                context.getExternalFilesDir(
-                    Environment.DIRECTORY_DOCUMENTS
-                )?.absolutePath
-            }")
+        mutableStateOf(
+            File(
+                "${
+                    context.getExternalFilesDir(
+                        Environment.DIRECTORY_DOCUMENTS
+                    )?.absolutePath
+                }"
+            )
         )
     }
 
@@ -348,7 +350,8 @@ fun DigitalFormAScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }",
+                            "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
                         )
                         viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
@@ -373,7 +376,8 @@ fun DigitalFormAScreen(
                                 stringResource(id = R.string.downloading_button_text)
                             else
                                 stringResource(R.string.download_button_text)
-                        }, showLoader = showLoader.value,
+                        },
+                        showLoader = showLoader.value,
                     ) {
                         if (formPathState.value.isFile) {
                             navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")

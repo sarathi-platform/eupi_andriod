@@ -14,12 +14,27 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
-import com.patsurvey.nudge.activities.*
+import com.patsurvey.nudge.activities.AddDidiScreen
+import com.patsurvey.nudge.activities.DidiScreen
+import com.patsurvey.nudge.activities.PatDidiSummaryScreen
+import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
+import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
+import com.patsurvey.nudge.activities.ProgressScreen
+import com.patsurvey.nudge.activities.StepCompletionScreen
+import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
-import com.patsurvey.nudge.activities.ui.digital_forms.*
+import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
+import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
+import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
+import com.patsurvey.nudge.activities.ui.bpc.score_comparision.ScoreComparisionScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormAScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
+import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -31,15 +46,38 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementStepScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
+import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
+import com.patsurvey.nudge.utils.ARG_DIDI_DETAILS_ID
+import com.patsurvey.nudge.utils.ARG_DIDI_ID
+import com.patsurvey.nudge.utils.ARG_DIDI_STATUS
+import com.patsurvey.nudge.utils.ARG_FORM_PATH
+import com.patsurvey.nudge.utils.ARG_FOR_REPLACEMENT
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.ARG_FROM_SCREEN
+import com.patsurvey.nudge.utils.ARG_FROM_SETTING
+import com.patsurvey.nudge.utils.ARG_FROM_VO_ENDORSEMENT_SCREEN
+import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
+import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
+import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
+import com.patsurvey.nudge.utils.ARG_STEP_ID
+import com.patsurvey.nudge.utils.ARG_VIDEO_ID
+import com.patsurvey.nudge.utils.ARG_VILLAGE_ID
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 
 @Composable
-fun NavHomeGraph(navController: NavHostController) {
+fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = HomeScreens.PROGRESS_SCREEN.route
+        startDestination = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) HomeScreens.BPC_PROGRESS_SCREEN.route else HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
             ProgressScreen(
@@ -60,6 +98,21 @@ fun NavHomeGraph(navController: NavHostController) {
                 }
             )
         }
+
+        composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
+            BpcProgressScreen(
+                bpcProgreesScreenViewModel = hiltViewModel(),
+                navController = navController,
+                modifier = Modifier.fillMaxWidth(),
+                onNavigateToStep = { villageId, stepId ->
+                    navController.navigate("bpc_graph/$villageId/$stepId")
+                },
+                onNavigateToSetting = {
+                    navController.navigate(Graph.SETTING_GRAPH)
+                }
+            )
+        }
+
         composable(route = HomeScreens.DIDI_SCREEN.route) {
             DidiScreen(
                 navController = navController,
@@ -84,11 +137,15 @@ fun NavHomeGraph(navController: NavHostController) {
         settingNavGraph(navController = navController)
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController =navController)
+        bpcDidiListNavGraph(navController = navController)
     }
 }
 
 sealed class HomeScreens(val route: String) {
     object PROGRESS_SCREEN : HomeScreens(route = "progress_screen")
+
+    object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
+
     object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
 }
 
@@ -374,7 +431,6 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
                 patDidiSummaryViewModel = hiltViewModel(),
             ) {
-//                navController.popBackStack()
                 navController.popBackStack()
             }
         }
@@ -748,5 +804,192 @@ sealed class LogoutScreens(val route: String) {
     object LOG_LOGIN_SCREEN : LogoutScreens(route = "log_login_screen")
     object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "log_village_selection_screen")
     object LOG_OTP_VERIFICATION : LogoutScreens(route = "log_otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+
+}
+
+
+fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
+
+    navigation(
+        route = Graph.BPC_GRAPH,
+        startDestination = BpcDidiListScreens.BPC_DIDI_LIST.route,
+        arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+            type = NavType.IntType
+        }, navArgument(ARG_STEP_ID) {
+            type = NavType.IntType
+        })
+    ) {
+        composable(
+            route = BpcDidiListScreens.BPC_DIDI_LIST.route,
+            arguments = listOf(navArgument(ARG_VILLAGE_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            BpcDidiListScreen(
+                bpcDidiListViewModel = hiltViewModel(),
+                navController = navController,
+                villageId = it.arguments?.getInt(ARG_VILLAGE_ID) ?: 0,
+                stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1
+            )
+        }
+        composable(
+            route = BpcDidiListScreens.BPC_ADD_MORE_DIDI_LIST.route,
+            arguments = listOf(navArgument(ARG_FOR_REPLACEMENT){
+                type = NavType.BoolType
+            })
+        ) {
+            BpcAddMoreDidiScreen(
+                bpcAddMoreDidiViewModel = hiltViewModel(),
+                navController = navController,
+                forReplace = it.arguments?.getBoolean(ARG_FOR_REPLACEMENT) ?: false
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.YES_NO_QUESTION_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
+            })
+        ) {
+            QuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SECTION_TWO_SUMMARY_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })
+        ) {
+            PatSurvaySectionTwoSummaryScreen(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0
+            )
+        }
+
+        composable(route = BpcDidiListScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_FROM_SCREEN) {
+                type = NavType.StringType
+            }
+            )
+        ) {
+            PatSurveyCompleteSummary(
+                navController = navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                patSectionSummaryViewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
+            )
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_SURVEY_SUMMARY.route,
+            arguments = listOf(navArgument(ARG_STEP_ID) {
+                type = NavType.IntType
+            },
+                navArgument(ARG_IS_STEP_COMPLETE) {
+                    type = NavType.BoolType
+                }
+            )
+        ) {
+            SurveySummary(navController = navController, surveySummaryViewModel = hiltViewModel(), fromScreen = ARG_FROM_PAT_SURVEY, stepId = it.arguments?.getInt(ARG_STEP_ID) ?: -1, isStepComplete = it.arguments?.getBoolean(ARG_IS_STEP_COMPLETE) ?: false)
+        }
+
+        composable(route = BpcDidiListScreens.DIDI_PAT_SUMMARY_SCREEN.route,
+            arguments = listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            })){
+            PatDidiSummaryScreen(
+                navController=navController,
+                modifier = Modifier
+                    .fillMaxSize(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                patDidiSummaryViewModel = hiltViewModel(),
+            ) {
+                navController.popBackStack()
+            }
+        }
+
+        composable(
+            route = BpcDidiListScreens.PAT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+//                navController.navigate(BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route)
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+
+            }
+        }
+
+        composable(route = BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route){
+            ScoreComparisionScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+
+    }
+}
+
+sealed class BpcDidiListScreens(val route: String) {
+    object BPC_DIDI_LIST : BpcDidiListScreens(route = "bpc_did_list")
+
+    object BPC_ADD_MORE_DIDI_LIST : BpcDidiListScreens(route = "bpc_add_more_didi_list/{$ARG_FOR_REPLACEMENT}")
+
+    object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
+
+    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object STEP_COMPLETION_SCREEN :
+        BpcDidiListScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object PAT_SECTION_ONE_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "bpc_pat_section_one_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_SECTION_TWO_SUMMARY_SCREEN :
+        BpcDidiListScreens(route = "bpc_pat_section_two_summary_screen/{$ARG_DIDI_ID}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+
+    object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
+
+    object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "bpc_pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+
+    object BPC_SCORE_COMPARISION_SCREEN: BpcDidiListScreens(route = "bpc_score_comparison_screen")
 
 }

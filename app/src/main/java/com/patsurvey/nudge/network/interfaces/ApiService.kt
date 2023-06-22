@@ -123,4 +123,16 @@ interface ApiService {
     @POST("/write-api/beneficiary/edit")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun updateDidis(@Body didiWealthRankingRequest: List<EditDidiRequest>): ApiResponseModel<List<DidiEntity>>
+
+    @GET("/read-api/bpc/view-summary")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
+    @GET("/write-api/bpc/beneficiary-list")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<BpcBeneficiaryApiResponse>>
+
+
+    @POST("/write-api/bpc/update-beneficiary-selection")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun sendSelectedDidiList(@Body bpcBeneficiaryApiResponse: BpcUpdateSelectedDidiRequest): ApiResponseModel<String?>
 }

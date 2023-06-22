@@ -11,6 +11,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
@@ -339,11 +340,11 @@ fun PatDidiSummaryScreen(
                                             color = if (shgFlag.value == SHGFlag.YES.value) white else textColorDark
                                         )
                                     }
-                                    Spacer(
+                                    Divider(
                                         modifier = Modifier
-                                            .width(2.dp)
-                                            .fillMaxHeight()
-                                            .background(greyBorder)
+                                            .width(1.dp)
+                                            .height(yesNoButtonViewHeight.value)
+                                            .background(lightGray2)
                                     )
                                     TextButton(
                                         onClick = {
@@ -459,7 +460,11 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = "Next",
                 positiveButtonOnClick = {
-                    navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}")
+                    if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")
+                    } else {
+                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}")
+                    }
                 },
                 negativeButtonOnClick = {}
             )

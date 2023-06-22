@@ -253,7 +253,7 @@ fun CameraViewForForm(
                         color = Color.Black
                     )
                 ) {
-                    Log.d("FormPictureScreen_CameraViewForForm", "formName: $formName" )
+                    Log.d("FormPictureScreen_CameraViewForForm", "formName: $formName")
                     takeFormPhoto(
                         formName = formName,
                         imageCapture = imageCapture,

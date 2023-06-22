@@ -20,8 +20,8 @@ import java.net.SocketTimeoutException
 abstract class BaseViewModel : ViewModel(){
 
     val tokenExpired = RetryHelper.tokenExpired
-
     val baseOtpNumber = mutableStateOf("")
+
 
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
@@ -173,5 +173,15 @@ abstract class BaseViewModel : ViewModel(){
             else -> onServerError(ErrorModelWithApi(-1, apiName = api, e.message))
         }
     }
+
+   /* open fun removeDidiFromSelectedList(bpcSelectedDidiDao: BpcSelectedDidiDao, ){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (didiToBeReplaced.value.first != -1 && didiToBeReplaced.value.second != -1) {
+                bpcSelectedDidiDao.markDidiSelected(didiToBeReplaced.value.second, false)
+            }
+        }
+    }*/
+
+
 }
 

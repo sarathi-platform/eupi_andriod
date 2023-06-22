@@ -5,12 +5,18 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
+import com.patsurvey.nudge.database.BpcSelectedDidiEntity
+import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
@@ -95,6 +101,9 @@ object RetryHelper {
     private var numericAnswerDao: NumericAnswerDao? = null
     private var questionDao: QuestionListDao? = null
     private var castListDao: CasteListDao? = null
+    private var bpcSummaryDao: BpcSummaryDao? = null
+    private var bpcSelectedDidiDao: BpcSelectedDidiDao? = null
+    private var bpcNonSelectedDidiDao: BpcNonSelectedDidiDao? = null
 
     val tokenExpired = mutableStateOf(false)
 
@@ -108,7 +117,10 @@ object RetryHelper {
         answerDao: AnswerDao,
         numericAnswerDao: NumericAnswerDao,
         questionDao: QuestionListDao,
-        castListDao: CasteListDao
+        castListDao: CasteListDao,
+        bpcSummaryDao: BpcSummaryDao,
+        bpcSelectedDidiDao: BpcSelectedDidiDao,
+        bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
     ) {
         setPrefRepo(prefRepo)
         setApiServices(apiService)
@@ -120,6 +132,9 @@ object RetryHelper {
         setNumericAnswerDao(numericAnswerDao)
         setQuestionDao(questionDao)
         setCastListDao(castListDao)
+        setBpcSummaryDao(bpcSummaryDao)
+        setBpcSelectedDidiDao(bpcSelectedDidiDao)
+        setBpcNonSelectedDidiDao(bpcNonSelectedDidiDao)
     }
 
     fun cleanUp() {
@@ -196,6 +211,18 @@ object RetryHelper {
 
     private fun setCastListDao(mCasteListDao: CasteListDao) {
         castListDao = mCasteListDao
+    }
+
+    private fun setBpcSummaryDao(mBpcSummaryDao: BpcSummaryDao) {
+        bpcSummaryDao = mBpcSummaryDao
+    }
+
+    private fun setBpcSelectedDidiDao(mBpcSelectedDidiDao: BpcSelectedDidiDao) {
+        bpcSelectedDidiDao = mBpcSelectedDidiDao
+    }
+
+    private fun setBpcNonSelectedDidiDao(mBpcNonSelectedDidiDao: BpcNonSelectedDidiDao) {
+        bpcNonSelectedDidiDao = mBpcNonSelectedDidiDao
     }
 
     fun retryApi(apiType: ApiType) {
@@ -540,7 +567,203 @@ object RetryHelper {
                             onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                         }
                     }
-                    ApiType.VILLAGE_LIST_API -> {
+
+                    ApiType.BPC_SUMMARY_API -> {
+                        stepListApiVillageId?.forEach { villageId ->
+                            try {
+                                val bpcSummaryResponse =
+                                    apiService?.getBpcSummary(villageId = villageId)
+                                if (bpcSummaryResponse?.status.equals(SUCCESS, true)) {
+                                    bpcSummaryResponse?.data?.let {
+                                        val bpcSummary = BpcSummaryEntity(
+                                            cohortCount = it.cohortCount,
+                                            mobilisedCount = it.mobilisedCount,
+                                            poorDidiCount = it.poorDidiCount,
+                                            sentVoEndorsementCount = it.sentVoEndorsementCount,
+                                            voEndorsedCount = it.voEndorsedCount,
+                                            villageId = villageId
+                                        )
+                                        bpcSummaryDao?.insert(bpcSummary)
+                                    }
+                                } else {
+                                    //TODO remove mock data
+                                    bpcSummaryDao?.insert(
+                                        BpcSummaryEntity(
+                                            0,
+                                            12,
+                                            14,
+                                            24,
+                                            77,
+                                            19,
+                                            villageId = villageId
+                                        )
+                                    )
+
+                                    val ex = ApiResponseFailException(bpcSummaryResponse?.message!!)
+                                    onCatchError(ex, ApiType.BPC_SUMMARY_API)
+                                }
+                            } catch (ex: Exception) {
+
+                                onCatchError(ex, ApiType.BPC_SUMMARY_API)
+                            }
+                        }
+                    }
+
+                    ApiType.BPC_DIDI_LIST_API -> {
+                        stepListApiVillageId.forEach { villageId ->
+                            try {
+                                val didiResponse =
+                                    apiService?.getDidiForBpcFromNetwork(villageId = villageId)
+                                if (didiResponse?.status.equals(SUCCESS, true)) {
+                                    didiResponse?.data?.let { beneficiaryResponse ->
+                                        beneficiaryResponse.forEach {
+                                            it.selected.forEach { didi ->
+                                                var tolaName = BLANK_STRING
+                                                var casteName = BLANK_STRING
+//                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId)
+//                                            singleTola?.let {
+//                                                tolaName = it.name
+//                                            }
+                                                singleCaste?.let {
+                                                    casteName = it.casteName
+                                                }
+//                                             if (singleTola != null) {
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.WEALTH_RANKING.name))
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                    else
+                                                        WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.PAT_SURVEY.name))
+                                                        PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.VO_ENDROSEMENT.name))
+                                                        DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        DidiEndorsementStatus.NOT_STARTED.ordinal
+
+                                                //TODO Create new table
+                                                bpcSelectedDidiDao?.insertDidi(
+                                                    BpcSelectedDidiEntity(
+                                                        id = didi.id,
+                                                        serverId = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = villageId,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
+                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        section1Status = PatSurveyStatus.COMPLETED.ordinal,
+                                                        section2Status = PatSurveyStatus.COMPLETED.ordinal,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
+                                                    )
+                                                )
+                                            }
+                                            it.not_selected.forEach { didi ->
+                                                var tolaName = BLANK_STRING
+                                                var casteName = BLANK_STRING
+//                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId)
+//                                            singleTola?.let {
+//                                                tolaName = it.name
+//                                            }
+                                                singleCaste?.let {
+                                                    casteName = it.casteName
+                                                }
+//                                             if (singleTola != null) {
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.WEALTH_RANKING.name))
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                    else
+                                                        WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.PAT_SURVEY.name))
+                                                        PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.VO_ENDROSEMENT.name))
+                                                        DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else
+                                                        DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                bpcNonSelectedDidiDao?.insertNonSelectedDidi(
+                                                    BpcNonSelectedDidiEntity(
+                                                        id = didi.id,
+                                                        serverId = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = villageId,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
+                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        section1Status = PatSurveyStatus.COMPLETED.ordinal,
+                                                        section2Status = PatSurveyStatus.COMPLETED.ordinal,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        transactionId = "",
+                                                        bpcScore = didi.bpcScore,
+                                                        bpcComment = didi.bpcComment,
+                                                        crpComment = didi.crpComment,
+                                                        crpScore = didi.crpScore
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    val ex = ApiResponseFailException(didiResponse?.message!!)
+                                    onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
+                            }
+                        }
+                    }
+
+                    ApiType.PAT_BPC_QUESTION_API -> {
+
+                    }
+
+                    ApiType.PAT_BPC_SURVEY_SUMMARY -> {
 
                     }
                     ApiType.CAST_LIST_API -> {
@@ -573,7 +796,7 @@ object RetryHelper {
         }
     }
 
-    fun retryVillageListApi(saveVillageList: (success: Boolean , villageList: List<VillageEntity>?) -> Unit) {
+    fun retryVillageListApi(saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val response = apiService?.userAndVillageListAPI(prefRepo?.getAppLanguageId() ?: 2)
@@ -588,7 +811,7 @@ object RetryHelper {
                             if (it.villageList.isNotEmpty()) {
                                 villageListDao?.insertAll(it.villageList)
                                 saveVillageList(true, villageListDao?.getAllVillages())
-                            } else{
+                            } else {
                                 saveVillageList(false, listOf())
                             }
                         }
@@ -749,7 +972,10 @@ object RetryHelper {
     }
 
     fun onServerError(errorModel: ErrorModelWithApi?) {
-        if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(RESPONSE_CODE_CONFLICT) == true) {
+        if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(
+                RESPONSE_CODE_CONFLICT
+            ) == true
+        ) {
 //            tokenExpired.value = true
         }
     }
@@ -758,7 +984,8 @@ object RetryHelper {
         otpNumber: MutableState<String>,
         onOtpResponse: (success: Boolean, message: String) -> Unit
     ) {
-        val otpRequest = OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
+        val otpRequest =
+            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 launch {
@@ -791,7 +1018,7 @@ object RetryHelper {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 launch {
-                val response = apiService?.generateOtp(loginRequest)
+                    val response = apiService?.generateOtp(loginRequest)
                     if (response?.status.equals(SUCCESS, true)) {
                         withContext(Dispatchers.Main) {
                             prefRepo?.saveMobileNumber(mobileNumber)

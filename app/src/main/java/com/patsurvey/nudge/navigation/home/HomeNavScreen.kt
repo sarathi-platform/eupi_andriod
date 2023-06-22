@@ -28,24 +28,29 @@ import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.smallestTextStyle
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BottomNavItem
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun HomeNavScreen(navController: NavHostController = rememberNavController(),prefRepo: PrefRepo) {
+fun HomeNavScreen(navController: NavHostController = rememberNavController(), prefRepo: PrefRepo) {
     Scaffold(
-        bottomBar = { BottomBar(navController = navController,prefRepo) }
+        bottomBar = { BottomBar(navController = navController, prefRepo) }
     ) {
-        NavHomeGraph(navController = navController)
+        NavHomeGraph(navController = navController, prefRepo)
     }
 }
 
 @Composable
-fun BottomBar(navController: NavHostController,prefRepo: PrefRepo) {
+fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
     val screens = listOf(
         BottomNavItem(
             stringResource(R.string.progress_item_text),
-            HomeScreens.PROGRESS_SCREEN.route,
+            if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
+                HomeScreens.BPC_PROGRESS_SCREEN.route
+            else
+                HomeScreens.PROGRESS_SCREEN.route,
             painterResource(R.drawable.progress_icon)
         ),
         BottomNavItem(
@@ -59,10 +64,12 @@ fun BottomBar(navController: NavHostController,prefRepo: PrefRepo) {
 
     val bottomBarDestination = screens.any { it.route == currentDestination?.route }
     if (bottomBarDestination) {
-        BottomNavigation(modifier = Modifier.shadow(
-            elevation = 10.dp
-        ),
-            backgroundColor = Color.White) {
+        BottomNavigation(
+            modifier = Modifier.shadow(
+                elevation = 10.dp
+            ),
+            backgroundColor = Color.White
+        ) {
             screens.forEach { screen ->
                 AddItem(
                     screen = screen,
@@ -89,15 +96,17 @@ fun RowScope.AddItem(
         alwaysShowLabel = true,
         icon = {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Spacer(modifier = Modifier
-                    .fillMaxWidth()
-                    .height(2.dp)
-                    .padding(horizontal = 27.dp)
-                    .background(if (selected) blueDark else Color.White)
-                    .border(
-                        width = 2.dp, color = if (selected) blueDark else Color.White,
-                        shape = RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
-                    ))
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(2.dp)
+                        .padding(horizontal = 27.dp)
+                        .background(if (selected) blueDark else Color.White)
+                        .border(
+                            width = 2.dp, color = if (selected) blueDark else Color.White,
+                            shape = RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                        )
+                )
                 Icon(
                     painter = screen.icon,
                     contentDescription = screen.name,
