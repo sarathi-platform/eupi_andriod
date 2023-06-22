@@ -567,6 +567,7 @@ object RetryHelper {
                             onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                         }
                     }
+
                     ApiType.BPC_SUMMARY_API -> {
                         stepListApiVillageId?.forEach { villageId ->
                             try {
@@ -607,6 +608,7 @@ object RetryHelper {
                             }
                         }
                     }
+
                     ApiType.BPC_DIDI_LIST_API -> {
                         stepListApiVillageId.forEach { villageId ->
                             try {
@@ -643,7 +645,7 @@ object RetryHelper {
                                                         PatSurveyStatus.NOT_STARTED.ordinal
                                                 val voEndorsementStatus =
                                                     if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.VO_ENDORSEMENT.name))
+                                                            .contains(StepType.VO_ENDROSEMENT.name))
                                                         DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                             .indexOf(StepType.PAT_SURVEY.name)].status)
                                                     else
@@ -709,7 +711,7 @@ object RetryHelper {
                                                         PatSurveyStatus.NOT_STARTED.ordinal
                                                 val voEndorsementStatus =
                                                     if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.VO_ENDORSEMENT.name))
+                                                            .contains(StepType.VO_ENDROSEMENT.name))
                                                         DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                             .indexOf(StepType.PAT_SURVEY.name)].status)
                                                     else
@@ -750,19 +752,22 @@ object RetryHelper {
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse?.message!!)
-                                     onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
+                                    onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
                             }
                         }
                     }
+
                     ApiType.PAT_BPC_QUESTION_API -> {
 
                     }
+
                     ApiType.PAT_BPC_SURVEY_SUMMARY -> {
 
                     }
+
                     else -> {
                         //TODO check if retry required for workflow api.
                     }
@@ -772,7 +777,7 @@ object RetryHelper {
         }
     }
 
-    fun retryVillageListApi(saveVillageList: (success: Boolean , villageList: List<VillageEntity>?) -> Unit) {
+    fun retryVillageListApi(saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val response = apiService?.userAndVillageListAPI(prefRepo?.getAppLanguageId() ?: 2)
@@ -787,7 +792,7 @@ object RetryHelper {
                             if (it.villageList.isNotEmpty()) {
                                 villageListDao?.insertAll(it.villageList)
                                 saveVillageList(true, villageListDao?.getAllVillages())
-                            } else{
+                            } else {
                                 saveVillageList(false, listOf())
                             }
                         }
@@ -948,7 +953,10 @@ object RetryHelper {
     }
 
     fun onServerError(errorModel: ErrorModelWithApi?) {
-        if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(RESPONSE_CODE_CONFLICT) == true) {
+        if (errorModel?.code?.equals(RESPONSE_CODE_UNAUTHORIZED) == true || errorModel?.code?.equals(
+                RESPONSE_CODE_CONFLICT
+            ) == true
+        ) {
 //            tokenExpired.value = true
         }
     }
@@ -957,7 +965,8 @@ object RetryHelper {
         otpNumber: MutableState<String>,
         onOtpResponse: (success: Boolean, message: String) -> Unit
     ) {
-        val otpRequest = OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
+        val otpRequest =
+            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 launch {
@@ -990,7 +999,7 @@ object RetryHelper {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 launch {
-                val response = apiService?.generateOtp(loginRequest)
+                    val response = apiService?.generateOtp(loginRequest)
                     if (response?.status.equals(SUCCESS, true)) {
                         withContext(Dispatchers.Main) {
                             prefRepo?.saveMobileNumber(mobileNumber)

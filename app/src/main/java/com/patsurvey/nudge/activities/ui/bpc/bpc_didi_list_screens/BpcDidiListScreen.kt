@@ -101,6 +101,13 @@ fun BpcDidiListScreen(
     stepId: Int
 ) {
 
+    LaunchedEffect(key1 = Unit) {
+        bpcDidiListViewModel.isStepComplete() { stepId, isComplete ->
+            if (isComplete)
+                navController.navigate("bpc_pat_survey_summary/$stepId/$isComplete")
+        }
+    }
+
     val didis by bpcDidiListViewModel.selectedDidiList.collectAsState()
 
     val newFilteredTolaDidiList = bpcDidiListViewModel.filterTolaMapList

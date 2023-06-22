@@ -58,6 +58,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -293,7 +294,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             PatSurveyStatus.NOT_STARTED.ordinal
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDORSEMENT.name))
+                                                                .contains(StepType.VO_ENDROSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
@@ -361,7 +362,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             PatSurveyStatus.NOT_STARTED.ordinal
                                                     val voEndorsementStatus =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDORSEMENT.name))
+                                                                .contains(StepType.VO_ENDROSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
@@ -801,7 +802,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.VO_ENDROSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.VO_ENDORSEMENT.name)].status)
+                                                                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
 

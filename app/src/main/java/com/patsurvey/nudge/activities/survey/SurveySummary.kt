@@ -181,7 +181,7 @@ fun SurveySummary(
                             }
 
                         })
-                        surveySummaryViewModel.callWorkFlowAPI(
+                        surveySummaryViewModel.callWorkFlowAPIForBpc(
                             surveySummaryViewModel.prefRepo.getSelectedVillage().id,
                             stepId,
                             object :

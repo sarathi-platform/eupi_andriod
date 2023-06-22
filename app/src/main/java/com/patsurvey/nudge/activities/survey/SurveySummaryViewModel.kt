@@ -256,34 +256,23 @@ class SurveySummaryViewModel @Inject constructor(
         },10000)
     }
 
-    fun callWorkFlowAPI(
-        villageId: Int,
-        stepId: Int,
-        networkCallbackListener: NetworkCallbackListener
-    ) {
+    fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
                 val stepList = stepsListDao.getAllStepsForVillage(villageId)
-                val bpcStep = stepList.sortedBy { it.orderNumber }.last()
-                if (bpcStep.workFlowId > 0) {
+                if(dbResponse.workFlowId>0){
                     val response = apiService.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
-                        )
-                    )
-                    withContext(Dispatchers.IO) {
+                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(
-                                    stepId,
-                                    bpcStep.workFlowId,
-                                    villageId,
-                                    it[0].status
-                                )
+                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
                             stepsListDao.updateNeedToPost(stepId, false)
-                        } else {
+                        }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
@@ -318,7 +307,7 @@ class SurveySummaryViewModel @Inject constructor(
                         onCatchError(ex, ApiType.WORK_FLOW_API)
                     }
                 }
-            } catch (ex: Exception) {
+            }catch (ex:Exception){
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
@@ -742,6 +731,35 @@ class SurveySummaryViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+            }
+        }
+    }
+
+    fun callWorkFlowAPIForBpc(villageId: Int, stepId: Int, networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                val bpcStep = stepList.last()
+                if(bpcStep.workFlowId>0){
+                    val response = apiService.editWorkFlow(
+                        listOf(
+                            EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.COMPLETED.name)
+                        ) )
+                    withContext(Dispatchers.IO){
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
+                            }
+                            stepsListDao.updateNeedToPost(bpcStep.id, false)
+                        }else{
+                            networkCallbackListener.onFailed()
+                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                    }
+                }
+            }catch (ex:Exception){
+                networkCallbackListener.onFailed()
+                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }

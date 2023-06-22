@@ -623,7 +623,11 @@ fun BpcProgressScreen(
                                     shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     onclick = {
-                                        onNavigateToStep(bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, 6)
+                                        if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
+                                            onNavigateToStep(
+                                                bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
+                                                steps.sortedBy { it.orderNumber }.last().id,
+                                            )
                                     }
                                 )
                             }

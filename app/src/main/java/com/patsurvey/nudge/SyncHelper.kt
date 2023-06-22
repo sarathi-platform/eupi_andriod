@@ -832,6 +832,7 @@ class SyncHelper (
                         val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
                         var surveyId =0
                         var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                        val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
                         didiIDList.forEachIndexed { index, didi ->
                             Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()

@@ -16,8 +16,8 @@ import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.network.model.ErrorModel
-import com.patsurvey.nudge.network.model.ErrorModelWithApi
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TAG
@@ -240,6 +240,19 @@ class BpcDidiListViewModel @Inject constructor(
                     delay(100)
                     callBack(false)
                 }
+            }
+        }
+    }
+
+    fun isStepComplete(callBack: (stepId: Int, isComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val step  = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }.last()
+            val isComplete = step.isComplete
+            withContext(Dispatchers.Main){
+                if (isComplete == StepStatus.COMPLETED.ordinal)
+                    callBack(step.id, true)
+                else
+                    callBack(step.id,false)
             }
         }
     }
