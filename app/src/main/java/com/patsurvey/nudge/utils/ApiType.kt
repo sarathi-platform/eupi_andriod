@@ -15,7 +15,9 @@ enum class ApiType {
     BPC_SUMMARY_API,
     BPC_DIDI_LIST_API,
     PAT_BPC_QUESTION_API,
-    PAT_BPC_SURVEY_SUMMARY;
+    DIDI_EDIT_API,
+    PAT_BPC_SURVEY_SUMMARY,
+    BPC_UPDATE_DIDI_LIST_API;
 
 /*    fun fromString(apiName: String): ApiType {
         when (apiName) {

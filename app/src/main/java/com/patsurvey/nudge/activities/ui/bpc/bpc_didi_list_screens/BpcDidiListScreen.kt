@@ -236,6 +236,7 @@ fun BpcDidiListScreen(
                                 modifier = Modifier
                                     .weight(0.5f)
                                     .height(45.dp),
+                                buttonTitle = stringResource(R.string.add_more)
                             ) {
                                 ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
                                 val forReplace = false

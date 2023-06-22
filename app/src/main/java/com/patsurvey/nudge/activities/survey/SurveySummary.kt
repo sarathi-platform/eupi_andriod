@@ -126,7 +126,7 @@ fun SurveySummary(
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),
                 message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
-                    stringResource(id = R.string.do_you_want_to_submit_list_for_final_vo_submission)
+                    stringResource(id = R.string.bpc_final_pat_submition_message)
                 }else{
                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
                         if (count > 1)
@@ -147,6 +147,16 @@ fun SurveySummary(
                 }) {
                 if(surveySummaryViewModel.prefRepo.isUserBPC()){
                     if ((context as MainActivity).isOnline.value ?: false) {
+                        surveySummaryViewModel.sendBpcUpdatedDidiList(object : NetworkCallbackListener{
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+
+                            }
+
+                        })
                         surveySummaryViewModel.savePATSummeryToServer(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {
@@ -159,6 +169,17 @@ fun SurveySummary(
 
                         })
 
+                        surveySummaryViewModel.updateBpcPatStatusToNetwork(object :
+                            NetworkCallbackListener {
+                            override fun onSuccess() {
+
+                            }
+
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+
+                        })
                         surveySummaryViewModel.callWorkFlowAPI(
                             surveySummaryViewModel.prefRepo.getSelectedVillage().id,
                             stepId,
@@ -174,7 +195,7 @@ fun SurveySummary(
 
                         surveySummaryViewModel.updateDidiPatStatus()
                         surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                        surveySummaryViewModel.savePatCompletionDate()
+                        surveySummaryViewModel.saveBpcPatCompletionDate()
                         navController.navigate(
                             "bpc_pat_step_completion_screen/${
                                 context.getString(R.string.pat_survey_completed_message)
