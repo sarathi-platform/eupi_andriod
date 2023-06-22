@@ -290,7 +290,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.VO_ENDROSEMENT.name))
                                                             DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.VO_ENDORSEMENT.name)].status)
+                                                                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
 
