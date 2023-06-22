@@ -37,4 +37,7 @@ interface BpcNonSelectedDidiDao {
 
     @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET section2Status = :section2 WHERE id = :didiId")
     fun updateNonSelDidiPatSection2Status(didiId: Int, section2: Int)
+
+    @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET needsToPostPAT=0 WHERE id = :didiId")
+    fun updateNonSelDidiNeedToPostPAT(didiId: Int)
 }

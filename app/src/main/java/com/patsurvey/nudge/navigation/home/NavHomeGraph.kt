@@ -940,6 +940,26 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
             }
         }
 
+        composable(
+            route = BpcDidiListScreens.PAT_STEP_COMPLETION_SCREEN.route,
+            arguments = listOf(navArgument(ARG_COMPLETION_MESSAGE) {
+                type = NavType.StringType
+            })
+        ) {
+            StepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
+            ) {
+                navController.navigate(Graph.HOME) {
+                    popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
+                        inclusive = true
+                    }
+                }
+
+            }
+        }
+
         composable(route = BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route){
             ScoreComparisionScreen(navController = navController, viewModel = hiltViewModel())
         }
@@ -967,8 +987,8 @@ sealed class BpcDidiListScreens(val route: String) {
 
     object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 
-    object BPC_SCORE_COMPARISION_SCREEN: BpcDidiListScreens(route = "bpc_score_comparison_screen")
+    object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "bpc_pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
-    object PAT_STEP_COMPLETION_SCREEN : BpcDidiListScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
+    object BPC_SCORE_COMPARISION_SCREEN: BpcDidiListScreens(route = "bpc_score_comparison_screen")
 
 }
