@@ -218,11 +218,11 @@ object RetryHelper {
     }
 
     private fun setBpcSelectedDidiDao(mBpcSelectedDidiDao: BpcSelectedDidiDao) {
-
+        bpcSelectedDidiDao = mBpcSelectedDidiDao
     }
 
     private fun setBpcNonSelectedDidiDao(mBpcNonSelectedDidiDao: BpcNonSelectedDidiDao) {
-
+        bpcNonSelectedDidiDao = mBpcNonSelectedDidiDao
     }
 
     fun retryApi(apiType: ApiType) {
@@ -667,7 +667,7 @@ object RetryHelper {
                                                         cohortName = tolaName,
                                                         needsToPost = false,
                                                         wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
-                                                        patSurveyStatus = /*patSurveyStatus*/PatSurveyStatus.COMPLETED.ordinal,
+                                                        patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
                                                         voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
@@ -731,7 +731,7 @@ object RetryHelper {
                                                         cohortName = tolaName,
                                                         needsToPost = false,
                                                         wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
-                                                        patSurveyStatus = /*patSurveyStatus*/PatSurveyStatus.COMPLETED.ordinal,
+                                                        patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
                                                         voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
