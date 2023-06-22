@@ -128,5 +128,6 @@ interface ApiService {
 
 
     @POST("/write-api/bpc/update-beneficiary-selection")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun sendSelectedDidiList(@Body bpcBeneficiaryApiResponse: BpcUpdateSelectedDidiRequest): ApiResponseModel<String?>
 }
