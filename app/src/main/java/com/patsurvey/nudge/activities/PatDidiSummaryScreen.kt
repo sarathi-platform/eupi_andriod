@@ -153,7 +153,7 @@ fun PatDidiSummaryScreen(
                     if (shouldRequestPermission.value) {
                         ShowDialog(
                             title = "Permission Required",
-                            message = "Camera Permission requierd, please grant permission.",
+                            message = "Camera Permission required, please grant permission.",
                             setShowDialog = {
                                 shouldRequestPermission.value = it
                             }

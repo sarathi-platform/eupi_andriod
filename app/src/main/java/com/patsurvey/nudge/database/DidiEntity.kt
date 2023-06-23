@@ -134,5 +134,35 @@ data class DidiEntity(
 ){
     companion object{
         fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId
+        fun getDidiEntityFromSelectedDidiEntity(selectedDidiEntity: BpcSelectedDidiEntity): DidiEntity {
+            return DidiEntity(
+                id = selectedDidiEntity.id,
+                serverId = selectedDidiEntity.serverId,
+                name = selectedDidiEntity.name,
+                address = selectedDidiEntity.address,
+                guardianName = selectedDidiEntity.guardianName,
+                relationship = selectedDidiEntity.relationship,
+                castId = selectedDidiEntity.castId,
+                castName = selectedDidiEntity.castName,
+                cohortId = selectedDidiEntity.cohortId,
+                cohortName = selectedDidiEntity.cohortName,
+                villageId = selectedDidiEntity.villageId,
+                wealth_ranking = selectedDidiEntity.wealth_ranking,
+                needsToPost = selectedDidiEntity.needsToPost,
+                localPath = selectedDidiEntity.localPath,
+                createdDate = selectedDidiEntity.createdDate,
+                modifiedDate = selectedDidiEntity.modifiedDate,
+                activeStatus = selectedDidiEntity.activeStatus,
+                patSurveyStatus = selectedDidiEntity.patSurveyStatus,
+                section1Status = selectedDidiEntity.section1Status,
+                section2Status = selectedDidiEntity.section2Status,
+                beneficiaryProcessStatus = selectedDidiEntity.beneficiaryProcessStatus,
+                shgFlag = selectedDidiEntity.shgFlag,
+                bpcComment = selectedDidiEntity.bpcComment,
+                bpcScore = selectedDidiEntity.bpcScore,
+                crpScore = selectedDidiEntity.crpScore,
+                crpComment = selectedDidiEntity.crpComment
+            )
+        }
     }
 }

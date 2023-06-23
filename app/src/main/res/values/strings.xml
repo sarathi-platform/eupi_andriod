@@ -254,6 +254,8 @@
     <string name="summary_didis_mobilised_text">" Didis Mobilised"</string>
     <string name="summary_wealth_ranking_text">" Didis Marked as poor in PWR"</string>
     <string name="summary_vo_endoresement_text">" Didis sent for VO Endorsement"</string>
+    <string name="unmatched_text">Unmatched</string>
+    <string name="matched_text">Matched</string>
 
 
 </resources>

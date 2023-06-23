@@ -80,7 +80,8 @@ import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
+import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegativeForPAT
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
@@ -104,7 +105,8 @@ fun BpcDidiListScreen(
     LaunchedEffect(key1 = Unit) {
         bpcDidiListViewModel.isStepComplete() { stepId, isComplete ->
             if (isComplete)
-                navController.navigate("bpc_pat_survey_summary/$stepId/$isComplete")
+                navController.navigate(BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route)
+//                navController.navigate("bpc_pat_survey_summary/$stepId/$isComplete")
         }
     }
 
@@ -509,9 +511,7 @@ fun DidiItemCardForBpc(
                         textColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white,
                         iconTintColor = /*if (!didiMarkedNotAvailable.value) white else blueDark*/ white
                     ) {
-                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal) {
-                            viewModel.addDidiForPat(didi.id)
-                        }
+                        viewModel.addDidiForPatIdRequired(didi.id)
 
                         Log.d("TAG", "DidiItemCardForBpc: ${Gson().toJson(didi)} :: ${navController.graph.route} ")
                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal){
@@ -521,7 +521,7 @@ fun DidiItemCardForBpc(
                                 navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
                             }
                             else if (didi.section2Status == 0 || didi.section2Status == 1){
-                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$$TYPE_INCLUSION")
+                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
                             }
 
                         }
@@ -548,7 +548,7 @@ fun DidiItemCardForBpc(
                     .padding(vertical = 10.dp)
                     .padding(horizontal = 20.dp)
                     .clickable {
-                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
+                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/$BLANK_STRING")
                     }
                     .then(modifier),
                     horizontalArrangement = Arrangement.SpaceBetween

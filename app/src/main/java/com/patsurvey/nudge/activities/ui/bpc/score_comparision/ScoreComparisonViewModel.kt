@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities.ui.bpc.score_comparision
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
+import android.util.Log
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -30,11 +28,14 @@ class ScoreComparisonViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
-    var filterDidiList by mutableStateOf(listOf<DidiEntity>())
-        private set
+    private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
+    val filterDidiList: StateFlow<List<DidiEntity>> get() = _filterDidiList
 
     private val _questionPassingScore = MutableStateFlow(0)
     val questionPassingScore: StateFlow<Int> get() = _questionPassingScore
+
+    val _passPercentage = MutableStateFlow(0)
+    val passPercentage: StateFlow<Int> get() = _passPercentage
 
     init {
         fetchDidiList()
@@ -52,25 +53,26 @@ class ScoreComparisonViewModel @Inject constructor(
             val passingScore = questionListDao.getPassingScore()
             _questionPassingScore.value = passingScore
 
-            filterDidiList = didiList.value
+            _filterDidiList.value = didiList.value
+            _passPercentage.value = calculateMatchPercentage(didiList.value)
         }
     }
 
-    fun calculateMatchPercentage(): Int {
-        val matchedCount = filterDidiList.filter {
+    fun calculateMatchPercentage(didiList: List<DidiEntity>): Int {
+        val matchedCount = didiList.filter {
             (it.score ?: 0.0) >= questionPassingScore.value.toDouble()
                     && (it.crpScore ?: 0.0) >= questionPassingScore.value.toDouble() }.size
 
-        return ((matchedCount/filterDidiList.size) * 100).toInt()
+        return ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt()
 
     }
 
     override fun onServerError(error: ErrorModel?) {
-        TODO("Not yet implemented")
+        Log.e("ScoreComparisonViewModel", "onServerError: ${error?.message}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        Log.e("ScoreComparisonViewModel", "onServerError: ${errorModel?.message}, api: ${errorModel?.apiName} ")
     }
 
 }

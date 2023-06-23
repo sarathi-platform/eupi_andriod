@@ -148,7 +148,8 @@ fun SurveySummary(
                 }) {
                 if(surveySummaryViewModel.prefRepo.isUserBPC()){
                     if ((context as MainActivity).isOnline.value ?: false) {
-                        surveySummaryViewModel.sendBpcUpdatedDidiList(object : NetworkCallbackListener{
+                        surveySummaryViewModel.sendBpcUpdatedDidiList(object :
+                            NetworkCallbackListener {
                             override fun onSuccess() {
 
                             }
@@ -193,20 +194,24 @@ fun SurveySummary(
                                     showCustomToast(context, SYNC_FAILED)
                                 }
                             })
+                        surveySummaryViewModel.sendBpcMatchScore(object :
+                            NetworkCallbackListener {
+                            override fun onSuccess() {
+                            }
 
-                        surveySummaryViewModel.updateDidiPatStatus()
-                        surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                        surveySummaryViewModel.saveBpcPatCompletionDate()
-                        navController.navigate(
-                            "bpc_pat_step_completion_screen/${
-                                context.getString(R.string.pat_survey_completed_message)
-                                    .replace(
-                                        "{VILLAGE_NAME}",
-                                        surveySummaryViewModel.prefRepo.getSelectedVillage().name
-                                    )
-                            }"
-                        )
+                            override fun onFailed() {
+                                showCustomToast(context, SYNC_FAILED)
+                            }
+                        })
                     }
+                    surveySummaryViewModel.updateDidiPatStatus()
+                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                    surveySummaryViewModel.saveBpcPatCompletionDate()
+                    navController.navigate(
+                        "bpc_pat_step_completion_screen/${
+                            context.getString(R.string.pat_survey_completed_message).replace("{VILLAGE_NAME}", surveySummaryViewModel.prefRepo.getSelectedVillage().name)
+                        }"
+                    )
                 } else {
                     surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                         if (isPreviousStepComplete) {

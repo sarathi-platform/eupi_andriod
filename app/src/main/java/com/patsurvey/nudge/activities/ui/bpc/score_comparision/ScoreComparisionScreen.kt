@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.score_comparision
 
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
@@ -13,6 +14,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.indication
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,13 +37,12 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -87,12 +89,12 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
-import kotlinx.coroutines.delay
 import java.io.File
 
 @Composable
@@ -102,28 +104,9 @@ fun ScoreComparisionScreen(
     viewModel: ScoreComparisonViewModel
 ) {
 
+    val filterdDidiList = viewModel.filterDidiList.collectAsState()
 
-    val isValidPercentage = remember {
-        mutableStateOf(false)
-    }
-
-    val percentage = remember {
-        mutableStateOf(0)
-    }
-
-    LaunchedEffect(key1 = Unit) {
-        viewModel.fetchDidiList()
-        delay(100)
-        percentage.value = viewModel.calculateMatchPercentage()
-        isValidPercentage.value = percentage.value >= MATCH_PERCENTAGE
-
-    }
-
-    val filterdDidiList = viewModel.filterDidiList
-
-    val passingScore = viewModel.questionPassingScore.collectAsState()
-
-    val coroutineScope = rememberCoroutineScope()
+    val passPercentage = viewModel.passPercentage.collectAsState()
 
     val localDensity = LocalDensity.current
 
@@ -140,12 +123,16 @@ fun ScoreComparisionScreen(
         mutableStateOf(false)
     }
 
-
-
-
+    BackHandler() {
+        navController.navigate(Graph.HOME){
+            popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route){
+                inclusive = true
+            }
+        }
+    }
 
     val transition = updateTransition(expandBox.value, label = "transition")
-    val colorTransistion = updateTransition(targetState = isValidPercentage.value, label = "colorTransistion")
+    val colorTransistion = updateTransition(targetState = passPercentage.value > MATCH_PERCENTAGE, label = "colorTransistion")
 
     val animateColor by colorTransistion.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
@@ -198,7 +185,7 @@ fun ScoreComparisionScreen(
             ) {
 
                 Text(
-                    text = stringResource(id = R.string.comparison_screen_heading).replace("{COUNT}", filterdDidiList.size.toString(), true),
+                    text = stringResource(id = R.string.comparison_screen_heading).replace("{COUNT}", filterdDidiList.value.size.toString(), true),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -249,11 +236,14 @@ fun ScoreComparisionScreen(
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.Top,
                                     modifier = Modifier
-                                        .padding(16.dp),
+                                        .padding(16.dp)
+                                        .clickable {
+                                            expandBox.value = !expandBox.value
+                                        },
                                 ) {
                                     Text(
                                         text = stringResource(R.string.match_percentage_box_text)
-                                            .replace("{PERCENTAGE}", percentage.value.toString(), true),
+                                            .replace("{PERCENTAGE}", passPercentage.value.toString(), true),
                                         color = animateColor,
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -267,10 +257,7 @@ fun ScoreComparisionScreen(
                                         painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
                                         contentDescription = "Expandable Arrow",
                                         modifier = Modifier
-                                            .rotate(degrees = arrowRotationDegree)
-                                            .clickable {
-                                                expandBox.value = !expandBox.value
-                                            },
+                                            .rotate(degrees = arrowRotationDegree),
                                         tint = textColorDark
                                     )
                                 }
@@ -309,7 +296,7 @@ fun ScoreComparisionScreen(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append("${filterdDidiList.size}")
+                                    append("${filterdDidiList.value.size}")
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -333,10 +320,10 @@ fun ScoreComparisionScreen(
                         )
                     }
 
-                    itemsIndexed(filterdDidiList) { index, didi ->
-
-                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, passingScore = passingScore.value)
-
+                    itemsIndexed(filterdDidiList.value) { index, didi ->
+                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
+                            navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
+                        }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
 
@@ -359,7 +346,7 @@ fun ScoreComparisionScreen(
             negativeButtonRequired = false,
             positiveButtonOnClick = {
                 navController.navigate(Graph.HOME) {
-                    popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
                         inclusive = true
                     }
                 }
@@ -374,7 +361,9 @@ fun ScoreComparisonDidiCard(
     modifier: Modifier = Modifier,
     didiEntity: DidiEntity,
     passingScore: Int,
+    onScoreCardClicked: (didiEntity: DidiEntity) -> Unit
 ) {
+    val interactionSource = remember { MutableInteractionSource() }
 
     Card(
         elevation = 10.dp,
@@ -383,6 +372,16 @@ fun ScoreComparisonDidiCard(
             .fillMaxWidth()
             .background(color = languageItemActiveBg, shape = RoundedCornerShape(6.dp))
             .border(1.dp, color = borderGrey, shape = RoundedCornerShape(6.dp))
+            .indication(
+                interactionSource = interactionSource,
+                indication = rememberRipple(
+                    bounded = true,
+                    color = Color.White
+                )
+            )
+            .clickable { 
+                onScoreCardClicked(didiEntity)
+            }
             .then(modifier)
     ) {
         Column {
@@ -494,7 +493,10 @@ fun ScoreComparisonDidiCard(
                     tint = white
                 )
                 Text(
-                    text = "Matched",
+                    text = if ((didiEntity.crpScore
+                            ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
+                            ?: 0.0) >= passingScore.toDouble()
+                    ) stringResource(R.string.unmatched_text) else stringResource(R.string.matched_text),
                     color = white,
                     style = smallerTextStyle,
                     modifier = Modifier.absolutePadding(bottom = 3.dp)
@@ -580,7 +582,7 @@ fun ScoreItem(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (itemType.equals(CRP_USER_TYPE, true)) didiEntity.crpScore?.toString() ?: "0.0" else didiEntity.score?.toString() ?: "0.0",
+                text = if (itemType.equals(CRP_USER_TYPE, true)) (didiEntity.crpScore ?: 0.0).toInt().toString() else (didiEntity.score ?: 0.0).toInt().toString(),
                 color = textColorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),

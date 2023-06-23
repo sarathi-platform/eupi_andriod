@@ -193,7 +193,7 @@ class BpcDidiListViewModel @Inject constructor(
         ReplaceHelper.didiToBeReplaced.value = Pair(index, didiId)
     }
 
-    fun addDidiForPat(didiId: Int) {
+    fun addDidiForPatIdRequired(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiEntityList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             val didiEntity = filterDidiList[filterDidiList.map { it.id }.indexOf(didiId)]
@@ -217,6 +217,9 @@ class BpcDidiListViewModel @Inject constructor(
                         createdDate = didiEntity.createdDate,
                         modifiedDate = didiEntity.modifiedDate,
                         activeStatus = didiEntity.activeStatus,
+                        patSurveyStatus = didiEntity.patSurveyStatus,
+                        section1Status = didiEntity.section1Status,
+                        section2Status = didiEntity.section2Status,
                         beneficiaryProcessStatus = didiEntity.beneficiaryProcessStatus,
                         shgFlag = didiEntity.shgFlag,
                         bpcComment = didiEntity.bpcComment,

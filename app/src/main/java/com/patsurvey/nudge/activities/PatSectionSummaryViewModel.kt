@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -180,51 +178,84 @@ class PatSectionSummaryViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    fun calculateDidiScore(didiId: Int){
-        var passingMark=0
-        var isDidiAccepted=false
-        var comment= LOW_SCORE
-        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
-        _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId =didiId)
-        if(_inclusiveQueList.value.isNotEmpty()){
-            var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
-            val numQueList= _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
-            if(numQueList.isNotEmpty()){
-                numQueList.forEach { answer->
-                    val numQue=questionListDao.getQuestion(answer.questionId)
-                    passingMark =numQue.surveyPassingMark?:0
-                    if(numQue.questionFlag?.equals(FLAG_WEIGHT,true) == true){
-                        val weightList= toWeightageRatio(numQue.json.toString())
-                        if(weightList.isNotEmpty()){
-                            val newScore= calculateScore(weightList,
-                                answer.totalAssetAmount?.toDouble()?:0.0,
-                                false)
-                            totalWightWithoutNumQue += newScore
+    fun calculateDidiScore(didiId: Int) {
+        var passingMark = 0
+        var isDidiAccepted = false
+        var comment = LOW_SCORE
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
+                _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId = didiId)
+                if (_inclusiveQueList.value.isNotEmpty()) {
+                    var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+                    val numQueList =
+                        _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
+                    if (numQueList.isNotEmpty()) {
+                        numQueList.forEach { answer ->
+                            val numQue = questionListDao.getQuestion(answer.questionId)
+                            passingMark = numQue.surveyPassingMark ?: 0
+                            if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
+                                val weightList = toWeightageRatio(numQue.json.toString())
+                                if (weightList.isNotEmpty()) {
+                                    val newScore = calculateScore(
+                                        weightList,
+                                        answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                        false
+                                    )
+                                    totalWightWithoutNumQue += newScore
+                                }
+                            } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
+                                val ratioList = toWeightageRatio(numQue.json.toString())
+                                val newScore = calculateScore(
+                                    ratioList,
+                                    answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                    true
+                                )
+                                totalWightWithoutNumQue += newScore
+                            }
                         }
-                    }else if(numQue.questionFlag?.equals(FLAG_RATIO,true) == true){
-                        val ratioList= toWeightageRatio(numQue.json.toString())
-                        val newScore= calculateScore(ratioList,
-                            answer.totalAssetAmount?.toDouble()?:0.0,
-                            true)
-                        totalWightWithoutNumQue += newScore
+                    }
+                    // TotalScore
+
+
+                    if (totalWightWithoutNumQue >= passingMark) {
+                        isDidiAccepted = true
+                        comment = BLANK_STRING
+                        didiDao.updateVOEndorsementDidiStatus(
+                            prefRepo.getSelectedVillage().id,
+                            didiId
+                        )
+                    }
+                    didiDao.updateDidiScore(
+                        score = totalWightWithoutNumQue,
+                        comment = comment,
+                        didiId = didiId,
+                        isDidiAccepted = isDidiAccepted
+                    )
+                    if (prefRepo.isUserBPC()) {
+                        bpcSelectedDidiDao.updateSelDidiScore(
+                            score = totalWightWithoutNumQue,
+                            comment = comment,
+                            didiId = didiId,
+                        )
                     }
                 }
+                else {
+                    didiDao.updateDidiScore(
+                        score = 0.0,
+                        comment = TYPE_EXCLUSION,
+                        didiId = didiId,
+                        isDidiAccepted = false
+                    )
+                    if (prefRepo.isUserBPC()) {
+                        bpcSelectedDidiDao.updateSelDidiScore(
+                            score = 0.0,
+                            comment = TYPE_EXCLUSION,
+                            didiId = didiId,
+                        )
+                    }
+                }
+                didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
             }
-            // TotalScore
-
-
-                   if(totalWightWithoutNumQue>=passingMark){
-                       isDidiAccepted=true
-                       comment= BLANK_STRING
-                       didiDao.updateVOEndorsementDidiStatus(prefRepo.getSelectedVillage().id,didiId)
-                   }
-                       didiDao.updateDidiScore(score = totalWightWithoutNumQue, comment = comment, didiId = didiId, isDidiAccepted = isDidiAccepted)
-               }else{
-               didiDao.updateDidiScore(score = 0.0, comment = TYPE_EXCLUSION, didiId = didiId, isDidiAccepted = false)
-        }
-                didiDao.updateModifiedDateServerId(System.currentTimeMillis(),didiId)
-           }
         }
     }
 }
