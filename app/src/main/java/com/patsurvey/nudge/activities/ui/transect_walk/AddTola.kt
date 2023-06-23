@@ -62,6 +62,8 @@ import com.patsurvey.nudge.activities.ui.theme.brownLight
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.lightGray2
+import com.patsurvey.nudge.activities.ui.theme.locationIconActiveColor
 import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.red
 import com.patsurvey.nudge.activities.ui.theme.redDark
@@ -368,7 +370,7 @@ fun TolaBox(
                             painter = painterResource(id = R.drawable.baseline_location_icn),
                             contentDescription = "Location Icon",
                             modifier = Modifier.absolutePadding(top = 2.dp),
-                            tint = Color(0xFFDE0101)
+                            tint = if (isLocationAvailable) lightGray2 else locationIconActiveColor
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(

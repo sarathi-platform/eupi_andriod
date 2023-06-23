@@ -32,7 +32,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class AddDidiViewModel @Inject constructor(
@@ -448,7 +447,11 @@ class AddDidiViewModel @Inject constructor(
             val jsonDidi = JsonArray()
             val filteredDidiList = didiDao.getAllNeedToPostDidiRanking(true)
             if (filteredDidiList.isNotEmpty()) {
-                for (didi in filteredDidiList) {
+                for(didi in filteredDidiList){
+                    val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
+                    if (tola != null) {
+                        didi.cohortId = tola.serverId
+                    }
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
                 }
                 val response = apiService.addDidis(jsonDidi)
