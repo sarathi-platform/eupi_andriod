@@ -258,5 +258,7 @@
     <string name="unmatched_text">Unmatched</string>
     <string name="matched_text">Matched</string>
 
+    <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
+
 
 </resources>

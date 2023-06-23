@@ -101,3 +101,6 @@ val unmatchedOrangeColor = Color(0xFFDD6541)
 val brownLightBorderColor = Color(0xFFE0D9D7)
 val greyLightBgColor = Color(0xffFFFCFC)
 val greenBgLight = Color(0xFFFCFFFD)
+
+val decrementCounterColor = Color(0xFFF0665B)
+val locationIconActiveColor = Color(0xFFDE0101)

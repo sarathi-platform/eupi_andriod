@@ -67,6 +67,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyShare
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.decrementCounterColor
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
@@ -1186,7 +1187,7 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
     Box(modifier = modifier
         .fillMaxWidth()
         .background(Color.White)
-        .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = Color.Black)){
+        .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = lightGray2)){
 
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -1194,6 +1195,19 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
             Box(modifier = Modifier
                 .weight(1f)
                 .fillMaxHeight()
+                .clip(
+                    RoundedCornerShape(
+                        topStart = 6.dp,
+                        bottomStart = 6.dp
+                    )
+                )
+                .background(
+                    decrementCounterColor,
+                    RoundedCornerShape(
+                        topStart = 6.dp,
+                        bottomStart = 6.dp
+                    )
+                )
                 ,contentAlignment = Alignment.Center){
                 Row(modifier = Modifier
                     .fillMaxWidth()
@@ -1201,18 +1215,19 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
                         currentCount = incDecValue(0, currentCount)
                         onDecrementClick(currentCount.toInt())
                     }, horizontalArrangement = Arrangement.Center){
-                    Spacer(modifier = Modifier
-                        .width(14.dp)
-                        .background(Color.Black)
-                        .height(1.5.dp)
-                        .align(Alignment.CenterVertically))
+                    Icon(
+                        painter = painterResource(id = R.drawable.minus_icon),
+                        contentDescription = "decrement counter",
+                        tint = Color.White,
+                        modifier = Modifier.size(14.dp)
+                    )
                 }
 
             }
            Spacer(modifier = Modifier
                .width(1.dp)
                .fillMaxHeight()
-               .background(Color.Black))
+               .background(lightGray2))
             Column(modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)){
@@ -1262,22 +1277,33 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
             Spacer(modifier = Modifier
                 .width(1.dp)
                 .fillMaxHeight()
-                .background(Color.Black))
+                .background(lightGray2))
             Box(modifier = Modifier
                 .fillMaxHeight()
                 .weight(1f)
+                .clip(
+                    RoundedCornerShape(
+                        topEnd = 6.dp,
+                        bottomEnd = 6.dp
+                    )
+                )
+                .background(
+                    greenOnline,
+                    RoundedCornerShape(
+                        topEnd = 6.dp,
+                        bottomEnd = 6.dp
+                    )
+                )
                 .clickable {
                     currentCount = incDecValue(1, currentCount)
                     onIncrementClick(currentCount.toInt())
                 },
                 contentAlignment = Alignment.Center){
-                Text(
-                    text = "+",
-                    color = Color.Black,
-                    fontFamily = NotoSans,
-                    fontSize = 22.sp,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
+                Icon(
+                    painter = painterResource(id = R.drawable.plus_icon),
+                    contentDescription = "increment counter",
+                    tint = Color.White,
+                    modifier = Modifier.size(14.dp)
                 )
             }
         }

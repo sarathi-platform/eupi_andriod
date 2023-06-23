@@ -166,8 +166,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 tolaExpended = false
 
             }
-
-
         }
         Column(
             modifier = Modifier

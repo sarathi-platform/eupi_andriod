@@ -194,5 +194,6 @@ const val CRP_USER_TYPE = "Community Resource Person"
 const val ARG_USER_TYPE = "user_type"
 
 const val MATCH_PERCENTAGE = 70
+const val QUESTION_FLAG_RATIO = "ratio"
 
 

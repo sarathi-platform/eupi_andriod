@@ -545,7 +545,7 @@ class SyncHelper (
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
                 if (tola != null) {
                     didi.cohortId = tola.serverId
-                    didiDao.updateTolaIdForDidi(tola.serverId,didi.id)
+//                    didiDao.updateTolaIdForDidi(tola.serverId,didi.id)
                 }
             }
             val jsonDidi = JsonArray()
