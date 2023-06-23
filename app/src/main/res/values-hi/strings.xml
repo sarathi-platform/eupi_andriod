@@ -267,4 +267,7 @@
     <string name="summary_vo_endoresement_text">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
     <string name="unmatched_text">बेजोड़</string>
     <string name="matched_text">मिलान</string>
+
+    <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
+
 </resources>
