@@ -140,7 +140,7 @@ class WealthRankingViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiRankInDb(didiEntity: DidiEntity, rank: String, networkCallbackListener: NetworkCallbackListener) {
+    fun updateDidiRankInDb(didiEntity: DidiEntity, rank: String, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 var didiId=didiEntity.id
@@ -192,31 +192,33 @@ class WealthRankingViewModel @Inject constructor(
                 CheckDBStatus(this@WealthRankingViewModel).isSecondStepNeedToBeSync(didiDao){
                     isDidiSynced.value=it
                 }
-                if(isTolaSynced.value == 2 && isDidiSynced.value == 2) {
-                    withContext(Dispatchers.IO) {
-                        val updateWealthRankResponse = apiService.updateDidiRanking(
-                            listOf(
-                                EditDidiWealthRankingRequest(
-                                    didiId,
-                                    StepType.WEALTH_RANKING.name,
-                                    rank,
-                                    localModifiedDate = System.currentTimeMillis() ?:0
-                                ),
-                                EditDidiWealthRankingRequest(
-                                    didiId,
-                                    StepType.SOCIAL_MAPPING.name,
-                                    StepStatus.COMPLETED.name,
-                                    localModifiedDate = System.currentTimeMillis() ?:0
+                if (isOnline) {
+                    if (isTolaSynced.value == 2 && isDidiSynced.value == 2) {
+                        withContext(Dispatchers.IO) {
+                            val updateWealthRankResponse = apiService.updateDidiRanking(
+                                listOf(
+                                    EditDidiWealthRankingRequest(
+                                        didiId,
+                                        StepType.WEALTH_RANKING.name,
+                                        rank,
+                                        localModifiedDate = System.currentTimeMillis() ?: 0
+                                    ),
+                                    EditDidiWealthRankingRequest(
+                                        didiId,
+                                        StepType.SOCIAL_MAPPING.name,
+                                        StepStatus.COMPLETED.name,
+                                        localModifiedDate = System.currentTimeMillis() ?: 0
+                                    )
                                 )
                             )
-                        )
-                        if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
-                            if (didiEntity.serverId == 0) {
-                                didiDao.setNeedToPostRanking(didiEntity.id, false)
-                            } else
-                                didiDao.setNeedToPostRankingServerId(didiEntity.serverId, false)
-                        } else {
-                            networkCallbackListener.onFailed()
+                            if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                                if (didiEntity.serverId == 0) {
+                                    didiDao.setNeedToPostRanking(didiEntity.id, false)
+                                } else
+                                    didiDao.setNeedToPostRankingServerId(didiEntity.serverId, false)
+                            } else {
+                                networkCallbackListener.onFailed()
+                            }
                         }
                     }
                 }

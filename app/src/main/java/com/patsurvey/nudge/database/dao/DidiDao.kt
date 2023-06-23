@@ -140,6 +140,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET transactionId = :transactionId WHERE id = :id")
     fun updateDidiTransactionId(id: Int, transactionId: String)
 
+    @Query("UPDATE $DIDI_TABLE SET transactionId = :transactionId WHERE serverId = :id")
+    fun updateDidiTransactionIdWithServerId(id: Int, transactionId: String)
+
     @Query("UPDATE $DIDI_TABLE SET needsToPostRanking = :needsToPostRanking WHERE id = :didiId")
     fun updateDidiNeedToPostWealthRank(didiId: Int, needsToPostRanking: Boolean)
 
@@ -178,6 +181,9 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId ")
     fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int)
+
+    @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE serverId=:didiId ")
+    fun updateNeedToPostVOWithServerId(needsToPostVo: Boolean,didiId: Int)
 
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
