@@ -118,6 +118,7 @@
     <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
     <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
     <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
+    <string name="tola_already_exist">Tola already exist.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exist.</string>
     <string name="location_added_text">Location Added</string>

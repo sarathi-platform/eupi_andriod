@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.text.TextUtils
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -14,6 +15,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -70,32 +72,45 @@ class TransectWalkViewModel @Inject constructor(
 
     }
 
-    fun addTola(tola: Tola) {
+    fun addTola(tola: Tola, dbListener: LocalDbListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val tolaItem = TolaEntity(
-                id = 0,
-                name = tola.name,
-                type = CohortType.TOLA.type,
-                latitude = tola.location.lat ?: 0.0,
-                longitude = tola.location.long ?: 0.0,
-                villageId = villageEntity.value?.id ?: 0,
-                status = 1,
-                localCreatedDate = System.currentTimeMillis(),
-                localModifiedDate = System.currentTimeMillis(),
-                transactionId = "",
-                needsToPost = true,
-            )
-            tolaDao.insert(tolaItem)
-            val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
-            withContext(Dispatchers.Main) {
-                _tolaList.value = updatedTolaList
-                prefRepo.savePref(TOLA_COUNT, _tolaList.value.size)
-                if (isTransectWalkComplete.value) {
-                    isTransectWalkComplete.value = false
+            if (!isTolaExist(tola.name)) {
+                val tolaItem = TolaEntity(
+                    id = 0,
+                    name = tola.name,
+                    type = CohortType.TOLA.type,
+                    latitude = tola.location.lat ?: 0.0,
+                    longitude = tola.location.long ?: 0.0,
+                    villageId = villageEntity.value?.id ?: 0,
+                    status = 1,
+                    localCreatedDate = System.currentTimeMillis(),
+                    localModifiedDate = System.currentTimeMillis(),
+                    transactionId = "",
+                    needsToPost = true,
+                )
+                tolaDao.insert(tolaItem)
+                val updatedTolaList =
+                    tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
+                withContext(Dispatchers.Main) {
+                    _tolaList.value = updatedTolaList
+                    prefRepo.savePref(TOLA_COUNT, _tolaList.value.size)
+                    if (isTransectWalkComplete.value) {
+                        isTransectWalkComplete.value = false
+                    }
+                    dbListener.onInsertionSuccess()
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    dbListener.onInsertionFailed()
                 }
             }
         }
     }
+
+    fun isTolaExist(name : String) : Boolean{
+        return tolaDao.getTolaExist(name,prefRepo.getSelectedVillage().id) > 0
+    }
+
 
     /*fun addEmptyTola() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

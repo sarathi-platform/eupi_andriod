@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -58,6 +59,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CustomProgressBar
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
 import com.patsurvey.nudge.utils.ButtonOutline
@@ -85,7 +87,10 @@ fun TransectWalkScreen(
     val tolaList by viewModel.tolaList.collectAsState()
     val tolaToBeEdited: Tola by remember { mutableStateOf(Tola()) }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
-    var isTolaEdit = remember { mutableStateOf(false) }
+    val isTolaEdit = remember { mutableStateOf(false) }
+    val isTolaAdded = remember {
+        mutableStateOf(0)
+    }
     var mEditedTola:TolaEntity?=null
     val networkError = viewModel.networkErrorMessage.value
 
@@ -250,19 +255,34 @@ fun TransectWalkScreen(
                                                 Tola(
                                                     name,
                                                     location ?: LocationCoordinates()
-                                                )
-                                            )
-                                            viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
-                                                override fun onSuccess() {
-                                                }
+                                                ),
+                                                object : LocalDbListener {
+                                                    override fun onInsertionSuccess() {
+                                                        showAddTolaBox = false
+                                                        focusManager.clearFocus()
+                                                        showCustomToast(
+                                                            context,
+                                                            context.getString(R.string.tola_successfully_added)
+                                                                .replace("{TOLA_NAME}", name)
+                                                        )
+                                                        viewModel.markTransectWalkIncomplete(
+                                                            stepId,
+                                                            villageId,
+                                                            object : NetworkCallbackListener {
+                                                                override fun onSuccess() {
 
-                                                override fun onFailed() {
-//                                                    showCustomToast(context, SYNC_FAILED)
+                                                                }
+
+                                                                override fun onFailed() {
+
+                                                                }
+                                                            })
+                                                    }
+                                                    override fun onInsertionFailed() {
+                                                        showCustomToast(context,context.getString(R.string.tola_already_exist))
+                                                    }
                                                 }
-                                            })
-                                            showAddTolaBox = false
-                                            focusManager.clearFocus()
-                                            showCustomToast(context,context.getString(R.string.tola_successfully_added).replace("{TOLA_NAME}", name))
+                                            )
                                         },
                                         onCancelClicked = {
                                             showAddTolaBox = false

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.database.dao
 
 import androidx.room.*
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.TOLA_TABLE
 
 @Dao
@@ -74,4 +75,7 @@ interface TolaDao {
 
     @Query("SELECT * from $TOLA_TABLE where serverId = :serverId")
     fun fetchSingleTolaFromServerId(serverId: Int): TolaEntity?
+
+    @Query("Select COUNT(*) FROM $TOLA_TABLE where name = :name AND villageId= :villageId and status = 1")
+    fun getTolaExist(name:String,villageId:Int):Int
 }
