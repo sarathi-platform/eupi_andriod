@@ -9,7 +9,11 @@ import android.os.ParcelFileDescriptor
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -67,7 +71,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.engawapg.lib.zoomable.rememberZoomState
-import net.engawapg.lib.zoomable.zoomable
 import java.io.File
 import kotlin.math.sqrt
 
@@ -163,9 +166,28 @@ fun PdfViewer(
             val width = with(LocalDensity.current) { maxWidth.toPx() }.toInt()
             val height = (width * sqrt(2f)).toInt()
             val pageCount by remember(renderer) { derivedStateOf { renderer?.pageCount ?: 0 } }
+
+            var scale by remember { mutableStateOf(1f) }
+            var offsetX by remember { mutableStateOf(0f) }
+            var offsetY by remember { mutableStateOf(0f) }
             LazyColumn(
                 verticalArrangement = verticalArrangement,
-                state = lazyScrollState
+                state = lazyScrollState,
+                modifier = Modifier
+                    .pointerInput(Unit) {
+                    forEachGesture {
+                        awaitPointerEventScope {
+                            awaitFirstDown()
+                            do {
+                                val event = awaitPointerEvent()
+                                scale *= event.calculateZoom()
+                                val offset = event.calculatePan()
+                                offsetX += offset.x
+                                offsetY += offset.y
+                            } while (event.changes.any { it.pressed })
+                        }
+                    }
+                }
             ) {
                 item { Spacer(modifier = Modifier.height(8.dp)) }
                 items(
@@ -227,13 +249,18 @@ fun PdfViewer(
                             contentColor = Color.Transparent,
                             shape = RectangleShape,
                             modifier = Modifier
-                                .zoomable(zoomState)
                         ) {
                             Image(
                                 modifier = Modifier
                                     .background(Color.White)
                                     .aspectRatio(sqrt(2f) / 1f)
-                                    .fillMaxWidth(),
+                                    .fillMaxWidth()
+                                    .graphicsLayer(
+                                        scaleX = scale,
+                                        scaleY = scale,
+                                        translationX = offsetX,
+                                        translationY = offsetY
+                                    ),
                                 contentScale = ContentScale.FillBounds,
                                 painter = painter,
                                 contentDescription = "Page ${index + 1} of $pageCount"
