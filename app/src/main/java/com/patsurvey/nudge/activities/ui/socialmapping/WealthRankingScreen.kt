@@ -37,6 +37,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
@@ -404,7 +405,7 @@ fun ExpandableCard(
                     .fillMaxWidth())
                 ExpandableContent(visible = expanded, didiEntity = didiEntity) {
                     didiEntity.wealth_ranking = it.rank
-                    viewModel.updateDidiRankInDb(didiEntity,it.rank, object : NetworkCallbackListener{
+                    viewModel.updateDidiRankInDb(didiEntity,it.rank, (context as MainActivity).isOnline.value ?: false, object : NetworkCallbackListener{
                             override fun onSuccess() {
 
                             }
