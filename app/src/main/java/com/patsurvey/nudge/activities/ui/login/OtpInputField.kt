@@ -118,7 +118,7 @@ fun OtpCell(
         .width(dimensionResource(id = R.dimen.otp_box_width))
         .padding(dimensionResource(id = R.dimen.dp_4))
         .border(
-            width = 1.dp,
+            width = if (isFocus) 2.dp else 1.dp,
             color = if (isFocus) textColorDark else otpBorderColor,
             shape = MaterialTheme.shapes.small
         ))
@@ -249,7 +249,7 @@ fun OtpCellForDialog(
         .width(dimensionResource(id = R.dimen.otp_box_width_for_dialog))
         .padding(dimensionResource(id = R.dimen.dp_4))
         .border(
-            width = 1.dp,
+            width = if (isFocus) 2.dp else 1.dp,
             color = if (isFocus) textColorDark else otpBorderColor,
             shape = MaterialTheme.shapes.small
         ))

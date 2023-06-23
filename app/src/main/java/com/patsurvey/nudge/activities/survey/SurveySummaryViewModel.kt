@@ -18,6 +18,7 @@ import com.patsurvey.nudge.model.request.BpcUpdateSelectedDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
+import com.patsurvey.nudge.model.request.SaveMatchSummaryRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -760,6 +761,33 @@ class SurveySummaryViewModel @Inject constructor(
             }catch (ex:Exception){
                 networkCallbackListener.onFailed()
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
+    }
+    fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val villageId = prefRepo.getSelectedVillage().id
+                val passingScore = questionDao.getPassingScore()
+                val bpcStep = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
+                val matchedCount = didiList.value.filter {
+                    (it.score ?: 0.0) >= passingScore.toDouble()
+                            && (it.crpScore ?: 0.0) >= passingScore.toDouble() }.size
+
+                val matchPercentage = ((matchedCount.toFloat()/didiList.value.size.toFloat()) * 100).toInt()
+                val saveMatchSummaryRequest = SaveMatchSummaryRequest(
+                    programId = bpcStep.programId,
+                    score = matchPercentage,
+                    villageId = villageId
+                )
+                val saveMatchSummaryResponse = apiService.saveMatchSummary(saveMatchSummaryRequest)
+                if (saveMatchSummaryResponse.status.equals(SUCCESS, true)){
+                    networkCallbackListener.onSuccess()
+                } else {
+                    networkCallbackListener.onFailed()
+                }
+            } catch (ex: Exception){
+                onCatchError(ex, ApiType.SAVE_MATCH_PERCENTAGE_API)
             }
         }
     }

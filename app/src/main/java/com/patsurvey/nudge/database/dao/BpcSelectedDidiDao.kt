@@ -46,4 +46,10 @@ interface BpcSelectedDidiDao {
 
     @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET patSurveyStatus = :patSurveyProgress WHERE id = :didiId")
     fun updateQuesSectionStatus(didiId: Int, patSurveyProgress: Int)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status,needsToPostPAT=0 WHERE id =:didiId")
+    fun updatePATProgressStatus(patSurveyStatus: Int,section1Status:Int,section2Status:Int,didiId:Int)
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE set bpcScore =:score, bpcComment=:comment WHERE id=:didiId ")
+    fun updateSelDidiScore(score: Double, comment:String, didiId: Int)
 }

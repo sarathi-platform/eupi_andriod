@@ -271,5 +271,8 @@
     <string name="summary_didis_mobilised_text">" दीदियों को मोबिलाइज किया"</string>
     <string name="summary_wealth_ranking_text">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
     <string name="summary_vo_endoresement_text">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
+    <string name="unmatched_text">बेजोड़</string>
+    <string name="matched_text">मिलान</string>
+
 
 </resources>

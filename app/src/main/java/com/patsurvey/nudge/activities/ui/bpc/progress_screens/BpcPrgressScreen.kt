@@ -70,6 +70,8 @@ fun BpcProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
 
+//    bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
+    bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
     val context = LocalContext.current
 
     Surface(
@@ -613,6 +615,8 @@ fun BpcProgressScreen(
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 bpcProgreesScreenViewModel.callWorkFlowAPI()
                             }
+                            if (isStepCompleted == StepStatus.COMPLETED.ordinal)
+                                bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",
@@ -807,7 +811,7 @@ fun StepsBoxForBpc(
                     if (isCompleted) {
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
-                        val subText = ""
+                        val subText = "${viewModel.bpcCompletedDidiCount.value} Ultrapoor Didis verified"
                         if (subText != null || subText != "") {
                             Text(
                                 text = subText,
