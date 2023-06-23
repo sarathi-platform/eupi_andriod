@@ -787,7 +787,7 @@ class SurveySummaryViewModel @Inject constructor(
                     networkCallbackListener.onFailed()
                 }
             } catch (ex: Exception){
-                onCatchError(ex, ApiType.SAVE_MATCH_PERCENTAGE_API)
+                onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
             }
         }
     }

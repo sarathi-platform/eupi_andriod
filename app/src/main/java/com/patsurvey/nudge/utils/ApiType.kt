@@ -19,7 +19,7 @@ enum class ApiType {
     DIDI_EDIT_API,
     PAT_BPC_SURVEY_SUMMARY,
     BPC_UPDATE_DIDI_LIST_API,
-    SAVE_MATCH_PERCENTAGE_API;
+    BPC_SAVE_MATCH_PERCENTAGE_API;
 
     /*    fun fromString(apiName: String): ApiType {
             when (apiName) {
