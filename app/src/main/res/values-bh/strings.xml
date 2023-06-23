@@ -143,6 +143,7 @@
     <string name="didi_has_been_successfully_added">दीदी के सफलतापूर्वक जोड़ल गइल बा</string>
     <string name="didi_has_been_successfully_updated">दीदी के सफलतापूर्वक अपडेट हो गइल बा</string>
     <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
+    <string name="tola_already_exist">Tola already exist.</string>
     <string name="not_avaliable">उपलब्ध नहीं है</string>
     <string name="start_pat">PAT शुरू करें</string>
 

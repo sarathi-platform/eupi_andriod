@@ -319,7 +319,7 @@ fun SectionTwoSummeryItem(
                     fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
-                maxLines = 2,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .weight(1f)

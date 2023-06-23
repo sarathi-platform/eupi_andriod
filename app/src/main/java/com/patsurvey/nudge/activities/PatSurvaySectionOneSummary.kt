@@ -370,7 +370,7 @@ fun SectionOneSummeryItem(
                     fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
-                maxLines = 1,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
             )
