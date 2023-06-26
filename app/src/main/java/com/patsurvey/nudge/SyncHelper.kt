@@ -1148,7 +1148,7 @@ class SyncHelper (
                 if(step.workFlowId>0 && step.needToPost){
                     val response = apiService.editWorkFlow(
                         listOf(
-                            EditWorkFlowRequest(step.workFlowId,step.status)
+                            EditWorkFlowRequest(step.workFlowId, StepStatus.getStepFromOrdinal(step.isComplete))
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
