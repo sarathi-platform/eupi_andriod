@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities
 
 import android.Manifest
 import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -34,8 +36,10 @@ import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.SmsRead.SmsBroadcastReceiver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -44,6 +48,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
@@ -65,6 +70,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     val isOnline = mutableStateOf(false)
 
     var downloader: AndroidDownloader? = null
+
+    private val REQ_USER_CONSENT = 200
+    var smsBroadcastReceiver: SmsBroadcastReceiver? = null
+
 
     @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -189,8 +198,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                         context = LocalContext.current,
                         viewModel = mViewModel,
                         snackState = snackState,
-                        /*isResendOTPEnable = isResendOTPEnable,
-                        formattedTime = formattedTime,*/
                         setShowDialog = {
                             mViewModel.tokenExpired.value = false
                         },
@@ -198,11 +205,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                             RetryHelper.updateOtp(mViewModel.baseOtpNumber) { success, message ->
                                 if (success){
                                     RetryHelper.tokenExpired.value = false
-                                    /*RetryHelper.retryVillageListApi { success, villageList ->
-                                        if (success && !villageList?.isNullOrEmpty()!!) {
-                                            mViewModel.saveVillageListAfterTokenRefresh(villageList)
-                                        }
-                                    }*/
+                                    mViewModel.tokenExpired.value = false
                                     showCustomToast(this,"Session Restored")
                                 }
                                 else {
@@ -214,6 +217,72 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
+        startSmartUserConsent()
+    }
+
+    private fun startSmartUserConsent() {
+        val client = SmsRetriever.getClient(this)
+        client.startSmsUserConsent(SENDER_NUMBER)
+    }
+
+    private fun registerBroadcastReceiver(context: Context) {
+        smsBroadcastReceiver = SmsBroadcastReceiver()
+        smsBroadcastReceiver?.smsBroadcastReceiverListener = object : SmsBroadcastReceiver.SmsBroadcastReceiverListener{
+            override fun onSuccess(intent: Intent?) {
+
+                val client = SmsRetriever.getClient(context)
+                client.startSmsUserConsent(SENDER_NUMBER)
+                startActivityForResult(intent!!, REQ_USER_CONSENT)
+
+            }
+
+            override fun onFailure() {
+                Log.d("MainActivity", "SmsBroadcastReceiverListener: onFailure: OTP Read time-out.")
+            }
+
+        }
+        val intentFilter = IntentFilter(SmsRetriever.SMS_RETRIEVED_ACTION)
+        registerReceiver(smsBroadcastReceiver, intentFilter)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if (requestCode == REQ_USER_CONSENT) {
+            if (resultCode == RESULT_OK && data != null) {
+                val message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
+                getOtpFromMessage(message)
+            }
+        }
+
+    }
+
+    private fun getOtpFromMessage(message: String?) {
+        val optPattern = "(\\d{6}).*?(\\d{10})".toRegex()
+//        val optPattern = Pattern.compile("(|^)\\d{6}")
+        val matchResult = optPattern.find(message!!)
+        if (matchResult != null){
+            val otp = matchResult.groupValues[1]
+            val mobileNumber = matchResult.groupValues[2]
+
+            RetryHelper.autoReadOtp.value = otp
+
+//            Toast.makeText(this, "OTP: $otp", Toast.LENGTH_LONG).show()
+//            Toast.makeText(this, "Mobile Number: $mobileNumber", Toast.LENGTH_LONG).show()
+        } else {
+            println("No match found.")
+        }
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        registerBroadcastReceiver(this)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        unregisterReceiver(smsBroadcastReceiver)
     }
 
     fun exitApplication(){

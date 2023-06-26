@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.text.TextUtils
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -44,9 +43,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class TransectWalkViewModel @Inject constructor(
@@ -477,9 +476,11 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        val isComplete =
-            prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
-        isVoEndorsementComplete.value = isComplete
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber}
+            val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
+            isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
+        }
     }
 
     fun callWorkFlowAPI(

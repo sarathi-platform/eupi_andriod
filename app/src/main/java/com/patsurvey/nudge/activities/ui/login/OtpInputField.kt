@@ -30,9 +30,10 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 @Composable
 fun OtpInputField(
     otpLength: Int,
+    autoReadOtp: MutableState<String>,
     onOtpChanged: (String) -> Unit
 ){
-    var otpValue by remember { mutableStateOf("") }
+    var otpValue by remember { autoReadOtp }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardState = keyboardAsState(KeyboardStatus.Closed)
@@ -140,7 +141,10 @@ fun OtpCell(
 fun OtpInputFieldPreview() {
     MaterialTheme {
         Box(modifier = Modifier.padding(4.dp)) {
-            OtpInputField(otpLength = 6, onOtpChanged = {})
+            val otp = remember {
+                mutableStateOf("")
+            }
+            OtpInputField(otpLength = 6, otp, onOtpChanged = {})
         }
     }
 }
@@ -161,9 +165,12 @@ fun OtpCellFocusPreview(
 @Composable
 fun OtpInputFieldForDialog(
     otpLength: Int,
+    autoReadOtp: MutableState<String>,
     onOtpChanged: (String) -> Unit
 ){
-    var otpValue by remember { mutableStateOf("") }
+    var otpValue by remember {
+        autoReadOtp
+    }
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardState = keyboardAsState(KeyboardStatus.Closed)

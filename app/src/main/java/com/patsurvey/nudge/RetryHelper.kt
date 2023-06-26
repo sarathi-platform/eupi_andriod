@@ -91,6 +91,8 @@ object RetryHelper {
 
     var retryCount = mutableMapOf<ApiType, Int>()
 
+    val autoReadOtp = mutableStateOf("")
+
     private var prefRepo: PrefRepo? = null
     private var apiService: ApiService? = null
     private var tolaDao: TolaDao? = null

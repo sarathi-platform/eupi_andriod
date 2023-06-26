@@ -465,7 +465,7 @@ fun SurveySummary(
                     positiveButtonText = if (showDidiListForStatus.first)
                         stringResource(id = R.string.done_text)
                     else
-                        stringResource(id = R.string.confirm_text),
+                        stringResource(id = R.string.submit_pat_verification),
                     isArrowRequired = !showDidiListForStatus.first,
                     positiveButtonOnClick = {
                         if (showDidiListForStatus.first) {

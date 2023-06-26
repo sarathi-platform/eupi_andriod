@@ -16,7 +16,7 @@ import com.wwdablu.soumya.simplypdf.composers.properties.cell.TextCell
 import com.wwdablu.soumya.simplypdf.document.DocumentInfo
 import com.wwdablu.soumya.simplypdf.document.Margin
 import java.io.File
-import java.util.*
+import java.util.LinkedList
 
 object PdfUtils {
 
@@ -26,7 +26,8 @@ object PdfUtils {
     private const val GUARDIAN_NAME_HEADING_TEXT = "Name of Husband/ Father\n" + "(4)"
     private const val TOLA_NAME_HEADING_TEXT = "Name of \n" + "the Hamlet/Tola/Para\n" + "(5)"
 
-    private val margins: UInt = 16u
+    private val margins: UInt = 20u
+    private val marginBottom: UInt = 20u
     private const val serialNumberCellWidth = 50
     private const val dataCellWidth = 125
     private val titleTextProperties = getTitleTextProperties()
@@ -36,10 +37,13 @@ object PdfUtils {
 
     suspend fun getFormAPdf(context: Context, villageEntity: VillageEntity, didiDetailList: List<DidiEntity>, completionDate: String): Boolean{
 
+        val mSerialNumberCellWidth = 50
+        val mDataCellWidth = 150
+
         val simplyPdfDocument = getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME)
 
         simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
-        simplyPdfDocument.text.write("List of households categorized into Rich, Medium, and Poor in Participatory Wealth Ranking", subTitleTextProperties)
+        simplyPdfDocument.text.write("List of households categorized as Poor in Participatory Wealth Ranking", subTitleTextProperties)
 
         simplyPdfDocument.text.write("Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
             contentTextProperties)
@@ -49,54 +53,52 @@ object PdfUtils {
         simplyPdfDocument.insertEmptyLines(1)
 
         val headerRow = LinkedList<Cell>().apply {
-            add(TextCell(SR_NO_HEADING_TEXT, cellDataTextProperties, serialNumberCellWidth))
-            add(TextCell(HOUSE_NO_HEADING_TEXT, cellDataTextProperties, dataCellWidth))
             add(
-                TextCell(DIDI_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+                TextCell(SR_NO_HEADING_TEXT, cellDataTextProperties, mSerialNumberCellWidth)
             )
             add(
-                TextCell(GUARDIAN_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+                TextCell(HOUSE_NO_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
             )
             add(
-                TextCell(TOLA_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+                TextCell(DIDI_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(GUARDIAN_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(TOLA_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
             )
             add(
                 TextCell("Social Category\n" +
-                    "(6)", cellDataTextProperties, dataCellWidth)
-            )
-            add(
-                TextCell("Categorized as (Rich, \n" +
-                    "Medium, Poor)\n" +
-                    "(7)", cellDataTextProperties, dataCellWidth)
+                    "(6)", cellDataTextProperties, mDataCellWidth)
             )
         }
 
         val rows = LinkedList<LinkedList<Cell>>().apply {
             add(headerRow)
 
-            didiDetailList.forEachIndexed { index, didiEntity ->
+            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }.forEachIndexed { index, didiEntity ->
                 add(
                     LinkedList<Cell>().apply {
-                        add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
+                        add(TextCell("${index + 1}", cellDataTextProperties, mSerialNumberCellWidth))
                         add(
-                            TextCell("${didiEntity.address}", cellDataTextProperties, dataCellWidth)
+                            TextCell("${didiEntity.address}", cellDataTextProperties, mDataCellWidth)
                         )
                         add(
-                            TextCell("${didiEntity.name}", cellDataTextProperties, dataCellWidth)
+                            TextCell("${didiEntity.name}", cellDataTextProperties, mDataCellWidth)
                         )
                         add(
-                            TextCell("${didiEntity.guardianName}", cellDataTextProperties, dataCellWidth)
+                            TextCell("${didiEntity.guardianName}", cellDataTextProperties, mDataCellWidth)
                         )
                         add(
-                            TextCell("${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
+                            TextCell("${didiEntity.cohortName}", cellDataTextProperties, mDataCellWidth)
                         )
                         add(
-                            TextCell("${didiEntity.castName}", cellDataTextProperties, dataCellWidth))
-                        add(
-                            TextCell("${didiEntity.wealth_ranking}", cellDataTextProperties, dataCellWidth))
+                            TextCell("${didiEntity.castName}", cellDataTextProperties, mDataCellWidth))
                     }
                 )
             }
+
         }
 
         simplyPdfDocument.table.draw(rows, TableProperties().apply {
@@ -322,7 +324,7 @@ object PdfUtils {
         return SimplyPdf.with(context, getPdfPath(context = context, formName = fileName, villageEntity.name))
             .colorMode(DocumentInfo.ColorMode.COLOR)
             .paperSize(PrintAttributes.MediaSize.ISO_A4)
-            .margin(Margin(margins, margins, margins, margins))
+            .margin(Margin(margins, margins, margins, marginBottom))
             .paperOrientation(DocumentInfo.Orientation.LANDSCAPE)
             .build()
     }

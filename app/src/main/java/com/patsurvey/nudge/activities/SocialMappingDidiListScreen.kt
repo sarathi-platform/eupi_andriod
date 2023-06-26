@@ -94,10 +94,6 @@ fun SocialMappingDidiListScreen(
         didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
-    LaunchedEffect(key1 = true) {
-        didiViewModel.isSocialMappingComplete(stepId)
-        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
-    }
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
     val context = LocalContext.current
 

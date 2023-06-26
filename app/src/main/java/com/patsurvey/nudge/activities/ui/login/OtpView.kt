@@ -52,7 +52,10 @@ fun OtpView(){
             colors = currentColor,
             typography = typography
         ) {
-            OtpInputField(otpLength = 6, onOtpChanged = { otp ->
+            val otp = remember {
+                mutableStateOf("")
+            }
+            OtpInputField(otpLength = 6, otp,onOtpChanged = { otp ->
                 otpValue = otp
             })
         }

@@ -184,8 +184,9 @@ fun ScoreComparisionScreen(
                     .align(Alignment.TopCenter)
             ) {
 
+                val count = filterdDidiList.value.size
                 Text(
-                    text = stringResource(id = R.string.comparison_screen_heading).replace("{COUNT}", filterdDidiList.value.size.toString(), true),
+                    text = stringResource(id = if (count > 1) R.string.comparison_screen_heading_plural else R.string.comparison_screen_heading_singular).replace("{COUNT}", count.toString(), true),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -238,7 +239,8 @@ fun ScoreComparisionScreen(
                                     modifier = Modifier
                                         .padding(16.dp)
                                         .clickable {
-                                            expandBox.value = !expandBox.value
+                                            if (passPercentage.value < MATCH_PERCENTAGE)
+                                                expandBox.value = !expandBox.value
                                         },
                                 ) {
                                     Text(
@@ -253,13 +255,15 @@ fun ScoreComparisionScreen(
                                         modifier = Modifier.weight(1f)
                                     )
 
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
-                                        contentDescription = "Expandable Arrow",
-                                        modifier = Modifier
-                                            .rotate(degrees = arrowRotationDegree),
-                                        tint = textColorDark
-                                    )
+                                    if (passPercentage.value < MATCH_PERCENTAGE) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
+                                            contentDescription = "Expandable Arrow",
+                                            modifier = Modifier
+                                                .rotate(degrees = arrowRotationDegree),
+                                            tint = textColorDark
+                                        )
+                                    }
                                 }
                                 ExpandableSummaryBox(expanded = expandBox.value)
                             }
@@ -379,7 +383,7 @@ fun ScoreComparisonDidiCard(
                     color = Color.White
                 )
             )
-            .clickable { 
+            .clickable {
                 onScoreCardClicked(didiEntity)
             }
             .then(modifier)
@@ -496,7 +500,7 @@ fun ScoreComparisonDidiCard(
                     text = if ((didiEntity.crpScore
                             ?: 0.0) >= passingScore.toDouble() && (didiEntity.score
                             ?: 0.0) >= passingScore.toDouble()
-                    ) stringResource(R.string.unmatched_text) else stringResource(R.string.matched_text),
+                    ) stringResource(R.string.matched_text) else stringResource(R.string.unmatched_text),
                     color = white,
                     style = smallerTextStyle,
                     modifier = Modifier.absolutePadding(bottom = 3.dp)

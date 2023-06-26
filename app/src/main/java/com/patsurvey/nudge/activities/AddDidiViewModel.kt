@@ -436,9 +436,11 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        val isComplete =
-            prefRepo.getPref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
-        isVoEndorsementComplete.value = isComplete
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber}
+            val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
+            isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
+        }
     }
 
 

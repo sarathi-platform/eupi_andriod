@@ -26,7 +26,14 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.getStepStatusFromOrdinal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -78,7 +85,7 @@ class SettingViewModel @Inject constructor(
     fun isFormAAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name == "Participatory Wealth Ranking" }
+            val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
             val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
             if (stepId > 0) {
                 val step = stepsListDao.getStepForVillage(stepId, villageId)
@@ -91,7 +98,7 @@ class SettingViewModel @Inject constructor(
     fun isFormBAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name == "Pat Survey" }
+            val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
             val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
             if (stepId > 0) {
                 val step = stepsListDao.getStepForVillage(stepId, villageId)
@@ -105,7 +112,7 @@ class SettingViewModel @Inject constructor(
     fun isFormCAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val filteredStepList = stepList.filter { it.name == "VO Endorsement" }
+            val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
             val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
             if (stepId > 0) {
                 val step = stepsListDao.getStepForVillage(stepId, villageId)

@@ -28,14 +28,11 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.activities.ui.login.OtpInputFieldForDialog
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.base.BaseViewModel
@@ -711,7 +708,7 @@ fun ShowOptDialog(
     formattedTime: MutableState<String>,
     isResendOTPVisible: MutableState<Boolean>*/
 ) {
-    var otpValue by remember {
+    /*var otpValue by remember {
         mutableStateOf("")
     }
 
@@ -772,7 +769,7 @@ fun ShowOptDialog(
                         viewModel.baseOtpNumber.value = otpValue
                     })
 
-                /*    AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                *//*    AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
                         Row(
                             horizontalArrangement = Arrangement.End,
                             modifier = Modifier.fillMaxWidth(),
@@ -839,7 +836,7 @@ fun ShowOptDialog(
                                 isResendOTPEnable.value = false
                             }
                         )
-                    }*/
+                    }*//*
 
 
                     Spacer(modifier = Modifier.height(8.dp))
@@ -858,5 +855,5 @@ fun ShowOptDialog(
                 }
             }
         }
-    }
+    }*/
 }

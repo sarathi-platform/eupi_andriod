@@ -167,7 +167,7 @@ fun BpcAddMoreDidiScreen(
             ) {
 
                 Text(
-                    text = stringResource(id = R.string.bpc_didi_screen_title),
+                    text = stringResource(id = R.string.bpc_add_more_didi_screen_title),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
