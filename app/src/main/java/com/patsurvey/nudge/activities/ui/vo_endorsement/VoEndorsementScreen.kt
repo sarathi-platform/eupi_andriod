@@ -327,7 +327,7 @@ fun DidiItemCardForVo(
         modifier = Modifier
             .fillMaxWidth()
             .background(bgGreyLight, RoundedCornerShape(6.dp))
-            .border(width = 1.dp, color = borderGreyLight, shape = RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = bgGreyLight, shape = RoundedCornerShape(6.dp))
             .clickable {
                 onItemClick(didi)
             }

@@ -81,7 +81,6 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
-import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegativeForPAT
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
@@ -548,7 +547,7 @@ fun DidiItemCardForBpc(
                     .padding(vertical = 10.dp)
                     .padding(horizontal = 20.dp)
                     .clickable {
-                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/$BLANK_STRING")
+                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}")
                     }
                     .then(modifier),
                     horizontalArrangement = Arrangement.SpaceBetween

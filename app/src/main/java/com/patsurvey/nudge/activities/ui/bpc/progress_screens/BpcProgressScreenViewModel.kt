@@ -20,9 +20,18 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.calculateScore
+import com.patsurvey.nudge.utils.toWeightageRatio
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -150,7 +159,7 @@ class BpcProgressScreenViewModel @Inject constructor(
             selectedDidiList.forEach { didiEntity->
                 if (!didiEntityList.map { it.id }.contains(didiEntity.id)) {
                     didiDao.insertDidi(
-                        DidiEntity.getDidiEntityFromSelectedDidiEntity(didiEntity)
+                        DidiEntity.getDidiEntityFromSelectedDidiEntityForBpc(didiEntity)
                     )
                 }
             }
@@ -163,6 +172,123 @@ class BpcProgressScreenViewModel @Inject constructor(
             val verifiedDidiCount = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }.size
             withContext(Dispatchers.Main) {
                 bpcCompletedDidiCount.value = verifiedDidiCount
+            }
+        }
+    }
+
+    fun updateSelectedDidiPatStatus() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val selectedDidiList = bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
+            val questionList = questionListDao.getAllQuestions()
+            selectedDidiList.forEach { didi ->
+                val didiAnswers = answerDao.getAllAnswerForDidi(didi.id)
+                if (didiAnswers.filter { it.actionType == TYPE_INCLUSION }.size == questionList.filter { it.actionType == TYPE_INCLUSION }.size) {
+                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                    calculateDidiScore(didi.id)
+                } else if (didiAnswers.filter { it.actionType == TYPE_INCLUSION }.size < questionList.filter { it.actionType == TYPE_INCLUSION }.size) {
+                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                } else
+                    if (didiAnswers.filter { it.actionType == TYPE_EXCLUSION }.size < questionList.filter { it.actionType == TYPE_EXCLUSION }.size) {
+                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.NOT_STARTED.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                } else {
+                    if (didiAnswers.filter { it.actionType == TYPE_EXCLUSION }.size == questionList.filter { it.actionType == TYPE_EXCLUSION }.size) {
+                        val yesAnswerCount = answerDao.fetchOptionYesCount(didiId = didi.id, QuestionType.RadioButton.name,TYPE_EXCLUSION)
+                        if (yesAnswerCount > 0) {
+                            bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                            bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.NOT_STARTED.ordinal)
+                            bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                        } else {
+                            bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
+                            bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                            bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun calculateDidiScore(didiId: Int) {
+        var passingMark = 0
+        var isDidiAccepted = false
+        var comment = LOW_SCORE
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO) {
+                val inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+                if (inclusiveQueList.isNotEmpty()) {
+                    var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+                    val numQueList =
+                        inclusiveQueList.filter { it.type == QuestionType.Numeric_Field.name }
+                    if (numQueList.isNotEmpty()) {
+                        numQueList.forEach { answer ->
+                            val numQue = questionListDao.getQuestion(answer.questionId)
+                            passingMark = numQue.surveyPassingMark ?: 0
+                            if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
+                                val weightList = toWeightageRatio(numQue.json.toString())
+                                if (weightList.isNotEmpty()) {
+                                    val newScore = calculateScore(
+                                        weightList,
+                                        answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                        false
+                                    )
+                                    totalWightWithoutNumQue += newScore
+                                }
+                            } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
+                                val ratioList = toWeightageRatio(numQue.json.toString())
+                                val newScore = calculateScore(
+                                    ratioList,
+                                    answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                    true
+                                )
+                                totalWightWithoutNumQue += newScore
+                            }
+                        }
+                    }
+                    // TotalScore
+                    if (totalWightWithoutNumQue >= passingMark) {
+                        isDidiAccepted = true
+                        comment = BLANK_STRING
+                        didiDao.updateVOEndorsementDidiStatus(
+                            prefRepo.getSelectedVillage().id,
+                            didiId
+                        )
+                    }
+                    didiDao.updateDidiScore(
+                        score = totalWightWithoutNumQue,
+                        comment = comment,
+                        didiId = didiId,
+                        isDidiAccepted = isDidiAccepted
+                    )
+                    if (prefRepo.isUserBPC()) {
+                        bpcSelectedDidiDao.updateSelDidiScore(
+                            score = totalWightWithoutNumQue,
+                            comment = comment,
+                            didiId = didiId,
+                        )
+                    }
+                }
+                else {
+                    didiDao.updateDidiScore(
+                        score = 0.0,
+                        comment = TYPE_EXCLUSION,
+                        didiId = didiId,
+                        isDidiAccepted = false
+                    )
+                    if (prefRepo.isUserBPC()) {
+                        bpcSelectedDidiDao.updateSelDidiScore(
+                            score = 0.0,
+                            comment = TYPE_EXCLUSION,
+                            didiId = didiId,
+                        )
+                    }
+                }
+                didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
             }
         }
     }

@@ -897,9 +897,9 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         composable(route = BpcDidiListScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            }, navArgument(ARG_FROM_SCREEN) {
+            }/*, navArgument(ARG_FROM_SCREEN) {
                 type = NavType.StringType
-            }
+            }*/
             )
         ) {
             PatSurveyCompleteSummary(
@@ -908,7 +908,7 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 patSectionSummaryViewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
-                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
+                fromScreen = /*it.arguments?.getString(ARG_FROM_SCREEN) ?: */BLANK_STRING
             )
         }
 
@@ -984,7 +984,7 @@ sealed class BpcDidiListScreens(val route: String) {
         BpcDidiListScreens(route = "bpc_pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         BpcDidiListScreens(route = "bpc_pat_section_two_summary_screen/{$ARG_DIDI_ID}")
-    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
 
     object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 

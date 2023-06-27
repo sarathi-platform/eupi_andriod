@@ -74,7 +74,6 @@ import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.borderGrey
 import com.patsurvey.nudge.activities.ui.theme.brownDark
 import com.patsurvey.nudge.activities.ui.theme.comparisonCardDividerColor
 import com.patsurvey.nudge.activities.ui.theme.greenBgLight
@@ -290,7 +289,7 @@ fun ScoreComparisionScreen(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append("Showing ")
+                                    append(stringResource(R.string.showing_text))
                                 }
                                 withStyle(
                                     style = SpanStyle(
@@ -310,7 +309,7 @@ fun ScoreComparisionScreen(
                                         fontFamily = NotoSans
                                     )
                                 ) {
-                                    append(" result")
+                                    append(if (filterdDidiList.value.size > 1) stringResource(R.string.result_text_plural) else  stringResource(R.string.result_text_singular))
                                 }
                             }
                         )
@@ -375,7 +374,7 @@ fun ScoreComparisonDidiCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(color = languageItemActiveBg, shape = RoundedCornerShape(6.dp))
-            .border(1.dp, color = borderGrey, shape = RoundedCornerShape(6.dp))
+            .border(1.dp, color = languageItemActiveBg, shape = RoundedCornerShape(6.dp))
             .indication(
                 interactionSource = interactionSource,
                 indication = rememberRipple(

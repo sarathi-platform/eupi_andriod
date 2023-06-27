@@ -74,6 +74,7 @@ import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -812,6 +813,7 @@ object RetryHelper {
                             prefRepo?.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
                             if (it.villageList.isNotEmpty()) {
                                 villageListDao?.insertAll(it.villageList)
+                                delay(500)
                                 saveVillageList(true, villageListDao?.getAllVillages())
                             } else {
                                 saveVillageList(false, listOf())

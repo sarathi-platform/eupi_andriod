@@ -100,6 +100,7 @@ fun VillageSelectionScreen(
     LaunchedEffect(key1 = true) {
         viewModel.saveVideosToDb(context)
     }
+    val showRetryLoader = mutableStateOf(false)
 
     Box(Modifier.fillMaxSize()) {
         if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
@@ -120,17 +121,37 @@ fun VillageSelectionScreen(
                     modifier = Modifier
                 )
 
-                BlueButtonWithIconWithFixedWidthWithoutIcon(
-                    modifier = Modifier,
-                    buttonText = "Click to Refresh",
-                    onClick = {
-                        RetryHelper.retryVillageListApi { success, villageList ->
-                            if (success && !villageList?.isNullOrEmpty()!!) {
-                                viewModel.saveVillageListAfterTokenRefresh(villageList)
+                Row() {
+                    if (showRetryLoader.value) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(48.dp)
+                                .padding(top = 30.dp)
+                        ) {
+                            CircularProgressIndicator(
+                                color = blueDark,
+                                modifier = Modifier
+                                    .size(28.dp)
+                                    .align(Alignment.Center)
+                            )
+                        }
+
+                    }
+                    BlueButtonWithIconWithFixedWidthWithoutIcon(
+                        modifier = Modifier,
+                        buttonText = "Click to Refresh",
+                        onClick = {
+                            showRetryLoader.value = true
+                            RetryHelper.retryVillageListApi { success, villageList ->
+                                if (success && !villageList?.isNullOrEmpty()!!) {
+                                    viewModel.saveVillageListAfterTokenRefresh(villageList)
+                                }
+                                showRetryLoader.value = false
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         } else {
             Column(
