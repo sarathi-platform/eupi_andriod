@@ -11,16 +11,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
@@ -70,9 +75,18 @@ fun BpcProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
 
-//    bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
-    bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
+    LaunchedEffect(key1 = Unit) {
+        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
+        delay(100)
+        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
+    }
     val context = LocalContext.current
+
+    val localDensity = LocalDensity.current
+    val voTextHeight = remember {
+        mutableStateOf(Offset(0f, 0f))
+    }
+
 
     Surface(
         modifier = Modifier
@@ -243,7 +257,7 @@ fun BpcProgressScreen(
                                                     ) {
 
 
-                                                        append(String.format("%02d", summaryData.value.cohortCount?:0))
+                                                        append(String.format("%03d", summaryData.value.cohortCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -253,7 +267,12 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(stringResource(R.string.summary_tolas_added_text))
+                                                        append(
+                                                            if (summaryData.value.cohortCount > 1)
+                                                                stringResource(R.string.summary_tolas_added_text_plural)
+                                                            else
+                                                                stringResource(R.string.summary_tolas_added_text_singular)
+                                                        )
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -268,7 +287,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%02d", summaryData.value.mobilisedCount))
+                                                        append(String.format("%03d", summaryData.value.mobilisedCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -278,7 +297,12 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(stringResource(R.string.summary_didis_mobilised_text))
+                                                        append(
+                                                            if (summaryData.value.mobilisedCount > 1)
+                                                                stringResource(R.string.summary_didis_mobilised_text_plural)
+                                                            else
+                                                                stringResource(R.string.summary_didis_mobilised_text_singular)
+                                                        )
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -293,7 +317,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%02d", summaryData.value.poorDidiCount))
+                                                        append(String.format("%03d", summaryData.value.poorDidiCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -303,7 +327,12 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(stringResource(R.string.summary_wealth_ranking_text))
+                                                        append(
+                                                            if (summaryData.value.poorDidiCount > 1)
+                                                                stringResource(R.string.summary_wealth_ranking_text_plural)
+                                                            else
+                                                                stringResource(R.string.summary_wealth_ranking_text_singular)
+                                                        )
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -318,7 +347,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%02d", summaryData.value.sentVoEndorsementCount))
+                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -328,7 +357,12 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(stringResource(R.string.summary_vo_endoresement_text))
+                                                        append(
+                                                            if (summaryData.value.sentVoEndorsementCount > 1)
+                                                                stringResource(R.string.summary_vo_endoresement_text_plural)
+                                                            else
+                                                                stringResource(R.string.summary_vo_endoresement_text_singular)
+                                                        )
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -343,7 +377,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%02d", summaryData.value.voEndorsedCount))
+                                                        append(String.format("%03d", summaryData.value.voEndorsedCount))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -353,7 +387,12 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(" Didis Endorsed by VO")
+                                                        append(
+                                                            if (summaryData.value.voEndorsedCount > 1)
+                                                                stringResource(R.string.didis_endorsed_by_vo_plural)
+                                                            else stringResource(
+                                                                R.string.didi_endorsed_by_vo_singular)
+                                                        )
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
@@ -367,246 +406,205 @@ fun BpcProgressScreen(
 
                                             Spacer(modifier = Modifier.height(8.dp))
 
-                                            Row(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.spacedBy(2.dp)
-                                            ) {
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            greenOnline,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "1",
-                                                        color = white,
-                                                        textAlign = TextAlign.Center,
+                                            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                                Box(modifier = Modifier) {
+                                                    Divider(
                                                         modifier = Modifier
+                                                            .height(1.dp)
                                                             .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
+                                                            .padding(horizontal = 16.dp)
+                                                            .background(
+                                                                greyBorder,
+                                                                shape = DottedShape(step = 4.dp)
+                                                            )
                                                     )
-                                                }
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            greenOnline,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "2",
-                                                        color = white,
-                                                        textAlign = TextAlign.Center,
+                                                    Row(
                                                         modifier = Modifier
                                                             .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
-                                                    )
+                                                            .fillMaxWidth(),
+                                                        verticalAlignment = Alignment.CenterVertically,
+                                                        horizontalArrangement = Arrangement.SpaceEvenly
+                                                    ) {
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "1",
+                                                                color = white,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "2",
+                                                                color = white,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "3",
+                                                                color = white,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = greyBorder,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "4",
+                                                                color = white,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    greenOnline,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "5",
+                                                                color = white,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .clip(CircleShape)
+                                                                .border(
+                                                                    width = 1.dp,
+                                                                    color = if (isStepCompleted == StepStatus.COMPLETED.ordinal) greenOnline else stepBoxActiveColor,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .background(
+                                                                    if (isStepCompleted == StepStatus.COMPLETED.ordinal) greenOnline else stepBoxActiveColor,
+                                                                    shape = CircleShape
+                                                                )
+                                                                .padding(6.dp)
+                                                                .size(24.dp)
+                                                                .aspectRatio(1f),
+                                                            contentAlignment = Alignment.Center
+                                                        ) {
+                                                            Text(
+                                                                text = "6",
+                                                                color = if (isStepCompleted == StepStatus.COMPLETED.ordinal) white else textColorDark,
+                                                                textAlign = TextAlign.Center,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.Center)
+                                                                    .absolutePadding(bottom = 3.dp),
+                                                                style = smallerTextStyleNormalWeight,
+                                                            )
+                                                        }
+                                                    }
                                                 }
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            greenOnline,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
+                                                if (isStepCompleted != StepStatus.COMPLETED.ordinal) {
+                                                    Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
-                                                        text = "3",
-                                                        color = white,
+                                                        text = "VO Endorsement \nCompleted",
+                                                        fontSize = 12.sp,
+                                                        fontFamily = NotoSans,
+                                                        fontWeight = FontWeight.Medium,
+                                                        color = textColorDark,
                                                         textAlign = TextAlign.Center,
-                                                        modifier = Modifier
-                                                            .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
-                                                    )
-                                                }
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            greenOnline,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "4",
-                                                        color = white,
-                                                        textAlign = TextAlign.Center,
-                                                        modifier = Modifier
-                                                            .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
-                                                    )
-                                                }
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            greenOnline,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "5",
-                                                        color = white,
-                                                        textAlign = TextAlign.Center,
-                                                        modifier = Modifier
-                                                            .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
-                                                    )
-                                                }
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Divider(
-                                                    color = greyBorder,
-                                                    modifier = Modifier
-                                                        .height(1.dp)  //fill the max height
-                                                        .width(8.dp)
-                                                        .padding(horizontal = 2.dp)
-                                                )
-                                                Box(
-                                                    modifier = Modifier
-                                                        .clip(CircleShape)
-                                                        .border(
-                                                            width = 1.dp,
-                                                            color = greyBorder,
-                                                            shape = CircleShape
-                                                        )
-                                                        .background(
-                                                            if (isStepCompleted == StepStatus.COMPLETED.ordinal) greenOnline else stepBoxActiveColor,
-                                                            shape = CircleShape
-                                                        )
-                                                        .padding(6.dp)
-                                                        .size(24.dp)
-                                                        .aspectRatio(1f),
-                                                    contentAlignment = Alignment.Center
-                                                ) {
-                                                    Text(
-                                                        text = "6",
-                                                        color = if (isStepCompleted == StepStatus.COMPLETED.ordinal) white else textColorDark,
-                                                        textAlign = TextAlign.Center,
-                                                        modifier = Modifier
-                                                            .align(Alignment.Center)
-                                                            .absolutePadding(bottom = 3.dp),
-                                                        style = smallerTextStyleNormalWeight,
+                                                        modifier = Modifier.padding(start = (3 * 48).dp)
                                                     )
                                                 }
                                             }
                                             Spacer(modifier = Modifier.height(16.dp))
-
                                         }
                                     }
                                 }

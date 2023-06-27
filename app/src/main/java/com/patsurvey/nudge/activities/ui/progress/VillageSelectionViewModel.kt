@@ -121,19 +121,16 @@ class VillageSelectionViewModel @Inject constructor(
         fetchUserDetails {
             if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                 if ((System.currentTimeMillis() - prefRepo.getPref(
-                        LAST_UPDATE_TIME,
-                        0L
+                        LAST_UPDATE_TIME, 0L
                     )) > TimeUnit.DAYS.toMillis(5)
-                )
-                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
-                            CRP_USER_TYPE,
-                            true
-                        )
-                    ) {
-                        fetchVillageList()
-                    } else {
-                        fetchDataForBpc()
-                    }
+                ) if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
+                        CRP_USER_TYPE, true
+                    )
+                ) {
+                    fetchVillageList()
+                } else {
+                    fetchDataForBpc()
+                }
 //                else
 //                    showLoader.value = false
             } else {
@@ -172,27 +169,33 @@ class VillageSelectionViewModel @Inject constructor(
                                             }
                                             stepsListDao.insertAll(it.stepList)
                                         }
-                                        val bpcStepId =it.stepList.sortedBy { stepEntity ->
-                                            stepEntity.orderNumber }.last().id
-                                        stepsListDao.markStepAsCompleteOrInProgress(bpcStepId, StepStatus.INPROGRESS.ordinal, village.id)
+                                        val bpcStepId = it.stepList.sortedBy { stepEntity ->
+                                            stepEntity.orderNumber
+                                        }.last().id
+                                        stepsListDao.markStepAsCompleteOrInProgress(
+                                            bpcStepId,
+                                            StepStatus.INPROGRESS.ordinal,
+                                            village.id
+                                        )
                                         prefRepo.savePref(
-                                            PREF_PROGRAM_NAME,
-                                            it.programName
+                                            PREF_PROGRAM_NAME, it.programName
                                         )
                                         showLoader.value = false
 
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(response.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
-                                        retryApiList.add(ApiType.STEP_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) retryApiList.add(
+                                        ApiType.STEP_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.STEP_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
-                                        retryApiList.add(ApiType.STEP_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) retryApiList.add(
+                                        ApiType.STEP_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.STEP_LIST_API)
@@ -216,26 +219,22 @@ class VillageSelectionViewModel @Inject constructor(
                                     //TODO remove mock data
                                     bpcSummaryDao.insert(
                                         BpcSummaryEntity(
-                                            0,
-                                            12,
-                                            14,
-                                            24,
-                                            77,
-                                            19,
-                                            villageId = village.id
+                                            0, 12, 14, 24, 77, 19, villageId = village.id
                                         )
                                     )
 
                                     val ex = ApiResponseFailException(bpcSummaryResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_SUMMARY_API))
-                                        retryApiList.add(ApiType.BPC_SUMMARY_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_SUMMARY_API)) retryApiList.add(
+                                        ApiType.BPC_SUMMARY_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.BPC_SUMMARY_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_SUMMARY_API))
-                                        retryApiList.add(ApiType.BPC_SUMMARY_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_SUMMARY_API)) retryApiList.add(
+                                        ApiType.BPC_SUMMARY_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.BPC_SUMMARY_API)
@@ -249,15 +248,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(cohortResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
-                                        retryApiList.add(ApiType.TOLA_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
+                                        ApiType.TOLA_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.TOLA_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
-                                        retryApiList.add(ApiType.TOLA_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
+                                        ApiType.TOLA_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
@@ -271,7 +272,8 @@ class VillageSelectionViewModel @Inject constructor(
                                             it.selected.forEach { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
-                                                val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
+                                                val singleTola =
+                                                    tolaDao.fetchSingleTola(didi.cohortId)
                                                 val singleCaste = casteListDao.getCaste(didi.castId)
                                                 singleTola?.let {
                                                     tolaName = it.name
@@ -280,27 +282,15 @@ class VillageSelectionViewModel @Inject constructor(
                                                     casteName = it.casteName
                                                 }
 //                                                if (singleTola != null) {
-                                                    val wealthRanking =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.WEALTH_RANKING.name))
-                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                        else
-                                                            WealthRank.NOT_RANKED.rank
-                                                    val patSurveyStatus =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.PAT_SURVEY.name))
-                                                            PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                        else
-                                                            PatSurveyStatus.NOT_STARTED.ordinal
-                                                    val voEndorsementStatus =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDROSEMENT.name))
-                                                            DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                        else
-                                                            DidiEndorsementStatus.NOT_STARTED.ordinal
+
+                                                val bpcStatus = if (didi.beneficiaryProcessStatus.map { it.name }
+                                                        .contains(BPC_SURVEY_CONSTANT)) {
+                                                    PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }.indexOf(BPC_SURVEY_CONSTANT)].status)
+                                                }
+                                                else
+                                                    PatSurveyStatus.NOT_STARTED.ordinal
+
+
 //                                                }
                                                 //TODO Create new table
                                                 bpcSelectedDidiDao.insertDidi(
@@ -318,10 +308,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                         cohortName = tolaName,
                                                         needsToPost = false,
                                                         wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
-                                                        patSurveyStatus = /*patSurveyStatus*/PatSurveyStatus.NOT_STARTED.ordinal,
+                                                        patSurveyStatus = /*PatSurveyStatus.NOT_STARTED.ordinal*/bpcStatus,
                                                         voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
-                                                        section1Status = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                        section2Status = PatSurveyStatus.NOT_STARTED.ordinal,
+                                                        section1Status = bpcStatus,
+                                                        section2Status = bpcStatus,
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
@@ -348,27 +338,23 @@ class VillageSelectionViewModel @Inject constructor(
                                                     casteName = it.casteName
                                                 }
 //                                                if (singleTola != null) {
-                                                    val wealthRanking =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.WEALTH_RANKING.name))
-                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                        else
-                                                            WealthRank.NOT_RANKED.rank
-                                                    val patSurveyStatus =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.PAT_SURVEY.name))
-                                                            PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                        else
-                                                            PatSurveyStatus.NOT_STARTED.ordinal
-                                                    val voEndorsementStatus =
-                                                        if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                .contains(StepType.VO_ENDROSEMENT.name))
-                                                            DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                        else
-                                                            DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                        .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                    else WealthRank.NOT_RANKED.rank
+                                                val patSurveyStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.PAT_SURVEY.name)) PatSurveyStatus.toInt(
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else PatSurveyStatus.NOT_STARTED.ordinal
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus.map { it.name }
+                                                            .contains(StepType.VO_ENDROSEMENT.name)) DidiEndorsementStatus.toInt(
+                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                    else DidiEndorsementStatus.NOT_STARTED.ordinal
 //                                                }
                                                 bpcNonSelectedDidiDao.insertNonSelectedDidi(
                                                     BpcNonSelectedDidiEntity(
@@ -405,15 +391,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_DIDI_LIST_API))
-                                        retryApiList.add(ApiType.BPC_DIDI_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_DIDI_LIST_API)) retryApiList.add(
+                                        ApiType.BPC_DIDI_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_DIDI_LIST_API))
-                                        retryApiList.add(ApiType.BPC_DIDI_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.BPC_DIDI_LIST_API)) retryApiList.add(
+                                        ApiType.BPC_DIDI_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
@@ -452,16 +440,18 @@ class VillageSelectionViewModel @Inject constructor(
                                         }
                                     } else {
                                         val ex = ApiResponseFailException(quesListResponse.message)
-                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_QUESTION_API))
-                                            retryApiList.add(ApiType.PAT_BPC_QUESTION_API)
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
+                                            ApiType.PAT_BPC_QUESTION_API
+                                        )
                                         RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                                         onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
                                     }
 
                                 } catch (ex: Exception) {
                                     if (ex !is JsonSyntaxException) {
-                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_QUESTION_API))
-                                            retryApiList.add(ApiType.PAT_BPC_QUESTION_API)
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
+                                            ApiType.PAT_BPC_QUESTION_API
+                                        )
                                         RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                                     }
                                     onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
@@ -483,30 +473,81 @@ class VillageSelectionViewModel @Inject constructor(
                                             arrayListOf()
                                         it.forEach { item ->
                                             if (item.userType.equals(USER_BPC, true)) {
-                                            bpcSelectedDidiDao.updatePATProgressStatus(
-                                                patSurveyStatus = item.patSurveyStatus ?: 0,
-                                                section1Status = item.section1Status ?: 0,
-                                                section2Status = item.section2Status ?: 0,
-                                                didiId = item.beneficiaryId ?: 0
-                                            )
-                                            if (item?.answers?.isNotEmpty() == true) {
-                                                item?.answers?.forEach { answersItem ->
-                                                    if (answersItem?.questionType?.equals(
-                                                            QuestionType.Numeric_Field.name
-                                                        ) == true
-                                                    ) {
-
-                                                        if ((prefRepo.getPref(
-                                                                PREF_KEY_TYPE_NAME,
-                                                                ""
-                                                            ) ?: "").equals(
-                                                                BPC_USER_TYPE, true
-                                                            )
+                                                bpcSelectedDidiDao.updatePATProgressStatus(
+                                                    patSurveyStatus = item.patSurveyStatus ?: 0,
+                                                    section1Status = item.section1Status ?: 0,
+                                                    section2Status = item.section2Status ?: 0,
+                                                    didiId = item.beneficiaryId ?: 0
+                                                )
+                                                if (item?.answers?.isNotEmpty() == true) {
+                                                    item?.answers?.forEach { answersItem ->
+                                                        if (answersItem?.questionType?.equals(
+                                                                QuestionType.Numeric_Field.name
+                                                            ) == true
                                                         ) {
+
+                                                            if ((prefRepo.getPref(
+                                                                    PREF_KEY_TYPE_NAME, ""
+                                                                ) ?: "").equals(
+                                                                    BPC_USER_TYPE, true
+                                                                )
+                                                            ) {
+                                                                answerList.add(
+                                                                    SectionAnswerEntity(
+                                                                        id = 0,
+                                                                        optionId = 0,
+                                                                        didiId = item.beneficiaryId
+                                                                            ?: 0,
+                                                                        questionId = answersItem?.questionId
+                                                                            ?: 0,
+                                                                        villageId = item.villageId
+                                                                            ?: 0,
+                                                                        actionType = answersItem?.section
+                                                                            ?: TYPE_EXCLUSION,
+                                                                        weight = 0,
+                                                                        summary = answersItem?.summary,
+                                                                        optionValue = answersItem?.options?.get(
+                                                                            0
+                                                                        )?.optionValue,
+                                                                        totalAssetAmount = answersItem?.totalWeight,
+                                                                        needsToPost = false,
+                                                                        answerValue = answersItem?.options?.get(
+                                                                            0
+                                                                        )?.summary ?: BLANK_STRING,
+                                                                        type = answersItem?.questionType
+                                                                            ?: QuestionType.RadioButton.name
+                                                                    )
+                                                                )
+
+                                                                if (answersItem?.options?.isNotEmpty() == true) {
+
+                                                                    answersItem?.options?.forEach { optionItem ->
+                                                                        numAnswerList.add(
+                                                                            NumericAnswerEntity(
+                                                                                id = 0,
+                                                                                optionId = optionItem?.optionId
+                                                                                    ?: 0,
+                                                                                questionId = answersItem?.questionId
+                                                                                    ?: 0,
+                                                                                weight = optionItem?.weight
+                                                                                    ?: 0,
+                                                                                didiId = item.beneficiaryId
+                                                                                    ?: 0,
+                                                                                count = optionItem?.count
+                                                                                    ?: 0
+                                                                            )
+                                                                        )
+                                                                    }
+
+                                                                }
+                                                            }
+                                                        } else {
                                                             answerList.add(
                                                                 SectionAnswerEntity(
                                                                     id = 0,
-                                                                    optionId = 0,
+                                                                    optionId = answersItem?.options?.get(
+                                                                        0
+                                                                    )?.optionId ?: 0,
                                                                     didiId = item.beneficiaryId
                                                                         ?: 0,
                                                                     questionId = answersItem?.questionId
@@ -523,69 +564,16 @@ class VillageSelectionViewModel @Inject constructor(
                                                                     needsToPost = false,
                                                                     answerValue = answersItem?.options?.get(
                                                                         0
-                                                                    )?.summary
-                                                                        ?: BLANK_STRING,
+                                                                    )?.display ?: BLANK_STRING,
                                                                     type = answersItem?.questionType
                                                                         ?: QuestionType.RadioButton.name
                                                                 )
                                                             )
-
-                                                            if (answersItem?.options?.isNotEmpty() == true) {
-
-                                                                answersItem?.options?.forEach { optionItem ->
-                                                                    numAnswerList.add(
-                                                                        NumericAnswerEntity(
-                                                                            id = 0,
-                                                                            optionId = optionItem?.optionId
-                                                                                ?: 0,
-                                                                            questionId = answersItem?.questionId
-                                                                                ?: 0,
-                                                                            weight = optionItem?.weight
-                                                                                ?: 0,
-                                                                            didiId = item.beneficiaryId
-                                                                                ?: 0,
-                                                                            count = optionItem?.count
-                                                                                ?: 0
-                                                                        )
-                                                                    )
-                                                                }
-
-                                                            }
                                                         }
-                                                    } else {
-                                                        answerList.add(
-                                                            SectionAnswerEntity(
-                                                                id = 0,
-                                                                optionId = answersItem?.options?.get(
-                                                                    0
-                                                                )?.optionId
-                                                                    ?: 0,
-                                                                didiId = item.beneficiaryId ?: 0,
-                                                                questionId = answersItem?.questionId
-                                                                    ?: 0,
-                                                                villageId = item.villageId ?: 0,
-                                                                actionType = answersItem?.section
-                                                                    ?: TYPE_EXCLUSION,
-                                                                weight = 0,
-                                                                summary = answersItem?.summary,
-                                                                optionValue = answersItem?.options?.get(
-                                                                    0
-                                                                )?.optionValue,
-                                                                totalAssetAmount = answersItem?.totalWeight,
-                                                                needsToPost = false,
-                                                                answerValue = answersItem?.options?.get(
-                                                                    0
-                                                                )?.display
-                                                                    ?: BLANK_STRING,
-                                                                type = answersItem?.questionType
-                                                                    ?: QuestionType.RadioButton.name
-                                                            )
-                                                        )
-                                                    }
 
+                                                    }
                                                 }
                                             }
-                                        }
                                         }
                                         if (answerList.isNotEmpty()) {
                                             answerDao.insertAll(answerList)
@@ -596,21 +584,25 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(answerApiResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY))
-                                        retryApiList.add(ApiType.PAT_BPC_SURVEY_SUMMARY)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) retryApiList.add(
+                                        ApiType.PAT_BPC_SURVEY_SUMMARY
+                                    )
                                     it.forEach { villageId ->
-                                        if (!RetryHelper.stepListApiVillageId.contains(villageId))
-                                            RetryHelper.stepListApiVillageId.add(villageId)
+                                        if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
+                                            villageId
+                                        )
                                     }
                                     onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY))
-                                        retryApiList.add(ApiType.PAT_BPC_SURVEY_SUMMARY)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) retryApiList.add(
+                                        ApiType.PAT_BPC_SURVEY_SUMMARY
+                                    )
                                     it.forEach { villageId ->
-                                        if (!RetryHelper.stepListApiVillageId.contains(villageId))
-                                            RetryHelper.stepListApiVillageId.add(villageId)
+                                        if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
+                                            villageId
+                                        )
                                     }
                                 }
                                 onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
@@ -662,8 +654,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                     onCatchError(ex, ApiType.CAST_LIST_API)
                 } finally {
-                    if (retryApiList.contains(ApiType.CAST_LIST_API))
-                        RetryHelper.retryApi(ApiType.CAST_LIST_API)
+                    if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(ApiType.CAST_LIST_API)
                 }
             }
         }
@@ -682,9 +673,7 @@ class VillageSelectionViewModel @Inject constructor(
                         url = it.url,
                         thumbUrl = it.thumbUrl,
                         isDownload = if (getVideoPath(
-                                context,
-                                it.id,
-                                fileType = FileType.VIDEO
+                                context, it.id, fileType = FileType.VIDEO
                             ).exists()
                         ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     )
@@ -693,9 +682,7 @@ class VillageSelectionViewModel @Inject constructor(
             } else {
                 trainingVideos.forEach {
                     val videoIsDownloaded = if (getVideoPath(
-                            context,
-                            it.id,
-                            fileType = FileType.VIDEO
+                            context, it.id, fileType = FileType.VIDEO
                         ).exists()
                     ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
                     if (it.isDownload != videoIsDownloaded) {
@@ -759,23 +746,24 @@ class VillageSelectionViewModel @Inject constructor(
                                             stepsListDao.insertAll(it.stepList)
                                         }
                                         prefRepo.savePref(
-                                            PREF_PROGRAM_NAME,
-                                            it.programName
+                                            PREF_PROGRAM_NAME, it.programName
                                         )
                                         showLoader.value = false
 
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(response.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
-                                        retryApiList.add(ApiType.STEP_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) retryApiList.add(
+                                        ApiType.STEP_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.STEP_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API))
-                                        retryApiList.add(ApiType.STEP_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.STEP_LIST_API)) retryApiList.add(
+                                        ApiType.STEP_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.STEP_LIST_API)
@@ -794,15 +782,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(cohortResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
-                                        retryApiList.add(ApiType.TOLA_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
+                                        ApiType.TOLA_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.TOLA_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API))
-                                        retryApiList.add(ApiType.TOLA_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
+                                        ApiType.TOLA_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
@@ -828,61 +818,56 @@ class VillageSelectionViewModel @Inject constructor(
                                                         casteName = it.casteName
                                                     }
 //                                                    if (singleTola != null) {
-                                                        val wealthRanking =
-                                                            if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                    .contains(StepType.WEALTH_RANKING.name))
-                                                                didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                    .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                            else
-                                                                WealthRank.NOT_RANKED.rank
-                                                        val patSurveyAcceptedRejected =
-                                                            if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                    .contains(StepType.PAT_SURVEY.name))
-                                                                didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                    .indexOf(StepType.PAT_SURVEY.name)].status
-                                                            else
-                                                                DIDI_REJECTED
-                                                        val voEndorsementStatus =
-                                                            if (didi.beneficiaryProcessStatus.map { it.name }
-                                                                    .contains(StepType.VO_ENDROSEMENT.name))
-                                                                DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                                    .indexOf(StepType.VO_ENDROSEMENT.name)].status)
-                                                            else
-                                                                DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                    val wealthRanking =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                        else WealthRank.NOT_RANKED.rank
+                                                    val patSurveyAcceptedRejected =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.PAT_SURVEY.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status
+                                                        else DIDI_REJECTED
+                                                    val voEndorsementStatus =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.VO_ENDROSEMENT.name)) DidiEndorsementStatus.toInt(
+                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
+                                                        else DidiEndorsementStatus.NOT_STARTED.ordinal
 
-                                                        didiDao.insertDidi(
-                                                            DidiEntity(
-                                                                id = didi.id,
-                                                                serverId = didi.id,
-                                                                name = didi.name,
-                                                                address = didi.address,
-                                                                guardianName = didi.guardianName,
-                                                                relationship = didi.relationship,
-                                                                castId = didi.castId,
-                                                                castName = casteName,
-                                                                cohortId = didi.cohortId,
-                                                                villageId = village.id,
-                                                                cohortName = tolaName,
-                                                                needsToPost = false,
-                                                                wealth_ranking = wealthRanking,
-                                                                forVoEndorsement = if (patSurveyAcceptedRejected.equals(
-                                                                        COMPLETED_STRING, true
-                                                                    )
-                                                                ) 1 else 0,
-                                                                voEndorsementStatus = voEndorsementStatus,
-                                                                needsToPostRanking = false,
-                                                                createdDate = didi.createdDate,
-                                                                modifiedDate = didi.modifiedDate,
-                                                                beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                                shgFlag = SHGFlag.NOT_MARKED.value,
-                                                                transactionId = "",
-                                                                localCreatedDate = didi.localCreatedDate,
-                                                                localModifiedDate = didi.localModifiedDate,
-                                                                score = didi.score,
-                                                                comment = didi.comment,
-
+                                                    didiDao.insertDidi(
+                                                        DidiEntity(
+                                                            id = didi.id,
+                                                            serverId = didi.id,
+                                                            name = didi.name,
+                                                            address = didi.address,
+                                                            guardianName = didi.guardianName,
+                                                            relationship = didi.relationship,
+                                                            castId = didi.castId,
+                                                            castName = casteName,
+                                                            cohortId = didi.cohortId,
+                                                            villageId = village.id,
+                                                            cohortName = tolaName,
+                                                            needsToPost = false,
+                                                            wealth_ranking = wealthRanking,
+                                                            forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                                    COMPLETED_STRING, true
                                                                 )
-                                                        )
+                                                            ) 1 else 0,
+                                                            voEndorsementStatus = voEndorsementStatus,
+                                                            needsToPostRanking = false,
+                                                            createdDate = didi.createdDate,
+                                                            modifiedDate = didi.modifiedDate,
+                                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                            shgFlag = SHGFlag.NOT_MARKED.value,
+                                                            transactionId = "",
+                                                            localCreatedDate = didi.localCreatedDate,
+                                                            localModifiedDate = didi.localModifiedDate,
+                                                            score = didi.score,
+                                                            comment = didi.comment,
+
+                                                            )
+                                                    )
 //                                                    }
                                                 }
                                             } catch (ex: Exception) {
@@ -976,8 +961,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             id = 0,
                                                                             optionId = answersItem?.options?.get(
                                                                                 0
-                                                                            )?.optionId
-                                                                                ?: 0,
+                                                                            )?.optionId ?: 0,
                                                                             didiId = item.beneficiaryId
                                                                                 ?: 0,
                                                                             questionId = answersItem?.questionId
@@ -1033,25 +1017,25 @@ class VillageSelectionViewModel @Inject constructor(
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse.message)
-                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API))
-                                        retryApiList.add(ApiType.DIDI_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API)) retryApiList.add(
+                                        ApiType.DIDI_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.DIDI_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API))
-                                        retryApiList.add(ApiType.DIDI_LIST_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_LIST_API)) retryApiList.add(
+                                        ApiType.DIDI_LIST_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.DIDI_LIST_API)
                             }
                             try {
                                 val didiRankingResponse = apiService.getDidisWithRankingFromNetwork(
-                                    villageId = village.id, "Category",
-                                    StepResultTypeRequest(
-                                        StepType.WEALTH_RANKING.name,
-                                        ResultType.ALL.name
+                                    villageId = village.id, "Category", StepResultTypeRequest(
+                                        StepType.WEALTH_RANKING.name, ResultType.ALL.name
                                     )
                                 )
                                 if (didiRankingResponse.status.equals(SUCCESS, true)) {
@@ -1060,8 +1044,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             didiRank.beneficiaryList?.richDidi?.forEach { richDidi ->
                                                 richDidi?.id?.let { didiId ->
                                                     didiDao.updateDidiRank(
-                                                        didiId,
-                                                        WealthRank.RICH.rank
+                                                        didiId, WealthRank.RICH.rank
                                                     )
                                                 }
                                             }
@@ -1070,8 +1053,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             didiRank.beneficiaryList?.mediumDidi?.forEach { mediumDidi ->
                                                 mediumDidi?.id?.let { didiId ->
                                                     didiDao.updateDidiRank(
-                                                        didiId,
-                                                        WealthRank.MEDIUM.rank
+                                                        didiId, WealthRank.MEDIUM.rank
                                                     )
                                                 }
                                             }
@@ -1080,8 +1062,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             didiRank.beneficiaryList?.poorDidi?.forEach { poorDidi ->
                                                 poorDidi?.id?.let { didiId ->
                                                     didiDao.updateDidiRank(
-                                                        didiId,
-                                                        WealthRank.POOR.rank
+                                                        didiId, WealthRank.POOR.rank
                                                     )
                                                 }
                                             }
@@ -1091,15 +1072,17 @@ class VillageSelectionViewModel @Inject constructor(
                                     val ex = ApiResponseFailException(
                                         didiRankingResponse.message ?: "Didi Ranking Api Failed"
                                     )
-                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API))
-                                        retryApiList.add(ApiType.DIDI_RANKING_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API)) retryApiList.add(
+                                        ApiType.DIDI_RANKING_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                     onCatchError(ex, ApiType.DIDI_RANKING_API)
                                 }
                             } catch (ex: Exception) {
                                 if (ex !is JsonSyntaxException) {
-                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API))
-                                        retryApiList.add(ApiType.DIDI_RANKING_API)
+                                    if (!RetryHelper.retryApiList.contains(ApiType.DIDI_RANKING_API)) retryApiList.add(
+                                        ApiType.DIDI_RANKING_API
+                                    )
                                     RetryHelper.stepListApiVillageId.add(village.id)
                                 }
                                 onCatchError(ex, ApiType.DIDI_RANKING_API)
@@ -1114,9 +1097,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     // Fetch QuestionList from Server
                                     val quesListResponse = apiService.fetchQuestionListFromServer(
                                         GetQuestionListRequest(
-                                            languageEntity.id,
-                                            stateId.value,
-                                            PAT_SURVEY_CONSTANT
+                                            languageEntity.id, stateId.value, PAT_SURVEY_CONSTANT
                                         )
                                     )
 //                                    to explicitly throw exception
@@ -1145,15 +1126,17 @@ class VillageSelectionViewModel @Inject constructor(
                                         }
                                     } else {
                                         val ex = ApiResponseFailException(quesListResponse.message)
-                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API))
-                                            retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
+                                            ApiType.PAT_CRP_QUESTION_API
+                                        )
                                         RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                                         onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
                                     }
                                 } catch (ex: Exception) {
                                     if (ex !is JsonSyntaxException) {
-                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API))
-                                            retryApiList.add(ApiType.PAT_CRP_QUESTION_API)
+                                        if (!RetryHelper.retryApiList.contains(ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
+                                            ApiType.PAT_CRP_QUESTION_API
+                                        )
                                         RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                                     }
                                     onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
@@ -1196,14 +1179,13 @@ class VillageSelectionViewModel @Inject constructor(
                             prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName)
                             villageListDao.insertAll(it.villageList)
                             _villagList.emit(villageListDao.getAllVillages())
-                            if (it.typeName.equals(BPC_USER_TYPE, true)){
+                            if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                 prefRepo.setIsUserBPC(true)
                             }
                             apiSuccess()
                         }
 
-                        if (response.data == null)
-                            showLoader.value = false
+                        if (response.data == null) showLoader.value = false
                     } else if (response.status.equals(FAIL, true)) {
                         withContext(Dispatchers.Main) {
                             showLoader.value = false

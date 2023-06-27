@@ -73,7 +73,8 @@ class TransectWalkViewModel @Inject constructor(
 
     fun addTola(tola: Tola, dbListener: LocalDbListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (!isTolaExist(tola.name)) {
+            val isTolaExist = tolaDao.getTolaExist(tola.name, prefRepo.getSelectedVillage().id) > 0
+            if (!isTolaExist) {
                 val tolaItem = TolaEntity(
                     id = 0,
                     name = tola.name,

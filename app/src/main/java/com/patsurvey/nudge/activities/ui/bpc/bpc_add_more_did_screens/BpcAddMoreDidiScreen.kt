@@ -133,8 +133,8 @@ fun BpcAddMoreDidiScreen(
         mutableStateListOf<Int>()
     }
 
-    val isSelectedId = remember {
-        mutableStateOf<Int>(-1)
+    val isSelectedCount = remember {
+        mutableStateOf<Int>(0)
     }
 
     val configuration = LocalConfiguration.current
@@ -220,14 +220,6 @@ fun BpcAddMoreDidiScreen(
                         )
                     }
 
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(14.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-
                     if (newFilteredDidiList.isEmpty()) {
                         item {
                             Text(
@@ -248,7 +240,7 @@ fun BpcAddMoreDidiScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                val count = isCheckedIds.size
+                                val count = isSelectedCount.value
                                 Text(
                                     text = stringResource(
                                         id = if (count > 1) R.string.didi_selected_text_plural else R.string.didi_selected_text_singular,
@@ -265,14 +257,6 @@ fun BpcAddMoreDidiScreen(
                                         .weight(0.75f)
                                 )
                             }
-                        }
-
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .height(14.dp)
-                                    .fillMaxWidth()
-                            )
                         }
 
                         if (filterSelected) {
@@ -298,12 +282,14 @@ fun BpcAddMoreDidiScreen(
                                         if (forReplace) {
                                             isCheckedIds.clear()
                                             isCheckedIds.add(didi.id)
-
+                                            isSelectedCount.value = 1
                                         } else {
                                             if (isCheckedIds.contains(didi.id)) {
                                                 isCheckedIds.remove(didi.id)
+                                                isSelectedCount.value = --isSelectedCount.value
                                             } else {
                                                 isCheckedIds.add(didi.id)
+                                                isSelectedCount.value = ++isSelectedCount.value
                                             }
                                         }
                                     }
@@ -344,8 +330,10 @@ fun BpcAddMoreDidiScreen(
                                         } else {
                                             if (isCheckedIds.contains(didi.id)) {
                                                 isCheckedIds.remove(didi.id)
+                                                isSelectedCount.value = --isSelectedCount.value
                                             } else {
                                                 isCheckedIds.add(didi.id)
+                                                isSelectedCount.value = ++isSelectedCount.value
                                             }
                                         }
 
