@@ -86,10 +86,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formAAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formAAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formAAvailabe.value = false
             }
@@ -99,10 +97,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formBAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formBAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formBAvailabe.value = false
             }
@@ -113,10 +109,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formCAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formCAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formCAvailabe.value = false
             }
