@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Constraints
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -47,6 +48,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import java.io.File
 import java.lang.reflect.Type
+
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
 private object Invisible : LayoutModifier {
@@ -322,5 +324,9 @@ fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Bo
         }
     }
     return score
+}
+
+fun getFileNameFromURL(url: String): String{
+    return url.substring(url.lastIndexOf('/') + 1, url.length)
 }
 

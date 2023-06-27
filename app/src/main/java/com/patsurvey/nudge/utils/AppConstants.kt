@@ -195,6 +195,7 @@ const val ARG_USER_TYPE = "user_type"
 
 const val MATCH_PERCENTAGE = 70
 const val QUESTION_FLAG_RATIO = "ratio"
+const val NUDGE_IMAGE_FOLDER = "nudge_images"
 
 const val SENDER_NUMBER = "TM-DYNRLM"
 
