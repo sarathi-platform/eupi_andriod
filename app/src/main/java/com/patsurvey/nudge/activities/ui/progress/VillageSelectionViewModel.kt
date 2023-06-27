@@ -279,7 +279,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 singleCaste?.let {
                                                     casteName = it.casteName
                                                 }
-                                                if (singleTola != null) {
+//                                                if (singleTola != null) {
                                                     val wealthRanking =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.WEALTH_RANKING.name))
@@ -301,7 +301,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
-                                                }
+//                                                }
                                                 //TODO Create new table
                                                 bpcSelectedDidiDao.insertDidi(
                                                     BpcSelectedDidiEntity(
@@ -347,7 +347,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 singleCaste?.let {
                                                     casteName = it.casteName
                                                 }
-                                                if (singleTola != null) {
+//                                                if (singleTola != null) {
                                                     val wealthRanking =
                                                         if (didi.beneficiaryProcessStatus.map { it.name }
                                                                 .contains(StepType.WEALTH_RANKING.name))
@@ -369,7 +369,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 .indexOf(StepType.PAT_SURVEY.name)].status)
                                                         else
                                                             DidiEndorsementStatus.NOT_STARTED.ordinal
-                                                }
+//                                                }
                                                 bpcNonSelectedDidiDao.insertNonSelectedDidi(
                                                     BpcNonSelectedDidiEntity(
                                                         id = didi.id,
@@ -827,7 +827,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     singleCaste?.let {
                                                         casteName = it.casteName
                                                     }
-                                                    if (singleTola != null) {
+//                                                    if (singleTola != null) {
                                                         val wealthRanking =
                                                             if (didi.beneficiaryProcessStatus.map { it.name }
                                                                     .contains(StepType.WEALTH_RANKING.name))
@@ -883,7 +883,7 @@ class VillageSelectionViewModel @Inject constructor(
 
                                                                 )
                                                         )
-                                                    }
+//                                                    }
                                                 }
                                             } catch (ex: Exception) {
                                                 onError(

@@ -301,7 +301,7 @@ fun SectionTwoSummeryItem(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             var summaryText = "${index+1}. $quesSummery : $answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
                 if(quesSummery.contains("=")){

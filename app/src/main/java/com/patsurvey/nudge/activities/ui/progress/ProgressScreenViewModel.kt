@@ -23,7 +23,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -105,8 +104,8 @@ class ProgressScreenViewModel @Inject constructor(
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val mDidiList = didiDao.getAllDidisForVillage(villageId)
             val mTolaList = tolaDao.getAllTolasForVillage(villageId)
-            _tolaList.emit(mTolaList)
-            _didiList.emit(mDidiList)
+            _tolaList.value = mTolaList
+            _didiList.value = mDidiList
             val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
             if(dbInProgressStep!=null){
                 if(stepList.size>dbInProgressStep.orderNumber) {

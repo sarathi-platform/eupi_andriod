@@ -403,23 +403,25 @@ fun StepsBox(
                             1 -> viewModel?.tolaCount?.value?.let {
                                 stringResource(id = R.string.transect_walk_sub_text, it)
                             }
-                            2 -> viewModel?.didiCount?.value?.let {
-                                stringResource(id = R.string.social_mapping_sub_text, it)
+                            2 -> viewModel?.didiList?.collectAsState()?.value?.let {
+                                stringResource(id = R.string.social_mapping_sub_text, it.size)
                             }
-                            3 -> viewModel?.poorDidiCount?.value?.let {
-                                stringResource(id = R.string.wealth_ranking_sub_text, it)
+                            3 -> viewModel?.didiList?.collectAsState()?.value?.let {
+                                stringResource(id = R.string.wealth_ranking_sub_text, it.filter { didi -> didi.wealth_ranking == WealthRank.POOR.rank }.size)
                             }
-                            4 -> viewModel?.ultrPoorDidiCount?.value?.let {
-                                if (it > 1)
-                                    stringResource(id = R.string.pat_sub_text_plural, it)
+                            4 -> viewModel?.didiList?.collectAsState()?.value?.let {
+                                val count = it.filter { it.forVoEndorsement==1}.size
+                                if (count > 1)
+                                    stringResource(id = R.string.pat_sub_text_plural, count)
                                 else
-                                    stringResource(id = R.string.pat_sub_text_singular, it)
+                                    stringResource(id = R.string.pat_sub_text_singular, count)
                             }
-                            5 -> viewModel?.endorsedDidiCount?.value?.let {
-                                if (it > 1)
-                                    stringResource(id = R.string.vo_endorsement_sub_text_plural, it)
+                            5 -> viewModel?.didiList?.collectAsState()?.value?.let {
+                                val count = it.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
+                                if (count > 1)
+                                    stringResource(id = R.string.vo_endorsement_sub_text_plural, count)
                                 else
-                                    stringResource(id = R.string.vo_endorsement_sub_text_singular, it)
+                                    stringResource(id = R.string.vo_endorsement_sub_text_singular, count)
                             }
                             else -> ""
                         }

@@ -339,7 +339,7 @@ fun SectionOneSummeryItem(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 painter = painterResource(id = R.drawable.home_icn),
                 contentDescription = null,
@@ -356,7 +356,7 @@ fun SectionOneSummeryItem(
                     fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
-                maxLines = 1,
+                maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .weight(1f)
@@ -370,7 +370,7 @@ fun SectionOneSummeryItem(
                     fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
-                maxLines = 3,
+                maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
             )
