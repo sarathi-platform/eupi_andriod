@@ -7,5 +7,9 @@ import com.patsurvey.nudge.database.LanguageEntity
 data class ConfigResponseModel(
     @SerializedName("languageList")
     @Expose
-    val languageList:List<LanguageEntity>
+    val languageList:List<LanguageEntity>,
+
+    @SerializedName("image_profile_link")
+    @Expose
+    val image_profile_link:List<String>
 )

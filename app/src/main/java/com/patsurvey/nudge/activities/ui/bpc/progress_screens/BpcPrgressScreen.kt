@@ -243,7 +243,7 @@ fun BpcProgressScreen(
                                                     ) {
 
 
-                                                        append(String.format("%02d", summaryData.value.cohortCount))
+                                                        append(String.format("%02d", summaryData.value.cohortCount?:0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(

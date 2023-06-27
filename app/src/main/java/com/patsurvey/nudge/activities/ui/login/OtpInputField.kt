@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -34,6 +35,7 @@ fun OtpInputField(
     onOtpChanged: (String) -> Unit
 ){
     var otpValue by remember { autoReadOtp }
+    Log.d("TAG", "OtpInputField: ${otpValue}")
     val keyboardController = LocalSoftwareKeyboardController.current
 
     val keyboardState = keyboardAsState(KeyboardStatus.Closed)

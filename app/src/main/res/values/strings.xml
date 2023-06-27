@@ -154,7 +154,7 @@
     </plurals>
     <string name="logout">Logout</string>
     <string name="this_section_is_in_progress">This Section is InProgress state</string>
-    <string name="sync_up">Sync Data</string>
+    <string name="sync_up">Sync Data Now</string>
     <string name="last_syncup_text">Last Synced: {LAST_SYNC_TIME}</string>
     <string name="profile">Profile</string>
     <string name="forms">Forms</string>
@@ -181,7 +181,7 @@
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
     <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
     <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
-    <string name="vo_endorsement_completed_message">Vo Endorsement for {VILLAGE_NAME} \nis completed</string>
+    <string name="vo_endorsement_completed_message">VO Endorsement for {VILLAGE_NAME} \nis completed</string>
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
     <string name="pat_completed_box_title">PAT Completed</string>

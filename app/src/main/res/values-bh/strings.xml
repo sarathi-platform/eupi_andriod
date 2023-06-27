@@ -159,7 +159,7 @@
     <string name="enter_tola_name_message">टोला नाम दर्ज करें</string>
     <string name="logout">लॉग आउट</string>
     <string name="this_section_is_in_progress">ई खंड InProgress अवस्था में बा</string>
-    <string name="sync_up">डेटा सिंक करें</string>
+    <string name="sync_up">डअभी डेटा सिंक करें</string>
     <string name="last_syncup_text">आखिरी बेर सिंक कइल गइल: {LAST_SYNC_TIME}</string>
     <string name="your_data_already_synced">Your Data is already Synced</string>
     <string name="data_synced_successfully">Data Synced Successfully</string>

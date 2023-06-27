@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.login
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -74,6 +75,10 @@ fun OtpVerificationScreen(
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    LaunchedEffect(key1 = true){
+        otpValue.value= BLANK_STRING
+        viewModel.otpNumber.value= BLANK_STRING
+    }
 
     Box(
         modifier = Modifier
@@ -126,6 +131,7 @@ fun OtpVerificationScreen(
                 colors = currentColor,
                 typography = typography
             ) {
+                Log.d("TAG", "OtpInputField PReve: ${otpValue.value} :: ${viewModel.otpNumber.value}")
                 OtpInputField(otpLength = 6, otpValue, onOtpChanged = { otp ->
                     otpValue.value = otp
                     viewModel.otpNumber.value = otpValue.value
