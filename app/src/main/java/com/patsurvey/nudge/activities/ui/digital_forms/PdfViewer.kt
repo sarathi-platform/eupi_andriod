@@ -53,17 +53,22 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
 import coil.imageLoader
 import coil.memory.MemoryCache
 import coil.request.ImageRequest
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black1
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.pdfViewerBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.uriFromFile
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.isActive
@@ -71,6 +76,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.engawapg.lib.zoomable.rememberZoomState
+import net.engawapg.lib.zoomable.zoomable
 import java.io.File
 import kotlin.math.sqrt
 
@@ -166,28 +172,16 @@ fun PdfViewer(
             val width = with(LocalDensity.current) { maxWidth.toPx() }.toInt()
             val height = (width * sqrt(2f)).toInt()
             val pageCount by remember(renderer) { derivedStateOf { renderer?.pageCount ?: 0 } }
+            val currentPage = remember {
+                mutableStateOf(1)
+            }
 
             var scale by remember { mutableStateOf(1f) }
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
             LazyColumn(
                 verticalArrangement = verticalArrangement,
-                state = lazyScrollState,
-                modifier = Modifier
-                    .pointerInput(Unit) {
-                    forEachGesture {
-                        awaitPointerEventScope {
-                            awaitFirstDown()
-                            do {
-                                val event = awaitPointerEvent()
-                                scale *= event.calculateZoom()
-                                val offset = event.calculatePan()
-                                offsetX += offset.x
-                                offsetY += offset.y
-                            } while (event.changes.any { it.pressed })
-                        }
-                    }
-                }
+                state = lazyScrollState
             ) {
                 item { Spacer(modifier = Modifier.height(8.dp)) }
                 items(
@@ -249,22 +243,42 @@ fun PdfViewer(
                             contentColor = Color.Transparent,
                             shape = RectangleShape,
                             modifier = Modifier
+                                .zoomable(zoomState)
                         ) {
-                            Image(
-                                modifier = Modifier
-                                    .background(Color.White)
-                                    .aspectRatio(sqrt(2f) / 1f)
-                                    .fillMaxWidth()
-                                    .graphicsLayer(
-                                        scaleX = scale,
-                                        scaleY = scale,
-                                        translationX = offsetX,
-                                        translationY = offsetY
-                                    ),
-                                contentScale = ContentScale.FillBounds,
-                                painter = painter,
-                                contentDescription = "Page ${index + 1} of $pageCount"
-                            )
+                            Box(Modifier.fillMaxSize().aspectRatio(sqrt(2f) / 1f)) {
+                                Image(
+                                    modifier = Modifier
+                                        .background(Color.White)
+                                        .aspectRatio(sqrt(2f) / 1f)
+                                        .pointerInput(Unit) {
+                                            forEachGesture {
+                                                awaitPointerEventScope {
+                                                    awaitFirstDown()
+                                                    do {
+                                                        val event = awaitPointerEvent()
+                                                        scale *= event.calculateZoom()
+                                                        val offset = event.calculatePan()
+                                                        offsetX += offset.x
+                                                        offsetY += offset.y
+                                                    } while (event.changes.any { it.pressed })
+                                                }
+                                            }
+                                        }
+                                        .graphicsLayer(
+                                            scaleX = scale,
+                                            scaleY = scale,
+                                            translationX = offsetX,
+                                            translationY = offsetY
+                                        )
+                                        .fillMaxWidth(),
+                                    contentScale = ContentScale.FillBounds,
+                                    painter = painter,
+                                    contentDescription = "Page ${index + 1} of $pageCount"
+                                )
+                                Text(text = "Page ${index + 1} of $pageCount", modifier = Modifier.align(
+                                    Alignment.BottomCenter).padding(bottom = 4.dp).fillMaxWidth().background(
+                                    white), color = black1, fontSize = 8.sp, fontFamily = NotoSans, fontWeight = FontWeight.Normal, textAlign = TextAlign.Center)
+                            }
                         }
 //                    ZoomableImage(request = request, modifier = Modifier)
                     }

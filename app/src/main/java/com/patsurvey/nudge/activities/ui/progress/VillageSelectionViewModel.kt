@@ -108,7 +108,7 @@ class VillageSelectionViewModel @Inject constructor(
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
     val villageList: StateFlow<List<VillageEntity>> get() = _villagList
 
-    val villageSelected = mutableStateOf(-1)
+    val villageSelected = mutableStateOf(0)
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
 
@@ -1234,6 +1234,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {
         _villagList.value = villageList
+        RetryHelper.retryApiList.remove(ApiType.VILLAGE_LIST_API)
     }
 
     override fun onServerError(error: ErrorModel?) {

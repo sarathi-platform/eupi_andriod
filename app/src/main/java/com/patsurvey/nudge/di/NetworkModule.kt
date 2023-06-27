@@ -128,7 +128,7 @@ object NetworkModule {
       @Throws(IOException::class)
       override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
-        val maxAge = 24 * 60 * 60//24hours
+        val maxAge = 60 //60 Sec
         val cacheHeaderValue =
           if (DeviceInfoUtils.hasNetwork(context))
             "public, max-age=$maxAge"

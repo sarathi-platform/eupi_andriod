@@ -1,6 +1,13 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import android.content.Context
+import android.os.CountDownTimer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Surface
@@ -9,22 +16,33 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.login.OtpInputFieldForDialog
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.OTP_LENGTH
+import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
 import com.patsurvey.nudge.utils.SEC_30_STRING
+import java.text.SimpleDateFormat
+import java.util.Date
 
 @Composable
 fun ShowOptDialogForVillageScreen(
@@ -34,13 +52,16 @@ fun ShowOptDialogForVillageScreen(
     snackState: CustomSnackBarViewState,
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit,
-    /*isResendOTPEnable: MutableState<Boolean>,
-    formattedTime: MutableState<String>,
-    isResendOTPVisible: MutableState<Boolean>*/
 ) {
-    var otpValue by remember {
-        mutableStateOf("")
+
+    val otpValue = remember {
+        RetryHelper.autoReadOtp
     }
+
+    /*var otpValue: MutableState<String> = autoReadOtpValue by remember {
+        mutableStateOf("")
+    }*/
+
     val isResendOTPEnable = remember { mutableStateOf(false) }
     val formattedTime = remember {
         mutableStateOf(SEC_30_STRING)
@@ -82,12 +103,12 @@ fun ShowOptDialogForVillageScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
 
-                    OtpInputFieldForDialog(otpLength = 6, onOtpChanged = { otp ->
-                        otpValue = otp
-                        viewModel.baseOtpNumber.value = otpValue
+                    OtpInputFieldForDialog(otpLength = 6, otpValue, onOtpChanged = { otp ->
+                        otpValue.value = otp
+                        viewModel.baseOtpNumber.value = otpValue.value
                     })
 
-                    /*    AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                        AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
                             Row(
                                 horizontalArrangement = Arrangement.End,
                                 modifier = Modifier.fillMaxWidth(),
@@ -154,7 +175,7 @@ fun ShowOptDialogForVillageScreen(
                                     isResendOTPEnable.value = false
                                 }
                             )
-                        }*/
+                        }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
@@ -162,11 +183,11 @@ fun ShowOptDialogForVillageScreen(
                         ButtonPositive(
                             buttonTitle = stringResource(id = R.string.submit),
                             isArrowRequired = false,
-                            isActive = otpValue.length == OTP_LENGTH,
+                            isActive = otpValue.value.length == OTP_LENGTH,
                             modifier = Modifier.weight(1f)
                         ) {
                             positiveButtonClicked()
-                            setShowDialog(false)
+//                            setShowDialog(false)
                         }
                     }
                 }

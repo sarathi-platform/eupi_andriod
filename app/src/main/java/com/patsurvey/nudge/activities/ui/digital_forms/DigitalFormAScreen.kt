@@ -59,7 +59,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
-import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
@@ -338,12 +337,11 @@ fun DigitalFormAScreen(
                         .padding(horizontal = 16.dp)
 //                    .padding(bottom = 70.dp)
                 ) {
-                    ButtonNegative(
+                    OutlineButtonCustom(
                         buttonTitle = stringResource(id = R.string.share_button_text),
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f),
-                        isArrowRequired = false
                     ) {
                         val pdfFile = File(
                             "${

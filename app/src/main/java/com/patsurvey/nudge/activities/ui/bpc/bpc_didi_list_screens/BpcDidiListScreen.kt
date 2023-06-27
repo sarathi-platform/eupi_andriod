@@ -319,7 +319,7 @@ fun BpcDidiListScreen(
                 }
             }
         }
-        if (didis.isNotEmpty()) {
+        if (didis.isNotEmpty() && bpcDidiListViewModel.pendingDidiCount.value == 0) {
             DoubleButtonBox(
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
@@ -332,7 +332,7 @@ fun BpcDidiListScreen(
                         }
                     },
 
-                positiveButtonText = stringResource(id = R.string.next),
+                positiveButtonText = stringResource(id = R.string.review_and_submit_button_text),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     bpcDidiListViewModel.getPatStepStatus(stepId = stepId) {

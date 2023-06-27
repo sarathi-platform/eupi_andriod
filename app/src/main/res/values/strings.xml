@@ -225,7 +225,7 @@
     <string name="view">View Form</string>
     <string name="pat_inprogresee_status_text">In Progress</string>
     <string name="wealth_ranking_status_not_started_text">Wealth Ranking Not started</string>
-    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed</string>
+    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed - Not Poor</string>
     <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
     <string name="pat_completed_status_text">PAT Survey Completed</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed</string>
@@ -247,7 +247,8 @@
     <string name="didi_replace_button">Replace</string>
     <string name="submit_pat_verification">Submit PAT Verification</string>
 
-    <string name="comparison_screen_heading">Summary of {COUNT} PAT verified Didis</string>
+    <string name="comparison_screen_heading_plural">Summary of {COUNT} PAT verified Didis</string>
+    <string name="comparison_screen_heading_singular">Summary of {COUNT} PAT verified Didi</string>
     <string name="crp_score_text">CRP Score:</string>
     <string name="bpc_score_text">BPC Score:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
@@ -259,6 +260,8 @@
     <string name="matched_text">Matched</string>
 
     <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
+    <string name="review_and_submit_button_text">Review and Submit</string>
+    <string name="bpc_add_more_didi_screen_title">List of additional didis available for verification</string>
 
 
 </resources>

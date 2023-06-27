@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
@@ -46,9 +47,14 @@ fun OtpVerificationScreen(
     modifier: Modifier = Modifier,
     mobileNumber: String
 ) {
-    var otpValue by remember {
-        mutableStateOf("")
+    val otpValue = remember {
+        RetryHelper.autoReadOtp
     }
+
+    /*var otpValue: MutableState<String> = autoReadOtpValue by remember {
+        mutableStateOf("")
+    }*/
+
     val snackState = rememberSnackBarState()
     val formattedTime = remember {
         mutableStateOf(SEC_30_STRING)
@@ -120,9 +126,9 @@ fun OtpVerificationScreen(
                 colors = currentColor,
                 typography = typography
             ) {
-                OtpInputField(otpLength = 6, onOtpChanged = { otp ->
-                    otpValue = otp
-                    viewModel.otpNumber.value = otpValue
+                OtpInputField(otpLength = 6, otpValue, onOtpChanged = { otp ->
+                    otpValue.value = otp
+                    viewModel.otpNumber.value = otpValue.value
                 })
             }
             AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
@@ -223,16 +229,16 @@ fun OtpVerificationScreen(
                     .background(Color.Transparent)
                     .fillMaxWidth()
                     .height(dimensionResource(id = R.dimen.height_60dp)),
-                colors = if (otpValue.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
                     buttonBgColor
                 ),
                 shape = RoundedCornerShape(6.dp),
-                enabled = otpValue.length == OTP_LENGTH
+                enabled = otpValue.value.length == OTP_LENGTH
             ) {
 
                 Text(
                     text = stringResource(id = R.string.submit),
-                    color = if (otpValue.length == OTP_LENGTH) white else blueDark,
+                    color = if (otpValue.value.length == OTP_LENGTH) white else blueDark,
                     fontSize = 18.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,

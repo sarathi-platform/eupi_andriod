@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities
 
 import android.app.Activity
-import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,7 +25,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -42,44 +41,37 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
-import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.activities.ui.login.OtpInputFieldForDialog
 import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
-import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
-import com.patsurvey.nudge.customviews.CustomSnackBarViewState
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
-import com.patsurvey.nudge.utils.SEC_30_STRING
 import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable
@@ -109,65 +101,116 @@ fun VillageSelectionScreen(
         viewModel.saveVideosToDb(context)
     }
 
-    Box() {
-        Column(
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, top = 12.dp)
-                .align(Alignment.TopCenter)
-                .fillMaxWidth()
-                .then(modifier)
-        ) {
-            Text(
-                text = stringResource(R.string.seletc_village_screen_text),
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 24.sp, color = textColorDark,
+    Box(Modifier.fillMaxSize()) {
+        if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier
-            )
-            if (viewModel.showLoader.value) {
-                Box(
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp)
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .then(modifier)
+            ) {
+                Text(
+                    text = stringResource(R.string.seletc_village_screen_text),
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp, color = textColorDark,
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp)
-                        .padding(top = 30.dp)
-                ) {
-                    CircularProgressIndicator(
-                        color = blueDark,
-                        modifier = Modifier
-                            .size(28.dp)
-                            .align(Alignment.Center)
-                    )
-                }
+                )
 
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-//                item { Spacer(modifier = Modifier.height(4.dp)) }
-                    itemsIndexed(villages) { index, village ->
-                        VillageAndVoBox(
-                            tolaName = village.name,
-                            voName = village.federationName,
-                            index = index,
-                            viewModel.villageSelected.value,
-                        ) {
-                            viewModel.villageSelected.value = it
-                            viewModel.updateSelectedVillage()
-                            navController.popBackStack()
-                            navController.navigate(
-                                "home_graph/${
-                                    viewModel.prefRepo.getPref(
-                                        PREF_KEY_TYPE_NAME, ""
-                                    ) ?: ""
-                                }"
-                            )
+                BlueButtonWithIconWithFixedWidthWithoutIcon(
+                    modifier = Modifier,
+                    buttonText = "Click to Refresh",
+                    onClick = {
+                        RetryHelper.retryVillageListApi { success, villageList ->
+                            if (success && !villageList?.isNullOrEmpty()!!) {
+                                viewModel.saveVillageListAfterTokenRefresh(villageList)
+                            }
                         }
                     }
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                )
+            }
+        } else {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp, top = 12.dp)
+                    .align(Alignment.TopCenter)
+                    .fillMaxWidth()
+                    .then(modifier)
+            ) {
+                Text(
+                    text = stringResource(R.string.seletc_village_screen_text),
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 24.sp, color = textColorDark,
+                    modifier = Modifier
+                )
+                if (viewModel.showLoader.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(top = 30.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            color = blueDark,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+
+                } else {
+                    LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+//                item { Spacer(modifier = Modifier.height(4.dp)) }
+                        itemsIndexed(villages) { index, village ->
+                            VillageAndVoBox(
+                                tolaName = village.name,
+                                voName = village.federationName,
+                                index = index,
+                                viewModel.villageSelected.value,
+                            ) {
+                                viewModel.villageSelected.value = it
+                                viewModel.updateSelectedVillage()
+                            }
+                        }
+                        item { Spacer(modifier = Modifier.height(16.dp)) }
+                    }
+                }
+                CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
+            }
+        }
+
+        if (villages.isNotEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
+                    .padding(bottom = 16.dp)
+                    .align(Alignment.BottomCenter)
+            ) {
+                ButtonPositive(
+                    buttonTitle = stringResource(id = R.string.continue_text),
+                    isArrowRequired = false,
+                    isActive = villages.isNotEmpty()
+                ) {
+                    viewModel.updateSelectedVillage()
+                    navController.popBackStack()
+                    navController.navigate(
+                        "home_graph/${
+                            viewModel.prefRepo.getPref(
+                                PREF_KEY_TYPE_NAME, ""
+                            ) ?: ""
+                        }"
+                    )
                 }
             }
-            CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
         }
+
     }
 }
 

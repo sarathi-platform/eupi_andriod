@@ -48,6 +48,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -106,7 +107,13 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ButtonNegative
+import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.showToast
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -143,12 +150,12 @@ fun SettingScreen(
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
-    /*LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
         viewModel.isFormAAvailableForVillage(villageId)
         viewModel.isFormBAvailableForVillage(villageId)
         viewModel.isFormCAvailableForVillage(villageId)
-    }*/
+    }
 
     val formList = mutableListOf<String>()
     formList.add("Digital Form A")
@@ -260,6 +267,7 @@ fun SettingScreen(
                             expanded = item.title == stringResource(id = R.string.forms) && expanded.value,
                             showArrow = item.title == stringResource(id = R.string.forms),
                             formList = formList,
+                            viewModel = viewModel,
                             navController = navController
                         ) {
                             when (index) {
@@ -1077,6 +1085,7 @@ fun SettingCard(
     expanded: Boolean,
     showArrow: Boolean = false,
     formList: List<String>,
+    viewModel: SettingViewModel,
     navController: NavController,
     onClick: () -> Unit
 ) {
@@ -1145,6 +1154,7 @@ fun SettingCard(
             modifier = Modifier,
             expanded = animateInt == 1,
             formList = formList,
+            viewModel = viewModel,
             navController = navController
         )
         Spacer(
@@ -1162,8 +1172,12 @@ fun ExpandedSettingsList(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     formList: List<String>,
+    viewModel: SettingViewModel,
     navController: NavController
 ) {
+
+    val context = LocalContext.current
+
     val enterTransition = remember {
         expandVertically(
             expandFrom = Alignment.Top,
@@ -1225,15 +1239,24 @@ fun ExpandedSettingsList(
                                 .clickable {
                                     when (index) {
                                         0 -> {
-                                            navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                                            if (viewModel.formAAvailabe.value)
+                                                navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                                            else
+                                                showToast(context, "No Data! Form A not generated")
                                         }
 
                                         1 -> {
-                                            navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                                            if (viewModel.formBAvailabe.value)
+                                                navController.navigate(SettingScreens.FORM_B_SCREEN.route)
+                                            else
+                                                showToast(context, "No Data! Form B not generated")
                                         }
 
                                         2 -> {
-                                            navController.navigate(SettingScreens.FORM_C_SCREEN.route)
+                                            if (viewModel.formCAvailabe.value)
+                                                navController.navigate(SettingScreens.FORM_C_SCREEN.route)
+                                            else
+                                                showToast(context, "No Data! Form C not generated")
                                         }
                                     }
 
