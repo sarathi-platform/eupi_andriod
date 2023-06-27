@@ -131,7 +131,6 @@ fun OtpVerificationScreen(
                 colors = currentColor,
                 typography = typography
             ) {
-                Log.d("TAG", "OtpInputField PReve: ${otpValue.value} :: ${viewModel.otpNumber.value}")
                 OtpInputField(otpLength = 6, otpValue, onOtpChanged = { otp ->
                     otpValue.value = otp
                     viewModel.otpNumber.value = otpValue.value
