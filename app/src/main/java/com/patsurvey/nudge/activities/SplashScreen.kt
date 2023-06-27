@@ -38,7 +38,7 @@ fun SplashScreen(
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
     LaunchedEffect(key1 = true) {
-        viewModel.fetchLanguageDetails {
+        viewModel.fetchLanguageDetails(context) {
             if(isLoggedIn){
                 navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route){
                     popUpTo(AuthScreen.START_SCREEN.route){

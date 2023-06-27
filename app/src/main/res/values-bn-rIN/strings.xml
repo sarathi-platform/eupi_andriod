@@ -165,7 +165,7 @@
     <string name="option_no">না</string>
     <string name="logout">প্রস্থান</string>
     <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
-    <string name="sync_up">সিঙ্ক ডেটা</string>
+    <string name="sync_up">এখন ডেটা সিঙ্ক করুন</string>
     <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: {LAST_SYNC_TIME}</string>
     <string name="profile">প্রোফাইল</string>
     <string name="forms">ফর্ম</string>

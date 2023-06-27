@@ -13,11 +13,14 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.utils.DownloadStatus
+import com.patsurvey.nudge.utils.NUDGE_IMAGE_FOLDER
+import com.patsurvey.nudge.utils.getFileNameFromURL
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.File
 
 class AndroidDownloader(
@@ -53,6 +56,17 @@ class AndroidDownloader(
             .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, "${videoItem.id}.mp4")
         return downloadManager.enqueue(request)
 
+    }
+
+    override fun downloadImageFile(imageUrl: String, fileType: FileType): Long {
+        val request = DownloadManager.Request(imageUrl.toUri())
+            .setTitle("Question Images")
+            .setDescription("Downloading")
+            .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")
+            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
+            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_DCIM, "${getFileNameFromURL(imageUrl)}")
+        return downloadManager.enqueue(request)
     }
 
     @SuppressLint("Range")

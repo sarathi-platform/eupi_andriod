@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -332,6 +333,10 @@ fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Bo
         }
     }
     return score
+}
+
+fun getFileNameFromURL(url: String): String{
+    return url.substring(url.lastIndexOf('/') + 1, url.length)
 }
 
 data class DottedShape(

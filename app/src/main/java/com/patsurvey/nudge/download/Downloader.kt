@@ -6,5 +6,6 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 interface Downloader {
 
     fun downloadFile(videoItem: TrainingVideoEntity, fileType: FileType): Long
+    fun downloadImageFile(imageUrl: String, fileType: FileType): Long
 
 }

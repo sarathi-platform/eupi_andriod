@@ -1,11 +1,17 @@
 package com.patsurvey.nudge.activities.ui.splash
 
 
+import android.app.DownloadManager
+import android.content.Context
+import android.os.Environment
+import android.util.Log
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -18,6 +24,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,7 +38,7 @@ class ConfigViewModel @Inject constructor(
         return prefRepo.getAccessToken()?.isNotEmpty() == true
     }
 
-    fun fetchLanguageDetails(callBack: () -> Unit) {
+    fun fetchLanguageDetails(context: Context, callBack: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
 
@@ -57,6 +64,10 @@ class ConfigViewModel @Inject constructor(
                                         }
                                     }
                                 }
+                            }
+                            it.image_profile_link.forEach {
+                                //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
+                                downloadImageItem(context,it)
                             }
                             delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
@@ -110,5 +121,25 @@ class ConfigViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             addDefaultLanguage()
         }
+    }
+    fun downloadImageItem(context: Context, image: String) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                if (!getImagePath(context, image).exists()) {
+                    val localDownloader = (context as MainActivity).downloader
+                    val downloadManager = context.getSystemService(DownloadManager::class.java)
+                    val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
+                    Log.d("TAG", "downloadItem: $downloadId")
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
+
+    }
+
+    fun getImagePath(context: Context, imageName:String): File {
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
     }
 }

@@ -85,10 +85,11 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun fetchVillageList(){
         showLoader.value = true
+        val villageId=prefRepo.getSelectedVillage().id
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
                 val villageList=villageListDao.getAllVillages()
-                val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+                val stepList = stepsListDao.getAllStepsForVillage(villageId = villageId)
 //                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
 //                _tolaList.emit(tolaDBList)
