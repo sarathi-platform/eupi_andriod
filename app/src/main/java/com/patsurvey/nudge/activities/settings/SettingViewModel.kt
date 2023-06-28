@@ -11,6 +11,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
@@ -57,7 +58,8 @@ class SettingViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+    val bpcSummaryDao: BpcSummaryDao,
 
 ):BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
@@ -357,6 +359,7 @@ class SettingViewModel @Inject constructor(
             villegeListDao.deleteAllVilleges()
             bpcSelectedDidiDao.deleteAllDidis()
             bpcNonSelectedDidiDao.deleteAllDidis()
+            bpcSummaryDao.deleteAllSummary()
             clearSharedPreference()
             //cleared cache in case of logout
             context.cacheDir.deleteRecursively()

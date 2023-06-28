@@ -780,7 +780,7 @@ class AddDidiViewModel @Inject constructor(
             val tola = tolaDao.fetchSingleTola(selectedTolaId)
             if (tola != null && tola.name != selectedTola.value.second) {
                 selectedTola.value = Pair(tola.id ?: -1, tola.name ?: "")
-            } else {
+            } else if (tola == null){
                 selectedTola.value = Pair(-1, "")
             }
         }
