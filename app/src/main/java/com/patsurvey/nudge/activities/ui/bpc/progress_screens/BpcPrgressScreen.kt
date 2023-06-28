@@ -76,8 +76,8 @@ fun BpcProgressScreen(
     setKeyboardToPan(mainActivity!!)
 
     LaunchedEffect(key1 = Unit) {
-        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
-        delay(100)
+//        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
+//        delay(100)
         bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
     }
     val context = LocalContext.current
@@ -611,10 +611,13 @@ fun BpcProgressScreen(
                             }
 
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                bpcProgreesScreenViewModel.callWorkFlowAPI()
+                                bpcProgreesScreenViewModel.callWorkFlowApiToGetWorkFlowId()
                             }
-                            if (isStepCompleted == StepStatus.COMPLETED.ordinal)
+
+                            if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
+                            }
+
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",

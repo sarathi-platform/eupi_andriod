@@ -169,14 +169,16 @@ class VillageSelectionViewModel @Inject constructor(
                                             }
                                             stepsListDao.insertAll(it.stepList)
                                         }
-                                        val bpcStepId = it.stepList.sortedBy { stepEntity ->
+                                        val bpcStep = it.stepList.sortedBy { stepEntity ->
                                             stepEntity.orderNumber
-                                        }.last().id
-                                        stepsListDao.markStepAsCompleteOrInProgress(
-                                            bpcStepId,
-                                            StepStatus.INPROGRESS.ordinal,
-                                            village.id
-                                        )
+                                        }.last()
+                                        if (bpcStep.isComplete == StepStatus.NOT_STARTED.ordinal) {
+                                            stepsListDao.markStepAsCompleteOrInProgress(
+                                                bpcStep.id,
+                                                StepStatus.INPROGRESS.ordinal,
+                                                village.id
+                                            )
+                                        }
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
@@ -464,6 +466,7 @@ class VillageSelectionViewModel @Inject constructor(
                     villageIdList?.let {
                         launch {
                             try {
+                                //debug this complete section for BPC section
                                 val answerApiResponse = apiService.fetchPATSurveyToServer(it)
                                 if (answerApiResponse.status.equals(SUCCESS, true)) {
                                     answerApiResponse.data?.let {

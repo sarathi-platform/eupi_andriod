@@ -989,7 +989,7 @@ object RetryHelper {
         onOtpResponse: (success: Boolean, message: String) -> Unit
     ) {
         val otpRequest =
-            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = otpNumber.value)
+            OtpRequest(mobileNumber = prefRepo?.getMobileNumber() ?: "", otp = if (otpNumber.value == "") autoReadOtp.value else otpNumber.value) //Text this code
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 launch {

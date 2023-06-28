@@ -63,10 +63,19 @@ class BpcDidiListViewModel @Inject constructor(
     var stepId: Int = -1
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
+    val isStepComplete = mutableStateOf(false)
 
     init {
         villageId = prefRepo.getSelectedVillage().id
         fetchDidiFromDb()
+        checkIfStepIsComplete()
+    }
+
+    private fun checkIfStepIsComplete() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            isStepComplete.value = stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal
+        }
     }
 
     fun fetchDidiFromDb() {
