@@ -147,7 +147,11 @@ class BpcAddMoreDidiViewModel @Inject constructor(
                 bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
                 ReplaceHelper.didiForReplacement = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
 //                if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
-                bpcSelectedDidiDao.markDidiSelected(ReplaceHelper.didiToBeReplaced.value.second, false)
+                val isDidiInSelectedDao = bpcSelectedDidiDao.isDidiAvailableInSelectedTable(ReplaceHelper.didiToBeReplaced.value.second)
+                if (isDidiInSelectedDao > 0)
+                    bpcSelectedDidiDao.markDidiSelected(ReplaceHelper.didiToBeReplaced.value.second, false)
+                else
+                    bpcNonSelectedDidiDao.markDidiSelected(ReplaceHelper.didiToBeReplaced.value.second, false)
 //                }
 //                removeDidiFromSelectedList(bpcSelectedDidiDao)
             }

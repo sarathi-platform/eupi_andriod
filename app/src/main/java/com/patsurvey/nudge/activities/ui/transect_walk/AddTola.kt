@@ -346,6 +346,10 @@ fun TolaBox(
             val (contentBox, showBox, editBox) = createRefs()
             if (!showEditView) {
                 Column(modifier = Modifier
+                    .clickable {
+                        mTolaName = tolaName
+                        showEditView = true
+                    }
                     .constrainAs(contentBox) {
                         start.linkTo(parent.start)
                         top.linkTo(parent.top)

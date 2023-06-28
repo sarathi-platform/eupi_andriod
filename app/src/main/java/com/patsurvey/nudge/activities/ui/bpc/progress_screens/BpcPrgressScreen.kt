@@ -76,8 +76,8 @@ fun BpcProgressScreen(
     setKeyboardToPan(mainActivity!!)
 
     LaunchedEffect(key1 = Unit) {
-        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
-        delay(100)
+//        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
+//        delay(100)
         bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
     }
     val context = LocalContext.current
@@ -148,10 +148,37 @@ fun BpcProgressScreen(
             Scaffold(
                 modifier = Modifier,
                 topBar = {
-                    ProgressScreenTopBar() {
-                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-                        onNavigateToSetting()
-                    }
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "SARATHI",
+                                color = textColorDark,
+                                fontFamily = NotoSans,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                            )
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
+                                onNavigateToSetting()
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.more_icon),
+                                    contentDescription = "more action button",
+                                    tint = blueDark,
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                )
+                            }
+                        },
+                        backgroundColor = Color.White
+                    )
+//                    ProgressScreenTopBar() {
+//                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
+//                        onNavigateToSetting()
+//                    }
                 }
             ) { it ->
                 if (bpcProgreesScreenViewModel.showLoader.value) {
@@ -171,10 +198,15 @@ fun BpcProgressScreen(
                 } else {
 
                     var isStepCompleted =
-                        bpcProgreesScreenViewModel.isStepComplete(
-                            steps.sortedBy { it.orderNumber }.last().id,
-                            bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id
-                        ).observeAsState().value ?: 0
+                        if (!steps.isNullOrEmpty()) {
+                            bpcProgreesScreenViewModel.isStepComplete(
+                                steps.sortedBy { it.orderNumber }.last().id,
+                                bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id
+                            ).observeAsState().value ?: 0
+                        } else {
+                            1
+                        }
+
 
                     Column(modifier = Modifier) {
 
@@ -511,7 +543,7 @@ fun BpcProgressScreen(
                                                                 .clip(CircleShape)
                                                                 .border(
                                                                     width = 1.dp,
-                                                                    color = greyBorder,
+                                                                    color = greenOnline,
                                                                     shape = CircleShape
                                                                 )
                                                                 .background(
@@ -611,10 +643,13 @@ fun BpcProgressScreen(
                             }
 
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                bpcProgreesScreenViewModel.callWorkFlowAPI()
+                                bpcProgreesScreenViewModel.callWorkFlowApiToGetWorkFlowId()
                             }
-                            if (isStepCompleted == StepStatus.COMPLETED.ordinal)
+
+                            if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
+                            }
+
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",
