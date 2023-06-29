@@ -178,22 +178,6 @@ fun SettingScreen(
     val logout = remember {
         mutableStateOf(false)
     }
-/*    val stepOneSize = remember {
-        mutableStateOf(defaultStepSize)
-    }
-    val stepTwoSize = remember {
-        mutableStateOf(defaultStepSize)
-    }
-    val stepThreeSize = remember {
-        mutableStateOf(defaultStepSize)
-    }
-    val stepFourSize = remember {
-        mutableStateOf(defaultStepSize)
-    }
-    val stepFiveSize = remember {
-        mutableStateOf(defaultStepSize)
-    }*/
-
     val stepOneStatus = remember {
         mutableStateOf(0)
     }
@@ -209,7 +193,12 @@ fun SettingScreen(
     val stepFiveStatus = remember {
         mutableStateOf(0)
     }
-
+    val syncBPCStatus = remember {
+        mutableStateOf(0)
+    }
+    val isBPCDataNeedToBeSynced = remember {
+        mutableStateOf(false)
+    }
     BackHandler() {
         navController.navigate(Graph.HOME) {
             popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
@@ -272,8 +261,13 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-//                                    showSyncDialogStatus.value = true
-                                    viewModel.showSyncDialog.value = true
+                                    if(!viewModel.prefRepo.isUserBPC()) {
+                                        viewModel.showSyncDialog.value = true
+                                    } else {
+                                        syncBPCStatus.value = 0
+                                        isBPCDataNeedToBeSynced.value = false
+                                        viewModel.showBPCSyncDialog.value = true
+                                    }
                                 }
 
                                 1 -> {
@@ -352,30 +346,10 @@ fun SettingScreen(
                     }
                 }
             }
-            /*if (viewModel.showLoader.value) {
-                showSyncInProgressDialog(setShowDialog = {
-                    viewModel.showLoader.value = false
-                }, viewModel)
-                viewModel.syncDataOnServer(context)
-                viewModel.prefRepo.savePref(LAST_SYNC_TIME, System.currentTimeMillis())
-            }*/
             if (viewModel.showSyncDialog.value) {
-                /*stepOneStatus.value = 0
-                stepTwoStatus.value = 0
-                stepThreeStatus.value = 0
-                stepFourStatus.value = 0
-                stepFiveStatus.value = 0*/
                 showSyncDialog(setShowDialog = {
-//                    showSyncDialogStatus.value = it
                     viewModel.showSyncDialog.value = it
-                }, positiveButtonClicked = {
-                    viewModel.showLoader.value = true
-                }, stepOneStatus = stepOneStatus.value,
-                    stepTwoStatus = stepTwoStatus.value,
-                    stepThreeStatus = stepThreeStatus.value,
-                    stepFourStatus = stepFourStatus.value,
-                    stepFiveStatus = stepFiveStatus.value,
-                    settingViewModel = viewModel,
+                }, settingViewModel = viewModel,
                     showSyncDialogStatus = viewModel.showSyncDialog,
                     isDataNeedToBeSynced = isDataNeedToBeSynced
                 )
@@ -399,6 +373,16 @@ fun SettingScreen(
                 else
                     isDataNeedToBeSynced.value = 0
                 viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+            }
+            if (viewModel.showBPCSyncDialog.value) {
+                viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+                showBPCSyncDialog(setShowDialog = {
+                    viewModel.showBPCSyncDialog.value = it
+                }, settingViewModel = viewModel,
+                    showBPCSyncDialog = viewModel.showBPCSyncDialog,
+                    syncBPCStatus = syncBPCStatus,
+                    isBPCDataNeedToBeSynced = isBPCDataNeedToBeSynced
+                )
             }
         }
         CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
@@ -432,12 +416,6 @@ private fun logout(
 @Composable
 fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
-    positiveButtonClicked: () -> Unit,
-    stepOneStatus: Int,
-    stepTwoStatus: Int,
-    stepThreeStatus: Int,
-    stepFourStatus: Int,
-    stepFiveStatus: Int,
     settingViewModel: SettingViewModel,
     showSyncDialogStatus : MutableState<Boolean>,
     isDataNeedToBeSynced : MutableState<Int>
@@ -448,14 +426,8 @@ fun showSyncDialog(
     val isInternetConnected = (context as MainActivity).isOnline.value
 
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
-    val indicatorPadding = 48.dp
-    val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
     val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
-    val animationDuration = 1000
-    val animationDelay = 0
-
-//    settingViewModel.syncPercentage.value = 0f
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
@@ -939,140 +911,251 @@ fun showSyncDialog(
 }
 
 @Composable
-fun showSyncInProgressDialog(
+fun showBPCSyncDialog(
     setShowDialog: (Boolean) -> Unit,
-    settingViewModel: SettingViewModel
+    settingViewModel: SettingViewModel,
+    showBPCSyncDialog : MutableState<Boolean>,
+    syncBPCStatus : MutableState<Int>,
+    isBPCDataNeedToBeSynced : MutableState<Boolean>
 ) {
-    Dialog(onDismissRequest = { setShowDialog(false) }) {
-        Surface(
-            shape = RoundedCornerShape(6.dp),
-            color = Color.White
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Column(
-                    modifier = Modifier.padding(14.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier
-                    ) {
-                        MainTitle(
-                            stringResource(R.string.syncing),
-                            Modifier
-                                .weight(1f)
-                                .fillMaxWidth(), align = TextAlign.Center
-                        )
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    GradientProgressbar(settingViewModel)
-                }
-            }
-        }
-    }
-}
 
-@Composable
-fun GradientProgressbar(
-    settingViewModel: SettingViewModel
-) {
+    val context = LocalContext.current
+
+    val isInternetConnected = (context as MainActivity).isOnline.value
+
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
-    val indicatorPadding = 24.dp
-    val gradientColors = listOf(Color(0xFF2EE08E), Color(0xFF2EE08E))
+    val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
-    val animationDuration = 1000
-    val animationDelay = 0
-
     val syncPercentage: Float = settingViewModel.syncPercentage.value
     Log.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
-        targetValue = syncPercentage,
-        animationSpec = tween(
-            durationMillis = animationDuration,
-            delayMillis = animationDelay
-        )
+        targetValue =  settingViewModel.syncPercentage.value,
+        animationSpec = tween()
     )
-    Box(contentAlignment = Alignment.Center) {
-        Column(
-            modifier = Modifier.padding(1.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
+        dismissOnClickOutside = false
+    )) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
         ) {
-            Column(Modifier.fillMaxWidth()) {
-                Box(contentAlignment = Alignment.Center) {
-                    Canvas(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .align(Alignment.CenterStart)
-                            .height(24.dp)
-                            .padding(start = indicatorPadding, end = indicatorPadding)
-                    ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = white, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            modifier = Modifier
+                        ) {
+                            MainTitle(
+                                if (syncBPCStatus.value == 1) stringResource(R.string.sync_your_data) else if (syncBPCStatus.value == 0 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                Modifier
+                                    .weight(1f)
+                                    .fillMaxWidth(),
+                                align = TextAlign.Center
+                            )
+                        }
+                        val batSystemService =
+                            LocalContext.current.getSystemService(BATTERY_SERVICE) as BatteryManager
+                        val batteryLevel =
+                            batSystemService.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY)
 
-                        // Background indicator
-                        drawLine(
-                            color = backgroundIndicatorColor,
-                            cap = StrokeCap.Round,
-                            strokeWidth = size.height,
-                            start = Offset(x = 0f, y = 0f),
-                            end = Offset(x = size.width, y = 0f)
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Column() {
+                                Text(
+                                    text = stringResource(id = R.string.battery) + ": $batteryLevel%",
+                                    style = didiDetailItemStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier
+                                )
+                                if (batteryLevel < 30)
+                                    Text(
+                                        text = "(Min 30% required)",
+                                        color = redOffline,
+                                        fontSize = 10.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    )
+                            }
+
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = textColorDark80,
+                                        )
+                                    ) {
+                                        append(stringResource(id = R.string.mobile_data) + ": ")
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = if (isInternetConnected) greenOnline else redOffline,
+                                        )
+                                    ) {
+                                        append(
+                                            if (isInternetConnected) stringResource(id = R.string.connected) else stringResource(
+                                                id = R.string.no_internet
+                                            )
+                                        )
+                                    }
+                                },
+                            )
+                        }
+
+                        Divider(
+                            thickness = 1.dp,
+                            color = greyBorder
                         )
 
-                        // Convert the downloaded percentage into progress (width of foreground indicator)
-                        val progress =
-                            (animateNumber.value / 100) * size.width // size.width returns the width of the canvas
+                        Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                            Box(Modifier.fillMaxWidth()) {
+                                Row(modifier = Modifier.align(Alignment.CenterStart)) {
+                                    Text(
+                                        text = stringResource(id = R.string.sync_status) + ": ",
+                                        style = didiDetailItemStyle,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        textAlign = TextAlign.Start,
+                                        modifier = Modifier
+                                    )
+                                    /*Text(
+                                        text = stringResource(id = R.string.transect_wale_title),
+                                        style = didiDetailItemStyle,
+                                        textAlign = TextAlign.Start,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        modifier = Modifier
+                                    )*/
+                                }
+                                if (syncBPCStatus.value == 0) {
+                                    Log.e("sync dialog", "step one tick")
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.icon_check_green_without_border),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
+                                }
+                                else if (syncBPCStatus.value == 2) {
+                                    Log.e("sync dialog","step one circle")
+                                    CircularProgressIndicator(
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .align(Alignment.CenterEnd)
+                                            .padding(4.dp),
+                                        color = textColorDark,
+                                        strokeWidth = 1.dp
+                                    )
+                                }
+                            }
+                        }
 
-                        // Foreground indicator
-                        drawLine(
-                            brush = Brush.linearGradient(
-                                colors = gradientColors
-                            ),
-                            cap = StrokeCap.Round,
-                            strokeWidth = size.height,
-                            start = Offset(x = 0f, y = 0f),
-                            end = Offset(x = progress, y = 0f)
-                        )
+                        Divider(thickness = 1.dp, color = greyBorder)
+                        Spacer(modifier = Modifier.height(4.dp))
 
+                        if (settingViewModel.showLoader.value) {
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(24.dp)
+                                    .clip(RoundedCornerShape(14.dp)),
+                                color = progressIndicatorColor,
+                                backgroundColor = backgroundIndicatorColor,
+                                progress = animateNumber.value
+                            )
+
+                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
+                                .fillMaxWidth()
+                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
+                                .padding(10.dp)) {
+
+                                Box(modifier = Modifier
+                                    .absolutePadding(top = 4.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.info_icn),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .size(16.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = "Please don't close the app or switch off the phone.",
+                                    style = numberStyle,
+                                    textAlign = TextAlign.Start,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    overflow = TextOverflow.Ellipsis,
+                                    fontWeight = FontWeight.Normal,
+                                    color = redMessageColor,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                )
+                            }
+                        }
+
+                        if ((isInternetConnected
+                                    && (batteryLevel > 30)
+                                    && !settingViewModel.showLoader.value)
+                                    && (isBPCDataNeedToBeSynced.value
+                                    || syncBPCStatus.value == 0)
+                        ) {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                ButtonNegative(
+                                    buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    setShowDialog(false)
+                                }
+                                Spacer(modifier = Modifier.width(8.dp))
+                                ButtonPositive(
+                                    buttonTitle = stringResource(id = R.string.sync),
+                                    isArrowRequired = false,
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(vertical = 2.dp)
+                                ) {
+//                                    settingViewModel.showLoader.value = true
+                                    settingViewModel.syncBPCDataOnServer(context, showBPCSyncDialog,syncBPCStatus)
+                                    val updatedSyncTime = System.currentTimeMillis()
+                                    settingViewModel.lastSyncTime.value = updatedSyncTime
+                                    settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
+                                }
+                            }
+                        } else if(isBPCDataNeedToBeSynced.value
+                                || syncBPCStatus.value == 3
+                                || !isInternetConnected
+                                || batteryLevel < 30){
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                ButtonNegative(
+                                    buttonTitle = stringResource(id = R.string.close),
+                                    isArrowRequired = false,
+                                    modifier = Modifier.weight(1f)
+                                ) {
+                                    setShowDialog(false)
+                                }
+                            }
+                        }
                     }
-                    Text(
-                        text = syncPercentage.toInt().toString() + "%",
-                        style = numberStyle,
-                        textAlign = TextAlign.Start,
-                        fontSize = 14.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        color = textColorDark,
-                        modifier = Modifier
-                            .align(Alignment.CenterEnd)
-                    )
                 }
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Text(
-                    text = "Time Remaining : 2 mins",
-                    style = numberStyle,
-                    textAlign = TextAlign.Start,
-                    fontSize = 11.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColorDark,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Text(
-                    text = "Please don't close the app or switch off the phone.",
-                    style = numberStyle,
-                    textAlign = TextAlign.Start,
-                    fontSize = 12.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColorDark,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-                Log.e("sync", "new ->$syncPercentage")
             }
         }
     }

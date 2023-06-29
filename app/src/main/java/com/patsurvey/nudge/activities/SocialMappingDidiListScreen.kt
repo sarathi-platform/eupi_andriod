@@ -883,7 +883,13 @@ fun DidiItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal) {
+                if (didiViewModel.prefRepo
+                        .getFromPage()
+                        .equals(
+                            ARG_FROM_PAT_SURVEY,
+                            true
+                        ) && didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal
+                ) {
                     navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_DIDI_LIST_SCREEN}")
                 } else {
                     onExpendClick(expanded, didi)
@@ -1027,17 +1033,19 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
+                Divider(
+                    color = borderGreyLight,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .layoutId("divider")
+                        .padding(vertical = 4.dp)
+                )
+
                 if(didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal ) {
-                    Divider(
-                        color = borderGreyLight,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .layoutId("divider")
-                            .padding(vertical = 4.dp)
-                    )
+
 
                     Row(
                         modifier = Modifier

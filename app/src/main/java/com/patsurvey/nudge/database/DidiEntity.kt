@@ -104,6 +104,9 @@ data class DidiEntity(
     @ColumnInfo(name = "needsToPostPAT")
     var needsToPostPAT: Boolean = false,
 
+    @ColumnInfo(name = "needsToPostBPCProcessStatus")
+    var needsToPostBPCProcessStatus: Boolean = false,
+
     @ColumnInfo(name = "needsToPostVo")
     var needsToPostVo: Boolean = false,
 
