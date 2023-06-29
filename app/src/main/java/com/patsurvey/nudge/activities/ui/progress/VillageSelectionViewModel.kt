@@ -59,6 +59,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
 import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
@@ -407,6 +408,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
                             }
                         }
+                        prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
                     }
                     localLanguageList?.let {
                         launch {
@@ -616,6 +618,7 @@ class VillageSelectionViewModel @Inject constructor(
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
+
             }
         }
         fetchCastList()

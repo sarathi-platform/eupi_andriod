@@ -56,6 +56,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
@@ -209,6 +210,8 @@ fun SurveySummary(
                                 showCustomToast(context, SYNC_FAILED)
                             }
                         })
+                    } else {
+                        surveySummaryViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.prefRepo.getSelectedVillage().id, false)
                     }
                     surveySummaryViewModel.updateDidiPatStatus()
                     surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
