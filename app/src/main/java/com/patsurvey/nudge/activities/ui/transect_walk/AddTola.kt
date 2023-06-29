@@ -284,7 +284,7 @@ fun TolaBox(
     modifier: Modifier = Modifier,
     tolaName: String = "khabd",
     tolaLocation: LocationCoordinates?,
-    isLocationAvailable: Boolean = true,
+    isLocationAvailable: Boolean = false,
     isTransectWalkCompleted: Boolean = false,
     deleteButtonClicked: () -> Unit,
     saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
@@ -434,6 +434,7 @@ fun TolaBox(
                             Icon(imageVector = Icons.Default.Close, contentDescription = null, tint = textColorDark, modifier = Modifier
                                 .absolutePadding(top = 2.dp)
                                 .clickable {
+                                    location = tolaLocation ?: LocationCoordinates()
                                     showEditView = false
                                 })
                         }
@@ -496,6 +497,7 @@ fun TolaBox(
                                         if (LocationUtil.showPermissionDialog){
                                             shouldRequestPermission.value = true
                                         }
+                                        locationAdded = false
                                     }
                                     focusManager.clearFocus()
                                 }
@@ -509,7 +511,7 @@ fun TolaBox(
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 Icon(
-                                    painter = painterResource(id = if (locationAdded) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
+                                    painter = painterResource(id = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
                                     contentDescription = "Get Location",
                                     modifier = Modifier.absolutePadding(top = 2.dp),
                                     tint = blueDark,
@@ -517,10 +519,10 @@ fun TolaBox(
                                     )
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
-                                    text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
+                                    text = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
                                     textAlign = TextAlign.Center,
                                     style = smallTextStyle,
-                                    color = if (locationAdded) greenOnline else blueDark,
+                                    color = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) greenOnline else blueDark,
                                     modifier = Modifier.absolutePadding(bottom = 2.dp)
                                 )
                             }
