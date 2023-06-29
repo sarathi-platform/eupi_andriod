@@ -280,6 +280,7 @@
     <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
     <string name="review_and_submit_button_text">समीक्षा करें और सबमिट करें</string>
     <string name="bpc_add_more_didi_screen_title">सत्यापन के लिए उपलब्ध अतिरिक्त दीदियों की सूची</string>
+    <string name="sync_status">Sync Status</string>
 
 
 </resources>

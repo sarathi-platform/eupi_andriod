@@ -661,6 +661,7 @@ class SurveySummaryViewModel @Inject constructor(
                                         didiId = didi.id,
                                         didi.villageId
                                     )
+                                    didiDao.updateNeedsToPostBPCProcessStatus(false,didi.id)
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
@@ -780,7 +781,8 @@ class SurveySummaryViewModel @Inject constructor(
                     score = matchPercentage,
                     villageId = villageId
                 )
-                val saveMatchSummaryResponse = apiService.saveMatchSummary(saveMatchSummaryRequest)
+                val requestList = arrayListOf(saveMatchSummaryRequest)
+                val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
                 if (saveMatchSummaryResponse.status.equals(SUCCESS, true)){
                     networkCallbackListener.onSuccess()
                 } else {

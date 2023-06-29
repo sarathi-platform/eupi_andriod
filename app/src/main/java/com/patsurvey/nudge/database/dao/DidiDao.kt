@@ -70,6 +70,12 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostPAT = :needsToPostPAT AND villageId = :villageId")
     fun getAllNeedToPostPATDidi(needsToPostPAT: Boolean, villageId: Int): List<DidiEntity>
 
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus AND villageId = :villageId")
+    fun getAllNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean, villageId: Int): List<DidiEntity>
+
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus AND villageId = :villageId AND transactionId != :transactionId")
+    fun getAllPendingNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean, villageId: Int,transactionId: String): List<DidiEntity>
+
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
 
@@ -128,6 +134,13 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int,villageId: Int)
+
+    @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId")
+    fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int)
+
+    @Query("UPDATE $DIDI_TABLE set needsToPostBPCProcessStatus =:needsToPostBPCProcessStatus WHERE id=:didiId")
+    fun updateNeedsToPostBPCProcessStatus(needsToPostBPCProcessStatus: Boolean,didiId: Int)
+
     @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int,villageId: Int)
 

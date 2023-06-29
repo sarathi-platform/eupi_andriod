@@ -225,7 +225,8 @@ class BpcDidiListViewModel @Inject constructor(
                         bpcComment = didiEntity.bpcComment,
                         bpcScore = didiEntity.bpcScore,
                         crpScore = didiEntity.crpScore,
-                        crpComment = didiEntity.crpComment
+                        crpComment = didiEntity.crpComment,
+                        needsToPostBPCProcessStatus = true,
                     )
                 )
             }
