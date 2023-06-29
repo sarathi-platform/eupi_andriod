@@ -20,6 +20,7 @@ import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -43,7 +44,9 @@ class QuestionScreenViewModel @Inject constructor(
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 ) : BaseViewModel() {
-    val totalAmount = mutableStateOf(0)
+    val totalAmount = mutableStateOf(0.0)
+    val enteredAmount = mutableStateOf(0)
+    val nextCTAVisibility = mutableStateOf(true)
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
 
@@ -61,8 +64,8 @@ class QuestionScreenViewModel @Inject constructor(
     private val _selIndValue = MutableStateFlow<Int>(-1)
     val selIndValue: StateFlow<Int> get() = _selIndValue
 
-    private val _totalAssetAmount = MutableStateFlow<Int>(0)
-    val totalAssetAmount:StateFlow<Int> get() = _totalAssetAmount
+    private val _totalAssetAmount = MutableStateFlow<Double>(0.0)
+    val totalAssetAmount:StateFlow<Double> get() = _totalAssetAmount
 
 
     fun getAllQuestionsAnswers(didiId: Int) {
@@ -95,7 +98,7 @@ class QuestionScreenViewModel @Inject constructor(
                                         .indexOf(que.questionId)
                                     if (aIndex != -1) {
                                         _totalAssetAmount.value =
-                                            localAnswerList[aIndex].totalAssetAmount ?: 0
+                                            localAnswerList[aIndex].totalAssetAmount ?: 0.0
                                     }
                                 }
                             }
@@ -123,7 +126,7 @@ class QuestionScreenViewModel @Inject constructor(
                        .indexOf(questionList.value[quesIndex].questionId)
                    if (aIndex != -1) {
                        _totalAssetAmount.value =
-                           answerList.value[aIndex].totalAssetAmount ?: 0
+                           answerList.value[aIndex].totalAssetAmount ?: 0.0
                    }
                }
            }
@@ -178,7 +181,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun setAnswerToQuestion(
         didiId: Int, questionId: Int, answerOptionModel: OptionsItem,
-        assetAmount: Int, quesType: String, summary: String, selIndex: Int,
+        assetAmount: Double, quesType: String, summary: String, selIndex: Int,
         onAnswerSave: () -> Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -257,7 +260,7 @@ class QuestionScreenViewModel @Inject constructor(
                     amountList.forEach {
                         amt += it
                     }
-                    totalAmount.value = amt
+                    totalAmount.value = amt.toDouble()
                 }
 
             }
@@ -282,7 +285,6 @@ class QuestionScreenViewModel @Inject constructor(
         }
 
     }
-
     fun findListTypeSelectedAnswer(quesIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -295,17 +297,21 @@ class QuestionScreenViewModel @Inject constructor(
                     val index = questionList.value[quesIndex].options.map { it.optionId }.indexOf(optionId)
                     listTypeAnswerIndex.value = index
                     _selIndValue.value = index
-                    totalAmount.value =0
+                    totalAmount.value =0.0
+                    enteredAmount.value=0
                 } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
-
+                    nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
                     val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
-                    totalAmount.value =  totalDBAmount
+                    val totalAssetAmount= answerDao.getTotalAssetAmount(didiId,questionList.value[quesIndex].questionId?:0)
+                    totalAmount.value =  totalDBAmount.toDouble()
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
+                    enteredAmount.value= if((totalAssetAmount-totalDBAmount)>0) (totalAssetAmount-totalDBAmount) else 0
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    totalAmount.value = 0
+                    totalAmount.value = 0.0
+                    enteredAmount.value=0
                 }
 
             }

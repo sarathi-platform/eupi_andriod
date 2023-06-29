@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.QUESTION_TABLE
 
 @Dao
@@ -19,6 +20,8 @@ interface QuestionListDao {
     @Query("Select * FROM $QUESTION_TABLE where actionType = :type AND languageId=:languageId ORDER BY `order`")
     fun getQuestionForType(type: String,languageId:Int): List<QuestionEntity>
 
+    @Query("Select options FROM $QUESTION_TABLE where questionId = :questionId AND languageId=:languageId")
+    fun getQuestionOptions(questionId:Int,languageId:Int): List<OptionsItem>
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertQuestion(question: QuestionEntity)
 

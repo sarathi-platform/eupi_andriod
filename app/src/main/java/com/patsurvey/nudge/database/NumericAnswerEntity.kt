@@ -3,6 +3,7 @@ package com.patsurvey.nudge.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 
 @Entity(tableName = NUMERIC_TABLE_NAME)
@@ -17,6 +18,9 @@ data class NumericAnswerEntity(
     @ColumnInfo(name = "questionId")
     var questionId: Int,
 
+    @ColumnInfo(name = "questionFlag")
+    var questionFlag: String? = BLANK_STRING,
+
     @ColumnInfo(name = "didiId")
     var didiId: Int,
 
@@ -26,4 +30,4 @@ data class NumericAnswerEntity(
     @ColumnInfo(name = "count")
     val count : Int=0,
 
-)
+    )

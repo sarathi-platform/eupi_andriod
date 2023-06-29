@@ -27,7 +27,7 @@ interface AnswerDao {
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
     @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Int,summary:String)
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)
@@ -73,6 +73,11 @@ interface AnswerDao {
 
     @Query("SELECT SUM(weight)FROM ques_answer_table where didiId=:didiId AND type !='Numeric_Field'")
     fun getTotalWeightWithoutNumQues(didiId: Int): Double
+    @Query("SELECT totalAssetAmount FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
+    fun getTotalAssetAmount(didiId: Int,questionId: Int): Int
+
+    @Query("SELECT COUNT(*) FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
+    fun isQuestionAnswered(didiId: Int,questionId: Int): Int
 
     @Query("DELETE from $ANSWER_TABLE")
     fun deleteAllAnswers()

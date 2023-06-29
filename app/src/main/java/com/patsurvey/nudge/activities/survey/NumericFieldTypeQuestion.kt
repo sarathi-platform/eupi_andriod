@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -30,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -38,6 +40,9 @@ import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
+import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -47,6 +52,7 @@ fun NumericFieldTypeQuestion(
     question: String,
     questionId: Int,
     didiId: Int,
+    questionFlag:String,
     optionList: List<OptionsItem>,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
@@ -115,7 +121,8 @@ fun NumericFieldTypeQuestion(
                                     questionId = questionId,
                                     count = it,
                                     didiId = didiId,
-                                    id = 0
+                                    id = 0,
+                                    questionFlag = questionFlag
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity)
@@ -127,7 +134,8 @@ fun NumericFieldTypeQuestion(
                                     questionId = questionId,
                                     count = it,
                                     didiId = didiId,
-                                    id = 0
+                                    id = 0,
+                                    questionFlag = questionFlag
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity)
@@ -160,14 +168,23 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                readOnly = true,
-                                value = viewModel?.totalAmount?.value.toString(),
+                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString() else viewModel?.enteredAmount?.value.toString(),
+                                readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),
                                 onValueChange = {
-                                    viewModel?.totalAmount?.value = it.toInt()
+                                    if(questionFlag.equals(QUESTION_FLAG_RATIO,true)){
+
+                                        viewModel?.totalAmount?.value = it.toDouble()
+                                    }else{
+                                        if(it.isEmpty() || it.equals(BLANK_STRING)){
+                                            viewModel?.enteredAmount?.value = 0
+                                        }else viewModel?.enteredAmount?.value = it.toInt()
+
+                                    }
+
                                 },
                                 placeholder = {
                                     Text(
-                                        text = "Enter Amount", style = TextStyle(
+                                        text = stringResource(id = R.string.enter_amount), style = TextStyle(
                                             fontFamily = NotoSans,
                                             fontWeight = FontWeight.Normal,
                                             fontSize = 14.sp
@@ -202,7 +219,7 @@ fun NumericFieldTypeQuestion(
                     }
                 }
             }
-            
+
             Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -251,7 +268,8 @@ fun NumericFieldTypeQuestionPreview() {
         questionId = 1,
         didiId = 1,
         optionList = optionList,
-        totalValueTitle="Total Value"
+        totalValueTitle="Total Value",
+        questionFlag = "ratio"
     ) {}
 }
 

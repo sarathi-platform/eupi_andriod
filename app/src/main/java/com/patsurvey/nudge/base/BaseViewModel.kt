@@ -21,6 +21,7 @@ abstract class BaseViewModel : ViewModel(){
 
     val tokenExpired = RetryHelper.tokenExpired
     val baseOtpNumber = mutableStateOf("")
+    val baseSummarySecond = mutableStateOf(0)
 
 
     var job: Job? = null

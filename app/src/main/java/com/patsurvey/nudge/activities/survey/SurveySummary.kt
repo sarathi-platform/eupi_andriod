@@ -16,6 +16,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -92,6 +93,10 @@ fun SurveySummary(
 
     val showDialog = remember { mutableStateOf(false) }
 
+    LaunchedEffect(key1 = true){
+            showDidiListForStatus =
+                  Pair((context as MainActivity).isBackFromSummary.value, surveySummaryViewModel.baseSummarySecond.value)
+    }
     BackHandler() {
         if (showDidiListForStatus.first) {
             showDidiListForStatus =
@@ -422,10 +427,15 @@ fun SurveySummary(
                         ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {
-                        showDidiListForStatus = if (fromScreen == ARG_FROM_PAT_SURVEY) Pair(
-                            true,
-                            PatSurveyStatus.COMPLETED.ordinal
-                        ) else Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
+                        if(fromScreen == ARG_FROM_PAT_SURVEY){
+                            showDidiListForStatus=  Pair(
+                                true,
+                                PatSurveyStatus.COMPLETED.ordinal
+                            )
+                            surveySummaryViewModel.baseSummarySecond.value =PatSurveyStatus.COMPLETED.ordinal
+
+                        }else showDidiListForStatus = Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
+
                     }
                     SummaryBox(
                         count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }.size
@@ -439,11 +449,11 @@ fun SurveySummary(
                         ),
                         modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
                     ) {
-                        showDidiListForStatus =
-                            if (fromScreen == ARG_FROM_PAT_SURVEY)
-                                Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                            else
-                                Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
+                        if(fromScreen == ARG_FROM_PAT_SURVEY){
+                            showDidiListForStatus = Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                            surveySummaryViewModel.baseSummarySecond.value =PatSurveyStatus.NOT_AVAILABLE.ordinal
+                        }else showDidiListForStatus = Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
+
                     }
                 }
             }

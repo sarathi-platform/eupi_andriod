@@ -57,6 +57,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import java.io.File
 import java.lang.reflect.Type
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import kotlin.math.roundToInt
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
@@ -361,4 +363,10 @@ data class DottedShape(
         }
         close()
     })
+}
+
+fun roundOffDecimal(number: Double): Double? {
+    val df = DecimalFormat("#.##")
+    df.roundingMode = RoundingMode.CEILING
+    return df.format(number).toDouble()
 }
