@@ -16,6 +16,7 @@ import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -147,7 +148,21 @@ class BpcAddMoreDidiViewModel @Inject constructor(
                 bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
                 ReplaceHelper.didiForReplacement = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
 //                if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
-                bpcSelectedDidiDao.markDidiSelected(ReplaceHelper.didiToBeReplaced.value.second, false)
+                val isDidiInSelectedDao = bpcSelectedDidiDao.isDidiAvailableInSelectedTable(ReplaceHelper.didiToBeReplaced.value.second)
+                if (isDidiInSelectedDao > 0) {
+                    bpcSelectedDidiDao.markDidiSelected(
+                        ReplaceHelper.didiToBeReplaced.value.second,
+                        false
+                    )
+                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                }
+                else {
+                    bpcNonSelectedDidiDao.markDidiSelected(
+                        ReplaceHelper.didiToBeReplaced.value.second,
+                        false
+                    )
+                    bpcNonSelectedDidiDao.updateNonSelDidiPatSurveyStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                }
 //                }
 //                removeDidiFromSelectedList(bpcSelectedDidiDao)
             }

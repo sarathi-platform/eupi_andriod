@@ -154,7 +154,7 @@
     </plurals>
     <string name="logout">Logout</string>
     <string name="this_section_is_in_progress">This Section is InProgress state</string>
-    <string name="sync_up">Sync Data</string>
+    <string name="sync_up">Sync Data Now</string>
     <string name="last_syncup_text">Last Synced: {LAST_SYNC_TIME}</string>
     <string name="profile">Profile</string>
     <string name="forms">Forms</string>
@@ -181,7 +181,7 @@
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">You are sending %1$s PAT completed Didis for VO Endorsement</string>
     <string name="send_all_for_vo_endorsement">Send All For VO Endorsement</string>
     <string name="pat_survey_completed_message">PAT Survey for {VILLAGE_NAME} \nis completed</string>
-    <string name="vo_endorsement_completed_message">Vo Endorsement for {VILLAGE_NAME} \nis completed</string>
+    <string name="vo_endorsement_completed_message">VO Endorsement for {VILLAGE_NAME} \nis completed</string>
     <string name="form_c_photo_button_text">Take picture of form C</string>
     <string name="form_d_photo_button_text">Take picture of form D</string>
     <string name="pat_completed_box_title">PAT Completed</string>
@@ -243,8 +243,8 @@
     <string name="bpc_didi_screen_title">List of Didis auto selected For PAT Verification</string>
     <string name="bpc_final_pat_submition_message">Do you want to submit this VO for BPM Approval?</string>
 
-    <string name="didi_selected_text_singular">Didi Selected</string>
-    <string name="didi_selected_text_plural">Didis Selected</string>
+    <string name="didi_selected_text_singular">%1$s Didi Selected</string>
+    <string name="didi_selected_text_plural">%1$s Didis Selected</string>
     <string name="didi_replace_button">Replace</string>
     <string name="submit_pat_verification">Submit PAT Verification</string>
 
@@ -253,16 +253,25 @@
     <string name="crp_score_text">CRP Score:</string>
     <string name="bpc_score_text">BPC Score:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
-    <string name="summary_tolas_added_text">" Tolas Added"</string>
-    <string name="summary_didis_mobilised_text">" Didis Mobilised"</string>
-    <string name="summary_wealth_ranking_text">" Didis Marked as poor in PWR"</string>
-    <string name="summary_vo_endoresement_text">" Didis sent for VO Endorsement"</string>
+    <string name="summary_tolas_added_text_plural">" Tolas Added"</string>
+    <string name="summary_didis_mobilised_text_plural">" Didis Mobilised"</string>
+    <string name="summary_wealth_ranking_text_plural">" Didis Marked as poor in PWR"</string>
+    <string name="summary_vo_endoresement_text_plural">" Didis sent for VO Endorsement"</string>
     <string name="unmatched_text">Unmatched</string>
     <string name="matched_text">Matched</string>
 
     <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
     <string name="review_and_submit_button_text">Review and Submit</string>
     <string name="bpc_add_more_didi_screen_title">List of additional didis available for verification</string>
+    <string name="showing_text">"Showing "</string>
+    <string name="result_text_singular">" result"</string>
+    <string name="result_text_plural">" results"</string>
+    <string name="didis_endorsed_by_vo_plural">" Didis Endorsed by VO"</string>
+    <string name="didi_endorsed_by_vo_singular">" Didi Endorsed by VO"</string>
+    <string name="summary_vo_endoresement_text_singular">" Didi sent for VO Endorsement"</string>
+    <string name="summary_wealth_ranking_text_singular">" Didi Marked as poor in PWR"</string>
+    <string name="summary_didis_mobilised_text_singular">" Didi Mobilised"</string>
+    <string name="summary_tolas_added_text_singular">" Tola Added"</string>
 
 
 </resources>

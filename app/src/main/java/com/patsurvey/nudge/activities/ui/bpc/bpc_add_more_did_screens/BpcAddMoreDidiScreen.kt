@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -22,6 +23,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -75,9 +79,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
-import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.black2
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.checkBoxUncheckedColor
@@ -133,8 +135,8 @@ fun BpcAddMoreDidiScreen(
         mutableStateListOf<Int>()
     }
 
-    val isSelectedId = remember {
-        mutableStateOf<Int>(-1)
+    val isSelectedCount = remember {
+        mutableStateOf<Int>(0)
     }
 
     val configuration = LocalConfiguration.current
@@ -220,14 +222,6 @@ fun BpcAddMoreDidiScreen(
                         )
                     }
 
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(14.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-
                     if (newFilteredDidiList.isEmpty()) {
                         item {
                             Text(
@@ -248,7 +242,7 @@ fun BpcAddMoreDidiScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.fillMaxWidth()
                             ) {
-                                val count = isCheckedIds.size
+                                val count = isSelectedCount.value
                                 Text(
                                     text = stringResource(
                                         id = if (count > 1) R.string.didi_selected_text_plural else R.string.didi_selected_text_singular,
@@ -265,14 +259,6 @@ fun BpcAddMoreDidiScreen(
                                         .weight(0.75f)
                                 )
                             }
-                        }
-
-                        item {
-                            Spacer(
-                                modifier = Modifier
-                                    .height(14.dp)
-                                    .fillMaxWidth()
-                            )
                         }
 
                         if (filterSelected) {
@@ -298,12 +284,14 @@ fun BpcAddMoreDidiScreen(
                                         if (forReplace) {
                                             isCheckedIds.clear()
                                             isCheckedIds.add(didi.id)
-
+                                            isSelectedCount.value = 1
                                         } else {
                                             if (isCheckedIds.contains(didi.id)) {
                                                 isCheckedIds.remove(didi.id)
+                                                isSelectedCount.value = --isSelectedCount.value
                                             } else {
                                                 isCheckedIds.add(didi.id)
+                                                isSelectedCount.value = ++isSelectedCount.value
                                             }
                                         }
                                     }
@@ -344,8 +332,10 @@ fun BpcAddMoreDidiScreen(
                                         } else {
                                             if (isCheckedIds.contains(didi.id)) {
                                                 isCheckedIds.remove(didi.id)
+                                                isSelectedCount.value = --isSelectedCount.value
                                             } else {
                                                 isCheckedIds.add(didi.id)
+                                                isSelectedCount.value = ++isSelectedCount.value
                                             }
                                         }
 
@@ -852,7 +842,7 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
 ) {
     Column(modifier = Modifier) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -863,31 +853,51 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 
+            Spacer(modifier = Modifier.width(10.dp))
+
             Text(
                 text = didiTola,
                 style = TextStyle(
-                    color = black2,
+                    color = textColorDark,
                     fontSize = 16.sp,
+                    fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(end = 10.dp)
             )
-            Text(
-                text = "${didiList.size}",
-                style = TextStyle(
-                    color = black2,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Box(
                 modifier = Modifier
-                    .background(yellowBg, shape = CircleShape)
-                    .circleLayout()
-                    .padding(3.dp),
-                textAlign = TextAlign.Start
-            )
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = yellowBg,
+                        shape = CircleShape
+                    )
+                    .background(
+                        yellowBg,
+                        shape = CircleShape
+                    )
+                    .padding(6.dp)
+                    .size(24.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${didiList.size}",
+                    color = greenOnline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .absolutePadding(bottom = 3.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans,
+                )
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {

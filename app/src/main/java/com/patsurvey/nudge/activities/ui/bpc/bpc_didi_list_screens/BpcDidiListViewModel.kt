@@ -63,10 +63,19 @@ class BpcDidiListViewModel @Inject constructor(
     var stepId: Int = -1
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
+    val isStepComplete = mutableStateOf(false)
 
     init {
         villageId = prefRepo.getSelectedVillage().id
         fetchDidiFromDb()
+        checkIfStepIsComplete()
+    }
+
+    private fun checkIfStepIsComplete() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            isStepComplete.value = stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal
+        }
     }
 
     fun fetchDidiFromDb() {
@@ -97,8 +106,7 @@ class BpcDidiListViewModel @Inject constructor(
             }
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
             filterDidiList = selectedDidiList.value
-            pendingDidiCount.value =
-                bpcSelectedDidiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+            pendingDidiCount.value = selectedDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
         }
     }
 

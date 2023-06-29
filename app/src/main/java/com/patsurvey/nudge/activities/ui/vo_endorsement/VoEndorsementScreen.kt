@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -40,6 +40,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.layoutId
@@ -59,13 +60,12 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
-import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
-import com.patsurvey.nudge.activities.ui.theme.black2
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
@@ -78,7 +78,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.VoEndorsementStatus
 import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -93,10 +92,6 @@ fun VoEndorsementScreen(
 
     val showLoader = remember {
         mutableStateOf(false)
-    }
-    LaunchedEffect(key1 = true) {
-        delay(100)
-        viewModel.updateFilterDidiList()
     }
 
     val didis by viewModel.didiList.collectAsState()
@@ -119,7 +114,10 @@ fun VoEndorsementScreen(
         mutableStateOf(false)
     }
 
-
+//    LaunchedEffect(key1 = true) {
+//        delay(100)
+//        viewModel.updateFilterDidiList()
+//    }
 
     BackHandler {
         coroutineScope.launch {
@@ -197,7 +195,7 @@ fun VoEndorsementScreen(
                                 placeholderString = stringResource(id = R.string.search_didis),
                                 filterSelected = filterSelected,
                                 onFilterSelected = {
-                                    if (didis.isNotEmpty()) {
+                                    if (newFilteredDidiList.value.isNotEmpty()) {
                                         filterSelected = !it
                                         viewModel.filterList()
                                     }
@@ -234,9 +232,9 @@ fun VoEndorsementScreen(
                             itemsIndexed(
                                 newFilteredTolaDidiList.keys.toList().reversed()
                             ) { index, didiKey ->
-                                if (newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus == VoEndorsementStatus.NOT_STARTED.ordinal) {
-                                    viewModel.pendingDidiCount.value++
-                                }
+//                                if (newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus == VoEndorsementStatus.NOT_STARTED.ordinal) {
+//                                    viewModel.pendingDidiCount.value++
+//                                }
                                 ShowDidisFromTolaForVo(
                                     navController = navController,
                                     viewModel = viewModel,
@@ -259,8 +257,6 @@ fun VoEndorsementScreen(
                                         color = borderGreyLight,
                                         thickness = 1.dp,
                                         modifier = Modifier.padding(
-                                            start = 16.dp,
-                                            end = 16.dp,
                                             top = 22.dp,
                                             bottom = 1.dp
                                         )
@@ -269,9 +265,9 @@ fun VoEndorsementScreen(
                             }
                         } else {
                             itemsIndexed(newFilteredDidiList.value) { index, didi ->
-                                if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
-                                    viewModel.pendingDidiCount.value++
-                                }
+//                                if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
+//                                    viewModel.pendingDidiCount.value++
+//                                }
                                 DidiItemCardForVo(
                                     navController = navController,
                                     didi = didi,
@@ -327,9 +323,10 @@ fun DidiItemCardForVo(
         modifier = Modifier
             .fillMaxWidth()
             .background(bgGreyLight, RoundedCornerShape(6.dp))
-            .border(width = 1.dp, color = borderGreyLight, shape = RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = bgGreyLight, shape = RoundedCornerShape(6.dp))
             .clickable {
-                onItemClick(didi)
+                if (didi.voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal)
+                    onItemClick(didi)
             }
             .then(modifier)
     ) {
@@ -397,12 +394,14 @@ fun DidiItemCardForVo(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("village")
                     )
+
+
                     Divider(
                         color = borderGreyLight,
                         thickness = 1.dp,
                         modifier = Modifier
                             .layoutId("divider")
-                            .padding(vertical = 4.dp)
+                            .padding(bottom = 14.dp, top = 14.dp)
                     )
                 }
             }
@@ -538,7 +537,7 @@ fun ShowDidisFromTolaForVo(
 ) {
     Column(modifier = Modifier) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -549,31 +548,51 @@ fun ShowDidisFromTolaForVo(
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 
+            Spacer(modifier = Modifier.width(10.dp))
+
             Text(
                 text = didiTola,
                 style = TextStyle(
-                    color = black2,
+                    color = textColorDark,
                     fontSize = 16.sp,
+                    fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(end = 10.dp)
             )
-            Text(
-                text = "${didiList.size}",
-                style = TextStyle(
-                    color = black2,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Box(
                 modifier = Modifier
-                    .background(yellowBg, shape = CircleShape)
-                    .circleLayout()
-                    .padding(3.dp),
-                textAlign = TextAlign.Start
-            )
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = yellowBg,
+                        shape = CircleShape
+                    )
+                    .background(
+                        yellowBg,
+                        shape = CircleShape
+                    )
+                    .padding(6.dp)
+                    .size(20.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${didiList.size}",
+                    color = greenOnline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .absolutePadding(bottom = 2.dp),
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans,
+                )
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -583,11 +602,10 @@ fun ShowDidisFromTolaForVo(
                     didi = didi,
                     modifier = modifier,
                     onItemClick = {
-                        //TODO navigate to summary screen for Endorsement
+                        onNavigate("")
                     }
                 )
             }
-
         }
     }
 }

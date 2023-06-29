@@ -137,10 +137,37 @@ fun ProgressScreen(
             Scaffold(
                 modifier = Modifier,
                 topBar = {
-                    ProgressScreenTopBar() {
-                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-                        onNavigateToSetting()
-                    }
+                    TopAppBar(
+                        title = {
+                            Text(
+                                text = "SARATHI",
+                                color = textColorDark,
+                                fontFamily = NotoSans,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                modifier = Modifier
+                            )
+                        },
+                        actions = {
+                            IconButton(onClick = {
+                                viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                                onNavigateToSetting()
+                            }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.more_icon),
+                                    contentDescription = "more action button",
+                                    tint = blueDark,
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                )
+                            }
+                        },
+                        backgroundColor = Color.White
+                    )
+//                    ProgressScreenTopBar() {
+//                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+//                        onNavigateToSetting()
+//                    }
                 }
             ) { it ->
                 if (viewModel.showLoader.value) {

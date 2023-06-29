@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.navigation.home
 
-
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -35,6 +34,7 @@ import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormBScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.DigitalFormCScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.FormImageViewerScreen
 import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
+import com.patsurvey.nudge.activities.ui.home.HomeUserScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -77,26 +77,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) HomeScreens.BPC_PROGRESS_SCREEN.route else HomeScreens.PROGRESS_SCREEN.route
+        startDestination = HomeScreens.PROGRESS_SCREEN.route
     ) {
         composable(route = HomeScreens.PROGRESS_SCREEN.route) {
-            ProgressScreen(
-                stepsNavHostController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxWidth(),
-                onNavigateToStep = { villageId, stepId, index, isStepComplete ->
-                    when (index) {
-                        0 -> navController.navigate("details_graph/$villageId/$stepId/$index")
-                        1 -> navController.navigate("social_mapping_graph/$villageId/$stepId")
-                        2 -> navController.navigate("wealth_ranking/$villageId/$stepId")
-                        3 -> navController.navigate("pat_screens/$villageId/$stepId")
-                        4 -> navController.navigate("vo_endorsement_graph/$villageId/$stepId/$isStepComplete")
-                    }
-                },
-                onNavigateToSetting = {
-                    navController.navigate(Graph.SETTING_GRAPH)
-                }
-            )
+            HomeUserScreen(navController = navController, prefRepo = prefRepo)
         }
 
         composable(route = HomeScreens.BPC_PROGRESS_SCREEN.route) {
@@ -897,9 +881,9 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         composable(route = BpcDidiListScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            }, navArgument(ARG_FROM_SCREEN) {
+            }/*, navArgument(ARG_FROM_SCREEN) {
                 type = NavType.StringType
-            }
+            }*/
             )
         ) {
             PatSurveyCompleteSummary(
@@ -908,7 +892,7 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 patSectionSummaryViewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
-                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
+                fromScreen = /*it.arguments?.getString(ARG_FROM_SCREEN) ?: */BLANK_STRING
             )
         }
 
@@ -984,7 +968,7 @@ sealed class BpcDidiListScreens(val route: String) {
         BpcDidiListScreens(route = "bpc_pat_section_one_summary_screen/{$ARG_DIDI_ID}")
     object PAT_SECTION_TWO_SUMMARY_SCREEN :
         BpcDidiListScreens(route = "bpc_pat_section_two_summary_screen/{$ARG_DIDI_ID}")
-    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}/{$ARG_FROM_SCREEN}")
+    object PAT_COMPLETE_DIDI_SUMMARY_SCREEN : BpcDidiListScreens(route = "bpc_pat_complete_didi_summary_screen/{$ARG_DIDI_ID}")
 
     object PAT_SURVEY_SUMMARY : BpcDidiListScreens(route = "bpc_pat_survey_summary/{$ARG_STEP_ID}/{$ARG_IS_STEP_COMPLETE}")
 

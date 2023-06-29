@@ -13,6 +13,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
@@ -52,7 +53,8 @@ class SettingViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+    val bpcSummaryDao: BpcSummaryDao,
 
 ):BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
@@ -85,10 +87,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formAAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formAAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formAAvailabe.value = false
             }
@@ -98,10 +98,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formBAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formBAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formBAvailabe.value = false
             }
@@ -112,10 +110,8 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
-            val stepId = if (filteredStepList.isNotEmpty()) filteredStepList[0].id else -1
-            if (stepId > 0) {
-                val step = stepsListDao.getStepForVillage(stepId, villageId)
-                formCAvailabe.value = step.status == StepStatus.COMPLETED.name
+            if (filteredStepList[0] != null) {
+                formCAvailabe.value = filteredStepList[0].status == StepStatus.COMPLETED.name
             } else {
                 formCAvailabe.value = false
             }
@@ -418,6 +414,7 @@ class SettingViewModel @Inject constructor(
             villegeListDao.deleteAllVilleges()
             bpcSelectedDidiDao.deleteAllDidis()
             bpcNonSelectedDidiDao.deleteAllDidis()
+            bpcSummaryDao.deleteAllSummary()
             clearSharedPreference()
             //cleared cache in case of logout
             context.cacheDir.deleteRecursively()

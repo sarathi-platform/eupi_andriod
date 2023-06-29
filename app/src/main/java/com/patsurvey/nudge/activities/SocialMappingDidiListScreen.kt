@@ -8,6 +8,7 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -364,8 +365,6 @@ fun SocialMappingDidiListScreen(
                                         color = borderGreyLight,
                                         thickness = 1.dp,
                                         modifier = Modifier.padding(
-                                            start = 16.dp,
-                                            end = 16.dp,
                                             top = 22.dp,
                                             bottom = 1.dp
                                         )
@@ -561,7 +560,7 @@ fun ShowDidisFromTola(
 ) {
     Column(modifier = Modifier) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -572,31 +571,51 @@ fun ShowDidisFromTola(
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 
+            Spacer(modifier = Modifier.width(10.dp))
+
             Text(
                 text = didiTola,
                 style = TextStyle(
-                    color = black2,
+                    color = textColorDark,
                     fontSize = 16.sp,
+                    fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(end = 10.dp)
             )
-            Text(
-                text = "${didiList.size}",
-                style = TextStyle(
-                    color = black2,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
-                ),
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Box(
                 modifier = Modifier
-                    .background(yellowBg, shape = CircleShape)
-                    .circleLayout()
-                    .padding(3.dp),
-                textAlign = TextAlign.Start
-            )
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = yellowBg,
+                        shape = CircleShape
+                    )
+                    .background(
+                        yellowBg,
+                        shape = CircleShape
+                    )
+                    .padding(6.dp)
+                    .size(24.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${didiList.size}",
+                    color = greenOnline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .absolutePadding(bottom = 3.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans,
+                )
+            }
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
@@ -864,7 +883,17 @@ fun DidiItemCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                onExpendClick(expanded, didi)
+                if (didiViewModel.prefRepo
+                        .getFromPage()
+                        .equals(
+                            ARG_FROM_PAT_SURVEY,
+                            true
+                        ) && didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal
+                ) {
+                    navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_DIDI_LIST_SCREEN}")
+                } else {
+                    onExpendClick(expanded, didi)
+                }
             }
             .then(modifier)
     ) {
@@ -1004,17 +1033,19 @@ fun DidiItemCard(
             if (didiViewModel.prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
+                Divider(
+                    color = borderGreyLight,
+                    thickness = 1.dp,
+                    modifier = Modifier
+                        .layoutId("divider")
+                        .padding(vertical = 4.dp)
+                )
+
                 if(didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
                     didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal ) {
-                    Divider(
-                        color = borderGreyLight,
-                        thickness = 1.dp,
-                        modifier = Modifier
-                            .layoutId("divider")
-                            .padding(vertical = 4.dp)
-                    )
+
 
                     Row(
                         modifier = Modifier
@@ -1075,7 +1106,8 @@ fun DidiItemCard(
                             }
                         }
                     }
-                }else{
+                }
+                else{
                     Row(modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 10.dp)

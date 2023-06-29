@@ -16,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -74,6 +73,10 @@ fun OtpVerificationScreen(
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
+    LaunchedEffect(key1 = true){
+        otpValue.value= BLANK_STRING
+        viewModel.otpNumber.value= BLANK_STRING
+    }
 
     Box(
         modifier = Modifier
@@ -219,10 +222,15 @@ fun OtpVerificationScreen(
                                     }
                                 }
                             }
-
+                            RetryHelper.autoReadOtp.value = ""
                         }
-                        else
-                            snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
+                        else {
+                            snackState.addMessage(
+                                message = message,
+                                isSuccess = false,
+                                isCustomIcon = false
+                            )
+                        }
                     }
                 },
                 modifier = Modifier

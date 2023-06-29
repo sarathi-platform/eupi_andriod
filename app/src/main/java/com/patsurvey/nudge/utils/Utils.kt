@@ -24,6 +24,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Outline
+import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
@@ -31,7 +37,11 @@ import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Constraints
+import androidx.compose.ui.unit.Density
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.FileProvider
+import androidx.core.net.toFile
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -47,6 +57,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import java.io.File
 import java.lang.reflect.Type
+import kotlin.math.roundToInt
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
 private object Invisible : LayoutModifier {
@@ -324,3 +335,30 @@ fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Bo
     return score
 }
 
+fun getFileNameFromURL(url: String): String{
+    return url.substring(url.lastIndexOf('/') + 1, url.length)
+}
+
+data class DottedShape(
+    val step: Dp,
+) : Shape {
+    override fun createOutline(
+        size: Size,
+        layoutDirection: LayoutDirection,
+        density: Density
+    ) = Outline.Generic(Path().apply {
+        val stepPx = with(density) { step.toPx() }
+        val stepsCount = (size.width / stepPx).roundToInt()
+        val actualStep = size.width / stepsCount
+        val dotSize = Size(width = actualStep / 2, height = size.height)
+        for (i in 0 until stepsCount) {
+            addRect(
+                Rect(
+                    offset = Offset(x = i * actualStep, y = 0f),
+                    size = dotSize
+                )
+            )
+        }
+        close()
+    })
+}

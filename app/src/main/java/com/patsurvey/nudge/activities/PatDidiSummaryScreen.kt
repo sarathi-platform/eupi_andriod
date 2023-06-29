@@ -118,7 +118,6 @@ fun PatDidiSummaryScreen(
                 start.linkTo(parent.start)
                 top.linkTo(parent.top)
             }
-            .padding(horizontal = 16.dp)
         ) {
 
             AnimatedVisibility(patDidiSummaryViewModel.shouldShowCamera.value) {
@@ -146,7 +145,8 @@ fun PatDidiSummaryScreen(
                 Column(
                     modifier = modifier
                         .fillMaxSize()
-                        .padding(top = 14.dp),
+                        .padding(top = 14.dp)
+                        .padding(horizontal = 16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
 

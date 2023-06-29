@@ -16,6 +16,8 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -31,6 +33,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
@@ -57,8 +60,11 @@ fun CameraView(
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
 
+    val screenHeight = LocalConfiguration.current.screenHeightDp
+
     val preview = Preview.Builder().build()
     val previewView = remember { PreviewView(context) }
+    previewView.scaleType = PreviewView.ScaleType.FILL_CENTER
     val imageCapture: ImageCapture = remember { ImageCapture.Builder().build() }
     val cameraSelector = CameraSelector.Builder()
         .requireLensFacing(lensFacing)
@@ -81,25 +87,35 @@ fun CameraView(
         .then(modifier)) {
         AndroidView({ previewView }, modifier = Modifier.fillMaxSize())
 
-        Icon(
-            imageVector = Icons.Default.Close,
-            contentDescription = "close camera",
-            tint = white,
-            modifier = Modifier
-                .align(
-                    Alignment.TopStart
-                )
-                .padding(start = 10.dp, top = 10.dp)
-                .clickable(
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = rememberRipple(
-                        bounded = true,
-                        color = Color.Black
-                    )
-                ) {
-                    onCloseButtonClicked()
-                }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .height((screenHeight / 4).dp)
+                .background(Color.Black.copy(alpha = 0.5f))
         )
+
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .height((screenHeight / 4).dp)
+                .background(Color.Black.copy(alpha = 0.5f))
+        )
+
+        IconButton(
+            onClick = {
+                onCloseButtonClicked()
+            }, modifier = Modifier
+                .align(Alignment.TopStart)
+        ) {
+            Icon(
+                imageVector = Icons.Default.Close,
+                contentDescription = "close camera",
+                tint = white,
+            )
+        }
+
         Box(
             modifier = Modifier
                 .padding(bottom = 20.dp)

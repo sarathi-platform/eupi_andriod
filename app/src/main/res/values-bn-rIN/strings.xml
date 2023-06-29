@@ -165,7 +165,7 @@
     <string name="option_no">না</string>
     <string name="logout">প্রস্থান</string>
     <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
-    <string name="sync_up">সিঙ্ক ডেটা</string>
+    <string name="sync_up">এখন ডেটা সিঙ্ক করুন</string>
     <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: {LAST_SYNC_TIME}</string>
     <string name="profile">প্রোফাইল</string>
     <string name="forms">ফর্ম</string>
@@ -270,16 +270,25 @@
     <string name="crp_score_text">सीआरपी स्कोर:</string>
     <string name="bpc_score_text">बीपीसी स्कोर:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% मिलान PAT सत्यापन पर हुआ मिलान PAT सत्यापन पर हुआ|</string>
-    <string name="summary_tolas_added_text">" टोला जोड़ा गया"</string>
-    <string name="summary_didis_mobilised_text">" दीदियों को मोबिलाइज किया"</string>
-    <string name="summary_wealth_ranking_text">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
-    <string name="summary_vo_endoresement_text">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
+    <string name="summary_tolas_added_text_plural">" टोला जोड़ा गया"</string>
+    <string name="summary_didis_mobilised_text_plural">" दीदियों को मोबिलाइज किया"</string>
+    <string name="summary_wealth_ranking_text_plural">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
+    <string name="summary_vo_endoresement_text_plural">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
     <string name="unmatched_text">बेजोड़</string>
     <string name="matched_text">मिलान</string>
 
     <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
     <string name="review_and_submit_button_text">समीक्षा करें और सबमिट करें</string>
     <string name="bpc_add_more_didi_screen_title">सत्यापन के लिए उपलब्ध अतिरिक्त दीदियों की सूची</string>
+    <string name="showing_text">"Showing "</string>
+    <string name="result_text_singular">" result"</string>
+    <string name="result_text_plural">" results"</string>
+    <string name="didis_endorsed_by_vo_plural">" Didis Endorsed by VO"</string>
+    <string name="didi_endorsed_by_vo_singular">" Didi Endorsed by VO"</string>
+    <string name="summary_vo_endoresement_text_singular">" Didi sent for VO Endorsement"</string>
+    <string name="summary_wealth_ranking_text_singular">" Didi Marked as poor in PWR"</string>
+    <string name="summary_didis_mobilised_text_singular">" Didi Mobilised"</string>
+    <string name="summary_tolas_added_text_singular">" Tola Added"</string>
     <string name="sync_status">Sync Status</string>
 
 

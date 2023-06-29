@@ -1,6 +1,9 @@
 package com.patsurvey.nudge.activities
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,7 +17,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.STEP_COMPLETION_DELAY
 import kotlinx.coroutines.delay
 import nl.dionsegijn.konfetti.compose.KonfettiView
@@ -51,7 +53,7 @@ fun StepCompletionScreen(
                     damping = 0.9f,
                     spread = 360,
                     colors = listOf(0xfce18a, 0xff726d, 0xf4306d, 0xb48def),
-                    emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(100),
+                    emitter = Emitter(duration = 100, TimeUnit.MILLISECONDS).max(80),
                     position = Position.Relative(0.5, 0.3)
                 )
             ),
@@ -62,7 +64,7 @@ fun StepCompletionScreen(
             }
         )
 
-        if (animationOver.value) {
+//        if (animationOver.value) {
             Column(
                 modifier = Modifier.align(Alignment.Center),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -81,6 +83,6 @@ fun StepCompletionScreen(
                     style = largeTextStyle
                 )
             }
-        }
+//        }
     }
 }

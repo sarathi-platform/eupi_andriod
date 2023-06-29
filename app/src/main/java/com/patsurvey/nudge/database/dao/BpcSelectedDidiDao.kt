@@ -52,4 +52,7 @@ interface BpcSelectedDidiDao {
 
     @Query("UPDATE $BPC_SELECTED_DIDI_TABLE set bpcScore =:score, bpcComment=:comment WHERE id=:didiId ")
     fun updateSelDidiScore(score: Double, comment:String, didiId: Int)
+
+    @Query("SELECT COUNT(*) from $BPC_SELECTED_DIDI_TABLE where id = :didiId")
+    fun isDidiAvailableInSelectedTable(didiId: Int): Int
 }
