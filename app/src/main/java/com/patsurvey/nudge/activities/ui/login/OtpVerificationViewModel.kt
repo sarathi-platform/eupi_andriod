@@ -1,7 +1,7 @@
 package com.patsurvey.nudge.activities.ui.login
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.VillageEntity
@@ -37,7 +37,7 @@ class OtpVerificationViewModel @Inject constructor(
     fun validateOtp(onOtpResponse: (success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val otpRequest =
-            OtpRequest(mobileNumber = prefRepo.getMobileNumber() ?: "", otp = otpNumber.value)
+            OtpRequest(mobileNumber = prefRepo.getMobileNumber() ?: "", otp = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value ) //Text this code
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val response = apiInterface.validateOtp(otpRequest)
             withContext(Dispatchers.IO) {

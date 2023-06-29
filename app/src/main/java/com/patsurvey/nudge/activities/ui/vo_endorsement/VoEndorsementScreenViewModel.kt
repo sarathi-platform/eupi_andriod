@@ -83,7 +83,8 @@ class VoEndorsementScreenViewModel @Inject constructor(
             if(_filterDidiList.value.isNotEmpty()){
                 _filterDidiList.value.forEach {
                     val didiDetails = didiDao.fetchDidiDetails(it.id)
-                    it.voEndorsementStatus = didiDetails.voEndorsementStatus
+                    if (didiDetails != null)
+                        it.voEndorsementStatus = didiDetails.voEndorsementStatus
                 }
             }
         }

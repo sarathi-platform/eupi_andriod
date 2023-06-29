@@ -21,5 +21,10 @@ interface BpcSummaryDao {
 
     @Query("Select * from $BPC_SUMMARY_TABLE")
     fun getBpcSummaryForAllVillage(): List<BpcSummaryEntity>
+    @Query("DELETE from $BPC_SUMMARY_TABLE")
+    fun deleteAllSummary()
+
+    @Query("DELETE from $BPC_SUMMARY_TABLE where villageId = :villageId")
+    fun deleteForVillage(villageId: Int)
 
 }

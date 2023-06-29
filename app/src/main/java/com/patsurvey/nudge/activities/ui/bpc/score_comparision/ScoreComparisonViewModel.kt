@@ -63,7 +63,7 @@ class ScoreComparisonViewModel @Inject constructor(
             (it.score ?: 0.0) >= questionPassingScore.value.toDouble()
                     && (it.crpScore ?: 0.0) >= questionPassingScore.value.toDouble() }.size
 
-        return ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt()
+        return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
 
     }
 

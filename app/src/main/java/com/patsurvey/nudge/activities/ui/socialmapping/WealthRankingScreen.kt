@@ -17,6 +17,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -38,7 +39,6 @@ import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.circleLayout
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
@@ -170,19 +170,30 @@ fun WealthRankingScreen(
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                                 .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                .padding(start = 8.dp)
                         )
                     }
                     if (filterSelected) {
                         itemsIndexed(
                             newFilteredTolaDidiList.keys.toList().reversed()
                         ) { index, item ->
-                            ShowDidisFromTola(
+                             ShowDidisFromTola(
                                 didiTola = item,
                                 didiList = newFilteredTolaDidiList[item]?.reversed() ?: emptyList(),
                                 viewModel = viewModel,
                                 expandedIds = expandedCardIds,
                                 modifier = Modifier
                             )
+                            if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                Divider(
+                                    color = borderGreyLight,
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(
+                                        top = 22.dp,
+                                        bottom = 1.dp
+                                    )
+                                )
+                            }
                         }
                     } else {
                         itemsIndexed(newFilteredDidiList.value) { index, didi ->
@@ -304,6 +315,10 @@ fun ExpandableCard(
         shape = RoundedCornerShape(cardRoundedCorners),
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank)
+                    onCardArrowClick(true)
+            }
             .padding(
                 horizontal = cardPaddingHorizontal,
                 /*vertical = dimensionResource(id = R.dimen.dp_8)*/
@@ -348,9 +363,10 @@ fun ExpandableCard(
                         Column {
                             Text(
                                 text = didiEntity.name,
-                                color = Color.Black,
+                                color = textColorDark,
                                 fontSize = 16.sp,
                                 fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
                                 textAlign = TextAlign.Start,
                             )
                             if (didiEntity.wealth_ranking != WealthRank.NOT_RANKED.rank) {
@@ -387,36 +403,52 @@ fun ExpandableCard(
                     }
                 }
                 // Arrow Icon
-                Column(
-                    modifier = Modifier,
-                    horizontalAlignment = Alignment.End
-                ) {
-                    CardArrow(
-                        degrees = arrowRotationDegree,
-                        onClick = { onCardArrowClick(true) }
-                    )
+                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+                    Column(
+                        modifier = Modifier,
+                        horizontalAlignment = Alignment.End
+                    ) {
+                        CardArrow(
+                            degrees = arrowRotationDegree,
+                            onClick = { onCardArrowClick(true) }
+                        )
+                    }
                 }
 
             }
             //Expandable Content
-            Column {
-                Spacer(modifier = Modifier
-                    .height(10.dp)
-                    .fillMaxWidth())
-                ExpandableContent(visible = expanded, didiEntity = didiEntity) {
-                    didiEntity.wealth_ranking = it.rank
-                    viewModel.updateDidiRankInDb(didiEntity,it.rank, (context as MainActivity).isOnline.value ?: false, object : NetworkCallbackListener{
-                            override fun onSuccess() {
+            if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+                Column {
+                    Spacer(
+                        modifier = Modifier
+                            .height(10.dp)
+                            .fillMaxWidth()
+                    )
+                    ExpandableContent(visible = expanded, didiEntity = didiEntity) {
+                        didiEntity.wealth_ranking = it.rank
+                        viewModel.updateDidiRankInDb(
+                            didiEntity,
+                            it.rank,
+                            (context as MainActivity).isOnline.value ?: false,
+                            object : NetworkCallbackListener {
+                                override fun onSuccess() {
 
-                            }
+                                }
 
-                            override fun onFailed() {
-                                showCustomToast(context, SYNC_FAILED)
-                            }
+                                override fun onFailed() {
+                                    showCustomToast(context, SYNC_FAILED)
+                                }
 
-                        })
-                    onCardArrowClick(false)
+                            })
+                        onCardArrowClick(false)
+                    }
                 }
+            } else {
+                Spacer(
+                    modifier = Modifier
+                        .height(14.dp)
+                        .fillMaxWidth()
+                )
             }
         }
 
@@ -664,7 +696,7 @@ fun ShowDidisFromTola(
 ) {
     Column(modifier = Modifier.then(modifier)) {
         Row(
-            modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 10.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 16.dp, bottom = 10.dp, top = 4.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -675,21 +707,55 @@ fun ShowDidisFromTola(
                 colorFilter = ColorFilter.tint(textColorBlueLight)
             )
 
+            Spacer(modifier = Modifier.width(10.dp))
+
             Text(
                 text = didiTola,
                 style = TextStyle(
-                    color = black2,
+                    color = textColorDark,
                     fontSize = 16.sp,
+                    fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
                 ),
                 textAlign = TextAlign.Start,
                 modifier = Modifier.padding(end = 10.dp)
             )
-            Text(
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Box(
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .border(
+                        width = 1.dp,
+                        color = yellowBg,
+                        shape = CircleShape
+                    )
+                    .background(
+                        yellowBg,
+                        shape = CircleShape
+                    )
+                    .padding(6.dp)
+                    .size(28.dp)
+                    .aspectRatio(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "${didiList.size}",
+                    color = greenOnline,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .absolutePadding(bottom = 3.dp),
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = NotoSans,
+                )
+            }
+            /*Text(
                 text = "${didiList.size}",
                 style = TextStyle(
-                    color = black2,
+                    color = greenOnline,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
                     fontFamily = NotoSans
@@ -699,7 +765,7 @@ fun ShowDidisFromTola(
                     .circleLayout()
                     .padding(3.dp),
                 textAlign = TextAlign.Start
-            )
+            )*/
         }
 
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {

@@ -20,6 +20,8 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ApiResponseFailException
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
@@ -117,7 +119,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         prefRepo.saveSelectedVillage(selectedVillageEntity)
     }
 
-    fun callWorkFlowAPI(){
+    fun callWorkFlowApiToGetWorkFlowId(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
@@ -126,8 +128,8 @@ class BpcProgressScreenViewModel @Inject constructor(
                     val response = apiService.addWorkFlow(
                         listOf(
                             AddWorkFlowRequest(
-                                StepStatus.INPROGRESS.name,prefRepo.getSelectedVillage().id,
-                                bpcStep.programId,bpcStep.id)
+                                StepStatus.INPROGRESS.name, prefRepo.getSelectedVillage().id,
+                                bpcStep.programId, bpcStep.id)
                         ) )
                     withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
@@ -135,23 +137,26 @@ class BpcProgressScreenViewModel @Inject constructor(
                                 stepsListDao.updateWorkflowId(bpcStep.id, it[0].id, prefRepo.getSelectedVillage().id, it[0].status)
                             }
                         }else{
+                            val error = ApiResponseFailException(response.message)
+                            onCatchError(error, ApiType.WORK_FLOW_API)
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
                     }
                 }
 
             }catch (ex:Exception){
+                onCatchError(ex, ApiType.WORK_FLOW_API)
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+
     }
     fun addDidisToDidiDaoIfNeeded() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -170,7 +175,8 @@ class BpcProgressScreenViewModel @Inject constructor(
     fun getBpcCompletedDidiCount() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
-            val verifiedDidiCount = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }.size
+//            val passingScore = questionListDao.getPassingScore()
+            val verifiedDidiCount = didiList.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
             withContext(Dispatchers.Main) {
                 bpcCompletedDidiCount.value = verifiedDidiCount
             }

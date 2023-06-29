@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.ui.login
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -224,10 +222,15 @@ fun OtpVerificationScreen(
                                     }
                                 }
                             }
-
+                            RetryHelper.autoReadOtp.value = ""
                         }
-                        else
-                            snackState.addMessage(message=message, isSuccess = false, isCustomIcon = false)
+                        else {
+                            snackState.addMessage(
+                                message = message,
+                                isSuccess = false,
+                                isCustomIcon = false
+                            )
+                        }
                     }
                 },
                 modifier = Modifier

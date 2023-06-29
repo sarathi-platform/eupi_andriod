@@ -206,6 +206,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                             RetryHelper.updateOtp(mViewModel.baseOtpNumber) { success, message ->
                                 if (success){
                                     RetryHelper.tokenExpired.value = false
+                                    RetryHelper.autoReadOtp.value = ""
                                     mViewModel.tokenExpired.value = false
                                     showCustomToast(this,"Session Restored")
                                 }
