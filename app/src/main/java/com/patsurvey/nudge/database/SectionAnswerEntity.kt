@@ -43,7 +43,7 @@ data class SectionAnswerEntity(
     val optionValue: Int? = -1,
 
     @SerializedName("totalAssetAmount")
-    val totalAssetAmount: Int? = 0,
+    val totalAssetAmount: Double? = 0.0,
 
     @SerializedName("summary")
     val summary: String? = BLANK_STRING,

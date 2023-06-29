@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -154,7 +155,7 @@ fun QuestionScreen(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= sortedOptionList?.get(selectedIndex)!!,
-                                    assetAmount = 0,
+                                    assetAmount = 0.0,
                                     quesType = QuestionType.RadioButton.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = selectedIndex
@@ -192,7 +193,7 @@ fun QuestionScreen(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= questionList[it].options[selectedIndex],
-                                    assetAmount = 0,
+                                    assetAmount = 0.0,
                                     quesType = QuestionType.List.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = viewModel.listTypeAnswerIndex.value
@@ -227,6 +228,7 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
+                                questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
                                 val newAnswerOptionModel= OptionsItem( BLANK_STRING,0,0,0,
@@ -235,7 +237,8 @@ fun QuestionScreen(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
-                                    assetAmount = viewModel.totalAmount.value,
+                                    assetAmount = if(questionList[it].questionFlag.equals(
+                                            QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                                     quesType = QuestionType.Numeric_Field.name,
                                     summary = (questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString()) else context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
                                     selIndex = -1
@@ -331,6 +334,7 @@ fun QuestionScreen(
             .visible(nextButtonVisible.value)
             .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomEnd)) {
+            viewModel.nextCTAVisibility.value=nextButtonVisible.value
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
@@ -351,7 +355,7 @@ fun QuestionScreen(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
                             answerOptionModel = newAnswerOptionModel,
-                            assetAmount = viewModel.totalAmount.value,
+                            assetAmount = viewModel.totalAmount.value + viewModel.enteredAmount.value,
                             quesType = QuestionType.Numeric_Field.name,
                             summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
                             selIndex = -1
@@ -387,7 +391,6 @@ fun QuestionScreen(
 }
 
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
-    Log.d(TAG, "navigateToSummeryPage: ${quesViewModel.prefRepo.isUserBPC()} ")
     if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true)){
         if(quesViewModel.prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_one_summary_screen/$didiId")

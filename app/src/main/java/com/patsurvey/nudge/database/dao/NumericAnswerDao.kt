@@ -41,6 +41,7 @@ interface NumericAnswerDao {
     @Query("SELECT SUM(weight * count) FROM $NUMERIC_TABLE_NAME where didiId =:didiId AND questionId = :questionId")
     fun fetchTotalAmount(questionId:Int,didiId:Int):Int
 
+
     @Query("DELETE from $NUMERIC_TABLE_NAME")
     fun deleteAllNumericAnswers()
 }

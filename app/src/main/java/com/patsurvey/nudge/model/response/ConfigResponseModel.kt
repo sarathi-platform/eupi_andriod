@@ -9,7 +9,7 @@ data class ConfigResponseModel(
     @Expose
     val languageList:List<LanguageEntity>,
 
-    @SerializedName("image_profile_link")
+    @SerializedName("questionImageUrlList")
     @Expose
     val image_profile_link:List<String>
 )

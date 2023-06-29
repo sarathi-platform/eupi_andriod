@@ -509,7 +509,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                         optionValue = answersItem?.options?.get(
                                                                             0
                                                                         )?.optionValue,
-                                                                        totalAssetAmount = answersItem?.totalWeight,
+                                                                        totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                         needsToPost = false,
                                                                         answerValue = answersItem?.options?.get(
                                                                             0
@@ -560,7 +560,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                     optionValue = answersItem?.options?.get(
                                                                         0
                                                                     )?.optionValue,
-                                                                    totalAssetAmount = answersItem?.totalWeight,
+                                                                    totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                     needsToPost = false,
                                                                     answerValue = answersItem?.options?.get(
                                                                         0
@@ -923,7 +923,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue,
-                                                                            totalAssetAmount = answersItem?.totalWeight,
+                                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
                                                                             answerValue = answersItem?.options?.get(
                                                                                 0
@@ -975,7 +975,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue,
-                                                                            totalAssetAmount = answersItem?.totalWeight,
+                                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
                                                                             answerValue = answersItem?.options?.get(
                                                                                 0
