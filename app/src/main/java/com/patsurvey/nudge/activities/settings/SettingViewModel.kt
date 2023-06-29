@@ -368,7 +368,8 @@ class SettingViewModel @Inject constructor(
 //        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            val didiIDList =
-            if(answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if(!bpcSyncHelper.isBPCDidiNeedToBeReplaced()
+                && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
