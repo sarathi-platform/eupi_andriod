@@ -138,5 +138,5 @@ interface ApiService {
 
     @POST("/write-api/bpc/save-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun saveMatchSummary(@Body saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<SaveMatchSummaryResponse>
+    suspend fun saveMatchSummary(@Body saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<ArrayList<SaveMatchSummaryResponse>>
 }
