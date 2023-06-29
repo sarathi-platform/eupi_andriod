@@ -952,7 +952,10 @@ fun showBPCSyncDialog(
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                if (syncBPCStatus.value == 1) stringResource(R.string.sync_your_data) else if (syncBPCStatus.value == 0 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                if (!isBPCDataNeedToBeSynced.value
+                                    && syncBPCStatus.value == 0) stringResource(R.string.your_data_already_synced)
+                                else if (!isBPCDataNeedToBeSynced.value
+                                    && syncBPCStatus.value == 3 ) stringResource(R.string.data_synced_successfully) else stringResource(R.string.sync_your_data),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -1040,7 +1043,9 @@ fun showBPCSyncDialog(
                                         modifier = Modifier
                                     )*/
                                 }
-                                if (syncBPCStatus.value == 0) {
+                                if (!isBPCDataNeedToBeSynced.value
+                                    && (syncBPCStatus.value == 3
+                                            || syncBPCStatus.value == 0)) {
                                     Log.e("sync dialog", "step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
