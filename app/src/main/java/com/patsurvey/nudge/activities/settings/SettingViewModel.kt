@@ -5,7 +5,9 @@ import android.os.CountDownTimer
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -27,14 +29,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.SYNC_FAILED
-import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TolaStatus
-import com.patsurvey.nudge.utils.getStepStatusFromOrdinal
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -67,23 +62,27 @@ class SettingViewModel @Inject constructor(
     val formCAvailabe = mutableStateOf(false)
     val onLogoutError = mutableStateOf(false)
     var syncPercentage = mutableStateOf(0f)
+    var syncBPCPercentage = mutableStateOf(0f)
     var stepOneSyncStatus = mutableStateOf(0)
     var stepTwoSyncStatus = mutableStateOf(0)
     var stepThreeSyncStatus = mutableStateOf(0)
     var stepFourSyncStatus = mutableStateOf(0)
     var stepFifthSyncStatus = mutableStateOf(0)
+    var bpcSyncStatus = mutableStateOf(0)
     var hitApiStatus = mutableStateOf(0)
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
     val showAPILoader = mutableStateOf(false)
     var showSyncDialog = mutableStateOf(false)
+    var showBPCSyncDialog = mutableStateOf(false)
 
     val lastSyncTime = mutableStateOf(prefRepo.getPref(LAST_SYNC_TIME, 0L))
 
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
         questionDao)
+    var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,bpcSelectedDidiDao,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao)
     fun isFormAAvailableForVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
@@ -225,14 +224,22 @@ class SettingViewModel @Inject constructor(
 
     override fun onServerError(error: ErrorModel?) {
         Log.e("server error","called")
-        if(hitApiStatus.value == 1)
-            onLogoutError.value = true
-        else if(hitApiStatus.value == 2){
-            showLoader.value = false
-            syncPercentage.value = 1f
-            showSyncDialog.value = false
-            showAPILoader.value = false
-            networkErrorMessage.value = error?.message.toString()
+        when (hitApiStatus.value) {
+            1 -> onLogoutError.value = true
+            2 -> {
+                showLoader.value = false
+                syncPercentage.value = 1f
+                showSyncDialog.value = false
+                showAPILoader.value = false
+                networkErrorMessage.value = error?.message.toString()
+            }
+            3 -> {
+                networkErrorMessage.value = SYNC_FAILED
+                syncBPCPercentage.value = 1f
+                showSyncDialog.value = false
+                showBPCSyncDialog.value = false
+                bpcSyncStatus.value = 3
+            }
         }
         /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (context != null) {
@@ -248,7 +255,7 @@ class SettingViewModel @Inject constructor(
 
     }
 
-    fun getStepOneSize(stepOneSize : MutableState<String>) {
+/*    fun getStepOneSize(stepOneSize : MutableState<String>) {
         syncHelper.getStepOneDataSizeInSync(stepOneSize)
     }
 
@@ -266,7 +273,7 @@ class SettingViewModel @Inject constructor(
 
     fun getStepFiveSize(stepFiveSize : MutableState<String>) {
         syncHelper.getStepFiveDataSizeInSync(stepFiveSize)
-    }
+    }*/
 
     fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
         hitApiStatus.value = 2
@@ -298,6 +305,35 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun syncBPCDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>,syncBPCStatus : MutableState<Int>) {
+        bpcSyncStatus = syncBPCStatus
+        hitApiStatus.value = 3
+        showBPCSyncDialog = syncDialog
+        bpcSyncStatus.value = 2
+        if(isInternetAvailable(cxt)){
+            bpcSyncHelper.syncBPCDataToServer(object :
+                NetworkCallbackListener {
+                override fun onSuccess() {
+                    object: CountDownTimer(0, 1000){
+                        override fun onTick(p0: Long) {
+
+                        }
+                        override fun onFinish() {
+                            networkErrorMessage.value = SYNC_SUCCESSFULL
+                            syncBPCPercentage.value = 1f
+                            showBPCSyncDialog.value = false
+                            bpcSyncStatus.value = 3
+                        }
+                    }.start()
+                }
+
+                override fun onFailed() {
+
+                }
+            })
+        }
+    }
+
     private fun resetPosition() {
         syncPercentage.value = 0f
         stepOneSyncStatus.value = 0
@@ -305,8 +341,6 @@ class SettingViewModel @Inject constructor(
         stepThreeSyncStatus.value = 0
         stepFourSyncStatus.value = 0
         stepFifthSyncStatus.value = 0
-//        showSyncDialog.value = false
-//        showLoader.value = false
     }
 
     fun isDataNeedToBeSynced(
@@ -326,6 +360,27 @@ class SettingViewModel @Inject constructor(
         isThirdStepNeedToBeSync(stepThreeSyncStatus)
         isFourthStepNeedToBeSync(stepFourSyncStatus)
         isFifthStepNeedToBeSync(stepFifthSyncStatus)
+    }
+
+    fun isBPCDataNeedToBeSynced(
+        isBPCDataNeedToBeSynced: MutableState<Boolean>
+    ) {
+//        bpcSyncStatus = localBpcSyncStatus
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+//            val didiIDList =
+            if(answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+                && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
+                && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
+                && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
+                && isStatusStepStatusSync(0)
+                && didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id).isEmpty()){
+                withContext(Dispatchers.Main) {
+                    isBPCDataNeedToBeSynced.value = false
+                }
+            } else {
+                isBPCDataNeedToBeSynced.value = bpcSyncStatus.value == 0
+            }
+        }
     }
 
     fun performLogout(networkCallbackListener: NetworkCallbackListener){
