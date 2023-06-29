@@ -199,5 +199,6 @@ const val QUESTION_FLAG_WEIGHT = "weight"
 const val NUDGE_IMAGE_FOLDER = "nudge_images"
 
 const val SENDER_NUMBER = "TM-DYNRLM"
+const val PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ = "NEED_TO_POST_BPC_MATCH_SCORE_FOR_"
 
 
