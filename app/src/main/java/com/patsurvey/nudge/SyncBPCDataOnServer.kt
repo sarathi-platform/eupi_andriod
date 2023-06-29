@@ -66,7 +66,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     savePATSummeryToServer(networkCallbackListener)
                 } else {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
                 }
             } catch (ex: Exception) {
                 settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
@@ -169,13 +171,17 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             stepsListDao.updateNeedToPost(bpcStep.id, false)
                             sendBpcMatchScore(networkCallbackListener)
                         }else{
-                            networkCallbackListener.onFailed()
+                            withContext(Dispatchers.Main) {
+                                networkCallbackListener.onFailed()
+                            }
 //                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
                         }
                     }
                 }
             }catch (ex:Exception){
-                networkCallbackListener.onFailed()
+                withContext(Dispatchers.Main) {
+                    networkCallbackListener.onFailed()
+                }
                 settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
             }
         }
@@ -205,9 +211,13 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 val requestList = arrayListOf(saveMatchSummaryRequest)
                 val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
                 if (saveMatchSummaryResponse.status.equals(SUCCESS, true)){
-                    networkCallbackListener.onSuccess()
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onSuccess()
+                    }
                 } else {
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
                 }
             } catch (ex: Exception){
                 settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
@@ -274,7 +284,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 startSyncTimer(networkCallbackListener)
                             }
                         } else {
-                            networkCallbackListener.onFailed()
+                            withContext(Dispatchers.Main) {
+                                networkCallbackListener.onFailed()
+                            }
                         }
                     } catch (ex: Exception) {
                         settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
@@ -413,7 +425,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 }
 //                                        checkDidiPatStatus()
                             } else {
-                                networkCallbackListener.onFailed()
+                                withContext(Dispatchers.Main) {
+                                    networkCallbackListener.onFailed()
+                                }
                             }
                             apiService.updateDidiScore(scoreDidiList)
                         }
@@ -422,7 +436,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     checkPendingPatStatus(networkCallbackListener)
                 }
             } catch (ex: Exception) {
-                networkCallbackListener.onFailed()
+                withContext(Dispatchers.Main) {
+                    networkCallbackListener.onFailed()
+                }
                 ex.printStackTrace()
                 settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
             }
