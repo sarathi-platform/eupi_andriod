@@ -121,7 +121,8 @@ fun NumericFieldTypeQuestion(
                                     questionId = questionId,
                                     count = it,
                                     didiId = didiId,
-                                    id = 0
+                                    id = 0,
+                                    questionFlag = questionFlag
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity)
@@ -133,7 +134,8 @@ fun NumericFieldTypeQuestion(
                                     questionId = questionId,
                                     count = it,
                                     didiId = didiId,
-                                    id = 0
+                                    id = 0,
+                                    questionFlag = questionFlag
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity)
