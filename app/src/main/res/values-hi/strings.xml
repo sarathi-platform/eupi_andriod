@@ -47,7 +47,7 @@
     <string name="medium_text">मध्यम</string>
     <string name="rich_text">अमीर</string>
     <string name="social_mapping">सामाजिक मानचित्रण</string>
-    <string name="pat_survey_title">PAT Survey</string>
+    <string name="pat_survey_title">PAT सर्वेक्षण</string>
     <string name="showing_added_tolas">जोड़े गए %s टोला दिखा रहा है</string>
     <string name="showing">दिखा रहा है</string>
     <string name="added_tolas">जोड़े गए टोला</string>
@@ -233,13 +233,13 @@
     <string name="view">View Form</string>
     <string name="continue_pat">PAT जारी रखें</string>
 
-    <string name="step_1">Step 1</string>
-    <string name="step_2">Step 2</string>
-    <string name="step_3">Step 3</string>
-    <string name="step_4">Step 4</string>
-    <string name="step_5">Step 5</string>
-    <string name="vo_endorsement">VO Endorsement</string>
-    <string name="close">Close</string>
+    <string name="step_1">स्टेप 1</string>
+    <string name="step_2">स्टेप 2</string>
+    <string name="step_3">स्टेप 3</string>
+    <string name="step_4">स्टेप 4</string>
+    <string name="step_5">स्टेप 5</string>
+    <string name="vo_endorsement">वीओ अनुमोदन</string>
+    <string name="close">बंद करें</string>
 
     <string name="pat_inprogresee_status_text">चालू</string>
     <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नहीं हुई</string>

@@ -447,7 +447,7 @@ class AddDidiViewModel @Inject constructor(
     fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonDidi = JsonArray()
-            val filteredDidiList = didiDao.getAllNeedToPostDidiRanking(true)
+            val filteredDidiList = didiDao.fetchAllDidiNeedToPost(true, "")
             if (filteredDidiList.isNotEmpty()) {
                 for(didi in filteredDidiList){
                     val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)

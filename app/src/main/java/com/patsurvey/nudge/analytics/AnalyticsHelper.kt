@@ -61,10 +61,39 @@ object AnalyticsHelper {
         params.putString(EventParams.USER_NAME.eventParam, mPrefRepo?.getPref(PREF_KEY_USER_NAME, "") ?: "")
         params.putString(EventParams.SDK_INT.eventParam, EventValues.SDK_INT_VALUE.eventValue)
         params.putString(EventParams.BUILD_VERSION_NAME.eventParam, EventValues.BUILD_VERSION_NAME.eventValue)
+        params.putString(EventParams.BUILD_DEVICE.eventParam, EventValues.DEVICE.eventValue)
+        params.putString(EventParams.BUILD_MANUFACTURER.eventParam, EventValues.MANUFACTURER.eventValue)
+        params.putString(EventParams.BUILD_MODEL.eventParam, EventValues.MODEL.eventValue)
+        params.putString(EventParams.BUILD_BRAND.eventParam, EventValues.BRAND.eventValue)
 
         firebaseAnalytics?.logEvent(eventName, params)
         i("AnalyticsHelper", "logEvent- ${eventName} -> $params")
 
+    }
+
+    fun logLocationEvents(events: Events, paramsMap: Map<EventParams, Any>? = null) {
+        val params = Bundle()
+        if (paramsMap != null) {
+            for ((key, value) in paramsMap) {
+                when (value) {
+                    is Int -> params.putLong(key.eventParam, value.toLong())
+                    is Long -> params.putLong(key.eventParam, value)
+                    is String -> params.putString(key.eventParam, value)
+                    is Double -> params.putDouble(key.eventParam, value)
+                    else -> params.putString(key.eventParam, value.toString())
+                }
+            }
+        }
+        params.putString(EventParams.USER_NAME.eventParam, mPrefRepo?.getPref(PREF_KEY_USER_NAME, "") ?: "")
+        params.putString(EventParams.SDK_INT.eventParam, EventValues.SDK_INT_VALUE.eventValue)
+        params.putString(EventParams.BUILD_VERSION_NAME.eventParam, EventValues.BUILD_VERSION_NAME.eventValue)
+        params.putString(EventParams.BUILD_DEVICE.eventParam, EventValues.DEVICE.eventValue)
+        params.putString(EventParams.BUILD_MANUFACTURER.eventParam, EventValues.MANUFACTURER.eventValue)
+        params.putString(EventParams.BUILD_MODEL.eventParam, EventValues.MODEL.eventValue)
+        params.putString(EventParams.BUILD_BRAND.eventParam, EventValues.BRAND.eventValue)
+
+        firebaseAnalytics?.logEvent(events.eventName, params)
+        i("AnalyticsHelper", "logEvent- ${events.eventName} -> $params")
     }
 
     private fun getErrorCode(exception: Exception): Int {

@@ -7,7 +7,6 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
-import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -29,7 +28,14 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.getStepStatusFromOrdinal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -295,8 +301,12 @@ class SettingViewModel @Inject constructor(
                                 networkErrorMessage.value = SYNC_SUCCESSFULL
                                 syncPercentage.value = 1f
                                 showLoader.value = false
+                                val updatedSyncTime = System.currentTimeMillis()
+                                lastSyncTime.value = updatedSyncTime
+                                prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
                             }
                         }.start()
+
                     }
 
                     override fun onFailed() {
