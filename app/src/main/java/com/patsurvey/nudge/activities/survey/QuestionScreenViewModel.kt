@@ -23,6 +23,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.roundOffDecimal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -236,7 +237,11 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
 
-    fun updateNumericAnswer(numericAnswer: NumericAnswerEntity) {
+    fun updateNumericAnswer(
+        numericAnswer: NumericAnswerEntity,
+        index: Int,
+        optionList: List<OptionsItem>
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 val optionDetails = numericAnswerDao.getOptionDetails(
@@ -253,18 +258,29 @@ class QuestionScreenViewModel @Inject constructor(
                 } else {
                     numericAnswerDao.insertNumericOption(numericAnswer)
                 }
-
-                val amountList = numericAnswerDao.getTotalAssetAmount(numericAnswer.questionId,numericAnswer.didiId)
-                if(amountList.isNotEmpty() && amountList.size>0){
-                    var amt=0
-                    amountList.forEach {
-                        amt += it
+                 if(numericAnswer.questionFlag.equals(QUESTION_FLAG_RATIO,true)){
+                    val earningMemberCount=calculateCountWeight(optionList[1])
+                    val totalMemberCount=calculateCountWeight(optionList[0])
+                    if(earningMemberCount>0 && totalMemberCount>0){
+                        totalAmount.value = roundOffDecimal(earningMemberCount/totalMemberCount)?:0.00
+                    }else totalAmount.value=0.00
+                }else{
+                    val amountList = numericAnswerDao.getTotalAssetAmount(numericAnswer.questionId,numericAnswer.didiId)
+                    if(amountList.isNotEmpty() && amountList.size>0){
+                        var amt=0
+                        amountList.forEach {
+                            amt += it
+                        }
+                        totalAmount.value = amt.toDouble()
                     }
-                    totalAmount.value = amt.toDouble()
                 }
+
 
             }
         }
+    }
+    fun calculateCountWeight(optionsItem: OptionsItem): Double {
+        return (optionsItem.count?:0).times(optionsItem.weight?:0).toDouble()
     }
 
     fun updateAnswerOptions(questionIndex: Int, didiId: Int) {
@@ -304,9 +320,13 @@ class QuestionScreenViewModel @Inject constructor(
                     val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
                     val totalAssetAmount= answerDao.getTotalAssetAmount(didiId,questionList.value[quesIndex].questionId?:0)
                     totalAmount.value =  totalDBAmount.toDouble()
+                    if(questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_RATIO,true)){
+                        totalAmount.value = totalAssetAmount
+                    }
+
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    enteredAmount.value= if((totalAssetAmount-totalDBAmount)>0) (totalAssetAmount-totalDBAmount) else 0
+                    enteredAmount.value= if((totalAssetAmount-totalDBAmount)>0) ((totalAssetAmount-totalDBAmount).toInt()) else 0
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1

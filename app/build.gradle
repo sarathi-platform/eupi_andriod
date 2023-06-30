@@ -9,7 +9,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.0.30"
+def version = "0.0.32"
 android {
     compileSdk 33
 
@@ -197,5 +197,6 @@ dependencies {
     implementation "com.google.android.gms:play-services-auth:19.0.0"
     implementation "com.google.android.gms:play-services-auth-api-phone:17.5.0"
 
+    implementation "com.github.barteksc:android-pdf-viewer:3.2.0-beta.1"
 
 }

@@ -142,4 +142,20 @@ class ConfigViewModel @Inject constructor(
     fun getImagePath(context: Context, imageName:String): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
     }
+
+    fun checkAndAddLanguage() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val localLanguages = languageListDao.getAllLanguages()
+            if (localLanguages.isEmpty())
+                languageListDao.insertLanguage(
+                    LanguageEntity(
+                        id = 2,
+                        language = "English",
+                        langCode = "en",
+                        orderNumber = 1,
+                        localName = "English"
+                    )
+                )
+        }
+    }
 }

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
@@ -123,7 +124,7 @@ class VillageSelectionViewModel @Inject constructor(
             if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                 if ((System.currentTimeMillis() - prefRepo.getPref(
                         LAST_UPDATE_TIME, 0L
-                    )) > TimeUnit.DAYS.toMillis(5)
+                    )) > TimeUnit.DAYS.toMillis(30)
                 ) if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
                         CRP_USER_TYPE, true
                     )
@@ -894,15 +895,23 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val numAnswerList: ArrayList<NumericAnswerEntity> =
                                                         arrayListOf()
                                                     it.forEach { item ->
-                                                        didiDao.updatePATProgressStatus(
-                                                            patSurveyStatus = item.patSurveyStatus
-                                                                ?: 0,
-                                                            section1Status = item.section1Status
-                                                                ?: 0,
-                                                            section2Status = item.section2Status
-                                                                ?: 0,
-                                                            didiId = item.beneficiaryId ?: 0
-                                                        )
+                                                        try{
+                                                            Log.d("TAG", "fetchVillageList: ${item.beneficiaryId} :: ${item.patSurveyStatus} :: ${item.section1Status} :: ${item.section2Status} ")
+
+                                                            didiDao.updatePATProgressStatus(
+                                                                patSurveyStatus = item.patSurveyStatus
+                                                                    ?: 0,
+                                                                section1Status = item.section1Status
+                                                                    ?: 0,
+                                                                section2Status = item.section2Status
+                                                                    ?: 0,
+                                                                didiId = item.beneficiaryId ?: 0
+                                                            )
+                                                        }catch (ex:Exception){
+                                                            ex.printStackTrace()
+                                                            Log.e("TAG", "fetchVillageList: Eroor ${ex.message}")
+                                                        }
+
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
                                                                 if (answersItem?.questionType?.equals(
@@ -923,21 +932,19 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
                                                                             summary = answersItem?.summary,
-                                                                            optionValue = answersItem?.options?.get(
+                                                                            optionValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.optionValue,
+                                                                            )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.options?.get(
+                                                                            answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.summary
-                                                                                ?: BLANK_STRING,
-                                                                            type = answersItem?.questionType
-                                                                                ?: QuestionType.RadioButton.name
+                                                                            )?.summary?: BLANK_STRING) else BLANK_STRING,
+                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name
                                                                         )
                                                                     )
 
-                                                                    if (answersItem?.options?.isNotEmpty() == true) {
+                                                                    if (answersItem.options?.isNotEmpty() == true) {
 
                                                                         answersItem?.options?.forEach { optionItem ->
                                                                             numAnswerList.add(
@@ -1122,6 +1129,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                             questionList.surveyPassingMark
                                                     }
                                                     list?.questionList?.let {
+                                                        it.forEach {q->
+                                                            Log.d("TAG", "fetchVillageList: ${q?.headingProductAssetValue} ")
+                                                        }
+
                                                         questionListDao.insertAll(it as List<QuestionEntity>)
                                                     }
                                                 }
@@ -1169,37 +1180,44 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchUserDetails(apiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 2)
-                withContext(Dispatchers.IO) {
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
-                            prefRepo.savePref(PREF_KEY_USER_NAME, it.username)
-                            prefRepo.savePref(PREF_KEY_NAME, it.name)
-                            prefRepo.savePref(PREF_KEY_EMAIL, it.email)
-                            prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
-                            prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
-                            prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName)
-                            prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName)
-                            villageListDao.insertAll(it.villageList)
-                            _villagList.emit(villageListDao.getAllVillages())
-                            if (it.typeName.equals(BPC_USER_TYPE, true)) {
-                                prefRepo.setIsUserBPC(true)
+                val localVillageList = villageListDao.getAllVillages()
+                if (!localVillageList.isNullOrEmpty()) {
+                    _villagList.value = localVillageList
+                    apiSuccess()
+                } else {
+                    val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 2)
+                    withContext(Dispatchers.IO) {
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                prefRepo.savePref(PREF_KEY_USER_NAME, it.username)
+                                prefRepo.savePref(PREF_KEY_NAME, it.name)
+                                prefRepo.savePref(PREF_KEY_EMAIL, it.email)
+                                prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
+                                prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
+                                prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName)
+                                prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName)
+                                villageListDao.insertAll(it.villageList)
+                                _villagList.emit(villageListDao.getAllVillages())
+                                if (it.typeName.equals(BPC_USER_TYPE, true)) {
+                                    prefRepo.setIsUserBPC(true)
+                                }
+                                apiSuccess()
                             }
-                            apiSuccess()
-                        }
 
-                        if (response.data == null) showLoader.value = false
-                    } else if (response.status.equals(FAIL, true)) {
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
-                        }
-                    } else {
-                        onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
-                        withContext(Dispatchers.Main) {
-                            showLoader.value = false
+                            if (response.data == null) showLoader.value = false
+                        } else if (response.status.equals(FAIL, true)) {
+                            withContext(Dispatchers.Main) {
+                                showLoader.value = false
+                            }
+                        } else {
+                            onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                            withContext(Dispatchers.Main) {
+                                showLoader.value = false
+                            }
                         }
                     }
                 }
+
             } catch (ex: Exception) {
                 Log.d("VillageSelectionViewModel", "fetchUserDetails: catch called")
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)

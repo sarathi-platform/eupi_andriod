@@ -1,31 +1,17 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.pdf.PdfRenderer
-import android.net.Uri
 import android.os.Environment
-import android.os.ParcelFileDescriptor
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.calculatePan
-import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.gestures.detectTransformGestures
-import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
@@ -35,14 +21,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -50,35 +30,21 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
-import coil.imageLoader
-import coil.memory.MemoryCache
 import coil.request.ImageRequest
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.black1
+import com.github.barteksc.pdfviewer.PDFView
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.pdfViewerBg
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.uriFromFile
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.isActive
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import net.engawapg.lib.zoomable.rememberZoomState
-import net.engawapg.lib.zoomable.zoomable
 import java.io.File
-import kotlin.math.sqrt
 
 @Composable
 fun PdfViewer(
@@ -99,6 +65,10 @@ fun PdfViewer(
     )
 
     val nonUpdatedUri = uriFromFile(context, pdfFile)
+    val pdfView = remember { PDFView(context, null) }
+    val zoomState = rememberZoomState()
+
+/*    val nonUpdatedUri = uriFromFile(context, pdfFile)
     val uri = Uri.fromFile(nonUpdatedUri.path?.replace("content:", "file:")
         ?.let { File(it) })
     val rendererScope = rememberCoroutineScope()
@@ -119,7 +89,7 @@ fun PdfViewer(
     }
     val imageLoader = LocalContext.current.imageLoader
     val imageLoadingScope = rememberCoroutineScope()
-    val zoomState = rememberZoomState()
+    val zoomState = rememberZoomState()*/
 
     val lazyScrollState = rememberLazyListState()
     Scaffold(
@@ -160,8 +130,40 @@ fun PdfViewer(
         },
         backgroundColor = pdfViewerBg
     ) {
-
         BoxWithConstraints(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(pdfViewerBg)
+                .padding(it)
+                .padding(horizontal = 10.dp)
+        ) {
+
+            AndroidView(
+                factory = { ctx ->
+                    pdfView.fromUri(nonUpdatedUri)
+                        .enableDoubletap(true)
+                        .enableSwipe(true)
+                        .defaultPage(0)
+                        .enableAnnotationRendering(false)
+                        .onPageChange { page, _ ->
+                            // Handle page change if needed
+                        }
+                        .onLoad { totalPages ->
+                            // Handle load event if needed
+                        }
+                        .load()
+
+                    pdfView
+                },
+                update = {
+
+                },
+                modifier = Modifier.fillMaxSize().background(pdfViewerBg)
+            )
+        }
+
+
+        /*BoxWithConstraints(
             modifier = modifier
                 .fillMaxWidth()
                 .background(pdfViewerBg)
@@ -285,7 +287,7 @@ fun PdfViewer(
                 }
                 item { Spacer(modifier = Modifier.height(8.dp)) }
             }
-        }
+        }*/
     }
 }
 

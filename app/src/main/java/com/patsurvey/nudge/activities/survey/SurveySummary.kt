@@ -377,10 +377,13 @@ fun SurveySummary(
                             .padding(vertical = 8.dp)
                     ) {
                         LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(4.dp),
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
                             contentPadding = PaddingValues(bottom = bottomPadding),
                             modifier = Modifier.padding(bottom = 10.dp)
                         ) {
+                            item {
+                                Spacer(modifier = Modifier.fillMaxWidth().height(6.dp))
+                            }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
                                 itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
                                     didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
@@ -411,7 +414,7 @@ fun SurveySummary(
                                     )
                                 }
                             }
-                            item { Spacer(modifier = Modifier.height(6.dp)) }
+                            item { Spacer(modifier = Modifier.fillMaxWidth().height(6.dp)) }
                         }
                     }
                 }

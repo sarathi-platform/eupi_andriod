@@ -120,7 +120,7 @@ fun DidiItemCardForPat(
     onItemClick: (DidiEntity) -> Unit
 ) {
     Card(
-        elevation = 0.dp,
+        elevation = 10.dp,
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
