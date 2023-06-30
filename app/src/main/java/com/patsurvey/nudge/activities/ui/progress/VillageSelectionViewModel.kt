@@ -914,7 +914,6 @@ class VillageSelectionViewModel @Inject constructor(
 
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
-                                                                Log.d("TAG", "fetchVillageList:${item.beneficiaryId} :: ${Gson().toJson(answersItem)}")
                                                                 if (answersItem?.questionType?.equals(
                                                                         QuestionType.Numeric_Field.name
                                                                     ) == true
@@ -933,21 +932,19 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
                                                                             summary = answersItem?.summary,
-                                                                            optionValue = answersItem?.options?.get(
+                                                                            optionValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.optionValue,
+                                                                            )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.options?.get(
+                                                                            answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.summary
-                                                                                ?: BLANK_STRING,
-                                                                            type = answersItem?.questionType
-                                                                                ?: QuestionType.RadioButton.name
+                                                                            )?.summary?: BLANK_STRING) else BLANK_STRING,
+                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name
                                                                         )
                                                                     )
 
-                                                                    if (answersItem?.options?.isNotEmpty() == true) {
+                                                                    if (answersItem.options?.isNotEmpty() == true) {
 
                                                                         answersItem?.options?.forEach { optionItem ->
                                                                             numAnswerList.add(
