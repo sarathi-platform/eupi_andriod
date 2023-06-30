@@ -225,7 +225,7 @@ fun BpcAddMoreDidiScreen(
                     if (newFilteredDidiList.isEmpty()) {
                         item {
                             Text(
-                                text = "No more Didi's available to add or replace.",
+                                text = "No Didi's available to add or replace.",
                                 textAlign = TextAlign.Center,
                                 style = largeTextStyle,
                                 color = textColorDark,

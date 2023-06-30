@@ -90,9 +90,6 @@ fun VoEndorsementScreen(
     viewModel: VoEndorsementScreenViewModel,
     stepId: Int
 ) {
-    LaunchedEffect(true) {
-        viewModel.updateFilterDidiList()
-    }
     val showLoader = remember {
         mutableStateOf(false)
     }
@@ -117,6 +114,9 @@ fun VoEndorsementScreen(
         mutableStateOf(false)
     }
 
+    LaunchedEffect(true) {
+        viewModel.updateFilterDidiList()
+    }
 
     BackHandler {
         coroutineScope.launch {
