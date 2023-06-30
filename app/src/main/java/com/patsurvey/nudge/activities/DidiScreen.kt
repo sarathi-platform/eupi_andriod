@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -58,6 +59,7 @@ fun DidiScreen(
     }
 
     val configuration = LocalConfiguration.current
+    val context = LocalContext.current
     val screenHeight = configuration.screenHeightDp
     if(didiViewModel.showLoader.value){
         CustomProgressBar(modifier = Modifier)
@@ -131,8 +133,10 @@ fun DidiScreen(
 
             if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                 if(didiViewModel.isPATSurveyComplete.value){
-                    if(!openSummaryPage.value)
+                    if(!openSummaryPage.value) {
+                        (context as MainActivity).isBackFromSummary.value=false
                         onNavigateToSummary()
+                    }
                      openSummaryPage.value = true
                 }else{
                     SocialMappingDidiListScreen(
