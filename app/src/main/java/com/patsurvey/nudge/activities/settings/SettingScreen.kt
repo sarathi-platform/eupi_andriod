@@ -343,7 +343,7 @@ fun SettingScreen(
                             }
                         } else {
                             viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-                            if(!isBPCDataNeedToBeSynced.value){
+                            if(isBPCDataNeedToBeSynced.value){
                                 showToast(
                                     context,
                                     "Sync is required before logout,Please sync your data before logout."

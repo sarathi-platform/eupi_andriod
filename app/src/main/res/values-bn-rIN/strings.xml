@@ -290,7 +290,7 @@
     <string name="summary_didis_mobilised_text_singular">" Didi Mobilised"</string>
     <string name="summary_tolas_added_text_singular">" Tola Added"</string>
     <string name="enter_amount">পরিমান লিখুন</string>
-    <string name="sync_status">Sync Status</string>
+    <string name="sync_status">BPC Verification</string>
 
 
 </resources>
