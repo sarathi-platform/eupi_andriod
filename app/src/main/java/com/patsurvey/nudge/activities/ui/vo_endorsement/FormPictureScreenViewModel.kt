@@ -195,7 +195,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, ACCEPTED),
+                                                EditDidiWealthRankingRequest(if (didi.serverId == 0) didi.id else didi.serverId, StepType.VO_ENDROSEMENT.name, ACCEPTED),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
@@ -206,7 +206,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
-                                                EditDidiWealthRankingRequest(didi.id,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name),
+                                                EditDidiWealthRankingRequest(if (didi.serverId == 0) didi.id else didi.serverId, StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name),
                                             )
                                         )
                                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
