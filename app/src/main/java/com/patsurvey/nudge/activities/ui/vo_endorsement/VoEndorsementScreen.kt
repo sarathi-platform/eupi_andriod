@@ -32,6 +32,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -89,7 +90,9 @@ fun VoEndorsementScreen(
     viewModel: VoEndorsementScreenViewModel,
     stepId: Int
 ) {
-
+    LaunchedEffect(true) {
+        viewModel.updateFilterDidiList()
+    }
     val showLoader = remember {
         mutableStateOf(false)
     }
@@ -114,10 +117,6 @@ fun VoEndorsementScreen(
         mutableStateOf(false)
     }
 
-//    LaunchedEffect(key1 = true) {
-//        delay(100)
-//        viewModel.updateFilterDidiList()
-//    }
 
     BackHandler {
         coroutineScope.launch {

@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
@@ -891,17 +892,26 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val numAnswerList: ArrayList<NumericAnswerEntity> =
                                                         arrayListOf()
                                                     it.forEach { item ->
-                                                        didiDao.updatePATProgressStatus(
-                                                            patSurveyStatus = item.patSurveyStatus
-                                                                ?: 0,
-                                                            section1Status = item.section1Status
-                                                                ?: 0,
-                                                            section2Status = item.section2Status
-                                                                ?: 0,
-                                                            didiId = item.beneficiaryId ?: 0
-                                                        )
+                                                        try{
+                                                            Log.d("TAG", "fetchVillageList: ${item.beneficiaryId} :: ${item.patSurveyStatus} :: ${item.section1Status} :: ${item.section2Status} ")
+
+                                                            didiDao.updatePATProgressStatus(
+                                                                patSurveyStatus = item.patSurveyStatus
+                                                                    ?: 0,
+                                                                section1Status = item.section1Status
+                                                                    ?: 0,
+                                                                section2Status = item.section2Status
+                                                                    ?: 0,
+                                                                didiId = item.beneficiaryId ?: 0
+                                                            )
+                                                        }catch (ex:Exception){
+                                                            ex.printStackTrace()
+                                                            Log.e("TAG", "fetchVillageList: Eroor ${ex.message}")
+                                                        }
+
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
+                                                                Log.d("TAG", "fetchVillageList:${item.beneficiaryId} :: ${Gson().toJson(answersItem)}")
                                                                 if (answersItem?.questionType?.equals(
                                                                         QuestionType.Numeric_Field.name
                                                                     ) == true
@@ -1119,6 +1129,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                             questionList.surveyPassingMark
                                                     }
                                                     list?.questionList?.let {
+                                                        it.forEach {q->
+                                                            Log.d("TAG", "fetchVillageList: ${q?.headingProductAssetValue} ")
+                                                        }
+
                                                         questionListDao.insertAll(it as List<QuestionEntity>)
                                                     }
                                                 }

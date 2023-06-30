@@ -74,7 +74,7 @@ interface AnswerDao {
     @Query("SELECT SUM(weight)FROM ques_answer_table where didiId=:didiId AND type !='Numeric_Field'")
     fun getTotalWeightWithoutNumQues(didiId: Int): Double
     @Query("SELECT totalAssetAmount FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
-    fun getTotalAssetAmount(didiId: Int,questionId: Int): Int
+    fun getTotalAssetAmount(didiId: Int,questionId: Int): Double
 
     @Query("SELECT COUNT(*) FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
     fun isQuestionAnswered(didiId: Int,questionId: Int): Int
