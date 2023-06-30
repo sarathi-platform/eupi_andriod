@@ -379,7 +379,7 @@ fun PatDidiSummaryScreen(
                                 painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .height(180.dp)
+                                    .height(200.dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(
@@ -391,7 +391,7 @@ fun PatDidiSummaryScreen(
                         } else {
                             Box(
                                 modifier = Modifier
-                                    .height(180.dp)
+                                    .height(200.dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(

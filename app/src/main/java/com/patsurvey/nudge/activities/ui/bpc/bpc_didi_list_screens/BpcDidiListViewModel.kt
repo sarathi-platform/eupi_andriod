@@ -18,6 +18,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TAG
@@ -85,7 +86,7 @@ class BpcDidiListViewModel @Inject constructor(
             val localUnselectedDidiList =
                 bpcNonSelectedDidiDao.fetchAllDidisForVillage(prefRepo.getSelectedVillage().id)
             _selectedDidiList.value = localSeletctedDidiList
-            val filterdNonSelectedList = localUnselectedDidiList.filter { it.isAlsoSelected }
+            val filterdNonSelectedList = localUnselectedDidiList.filter { it.isAlsoSelected == BpcDidiSelectionStatus.SELECTED.ordinal }
             if (filterdNonSelectedList.isNotEmpty()) {
                 _selectedDidiList.value =
                     _selectedDidiList.value.toMutableList().also { selectedList ->
@@ -106,7 +107,7 @@ class BpcDidiListViewModel @Inject constructor(
             }
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
             filterDidiList = selectedDidiList.value
-            pendingDidiCount.value = selectedDidiList.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
+            pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
         }
     }
 

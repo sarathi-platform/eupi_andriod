@@ -21,7 +21,7 @@ interface BpcNonSelectedDidiDao {
     fun fetchAllDidisForVillage(villageId: Int): List<BpcNonSelectedDidiEntity>
 
     @Query("Update $BPC_NON_SELECTED_DIDI_TABLE set isAlsoSelected = :selected where id = :didiId")
-    fun markDidiSelected(didiId: Int, selected: Boolean)
+    fun markDidiSelected(didiId: Int, selected: Int)
 
     @Query("DELETE from $BPC_NON_SELECTED_DIDI_TABLE")
     fun deleteAllDidis()

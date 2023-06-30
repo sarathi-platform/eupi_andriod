@@ -88,12 +88,13 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
-import com.patsurvey.nudge.utils.ARG_FROM_PAT_DIDI_LIST_SCREEN
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import java.io.File
 
 @Composable
@@ -324,8 +325,8 @@ fun ScoreComparisionScreen(
                     }
 
                     itemsIndexed(filterdDidiList.value) { index, didi ->
-                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
-                            navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/$ARG_FROM_PAT_DIDI_LIST_SCREEN")
+                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, viewModel = viewModel, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
+                            navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                     }
@@ -364,6 +365,7 @@ fun ScoreComparisonDidiCard(
     modifier: Modifier = Modifier,
     didiEntity: DidiEntity,
     passingScore: Int,
+    viewModel: ScoreComparisonViewModel,
     onScoreCardClicked: (didiEntity: DidiEntity) -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -460,13 +462,16 @@ fun ScoreComparisonDidiCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 10.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.crp_score_text), itemType = CRP_USER_TYPE)
-
-                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE)
+                ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.crp_score_text), itemType = CRP_USER_TYPE, modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.width(4.dp))
+                if (didiEntity.section1Status == PatSurveyStatus.COMPLETED.ordinal && didiEntity.section2Status == PatSurveyStatus.COMPLETED.ordinal)
+                    ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE, modifier = Modifier.weight(1f))
+                else
+                    ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text),
+                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1f))
 
             }
 
@@ -558,7 +563,7 @@ fun ScoreItem(
     itemName: String,
     itemType: String
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
             text = itemName,
             color = textColorDark,
@@ -597,6 +602,34 @@ fun ScoreItem(
                 )
             )
         }
+    }
+}
+
+@Composable
+fun ScoreItemExclusion(
+    modifier: Modifier = Modifier,
+    didiEntity: DidiEntity,
+    exclusionResponse: String,
+    itemName: String,
+) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
+        Text(
+            text = itemName,
+            color = textColorDark,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = NotoSans
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+        Text(
+            text = exclusionResponse,
+            color = textColorDark,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.SemiBold,
+            fontFamily = NotoSans,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
     }
 }
 

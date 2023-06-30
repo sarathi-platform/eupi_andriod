@@ -16,6 +16,7 @@ import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -137,7 +138,7 @@ class BpcAddMoreDidiViewModel @Inject constructor(
     fun markCheckedDidisSelected(checkedIds: SnapshotStateList<Int>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             checkedIds.forEach {  didiId ->
-                bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
+                bpcNonSelectedDidiDao.markDidiSelected(didiId, BpcDidiSelectionStatus.SELECTED.ordinal)
             }
         }
     }
@@ -145,23 +146,23 @@ class BpcAddMoreDidiViewModel @Inject constructor(
     fun replaceDidi(checkedIds: SnapshotStateList<Int>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             checkedIds.forEach {  didiId ->
-                bpcNonSelectedDidiDao.markDidiSelected(didiId, true)
+                bpcNonSelectedDidiDao.markDidiSelected(didiId, BpcDidiSelectionStatus.SELECTED.ordinal)
                 ReplaceHelper.didiForReplacement = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
 //                if (didiToBeReplaced.first != -1 && didiToBeReplaced.second != -1) {
                 val isDidiInSelectedDao = bpcSelectedDidiDao.isDidiAvailableInSelectedTable(ReplaceHelper.didiToBeReplaced.value.second)
                 if (isDidiInSelectedDao > 0) {
                     bpcSelectedDidiDao.markDidiSelected(
                         ReplaceHelper.didiToBeReplaced.value.second,
-                        false
+                        BpcDidiSelectionStatus.REPLACED.ordinal
                     )
-                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(ReplaceHelper.didiToBeReplaced.value.second, PatSurveyStatus.NOT_AVAILABLE.ordinal)
                 }
                 else {
                     bpcNonSelectedDidiDao.markDidiSelected(
                         ReplaceHelper.didiToBeReplaced.value.second,
-                        false
+                        BpcDidiSelectionStatus.REPLACED.ordinal
                     )
-                    bpcNonSelectedDidiDao.updateNonSelDidiPatSurveyStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                    bpcNonSelectedDidiDao.updateNonSelDidiPatSurveyStatus(ReplaceHelper.didiToBeReplaced.value.second, PatSurveyStatus.NOT_AVAILABLE.ordinal)
                 }
 //                }
 //                removeDidiFromSelectedList(bpcSelectedDidiDao)

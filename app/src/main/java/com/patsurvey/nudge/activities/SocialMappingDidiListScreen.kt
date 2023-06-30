@@ -201,7 +201,7 @@ fun SocialMappingDidiListScreen(
                                     stringResource(R.string.social_mapping)
                                 else
                                     stringResource(R.string.didis_item_text_plural)
-                                MainTitle(title, Modifier.weight(0.5f))
+                                MainTitle(title, Modifier.weight(1f))
                                 if (!didiViewModel.prefRepo.getFromPage()
                                         .equals(ARG_FROM_HOME, true)
                                     && !didiViewModel.prefRepo.getFromPage()
@@ -210,7 +210,7 @@ fun SocialMappingDidiListScreen(
                                     if (!didiViewModel.isVoEndorsementComplete.value) {
                                         ButtonOutline(
                                             modifier = Modifier
-                                                .weight(0.5f)
+                                                .weight(0.9f)
                                                 .height(45.dp),
                                             buttonTitle = stringResource(id = R.string.add_didi),
                                         ) {
