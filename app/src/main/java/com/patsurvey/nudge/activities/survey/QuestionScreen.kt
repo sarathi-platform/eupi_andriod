@@ -301,9 +301,25 @@ fun QuestionScreen(
                 onClick = {
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
-                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
-//                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
-                    coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
+                    if (questionList[prevPageIndex].type == QuestionType.Numeric_Field.name
+                        && questionList[prevPageIndex].questionFlag.equals(
+                            QUESTION_FLAG_RATIO,true)){
+                        val newAnswerOptionModel = OptionsItem(
+                            BLANK_STRING, 0, 0, 0, BLANK_STRING
+                        )
+                        viewModel.setAnswerToQuestion(
+                            didiId =didiId,
+                            questionId = questionList[pagerState.currentPage].questionId ?: 0,
+                            answerOptionModel = newAnswerOptionModel,
+                            assetAmount = viewModel.totalAmount.value + viewModel.enteredAmount.value,
+                            quesType = QuestionType.Numeric_Field.name,
+                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
+                            selIndex = -1
+                        ) {
+                            coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                        }
+                    }else coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                 },
                 text = {
                     Image(
