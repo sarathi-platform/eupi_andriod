@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import androidx.core.text.isDigitsOnly
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -176,7 +177,10 @@ fun NumericFieldTypeQuestion(
                                             viewModel?.enteredAmount?.value = 0
                                         }else {
                                             if(it.length<ASSET_VALUE_LENGTH){
-                                                viewModel?.enteredAmount?.value = it.toInt()
+                                                if(it.isDigitsOnly()){
+                                                    viewModel?.enteredAmount?.value = it.toInt()
+                                                }
+
                                             }
                                         }
 
@@ -252,7 +256,7 @@ fun NumericFieldTypeQuestionPreview() {
     for (i in 1..5) {
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
     }
-    NumericFieldTypeQuestion(
+   /* NumericFieldTypeQuestion(
         modifier = Modifier,
         questionNumber = 1,
         question = "How many Goats?",
@@ -260,8 +264,9 @@ fun NumericFieldTypeQuestionPreview() {
         didiId = 1,
         optionList = optionList,
         totalValueTitle="Total Value",
-        questionFlag = "ratio"
-    ) {}
+        questionFlag = "ratio",
+        onAssetValueChange = {}
+    ) {}*/
 }
 
 @Composable
