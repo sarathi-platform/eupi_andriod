@@ -133,6 +133,9 @@ data class DidiEntity(
     @ColumnInfo(name = "isDidiAccepted")
     var isDidiAccepted: Boolean = false,
 
+    @ColumnInfo(name = "isExclusionYesSelected")
+    var isExclusionYesSelected: Int = 0,
+
 ){
     companion object{
         fun getDidiId(didiEntity: DidiEntity)=if(didiEntity.serverId  == 0) didiEntity.id else didiEntity.serverId

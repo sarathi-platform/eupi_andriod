@@ -1102,7 +1102,8 @@ fun DidiItemCard(
                             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                 if (didi.section1Status == 0 || didi.section1Status == 1)
                                     navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
-                                else if (didi.section2Status == 0 || didi.section2Status == 1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                                else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.isExclusionYesSelected == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                                else if(didi.section1Status == 2 && didi.isExclusionYesSelected ==1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
                             }
                         }
                     }

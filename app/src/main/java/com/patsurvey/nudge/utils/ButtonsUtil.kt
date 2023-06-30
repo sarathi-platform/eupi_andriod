@@ -1162,7 +1162,6 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
     var currentCount by remember {
         mutableStateOf(currentValue.toString())
     }
-    Log.d(TAG, "IncrementDecrementView: ")
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(5.dp)) {
@@ -1323,7 +1322,9 @@ fun incDecValue(operation:Int,value:String):String{
         if(intValue>0)
             intValue--
     }else{
-        intValue++
+        if(intValue<MAXIMUM_RANGE){
+            intValue++
+        }
     }
     return intValue.toString()
 }

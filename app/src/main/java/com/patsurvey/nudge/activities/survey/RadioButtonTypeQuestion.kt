@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -27,12 +28,15 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
 import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -40,62 +44,111 @@ fun RadioButtonTypeQuestion(
     modifier: Modifier,
     questionNumber: Int,
     question: String,
+    isLastIndex:Boolean=false,
     selectedOptionIndex: Int=-1,
     optionList: List<OptionsItem?>?,
     onAnswerSelection: (Int) -> Unit
 ) {
     var selectedIndex by remember { mutableStateOf(selectedOptionIndex) }
 
-    Column(modifier = modifier) {
-
-        Text(
-            modifier = Modifier
-                .border(
-                    BorderStroke(1.dp, lightGray2),
-                    shape = RoundedCornerShape(6.dp)
-                )
-                .padding(14.dp)
-                .fillMaxWidth(),
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    append("$questionNumber.")
-                }
-                append(" $question")
-            },
-            style = TextStyle(
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
-            ),
-            color = textColorDark
-        )
-
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 20.dp)
+    Box {
+        ConstraintLayout(
+            modifier = modifier
+                .fillMaxSize()
+                .align(Alignment.TopCenter)
         ) {
-            LazyVerticalGrid(modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
-             state = rememberLazyGridState()){
-                itemsIndexed(optionList?: emptyList()){ index, option ->
-                    RadioButtonOptionCard(buttonTitle = option?.display?: BLANK_STRING,index = index, optionValue = option?.optionValue?:0,selectedIndex = selectedIndex ){
-                        selectedIndex=it
-                        onAnswerSelection(index)
+            val (questionBox, submitBox) = createRefs()
+            Column(modifier = modifier.
+             constrainAs(questionBox){
+                top.linkTo(parent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+             }) {
+
+                Text(
+                    modifier = Modifier
+                        .border(
+                            BorderStroke(1.dp, lightGray2),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(14.dp)
+                        .fillMaxWidth(),
+                    text = buildAnnotatedString {
+                        withStyle(
+                            style = SpanStyle(
+                                color = textColorDark,
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = NotoSans
+                            )
+                        ) {
+                            append("$questionNumber.")
+                        }
+                        append(" $question")
+                    },
+                    style = TextStyle(
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    ),
+                    color = textColorDark
+                )
+
+                Row(
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 20.dp)
+                ) {
+                    LazyVerticalGrid(
+                        modifier = Modifier.fillMaxWidth(), columns = GridCells.Fixed(2),
+                        state = rememberLazyGridState()
+                    ) {
+                        itemsIndexed(optionList ?: emptyList()) { index, option ->
+                            RadioButtonOptionCard(
+                                buttonTitle = option?.display ?: BLANK_STRING,
+                                index = index,
+                                optionValue = option?.optionValue ?: 0,
+                                selectedIndex = selectedIndex
+                            ) {
+                                selectedIndex = it
+                                onAnswerSelection(index)
+                            }
+                        }
                     }
                 }
-            }
-        }
 
+
+            }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .visible(selectedOptionIndex !=-1 && isLastIndex)
+                        .padding(horizontal = 5.dp)
+                        .padding(top = 20.dp)
+                        .padding(bottom = 8.dp)
+                        .constrainAs(submitBox) {
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
+                        }
+                ) {
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.next),
+                        isArrowRequired = false,
+                        isActive = true,
+                        modifier = Modifier.height(45.dp)
+                    ) {
+                        onAnswerSelection(selectedIndex)
+                    }
+                }
+
+
+        }
     }
 }
+
+
 
 
 @Preview(showBackground = true)
