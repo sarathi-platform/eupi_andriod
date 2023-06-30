@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -31,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -41,8 +39,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
-import com.patsurvey.nudge.utils.QuestionType
-import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -125,7 +121,7 @@ fun NumericFieldTypeQuestion(
                                     questionFlag = questionFlag
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity)
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onIncrementClick = {
                                 val numericAnswerEntity = NumericAnswerEntity(
@@ -138,7 +134,7 @@ fun NumericFieldTypeQuestion(
                                     questionFlag = questionFlag
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity)
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onValueChange = {
                             })
@@ -240,16 +236,6 @@ fun NumericFieldTypeQuestion(
                     onSubmitClick()
                 }
             }
-        }
-    }
-}
-
-fun calculateAmount(questionId: Int, list: List<SectionAnswerEntity>) {
-    if (list.isNotEmpty()) {
-
-        val aIndex = list.map { it.questionId }.indexOf(questionId)
-        if (aIndex != -1) {
-
         }
     }
 }

@@ -60,18 +60,11 @@ class VoEndorsementScreenViewModel @Inject constructor(
         fetchDidisFromDB()
     }
 
-    @SuppressLint("SuspiciousIndentation")
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 _didiList.value = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id)
                 _filterDidiList.value = didiList.value
-                _filterDidiList.value.forEach {
-                    val didiDetails = didiDao.fetchDidiDetails(it.id)
-                    if (didiDetails != null)
-                        it.voEndorsementStatus = didiDetails.voEndorsementStatus
-                }
-                pendingDidiCount.value = _didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
 
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -79,10 +72,17 @@ class VoEndorsementScreenViewModel @Inject constructor(
             }
         }
     }
-
-    fun updateFilterDidiList(){
+    fun updateFilterDidiList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if(_filterDidiList.value.isNotEmpty()){
+            _filterDidiList.value.forEach {
+                val didiDetails = didiDao.fetchDidiDetails(it.id)
+                if (didiDetails != null)
+                    it.voEndorsementStatus = didiDetails.voEndorsementStatus
+            }
+
+            withContext(Dispatchers.Main) {
+                pendingDidiCount.value =
+                    didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal }.size
 
             }
         }

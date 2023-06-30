@@ -5,6 +5,7 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
@@ -894,15 +895,23 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val numAnswerList: ArrayList<NumericAnswerEntity> =
                                                         arrayListOf()
                                                     it.forEach { item ->
-                                                        didiDao.updatePATProgressStatus(
-                                                            patSurveyStatus = item.patSurveyStatus
-                                                                ?: 0,
-                                                            section1Status = item.section1Status
-                                                                ?: 0,
-                                                            section2Status = item.section2Status
-                                                                ?: 0,
-                                                            didiId = item.beneficiaryId ?: 0
-                                                        )
+                                                        try{
+                                                            Log.d("TAG", "fetchVillageList: ${item.beneficiaryId} :: ${item.patSurveyStatus} :: ${item.section1Status} :: ${item.section2Status} ")
+
+                                                            didiDao.updatePATProgressStatus(
+                                                                patSurveyStatus = item.patSurveyStatus
+                                                                    ?: 0,
+                                                                section1Status = item.section1Status
+                                                                    ?: 0,
+                                                                section2Status = item.section2Status
+                                                                    ?: 0,
+                                                                didiId = item.beneficiaryId ?: 0
+                                                            )
+                                                        }catch (ex:Exception){
+                                                            ex.printStackTrace()
+                                                            Log.e("TAG", "fetchVillageList: Eroor ${ex.message}")
+                                                        }
+
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
                                                                 if (answersItem?.questionType?.equals(
@@ -923,21 +932,19 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
                                                                             summary = answersItem?.summary,
-                                                                            optionValue = answersItem?.options?.get(
+                                                                            optionValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.optionValue,
+                                                                            )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.options?.get(
+                                                                            answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
-                                                                            )?.summary
-                                                                                ?: BLANK_STRING,
-                                                                            type = answersItem?.questionType
-                                                                                ?: QuestionType.RadioButton.name
+                                                                            )?.summary?: BLANK_STRING) else BLANK_STRING,
+                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name
                                                                         )
                                                                     )
 
-                                                                    if (answersItem?.options?.isNotEmpty() == true) {
+                                                                    if (answersItem.options?.isNotEmpty() == true) {
 
                                                                         answersItem?.options?.forEach { optionItem ->
                                                                             numAnswerList.add(
@@ -1122,6 +1129,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                             questionList.surveyPassingMark
                                                     }
                                                     list?.questionList?.let {
+                                                        it.forEach {q->
+                                                            Log.d("TAG", "fetchVillageList: ${q?.headingProductAssetValue} ")
+                                                        }
+
                                                         questionListDao.insertAll(it as List<QuestionEntity>)
                                                     }
                                                 }
