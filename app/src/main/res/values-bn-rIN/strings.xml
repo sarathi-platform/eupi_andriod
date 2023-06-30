@@ -48,7 +48,7 @@
     <string name="medium_text">মধ্যম</string>
     <string name="rich_text">ধনী</string>
     <string name="social_mapping">সামাজিক ম্যাপিং</string>
-    <string name="pat_survey_title">PAT Survey</string>
+    <string name="pat_survey_title">PAT सर्वेक्षण</string>
     <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
     <string name="showing">দেখাচ্ছে</string>
     <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
@@ -246,13 +246,13 @@
     <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
     <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
 
-    <string name="step_1">Step 1</string>
-    <string name="step_2">Step 2</string>
-    <string name="step_3">Step 3</string>
-    <string name="step_4">Step 4</string>
-    <string name="step_5">Step 5</string>
-    <string name="vo_endorsement">VO Endorsement</string>
-    <string name="close">Close</string>
+    <string name="step_1">स्टेप 1</string>
+    <string name="step_2">स्टेप 2</string>
+    <string name="step_3">स्टेप 3</string>
+    <string name="step_4">स्टेप 4</string>
+    <string name="step_5">स्टेप 5</string>
+    <string name="vo_endorsement">वीओ अनुमोदन</string>
+    <string name="close">बंद करें</string>
     <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনের জন্য কোন Didis উপলব্ধ.</string>
 
     <string name="add_more">अधिक जोड़ें</string>

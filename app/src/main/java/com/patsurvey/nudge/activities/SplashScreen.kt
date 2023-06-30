@@ -2,7 +2,17 @@ package com.patsurvey.nudge.activities
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +32,9 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.showCustomToast
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
@@ -38,16 +50,30 @@ fun SplashScreen(
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
     LaunchedEffect(key1 = true) {
-        viewModel.fetchLanguageDetails(context) {
-            if(isLoggedIn){
-                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route){
-                    popUpTo(AuthScreen.START_SCREEN.route){
-                        inclusive=true
+        if (!(context as MainActivity).isOnline.value) {
+            if (isLoggedIn) {
+                delay(SPLASH_SCREEN_DURATION)
+                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                    popUpTo(AuthScreen.START_SCREEN.route) {
+                        inclusive = true
                     }
                 }
-            }else{
+            } else {
+                viewModel.checkAndAddLanguage()
+                delay(SPLASH_SCREEN_DURATION)
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
-
+            }
+        } else {
+            viewModel.fetchLanguageDetails(context) {
+                if (isLoggedIn) {
+                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+                        popUpTo(AuthScreen.START_SCREEN.route) {
+                            inclusive = true
+                        }
+                    }
+                } else {
+                    navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                }
             }
         }
     }

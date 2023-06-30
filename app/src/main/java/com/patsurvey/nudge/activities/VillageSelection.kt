@@ -100,7 +100,9 @@ fun VillageSelectionScreen(
     LaunchedEffect(key1 = true) {
         viewModel.saveVideosToDb(context)
     }
-    val showRetryLoader = mutableStateOf(false)
+    val showRetryLoader = remember {
+        mutableStateOf(false)
+    }
 
     Box(Modifier.fillMaxSize()) {
         if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
