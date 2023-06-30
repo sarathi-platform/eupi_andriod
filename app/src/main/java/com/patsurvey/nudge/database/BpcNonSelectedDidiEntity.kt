@@ -8,6 +8,7 @@ import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_NON_SELECTED_DIDI_TABLE
+import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.WealthRank
 
@@ -97,7 +98,7 @@ data class BpcNonSelectedDidiEntity(
     var shgFlag: Int,
 
     @ColumnInfo(name = "isAlsoSelected")
-    var isAlsoSelected: Boolean = false,
+    var isAlsoSelected: Int = BpcDidiSelectionStatus.NOT_SELECTED.ordinal,
 
     @ColumnInfo(name = "voEndorsementStatus")
     var voEndorsementStatus: Int = 0,

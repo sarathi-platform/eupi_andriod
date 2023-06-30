@@ -86,7 +86,6 @@ import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.utils.ButtonNegativeForPAT
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
-import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
@@ -239,13 +238,13 @@ fun BpcDidiListScreen(
                                 modifier = Modifier
                                     .padding(vertical = dimensionResource(id = R.dimen.dp_6))
                                     .padding(start = 4.dp)
-                                    .weight(0.75f)
+                                    .weight(1f)
                             )
 
 //                            if (!bpcDidiListViewModel.isStepComplete.value) {
                                 ButtonOutline(
                                     modifier = Modifier
-                                        .weight(0.5f)
+                                        .weight(0.9f)
                                         .height(45.dp),
                                     buttonTitle = stringResource(R.string.add_more)
                                 ) {
@@ -304,9 +303,6 @@ fun BpcDidiListScreen(
                         }
                     } else {
                         itemsIndexed(newFilteredDidiList) { index, didi ->
-                            if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
-                                bpcDidiListViewModel.pendingDidiCount.value++
-                            }
                             DidiItemCardForBpc(
                                 navController = navController,
                                 didi = didi,

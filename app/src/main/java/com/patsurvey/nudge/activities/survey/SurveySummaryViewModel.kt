@@ -57,7 +57,35 @@ class SurveySummaryViewModel @Inject constructor(
     val isDidiPATSynced = mutableStateOf(0)
 
     init {
-        fetchDidisFromDB()
+        if (prefRepo.isUserBPC()) {
+            fetchDidisForBpcFromDB()
+        } else {
+            fetchDidisFromDB()
+        }
+    }
+
+    private fun fetchDidisForBpcFromDB() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val selectedVillage = prefRepo.getSelectedVillage()
+            val didiList = mutableListOf<DidiEntity>()
+            val patCompletedDidiList = didiDao.getAllDidisForVillage(selectedVillage.id)
+            val replacedDidiFromSelectedDao = bpcSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
+            val replacedDidiFromNonSelectedDao = bpcNonSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
+
+            didiList.addAll(patCompletedDidiList)
+            val filteredReplacedDidiFromSelectedDao = replacedDidiFromSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
+            val filteredReplacedDidiFromNonSelectedDao = replacedDidiFromNonSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
+
+            filteredReplacedDidiFromSelectedDao.forEach {
+                didiList.add(DidiEntity.getDidiEntityFromSelectedDidiEntityForBpc(it))
+            }
+            filteredReplacedDidiFromNonSelectedDao.forEach {
+                didiList.add(DidiEntity.getDidiEntityFromNonSelectedDidiEntityForBpc(it))
+            }
+
+            _didiList.value = didiList
+
+        }
     }
 
     fun fetchDidisFromDB(){

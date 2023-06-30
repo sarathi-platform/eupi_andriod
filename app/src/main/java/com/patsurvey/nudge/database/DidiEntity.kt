@@ -7,7 +7,6 @@ import androidx.room.TypeConverters
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.utils.BLANK_STRING
-
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -167,6 +166,38 @@ data class DidiEntity(
                 bpcScore = selectedDidiEntity.bpcScore,
                 crpScore = selectedDidiEntity.crpScore,
                 crpComment = selectedDidiEntity.crpComment
+            )
+        }
+        fun getDidiEntityFromNonSelectedDidiEntityForBpc(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): DidiEntity {
+            return DidiEntity(
+                id = nonSelectedDidiEntity.id,
+                serverId = nonSelectedDidiEntity.serverId,
+                name = nonSelectedDidiEntity.name,
+                address = nonSelectedDidiEntity.address,
+                guardianName = nonSelectedDidiEntity.guardianName,
+                relationship = nonSelectedDidiEntity.relationship,
+                castId = nonSelectedDidiEntity.castId,
+                castName = nonSelectedDidiEntity.castName,
+                cohortId = nonSelectedDidiEntity.cohortId,
+                cohortName = nonSelectedDidiEntity.cohortName,
+                villageId = nonSelectedDidiEntity.villageId,
+                wealth_ranking = nonSelectedDidiEntity.wealth_ranking,
+                needsToPost = nonSelectedDidiEntity.needsToPost,
+                localPath = nonSelectedDidiEntity.localPath,
+                createdDate = nonSelectedDidiEntity.createdDate,
+                modifiedDate = nonSelectedDidiEntity.modifiedDate,
+                activeStatus = nonSelectedDidiEntity.activeStatus,
+                patSurveyStatus = nonSelectedDidiEntity.patSurveyStatus,
+                section1Status = nonSelectedDidiEntity.section1Status,
+                section2Status = nonSelectedDidiEntity.section2Status,
+                beneficiaryProcessStatus = nonSelectedDidiEntity.beneficiaryProcessStatus,
+                shgFlag = nonSelectedDidiEntity.shgFlag,
+                score = nonSelectedDidiEntity.bpcScore,
+                comment = nonSelectedDidiEntity.bpcComment,
+                bpcComment = nonSelectedDidiEntity.bpcComment,
+                bpcScore = nonSelectedDidiEntity.bpcScore,
+                crpScore = nonSelectedDidiEntity.crpScore,
+                crpComment = nonSelectedDidiEntity.crpComment
             )
         }
         fun getDidiEntityFromSelectedDidiEntityForCrp(selectedDidiEntity: BpcSelectedDidiEntity): DidiEntity {

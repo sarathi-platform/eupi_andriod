@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
@@ -45,6 +44,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
@@ -318,7 +318,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                         shgFlag = SHGFlag.NOT_MARKED.value,
-                                                        isAlsoSelected = true,
+                                                        isAlsoSelected = BpcDidiSelectionStatus.SELECTED.ordinal,
                                                         transactionId = "",
                                                         bpcScore = didi.bpcScore,
                                                         bpcComment = didi.bpcComment,

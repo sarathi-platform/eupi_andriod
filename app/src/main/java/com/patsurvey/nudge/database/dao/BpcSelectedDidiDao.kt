@@ -27,7 +27,7 @@ interface BpcSelectedDidiDao {
     fun deleteAllDidis()
 
     @Query("Update $BPC_SELECTED_DIDI_TABLE set isAlsoSelected = :selected where id = :didiId")
-    fun markDidiSelected(didiId: Int, selected: Boolean)
+    fun markDidiSelected(didiId: Int, selected: Int)
 
     @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET patSurveyStatus = :patSurveyProgress,needsToPostPAT=0 WHERE id = :didiId")
     fun updateSelDidiPatSurveyStatus(didiId: Int, patSurveyProgress: Int)
