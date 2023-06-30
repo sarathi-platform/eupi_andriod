@@ -69,7 +69,6 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
@@ -174,11 +173,11 @@ class VillageSelectionViewModel @Inject constructor(
                                         val bpcStepId = it.stepList.sortedBy { stepEntity ->
                                             stepEntity.orderNumber
                                         }.last().id
-                                        stepsListDao.markStepAsCompleteOrInProgress(
-                                            bpcStepId,
-                                            StepStatus.INPROGRESS.ordinal,
-                                            village.id
-                                        )
+//                                        stepsListDao.markStepAsCompleteOrInProgress(
+//                                            bpcStepId,
+//                                            StepStatus.INPROGRESS.ordinal,
+//                                            village.id
+//                                        )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )

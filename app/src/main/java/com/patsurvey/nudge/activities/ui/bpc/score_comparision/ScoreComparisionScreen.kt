@@ -470,7 +470,7 @@ fun ScoreComparisonDidiCard(
                 if (didiEntity.section1Status == PatSurveyStatus.COMPLETED.ordinal && didiEntity.section2Status == PatSurveyStatus.COMPLETED.ordinal)
                     ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE, modifier = Modifier.weight(1f))
                 else
-                    ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text),
+                    ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_result_text),
                         exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1f))
 
             }
