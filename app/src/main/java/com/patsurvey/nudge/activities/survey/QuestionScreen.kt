@@ -148,8 +148,9 @@ fun QuestionScreen(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
                                 question = questionList[it].questionDisplay ?: "",
-                                selectedOption,
-                                sortedOptionList
+                                selectedOptionIndex= selectedOption,
+                                optionList = sortedOptionList,
+                                isLastIndex = (it == questionList.size-1)
                             ) { selectedIndex ->
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,

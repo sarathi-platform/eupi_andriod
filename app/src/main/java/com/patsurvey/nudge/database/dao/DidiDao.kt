@@ -243,4 +243,7 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostVo = :needsToPostVo AND villageId = :villageId")
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity>
 
+    @Query("UPDATE $DIDI_TABLE SET isExclusionYesSelected = :isExclusionYesSelected WHERE id = :didiId")
+    fun updateExclusionStatus(didiId: Int, isExclusionYesSelected: Int)
+
 }

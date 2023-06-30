@@ -872,6 +872,20 @@ class SyncHelper (
                                                 )
                                             }
                                             optionList = tList
+                                        }else{
+                                            tList.add(
+                                                OptionsItem(
+                                                    optionId = it.optionId,
+                                                    optionValue = 0,
+                                                    count = 0,
+                                                    summary = it.summary,
+                                                    display = it.answerValue,
+                                                    weight = it.weight,
+                                                    isSelected = false
+                                                )
+                                            )
+
+                                            optionList = tList
                                         }
 
                                     }
