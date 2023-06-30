@@ -316,30 +316,55 @@ fun SettingScreen(
 
                 ) {
                     if ((context as MainActivity).isOnline.value) {
-                        viewModel.isDataNeedToBeSynced(
-                            stepOneStatus,
-                            stepTwoStatus,
-                            stepThreeStatus,
-                            stepFourStatus,
-                            stepFiveStatus
-                        )
-                        if (isDataNeedToBeSynced.value == 0
-                            || isDataNeedToBeSynced.value == 2
-                        ) {
-                            viewModel.performLogout(object : NetworkCallbackListener {
-                                override fun onFailed() {
-                                    logout(context, viewModel, logout, rootNavController)
-                                    changeGraph.value = true
-                                }
+                        if (!viewModel.prefRepo.isUserBPC()) {
+                            viewModel.isDataNeedToBeSynced(
+                                stepOneStatus,
+                                stepTwoStatus,
+                                stepThreeStatus,
+                                stepFourStatus,
+                                stepFiveStatus
+                            )
+                            if (isDataNeedToBeSynced.value == 0
+                                || isDataNeedToBeSynced.value == 2
+                            ) {
+                                viewModel.performLogout(object : NetworkCallbackListener {
+                                    override fun onFailed() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
 
-                                override fun onSuccess() {
-                                    logout(context, viewModel, logout, rootNavController)
-                                    changeGraph.value = true
-                                }
-                            })
+                                    override fun onSuccess() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
+                                })
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
+                            } else {
+                                showToast(
+                                    context,
+                                    "Sync is required before logout,Please sync your data before logout."
+                                )
+                            }
                         } else {
-                            showToast(context,"Sync is required before logout,Please sync your data before logout.")
+                            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+                            if(!isBPCDataNeedToBeSynced.value){
+                                showToast(
+                                    context,
+                                    "Sync is required before logout,Please sync your data before logout."
+                                )
+                            } else {
+                                viewModel.performLogout(object : NetworkCallbackListener {
+                                    override fun onFailed() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
+
+                                    override fun onSuccess() {
+                                        logout(context, viewModel, logout, rootNavController)
+                                        changeGraph.value = true
+                                    }
+                                })
+                            }
                         }
                     } else {
                         showToast(context,"No Internet Available, Please connect with internet")
@@ -1119,8 +1144,7 @@ fun showBPCSyncDialog(
                         if ((isInternetConnected
                                     && (batteryLevel > 30)
                                     && !settingViewModel.showLoader.value)
-                                    && (isBPCDataNeedToBeSynced.value
-                                    || syncBPCStatus.value == 0)
+                                    && (isBPCDataNeedToBeSynced.value)
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
@@ -1145,7 +1169,7 @@ fun showBPCSyncDialog(
                                     settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
                                 }
                             }
-                        } else if(isBPCDataNeedToBeSynced.value
+                        } else if(!isBPCDataNeedToBeSynced.value
                                 || syncBPCStatus.value == 3
                                 || !isInternetConnected
                                 || batteryLevel < 30){

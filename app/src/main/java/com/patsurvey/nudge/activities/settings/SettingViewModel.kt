@@ -171,6 +171,10 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun isBPCScoreSaved() : Boolean{
+        return prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id,false)
+    }
+
     fun isThirdStepNeedToBeSync(isNeedToBeSync : MutableState<Int>){
         stepThreeSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -368,12 +372,13 @@ class SettingViewModel @Inject constructor(
 //        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            val didiIDList =
-            if(answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if(!bpcSyncHelper.isBPCDidiNeedToBeReplaced()
+                && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
                 && isStatusStepStatusSync(0)
-                && didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id).isEmpty()){
+                && isBPCScoreSaved()){
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false
                 }

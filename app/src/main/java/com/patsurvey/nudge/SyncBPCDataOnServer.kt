@@ -42,38 +42,62 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
             withContext(Dispatchers.Main) {
                 syncPercentage.value = 0f
             }
-            val villagId = prefRepo.getSelectedVillage().id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villagId)
-            val updatedList = didiDao.getAllDidisForVillage(villageId = villagId)
-            try {
-                val oldBeneficiaryIdSelected = mutableListOf<Int>()
-                oldDidiList.forEach {
-                    oldBeneficiaryIdSelected.add(it.serverId)
-                }
-                val newBeneficiaryIdSelected = mutableListOf<Int>()
-                updatedList.forEach {
-                    newBeneficiaryIdSelected.add(it.serverId)
-                }
-                val updateSelectedDidiResponse = apiService.sendSelectedDidiList(
-                    BpcUpdateSelectedDidiRequest(
-                        oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
-                        newBeneficiaryIdSelected = newBeneficiaryIdSelected,
-                        villageId = villagId
-                    )
-                )
-                if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
-                    Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
-                    savePATSummeryToServer(networkCallbackListener)
-                } else {
-                    Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
-                    withContext(Dispatchers.Main) {
-                        networkCallbackListener.onFailed()
+            if(isBPCDidiNeedToBeReplaced()) {
+                val villagId = prefRepo.getSelectedVillage().id
+                val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villagId)
+                val updatedList = didiDao.getAllDidisForVillage(villageId = villagId)
+                try {
+                    val oldBeneficiaryIdSelected = mutableListOf<Int>()
+                    oldDidiList.forEach {
+                        oldBeneficiaryIdSelected.add(it.serverId)
                     }
+                    val newBeneficiaryIdSelected = mutableListOf<Int>()
+                    updatedList.forEach {
+                        newBeneficiaryIdSelected.add(it.serverId)
+                    }
+                    val updateSelectedDidiResponse = apiService.sendSelectedDidiList(
+                        BpcUpdateSelectedDidiRequest(
+                            oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
+                            newBeneficiaryIdSelected = newBeneficiaryIdSelected,
+                            villageId = villagId
+                        )
+                    )
+                    if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
+                        Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                        savePATSummeryToServer(networkCallbackListener)
+                    } else {
+                        Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                        withContext(Dispatchers.Main) {
+                            networkCallbackListener.onFailed()
+                        }
+                    }
+                } catch (ex: Exception) {
+                    settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
                 }
-            } catch (ex: Exception) {
-                settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+            } else {
+                savePATSummeryToServer(networkCallbackListener)
             }
         }
+    }
+
+    fun isBPCDidiNeedToBeReplaced() : Boolean{
+        val villageId = prefRepo.getSelectedVillage().id
+        val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId)
+        val updatedList = didiDao.getAllDidisForVillage(villageId)
+        val oldBeneficiaryIdSelected = mutableListOf<Int>()
+        oldDidiList.forEach {
+            oldBeneficiaryIdSelected.add(it.serverId)
+        }
+        val newBeneficiaryIdSelected = mutableListOf<Int>()
+        updatedList.forEach {
+            newBeneficiaryIdSelected.add(it.serverId)
+        }
+        for(id in oldBeneficiaryIdSelected){
+            if(newBeneficiaryIdSelected.indexOf(id) == -1){
+                return true
+            }
+        }
+        return false
     }
 
     private fun startSyncTimer(networkCallbackListener: NetworkCallbackListener){

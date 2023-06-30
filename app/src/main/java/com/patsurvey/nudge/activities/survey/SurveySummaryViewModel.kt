@@ -800,9 +800,11 @@ class SurveySummaryViewModel @Inject constructor(
                 if (saveMatchSummaryResponse.status.equals(SUCCESS, true)){
                     networkCallbackListener.onSuccess()
                 } else {
+                    prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
                     networkCallbackListener.onFailed()
                 }
             } catch (ex: Exception){
+                prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
                 onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
             }
         }
