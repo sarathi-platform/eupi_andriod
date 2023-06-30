@@ -178,6 +178,14 @@ class PatSectionSummaryViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
+    fun updateExclusionStatus(didiId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                didiDao.updateExclusionStatus(didiId,1)
+            }
+        }
+    }
+
     fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false

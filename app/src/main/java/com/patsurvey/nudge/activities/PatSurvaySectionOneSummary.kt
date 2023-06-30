@@ -209,6 +209,7 @@ fun PatSurvaySectionSummaryScreen(
                     PatSurveyStatus.COMPLETED.ordinal
                 )
                 if (patSectionSummaryViewModel.isYesSelected.value) {
+                    patSectionSummaryViewModel.updateExclusionStatus(didi.value.id)
                     if (showPatCompletion.value) {
                         patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
                         patSectionSummaryViewModel.setPATSurveyComplete(
