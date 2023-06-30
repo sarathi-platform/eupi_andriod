@@ -5,6 +5,8 @@ import androidx.compose.ui.unit.dp
 const val BLANK_STRING=""
 const val DEFAULT_LANGUAGE_CODE="en"
 const val MOBILE_NUMBER_LENGTH=10
+const val ASSET_VALUE_LENGTH=8
+const val MAXIMUM_RANGE=99999
 const val OTP_LENGTH = 6
 var OTP_RESEND_DURATION: Long = 30 * 1000
 var EXPANSTION_TRANSITION_DURATION: Int = 450
