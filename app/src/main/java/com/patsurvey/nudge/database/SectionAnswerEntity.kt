@@ -49,7 +49,11 @@ data class SectionAnswerEntity(
     val summary: String? = BLANK_STRING,
 
     @ColumnInfo(name = "needsToPost")
-    var needsToPost: Boolean = true
+    var needsToPost: Boolean = true,
+
+    @SerializedName("assetAmount")
+    val assetAmount: Double? = 0.0,
+
 
 
 )
