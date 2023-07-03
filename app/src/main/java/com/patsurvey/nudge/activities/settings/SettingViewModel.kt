@@ -334,16 +334,20 @@ class SettingViewModel @Inject constructor(
 
                         }
                         override fun onFinish() {
-//                            networkErrorMessage.value = SYNC_SUCCESSFULL
+                            networkErrorMessage.value = SYNC_SUCCESSFULL
+                            val updatedSyncTime = System.currentTimeMillis()
+                            lastSyncTime.value = updatedSyncTime
+                            prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
                             syncBPCPercentage.value = 1f
-//                            showBPCSyncDialog.value = false
                             bpcSyncStatus.value = 3
                         }
                     }.start()
                 }
 
                 override fun onFailed() {
-
+                    networkErrorMessage.value = SYNC_FAILED
+                    syncBPCPercentage.value = 1f
+                    bpcSyncStatus.value = 3
                 }
             })
         }

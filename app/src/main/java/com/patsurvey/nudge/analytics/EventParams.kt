@@ -18,10 +18,10 @@ enum class EventParams(val eventParam: String) {
     LOCATION_CRITERIA_ACCURACY("location_criteria_accuracy"),
     LOCATION_CRITERIA_POWER("location_criteria_power"),
     LOCATION_PROVIDER("location_provider"),
-    BUILD_DEVICE("Build.DEVICE"),
-    BUILD_MANUFACTURER("Build.MANUFACTURER"),
-    BUILD_MODEL("Build.MODEL"),
-    BUILD_BRAND("Build.BRAND"),
+    BUILD_DEVICE("Build_DEVICE"),
+    BUILD_MANUFACTURER("Build_MANUFACTURER"),
+    BUILD_MODEL("Build_MODEL"),
+    BUILD_BRAND("Build_BRAND"),
 
 
 

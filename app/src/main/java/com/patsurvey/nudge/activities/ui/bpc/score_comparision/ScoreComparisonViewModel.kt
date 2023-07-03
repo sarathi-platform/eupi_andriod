@@ -58,7 +58,7 @@ class ScoreComparisonViewModel @Inject constructor(
 
             _filterDidiList.value = didiList.value
             _passPercentage.value = calculateMatchPercentage(didiList.value)
-            val exclusionList = localDidList.filter { it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status != PatSurveyStatus.COMPLETED.ordinal }
+            val exclusionList = localDidList.filter { it.section1Status == PatSurveyStatus.COMPLETED.ordinal && it.section2Status == PatSurveyStatus.NOT_STARTED.ordinal }
             if (exclusionList.isNotEmpty()) {
                 val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION, prefRepo.getAppLanguageId() ?: 2)
                 exclusionList.forEach { didi ->

@@ -83,6 +83,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
+import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.ButtonNegativeForPAT
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
@@ -134,8 +135,8 @@ fun BpcDidiListScreen(
     LaunchedEffect(key1 = Unit) {
         bpcDidiListViewModel.fetchDidiFromDb()
         delay(100)
-        if (ReplaceHelper.didiToBeReplaced.value.first != -1)
-            listState.animateScrollToItem(ReplaceHelper.didiToBeReplaced.value.first)
+//        if (ReplaceHelper.didiToBeReplaced.value.first != -1)
+//            listState.animateScrollToItem(ReplaceHelper.didiToBeReplaced.value.first)
     }
 
     ConstraintLayout(
@@ -240,18 +241,18 @@ fun BpcDidiListScreen(
                                     .padding(start = 4.dp)
                                     .weight(1f)
                             )
-
+                            Spacer(modifier = Modifier.padding(14.dp))
 //                            if (!bpcDidiListViewModel.isStepComplete.value) {
-                                ButtonOutline(
-                                    modifier = Modifier
-                                        .weight(0.9f)
-                                        .height(45.dp),
-                                    buttonTitle = stringResource(R.string.add_more)
-                                ) {
-                                    ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
-                                    val forReplace = false
-                                    navController.navigate("bpc_add_more_didi_list/$forReplace")
-                                }
+                            ButtonOutline(
+                                modifier = Modifier
+                                    .weight(0.9f)
+                                    .height(45.dp),
+                                buttonTitle = stringResource(R.string.add_more)
+                            ) {
+                                ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
+                                val forReplace = false
+                                navController.navigate("bpc_add_more_didi_list/$forReplace")
+                            }
 //                            }
 
                             /*BlueButtonWithIconWithFixedWidth(
@@ -365,6 +366,11 @@ fun DidiItemCardForBpc(
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
             .fillMaxWidth()
+            .clickable {
+                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal) {
+                    navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                }
+            }
             .then(modifier)
     ) {
         Column(
@@ -547,7 +553,7 @@ fun DidiItemCardForBpc(
                     .padding(vertical = 10.dp)
                     .padding(horizontal = 20.dp)
                     .clickable {
-                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}")
+                        navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                     }
                     .then(modifier),
                     horizontalArrangement = Arrangement.SpaceBetween

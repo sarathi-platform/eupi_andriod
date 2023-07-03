@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -70,7 +69,10 @@ fun PatSurveyCompleteSummary(
 
     BackHandler() {
         if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
-            navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
+            if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
+                navController.popBackStack()
+            else
+                navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
         } else {
             if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
                 navController.popBackStack()
@@ -237,14 +239,16 @@ fun PatSurveyCompleteSummary(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN){
-                    (context as MainActivity).isBackFromSummary.value=true
-                    navController.popBackStack()
-                }
-                else{
-                    if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                    if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
+                        navController.popBackStack()
+                    else
                         navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
-                    }else{
+                }else{
+                    if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN) {
+                        (context as MainActivity).isBackFromSummary.value = true
+                        navController.popBackStack()
+                    } else {
                         navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
                     }
                 }
