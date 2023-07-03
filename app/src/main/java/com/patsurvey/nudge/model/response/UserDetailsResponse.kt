@@ -7,33 +7,33 @@ import com.patsurvey.nudge.database.VillageEntity
 data class UserDetailsResponse(
     @SerializedName("username")
     @Expose
-    val username:String,
+    val username:String?,
 
     @SerializedName("email")
     @Expose
-    val email:String,
+    val email:String?,
 
     @SerializedName("name")
     @Expose
-    val name:String,
+    val name:String?,
 
     @SerializedName("identityNumber")
     @Expose
-    val identityNumber:String,
+    val identityNumber:String?,
 
     @SerializedName("profileImage")
     @Expose
-    val profileImage:String,
+    val profileImage:String?,
 
     @SerializedName("roleName")
     @Expose
-    val roleName:String,
+    val roleName:String?,
 
     @SerializedName("typeName")
     @Expose
-    val typeName:String,
+    val typeName:String?,
 
     @SerializedName("villageList")
     @Expose
-    val villageList:List<VillageEntity>
+    val villageList:List<VillageEntity>?
 )
