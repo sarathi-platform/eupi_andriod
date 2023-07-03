@@ -144,6 +144,7 @@ fun SettingScreen(
     list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
     list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
+    list.add(SettingOptionModel(6, "Share Logs", BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
     LaunchedEffect(key1 = true) {
@@ -280,6 +281,9 @@ fun SettingScreen(
 
                                 4 -> {
                                     navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                }
+                                5 -> {
+                                    viewModel.buildAndShareLogs()
                                 }
 
                                 else -> {

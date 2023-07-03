@@ -30,6 +30,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -451,5 +452,11 @@ class SettingViewModel @Inject constructor(
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
+    }
+
+    fun buildAndShareLogs() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            LogWriter.buildSupportLogAndShare()
+        }
     }
 }
