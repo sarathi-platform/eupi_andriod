@@ -4,6 +4,9 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.analytics.EventParams
+import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
 import com.patsurvey.nudge.database.BpcSelectedDidiEntity
@@ -42,6 +45,8 @@ import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_LANGUAGE_ID_TO_RETRY
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
@@ -779,6 +784,14 @@ object RetryHelper {
                                             casteEntity.languageId = language
                                         }
                                         castListDao?.insertAll(casteList)
+                                        AnalyticsHelper.logEvent(
+                                            Events.CASTE_LIST_WRITE,
+                                            mapOf(
+                                                EventParams.LANGUAGE_ID to language,
+                                                EventParams.CASTE_LIST to "$casteList",
+                                                EventParams.FROM_SCREEN to "RetryHelper"
+                                            )
+                                        )
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(casteResponse?.message!!)
@@ -806,13 +819,15 @@ object RetryHelper {
                 withContext(Dispatchers.IO) {
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {
-                            prefRepo?.savePref(PREF_KEY_USER_NAME, it.username)
-                            prefRepo?.savePref(PREF_KEY_NAME, it.name)
-                            prefRepo?.savePref(PREF_KEY_EMAIL, it.email)
-                            prefRepo?.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
-                            prefRepo?.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
-                            if (it.villageList.isNotEmpty()) {
-                                villageListDao?.insertAll(it.villageList)
+                            prefRepo?.savePref(PREF_KEY_USER_NAME, it.username ?: "")
+                            prefRepo?.savePref(PREF_KEY_NAME, it.name ?: "")
+                            prefRepo?.savePref(PREF_KEY_EMAIL, it.email ?: "")
+                            prefRepo?.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
+                            prefRepo?.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
+                            prefRepo?.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
+                            prefRepo?.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                            if (it.villageList?.isNotEmpty() == true) {
+                                villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
                                 saveVillageList(true, villageListDao?.getAllVillages())
                             } else {
