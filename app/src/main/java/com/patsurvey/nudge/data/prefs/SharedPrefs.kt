@@ -5,7 +5,12 @@ import android.content.SharedPreferences
 import com.google.gson.Gson
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ACCESS_TOKEN
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
+import com.patsurvey.nudge.utils.ONLINE_STATUS
+import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -161,8 +166,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         editor.apply()
     }
 
-    override fun setIsUserBPC(isOnline: Boolean) {
-       prefs.edit().putBoolean(PREF_KEY_USER_BPC,isOnline).apply()
+    override fun setIsUserBPC(isBpcUser: Boolean) {
+       prefs.edit().putBoolean(PREF_KEY_USER_BPC, isBpcUser).apply()
     }
 
     override fun isUserBPC(): Boolean {
