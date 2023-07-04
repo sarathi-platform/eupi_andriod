@@ -144,7 +144,12 @@ class TransectWalkViewModel @Inject constructor(
                             response.data.forEach { tolaDataFromNetwork ->
                                 tolaList.forEach { tola ->
                                     if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
-                                        tola.id = tolaDataFromNetwork.id
+                                        tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
+                                            false,
+                                            "",
+                                            tolaDataFromNetwork.createdDate,
+                                            tolaDataFromNetwork.modifiedDate)
+                                        tola.serverId = tolaDataFromNetwork.id
                                         tola.createdDate = tolaDataFromNetwork.createdDate
                                         tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                     }
