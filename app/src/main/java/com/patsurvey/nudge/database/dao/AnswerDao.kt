@@ -60,6 +60,10 @@ interface AnswerDao {
     @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
 
+    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
+    fun fetchPATSurveyDidiList(): List<PATDidiStatusModel>
+
+
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
     @Query("select  d.* from $DIDI_TABLE d  INNER join $ANSWER_TABLE q  on q.didiId = d.id where d.villageId =:villageId AND d.forVoEndorsement = 1 GROUP BY d.id ORDER BY d.createdDate DESC")

@@ -823,7 +823,7 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.6f
                 }
                 withContext(Dispatchers.IO){
-                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                    val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         var optionList= emptyList<OptionsItem>()
                         val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
