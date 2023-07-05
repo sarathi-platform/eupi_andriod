@@ -878,9 +878,9 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         composable(route = BpcDidiListScreens.PAT_COMPLETE_DIDI_SUMMARY_SCREEN.route,
             arguments = listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
-            }/*, navArgument(ARG_FROM_SCREEN) {
+            }, navArgument(ARG_FROM_SCREEN) {
                 type = NavType.StringType
-            }*/
+            }
             )
         ) {
             PatSurveyCompleteSummary(
@@ -889,7 +889,7 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                     .fillMaxSize(),
                 patSectionSummaryViewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
-                fromScreen = /*it.arguments?.getString(ARG_FROM_SCREEN) ?: */BLANK_STRING
+                fromScreen = it.arguments?.getString(ARG_FROM_SCREEN) ?: BLANK_STRING
             )
         }
 

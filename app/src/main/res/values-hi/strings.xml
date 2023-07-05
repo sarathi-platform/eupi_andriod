@@ -286,4 +286,7 @@
 
     <string name="sync_status">BPC Verification</string>
 
+    <string name="bpc_result_text">बीपीसी परिणाम:</string>
+
+
 </resources>

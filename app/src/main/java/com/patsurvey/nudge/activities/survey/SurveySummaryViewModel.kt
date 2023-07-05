@@ -815,11 +815,7 @@ class SurveySummaryViewModel @Inject constructor(
                 val villageId = prefRepo.getSelectedVillage().id
                 val passingScore = questionDao.getPassingScore()
                 val bpcStep = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
-                val matchedCount = didiList.value.filter {
-                    (it.score ?: 0.0) >= passingScore.toDouble()
-                            && (it.crpScore ?: 0.0) >= passingScore.toDouble() }.size
-
-                val matchPercentage = ((matchedCount.toFloat()/didiList.value.size.toFloat()) * 100).toInt()
+                val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
                     score = matchPercentage,
@@ -828,6 +824,7 @@ class SurveySummaryViewModel @Inject constructor(
                 val requestList = arrayListOf(saveMatchSummaryRequest)
                 val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
                 if (saveMatchSummaryResponse.status.equals(SUCCESS, true)){
+                    prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, true)
                     networkCallbackListener.onSuccess()
                 } else {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
@@ -838,6 +835,15 @@ class SurveySummaryViewModel @Inject constructor(
                 onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
             }
         }
+    }
+
+    fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
+        val matchedCount = didiList.filter {
+            (it.score ?: 0.0) >= questionPassingScore.toDouble()
+                    && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
+
+        return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
+
     }
 
 }

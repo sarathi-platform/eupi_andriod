@@ -809,7 +809,7 @@ object RetryHelper {
                         response?.data?.let {
                             prefRepo?.savePref(PREF_KEY_USER_NAME, it.username)
                             prefRepo?.savePref(PREF_KEY_NAME, it.name)
-                            prefRepo?.savePref(PREF_KEY_EMAIL, it.email)
+                            it.email?.let { it1 -> prefRepo?.savePref(PREF_KEY_EMAIL, it1) }
                             prefRepo?.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
                             prefRepo?.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
                             if (it.villageList.isNotEmpty()) {

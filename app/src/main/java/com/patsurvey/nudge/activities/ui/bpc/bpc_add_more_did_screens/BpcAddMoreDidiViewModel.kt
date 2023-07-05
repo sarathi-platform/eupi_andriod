@@ -156,8 +156,7 @@ class BpcAddMoreDidiViewModel @Inject constructor(
                         BpcDidiSelectionStatus.REPLACED.ordinal
                     )
                     bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(ReplaceHelper.didiToBeReplaced.value.second, PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                }
-                else {
+                } else {
                     bpcNonSelectedDidiDao.markDidiSelected(
                         ReplaceHelper.didiToBeReplaced.value.second,
                         BpcDidiSelectionStatus.REPLACED.ordinal

@@ -106,7 +106,7 @@ class BpcDidiListViewModel @Inject constructor(
                     }
             }
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
-            filterDidiList = selectedDidiList.value
+            filterDidiList = selectedDidiList.value.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }
             pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
         }
     }

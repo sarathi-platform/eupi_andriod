@@ -11,7 +11,7 @@ data class UserDetailsResponse(
 
     @SerializedName("email")
     @Expose
-    val email:String,
+    val email:String?,
 
     @SerializedName("name")
     @Expose

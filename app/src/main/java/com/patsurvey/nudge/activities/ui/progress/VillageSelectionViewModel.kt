@@ -69,7 +69,6 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
@@ -183,11 +182,11 @@ class VillageSelectionViewModel @Inject constructor(
                                         val bpcStepId = it.stepList.sortedBy { stepEntity ->
                                             stepEntity.orderNumber
                                         }.last().id
-                                        stepsListDao.markStepAsCompleteOrInProgress(
-                                            bpcStepId,
-                                            StepStatus.INPROGRESS.ordinal,
-                                            village.id
-                                        )
+//                                        stepsListDao.markStepAsCompleteOrInProgress(
+//                                            bpcStepId,
+//                                            StepStatus.INPROGRESS.ordinal,
+//                                            village.id
+//                                        )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
@@ -1211,7 +1210,7 @@ class VillageSelectionViewModel @Inject constructor(
                             response.data?.let {
                                 prefRepo.savePref(PREF_KEY_USER_NAME, it.username)
                                 prefRepo.savePref(PREF_KEY_NAME, it.name)
-                                prefRepo.savePref(PREF_KEY_EMAIL, it.email)
+                                it.email?.let { it1 -> prefRepo.savePref(PREF_KEY_EMAIL, it1) }
                                 prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber)
                                 prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage)
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName)

@@ -202,6 +202,7 @@ fun SocialMappingDidiListScreen(
                                 else
                                     stringResource(R.string.didis_item_text_plural)
                                 MainTitle(title, Modifier.weight(1f))
+                                Spacer(modifier = Modifier.padding(14.dp))
                                 if (!didiViewModel.prefRepo.getFromPage()
                                         .equals(ARG_FROM_HOME, true)
                                     && !didiViewModel.prefRepo.getFromPage()
