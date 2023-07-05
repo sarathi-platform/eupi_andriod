@@ -47,6 +47,7 @@ class QuestionScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0.0)
     val enteredAmount = mutableStateOf("")
+    val isAnswerSelected = mutableStateOf(false)
     val nextCTAVisibility = mutableStateOf(true)
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList

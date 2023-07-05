@@ -66,6 +66,7 @@ fun QuestionScreen(
         val mAnswerList  = viewModel.answerList.value
         val mAnsweredQuestion = mAnswerList.size
         if (mAnsweredQuestion > 0) {
+            viewModel.isAnswerSelected.value=false
             pagerState.animateScrollToPage(mAnsweredQuestion)
         }
     }
@@ -198,8 +199,10 @@ fun QuestionScreen(
                                 question = questionList[it].questionDisplay ?: "",
                                 selectedOptionIndex= selectedOption,
                                 optionList = sortedOptionList,
-                                isLastIndex = (it == questionList.size-1)
+                                isLastIndex = (it == questionList.size-1),
+                                isAnswerSelected = viewModel.isAnswerSelected.value
                             ) { selectedIndex ->
+                                viewModel.isAnswerSelected.value =true
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
@@ -219,7 +222,9 @@ fun QuestionScreen(
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
+                                                viewModel.isAnswerSelected.value=false
                                             }
+
                                         } else {
                                             navigateToSummeryPage(
                                                 navController,
@@ -237,8 +242,11 @@ fun QuestionScreen(
                                 index = viewModel.selIndValue.collectAsState().value,
                                 question = questionList[it].questionDisplay ?: "",
                                 selectedIndex = viewModel.selIndValue.collectAsState().value,
-                                optionList = questionList[it].options
+                                optionList = questionList[it].options,
+                                isAnswerSelected = viewModel.isAnswerSelected.value
                             ) { selectedIndex ->
+                                viewModel.isAnswerSelected.value=true
+
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
@@ -259,6 +267,7 @@ fun QuestionScreen(
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
+                                                viewModel.isAnswerSelected.value=false
                                             }
                                         } else {
                                             navigateToSummeryPage(
@@ -342,6 +351,7 @@ fun QuestionScreen(
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
@@ -404,6 +414,7 @@ fun QuestionScreen(
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
