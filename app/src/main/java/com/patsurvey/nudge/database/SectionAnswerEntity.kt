@@ -52,7 +52,7 @@ data class SectionAnswerEntity(
     var needsToPost: Boolean = true,
 
     @SerializedName("assetAmount")
-    val assetAmount: Double? = 0.0,
+    val assetAmount: String? = "0"
 
 
 

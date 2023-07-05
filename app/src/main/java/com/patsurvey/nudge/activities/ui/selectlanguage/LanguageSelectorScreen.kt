@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
@@ -18,13 +19,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
@@ -34,6 +40,7 @@ import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.*
 
+@OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun LanguageScreen(
@@ -48,6 +55,36 @@ fun LanguageScreen(
         showCustomToast(context,networkErrorMessage)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
+
+    if (pageFrom == ARG_FROM_HOME){
+        val permissionsState = rememberMultiplePermissionsState(
+            permissions = listOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.CAMERA,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        )
+
+        val lifecycleOwner = LocalLifecycleOwner.current
+        DisposableEffect(
+            key1 = lifecycleOwner,
+            effect = {
+                val observer = LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_START) {
+                        permissionsState.launchMultiplePermissionRequest()
+                    }
+                }
+                lifecycleOwner.lifecycle.addObserver(observer)
+
+                onDispose {
+                    lifecycleOwner.lifecycle.removeObserver(observer)
+                }
+            }
+        )
+    }
+
     BackHandler {
         if (pageFrom == ARG_FROM_HOME)
             (context as? Activity)?.finish()

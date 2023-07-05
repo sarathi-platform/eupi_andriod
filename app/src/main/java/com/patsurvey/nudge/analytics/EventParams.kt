@@ -22,6 +22,9 @@ enum class EventParams(val eventParam: String) {
     BUILD_MANUFACTURER("Build_MANUFACTURER"),
     BUILD_MODEL("Build_MODEL"),
     BUILD_BRAND("Build_BRAND"),
+    LANGUAGE_ID("language_id"),
+    CASTE_LIST("caste_list"),
+    FROM_SCREEN("from_screen"),
 
 
 

@@ -154,9 +154,9 @@ fun SettingScreen(
     }
 
     val formList = mutableListOf<String>()
-    formList.add("Digital Form A")
-    formList.add("Digital Form B")
-    formList.add("Digital Form C")
+    formList.add(stringResource(R.string.digital_form_a_title))
+    formList.add(stringResource(R.string.digital_form_b_title))
+    formList.add(stringResource(R.string.digital_form_c_title))
 
     val optionList = viewModel.optionList.collectAsState()
 
@@ -212,7 +212,7 @@ fun SettingScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(R.string.settings_screen_title),
                         style = mediumTextStyle,
                         color = textColorDark,
                         modifier = Modifier,
@@ -338,7 +338,7 @@ fun SettingScreen(
                             } else {
                                 showToast(
                                     context,
-                                    "Sync is required before logout,Please sync your data before logout."
+                                    context.getString(R.string.logout_sync_error_message)
                                 )
                             }
                         } else {
@@ -346,7 +346,7 @@ fun SettingScreen(
                             if(isBPCDataNeedToBeSynced.value){
                                 showToast(
                                     context,
-                                    "Sync is required before logout,Please sync your data before logout."
+                                    context.getString(R.string.logout_sync_error_message)
                                 )
                             } else {
                                 viewModel.performLogout(object : NetworkCallbackListener {
@@ -363,7 +363,10 @@ fun SettingScreen(
                             }
                         }
                     } else {
-                        showToast(context,"No Internet Available, Please connect with internet")
+                        showToast(
+                            context,
+                            context.getString(R.string.logout_no_internet_error_message)
+                        )
                     }
                 }
             }
@@ -505,7 +508,7 @@ fun showSyncDialog(
                                 )
                                 if (batteryLevel < 30)
                                     Text(
-                                        text = "(Min 30% required)",
+                                        text = stringResource(R.string.min_battery_text),
                                         color = redOffline,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.SemiBold,
@@ -866,7 +869,7 @@ fun showSyncDialog(
 
 
                                 Text(
-                                    text = "Please don't close the app or switch off the phone.",
+                                    text = stringResource(R.string.do_not_close_app_message),
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
@@ -1347,21 +1350,30 @@ fun ExpandedSettingsList(
                                             if (viewModel.formAAvailabe.value)
                                                 navController.navigate(SettingScreens.FORM_A_SCREEN.route)
                                             else
-                                                showToast(context, "No Data! Form A not generated")
+                                                showToast(
+                                                    context,
+                                                    context.getString(R.string.no_data_form_a_not_generated_text)
+                                                )
                                         }
 
                                         1 -> {
                                             if (viewModel.formBAvailabe.value)
                                                 navController.navigate(SettingScreens.FORM_B_SCREEN.route)
                                             else
-                                                showToast(context, "No Data! Form B not generated")
+                                                showToast(
+                                                    context,
+                                                    context.getString(R.string.no_data_form_b_not_generated_text)
+                                                )
                                         }
 
                                         2 -> {
                                             if (viewModel.formCAvailabe.value)
                                                 navController.navigate(SettingScreens.FORM_C_SCREEN.route)
                                             else
-                                                showToast(context, "No Data! Form C not generated")
+                                                showToast(
+                                                    context,
+                                                    context.getString(R.string.no_data_form_c_not_generated_text)
+                                                )
                                         }
                                     }
 
@@ -1383,7 +1395,7 @@ fun ExpandedSettingsList(
                 }
             } else {
                 Text(
-                    text = "No Form available yet.",
+                    text = stringResource(R.string.no_form_available_yet_text),
                     textAlign = TextAlign.Start,
                     fontSize = 14.sp,
                     fontFamily = NotoSans,

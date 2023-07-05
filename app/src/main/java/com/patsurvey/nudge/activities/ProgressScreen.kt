@@ -75,6 +75,22 @@ fun ProgressScreen(
         viewModel.setVoEndorsementCompleteForVillages()
     }
 
+   val tolaCount = remember {
+       viewModel.tolaCount
+   }
+    val didiCount = remember {
+        viewModel.didiCount
+    }
+    val poorDidiCount = remember {
+        viewModel.poorDidiCount
+    }
+    val ultraPoorDidiCount = remember {
+        viewModel.ultrPoorDidiCount
+    }
+    val endorsedDidiCount = remember {
+        viewModel.endorsedDidiCount
+    }
+
     BackHandler {
         (context as? Activity)?.finish()
     }
@@ -264,8 +280,33 @@ fun ProgressScreen(
                                 if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                     viewModel.updateSelectedStep(steps[index].stepId)
                                 }
+                                val subText = when(step.orderNumber) {
+                                    1 -> tolaCount.value.let {
+                                        stringResource(id = R.string.transect_walk_sub_text, it)
+                                    }
+                                    2 -> didiCount.value.let {
+                                        stringResource(id = R.string.social_mapping_sub_text, it)
+                                    }
+                                    3 -> poorDidiCount.value.let {
+                                        stringResource(id = R.string.wealth_ranking_sub_text, it)
+                                    }
+                                    4 -> ultraPoorDidiCount.value.let {
+                                        if (it > 1)
+                                            stringResource(id = R.string.pat_sub_text_plural, it)
+                                        else
+                                            stringResource(id = R.string.pat_sub_text_singular, it)
+                                    }
+                                    5 -> endorsedDidiCount.value.let {
+                                        if (it > 1)
+                                            stringResource(id = R.string.vo_endorsement_sub_text_plural, it)
+                                        else
+                                            stringResource(id = R.string.vo_endorsement_sub_text_singular, it)
+                                    }
+                                    else -> ""
+                                }
                                 StepsBox(
                                     boxTitle = step.name,
+                                    subTitle = subText,
                                     stepNo = step.orderNumber,
                                     index = index,
                                     iconId = step.orderNumber,
@@ -316,6 +357,7 @@ fun ProgressScreen(
 fun StepsBox(
     modifier: Modifier = Modifier,
     boxTitle: String,
+    subTitle: String,
     stepNo: Int,
     index: Int,
     iconId: Int,
@@ -423,35 +465,9 @@ fun StepsBox(
                     if (isCompleted) {
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
-                        val subText = when(stepNo) {
-                            1 -> viewModel?.tolaCount?.value?.let {
-                                stringResource(id = R.string.transect_walk_sub_text, it)
-                            }
-                            2 -> viewModel?.didiList?.collectAsState()?.value?.let {
-                                stringResource(id = R.string.social_mapping_sub_text, it.size)
-                            }
-                            3 -> viewModel?.didiList?.collectAsState()?.value?.let {
-                                stringResource(id = R.string.wealth_ranking_sub_text, it.filter { didi -> didi.wealth_ranking == WealthRank.POOR.rank }.size)
-                            }
-                            4 -> viewModel?.didiList?.collectAsState()?.value?.let {
-                                val count = it.filter { it.forVoEndorsement==1}.size
-                                if (count > 1)
-                                    stringResource(id = R.string.pat_sub_text_plural, count)
-                                else
-                                    stringResource(id = R.string.pat_sub_text_singular, count)
-                            }
-                            5 -> viewModel?.didiList?.collectAsState()?.value?.let {
-                                val count = it.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
-                                if (count > 1)
-                                    stringResource(id = R.string.vo_endorsement_sub_text_plural, count)
-                                else
-                                    stringResource(id = R.string.vo_endorsement_sub_text_singular, count)
-                            }
-                            else -> ""
-                        }
-                        if (subText != null) {
+                        if (subTitle != "") {
                             Text(
-                                text = subText,
+                                text = subTitle,
                                 color = if (isCompleted) greenOnline else textColorDark,
                                 modifier = Modifier
                                     .padding(bottom = 10.dp)
@@ -584,7 +600,7 @@ fun StepsBox(
 @Composable
 fun StepBoxPreview(){
 
-    StepsBox(boxTitle = "TransectBox", stepNo = 1, index = 1, iconId = 1, onclick = {})
+    StepsBox(boxTitle = "TransectBox", subTitle = "10 Poor didis identified", stepNo = 1, index = 1, iconId = 1, onclick = {})
 }
 
 @Composable

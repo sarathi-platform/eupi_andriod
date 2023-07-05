@@ -18,6 +18,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.getImagePath
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -129,7 +130,6 @@ class ConfigViewModel @Inject constructor(
                     val localDownloader = (context as MainActivity).downloader
                     val downloadManager = context.getSystemService(DownloadManager::class.java)
                     val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
-                    Log.d("TAG", "downloadItem: $downloadId")
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -139,9 +139,7 @@ class ConfigViewModel @Inject constructor(
 
     }
 
-    fun getImagePath(context: Context, imageName:String): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
-    }
+
 
     fun checkAndAddLanguage() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

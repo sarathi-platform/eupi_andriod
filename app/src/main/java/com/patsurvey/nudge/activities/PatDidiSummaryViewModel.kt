@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
@@ -22,6 +23,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -31,7 +35,8 @@ import javax.inject.Inject
 class PatDidiSummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val apiService: ApiService
 ) :
     BaseViewModel() {
 
@@ -138,6 +143,19 @@ class PatDidiSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             didiDao.updateDidiShgStatus(didiId = didiId, shgFlag = flagStatus.value)
 
+        }
+    }
+
+    fun uploadDidiImage(image: MultipartBody.Part, didiId: RequestBody) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+              try {
+                  apiService.uploadDidiImage(image,didiId)
+                }   catch (ex:Exception){
+                    ex.printStackTrace()
+                }
+
+            }
         }
     }
 }

@@ -7,6 +7,9 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.analytics.EventParams
+import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -104,12 +107,22 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
                 _didiList.value = updatedList
-                _casteList.emit(
-                    casteListDao.getAllCasteForLanguage(
-                        prefRepo.getAppLanguageId() ?: 2
+                val languageId = prefRepo.getAppLanguageId() ?: 2
+                val casteList = casteListDao.getAllCasteForLanguage(
+                    languageId = languageId
+                )
+                AnalyticsHelper.logEvent(
+                    Events.CASTE_LIST_READ,
+                    mapOf(
+                        EventParams.LANGUAGE_ID to languageId,
+                        EventParams.CASTE_LIST to "$casteList",
+                        EventParams.FROM_SCREEN to "Add DidiScreen"
                     )
                 )
-                _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
+                _casteList.emit(
+                    casteList
+                )
+                _tolaList.value = tolaDao.getAllTolasForVillage(villageId)
                 if (lastSelectedTolaDao.getTolaCountForVillage(villageId = villageId) > 0) {
                     val selectedDBTola = lastSelectedTolaDao.getTolaForVillage(villageId)
                     withContext(Dispatchers.Main) {
@@ -252,7 +265,6 @@ class AddDidiViewModel @Inject constructor(
     fun updateDidiIntoDatabase(didiId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
-            didiList.value
             filterDidiList
             val updatedDidi = DidiEntity(
                 id = didiId,
@@ -264,6 +276,8 @@ class AddDidiViewModel @Inject constructor(
                 cohortId = selectedTola.value.first,
                 cohortName = selectedTola.value.second,
                 relationship = HUSBAND_STRING,
+                wealth_ranking = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).wealth_ranking ?: WealthRank.NOT_RANKED.rank,
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
                 createdDate = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).createdDate ?:0,

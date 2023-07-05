@@ -4,7 +4,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,15 +40,21 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.text.isDigitsOnly
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.lightGray2
+import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
+import com.patsurvey.nudge.activities.ui.theme.quesOptionTextStyle
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.ASSET_VALUE_LENGTH
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -54,6 +68,7 @@ fun NumericFieldTypeQuestion(
     optionList: List<OptionsItem>,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
+    showNextButton: Boolean = true,
     onSubmitClick: () -> Unit
 ) {
 
@@ -166,19 +181,20 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString() else (if(viewModel?.enteredAmount?.value==0) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
+                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString()
+                                else
+                                        (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") || viewModel?.enteredAmount?.value.equals("0")) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
                                 readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),
                                 onValueChange = {
                                     if(questionFlag.equals(QUESTION_FLAG_RATIO,true)){
                                         viewModel?.totalAmount?.value = it.toDouble()
                                     }else{
-
-                                        if(it.isEmpty() || it.equals(BLANK_STRING)){
-                                            viewModel?.enteredAmount?.value = 0
+                                        if(it.isEmpty() || it.equals(BLANK_STRING) || it.equals("0.0")){
+                                            viewModel?.enteredAmount?.value = BLANK_STRING
                                         }else {
                                             if(it.length<ASSET_VALUE_LENGTH){
                                                 if(it.isDigitsOnly()){
-                                                    viewModel?.enteredAmount?.value = it.toInt()
+                                                    viewModel?.enteredAmount?.value = it
                                                 }
 
                                             }
@@ -225,7 +241,8 @@ fun NumericFieldTypeQuestion(
                 }
             }
 
-            Row(
+            if (showNextButton) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 5.dp)
@@ -235,14 +252,15 @@ fun NumericFieldTypeQuestion(
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
                         }
-                    ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(id = R.string.next),
-                    isArrowRequired = false,
-                    isActive = true,
-                    modifier = Modifier.height(45.dp)
                 ) {
-                    onSubmitClick()
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.next),
+                        isArrowRequired = false,
+                        isActive = true,
+                        modifier = Modifier.height(45.dp)
+                    ) {
+                        onSubmitClick()
+                    }
                 }
             }
         }

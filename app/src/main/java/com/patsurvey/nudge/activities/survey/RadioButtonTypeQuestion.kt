@@ -47,6 +47,7 @@ fun RadioButtonTypeQuestion(
     isLastIndex:Boolean=false,
     selectedOptionIndex: Int=-1,
     optionList: List<OptionsItem?>?,
+    isAnswerSelected:Boolean =false,
     onAnswerSelection: (Int) -> Unit
 ) {
     var selectedIndex by remember { mutableStateOf(selectedOptionIndex) }
@@ -111,8 +112,10 @@ fun RadioButtonTypeQuestion(
                                 optionValue = option?.optionValue ?: 0,
                                 selectedIndex = selectedIndex
                             ) {
-                                selectedIndex = it
-                                onAnswerSelection(index)
+                                if(!isAnswerSelected) {
+                                    selectedIndex = it
+                                    onAnswerSelection(index)
+                                }
                             }
                         }
                     }
@@ -124,7 +127,7 @@ fun RadioButtonTypeQuestion(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .visible(selectedOptionIndex !=-1 && isLastIndex)
+                        .visible(selectedOptionIndex != -1 && isLastIndex)
                         .padding(horizontal = 5.dp)
                         .padding(top = 20.dp)
                         .padding(bottom = 8.dp)
@@ -139,7 +142,8 @@ fun RadioButtonTypeQuestion(
                         isActive = true,
                         modifier = Modifier.height(45.dp)
                     ) {
-                        onAnswerSelection(selectedIndex)
+                        if(!isAnswerSelected)
+                             onAnswerSelection(selectedIndex)
                     }
                 }
 

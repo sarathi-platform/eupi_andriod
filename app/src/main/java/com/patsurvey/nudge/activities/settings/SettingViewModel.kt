@@ -234,7 +234,7 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        Log.e("server error","called")
+        Log.e("server error","called, $error")
         when (hitApiStatus.value) {
             1 -> onLogoutError.value = true
             2 -> {
@@ -263,7 +263,7 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-
+        Log.e("server error","called, ${errorModel?.code}, api: ${errorModel?.apiName}")
     }
 
 /*    fun getStepOneSize(stepOneSize : MutableState<String>) {

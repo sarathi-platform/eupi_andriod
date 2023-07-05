@@ -35,7 +35,6 @@ object LocationUtil {
             ) == PackageManager.PERMISSION_GRANTED
         ) {
 
-
             if (isLocationEnabled(context, mLocationManager)) {
                 val criteria = getCriteria(
                     if (batteryLevel > 30)

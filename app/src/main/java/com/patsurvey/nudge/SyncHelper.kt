@@ -895,7 +895,8 @@ class SyncHelper (
                                             AnswerDetailDTOListItem(
                                                 questionId = it.questionId,
                                                 section = it.actionType,
-                                                options = optionList
+                                                options = optionList,
+                                                assetAmount = it.assetAmount
                                             )
                                         )
                                     } catch (e: Exception) {
@@ -922,7 +923,8 @@ class SyncHelper (
                                     answerDetailDTOList = qList,
                                     patSurveyStatus = didi.patSurveyStatus,
                                     section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status
+                                    section1Status = didi.section1Status,
+                                    shgFlag = didi.shgFlag
                                 )
                             )
                         }
