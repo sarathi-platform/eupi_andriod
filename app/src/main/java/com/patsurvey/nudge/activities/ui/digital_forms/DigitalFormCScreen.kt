@@ -151,8 +151,8 @@ fun DigitalFormCScreen(
 
                 if (shouldRequestPermission.value) {
                     ShowDialog(
-                        title = "Permission Required",
-                        message = "Camera Permission requierd, please grant permission.",
+                        title = stringResource(R.string.permission_required_prompt_title),
+                        message = stringResource(R.string.permission_dialog_prompt_message),
                         setShowDialog = {
                             shouldRequestPermission.value = it
                         }

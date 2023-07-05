@@ -1,14 +1,11 @@
 package com.patsurvey.nudge.activities
 
-import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
-import android.os.StrictMode
-import android.os.StrictMode.VmPolicy
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -18,24 +15,18 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -51,7 +42,7 @@ import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -76,12 +67,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     var smsBroadcastReceiver: SmsBroadcastReceiver? = null
 
 
-    @OptIn(ExperimentalPermissionsApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        localizationDelegate.addOnLocaleChangedListener(this)
-        localizationDelegate.onCreate()
-        val builder = VmPolicy.Builder()
-        StrictMode.setVmPolicy(builder.build())
+        /*val builder = VmPolicy.Builder()
+        StrictMode.setVmPolicy(builder.build())*/
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.O) {
             setTheme(R.style.Android_starter_project_blow_lollipop)
         }
@@ -91,32 +79,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 val snackState = rememberSnackBarState()
                 val onlineStatus = remember { mutableStateOf(false) }
 
-                val permissionsState = rememberMultiplePermissionsState(
-                    permissions = listOf(
-                        Manifest.permission.ACCESS_FINE_LOCATION,
-                        Manifest.permission.ACCESS_COARSE_LOCATION,
-                        Manifest.permission.CAMERA,
-                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                        Manifest.permission.READ_EXTERNAL_STORAGE
-                    )
-                )
-
-                val lifecycleOwner = LocalLifecycleOwner.current
-                DisposableEffect(
-                    key1 = lifecycleOwner,
-                    effect = {
-                        val observer = LifecycleEventObserver { _, event ->
-                            if (event == Lifecycle.Event.ON_START) {
-                                permissionsState.launchMultiplePermissionRequest()
-                            }
-                        }
-                        lifecycleOwner.lifecycle.addObserver(observer)
-
-                        onDispose {
-                            lifecycleOwner.lifecycle.removeObserver(observer)
-                        }
-                    }
-                )
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier
@@ -147,32 +109,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                            RootNavigationGraph(navController = rememberNavController(),sharedPrefs)
                         }
                     }
-                }
-
-                downloader = AndroidDownloader(applicationContext)
-
-                RetryHelper.init(
-                    prefRepo = mViewModel.prefRepo,
-                    apiService = mViewModel.apiService,
-                    tolaDao = mViewModel.tolaDao,
-                    stepsListDao = mViewModel.stepsListDao,
-                    villageListDao = mViewModel.villegeListDao,
-                    didiDao = mViewModel.didiDao,
-                    answerDao = mViewModel.answerDao,
-                    numericAnswerDao = mViewModel.numericAnswerDao,
-                    questionDao = mViewModel.questionDao,
-                    castListDao = mViewModel.casteListDao,
-                    bpcSummaryDao = mViewModel.bpcSummaryDao,
-                    bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
-                    bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
-                )
-
-                AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo)
-
-                connectionLiveData = ConnectionMonitor(this)
-                connectionLiveData.observe(this) { isNetworkAvailable ->
-                    onlineStatus.value = isNetworkAvailable
-                    isOnline.value = isNetworkAvailable
                 }
 
                 isLoggedInLive.observe(this) { isLoggedIn ->
@@ -219,8 +155,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
-        startSmartUserConsent()
+        localizationDelegate.addOnLocaleChangedListener(this)
+        localizationDelegate.onCreate()
     }
+
 
     private fun startSmartUserConsent() {
         val client = SmsRetriever.getClient(this)
@@ -309,6 +247,33 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     public override fun onResume() {
         super.onResume()
         localizationDelegate.onResume(this)
+        downloader = AndroidDownloader(applicationContext)
+
+        RetryHelper.init(
+            prefRepo = mViewModel.prefRepo,
+            apiService = mViewModel.apiService,
+            tolaDao = mViewModel.tolaDao,
+            stepsListDao = mViewModel.stepsListDao,
+            villageListDao = mViewModel.villegeListDao,
+            didiDao = mViewModel.didiDao,
+            answerDao = mViewModel.answerDao,
+            numericAnswerDao = mViewModel.numericAnswerDao,
+            questionDao = mViewModel.questionDao,
+            castListDao = mViewModel.casteListDao,
+            bpcSummaryDao = mViewModel.bpcSummaryDao,
+            bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
+            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
+        )
+
+        AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)
+
+        connectionLiveData = ConnectionMonitor(this)
+        connectionLiveData.observe(this) { isNetworkAvailable ->
+            isOnline.value = isNetworkAvailable
+        }
+
+        startSmartUserConsent()
+
     }
 
     override fun attachBaseContext(newBase: Context) {

@@ -122,7 +122,7 @@ class AddDidiViewModel @Inject constructor(
                 _casteList.emit(
                     casteList
                 )
-                _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
+                _tolaList.value = tolaDao.getAllTolasForVillage(villageId)
                 if (lastSelectedTolaDao.getTolaCountForVillage(villageId = villageId) > 0) {
                     val selectedDBTola = lastSelectedTolaDao.getTolaForVillage(villageId)
                     withContext(Dispatchers.Main) {
@@ -265,7 +265,6 @@ class AddDidiViewModel @Inject constructor(
     fun updateDidiIntoDatabase(didiId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
-            didiList.value
             filterDidiList
             val updatedDidi = DidiEntity(
                 id = didiId,
@@ -277,6 +276,8 @@ class AddDidiViewModel @Inject constructor(
                 cohortId = selectedTola.value.first,
                 cohortName = selectedTola.value.second,
                 relationship = HUSBAND_STRING,
+                wealth_ranking = _didiList.value.get(_didiList.value.map { it.id }
+                    .indexOf(didiId)).wealth_ranking ?: WealthRank.NOT_RANKED.rank,
                 villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
                 createdDate = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).createdDate ?:0,

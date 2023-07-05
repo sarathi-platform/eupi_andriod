@@ -72,6 +72,7 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
@@ -186,11 +187,12 @@ class VillageSelectionViewModel @Inject constructor(
                                         val bpcStepId = it.stepList.sortedBy { stepEntity ->
                                             stepEntity.orderNumber
                                         }.last().id
-//                                        stepsListDao.markStepAsCompleteOrInProgress(
-//                                            bpcStepId,
-//                                            StepStatus.INPROGRESS.ordinal,
-//                                            village.id
-//                                        )
+                                        if (it.stepList[it.stepList.map { it.id }.indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
+                                        stepsListDao.markStepAsCompleteOrInProgress(
+                                            bpcStepId,
+                                            StepStatus.INPROGRESS.ordinal,
+                                            village.id
+                                        )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
@@ -544,9 +546,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                 ApiType.PAT_BPC_SURVEY_SUMMARY
                                             )
 
-                                                if (!RetryHelper.stepListApiVillageId.contains(village.id)) RetryHelper.stepListApiVillageId.add(
-                                                    village.id
-                                                )
+                                            if (!RetryHelper.stepListApiVillageId.contains(village.id)) RetryHelper.stepListApiVillageId.add(
+                                                village.id
+                                            )
                                         }
                                         onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
                                     }

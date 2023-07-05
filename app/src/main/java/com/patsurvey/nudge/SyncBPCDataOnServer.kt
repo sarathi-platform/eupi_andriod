@@ -92,8 +92,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         updatedList.forEach {
             newBeneficiaryIdSelected.add(it.serverId)
         }
-        for(id in oldBeneficiaryIdSelected){
-            if(newBeneficiaryIdSelected.indexOf(id) == -1){
+        for(id in newBeneficiaryIdSelected){
+            if(oldBeneficiaryIdSelected.indexOf(id) == -1){
                 return true
             }
         }
@@ -206,7 +206,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
-                settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }
@@ -249,7 +249,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     }
                 } catch (ex: Exception) {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
-                    settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                    settingViewModel.onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
                     networkCallbackListener.onFailed()
                 }
             } else {
@@ -339,7 +339,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             }
                         }
                     } catch (ex: Exception) {
-                        settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                        settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
                     }
                 }
             } else {
@@ -490,7 +490,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     networkCallbackListener.onFailed()
                 }
                 ex.printStackTrace()
-                settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                settingViewModel.onCatchError(ex, ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY)
             }
         }
     }

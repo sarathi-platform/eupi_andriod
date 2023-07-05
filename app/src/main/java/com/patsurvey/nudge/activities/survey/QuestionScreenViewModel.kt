@@ -206,6 +206,7 @@ class QuestionScreenViewModel @Inject constructor(
                         totalAssetAmount = assetAmount,
                         summary = summary
                     )
+                    answerDao.updateNeedToPost(didiId, questionId, true)
                     withContext(Dispatchers.Main) {
                         onAnswerSave()
                     }

@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.survey
 import android.annotation.SuppressLint
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -26,7 +25,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -87,6 +85,17 @@ fun QuestionScreen(
         if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
             navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
         else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+    }
+
+    val prevButtonVisible = remember {
+        derivedStateOf {
+            pagerState.currentPage > 0
+        }
+    }
+    val nextButtonVisible = remember {
+        derivedStateOf {
+            (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+        }
     }
 
     Box(modifier = Modifier
@@ -229,6 +238,7 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
+                                showNextButton = !nextButtonVisible.value,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
@@ -275,16 +285,6 @@ fun QuestionScreen(
 
         }
 
-        val prevButtonVisible = remember {
-            derivedStateOf {
-                pagerState.currentPage > 0
-            }
-        }
-        val nextButtonVisible = remember {
-            derivedStateOf {
-                (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-            }
-        }
         //Previous Ques Button
         AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
@@ -302,9 +302,7 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
-                    if (questionList[prevPageIndex].type == QuestionType.Numeric_Field.name
-                        && questionList[prevPageIndex].questionFlag.equals(
-                            QUESTION_FLAG_RATIO,true)){
+                    if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name){
                         val newAnswerOptionModel = OptionsItem(
                             BLANK_STRING, 0, 0, 0, BLANK_STRING
                         )

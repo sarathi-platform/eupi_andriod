@@ -2,6 +2,7 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -139,4 +140,7 @@ interface ApiService {
     @POST("/write-api/bpc/save-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun saveMatchSummary(@Body saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<ArrayList<SaveMatchSummaryResponse>>
+
+    @POST("/read-api/custom/log")
+    suspend fun addLogs(@Body logsBody: String): JsonObject?
 }
