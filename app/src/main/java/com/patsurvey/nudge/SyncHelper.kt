@@ -606,16 +606,13 @@ class SyncHelper (
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    launch {
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
-                    }
+                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
                 }
                 val response = apiService.updateDidis(didiRequestList)
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
-//                        networkCallbackListener.onSuccess()
-                            response.data.forEach { didiFromNetwork ->
+                            response.data.forEach { _ ->
                                 didiList.forEach { didi ->
                                     didiDao.updateNeedToPost(didi.id,false)
                                 }
@@ -765,10 +762,8 @@ class SyncHelper (
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
-                            launch {
-                                didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                                    localModifiedDate = didi.localModifiedDate))
-                            }
+                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
+                                localModifiedDate = didi.localModifiedDate))
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
                             didiRequestList
@@ -1005,15 +1000,13 @@ class SyncHelper (
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
-                            launch {
-                                didi.voEndorsementStatus.let {
-                                    if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                            localModifiedDate = System.currentTimeMillis()))
-                                    } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                            localModifiedDate = System.currentTimeMillis()))
-                                    }
+                            didi.voEndorsementStatus.let {
+                                if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                    didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
+                                        localModifiedDate = System.currentTimeMillis()))
+                                } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
+                                    didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
+                                        localModifiedDate = System.currentTimeMillis()))
                                 }
                             }
                         }
