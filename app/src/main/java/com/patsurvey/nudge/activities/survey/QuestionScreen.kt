@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
@@ -28,6 +30,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
@@ -39,9 +44,10 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun QuestionScreen(
     navController: NavHostController,
@@ -125,15 +131,47 @@ fun QuestionScreen(
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
-                        Image(
-                            painter = painterResource(id = R.drawable.pat_sample_icon),
-                            contentDescription = "home image",
-                            modifier = Modifier
-                                .fillMaxWidth()
+                        val quesImage:File?=
+                            questionList[it].questionImageUrl?.let { it1 ->
+                                getImagePath(context,
+                                    it1
+                                )
+                            }
+                        if(quesImage?.extension.equals(EXTENSION_WEBP,true)){
+                            GlideImage(model = quesImage,
+                                contentDescription ="Question Image",
+                                    modifier = Modifier
+                                    .fillMaxWidth()
                                 .width(50.dp)
                                 .height(50.dp),
-                            colorFilter = ColorFilter.tint(textColorDark)
-                        )
+                            )
+                        }else {
+                            var imgBitmap: Bitmap? = null
+                            if (quesImage?.exists() == true) {
+                                imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
+                            }
+                            if (quesImage?.exists() == true) {
+                                Image(
+                                    painter = rememberAsyncImagePainter(model = imgBitmap),
+                                    contentDescription = "home image",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .width(50.dp)
+                                        .height(50.dp),
+                                    colorFilter = ColorFilter.tint(textColorDark)
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(id = R.drawable.pat_sample_icon),
+                                    contentDescription = "home image",
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .width(50.dp)
+                                        .height(50.dp),
+                                    colorFilter = ColorFilter.tint(textColorDark)
+                                )
+                            }
+                        }
                         Spacer(modifier = Modifier.height(10.dp))
                         if (questionList[it].type == QuestionType.RadioButton.name) {
                             var sortedOptionList =
@@ -159,7 +197,8 @@ fun QuestionScreen(
                                     assetAmount = 0.0,
                                     quesType = QuestionType.RadioButton.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
-                                    selIndex = selectedIndex
+                                    selIndex = selectedIndex,
+                                    enteredAssetAmount = "0"
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -197,7 +236,8 @@ fun QuestionScreen(
                                     assetAmount = 0.0,
                                     quesType = QuestionType.List.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
-                                    selIndex = viewModel.listTypeAnswerIndex.value
+                                    selIndex = viewModel.listTypeAnswerIndex.value,
+                                    enteredAssetAmount = "0"
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -241,8 +281,10 @@ fun QuestionScreen(
                                     assetAmount = if(questionList[it].questionFlag.equals(
                                             QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                                     quesType = QuestionType.Numeric_Field.name,
-                                    summary = (questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString()) else context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
-                                    selIndex = -1
+                                    summary = (questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                                    else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                                    selIndex = -1,
+                                    enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -302,9 +344,10 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
-                    if (questionList[prevPageIndex].type == QuestionType.Numeric_Field.name
-                        && questionList[prevPageIndex].questionFlag.equals(
-                            QUESTION_FLAG_RATIO,true)){
+                    Log.d(TAG, "QuestionScreen: ${questionList[pagerState.currentPage].type} :: ${questionList[pagerState.currentPage].questionFlag} :: ${questionList[pagerState.currentPage].questionDisplay}")
+                    if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
+                        && questionList[pagerState.currentPage].questionFlag.equals(
+                            QUESTION_FLAG_WEIGHT,true)){
                         val newAnswerOptionModel = OptionsItem(
                             BLANK_STRING, 0, 0, 0, BLANK_STRING
                         )
@@ -312,10 +355,11 @@ fun QuestionScreen(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
                             answerOptionModel = newAnswerOptionModel,
-                            assetAmount = viewModel.totalAmount.value + viewModel.enteredAmount.value,
+                            assetAmount = viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value),
                             quesType = QuestionType.Numeric_Field.name,
                             summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
-                            selIndex = -1
+                            selIndex = -1,
+                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                         }
@@ -372,10 +416,12 @@ fun QuestionScreen(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
                             answerOptionModel = newAnswerOptionModel,
-                            assetAmount = viewModel.totalAmount.value + viewModel.enteredAmount.value,
+                            assetAmount = viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value),
                             quesType = QuestionType.Numeric_Field.name,
                             summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
-                            selIndex = -1
+                            selIndex = -1,
+                            enteredAssetAmount = (if(questionList[pagerState.currentPage].questionFlag.equals(
+                                    QUESTION_FLAG_WEIGHT,true)) viewModel.enteredAmount.value else "0")
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                         }

@@ -196,6 +196,7 @@ const val CRP_USER_TYPE = "Community Resource Person"
 const val ARG_USER_TYPE = "user_type"
 
 const val MATCH_PERCENTAGE = 70
+const val EXTENSION_WEBP = "webp"
 const val QUESTION_FLAG_RATIO = "ratio"
 const val QUESTION_FLAG_WEIGHT = "weight"
 const val NUDGE_IMAGE_FOLDER = "nudge_images"

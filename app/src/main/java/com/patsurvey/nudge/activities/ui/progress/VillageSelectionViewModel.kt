@@ -416,7 +416,16 @@ class VillageSelectionViewModel @Inject constructor(
                                                             patSurveyStatus = item.patSurveyStatus ?: 0,
                                                             section1Status = item.section1Status ?: 0,
                                                             section2Status = item.section2Status ?: 0,
-                                                            didiId = item.beneficiaryId ?: 0
+                                                            didiId = item.beneficiaryId ?: 0,
+                                                            shgFlag = item.shgFlag ?:-1
+                                                        )
+
+                                                        bpcNonSelectedDidiDao.updatePATProgressStatus(
+                                                            patSurveyStatus = item.patSurveyStatus ?: 0,
+                                                            section1Status = item.section1Status ?: 0,
+                                                            section2Status = item.section2Status ?: 0,
+                                                            didiId = item.beneficiaryId ?: 0,
+                                                            shgFlag = item.shgFlag ?:-1
                                                         )
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
@@ -454,7 +463,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                     0
                                                                                 )?.summary?: BLANK_STRING) else BLANK_STRING,
                                                                                 type = answersItem?.questionType
-                                                                                    ?: QuestionType.RadioButton.name
+                                                                                    ?: QuestionType.RadioButton.name,
+                                                                                assetAmount = answersItem?.assetAmount?:"0"
                                                                             )
                                                                         )
 
@@ -913,7 +923,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                     ?: 0,
                                                                 section2Status = item.section2Status
                                                                     ?: 0,
-                                                                didiId = item.beneficiaryId ?: 0
+                                                                didiId = item.beneficiaryId ?: 0,
+                                                                shgFlag = item.shgFlag ?:-1
                                                             )
                                                         }catch (ex:Exception){
                                                             ex.printStackTrace()
@@ -948,7 +959,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.summary?: BLANK_STRING) else BLANK_STRING,
-                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name
+                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name,
+                                                                            assetAmount = answersItem?.assetAmount?:"0"
                                                                         )
                                                                     )
 

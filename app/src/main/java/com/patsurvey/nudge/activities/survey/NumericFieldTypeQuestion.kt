@@ -41,6 +41,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -166,19 +167,20 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString() else (if(viewModel?.enteredAmount?.value==0) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
+                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString()
+                                else
+                                        (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") || viewModel?.enteredAmount?.value.equals("0")) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
                                 readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),
                                 onValueChange = {
                                     if(questionFlag.equals(QUESTION_FLAG_RATIO,true)){
                                         viewModel?.totalAmount?.value = it.toDouble()
                                     }else{
-
-                                        if(it.isEmpty() || it.equals(BLANK_STRING)){
-                                            viewModel?.enteredAmount?.value = 0
+                                        if(it.isEmpty() || it.equals(BLANK_STRING) || it.equals("0.0")){
+                                            viewModel?.enteredAmount?.value = BLANK_STRING
                                         }else {
                                             if(it.length<ASSET_VALUE_LENGTH){
                                                 if(it.isDigitsOnly()){
-                                                    viewModel?.enteredAmount?.value = it.toInt()
+                                                    viewModel?.enteredAmount?.value = it
                                                 }
 
                                             }

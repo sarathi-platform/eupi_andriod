@@ -12,6 +12,8 @@ import com.patsurvey.nudge.model.request.*
 import com.patsurvey.nudge.model.response.*
 import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
 import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.http.*
 
 interface ApiService {
@@ -139,4 +141,12 @@ interface ApiService {
     @POST("/write-api/bpc/save-summary")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun saveMatchSummary(@Body saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<ArrayList<SaveMatchSummaryResponse>>
+
+    //https://uat.eupi-sarthi.in/write-api/beneficiary/upload-image
+    @Multipart
+    @POST("/write-api/beneficiary/upload-image")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun uploadDidiImage(@Part image:MultipartBody.Part,
+                                 @Part ("id") didiId:RequestBody): ApiResponseModel<Object>
+
 }

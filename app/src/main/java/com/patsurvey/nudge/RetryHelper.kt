@@ -471,7 +471,8 @@ object RetryHelper {
                                             patSurveyStatus = item.patSurveyStatus ?: 0,
                                             section1Status = item.section1Status ?: 0,
                                             section2Status = item.section2Status ?: 0,
-                                            didiId = item.beneficiaryId ?: 0
+                                            didiId = item.beneficiaryId ?: 0,
+                                            shgFlag = item.shgFlag ?:-1
                                         )
                                         if (item?.answers?.isNotEmpty() == true) {
                                             item?.answers?.forEach { answersItem ->
