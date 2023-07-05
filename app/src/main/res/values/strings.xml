@@ -118,9 +118,9 @@
     <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
     <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
     <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
-    <string name="tola_already_exist">Tola already exist.</string>
+    <string name="tola_already_exist">Tola already exists.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
-    <string name="didi_already_exist">Didi already exist.</string>
+    <string name="didi_already_exist">Didi already exists.</string>
     <string name="location_added_text">Location Added</string>
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
@@ -291,5 +291,7 @@
     <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
     <string name="min_battery_text">(Min 30% required)</string>
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
+    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
 
 </resources>

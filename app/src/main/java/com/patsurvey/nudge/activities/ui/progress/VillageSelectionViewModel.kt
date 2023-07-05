@@ -121,8 +121,8 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
-    init {
-//        showLoader.value = true
+    fun init() {
+        showLoader.value = true
         fetchUserDetails {
             fetchCastList()
             if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
@@ -146,6 +146,7 @@ class VillageSelectionViewModel @Inject constructor(
                     fetchDataForBpc()
                 }
             }
+            showLoader.value = false
         }
     }
 
@@ -187,17 +188,16 @@ class VillageSelectionViewModel @Inject constructor(
                                         val bpcStepId = it.stepList.sortedBy { stepEntity ->
                                             stepEntity.orderNumber
                                         }.last().id
-                                        if (it.stepList[it.stepList.map { it.id }.indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
-                                        stepsListDao.markStepAsCompleteOrInProgress(
-                                            bpcStepId,
-                                            StepStatus.INPROGRESS.ordinal,
-                                            village.id
-                                        )
+                                        if (it.stepList[it.stepList.map { it.id }
+                                                .indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
+                                            stepsListDao.markStepAsCompleteOrInProgress(
+                                                bpcStepId,
+                                                StepStatus.INPROGRESS.ordinal,
+                                                village.id
+                                            )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
-                                        showLoader.value = false
-
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(response.message)
@@ -631,17 +631,19 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
-                showLoader.value = false
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
-
+                withContext(Dispatchers.Main) {
+                    showLoader.value = false
+                }
             }
         }
         fetchCastList()
     }
 
     private fun fetchCastList() {
+        showLoader.value = false
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val languageList = languageListDao.getAllLanguages()
             languageList.forEach { language ->
@@ -682,6 +684,13 @@ class VillageSelectionViewModel @Inject constructor(
                         if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
                             ApiType.CAST_LIST_API
                         )
+                        withContext(Dispatchers.Main) {
+                            showLoader.value = false
+                        }
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        showLoader.value = false
                     }
                 }
             }
@@ -733,9 +742,9 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchVillageList() {
+        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                showLoader.value = true
                 withContext(Dispatchers.IO) {
                     val villageList = villageListDao.getAllVillages()
                     val localStepsList = stepsListDao.getAllSteps()
@@ -775,7 +784,6 @@ class VillageSelectionViewModel @Inject constructor(
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
-                                        showLoader.value = false
 
                                     }
                                 } else {
@@ -902,7 +910,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     tag = "VillageSelectionViewModel",
                                                     "Error : ${didiResponse.message}"
                                                 )
-                                                showLoader.value = false
+
                                             }
                                         }
 
@@ -1041,10 +1049,6 @@ class VillageSelectionViewModel @Inject constructor(
                                             }
                                             onCatchError(ex, ApiType.PAT_CRP_SURVEY_SUMMARY)
                                         }
-                                        withContext(Dispatchers.Main) {
-                                            showLoader.value = false
-                                        }
-
                                     }
                                 } else {
                                     val ex = ApiResponseFailException(didiResponse.message)
@@ -1185,10 +1189,12 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
-                showLoader.value = false
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
+                withContext(Dispatchers.Main) {
+                    showLoader.value = false
+                }
             }
         }
     }
@@ -1205,6 +1211,9 @@ class VillageSelectionViewModel @Inject constructor(
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList
                     apiSuccess()
+                    withContext(Dispatchers.Main) {
+                        showLoader.value = false
+                    }
                 } else {
                     val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 2)
                     withContext(Dispatchers.IO) {
@@ -1227,7 +1236,10 @@ class VillageSelectionViewModel @Inject constructor(
                                 apiSuccess()
                             }
 
-                            if (response.data == null) showLoader.value = false
+                            if (response.data == null)
+                                withContext(Dispatchers.Main) {
+                                    showLoader.value = false
+                                }
                         } else if (response.status.equals(FAIL, true)) {
                             withContext(Dispatchers.Main) {
                                 showLoader.value = false
@@ -1264,7 +1276,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-//        showLoader.value = false
+        showLoader.value = false
 //        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            _villagList.value = villageListDao.getAllVillages()
 //        }
@@ -1275,6 +1287,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
+        showLoader.value = false
         job = CoroutineScope(Dispatchers.Main).launch {
             networkErrorMessage.value = errorModel?.message.toString()
         }

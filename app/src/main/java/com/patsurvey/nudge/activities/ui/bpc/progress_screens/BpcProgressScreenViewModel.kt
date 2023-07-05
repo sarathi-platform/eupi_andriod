@@ -71,11 +71,14 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     val bpcCompletedDidiCount = mutableStateOf(0)
 
+    val isBpcVerificationComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
         fetchVillageList()
         fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
+        setBpcVerificationCompleteForVillages()
     }
 
     fun fetchBpcSummaryData(villageId: Int) {
@@ -296,6 +299,15 @@ class BpcProgressScreenViewModel @Inject constructor(
                     }
                 }
                 didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
+            }
+        }
+    }
+
+    fun setBpcVerificationCompleteForVillages() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            villageList.value.forEach { village ->
+                val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                isBpcVerificationComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal)
             }
         }
     }

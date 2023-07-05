@@ -11,5 +11,10 @@ data class ConfigResponseModel(
 
     @SerializedName("questionImageUrlList")
     @Expose
-    val image_profile_link:List<String>
+    val image_profile_link:List<String>,
+
+    @SerializedName("bpcSuveryPercentage")
+    @Expose
+    val bpcSurveyPercentage: List<BpcScorePercentageResponse>
+
 )

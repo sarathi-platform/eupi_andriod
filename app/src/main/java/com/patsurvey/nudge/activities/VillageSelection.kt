@@ -80,6 +80,10 @@ fun VillageSelectionScreen(
     navController: NavController,
     viewModel: VillageSelectionViewModel
 ) {
+    LaunchedEffect(key1 = Unit) {
+        viewModel.init()
+    }
+
     val villages by viewModel.villageList.collectAsState()
 
     val snackState = rememberSnackBarState()
@@ -144,12 +148,14 @@ fun VillageSelectionScreen(
                         modifier = Modifier,
                         buttonText = "Click to Refresh",
                         onClick = {
+                            viewModel.showLoader.value = true
                             showRetryLoader.value = true
                             RetryHelper.retryVillageListApi { success, villageList ->
                                 if (success && !villageList?.isNullOrEmpty()!!) {
                                     viewModel.saveVillageListAfterTokenRefresh(villageList)
                                 }
                                 showRetryLoader.value = false
+                                viewModel.showLoader.value = false
                             }
                         }
                     )
@@ -328,6 +334,7 @@ fun VillageAndVoBoxForBottomSheet(
     voName: String = "",
     index: Int,
     selectedIndex: Int,
+    isBpcUser: Boolean = false,
     isVoEndorsementComplete: Boolean = false,
     onVillageSeleted: (Int) -> Unit,
 
@@ -454,7 +461,7 @@ fun VillageAndVoBoxForBottomSheet(
                         tint = white
                     )
                     Text(
-                        text = "VO Endorsement completed",
+                        text = if (isBpcUser) stringResource(R.string.bpc_verification_completed_village_banner_text) else stringResource(R.string.vo_endorsement_completed_village_banner_text),
                         color = white,
                         style = smallerTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)

@@ -93,7 +93,6 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import java.io.File
 
@@ -132,7 +131,7 @@ fun ScoreComparisionScreen(
     }
 
     val transition = updateTransition(expandBox.value, label = "transition")
-    val colorTransistion = updateTransition(targetState = passPercentage.value > MATCH_PERCENTAGE, label = "colorTransistion")
+    val colorTransistion = updateTransition(targetState = passPercentage.value > viewModel.minMatchPercentage, label = "colorTransistion")
 
     val animateColor by colorTransistion.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
@@ -239,7 +238,7 @@ fun ScoreComparisionScreen(
                                     modifier = Modifier
                                         .padding(16.dp)
                                         .clickable {
-                                            if (passPercentage.value < MATCH_PERCENTAGE)
+                                            if (passPercentage.value < viewModel.minMatchPercentage)
                                                 expandBox.value = !expandBox.value
                                         },
                                 ) {
@@ -255,7 +254,7 @@ fun ScoreComparisionScreen(
                                         modifier = Modifier.weight(1f)
                                     )
 
-                                    if (passPercentage.value < MATCH_PERCENTAGE) {
+                                    if (passPercentage.value < viewModel.minMatchPercentage) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
                                             contentDescription = "Expandable Arrow",

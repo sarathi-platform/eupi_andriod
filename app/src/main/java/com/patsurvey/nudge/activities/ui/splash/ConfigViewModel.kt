@@ -8,7 +8,9 @@ import android.util.Log
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.BpcScorePercentageEntity
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.download.FileType
@@ -32,7 +34,8 @@ class ConfigViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val apiInterface: ApiService,
     private val languageListDao: LanguageListDao,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val bpcScorePercentageDao: BpcScorePercentageDao
 ) : BaseViewModel() {
     fun isLoggedIn(): Boolean {
         return prefRepo.getAccessToken()?.isNotEmpty() == true
@@ -68,6 +71,15 @@ class ConfigViewModel @Inject constructor(
                             it.image_profile_link.forEach {
                                 //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
                                 downloadImageItem(context,it)
+                            }
+                            it.bpcSurveyPercentage.forEach { bpcScorePercentage ->
+                                bpcScorePercentageDao.insert(
+                                    BpcScorePercentageEntity(
+                                        percentage = bpcScorePercentage.percentage,
+                                        name = bpcScorePercentage.name,
+                                        stateId = bpcScorePercentage.id
+                                    )
+                                )
                             }
                             delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
