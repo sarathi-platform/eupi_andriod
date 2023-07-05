@@ -4,7 +4,15 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,9 +40,14 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.core.text.isDigitsOnly
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
+import com.patsurvey.nudge.activities.ui.theme.lightGray2
+import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
+import com.patsurvey.nudge.activities.ui.theme.quesOptionTextStyle
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.database.NumericAnswerEntity
-import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.ASSET_VALUE_LENGTH
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -55,6 +68,7 @@ fun NumericFieldTypeQuestion(
     optionList: List<OptionsItem>,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
+    showNextButton: Boolean = true,
     onSubmitClick: () -> Unit
 ) {
 
@@ -227,7 +241,8 @@ fun NumericFieldTypeQuestion(
                 }
             }
 
-            Row(
+            if (showNextButton) {
+                Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 5.dp)
@@ -237,14 +252,15 @@ fun NumericFieldTypeQuestion(
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
                         }
-                    ) {
-                ButtonPositive(
-                    buttonTitle = stringResource(id = R.string.next),
-                    isArrowRequired = false,
-                    isActive = true,
-                    modifier = Modifier.height(45.dp)
                 ) {
-                    onSubmitClick()
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.next),
+                        isArrowRequired = false,
+                        isActive = true,
+                        modifier = Modifier.height(45.dp)
+                    ) {
+                        onSubmitClick()
+                    }
                 }
             }
         }

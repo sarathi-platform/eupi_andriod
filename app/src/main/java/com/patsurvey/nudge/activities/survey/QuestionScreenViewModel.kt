@@ -190,6 +190,7 @@ class QuestionScreenViewModel @Inject constructor(
         onAnswerSave: () -> Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+
             withContext(Dispatchers.IO) {
                 didiDao.updateNeedToPostPAT(true,didiId, villageId = prefRepo.getSelectedVillage().id)
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
@@ -211,6 +212,7 @@ class QuestionScreenViewModel @Inject constructor(
                             summary = summary,
                             assetAmount = enteredAssetAmount
                         )
+                        answerDao.updateNeedToPost(didiId, questionId, true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }

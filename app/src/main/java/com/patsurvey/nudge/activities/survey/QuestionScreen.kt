@@ -5,7 +5,6 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -93,6 +92,17 @@ fun QuestionScreen(
         if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
             navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
         else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+    }
+
+    val prevButtonVisible = remember {
+        derivedStateOf {
+            pagerState.currentPage > 0
+        }
+    }
+    val nextButtonVisible = remember {
+        derivedStateOf {
+            (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+        }
     }
 
     Box(modifier = Modifier
@@ -269,6 +279,7 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
+                                showNextButton = !nextButtonVisible.value,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
@@ -317,16 +328,6 @@ fun QuestionScreen(
 
         }
 
-        val prevButtonVisible = remember {
-            derivedStateOf {
-                pagerState.currentPage > 0
-            }
-        }
-        val nextButtonVisible = remember {
-            derivedStateOf {
-                (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-            }
-        }
         //Previous Ques Button
         AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
@@ -344,7 +345,6 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
-                    Log.d(TAG, "QuestionScreen: ${questionList[pagerState.currentPage].type} :: ${questionList[pagerState.currentPage].questionFlag} :: ${questionList[pagerState.currentPage].questionDisplay}")
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
                         && questionList[pagerState.currentPage].questionFlag.equals(
                             QUESTION_FLAG_WEIGHT,true)){

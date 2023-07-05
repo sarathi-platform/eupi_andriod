@@ -844,7 +844,8 @@ fun StepsBoxForBpc(
                     if (isCompleted) {
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
-                        val subText = "${viewModel.bpcCompletedDidiCount.value} Ultrapoor Didis verified"
+                        val count = viewModel.bpcCompletedDidiCount.value
+                        val subText = if (count > 1) stringResource(R.string.ultra_poor_didis_verified_text_plural, count) else stringResource(R.string.ultra_poor_didis_verified_text_singular, count)
                         if (subText != null || subText != "") {
                             Text(
                                 text = subText,

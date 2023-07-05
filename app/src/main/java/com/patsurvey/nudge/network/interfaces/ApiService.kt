@@ -2,6 +2,7 @@ package com.patsurvey.nudge.network.interfaces
 
 
 import com.google.gson.JsonArray
+import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -149,4 +150,7 @@ interface ApiService {
     suspend fun uploadDidiImage(@Part image:MultipartBody.Part,
                                  @Part ("id") didiId:RequestBody): ApiResponseModel<Object>
 
+
+    @POST("/read-api/custom/log")
+    suspend fun addLogs(@Body logsBody: String): JsonObject?
 }

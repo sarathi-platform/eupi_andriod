@@ -58,7 +58,7 @@ interface PrefRepo {
    )
    fun clearSharedPreference()
 
-   fun setIsUserBPC(isOnline: Boolean)
+   fun setIsUserBPC(isBpcUser: Boolean)
 
    fun isUserBPC(): Boolean
 

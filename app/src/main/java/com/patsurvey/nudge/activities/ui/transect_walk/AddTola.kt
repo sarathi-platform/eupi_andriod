@@ -22,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
@@ -49,10 +50,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -67,12 +68,15 @@ import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.red
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
@@ -118,17 +122,20 @@ fun AddTolaBox(
     ) {
 
         if (shouldRequestPermission.value){
-            ShowDialog(
-                title = "Permission Required",
-                message = "Camera Permission requierd, please grant permission.",
+            ShowDialogForTolaLocation(
+                title = stringResource(R.string.permission_required_prompt_title),
+                message = stringResource(R.string.permission_dialog_prompt_message),
                 setShowDialog = {
                     shouldRequestPermission.value = it
-                    LocationUtil.showPermissionDialog = false
+                },
+                positiveButtonClicked = {
+                    openSettings(context)
+                    showPermissionDialog = false
+                },
+                cancelButtonClicked = {
+                    showPermissionDialog = true
                 }
-            ) {
-                openSettings(context)
-                LocationUtil.showPermissionDialog = false
-            }
+            )
         }
 
         Column(
@@ -209,8 +216,8 @@ fun AddTolaBox(
                         location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
                         if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                             locationAdded = true
-                        } else{
-                            if (LocationUtil.showPermissionDialog){
+                        } else {
+                            if (showPermissionDialog) {
                                 shouldRequestPermission.value = true
                             }
                         }
@@ -328,17 +335,20 @@ fun TolaBox(
 
 
         if (shouldRequestPermission.value){
-            ShowDialog(
-                title = "Permission Required",
-                message = "Camera Permission requierd, please grant permission.",
+            ShowDialogForTolaLocation(
+                title = stringResource(R.string.permission_required_prompt_title),
+                message = stringResource(R.string.permission_dialog_prompt_message),
                 setShowDialog = {
                     shouldRequestPermission.value = it
-                    LocationUtil.showPermissionDialog = false
+                },
+                positiveButtonClicked = {
+                    openSettings(context)
+                    showPermissionDialog = false
+                },
+                cancelButtonClicked = {
+                    showPermissionDialog = true
                 }
-            ) {
-                openSettings(context)
-                LocationUtil.showPermissionDialog = false
-            }
+            )
         }
 
 
@@ -493,8 +503,8 @@ fun TolaBox(
                                         LocationUtil.getLocation(activity) ?: LocationCoordinates()
                                     if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                                         locationAdded = true
-                                    } else{
-                                        if (LocationUtil.showPermissionDialog){
+                                    } else {
+                                        if (showPermissionDialog) {
                                             shouldRequestPermission.value = true
                                         }
                                         locationAdded = false
@@ -510,6 +520,7 @@ fun TolaBox(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
+//                                Log.d("TolaBox: ", "Edit Mode - location!!.lat: ${location!!.lat}, location!!.long: ${location!!.long}, ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)): ${((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0))} ")
                                 Icon(
                                     painter = painterResource(id = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
                                     contentDescription = "Get Location",
@@ -565,6 +576,66 @@ fun TolaBox(
                                     showCustomToast(context, context.getString(R.string.enter_tola_name_message))
                                 }
                             }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowDialogForTolaLocation(
+    title: String,
+    message: String,
+    setShowDialog: (Boolean) -> Unit,
+    positiveButtonClicked: () -> Unit,
+    cancelButtonClicked:() -> Unit,
+) {
+    Dialog(onDismissRequest = { setShowDialog(false) }) {
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color.White
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier.padding(14.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = title,
+                        textAlign = TextAlign.Start,
+                        style = buttonTextStyle,
+                        maxLines = 1,
+                        color = textColorDark,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Text(
+                        text = message,
+                        textAlign = TextAlign.Start,
+                        style = smallTextStyleMediumWeight,
+                        maxLines = 2,
+                        color = textColorDark,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        ButtonNegative(
+                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            setShowDialog(false)
+                            cancelButtonClicked()
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.yes_text),
+                            isArrowRequired = false,
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            positiveButtonClicked()
+                            setShowDialog(false)
                         }
                     }
                 }
