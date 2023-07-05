@@ -403,6 +403,20 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             )
                                         }
                                         optionList = tList
+                                    }else{
+                                        tList.add(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = 0,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = it.weight,
+                                                isSelected = false
+                                            )
+                                        )
+
+                                        optionList = tList
                                     }
                                 }
                                 try {
@@ -410,7 +424,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                         AnswerDetailDTOListItem(
                                             questionId = it.questionId,
                                             section = it.actionType,
-                                            options = optionList
+                                            options = optionList,
+                                            assetAmount = it.assetAmount
                                         )
                                     )
                                 } catch (e: Exception) {
@@ -444,7 +459,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 answerDetailDTOList = qList,
                                 patSurveyStatus = didi.patSurveyStatus,
                                 section2Status = didi.section2Status,
-                                section1Status = didi.section1Status
+                                section1Status = didi.section1Status,
+                                shgFlag = didi.shgFlag
                             )
                         )
                     }

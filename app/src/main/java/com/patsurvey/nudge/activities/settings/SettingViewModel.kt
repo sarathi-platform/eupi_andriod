@@ -200,7 +200,7 @@ class SettingViewModel @Inject constructor(
     fun isFourthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepFourSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if (answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
                 && isStatusStepStatusSync(3)
             ) {

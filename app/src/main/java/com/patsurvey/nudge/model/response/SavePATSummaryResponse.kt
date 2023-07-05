@@ -59,9 +59,12 @@ data class AnswersItem(
 	@SerializedName("questionType")
 	val questionType: String? = BLANK_STRING,
 
+	@SerializedName("assetAmount")
+	val assetAmount: String? = "0",
+
 )
 
-data class PATSummaryResponseItem(
+data class 	PATSummaryResponseItem(
 
 	@SerializedName("surveyId")
 	val surveyId: Int? = null,
@@ -110,6 +113,9 @@ data class PATSummaryResponseItem(
 
 	@SerializedName("section2Status")
 	val section2Status: Int? = 0,
+
+	@SerializedName("shgFlag")
+	val shgFlag: Int? = -1
 
 
 )

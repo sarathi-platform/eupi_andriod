@@ -606,16 +606,13 @@ class SyncHelper (
             if (didiList.isNotEmpty()) {
                 val didiRequestList = arrayListOf<EditDidiRequest>()
                 didiList.forEach { didi->
-                    launch {
-                        didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
-                    }
+                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
                 }
                 val response = apiService.updateDidis(didiRequestList)
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
-//                        networkCallbackListener.onSuccess()
-                            response.data.forEach { didiFromNetwork ->
+                            response.data.forEach { _ ->
                                 didiList.forEach { didi ->
                                     didiDao.updateNeedToPost(didi.id,false)
                                 }
@@ -765,10 +762,8 @@ class SyncHelper (
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
-                            launch {
-                                didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                                    localModifiedDate = didi.localModifiedDate))
-                            }
+                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
+                                localModifiedDate = didi.localModifiedDate))
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(
                             didiRequestList
@@ -811,6 +806,7 @@ class SyncHelper (
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
+                    settingViewModel.onCatchError(ex)
                 }
             }
         }
@@ -827,7 +823,7 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.6f
                 }
                 withContext(Dispatchers.IO){
-                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                    val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         var optionList= emptyList<OptionsItem>()
                         val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
@@ -894,7 +890,8 @@ class SyncHelper (
                                             AnswerDetailDTOListItem(
                                                 questionId = it.questionId,
                                                 section = it.actionType,
-                                                options = optionList
+                                                options = optionList,
+                                                assetAmount = it.assetAmount
                                             )
                                         )
                                     } catch (e: Exception) {
@@ -921,7 +918,8 @@ class SyncHelper (
                                     answerDetailDTOList = qList,
                                     patSurveyStatus = didi.patSurveyStatus,
                                     section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status
+                                    section1Status = didi.section1Status,
+                                    shgFlag = didi.shgFlag
                                 )
                             )
                         }
@@ -975,6 +973,7 @@ class SyncHelper (
             }  catch (ex:Exception){
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
+                    settingViewModel.onCatchError(ex)
                 }
                 ex.printStackTrace()
             }
@@ -1003,15 +1002,13 @@ class SyncHelper (
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
-                            launch {
-                                didi.voEndorsementStatus.let {
-                                    if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                            localModifiedDate = System.currentTimeMillis()))
-                                    } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                            localModifiedDate = System.currentTimeMillis()))
-                                    }
+                            didi.voEndorsementStatus.let {
+                                if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                    didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
+                                        localModifiedDate = System.currentTimeMillis()))
+                                } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
+                                    didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
+                                        localModifiedDate = System.currentTimeMillis()))
                                 }
                             }
                         }
@@ -1060,6 +1057,7 @@ class SyncHelper (
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
+                    settingViewModel.onCatchError(ex)
                 }
             }
         }
@@ -1174,6 +1172,7 @@ class SyncHelper (
                     }
                 }
             }catch (ex:Exception){
+                settingViewModel.onCatchError(ex)
 //                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }

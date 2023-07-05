@@ -42,7 +42,10 @@ data class PATSummarySaveRequest(
     var section1Status: Int=0,
 
     @ColumnInfo(name = "section2Status")
-    var section2Status: Int=0
+    var section2Status: Int=0,
+
+    @SerializedName("shgFlag")
+    val shgFlag: Int? = -1
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()
@@ -58,6 +61,7 @@ data class PATSummarySaveRequest(
         jsonObject.addProperty("patSurveyStatus", patSurveyStatus)
         jsonObject.addProperty("section1Status", section1Status)
         jsonObject.addProperty("section2Status", section2Status)
+        jsonObject.addProperty("shgFlag", shgFlag)
         return jsonObject
     }
 }
@@ -72,5 +76,8 @@ data class AnswerDetailDTOListItem(
 
     @SerializedName("section")
     val section: String? = BLANK_STRING,
+
+    @SerializedName("assetAmount")
+    val assetAmount: String? = "0"
 
     )

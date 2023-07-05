@@ -305,9 +305,9 @@ fun SectionTwoSummeryItem(
             var summaryText = "${index+1}. $quesSummery : $answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
                 if(quesSummery.contains("=")){
-                    summaryText = "${index+1}. $quesSummery."
+                    summaryText = "${index+1}. $quesSummery"
                 }else{
-                    summaryText = "${index+1}. $answerValue."
+                    summaryText = "${index+1}. $answerValue"
                 }
             }
             Text(

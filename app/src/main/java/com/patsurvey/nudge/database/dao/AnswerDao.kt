@@ -26,8 +26,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
 
-    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String)
+    @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary,assetAmount=:assetAmount where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String,assetAmount:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAnswer(Answer: SectionAnswerEntity)
@@ -57,8 +57,12 @@ interface AnswerDao {
     fun getAllNeedToPostQuesForDidi(id: Int): List<SectionAnswerEntity>
 
 
-    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
+    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.villageId = :villageId AND $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
     fun fetchPATSurveyDidiList(villageId: Int): List<PATDidiStatusModel>
+
+    @Query("select $DIDI_TABLE.id,$DIDI_TABLE.name,$DIDI_TABLE.serverId,$DIDI_TABLE.patSurveyStatus,$DIDI_TABLE.section1Status,$DIDI_TABLE.section2Status,$DIDI_TABLE.forVoEndorsement,$DIDI_TABLE.score,$DIDI_TABLE.comment,$DIDI_TABLE.shgFlag from $DIDI_TABLE LEFT join $ANSWER_TABLE on $ANSWER_TABLE.didiId = $DIDI_TABLE.id where $DIDI_TABLE.needsToPostPAT=1 AND $DIDI_TABLE.wealth_ranking = 'POOR' GROUP BY $DIDI_TABLE.id")
+    fun fetchPATSurveyDidiList(): List<PATDidiStatusModel>
+
 
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId")
     fun getQuestionAnswerForDidi(didiId: Int, questionId: Int): SectionAnswerEntity
@@ -75,6 +79,9 @@ interface AnswerDao {
     fun getTotalWeightWithoutNumQues(didiId: Int): Double
     @Query("SELECT totalAssetAmount FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
     fun getTotalAssetAmount(didiId: Int,questionId: Int): Double
+
+    @Query("SELECT assetAmount FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
+    fun fetchEnteredAmount(didiId: Int,questionId: Int): String
 
     @Query("SELECT COUNT(*) FROM ques_answer_table where didiId=:didiId AND questionId=:questionId")
     fun isQuestionAnswered(didiId: Int,questionId: Int): Int
