@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                                         end.linkTo(parent.end)
                                         width = Dimension.fillToConstraints
                                     },
-                                isOnline = onlineStatus.value
+                                isOnline = isOnline.value
                             )
                         }
                         Box(modifier = Modifier.constrainAs(mainContent){
