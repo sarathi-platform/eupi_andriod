@@ -290,7 +290,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                 var casteName = BLANK_STRING
                                                 val singleTola =
                                                     tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = casteListDao.getCaste(didi.castId)
+                                                val singleCaste = casteListDao.getCaste(didi.castId,
+                                                    prefRepo?.getAppLanguageId()?:2)
                                                 singleTola?.let {
                                                     tolaName = it.name
                                                 }
@@ -346,7 +347,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                 var casteName = BLANK_STRING
                                                 val singleTola =
                                                     tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = casteListDao.getCaste(didi.castId)
+                                                val singleCaste = casteListDao.getCaste(didi.castId,
+                                                    prefRepo?.getAppLanguageId()?:2)
                                                 singleTola?.let {
                                                     tolaName = it.name
                                                 }
@@ -855,7 +857,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val singleTola =
                                                         tolaDao.fetchSingleTola(didi.cohortId)
                                                     val singleCaste =
-                                                        casteListDao.getCaste(didi.castId)
+                                                        casteListDao.getCaste(didi.castId,
+                                                            prefRepo?.getAppLanguageId()?:2)
                                                     singleTola?.let {
                                                         tolaName = it.name
                                                     }

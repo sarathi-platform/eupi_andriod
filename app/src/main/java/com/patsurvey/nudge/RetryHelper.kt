@@ -300,7 +300,8 @@ object RetryHelper {
                                             var casteName = BLANK_STRING
                                             val singleTola =
                                                 tolaDao?.fetchSingleTola(didi.cohortId)
-                                            val singleCaste = castListDao?.getCaste(didi.castId)
+                                            val singleCaste = castListDao?.getCaste(didi.castId,
+                                                prefRepo?.getAppLanguageId()?:2)
                                             singleTola?.let {
                                                 tolaName = it.name
                                             }
@@ -630,7 +631,7 @@ object RetryHelper {
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = castListDao?.getCaste(didi.castId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId,prefRepo?.getAppLanguageId()?:2)
 //                                            singleTola?.let {
 //                                                tolaName = it.name
 //                                            }
@@ -696,7 +697,8 @@ object RetryHelper {
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = castListDao?.getCaste(didi.castId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId,
+                                                    prefRepo?.getAppLanguageId()?:2)
 //                                            singleTola?.let {
 //                                                tolaName = it.name
 //                                            }
