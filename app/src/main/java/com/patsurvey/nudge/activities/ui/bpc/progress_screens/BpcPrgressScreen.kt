@@ -87,6 +87,9 @@ fun BpcProgressScreen(
         mutableStateOf(Offset(0f, 0f))
     }
 
+    LaunchedEffect(key1 = true) {
+        bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
+    }
 
     Surface(
         modifier = Modifier
@@ -118,7 +121,8 @@ fun BpcProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                isVoEndorsementComplete = /*bpcProgreesScreenViewModel.isVoEndorsementComplete.value[village.id] ?:*/ true
+                                isBpcUser = true,
+                                isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it/*
@@ -649,6 +653,8 @@ fun BpcProgressScreen(
                             if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
                             }
+
+                            bpcProgreesScreenViewModel.isBpcVerificationComplete.value[bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id] = isStepCompleted == StepStatus.COMPLETED.ordinal
 
                             item {
                                 StepsBoxForBpc(

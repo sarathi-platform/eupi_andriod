@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -308,19 +309,19 @@ class AddDidiViewModel @Inject constructor(
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
 
-            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
-                override fun onSuccess() {
-
-                }
-
-                override fun onFailed() {
-                    networkCallbackListener.onFailed()
-                }
-
-            })
+//            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
+//                override fun onSuccess() {
+//
+//                }
+//
+//                override fun onFailed() {
+//                    networkCallbackListener.onFailed()
+//                }
+//
+//            })
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
-                isSocialMappingComplete.value = false
+//                isSocialMappingComplete.value = false
                 isPATSurveyComplete.value = false
 
             }
@@ -453,7 +454,10 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber}
             val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
+            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "step: ${stepList[stepList.map { it.orderNumber }.indexOf(5)].name}")
+            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "step isComplete: ${stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete}")
             isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
+            Log.d("DidiItemCard-isVoEndorsementCompleteForVillage: ", "isVoEndorsementComplete.valuee: ${isVoEndorsementComplete.value}")
         }
     }
 
@@ -825,7 +829,7 @@ class AddDidiViewModel @Inject constructor(
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
 
-            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
+            /*setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
                     networkCallbackListener.onSuccess()
                 }
@@ -834,10 +838,10 @@ class AddDidiViewModel @Inject constructor(
                     networkCallbackListener.onFailed()
                 }
 
-            })
+            })*/
             withContext(Dispatchers.Main) {
                 prefRepo.savePref(DIDI_COUNT, didiList.value.size)
-                isSocialMappingComplete.value = false
+//                isSocialMappingComplete.value = false
                 isPATSurveyComplete.value = false
             }
         }

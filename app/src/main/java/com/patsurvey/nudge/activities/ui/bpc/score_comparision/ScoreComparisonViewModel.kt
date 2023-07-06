@@ -6,6 +6,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -25,7 +26,8 @@ class ScoreComparisonViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val bpcScorePercentageDao: BpcScorePercentageDao
 ): BaseViewModel() {
 
 
@@ -43,8 +45,18 @@ class ScoreComparisonViewModel @Inject constructor(
 
     val exclusionListResponse = mutableStateMapOf<Int, String>()
 
+    var minMatchPercentage: Int = 0
+
     init {
         fetchDidiList()
+        getBpcScorePercentage()
+    }
+
+    private fun getBpcScorePercentage() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val bpcScorePercentageForVillage = bpcScorePercentageDao.getBpcScorePercentageForState(prefRepo.getSelectedVillage().stateId)
+            minMatchPercentage = bpcScorePercentageForVillage.percentage
+        }
     }
 
     fun fetchDidiList() {

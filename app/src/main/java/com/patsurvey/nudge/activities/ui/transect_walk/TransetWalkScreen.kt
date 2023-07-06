@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -64,6 +63,7 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
@@ -334,12 +334,36 @@ fun TransectWalkScreen(
                                                 showAddTolaBox = true
                                         }
                                         //TODO fix empty tola functionality
-                                        /*EnptyTolaButton */
+                                        Text(
+                                            text = "or",
+                                            color = textColorDark,
+                                            fontSize = 12.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = NotoSans,
+                                            modifier = Modifier.padding(top = 32.dp)
+                                        )
+                                       /* Text(
+                                            text = "Continue Without Tola",
+                                            color = textColorDark,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.Normal,
+                                            fontFamily = NotoSans,
+                                            modifier = Modifier.padding(top = 32.dp)
+                                        )*/
+                                        BlueButtonWithIconWithFixedWidth(
+                                            buttonText = "Continue Without Tola",
+                                            icon = Icons.Default.Add,
+                                            modifier = Modifier.padding(top = 16.dp)
+                                        ) {
+                                            viewModel.addEmptyTola()
+                                            completeTolaAdditionClicked = true
+                                        }
+
                                     }
                                 }
                             }
                         } else {
-                            itemsIndexed(tolaList) { index, tola ->
+                            itemsIndexed(tolaList.filter { it.name != EMPTY_TOLA_NAME }) { index, tola ->
                                 Box(
                                     modifier = Modifier
                                         .fillMaxWidth()
@@ -355,7 +379,7 @@ fun TransectWalkScreen(
                                         isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
                                             showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
-                                            viewModel.removeTola(tola.id,  object : NetworkCallbackListener{
+                                            viewModel.removeTola(tola.id, isOnline = (context as MainActivity).isOnline.value ?: false,  object : NetworkCallbackListener{
                                                 override fun onSuccess() {
                                                 }
 
@@ -363,21 +387,21 @@ fun TransectWalkScreen(
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
                                             }, villageId = villageId, stepId = stepId)
-                                            viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
+                                            /*viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
                                                 override fun onSuccess() {
                                                 }
 
                                                 override fun onFailed() {
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
-                                            })
+                                            })*/
                                             showAddTolaBox = false
                                             showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
                                            else {
-                                               viewModel.updateTola(tola.id, newName, newLocation,  object : NetworkCallbackListener{
+                                               viewModel.updateTola(tola.id, newName, newLocation, isOnline = (context as MainActivity).isOnline.value ?: false, object : NetworkCallbackListener{
                                                    override fun onSuccess() {
                                                    }
 
@@ -385,14 +409,14 @@ fun TransectWalkScreen(
 //                                                       showCustomToast(context, SYNC_FAILED)
                                                    }
                                                })
-                                               viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
+                                               /*viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
                                                    override fun onSuccess() {
                                                    }
 
                                                    override fun onFailed() {
 //                                                       showCustomToast(context, SYNC_FAILED)
                                                    }
-                                               })
+                                               })*/
                                                showCustomToast(context,context.getString(R.string.tola_updated).replace("{TOLA_NAME}", newName))
                                                false
                                            }

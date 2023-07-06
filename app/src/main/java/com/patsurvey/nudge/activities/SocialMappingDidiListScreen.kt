@@ -330,7 +330,7 @@ fun SocialMappingDidiListScreen(
                                                 true
                                             ) && !didiViewModel.isSocialMappingComplete.value
                                         ) {
-                                            navController.navigate("add_didi_graph/${it.id}") {
+                                            navController.navigate("add_didiA_graph/${it.id}") {
                                                 launchSingleTop = true
                                             }
                                         } else if (didiViewModel.prefRepo.getFromPage().equals(
@@ -967,10 +967,11 @@ fun DidiItemCard(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("village")
                     )
-                    if (!didiViewModel.prefRepo.getFromPage()
-                            .equals(ARG_FROM_PAT_SURVEY, true)
+                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isVoEndorsementComplete.value
                     ) {
-
+                        Log.d("DidiItemCard: ", "didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true): ${
+                            didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)}, " +
+                                "didiViewModel.isVoEndorsementComplete.value: ${didiViewModel.isVoEndorsementComplete.value}")
                         IconButton(onClick = {
                                              showMenu.value = !showMenu.value
                         }, modifier = Modifier

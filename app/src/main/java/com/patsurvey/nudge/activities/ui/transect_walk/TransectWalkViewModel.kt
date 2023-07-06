@@ -112,19 +112,21 @@ class TransectWalkViewModel @Inject constructor(
     }
 
 
-    /*fun addEmptyTola() {
+    fun addEmptyTola() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val tolaItem = TolaEntity.createEmptyTolaForVillageId(villageEntity.value?.id ?: 0)
             tolaDao.insert(tolaItem)
+            val updatedTolaList =
+                tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.Main) {
-                tolaList.add(tolaItem)
-                prefRepo.savePref(TOLA_COUNT, tolaList.size)
+//                prefRepo.savePref(TOLA_COUNT, tolaList.size)
+                _tolaList.value = updatedTolaList
                 if (isTransectWalkComplete.value) {
                     isTransectWalkComplete.value = false
                 }
             }
         }
-    }*/
+    }
 
     fun addTolasToNetwork(villageId: Int, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -236,15 +238,15 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun removeTola(tolaId: Int, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
+    fun removeTola(tolaId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
                 val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
                     _tolaList.value = updatedTolaList
-                    if (isTransectWalkComplete.value)
-                        isTransectWalkComplete.value = false
+//                    if (isTransectWalkComplete.value)
+//                        isTransectWalkComplete.value = false
                 }
                 deleteDidisForTola(tolaId)
                 val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
@@ -262,14 +264,21 @@ class TransectWalkViewModel @Inject constructor(
                     }
                 }
                 withContext(Dispatchers.IO){
-                    val jsonArray = JsonArray()
-                    jsonArray.add(DeleteTolaRequest(tolaId, localModifiedDate = System.currentTimeMillis()).toJson())
-                    val response = apiInterface.deleteCohort(jsonArray)
-                    if (response.status.equals(SUCCESS)) {
-                        tolaDao.removeTola(tolaId)
-                    } else {
-                        tolaDao.setNeedToPost(listOf(tolaId), true)
-                        networkCallbackListener.onFailed()
+                    if (isOnline) {
+                        val jsonArray = JsonArray()
+                        jsonArray.add(
+                            DeleteTolaRequest(
+                                tolaId,
+                                localModifiedDate = System.currentTimeMillis()
+                            ).toJson()
+                        )
+                        val response = apiInterface.deleteCohort(jsonArray)
+                        if (response.status.equals(SUCCESS)) {
+                            tolaDao.removeTola(tolaId)
+                        } else {
+                            tolaDao.setNeedToPost(listOf(tolaId), true)
+                            networkCallbackListener.onFailed()
+                        }
                     }
                 }
             } catch (ex: Exception) {
@@ -303,7 +312,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun updateTola(id: Int, newName: String, newLocation: LocationCoordinates?, networkCallbackListener: NetworkCallbackListener) {
+    fun updateTola(id: Int, newName: String, newLocation: LocationCoordinates?, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val updatedTola = TolaEntity(
                 id = id,
@@ -325,22 +334,26 @@ class TransectWalkViewModel @Inject constructor(
             didiDao.updateTolaName(id, newName)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
             _tolaList.value = updatedTolaList
-            if (isTransectWalkComplete.value)
-                isTransectWalkComplete.value = false
+//            if (isTransectWalkComplete.value)
+//                isTransectWalkComplete.value = false
 
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList
             }
             withContext(Dispatchers.IO){
-                val jsonTola = JsonArray()
-                jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
-                val response = apiInterface.editCohort(jsonTola)
-                if (response.status.equals(SUCCESS)){
+                if (isOnline) {
+                    val jsonTola = JsonArray()
+                    jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
+                    val response = apiInterface.editCohort(jsonTola)
+                    if (response.status.equals(SUCCESS)) {
 
-                }else{
-                    tolaDao.setNeedToPost(listOf(updatedTola.id), true)
-                    Log.d("updateTola: ", "update tola request failed: ${response.message}")
-                    networkCallbackListener.onFailed()
+                    } else {
+                        tolaDao.setNeedToPost(listOf(updatedTola.id), true)
+                        Log.d("updateTola: ", "update tola request failed: ${response.message}")
+                        networkCallbackListener.onFailed()
+                    }
+                } else {
+                    tolaDao.updateNeedToPost(updatedTola.id, true)
                 }
             }
         }

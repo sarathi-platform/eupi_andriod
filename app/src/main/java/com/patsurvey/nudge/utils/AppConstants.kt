@@ -47,6 +47,7 @@ const val TRAINING_VIDEO_TABLE = "training_video_table"
 const val BPC_SUMMARY_TABLE = "bpc_summary_table"
 const val BPC_SELECTED_DIDI_TABLE = "bpc_selected_didi_table"
 const val BPC_NON_SELECTED_DIDI_TABLE = "bpc_non_selected_didi_table"
+const val BPC_SCORE_PERCENTAGE_TABLE = "bpc_score_percentage_table"
 
 const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
 
