@@ -27,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
@@ -86,9 +85,6 @@ fun QuestionScreen(
 
 
     val context = LocalContext.current
-
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-
     BackHandler() {
         if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
             navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
@@ -185,7 +181,7 @@ fun QuestionScreen(
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         if (questionList[it].type == QuestionType.RadioButton.name) {
-                            var sortedOptionList =
+                            val sortedOptionList =
                                 questionList[it].options?.sortedBy { it?.optionValue }
                             var selectedOption = -1
                             answerList.forEach { answer ->
@@ -356,8 +352,8 @@ fun QuestionScreen(
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
-                        && questionList[pagerState.currentPage].questionFlag.equals(
-                            QUESTION_FLAG_WEIGHT,true)){
+                        /*&& questionList[pagerState.currentPage].questionFlag.equals(
+                            QUESTION_FLAG_WEIGHT,true)*/){
                         val newAnswerOptionModel = OptionsItem(
                             BLANK_STRING, 0, 0, 0, BLANK_STRING
                         )
@@ -365,9 +361,11 @@ fun QuestionScreen(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
                             answerOptionModel = newAnswerOptionModel,
-                            assetAmount = viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value),
+                            assetAmount = if(questionList[pagerState.currentPage].questionFlag.equals(
+                                    QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                             quesType = QuestionType.Numeric_Field.name,
-                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
+                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
                             selIndex = -1,
                             enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
                         ) {
@@ -427,12 +425,13 @@ fun QuestionScreen(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
                             answerOptionModel = newAnswerOptionModel,
-                            assetAmount = viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value),
+                            assetAmount = if(questionList[pagerState.currentPage].questionFlag.equals(
+                                    QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                             quesType = QuestionType.Numeric_Field.name,
-                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + context.getString(R.string.total_productive_asset_value,viewModel.totalAmount.value.toString()),
+                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
                             selIndex = -1,
-                            enteredAssetAmount = (if(questionList[pagerState.currentPage].questionFlag.equals(
-                                    QUESTION_FLAG_WEIGHT,true)) viewModel.enteredAmount.value else "0")
+                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                         }

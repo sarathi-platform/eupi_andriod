@@ -118,6 +118,7 @@ const val TYPE_EXCLUSION = "EXCLUSION"
 const val TYPE_INCLUSION = "INCLUSION"
 const val LOW_SCORE = "LOW SCORE"
 const val DIDI_REJECTED = "REJECTED"
+const val DIDI_NOT_AVAILABLE= "NOT_AVAILABLE"
 const val TYPE_RADIO_BUTTON = "RadioButton"
 
 const val ANSWER_TYPE_YES = "OPTION_A"
