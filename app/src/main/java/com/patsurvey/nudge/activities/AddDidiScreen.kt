@@ -160,8 +160,14 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 },
                 selectedItem = didiViewModel?.selectedTola?.value?.second ?: BLANK_STRING
             ) {
-                didiViewModel?.selectedTola?.value=Pair(it.id,it.name)
-                didiViewModel?.saveLastSelectedTolaForVillage(it.id,it.name)
+                val tolaName =
+                    if (it.name == EMPTY_TOLA_NAME)
+                        BLANK_STRING
+                    else
+                        it.name
+
+                didiViewModel?.selectedTola?.value=Pair(it.id,tolaName)
+                didiViewModel?.saveLastSelectedTolaForVillage(it.id,tolaName)
                 didiViewModel?.validateDidiDetails()
                 tolaExpended = false
 

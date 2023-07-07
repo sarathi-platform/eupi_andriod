@@ -3,14 +3,10 @@ package com.patsurvey.nudge.activities
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -21,6 +17,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -50,6 +47,8 @@ import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
+import com.patsurvey.nudge.utils.NO_TOLA_TITLE
 
 
 @Composable
@@ -61,6 +60,7 @@ fun <T : Any> DropDownWithTitle(
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
     isRequiredField: Boolean = false,
+    listTypeTola:Boolean = false,
     selectedItem: String = "",
     expanded: Boolean = false,
     mTextFieldSize: Size,
@@ -75,6 +75,17 @@ fun <T : Any> DropDownWithTitle(
     else
         Icons.Filled.KeyboardArrowDown
 
+
+    val showLoader = remember {
+        mutableStateOf(false)
+    }
+
+    /*LaunchedEffect(key1 = expanded) {
+        if (listTypeTola) {
+            delay(250)
+            showLoader.value = false
+        }
+    }*/
 
     Column(
         modifier = modifier,
@@ -160,35 +171,46 @@ fun <T : Any> DropDownWithTitle(
         ) {
 
 
-            Box (modifier = Modifier.height(30.dp).fillMaxWidth().padding(vertical = 4.dp)) {
-                CircularProgressIndicator(
-                    modifier = Modifier
-                        .size(24.dp)
-                        .align(Alignment.Center),
-                    color = textColorDark,
-                    strokeWidth = 2.dp
-                )
-            }
-            
-            items.mapIndexed { index, item ->
-                var title= BLANK_STRING
-                when(item){
-                    is CasteEntity -> title=item.casteName
-                    is VillageEntity -> title=item.name
-                    is TolaEntity -> title=item.name
-                }
-                DropdownMenuItem(onClick = {
-                    onItemSelected(item)
-                }) {
-
-                    Text(
-                        text = title,
-                        color = blueDark,
-                        modifier = Modifier.fillMaxWidth(),
-                        style = smallTextStyle
+            /*if (showLoader.value) {
+                Box(modifier = Modifier
+                    .height(30.dp)
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp)) {
+                    CircularProgressIndicator(
+                        modifier = Modifier
+                            .size(24.dp)
+                            .align(Alignment.Center),
+                        color = textColorDark,
+                        strokeWidth = 2.dp
                     )
                 }
-            }
+            } else {*/
+
+                items.mapIndexed { index, item ->
+                    var title = BLANK_STRING
+                    when (item) {
+                        is CasteEntity -> title = item.casteName
+                        is VillageEntity -> title = item.name
+                        is TolaEntity -> {
+                            title = if (item.name == EMPTY_TOLA_NAME)
+                                NO_TOLA_TITLE
+                            else
+                                item.name
+                        }
+                    }
+                    DropdownMenuItem(onClick = {
+                        onItemSelected(item)
+                    }) {
+
+                        Text(
+                            text = title,
+                            color = blueDark,
+                            modifier = Modifier.fillMaxWidth(),
+                            style = smallTextStyle
+                        )
+                    }
+                }
+//            }
 
         }
     }

@@ -95,7 +95,12 @@ object AnalyticsHelper {
 
         firebaseAnalytics?.logEvent(events.eventName, params)
         CoroutineScope(Dispatchers.IO).launch {
-            mApiService?.addLogs("${events.eventName}: $params ")
+            try {
+                mApiService?.addLogs("${events.eventName}: $params ")
+            } catch (ex: Exception) {
+                i("AnalyticsHelper", "exception: $ex")
+            }
+
         }
         i("AnalyticsHelper", "logEvent- ${events.eventName} -> $params")
     }
@@ -145,7 +150,11 @@ object AnalyticsHelper {
             for ((key, value) in paramsForLogs) {
                 paramsValue = "$paramsValue $key: ${value.toString()},"
             }
-            mApiService?.addLogs("${eventName}-> $paramsValue")
+            try {
+                mApiService?.addLogs("${eventName}-> $paramsValue")
+            } catch (ex: Exception) {
+                i("AnalyticsHelper", "exception: $ex")
+            }
         }
         i("AnalyticsHelper", "logServiceFailedEvent- ${eventName} -> $params")
 
@@ -195,7 +204,11 @@ object AnalyticsHelper {
             for ((key, value) in paramsForLogs) {
                 paramsValue = "$paramsValue $key: ${value.toString()},"
             }
-            mApiService?.addLogs("${events.eventName}-> $paramsValue")
+            try {
+                mApiService?.addLogs("${events.eventName}-> $paramsValue")
+            } catch (ex: Exception) {
+                i("AnalyticsHelper", "exception: $ex")
+            }
         }
         i("AnalyticsHelper", "logLocationEvents- ${events.eventName} -> $params")
     }

@@ -1544,6 +1544,7 @@ fun BlueButtonWithIconWithFixedWidthWithoutIcon(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier,
+                textAlign = TextAlign.Center,
                 style = newMediumTextStyle
             )
         }

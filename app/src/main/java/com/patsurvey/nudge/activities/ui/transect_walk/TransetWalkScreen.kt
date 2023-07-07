@@ -61,6 +61,7 @@ import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
+import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -148,10 +149,15 @@ fun TransectWalkScreen(
                     modifier = Modifier
                 )
                 val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                val totalCountWithoutEmptyTola = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = stringResource( if (tolaCount < 2)
-                        R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
-                        tolaCount
+                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaCount == 1)
+                        stringResource(R.string.empty_tola_success_message)
+                    else
+                        stringResource(
+                            if (totalCountWithoutEmptyTola < 2)
+                                R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
+                            totalCountWithoutEmptyTola
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )
@@ -230,7 +236,7 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append(" ${tolaList.size}")
+                                                append(" ${tolaList.filter { it.name != EMPTY_TOLA_NAME }.size}")
                                             }
                                             withStyle(
                                                 style = SpanStyle(
@@ -340,7 +346,7 @@ fun TransectWalkScreen(
                                             fontSize = 12.sp,
                                             fontWeight = FontWeight.Normal,
                                             fontFamily = NotoSans,
-                                            modifier = Modifier.padding(top = 32.dp)
+                                            modifier = Modifier.padding(top = 16.dp)
                                         )
                                        /* Text(
                                             text = "Continue Without Tola",
@@ -350,9 +356,8 @@ fun TransectWalkScreen(
                                             fontFamily = NotoSans,
                                             modifier = Modifier.padding(top = 32.dp)
                                         )*/
-                                        BlueButtonWithIconWithFixedWidth(
-                                            buttonText = "Continue Without Tola",
-                                            icon = Icons.Default.Add,
+                                        BlueButtonWithIconWithFixedWidthWithoutIcon(
+                                            buttonText = "Continue without Tola addition",
                                             modifier = Modifier.padding(top = 16.dp)
                                         ) {
                                             viewModel.addEmptyTola()
