@@ -4,11 +4,14 @@ import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -25,7 +28,8 @@ import javax.inject.Inject
 class VoEndorsementSummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val questionListDao: QuestionListDao
 ):BaseViewModel() {
 
     private val _didiEntity = MutableStateFlow(
@@ -75,14 +79,20 @@ class VoEndorsementSummaryViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
 
+    private val _quesList = MutableStateFlow(listOf<QuestionEntity>())
+    val quesList: StateFlow<List<QuestionEntity>> get() = _quesList
+
     val selPageIndex = mutableStateOf(0)
+    val quesImageUrl= mutableStateOf(BLANK_STRING)
 
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localDidiDetails=didiDao.getDidi(didiId)
+            val localQuesList=questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
             val localDidiList = answerDao.fetchAllDidisForVO(prefRepo.getSelectedVillage().id)
             withContext(Dispatchers.IO){
                  selPageIndex.value= localDidiList.map { it.id }.indexOf(didiId)
+                _quesList.emit((localQuesList))
                 _didiEntity.emit(localDidiDetails)
                 _didiList.emit(localDidiList)
             }
@@ -94,6 +104,14 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             val localSec1List = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
             val localSec2List = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
             withContext(Dispatchers.IO){
+                if(localSec1List.isNotEmpty()){
+                    localSec1List.forEach { answer->
+                        val quesimage= _quesList.value.filter { it.questionId == answer.questionId }
+                      if(quesimage.isNotEmpty()){
+                          answer.questionImageUrl=quesimage[0].questionImageUrl
+                      }
+                    }
+                }
                 _answerSection1List.emit(localSec1List)
                 _answerSection2List.emit(localSec2List)
             }
