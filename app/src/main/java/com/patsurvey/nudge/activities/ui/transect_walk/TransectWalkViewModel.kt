@@ -255,10 +255,10 @@ class TransectWalkViewModel @Inject constructor(
                         if (stepDetails.orderNumber != it.orderNumber) {
                             if (it.orderNumber == 2) {
                                 stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
-                                stepsListDao.updateNeedToPost(it.id, true)
+                                stepsListDao.updateNeedToPost(it.id, villageId, true)
                             } else {
                                 stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.NOT_STARTED.ordinal, villageId)
-                                stepsListDao.updateNeedToPost(it.id, true)
+                                stepsListDao.updateNeedToPost(it.id, villageId, true)
                             }
                         }
                     }
@@ -401,7 +401,7 @@ class TransectWalkViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -421,6 +421,7 @@ class TransectWalkViewModel @Inject constructor(
     fun markTransectWalkIncomplete(
         stepId: Int,
         villageId: Int,
+        isOnline: Boolean,
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -430,7 +431,7 @@ class TransectWalkViewModel @Inject constructor(
                 StepStatus.INPROGRESS.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
                 it.forEach { newStep ->
@@ -440,45 +441,55 @@ class TransectWalkViewModel @Inject constructor(
                             StepStatus.INPROGRESS.ordinal,
                             villageId
                         )
-                        stepsListDao.updateNeedToPost(newStep.id, true)
+                        stepsListDao.updateNeedToPost(newStep.id, villageId, true)
                     }
                 }
             }
-            completeStepList.let {
+            if (isOnline) {
                 val apiRequest = mutableListOf<EditWorkFlowRequest>()
-                it.forEach { newStep ->
-                    if (newStep.orderNumber > step.orderNumber) {
-                        if (newStep.workFlowId > 0) {
-                            apiRequest.add(
-                                EditWorkFlowRequest(
-                                    newStep.workFlowId,
-                                    StepStatus.INPROGRESS.name
+                apiRequest.add(
+                    EditWorkFlowRequest(
+                        step.workFlowId,
+                        StepStatus.INPROGRESS.name
+                    )
+                )
+                completeStepList.let {
+                    it.forEach { newStep ->
+                        if (newStep.orderNumber > step.orderNumber) {
+                            if (newStep.workFlowId > 0) {
+                                apiRequest.add(
+                                    EditWorkFlowRequest(
+                                        newStep.workFlowId,
+                                        StepStatus.INPROGRESS.name
+                                    )
                                 )
-                            )
+                            }
                         }
                     }
-                }
-                if (apiRequest.isNotEmpty()) {
-                    launch {
-                        val response = apiInterface.editWorkFlow(apiRequest)
-                        if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response ->
-                                response.forEach { it ->
-                                    stepsListDao.updateWorkflowId(
-                                        stepId,
-                                        it.id,
-                                        villageId,
-                                        it.status
-                                    )
+                    if (apiRequest.isNotEmpty()) {
+                        launch {
+                            val response = apiInterface.editWorkFlow(apiRequest)
+                            if (response.status.equals(SUCCESS)) {
+                                response.data?.let { response ->
+                                    response.forEach {
+                                        stepsListDao.updateWorkflowId(
+                                            stepId,
+                                            it.id,
+                                            villageId,
+                                            it.status
+                                        )
+                                        stepsListDao.updateNeedToPost(it.id, villageId, false)
+                                    }
                                 }
+
+                            } else {
+                                networkCallbackListener.onFailed()
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
-                        } else {
-                            networkCallbackListener.onFailed()
                         }
                     }
                 }
             }
+
         }
     }
 
@@ -527,7 +538,7 @@ class TransectWalkViewModel @Inject constructor(
                                     it[0].status
                                 )
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
                         } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -555,7 +566,7 @@ class TransectWalkViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(step.id, false)
+                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
                                 }
                             }
                         }

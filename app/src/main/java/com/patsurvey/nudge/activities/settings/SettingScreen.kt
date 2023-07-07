@@ -199,6 +199,7 @@ fun SettingScreen(
         navController.navigate(Graph.HOME) {
             popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                 inclusive = true
+                saveState = false
             }
         }
     }
@@ -220,7 +221,14 @@ fun SettingScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { navController.popBackStack() }) {
+                    IconButton(onClick = {
+                        navController.navigate(Graph.HOME) {
+                            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                inclusive = true
+                                saveState = false
+                            }
+                        }
+                    }) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },

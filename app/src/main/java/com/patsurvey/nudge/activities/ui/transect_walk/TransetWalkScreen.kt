@@ -274,6 +274,7 @@ fun TransectWalkScreen(
                                                         viewModel.markTransectWalkIncomplete(
                                                             stepId,
                                                             villageId,
+                                                            (context as MainActivity).isOnline.value ?: false,
                                                             object : NetworkCallbackListener {
                                                                 override fun onSuccess() {
 

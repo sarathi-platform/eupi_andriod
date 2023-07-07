@@ -37,9 +37,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Locale
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class WealthRankingSurveyViewModel @Inject constructor(
@@ -122,7 +123,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                     it[0].status
                                 )
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
                         } else {
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -150,7 +151,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(step.id, false)
+                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
                                 }
                             }
                         }
@@ -182,7 +183,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId,true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -190,7 +191,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id,true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")

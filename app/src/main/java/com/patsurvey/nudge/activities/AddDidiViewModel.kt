@@ -401,7 +401,7 @@ class AddDidiViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(mStepId,true)
+            stepsListDao.updateNeedToPost(mStepId, villageId, true)
             val existingList = villageListDao.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
             if (!existingList.isNullOrEmpty()) {
@@ -418,7 +418,7 @@ class AddDidiViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -623,7 +623,7 @@ class AddDidiViewModel @Inject constructor(
                                     villageId,
                                     it[0].status
                                 )
-                                stepsListDao.updateNeedToPost(stepId, false)
+                                stepsListDao.updateNeedToPost(stepId, villageId, false)
                             }
                         } else {
                             networkCallbackListener.onFailed()
@@ -652,7 +652,7 @@ class AddDidiViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(stepId, false)
+                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
                                 }
                             }
                         }
@@ -679,7 +679,7 @@ class AddDidiViewModel @Inject constructor(
                 StepStatus.INPROGRESS.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId,true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
                 it.forEach { newStep ->
@@ -698,7 +698,7 @@ class AddDidiViewModel @Inject constructor(
                                 villageId
                             )
                         }
-                        stepsListDao.updateNeedToPost(newStep.stepId,true)
+                        stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
                     }
                 }
             }
@@ -728,7 +728,7 @@ class AddDidiViewModel @Inject constructor(
                                         villageId,
                                         it.status
                                     )
-                                    stepsListDao.updateNeedToPost(stepId,false)
+                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
                                 }
                             }
                         } else {
@@ -828,6 +828,28 @@ class AddDidiViewModel @Inject constructor(
             )
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
+
+            if (filterDidiList.isEmpty()) {
+                val currentStep = stepsListDao.getStepForVillage(villageId, stepId)
+
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                stepsListDao.markStepAsCompleteOrInProgress(
+                    stepId,
+                    StepStatus.INPROGRESS.ordinal,
+                    villageId
+                )
+                stepsListDao.updateNeedToPost(stepId, villageId, true)
+                stepList.forEach { newStep ->
+                    if (newStep.orderNumber > currentStep.orderNumber) {
+                        stepsListDao.markStepAsCompleteOrInProgress(
+                            newStep.id,
+                            StepStatus.NOT_STARTED.ordinal,
+                            villageId
+                        )
+                        stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
+                    }
+                }
+            }
 
             /*setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
