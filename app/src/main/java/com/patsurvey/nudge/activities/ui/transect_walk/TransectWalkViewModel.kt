@@ -145,13 +145,9 @@ class TransectWalkViewModel @Inject constructor(
                         if(response.data[0].transactionId.isNullOrEmpty()) {
                             for(i in response.data.indices){
                                 val tola = tolaList[i]
-                                val tolaDataFromNetwork = tolaList[i]
-                                var createdTime = tolaDataFromNetwork.createdDate
-                                var modifiedDate = tolaDataFromNetwork.modifiedDate
-                                if(createdTime == null)
-                                    createdTime = 0
-                                if(modifiedDate == null)
-                                    modifiedDate = 0
+                                val tolaDataFromNetwork = response.data[i]
+                                val createdTime = tolaDataFromNetwork.createdDate
+                                val modifiedDate = tolaDataFromNetwork.modifiedDate
                                 tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
                                     false,
                                     "",
