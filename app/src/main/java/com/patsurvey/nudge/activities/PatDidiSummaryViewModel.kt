@@ -99,6 +99,10 @@ class PatDidiSummaryViewModel @Inject constructor(
                 File(it, activity.resources.getString(R.string.app_name)).apply { mkdirs() }
             }
         }
+        if (mediaDir != null) {
+            if(!mediaDir.exists())
+                mediaDir.mkdirs()
+        }
         return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
     }
 

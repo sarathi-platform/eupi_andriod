@@ -143,19 +143,19 @@ class TransectWalkViewModel @Inject constructor(
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if(response.data[0].transactionId.isNullOrEmpty()) {
-                            response.data.forEach { tolaDataFromNetwork ->
-                                tolaList.forEach { tola ->
-                                    if (TextUtils.equals(tolaDataFromNetwork.name, tola.name)) {
-                                        tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
-                                            false,
-                                            "",
-                                            tolaDataFromNetwork.createdDate,
-                                            tolaDataFromNetwork.modifiedDate)
-                                        tola.serverId = tolaDataFromNetwork.id
-                                        tola.createdDate = tolaDataFromNetwork.createdDate
-                                        tola.modifiedDate = tolaDataFromNetwork.modifiedDate
-                                    }
-                                }
+                            for(i in response.data.indices){
+                                val tola = tolaList[i]
+                                val tolaDataFromNetwork = response.data[i]
+                                val createdTime = tolaDataFromNetwork.createdDate
+                                val modifiedDate = tolaDataFromNetwork.modifiedDate
+                                tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
+                                    false,
+                                    "",
+                                    createdTime,
+                                    modifiedDate)
+                                tola.serverId = tolaDataFromNetwork.id
+                                tola.createdDate = tolaDataFromNetwork.createdDate
+                                tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                             }
                         } else {
                             response.data.forEach { tola ->
