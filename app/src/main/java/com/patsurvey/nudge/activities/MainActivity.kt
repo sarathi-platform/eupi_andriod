@@ -39,6 +39,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -234,6 +235,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
         applicationContext.cacheDir.deleteRecursively()
+        RetryHelper.cleanUp()
+        NudgeCore.cleanUp()
         super.onDestroy()
     }
 
@@ -248,6 +251,15 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         super.onResume()
         localizationDelegate.onResume(this)
         downloader = AndroidDownloader(applicationContext)
+
+        NudgeCore.init(
+            prefRepo = mViewModel.prefRepo,
+            apiService = mViewModel.apiService,
+            tolaDao = mViewModel.tolaDao,
+            stepsListDao = mViewModel.stepsListDao,
+            villageListDao = mViewModel.villegeListDao,
+            didiDao = mViewModel.didiDao
+        )
 
         RetryHelper.init(
             prefRepo = mViewModel.prefRepo,

@@ -76,7 +76,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-        outputDirectory = getOutputDirectory(activity) /*getImagePath(activity)*/
+        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
     }
 
     private fun getImagePath(context: Context): File {

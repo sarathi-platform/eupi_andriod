@@ -224,7 +224,8 @@ fun SettingScreen(
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                elevation = 10.dp
             )
         }
     ) {
