@@ -1223,9 +1223,6 @@ class VillageSelectionViewModel @Inject constructor(
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList
                     apiSuccess()
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                    }
                 } else {
                     val response = apiService.userAndVillageListAPI(prefRepo.getAppLanguageId() ?: 2)
                     withContext(Dispatchers.IO) {

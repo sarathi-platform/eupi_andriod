@@ -967,25 +967,28 @@ fun DidiItemCard(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("village")
                     )
-                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true) && !didiViewModel.isVoEndorsementComplete.value
-                    ) {
-                        Log.d("DidiItemCard: ", "didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true): ${
-                            didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)}, " +
-                                "didiViewModel.isVoEndorsementComplete.value: ${didiViewModel.isVoEndorsementComplete.value}")
-                        IconButton(onClick = {
-                                             showMenu.value = !showMenu.value
-                        }, modifier = Modifier
-                            .layoutId("moreActionIcon")
-                            .visible(
-                                !didiViewModel.prefRepo
-                                    .getFromPage()
-                                    .equals(
-                                        ARG_FROM_PAT_SURVEY,
-                                        true
-                                    ) && !didiViewModel.isSocialMappingComplete.value
-                            )) {
-                            Icon(painter = painterResource(id = R.drawable.baseline_more_icon), contentDescription = "more action", tint = textColorDark)
-                        }
+                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal) {
+                            IconButton(
+                                onClick = {
+                                    showMenu.value = !showMenu.value
+                                }, modifier = Modifier
+                                    .layoutId("moreActionIcon")
+                                    .visible(
+                                        !didiViewModel.prefRepo
+                                            .getFromPage()
+                                            .equals(
+                                                ARG_FROM_PAT_SURVEY,
+                                                true
+                                            ) && !didiViewModel.isSocialMappingComplete.value
+                                    )
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_more_icon),
+                                    contentDescription = "more action",
+                                    tint = textColorDark
+                                )
+                            }
 
                         Box(modifier = Modifier.layoutId("moreDropDown")) {
                             DropdownMenu(
@@ -1015,10 +1018,11 @@ fun DidiItemCard(
                                 }
                             }
                         }
+                        }
 
                         CardArrow(
                             modifier = Modifier.layoutId(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
-                                && !didiViewModel.isSocialMappingComplete.value)"expendArrowImage" else "expendArrowImageEnd"),
+                                && !didiViewModel.isSocialMappingComplete.value && didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal)"expendArrowImage" else "expendArrowImageEnd"),
                             degrees = arrowRotationDegree,
                             iconColor = animateColor,
                             onClick = { onExpendClick(expanded, didi) }

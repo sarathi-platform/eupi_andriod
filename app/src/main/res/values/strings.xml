@@ -293,5 +293,6 @@
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="empty_tola_success_message">This Village does not have any tola.</string>
 
 </resources>

@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -50,9 +49,6 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -410,7 +406,8 @@ fun PatDidiSummaryScreen(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.photo_camera_icon),
-                                        contentDescription = null
+                                        contentDescription = null,
+                                        tint = textColorDark50
                                     )
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(

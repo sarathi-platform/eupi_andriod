@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -1491,6 +1490,7 @@ fun BlueButtonWithIconWithFixedWidthWithoutIcon(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier,
+                textAlign = TextAlign.Center,
                 style = newMediumTextStyle
             )
         }

@@ -43,7 +43,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -383,7 +382,8 @@ fun roundOffDecimal(number: Double): Double? {
     return df.format(number).toDouble()
 }
 
-fun getImagePath(context: Context, imageName:String): File {
+fun getImagePath(context: Context, imagePath:String): File {
+    val imageName = getFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
 }
 

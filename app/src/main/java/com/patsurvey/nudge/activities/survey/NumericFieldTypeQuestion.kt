@@ -54,7 +54,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
-import com.patsurvey.nudge.utils.visible
 
 
 @Composable
@@ -240,19 +239,18 @@ fun NumericFieldTypeQuestion(
                     }
                 }
             }
-
-            if (showNextButton) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 5.dp)
-                        .padding(top = 20.dp)
-                        .padding(bottom = 8.dp)
-                        .constrainAs(submitBox) {
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
-                        }
-                ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 5.dp)
+                    .padding(top = 20.dp)
+                    .padding(bottom = 8.dp)
+                    .constrainAs(submitBox) {
+                        start.linkTo(parent.start)
+                        bottom.linkTo(parent.bottom)
+                    }
+            ) {
+                if (showNextButton) {
                     ButtonPositive(
                         buttonTitle = stringResource(id = R.string.next),
                         isArrowRequired = false,
