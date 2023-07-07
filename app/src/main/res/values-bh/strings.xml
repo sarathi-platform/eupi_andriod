@@ -100,7 +100,7 @@
     <string name="transect_walk_completed_message">{VILLAGE_NAME} खातिर गाँव के भ्रमण पूरा हो गइल बा</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
 
-    <string name="transect_walk_sub_text">%1$s तोलास हो गइल बाा</string>
+    <string name="transect_walk_sub_text_plural">%1$s तोलास हो गइल बाा</string>
 
     <string name="complete_social_walk_text">सामाजिक मानचित्रण पूरा करे के बा</string>
     <string name="social_mapping_completed_message">{VILLAGE_NAME} खातिर सामाजिक मानचित्रण पूरा हो गइल बा</string>
@@ -111,8 +111,8 @@
     <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
 
 
-    <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
-    <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
+    <string name="social_mapping_sub_text_plural">%1$s दीदियों की पहचान की गई</string>
+    <string name="wealth_ranking_sub_text_plural">%1$s गरीब दीदियों की पहचान की गई</string>
     <string name="pat_sub_text_singular">%1$s अत्यंत दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
     <string name="pat_sub_text_plural">%1$s अत्यंत दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
     <string name="vo_endorsement_sub_text_singular">%1$s अत्यंत गरीब दीदी का समर्थन किया गया</string>
@@ -304,5 +304,13 @@
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
     <string name="empty_tola_success_message">This Village does not have any tola.</string>
+
+    <string name="total_poor_didis">Total Poor Didis</string>
+    <string name="total_ultra_poor_didis">Total Ultra Poor Didis</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
+    <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
+    <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
+    <string name="added_tolas_text_plural">" added Tolas"</string>
+    <string name="added_tolas_text_singular">" added Tola"</string>
 
 </resources>

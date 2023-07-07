@@ -104,10 +104,10 @@
     <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
     <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
 
-    <string name="transect_walk_sub_text">%1$s Tolas Done</string>
+    <string name="transect_walk_sub_text_plural">%1$s Tolas Done</string>
 
-    <string name="social_mapping_sub_text">%1$s Didis Identified</string>
-    <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
+    <string name="social_mapping_sub_text_plural">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text_plural">%1$s Poor Didis Identified</string>
     <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
     <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
     <string name="vo_endorsement_sub_text_singular">%1$s Ultra Poor Didi Endorsed</string>
@@ -294,5 +294,14 @@
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
     <string name="empty_tola_success_message">This Village does not have any tola.</string>
+
+    <string name="total_poor_didis">Total Poor Didis</string>
+    <string name="total_ultra_poor_didis">Total Ultra Poor Didis</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
+    <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
+    <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
+    <string name="added_tolas_text_plural">" added Tolas"</string>
+    <string name="added_tolas_text_singular">" added Tola"</string>
+
 
 </resources>

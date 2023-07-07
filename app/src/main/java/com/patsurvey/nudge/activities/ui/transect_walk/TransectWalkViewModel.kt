@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
-import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
@@ -478,10 +477,10 @@ class TransectWalkViewModel @Inject constructor(
                                             villageId,
                                             it.status
                                         )
-                                        stepsListDao.updateNeedToPost(it.id, villageId, false)
+
                                     }
                                 }
-
+                                stepsListDao.updateNeedToPost(stepId, villageId, false)
                             } else {
                                 networkCallbackListener.onFailed()
                             }

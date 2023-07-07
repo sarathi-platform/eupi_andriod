@@ -89,7 +89,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.File
-import java.lang.StringBuilder
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
@@ -860,8 +859,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val singleTola =
                                                         tolaDao.fetchSingleTola(didi.cohortId)
                                                     val singleCaste =
-                                                        casteListDao.getCaste(didi.castId,
-                                                            prefRepo?.getAppLanguageId()?:2)
+                                                        casteListDao.getCaste(didi.castId, prefRepo?.getAppLanguageId()?:2)
                                                     singleTola?.let {
                                                         tolaName = it.name
                                                     }
