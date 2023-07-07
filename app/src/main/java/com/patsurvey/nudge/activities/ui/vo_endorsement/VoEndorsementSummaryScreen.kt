@@ -289,13 +289,14 @@ fun VoEndorsementSummaryScreen(
                             val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
-
+                                delay(500)
                                 showDialog.value = false
-                                delay(1000)
+                                delay(100)
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
+                                delay(500)
                                 showDialog.value = false
-                                delay(1000)
+                                delay(100)
                                 navController.popBackStack()
                             }
                         }
@@ -312,12 +313,15 @@ fun VoEndorsementSummaryScreen(
                             val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
+                                delay(500)
                                 showDialog.value = false
-                                delay(1000)
+                                delay(100)
+
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
+                                delay(500)
                                 showDialog.value = false
-                                delay(1000)
+                                delay(100)
                                 navController.popBackStack()
                             }
                         }
