@@ -234,6 +234,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
         AnalyticsHelper.cleanup()
         connectionLiveData.removeObservers(this)
         applicationContext.cacheDir.deleteRecursively()
+        RetryHelper.cleanUp()
         super.onDestroy()
     }
 

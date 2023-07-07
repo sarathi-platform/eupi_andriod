@@ -123,12 +123,12 @@ class FormPictureScreenViewModel @Inject constructor(
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
             stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
             if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
                 stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
                     StepStatus.INPROGRESS.ordinal,villageId)
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
@@ -243,7 +243,7 @@ class FormPictureScreenViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -271,7 +271,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(stepId, false)
+                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
                                 }
                             }
                         }

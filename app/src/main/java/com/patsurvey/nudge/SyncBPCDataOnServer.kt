@@ -192,7 +192,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(bpcStep.id, false)
+                            stepsListDao.updateNeedToPost(bpcStep.id, villageId,false)
                             sendBpcMatchScore(networkCallbackListener)
                         }else{
                             withContext(Dispatchers.Main) {

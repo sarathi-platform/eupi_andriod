@@ -1166,7 +1166,7 @@ class SyncHelper (
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,step.workFlowId,villageId,it[0].status)
-                                stepsListDao.updateNeedToPost(stepId,false)
+                                stepsListDao.updateNeedToPost(stepId, villageId,false)
                             }
                         }
                     }

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.ui.bpc.score_comparision
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -19,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -47,9 +49,11 @@ class ScoreComparisonViewModel @Inject constructor(
 
     var minMatchPercentage: Int = 0
 
-    init {
-        fetchDidiList()
+    val showLoader = mutableStateOf(false)
+
+    fun init() {
         getBpcScorePercentage()
+        fetchDidiList()
     }
 
     private fun getBpcScorePercentage() {
@@ -81,6 +85,9 @@ class ScoreComparisonViewModel @Inject constructor(
                     }
                     exclusionListResponse[didi.id] = exclusionResponse
                 }
+            }
+            withContext(Dispatchers.Main) {
+                showLoader.value = false
             }
         }
     }

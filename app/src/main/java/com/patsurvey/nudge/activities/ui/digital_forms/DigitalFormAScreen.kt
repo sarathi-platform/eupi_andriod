@@ -89,6 +89,7 @@ fun DigitalFormAScreen(
             navController.navigate(Graph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
+                    saveState = false
                 }
             }
         }
@@ -273,7 +274,7 @@ fun DigitalFormAScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.total) + ":",
+                                text = stringResource(id = R.string.total_poor_didis) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -419,6 +420,7 @@ fun DigitalFormAScreen(
                         navController.navigate(Graph.HOME) {
                             popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                                 inclusive = true
+                                saveState = false
                             }
                         }
                     }

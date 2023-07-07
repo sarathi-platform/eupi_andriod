@@ -26,10 +26,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -311,7 +314,28 @@ fun SectionTwoSummeryItem(
                 }
             }
             Text(
-                text = summaryText,
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("${index + 1}. $quesSummery:  ")
+                    }
+                    withStyle(
+                        SpanStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("$answerValue.")
+                    }
+                },
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

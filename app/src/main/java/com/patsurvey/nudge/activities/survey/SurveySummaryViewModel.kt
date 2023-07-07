@@ -325,7 +325,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -353,7 +353,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(step.id, false)
+                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
                                 }
                             }
                         }
@@ -384,7 +384,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -392,7 +392,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -443,7 +443,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -451,7 +451,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
@@ -805,7 +805,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(bpcStep.id, false)
+                            stepsListDao.updateNeedToPost(bpcStep.id, villageId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")

@@ -172,6 +172,7 @@ fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
                 navController.navigate(Graph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
+                        saveState = false
                     }
                 }
             }
@@ -264,6 +265,7 @@ fun NavGraphBuilder.socialMappingNavGraph(navController: NavHostController) {
                 navController.navigate(Graph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
+                        saveState = false
                     }
                 }
             }

@@ -226,7 +226,7 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append("Showing")
+                                                append(stringResource(id = R.string.showing))
                                             }
                                             withStyle(
                                                 style = SpanStyle(
@@ -246,7 +246,12 @@ fun TransectWalkScreen(
                                                     fontFamily = NotoSans
                                                 )
                                             ) {
-                                                append(" added Tolas")
+                                                append(
+                                                    if (tolaList.filter { it.name != EMPTY_TOLA_NAME }.size > 1)
+                                                        stringResource(R.string.added_tolas_text_plural)
+                                                    else
+                                                        stringResource(R.string.added_tolas_text_singular)
+                                                )
                                             }
                                         }
                                     )
@@ -274,6 +279,7 @@ fun TransectWalkScreen(
                                                         viewModel.markTransectWalkIncomplete(
                                                             stepId,
                                                             villageId,
+                                                            (context as MainActivity).isOnline.value ?: false,
                                                             object : NetworkCallbackListener {
                                                                 override fun onSuccess() {
 
