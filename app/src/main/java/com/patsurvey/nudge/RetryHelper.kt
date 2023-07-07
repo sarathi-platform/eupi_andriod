@@ -815,10 +815,10 @@ object RetryHelper {
         }
     }
 
-    fun retryVillageListApi(saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
+    fun retryVillageListApi(request: String,saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiService?.userAndVillageListAPI(prefRepo?.getAppLanguageId() ?: 2)
+                val response = apiService?.userAndVillageListAPI(request)
                 withContext(Dispatchers.IO) {
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {

@@ -19,6 +19,9 @@ data class VillageEntity(
     @ColumnInfo(name = "stateId")
     val stateId: Int,
 
+    @ColumnInfo(name = "languageId")
+    val languageId: Int,
+
     @TypeConverters(IntConverter::class)
     @ColumnInfo(name = "steps_completed")
     var steps_completed: List<Int>?,
