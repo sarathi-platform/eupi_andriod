@@ -138,7 +138,7 @@ class ProgressScreenViewModel @Inject constructor(
         showLoader.value = true
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
-                val villageList=villageListDao.getAllVillages()
+                val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
                 _tolaList.emit(tolaDBList)

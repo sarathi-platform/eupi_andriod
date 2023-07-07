@@ -6,7 +6,6 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = ANSWER_TABLE)
 data class SectionAnswerEntity(
@@ -52,7 +51,10 @@ data class SectionAnswerEntity(
     var needsToPost: Boolean = true,
 
     @SerializedName("assetAmount")
-    val assetAmount: String? = "0"
+    val assetAmount: String? = "0",
+
+    @SerializedName("questionImageUrl")
+    var questionImageUrl: String? = BLANK_STRING
 
 
 
