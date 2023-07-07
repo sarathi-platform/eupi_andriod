@@ -3,12 +3,12 @@ package com.patsurvey.nudge.activities.ui.splash
 
 import android.app.DownloadManager
 import android.content.Context
-import android.os.Environment
 import android.util.Log
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcScorePercentageEntity
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -27,7 +27,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -58,7 +57,7 @@ class ConfigViewModel @Inject constructor(
                             it.languageList.forEach { language ->
                                 launch {
                                     // Fetch CasteList from Server
-                                    val casteResponse = apiInterface.getCasteList(language.id)
+                                    /*val casteResponse = apiInterface.getCasteList(language.id)
                                     if (casteResponse.status.equals(SUCCESS, true)) {
                                         casteResponse.data?.let { casteList ->
                                             casteList.forEach { casteEntity ->
@@ -66,7 +65,8 @@ class ConfigViewModel @Inject constructor(
                                             }
                                             casteListDao.insertAll(casteList)
                                         }
-                                    }
+                                    }*/
+                                    casteListDao.insertAll(CasteEntity.getDefaultCasteListForLanguage(language.id))
                                 }
                             }
                             it.image_profile_link.forEach {
@@ -135,7 +135,7 @@ class ConfigViewModel @Inject constructor(
             addDefaultLanguage()
         }
     }
-    fun downloadImageItem(context: Context, image: String) {
+    private fun downloadImageItem(context: Context, image: String) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 if (!getImagePath(context, image).exists()) {

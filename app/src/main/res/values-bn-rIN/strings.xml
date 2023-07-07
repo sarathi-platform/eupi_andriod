@@ -8,308 +8,275 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
-    <string name="mark_complete_text">সম্পূর্ণ চিহ্নিত করুন</string>
-    <string name="go_back_text">ফিরে যাও</string>
+    <plurals name="didis_added">
+        <item quantity="one">দীদী যোগ করা হয়েছে</item>
+        <item quantity="other">দীদিয়ান যোগ করা হয়েছে</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">দরিদ্র বোন মুলতুবি</item>
+        <item quantity="other">দরিদ্র বোন মুলতুবি</item>
+    </plurals>
 
-    <string name="progress_item_text">অগ্রগতি</string>
-    <string name="didis_item_text_plural">दीदीया</string>
-    <string name="didis_item_text_singular">दीदी</string>
-    <string name="didis_list_text">दीदियों की सूची</string>
-
-    <string name="poor_didi_item_text">गरीब दीदी</string>
-    <string name="medium_didi_item_text">माध्यम दीदी</string>
-    <string name="rich_didi_item_text">अमीर दीदी</string>
-    <string name="poor_didi_item_text_plural">गरीब दीदीया</string>
-    <string name="medium_didi_item_text_plural">माध्यम दीदीया</string>
-    <string name="rich_didi_item_text_plural">अमीर दीदीया</string>
-    <string name="more_item_text">আরও</string>
-
-    <string name="online_text">অনলাইন</string>
-    <string name="offline_text">অফলাইন</string>
-    <string name="choose_language">ভাষা নির্বাচন করুন</string>
-    <string name="continue_text">চালিয়ে যান</string>
-    <string name="continue_pat_text">PAT जारी रखें</string>
-
-    <string name="enter_mobile_number">মোবাইল নম্বর লিখুন</string>
-    <string name="mobile_text">মুঠোফোন</string>
-    <string name="verification_text">প্রতিপাদন</string>
-    <string name="get_otp">Otp পান</string>
-    <string name="transect_wale_title">ট্রানসেক্ট ওয়াক</string>
+    <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
+    <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
+    <string name="sync_status">BPC পরীক্ষা</string>
+    <string name="otp_text" translatable="false">ওটিপি</string>
+    <string name="otp_resend_to_mobile_number_message">ওটিপি %1$s মোবাইল নম্বরে পুনরায় পাঠান৷</string>
+    <string name="otp_resend_to_mobile_number_message_for_relogin">ওটিপি {MOBILE_NUMBER} মোবাইল নম্বরে পুনরায় পাঠান৷</string>
+    <string name="get_otp">ওটিপি পান</string>
+    <string name="resend_otp">আবার পাঠান ওটিপি</string>
+    <string name="enter_otp_text">ওটিপি লিখুন</string>
+    <string name="vo_endorsement">VO অনুমোদন</string>
     <string name="invalid_mobile_number">অকার্যকর মোবাইল নম্বর</string>
-    <string name="submit">জমা দিন</string>
-    <string name="resend_otp">Otp আবার পাঠান</string>
-    <string name="ranking_text">র‍্যাঙ্কিং:</string>
-    <string name="otp_will_be_sent_to_this_number">এই নম্বরে ওটিপি পাঠানো হবে</string>
-    <string name="search_didis">Didis অনুসন্ধান</string>
-    <string name="search_video">वीडियो को खोजें</string>
-    <string name="count_didis_pending_plural">%1s दीदीया पेंडिंग</string>
-    <string name="count_didis_pending_singular">%1s दीदी पेंडिंग</string>
-    <string name="poor_text">দরিদ্র</string>
-    <string name="medium_text">মধ্যম</string>
+    <string name="more_item_text">অতিরিক্ত</string>
+    <string name="online_text">অনলাইন</string>
+    <string name="endorsed">অনুমোদন</string>
+    <string name="endorse">অনুমোদন করা</string>
+    <string name="offline_text">অফলাইন</string>
+    <string name="get_location_text">অবস্থান পান</string>
+    <string name="location_added_text">অবস্থান যোগ করা হয়েছে</string>
+    <string name="unmatched_text">অমিল</string>
+    <string name="share_button_text">অংশ করুণ</string>
+    <string name="particaptory_wealth_ranking_text">অংশগ্রহণমূলক সম্পদ র‌্যাঙ্কিং</string>
+    <string name="size">আকার</string>
+    <string name="add_more">আরো যোগ করো</string>
+    <string name="otp_will_be_sent_to_this_number">এই নম্বরে OTP পাঠানো হবে</string>
+    <string name="no_photo_available_text">কোন ছবি উপলব্ধ</string>
+    <string name="not_avaliable">খালি নেই</string>
+    <string name="seletc_village_screen_text">গ্রাম এবং গ্রাম সংগঠন নির্বাচন</string>
+    <string name="transect_wale_title">গ্রামের ভ্রমণ</string>
+    <string name="submit">জমা</string>
+    <string name="download_button_text">ডাউনলোড করুণ</string>
+    <string name="downloading_button_text">ডাউনলোড হচ্ছে</string>
+    <string name="confirmation_dialog_titile">তুমি কি নিশ্চিত?</string>
+    <string name="are_you_sure">তুমি কি নিশ্চিত?</string>
+    <string name="shg_question_text">দিদি SHG এর সদস্য</string>
+    <string name="add_didi">দিদি যোগ করুন</string>
+    <string name="search_didis">দিদির সন্ধান করুন</string>
     <string name="rich_text">ধনী</string>
-    <string name="social_mapping">সামাজিক ম্যাপিং</string>
-    <string name="pat_survey_title">PAT सर्वेक्षण</string>
-    <string name="showing_added_tolas">দেখাচ্ছে %s যোগ করা হয়েছে Tolas</string>
+    <string name="option_no">না</string>
+    <string name="enter_name_text">নাম লিখুন</string>
+    <string name="enter_tola_name_message">পদের নাম লিখুন</string>
+    <string name="add_tola">পাড়া যোগ করুণ</string>
+    <string name="pat_survey">পেট সমীক্ষা</string>
+    <string name="pat_survey_title">পেট সমীক্ষা</string>
+    <string name="pat_survey_complete">পেট সমীক্ষা</string>
+    <string name="progress_item_text">প্রগতি</string>
+    <string name="verification_text">প্রতিপাদন</string>
+    <string name="rejected">প্রত্যাখ্যাত</string>
+    <string name="go_back_text">প্রত্যাবর্তন করা</string>
+    <string name="show">প্রদর্শন</string>
+    <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
+    <string name="logout">প্রস্থান</string>
+    <string name="profile">প্রোফাইল</string>
+    <string name="forms">ফর্ম</string>
+    <string name="house_number">বাড়ির নম্বর</string>
+    <string name="cancel_tola_text">বাতিল</string>
+    <string name="reject">বাতিল</string>
+    <string name="battery">ব্যাটারি</string>
+    <string name="language_text">ভাষা</string>
+    <string name="choose_language">ভাষা নির্বাচন করুন</string>
+    <string name="search_video">ভিডিও অনুসন্ধান করুন</string>
+    <string name="medium_text">মধ্যম</string>
+    <string name="matched_text">মিলে গেছে</string>
+    <string name="enter_mobile_number">মোবাইল নম্বর লিখুন</string>
+    <string name="enter_mobile_text">মোবাইল নম্বর লিখুন</string>
+    <string name="mobile_text">মোবাইল ফোন</string>
+    <string name="not_added">যোগ নাহি</string>
+    <string name="finish">শেষ করুণ</string>
+    <string name="review_wealth_ranking">সম্পদের র‌্যাঙ্কিং পর্যালোচনা করুন</string>
+    <string name="complete_wealth_ranking_btn_text" translatable="false">সম্পদের র‌্যাঙ্কিং সম্পন্ন করুন</string>
+    <string name="done_text">সম্পন্ন</string>
+    <string name="complete_didi_addition">সম্পূর্ণ দিদি যোগ</string>
+    <string name="save_tola_text">সংরক্ষণ</string>
+    <string name="social_mapping">সামাজিক মানচিত্র</string>
+    <string name="complete_social_walk_text">সামাজিক ম্যাপিং সম্পন্ন</string>
+    <string name="summary_text">সারসংক্ষেপসারসংক্ষেপ</string>
+    <string name="syncing">সুসংগতি হচ্ছে</string>
+    <string name="dada_name">স্বামীর নাম</string>
+    <string name="yes_text">হ্যাঁ</string>
+    <string name="option_yes">হ্যাঁ</string>
+    <string name="mark_complete_text">তোলা জোদনা পুরা কারেন</string>
+    <string name="didis_item_text_plural">দিদিস</string>
+    <string name="didis_item_text_singular">দিদি</string>
+    <string name="didis_list_text">দিদির তালিকা</string>
+    <string name="poor_didi_item_text">বেচারা দিদি</string>
+    <string name="medium_didi_item_text">মাঝারি দিদি</string>
+    <string name="rich_didi_item_text">ধনী দিদি</string>
+    <string name="poor_didi_item_text_plural">বেচারা দিদিস</string>
+    <string name="medium_didi_item_text_plural">মাঝারি দিদিস</string>
+    <string name="rich_didi_item_text_plural">ধনী দিদিস</string>
+    <string name="continue_text">চালিয়ে যান</string>
+    <string name="continue_pat_text">PAT চালিয়ে যান</string>
+    <string name="ranking_text">র‌্যাঙ্কিং:</string>
+    <string name="poor_text">দরিদ্র</string>
+    <string name="count_didis_pending_plural">%1s দিদি মুলতুবি আছে</string>
+    <string name="count_didis_pending_singular">%1s দিদি পেন্ডিং</string>
+    <string name="expiry_login_verify_otp" translatable="false">%s</string>
+    <string name="showing_added_tolas">%s যোগ করা Tolas দেখানো হচ্ছে</string>
     <string name="showing">দেখাচ্ছে</string>
     <string name="added_tolas">Tolas যোগ করা হয়েছে</string>
-    <string name="title_activity_social_mapping">SocialMappingActivity</string>
-    <string name="not_added">যোগ করা হয়নি</string>
+    <string name="title_activity_social_mapping">সোশ্যাল ম্যাপিং অ্যাক্টিভিটি</string>
     <string name="mark_as_completed">সমাপ্ত হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
-    <string name="participation_date_wealth_ranking">তারিখ </string>
     <string name="vo_name">VO নাম</string>
     <string name="total">মোট</string>
-    <string name="add_didi">দিদি যোগ করুন</string>
-    <string name="house_number">বাড়ির নম্বর</string>
-    <string name="didi_name">दीदी नाम</string>
-    <string name="dada_name">दादा नाम</string>
-    <string name="dada">दादा</string>
+    <string name="participation_date_wealth_ranking">তারিখ</string>
+    <string name="update_didi">আপডেট দিদি</string>
+    <string name="didi_name">দিদির নাম</string>
+    <string name="dada">দাদা</string>
     <string name="enter">প্রবেশ করুন</string>
     <string name="caste">জাত</string>
     <string name="tola">তোলা</string>
     <string name="select">নির্বাচন করুন</string>
-
-    <string name="add_tola">টোলা যোগ করুন</string>
-
+    <string name="particaptory_wealth_ranking_survey_text">অংশগ্রহণমূলক সম্পদ র‌্যাঙ্কিং সারাংশ</string>
     <string name="delete_tola_text">টোলা মুছুন</string>
-    <string name="save_tola_text">সংরক্ষণ</string>
-
-    <string name="tola_name_text">টোলা</string>
-    <string name="cancel_tola_text">বাতিল করুন</string>
-    <string name="get_location_text">Get Location</string>
-    <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
-    <string name="location_added_text">स्थान जोड़ा गया</string>
-
-
-    <string name="seletc_village_screen_text">VO নির্বাচন করুন</string>
-
-    <string name="particaptory_wealth_ranking_survey_text">भागीदारी धन रैंकिंग सारांश</string>
-
-    <string name="review_wealth_ranking">धन रैंकिंग की समीक्षा करें</string>
-    <string name="particaptory_wealth_ranking_text">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
-    <string name="enter_mobile_text">মোবাইলে প্রবেশ করুন</string>
-    <string name="enter_otp_text">OTP লিখুন</string>
-    <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
-    <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
-
-    <string name="otp_resend_to_mobile_number_message">ओटीपी resent to %1$</string>
-    <string name="otp_resend_to_mobile_number_message_for_relogin">ओटीपी resent to {MOBILE_NUMBER}</string>
-
-    <string name="complete_didi_addition">দিদি সংযোজন সম্পূর্ণ করুন</string>
-
-    <string name="user_id_text">"সনাক্ত করা: "</string>
-    <string name="empty_tola_string">কোনো তোলা যোগ হয়নি</string>
-    <string name="tola_conirmation_text_singular">कुल %1$s नए टोला \nसफलतापूर्वक जोड़ा गया है</string>
-    <string name="tola_conirmation_text_plural">कुल %1$s नए टोलों को \nसफलतापूर्वक जोड़ा गया है</string>
-    <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূর্ণ করুন</string>
-    <string name="transect_walk_completed_message">{VILLAGE_NAME} জন্য ভাল্লাগে হাঁটা শেষ</string>
-    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
-
-    <string name="transect_walk_sub_text">%1$s টোলাস ডন</string>
-
-    <string name="complete_social_walk_text">সম্পূর্ণ সামাজিক ম্যাপিংे</string>
-    <string name="social_mapping_completed_message">{VILLAGE_NAME} के लिए सामाजिक मानचित्रण पूरा हो गया है</string>
-
-    <string name="didi_conirmation_text_plural">कुल %1$s নতুন दीदियों को \nसफलतापूर्वक जोड़ा गया है</string>
-    <string name="didi_conirmation_text_singular">कुल %1$s नई दीदी को \nसफलतापूर्वक जोड़ा गया है</string>
-    <string name="tola_successfully_added">{TOLA_NAME} टोला जोड़ा गया है</string>
-    <string name="tola_updated">{TOLA_NAME} टोला अपडेट कर दिया गया है</string>
-    <string name="tola_deleted">{TOLA_NAME} टोला मिटा दिया गया है</string>
-
-
-    <string name="social_mapping_sub_text">%1$s दीदियों की पहचान की गई</string>
-    <string name="wealth_ranking_sub_text">%1$s गरीब दीदियों की पहचान की गई</string>
-    <string name="pat_sub_text_singular">%1$s अत्यंत दीदी को वीओ एंडोर्समेंट के लिए भेजा गया</string>
-    <string name="pat_sub_text_plural">%1$s अत्यंत दीदियों को वीओ एंडोर्समेंट के लिए भेजा गया</string>
-    <string name="vo_endorsement_sub_text_singular">%1$s अत्यंत गरीब दीदी का समर्थन किया गया</string>
-    <string name="vo_endorsement_sub_text_plural">%1$s अत्यंत गरीब दीदियों का समर्थन किया गया</string>
-
-
-    <string name="pat_survey">PAT জরিপ</string>
+    <string name="tola_name_text">তোলা নাম</string>
+    <string name="location_unavailable">অবস্থান উপলব্ধ নয়</string>
+    <string name="user_id_text">আইডি:</string>
+    <string name="empty_tola_string">কোন Tolas যোগ করা হয়েছে</string>
+    <string name="tola_conirmation_text_plural">মোট %1$s নতুন Tolas সফলভাবে যোগ করা হয়েছে</string>
+    <string name="tola_conirmation_text_singular">মোট %1$s নতুন Tola \nসফলভাবে যোগ করা হয়েছে</string>
+    <string name="complete_transect_walk_text">সম্পূর্ণ ট্রানসেক্ট ওয়াক</string>
+    <string name="transect_walk_completed_message">{VILLAGE_NAME}-এর জন্য ট্রানসেক্ট হাঁটা শেষ হয়েছে৷</string>
+    <string name="wealth_ranking_completed_message">{VILLAGE_NAME}-এর অংশগ্রহণমূলক সম্পদ র‍্যাঙ্কিং সম্পূর্ণ হয়েছে৷</string>
+    <string name="social_mapping_completed_message">{VILLAGE_NAME} এর জন্য সামাজিক ম্যাপিং সম্পূর্ণ হয়েছে৷</string>
+    <string name="didi_conirmation_text_plural">%1$s নতুন Didis সফলভাবে যোগ করা হয়েছে</string>
+    <string name="didi_conirmation_text_singular">%1$s নতুন দিদি সফলভাবে যোগ করা হয়েছে</string>
+    <string name="transect_walk_sub_text">%1$s Tolas সম্পন্ন</string>
+    <string name="social_mapping_sub_text">%1$s দিদি শনাক্ত হয়েছে৷</string>
+    <string name="wealth_ranking_sub_text">%1$s দরিদ্র দিদি শনাক্ত হয়েছে৷</string>
+    <string name="pat_sub_text_singular">VO অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে৷</string>
+    <string name="pat_sub_text_plural">VO অনুমোদনের জন্য %1$s অতি দরিদ্র দিদি পাঠানো হয়েছে৷</string>
+    <string name="vo_endorsement_sub_text_singular">%1$s অতি দরিদ্র দিদি অনুমোদিত৷</string>
+    <string name="vo_endorsement_sub_text_plural">%1$s অতি দরিদ্র দিদি অনুমোদিত৷</string>
+    <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
+    <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে.</string>
+    <string name="tola_successfully_added">{TOLA_NAME} তোলা যোগ করা হয়েছে</string>
+    <string name="tola_updated">{TOLA_NAME} Tola আপডেট করা হয়েছে</string>
+    <string name="tola_deleted">{TOLA_NAME} তোলা মোছা হয়েছে</string>
+    <string name="tola_already_exist">তোলা আগে থেকেই আছে।</string>
+    <string name="didi_has_been_successfully_updated">দিদির বিবরণ সফলভাবে আপডেট করা হয়েছে।</string>
+    <string name="didi_already_exist">দিদি আগে থেকেই আছে।</string>
     <string name="didi">দিদি</string>
     <string name="section_number">বিভাগ %d</string>
-    <string name="pat_survey_section_1">PAT सर्वे - खंड 1</string>
-    <string name="pat_survey_section_2">PAT सर्वे - खंड  2</string>
-
-    <string name="pat_survey_complete">PAT सर्वे</string>
-    <string name="result_summary">सारांश परिणाम</string>
-    <string name="complete_section_1_text">Complete Section 1</string>
-    <string name="summary_text">सारांश</string>
-
-    <plurals name="didis_added">
-        <item quantity="one" tools:ignore="ImpliedQuantity">দিদি যোগ করেছে</item>
-        <item quantity="other">দিদি যোগ করেছে</item>
-    </plurals>
-    <plurals name="poor_didis_pending_text">
-        <item quantity="one" tools:ignore="ImpliedQuantity">गरीब दीदी पेंडिंग</item>
-        <item quantity="other">गरीब दीदीया पेंडिंग</item>
-    </plurals>
-    <string name="empty_didis_string">কোন Didis যোগ করা হয়েছে</string>
-    <string name="update_didi">আপডেট দিদি</string>
-    <string name="didi_has_been_successfully_added">দিদি সফলভাবে যোগ করা হয়েছে</string>
-    <string name="didi_has_been_successfully_updated">দিদি সফলভাবে আপডেট করা হয়েছে</string>
-    <string name="didi_already_exist">दीदी पहले से मौजूद हैं।</string>
-    <string name="tola_already_exist">Tola already exist.</string>
-    <string name="not_avaliable">उपलब्ध नहीं है</string>
-    <string name="start_pat">PAT शुरू करें</string>
-
-    <string name="done_text">पूर्ण </string>
-    <string name="yes_text">हाँ</string>
-    <string name="share_button_text">शेयर करें</string>
-    <string name="download_button_text">डाउनलोड करें</string>
-    <string name="downloading_button_text">Downloading</string>
-    <string name="no_photo_available_text">कोई चित्र नहीं जोड़ा गया</string>
-    <string name="enter_name_text">নাম লিখুন</string>
-    <string name="enter_tola_name_message">Tola নাম লিখুন</string>
-    <string name="option_yes">अत्यंत</string>
-    <string name="option_no">না</string>
-    <string name="logout">প্রস্থান</string>
+    <string name="start_pat">PAT শুরু করুন</string>
+    <string name="pat_survey_section_1">PAT জরিপ - ধারা 1</string>
+    <string name="pat_survey_section_2">PAT জরিপ - ধারা 2</string>
+    <string name="result_summary">সারাংশ ফলাফল</string>
+    <string name="complete_section_1_text">সম্পূর্ণ বিভাগ 1</string>
     <string name="this_section_is_in_progress">এই বিভাগটি ইনপ্রগ্রেস স্টেট</string>
     <string name="sync_up">এখন ডেটা সিঙ্ক করুন</string>
     <string name="last_syncup_text">শেষবার সিঙ্ক হয়েছে: {LAST_SYNC_TIME}</string>
-    <string name="profile">প্রোফাইল</string>
-    <string name="forms">ফর্ম</string>
-    <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
-    <string name="language_text">ভাষা</string>
-    <string name="productive_asset_owned_by_family"><!--পরিবারের মালিকানাধীন উত্পাদনশীল সম্পদ-->আয়ের অনুপাত</string>
+    <string name="productive_asset_owned_by_family">আয়ের অনুপাত</string>
+    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
     <string name="complete_pat_survey">সম্পূর্ণ PAT সমীক্ষা</string>
-    <string name="total_productive_asset_value"> = ₹ %1$s/-</string>
     <string name="complete">সম্পূর্ণ</string>
-    <string name="complete_section_2">खंड 2 पूर्ण कर</string>
-    <string name="show">দেখা</string>
-    <string name="next">आगे</string>
-    <string name="pat_survey_completion_text">PAT सर्वेक्षण - पूर्ण</string>
-    <string name="confirmation_dialog_titile">क्या आपको यकीन है?</string>
-    <string name="didi_pat_comption_dialog">आप {DIDI_NAME} के लिए PAT सबमिट कर रहे हैं.</string>
-    <string name="section_1_text">"खंड 1: "</string>
-    <string name="section_2_text">"खंड 2: "</string>
-    <string name="no_internet">Not Connected</string>
-    <string name="connected">Connected</string>
-    <string name="vo_endorsement_screen_title">वीओ एंडोर्समेंट के लिए दीदियों की सूची</string>
-    <string name="start_endorsement">अनुमोदन प्रारंभ करें</string>
+    <string name="complete_section_2">সম্পূর্ণ বিভাগ 2</string>
+    <string name="pat_survey_completion_text">PAT সমীক্ষা - সম্পন্ন হয়েছে৷</string>
+    <string name="next">পরবর্তী</string>
+    <string name="didi_pat_comption_dialog">আপনি {DIDI_NAME}-এর জন্য PAT জমা দিচ্ছেন।</string>
+    <string name="section_1_text">অধ্যায় 1: </string>
+    <string name="section_2_text">অধ্যায় 2: </string>
+    <string name="vo_endorsement_screen_title">VO অনুমোদনের জন্য দিদিদের তালিকা</string>
+    <string name="start_endorsement">অনুমোদন শুরু করুন</string>
     <string name="pat_completed">PAT সম্পন্ন হয়েছে</string>
     <string name="didi_not_available">দিদি পাওয়া যাচ্ছে না</string>
-    <string name="are_you_sure">তুমি কি নিশ্চিত?</string>
-    <string name="you_are_submitting_wealth_ranking_for_count_didis">আপনি %1$s দরিদ্র দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
     <string name="you_are_sending_count_pat_completed_didis_for_vo_endorsement">আপনি VO অনুমোদনের জন্য %1$s PAT সম্পন্ন Didis পাঠাচ্ছেন</string>
     <string name="send_all_for_vo_endorsement">VO অনুমোদনের জন্য সব পাঠান</string>
-    <string name="pat_survey_completed_message">{VILLAGE_NAME}-এর জন্য PAT সমীক্ষা \nসম্পন্ন হয়</string>
-    <string name="vo_endorsement_completed_message">{VILLAGE_NAME} वीओ समर्थन \nपूर्ण हो गया है</string>
-    <string name="form_c_photo_button_text">प्रपत्र सी का चित्र लें</string>
-    <string name="form_d_photo_button_text">+ प्रपत्र डी का चित्र लें</string>
-    <string name="pat_completed_box_title">PAT पूरा हो गया है</string>
-    <string name="didi_not_available_text_singular">दीदी उपलब्ध नहीं है</string>
-    <string name="didi_not_available_text_plural">दीदीया उपलब्ध नहीं है</string>
-
-    <string name="send_for_vo_text">वीओ एंडोर्समेंट के लिए सभी को भेजें</string>
-    <string name="didi_pat_complete_text">दीदी का PAT पूरा हुआ</string>
-    <string name="didi_endorsed_text_plural">पृष्ठांकित दीदीया</string>
-    <string name="didi_endorsed_text_singula">पृष्ठांकित दीदी</string>
-    <string name="didi_rejected_text_plural">अस्वीकार दीदीया</string>
-    <string name="didi_rejected_text_singula">अस्वीकार दीदी</string>
-    <string name="didi_not_available_sub_heading_text">दीदी उपलब्ध नहीं है</string>
+    <string name="pat_survey_completed_message">{VILLAGE_NAME} এর জন্য PAT সমীক্ষা শেষ হয়েছে৷</string>
+    <string name="vo_endorsement_completed_message">{VILLAGE_NAME}-এর জন্য VO অনুমোদন সম্পূর্ণ হয়েছে৷</string>
+    <string name="form_c_photo_button_text">সি ফর্মের ছবি তুলুন</string>
+    <string name="form_d_photo_button_text">ডি ফর্মের ছবি তুলুন</string>
+    <string name="pat_completed_box_title">PAT সম্পন্ন হয়েছে</string>
+    <string name="didi_not_available_text_singular">দিদি পাওয়া যাচ্ছে না</string>
+    <string name="didi_not_available_text_plural">দিদি পাওয়া যায় না</string>
+    <string name="send_for_vo_text">VO অনুমোদনের জন্য সব পাঠান</string>
+    <string name="didi_pat_complete_text">Didis PAT সম্পন্ন</string>
+    <string name="didi_endorsed_text_plural">দিদিস এন্ডোর্সড</string>
+    <string name="didi_endorsed_text_singula">দিদি এন্ডোর্সড</string>
+    <string name="didi_rejected_text_plural">Didis প্রত্যাখ্যান</string>
+    <string name="didi_rejected_text_singula">দিদি প্রত্যাখ্যান</string>
+    <string name="didi_not_available_sub_heading_text">Didis পাওয়া যায় না</string>
     <string name="accept">গ্রহণ করুন</string>
-    <string name="reject">প্রত্যাখ্যান করুন</string>
-    <string name="endorsed">অনুমোদন</string>
-    <string name="rejected">প্রত্যাখ্যাত</string>
-    <string name="endorse">অনুমোদন করা</string>
-
-    <string name="shg_question_text">क्या दीदी एसएचजी का हिस्सा हैं?</string>
-    <string name="confirm_text">पुष्टि करें</string>
-    <string name="finish">समाप्त करें</string>
-
-
-
-    <string name="sync_your_data">Sync Your Data</string>
-    <string name="your_data_already_synced">Your Data is already Synced</string>
-    <string name="data_synced_successfully">Data Synced Successfully</string>
-    <string name="sync">Sync</string>
-    <string name="battery">Battery</string>
-    <string name="mobile_data">Mobile Data</string>
-    <string name="estimated_time_required">Estimated Time Required</string>
-    <string name="size">Size</string>
-    <string name="syncing">Syncing</string>
-
-    <string name="pat_completion_dialog_message_plural">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदीया भेज रहे हैं।</string>
-    <string name="pat_completion_dialog_message_singular">आप वीओ एंडोर्समेंट के लिए {COUNT} पीएटी पूरी की हुई दीदी भेज रहे हैं।</string>
-
-    <string name="vo_endorsement_completion_dialog_message_plural">आप {COUNT} समर्थित दीदियों के लिए अंतिम सबमिशन कर रहे हैं।</string>
-    <string name="vo_endorsement_completion_dialog_message_singular">आप {COUNT} समर्थित दीदी के लिए अंतिम सबमिशन कर रहे हैं।.</string>
-    <string name="form_picture_screen_title">फॉर्म के लिए फोटो जोड़ें</string>
-    <string name="view">View Form</string>
-
+    <string name="confirm_text">নিশ্চিত করুন</string>
+    <string name="no_internet">সংযোগ বিচ্ছিন্ন</string>
+    <string name="connected">সংযুক্ত</string>
+    <string name="sync_your_data">আপনার ডেটা সিঙ্ক করুন</string>
+    <string name="your_data_already_synced">আপনার ডেটা ইতিমধ্যেই সিঙ্ক করা হয়েছে৷</string>
+    <string name="data_synced_successfully">ডেটা সফলভাবে সিঙ্ক হয়েছে৷</string>
+    <string name="sync">সুসংগত</string>
+    <string name="mobile_data">মোবাইল তথ্য</string>
+    <string name="estimated_time_required">আনুমানিক সময় প্রয়োজন</string>
     <string name="continue_pat">PAT চালিয়ে যান</string>
-    <string name="pat_inprogresee_status_text">चालू</string>
-    <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नहीं हुई</string>
-    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - गरीब नहीं</string>
-    <string name="pat_in_progress_status_text">PAT सर्वेक्षण चालू है</string>
-    <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
-    <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
-
-    <string name="step_1">स्टेप 1</string>
-    <string name="step_2">स्टेप 2</string>
-    <string name="step_3">स्टेप 3</string>
-    <string name="step_4">स्टेप 4</string>
-    <string name="step_5">स्टेप 5</string>
-    <string name="vo_endorsement">वीओ अनुमोदन</string>
-    <string name="close">बंद करें</string>
+    <string name="pat_completion_dialog_message_plural">আপনি VO অনুমোদনের জন্য {COUNT}টি PAT সম্পন্ন Didis পাঠাচ্ছেন।</string>
+    <string name="pat_completion_dialog_message_singular">আপনি VO অনুমোদনের জন্য {COUNT}টি PAT সম্পূর্ণ দিদিকে পাঠাচ্ছেন।</string>
+    <string name="vo_endorsement_completion_dialog_message_plural">আপনি {COUNT}টি অনুমোদিত ডিডিসের জন্য চূড়ান্ত জমা দিচ্ছেন।</string>
+    <string name="vo_endorsement_completion_dialog_message_singular">আপনি {COUNT}টি অনুমোদিত দিদির জন্য চূড়ান্ত জমা দিচ্ছেন।</string>
+    <string name="form_picture_screen_title">ফর্মের ছবি যোগ করুন</string>
+    <string name="view">ফর্ম দেখুন</string>
+    <string name="pat_inprogresee_status_text">চলমান</string>
+    <string name="wealth_ranking_status_not_started_text">সম্পদ র‌্যাঙ্কিং শুরু হয়নি</string>
+    <string name="wealth_ranking_status_complete_text">সম্পদ র‌্যাঙ্কিং সম্পন্ন - দরিদ্র নয়</string>
+    <string name="pat_in_progress_status_text">PAT সমীক্ষা চলছে</string>
+    <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে</string>
+    <string name="vo_endorsement_status_text">VO অনুমোদন সম্পন্ন</string>
     <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনের জন্য কোন Didis উপলব্ধ.</string>
-
-    <string name="add_more">अधिक जोड़ें</string>
-    <string name="bpc_didi_screen_title">PAT सत्यापन के लिए स्वचालित रूप से चयनित दीदियों की सूची</string>
-    <string name="bpc_final_pat_submition_message">আপনি কি চূড়ান্ত VO জমা দেওয়ার জন্য তালিকা জমা দিতে চান?</string>
-
-    <string name="didi_selected_text_singular">दीदी को चुना गया</string>
-    <string name="didi_selected_text_plural">दीदीयों को चुना गया</string>
-    <string name="didi_replace_button">दीदी को बदलो</string>
+    <string name="step_1">ধাপ 1</string>
+    <string name="step_2">ধাপ ২</string>
+    <string name="step_3">ধাপ 3</string>
+    <string name="step_4">ধাপ 4</string>
+    <string name="step_5">ধাপ 5</string>
+    <string name="close">বন্ধ</string>
+    <string name="bpc_didi_screen_title">PAT যাচাইকরণের জন্য অটো নির্বাচিত Didis তালিকা</string>
+    <string name="bpc_final_pat_submition_message">আপনি কি BPM অনুমোদনের জন্য এই VO জমা দিতে চান?</string>
+    <string name="didi_selected_text_singular">%1$s দিদি নির্বাচিত</string>
+    <string name="didi_selected_text_plural">%1$s দিদি নির্বাচিত</string>
+    <string name="didi_replace_button">প্রতিস্থাপন করুন</string>
     <string name="submit_pat_verification">PAT যাচাইকরণ জমা দিন</string>
-
-    <string name="comparison_screen_heading_plural">{COUNT} पैट सत्यापित दीदियों का सारांश</string>
-    <string name="comparison_screen_heading_singular">{COUNT} पैट सत्यापित दीदी का सारांश</string>
-
-    <string name="crp_score_text">सीआरपी स्कोर:</string>
-    <string name="bpc_score_text">बीपीसी स्कोर:</string>
-    <string name="match_percentage_box_text">{PERCENTAGE}% मिलान PAT सत्यापन पर हुआ मिलान PAT सत्यापन पर हुआ|</string>
-    <string name="summary_tolas_added_text_plural">" टोला जोड़ा गया"</string>
-    <string name="summary_didis_mobilised_text_plural">" दीदियों को मोबिलाइज किया"</string>
-    <string name="summary_wealth_ranking_text_plural">" दीदियों को PWR में गरीब के रूप में चिह्नित किया गया"</string>
-    <string name="summary_vo_endoresement_text_plural">" दीदियों ने वीओ एंडोर्समेंट के लिए भेजा"</string>
-    <string name="unmatched_text">बेजोड़</string>
-    <string name="matched_text">मिलान</string>
-
-    <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
-    <string name="review_and_submit_button_text">समीक्षा करें और सबमिट करें</string>
-    <string name="bpc_add_more_didi_screen_title">सत्यापन के लिए उपलब्ध अतिरिक्त दीदियों की सूची</string>
-    <string name="showing_text">"Showing "</string>
-    <string name="result_text_singular">" result"</string>
-    <string name="result_text_plural">" results"</string>
-    <string name="didis_endorsed_by_vo_plural">" Didis Endorsed by VO"</string>
-    <string name="didi_endorsed_by_vo_singular">" Didi Endorsed by VO"</string>
-    <string name="summary_vo_endoresement_text_singular">" Didi sent for VO Endorsement"</string>
-    <string name="summary_wealth_ranking_text_singular">" Didi Marked as poor in PWR"</string>
-    <string name="summary_didis_mobilised_text_singular">" Didi Mobilised"</string>
-    <string name="summary_tolas_added_text_singular">" Tola Added"</string>
+    <string name="comparison_screen_heading_plural">{COUNT}টি PAT যাচাইকৃত Didis-এর সারাংশ</string>
+    <string name="comparison_screen_heading_singular">{COUNT}টি PAT যাচাইকৃত দিদির সারাংশ</string>
+    <string name="crp_score_text">CRP স্কোর:</string>
+    <string name="bpc_score_text">BPC স্কোর:</string>
+    <string name="match_percentage_box_text">PAT যাচাইকরণে {PERCENTAGE}% অতি খারাপ মিল।</string>
+    <string name="summary_tolas_added_text_plural">টোলাস যোগ করা হয়েছে</string>
+    <string name="summary_didis_mobilised_text_plural">দিদিস মোবিলাইজড</string>
+    <string name="summary_wealth_ranking_text_plural">দিদি পিডব্লিউআরে দরিদ্র হিসাবে চিহ্নিত</string>
+    <string name="summary_vo_endoresement_text_plural">ভিও এনডোর্সমেন্টের জন্য দিদি পাঠানো হয়েছে</string>
+    <string name="total_productive_asset_value_for_ratio">= %1$s</string>
+    <string name="review_and_submit_button_text">পর্যালোচনা এবং জমা দিন</string>
+    <string name="bpc_add_more_didi_screen_title">যাচাইয়ের জন্য উপলব্ধ অতিরিক্ত ডিডির তালিকা</string>
+    <string name="showing_text">দেখাচ্ছে </string>
+    <string name="result_text_singular"> ফলাফল</string>
+    <string name="result_text_plural">ফলাফল</string>
+    <string name="didis_endorsed_by_vo_plural">ডিডিস VO দ্বারা অনুমোদিত</string>
+    <string name="didi_endorsed_by_vo_singular">দিদি VO দ্বারা অনুমোদিত</string>
+    <string name="summary_vo_endoresement_text_singular">ভিও এনডোর্সমেন্টের জন্য দিদি পাঠানো হয়েছে</string>
+    <string name="summary_wealth_ranking_text_singular">দিদি পিডব্লিউআর-এ দরিদ্র হিসাবে চিহ্নিত</string>
+    <string name="summary_didis_mobilised_text_singular">দিদি সচল</string>
+    <string name="summary_tolas_added_text_singular">টোলা যোগ করা হয়েছে</string>
     <string name="enter_amount">পরিমান লিখুন</string>
-    <string name="sync_status">BPC Verification</string>
+    <string name="bpc_result_text">BPC ফলাফল:</string>
+    <string name="permission_dialog_prompt_message">ক্যামেরার অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
+    <string name="permission_required_prompt_title">অনুমতি প্রয়োজন</string>
+    <string name="ultra_poor_didis_verified_text_plural">%1$s অতি দরিদ্র দিদি যাচাই করা হয়েছে</string>
+    <string name="ultra_poor_didis_verified_text_singular">%1$s অতি দরিদ্র দিদি যাচাই করা হয়েছে</string>
+    <string name="no_data_form_a_not_generated_text">কোন ডেটা নেই! ফর্ম A তৈরি হয়নি</string>
+    <string name="no_data_form_b_not_generated_text">কোন ডেটা নেই! ফর্ম বি তৈরি হয়নি</string>
+    <string name="no_data_form_c_not_generated_text">কোন ডেটা নেই! ফর্ম সি তৈরি হয়নি</string>
+    <string name="no_form_available_yet_text">এখনও কোন ফর্ম উপলব্ধ.</string>
+    <string name="digital_form_a_title">ডিজিটাল ফর্ম এ</string>
+    <string name="digital_form_b_title">ডিজিটাল ফর্ম বি</string>
+    <string name="digital_form_c_title">ডিজিটাল ফর্ম সি</string>
+    <string name="settings_screen_title">সেটিংস</string>
+    <string name="logout_sync_error_message">লগআউট করার আগে সিঙ্ক প্রয়োজন, লগআউট করার আগে আপনার ডেটা সিঙ্ক করুন।</string>
+    <string name="logout_no_internet_error_message">কোনো ইন্টারনেট উপলব্ধ নেই, অনুগ্রহ করে ইন্টারনেটের সাথে সংযোগ করুন</string>
+    <string name="min_battery_text">(ন্যূনতম 30% প্রয়োজন)</string>
+    <string name="do_not_close_app_message">অনুগ্রহ করে অ্যাপটি বন্ধ করবেন না বা ফোনটি বন্ধ করবেন না।</string>
 
-    <string name="bpc_result_text">बीपीसी परिणाम:</string>
-    <string name="permission_dialog_prompt_message">Camera Permission required, please grant permission.</string>
-    <string name="permission_required_prompt_title">Permission Required</string>
-    <string name="ultra_poor_didis_verified_text_plural">"%1$s Ultra poor Didis verified"</string>
-    <string name="ultra_poor_didis_verified_text_singular">"%1$s Ultra poor Didis verified"</string>
-    <string name="no_data_form_a_not_generated_text">No Data! Form A not generated</string>
-    <string name="no_data_form_b_not_generated_text">No Data! Form B not generated</string>
-    <string name="no_data_form_c_not_generated_text">No Data! Form C not generated</string>
-    <string name="no_form_available_yet_text">No Form available yet.</string>
-    <string name="digital_form_a_title">Digital Form A</string>
-    <string name="digital_form_b_title">Digital Form B</string>
-    <string name="digital_form_c_title">Digital Form C</string>
-    <string name="settings_screen_title">Settings</string>
-    <string name="logout_sync_error_message">Sync is required before logout,Please sync your data before logout.</string>
-    <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
-    <string name="min_battery_text">(Min 30% required)</string>
-    <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="empty_tola_success_message">This Village does not have any tola.</string>
 
 </resources>

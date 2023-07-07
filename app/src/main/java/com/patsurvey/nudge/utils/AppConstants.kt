@@ -50,6 +50,7 @@ const val BPC_NON_SELECTED_DIDI_TABLE = "bpc_non_selected_didi_table"
 const val BPC_SCORE_PERCENTAGE_TABLE = "bpc_score_percentage_table"
 
 const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
+const val NO_TOLA_TITLE = "No Tola"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
