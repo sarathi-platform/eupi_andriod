@@ -11,8 +11,8 @@ import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 @Dao
 interface VillageListDao {
 
-    @Query("SELECT * FROM $VILLAGE_TABLE_NAME")
-    fun getAllVillages(): List<VillageEntity>
+    @Query("SELECT * FROM $VILLAGE_TABLE_NAME where languageId=:languageId")
+    fun getAllVillages(languageId:Int): List<VillageEntity>
 
     @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id")
     fun getVillage(id: Int): VillageEntity

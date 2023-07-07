@@ -832,7 +832,7 @@ object RetryHelper {
                             if (it.villageList?.isNotEmpty() == true) {
                                 villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
-                                saveVillageList(true, villageListDao?.getAllVillages())
+                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
                             } else {
                                 saveVillageList(false, listOf())
                             }

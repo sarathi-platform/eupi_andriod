@@ -157,7 +157,7 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val villageList = villageListDao.getAllVillages()
+                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                     val localStepsList = stepsListDao.getAllSteps()
                     val localLanguageList = languageListDao.getAllLanguages()
                     val villageIdList: ArrayList<Int> = arrayListOf()
@@ -761,7 +761,7 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
-                    val villageList = villageListDao.getAllVillages()
+                    val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                     val localStepsList = stepsListDao.getAllSteps()
                     val localTolaList = tolaDao.getAllTolas()
                     val localLanguageList = languageListDao.getAllLanguages()
@@ -1240,7 +1240,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchUserDetails(apiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val localVillageList = villageListDao.getAllVillages()
+                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val localLanguageList = languageListDao.getAllLanguages()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
@@ -1259,7 +1259,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 villageListDao.insertAll(it.villageList ?: listOf())
-                                _villagList.emit(villageListDao.getAllVillages())
+                                _villagList.emit(villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2))
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {

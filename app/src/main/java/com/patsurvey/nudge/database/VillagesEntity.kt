@@ -6,7 +6,11 @@ import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Entity(tableName = VILLAGE_TABLE_NAME)
 data class VillageEntity(
-    @PrimaryKey
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "localVillageId")
+    var localVillageId: Int,
+
     @ColumnInfo(name = "id")
     var id: Int,
 
