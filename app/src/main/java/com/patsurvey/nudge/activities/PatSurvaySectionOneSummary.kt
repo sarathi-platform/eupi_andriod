@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -20,10 +22,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -37,7 +41,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -178,7 +185,7 @@ fun PatSurvaySectionSummaryScreen(
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionSummary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
+                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionSummary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
                     }
                 }
             }
@@ -327,10 +334,12 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
     PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SectionOneSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
+    questionImageUrl:String,
     questionDisplay: String,
     answerValue: String,
     optionValue:Int
@@ -341,13 +350,45 @@ fun SectionOneSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Icon(
-                painter = painterResource(id = R.drawable.home_icn),
-                contentDescription = null,
-                tint = textColorDark,
-                modifier = Modifier
-                    .size(25.dp)
-            )
+            val quesImage:File?=
+                questionImageUrl?.let { it1 ->
+                    getImagePath(
+                        LocalContext.current,
+                        it1
+                    )
+                }
+            if(quesImage?.extension.equals(EXTENSION_WEBP,true)){
+                GlideImage(model = quesImage,
+                    contentDescription ="Question Image",
+                    modifier = Modifier
+                        .width(30.dp)
+                        .height(30.dp),
+                )
+            }else {
+                var imgBitmap: Bitmap? = null
+                if (quesImage?.exists() == true) {
+                    imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
+                }
+                if (quesImage?.exists() == true) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = imgBitmap),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(30.dp)
+                            .height(30.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.pat_sample_icon),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(30.dp)
+                            .height(30.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
+                }
+            }
             Text(
                 text = "$index. ${questionDisplay}.",
                 style = TextStyle(
@@ -360,6 +401,7 @@ fun SectionOneSummeryItem(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
+                    .padding(start = 5.dp)
                     .weight(1f)
             )
             Text(

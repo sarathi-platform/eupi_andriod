@@ -150,7 +150,8 @@ fun VillageSelectionScreen(
                         onClick = {
                             viewModel.showLoader.value = true
                             showRetryLoader.value = true
-                            RetryHelper.retryVillageListApi { success, villageList ->
+
+                            RetryHelper.retryVillageListApi(viewModel.multiVillageRequest.value) { success, villageList ->
                                 if (success && !villageList?.isNullOrEmpty()!!) {
                                     viewModel.saveVillageListAfterTokenRefresh(villageList)
                                 }

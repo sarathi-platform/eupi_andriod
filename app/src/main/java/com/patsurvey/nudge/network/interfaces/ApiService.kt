@@ -32,7 +32,7 @@ interface ApiService {
     @GET("/read-api/user/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun userAndVillageListAPI(
-        @Query("languageId") languageId: Int
+        @Query("languageId") languageId: String
     ): ApiResponseModel<UserDetailsResponse>
 
     @GET("/read-api/config/step/get")

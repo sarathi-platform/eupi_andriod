@@ -200,16 +200,25 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
                             }
                             val passingMark=questionDao.getPassingScore()
+                            var comment= BLANK_STRING
+                            if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                 comment= BLANK_STRING
+                            else {
+                               comment =if(didi.score< passingMark) LOW_SCORE else {
+                                   if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                       TYPE_EXCLUSION
+                                   }else BLANK_STRING}
+                            }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
                                     id = if (didi.serverId == 0) didi.id else didi.serverId,
                                     score = didi.score,
-                                    comment = if(didi.score< passingMark) LOW_SCORE else {
-                                                 if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                                        TYPE_EXCLUSION
-                                                            }else BLANK_STRING},
+                                    comment =comment,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                    result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                                    else {
+                                        if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    }
                                 )
                             )
                             answeredDidiList.add(

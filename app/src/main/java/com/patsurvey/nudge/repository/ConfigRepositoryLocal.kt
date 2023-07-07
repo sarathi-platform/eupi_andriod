@@ -9,7 +9,6 @@ class ConfigRepositoryLocal @Inject constructor(
 ) {
     fun insertVillage(village: VillageEntity) = villageDao.insertVillage(village)
     fun insertVillageList(villageList: List<VillageEntity>) = villageDao.insertAll(villageList)
-    fun getAllVillages() = villageDao.getAllVillages()
     fun getVillage(id: Int) = villageDao.getVillage(id)
 
 }
