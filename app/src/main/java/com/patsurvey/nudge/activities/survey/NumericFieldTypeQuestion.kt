@@ -126,6 +126,8 @@ fun NumericFieldTypeQuestion(
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
+                            questionFlag = questionFlag,
+                            optionImageUrl = option.optionImage?: BLANK_STRING,
                             onDecrementClick = {
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
