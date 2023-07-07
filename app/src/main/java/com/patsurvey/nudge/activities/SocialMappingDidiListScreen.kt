@@ -459,25 +459,8 @@ fun SocialMappingDidiListScreen(
                             //TODO Integrate Api when backend fixes the response.
                             if ((context as MainActivity).isOnline.value ?: false) {
                                  if(didiViewModel.isTolaSynced.value == 2) {
-                                    didiViewModel.addDidisToNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
-                                    didiViewModel.deleteDidiFromNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                            showCustomToast(context, "Didi Deleted")
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
+                                    didiViewModel.addDidisToNetwork()
+                                    didiViewModel.deleteDidiFromNetwork()
                                     didiViewModel.callWorkFlowAPI(
                                         villageId,
                                         stepId,

@@ -103,7 +103,7 @@ class PatDidiSummaryViewModel @Inject constructor(
             if(!mediaDir.exists())
                 mediaDir.mkdirs()
         }
-        return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
+        return/* if (mediaDir != null && mediaDir.exists()) mediaDir else */activity.filesDir
     }
 
     fun saveFilePathInDb(
