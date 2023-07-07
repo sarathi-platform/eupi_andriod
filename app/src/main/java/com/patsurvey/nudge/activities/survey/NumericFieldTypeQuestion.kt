@@ -173,6 +173,7 @@ fun NumericFieldTypeQuestion(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 5.dp)
+                                .padding(bottom = 60.dp)
                                 .background(Color.White)
                                 .wrapContentHeight()
                                 .border(
