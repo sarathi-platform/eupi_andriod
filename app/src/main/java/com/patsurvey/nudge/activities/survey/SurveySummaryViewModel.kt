@@ -759,9 +759,9 @@ class SurveySummaryViewModel @Inject constructor(
 
     fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villagId = prefRepo.getSelectedVillage().id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villagId)
-            val updatedList = didiDao.getAllDidisForVillage(villageId = villagId)
+            val villageId = prefRepo.getSelectedVillage().id
+            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villageId)
+            val updatedList = didiDao.getAllDidisForVillage(villageId = villageId)
             try {
                 val oldBeneficiaryIdSelected = mutableListOf<Int>()
                 oldDidiList.forEach {
@@ -775,7 +775,7 @@ class SurveySummaryViewModel @Inject constructor(
                     BpcUpdateSelectedDidiRequest(
                         oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
                         newBeneficiaryIdSelected = newBeneficiaryIdSelected,
-                        villageId = villagId
+                        villageId = villageId
                     )
                 )
                 if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {

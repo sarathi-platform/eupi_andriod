@@ -188,17 +188,14 @@ class VillageSelectionViewModel @Inject constructor(
                                                     findCompleteValue(steps.status).ordinal
                                             }
                                             stepsListDao.insertAll(it.stepList)
+                                            val bpcStepId = it.stepList.sortedBy { stepEntity -> stepEntity.orderNumber }.last().id
+                                            if (it.stepList[it.stepList.map { it.id }.indexOf(bpcStepId)].status != StepStatus.COMPLETED.name)
+                                                stepsListDao.markStepAsCompleteOrInProgress(
+                                                    bpcStepId,
+                                                    StepStatus.INPROGRESS.ordinal,
+                                                    village.id
+                                                )
                                         }
-                                        val bpcStepId = it.stepList.sortedBy { stepEntity ->
-                                            stepEntity.orderNumber
-                                        }.last().id
-                                        if (it.stepList[it.stepList.map { it.id }
-                                                .indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
-                                            stepsListDao.markStepAsCompleteOrInProgress(
-                                                bpcStepId,
-                                                StepStatus.INPROGRESS.ordinal,
-                                                village.id
-                                            )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )

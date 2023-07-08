@@ -392,7 +392,7 @@ class SettingViewModel @Inject constructor(
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
-                && isStatusStepStatusSync(0)
+                && isStatusStepStatusSync(5)
                 && isBPCScoreSaved()){
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false

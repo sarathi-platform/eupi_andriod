@@ -106,7 +106,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                         }
                     }
                     _stepsList.value = stepList
-                    selectedText.value = prefRepo.getSelectedVillage().name
+                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
 //                    getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }

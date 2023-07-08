@@ -18,6 +18,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
@@ -235,7 +236,7 @@ class BpcDidiListViewModel @Inject constructor(
                         bpcScore = didiEntity.bpcScore,
                         crpScore = didiEntity.crpScore,
                         crpComment = didiEntity.crpComment,
-                        needsToPostBPCProcessStatus = true,
+                        needsToPostBPCProcessStatus = didiEntity.beneficiaryProcessStatus?.map { it.name }?.contains(BPC_SURVEY_CONSTANT) ?: true
                     )
                 )
             }

@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -98,11 +99,20 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+        outputDirectory = getOutputDirectory(activity)
     }
 
     private fun getImagePath(context: Context): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+    }
+
+    private fun getOutputDirectory(activity: MainActivity): File {
+        val mediaDir = activity.externalMediaDirs.firstOrNull()?.let { file ->
+            File(file, activity.getString(R.string.app_name)).apply { mkdirs() }
+        }
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else activity.filesDir
     }
 
     fun saveFormPath(formPath: String, formName: String){

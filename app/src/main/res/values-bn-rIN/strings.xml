@@ -287,5 +287,6 @@
     <string name="added_tolas_text_plural">" added Tolas"</string>
     <string name="added_tolas_text_singular">" added Tola"</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
+    <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
 
 </resources>
