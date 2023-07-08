@@ -76,9 +76,7 @@ fun VoEndorsementSummaryScreen(
 
 
     LaunchedEffect(key1 = true) {
-        Log.e(TAG, "VoEndorsementSummaryScreen: ")
-
-        viewModel?.setDidiDetailsFromDb(didiId)
+       viewModel?.setDidiDetailsFromDb(didiId)
         delay(200)
         if (viewModel.selPageIndex.value < voDidiList.size) {
             pagerState.animateScrollToPage(viewModel.selPageIndex.value)
@@ -239,7 +237,8 @@ fun VoEndorsementSummaryScreen(
                                             index = index,
                                             quesSummery = answer.summary ?: BLANK_STRING,
                                             answerValue = answer.answerValue ?: BLANK_STRING,
-                                            questionType = answer.type
+                                            questionType = answer.type,
+                                            questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                                         )
                                     }
                                 }
@@ -252,15 +251,15 @@ fun VoEndorsementSummaryScreen(
 //            if(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
             AnimatedVisibility(visible = didi?.value?.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal, enter = fadeIn(), exit = fadeOut(),
                 modifier = Modifier
-                .constrainAs(bottomActionBox) {
-                    bottom.linkTo(parent.bottom)
-                    start.linkTo(parent.start)
-                }
-                .onGloballyPositioned { coordinates ->
-                    bottomPadding = with(localDensity) {
-                        coordinates.size.height.toDp()
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
                     }
-                }) {
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    }) {
                 AcceptRejectButtonBox(
                     modifier = Modifier
 //                        .visible(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal)

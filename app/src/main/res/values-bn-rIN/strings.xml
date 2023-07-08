@@ -286,5 +286,7 @@
     <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
     <string name="added_tolas_text_plural">" added Tolas"</string>
     <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="take_photo_text">ছবি তোল</string>
+    <string name="retake_photo_text">ছবি আবার তুলুন</string>
 
 </resources>

@@ -188,6 +188,7 @@ class QuestionScreenViewModel @Inject constructor(
         quesType: String,
         summary: String,
         selIndex: Int,
+        questionFlag:String,
         onAnswerSave: () -> Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -211,7 +212,8 @@ class QuestionScreenViewModel @Inject constructor(
                             type = quesType,
                             totalAssetAmount = assetAmount,
                             summary = summary,
-                            assetAmount = enteredAssetAmount
+                            assetAmount = enteredAssetAmount,
+                            questionFlag = questionFlag
                         )
                         answerDao.updateNeedToPost(didiId, questionId, true)
                         withContext(Dispatchers.Main) {
@@ -232,7 +234,8 @@ class QuestionScreenViewModel @Inject constructor(
                                 summary = summary,
                                 villageId = prefRepo.getSelectedVillage().id,
                                 weight=answerOptionModel.weight ?: 0,
-                                assetAmount = enteredAssetAmount
+                                assetAmount = enteredAssetAmount,
+                                questionFlag = questionFlag
                             )
                         )
                         withContext(Dispatchers.Main) {

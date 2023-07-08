@@ -627,7 +627,7 @@ fun ButtonNegativePreview() {
 @Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
-    buttonTitle: String = "Add Tola",
+    buttonTitle: String = stringResource(id = R.string.add_tola),
     icon: ImageVector = Icons.Default.Add,
     onClick: () -> Unit
 ) {
@@ -678,7 +678,7 @@ fun ButtonOutlinePreview() {
 @Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
-    buttonTitle: String = "Add Tola",
+    buttonTitle: String = stringResource(id = R.string.add_tola),
     outlineColor: Color = greyBorder,
     textColor: Color = blueDark,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,

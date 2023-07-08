@@ -16,6 +16,9 @@ interface QuestionListDao {
     @Query("Select * FROM $QUESTION_TABLE where questionId = :id")
     fun getQuestion(id: Int): QuestionEntity
 
+    @Query("Select * FROM $QUESTION_TABLE where questionId = :id AND languageId=:languageId")
+    fun getQuestionForLanguage(id: Int,languageId:Int): QuestionEntity
+
     @Query("Select * FROM $QUESTION_TABLE where actionType = :type AND languageId=:languageId ORDER BY `order`")
     fun getQuestionForType(type: String,languageId:Int): List<QuestionEntity>
     @Insert(onConflict = OnConflictStrategy.REPLACE)

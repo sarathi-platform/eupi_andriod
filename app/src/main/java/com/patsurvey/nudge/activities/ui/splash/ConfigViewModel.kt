@@ -41,7 +41,7 @@ class ConfigViewModel @Inject constructor(
         return prefRepo.getAccessToken()?.isNotEmpty() == true
     }
 
-    fun fetchLanguageDetails(context: Context, callBack: () -> Unit) {
+    fun fetchLanguageDetails(context: Context, callBack: (imageList:List<String>) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
 
@@ -56,23 +56,13 @@ class ConfigViewModel @Inject constructor(
                             languageListDao.insertAll(it.languageList)
                             it.languageList.forEach { language ->
                                 launch {
-                                    // Fetch CasteList from Server
-                                    /*val casteResponse = apiInterface.getCasteList(language.id)
-                                    if (casteResponse.status.equals(SUCCESS, true)) {
-                                        casteResponse.data?.let { casteList ->
-                                            casteList.forEach { casteEntity ->
-                                                casteEntity.languageId = language.id
-                                            }
-                                            casteListDao.insertAll(casteList)
-                                        }
-                                    }*/
                                     casteListDao.insertAll(CasteEntity.getDefaultCasteListForLanguage(language.id))
                                 }
                             }
-                            it.image_profile_link.forEach {
+                            /*it.image_profile_link.forEach {
                                 //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
                                 downloadImageItem(context,it)
-                            }
+                            }*/
                             it.bpcSurveyPercentage.forEach { bpcScorePercentage ->
                                 bpcScorePercentageDao.insert(
                                     BpcScorePercentageEntity(
@@ -84,19 +74,19 @@ class ConfigViewModel @Inject constructor(
                             }
                             delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
-                                callBack()
+                                callBack(it.image_profile_link)
                             }
                         }
                     } else if (response.status.equals(FAIL, true)) {
                         addDefaultLanguage()
                         withContext(Dispatchers.Main) {
-                            callBack()
+                            callBack(listOf())
                         }
                     } else {
                         onError(tag = "ConfigViewModel", "Error : ${response.message} ")
                         addDefaultLanguage()
                         withContext(Dispatchers.Main) {
-                            callBack()
+                            callBack(listOf())
                         }
                     }
                 }
@@ -104,7 +94,7 @@ class ConfigViewModel @Inject constructor(
             } catch (ex: Exception) {
                 onCatchError(ex)
                 withContext(Dispatchers.Main) {
-                    callBack()
+                    callBack(listOf())
                 }
             }
         }
@@ -135,21 +125,7 @@ class ConfigViewModel @Inject constructor(
             addDefaultLanguage()
         }
     }
-    private fun downloadImageItem(context: Context, image: String) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                if (!getImagePath(context, image).exists()) {
-                    val localDownloader = (context as MainActivity).downloader
-                    val downloadManager = context.getSystemService(DownloadManager::class.java)
-                    val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                Log.e("VideoListViewModel", "downloadItem exception", ex)
-            }
-        }
 
-    }
 
 
 

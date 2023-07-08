@@ -60,6 +60,7 @@ import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidth
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonOutline
@@ -144,8 +145,8 @@ fun TransectWalkScreen(
                     .padding(horizontal = 16.dp)
             ) {
                 VillageDetailView(
-                    villageName = viewModel.villageEntity.value?.name ?: "",
-                    voName = viewModel.villageEntity.value?.federationName ?: "",
+                    villageName = viewModel.prefRepo.getSelectedVillage().name ?: BLANK_STRING,
+                    voName = viewModel.prefRepo.getSelectedVillage().federationName ?: BLANK_STRING,
                     modifier = Modifier
                 )
                 val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size

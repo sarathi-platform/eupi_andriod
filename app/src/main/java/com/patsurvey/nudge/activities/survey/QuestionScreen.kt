@@ -207,7 +207,8 @@ fun QuestionScreen(
                                     quesType = QuestionType.RadioButton.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = selectedIndex,
-                                    enteredAssetAmount = "0"
+                                    enteredAssetAmount = "0",
+                                    questionFlag = BLANK_STRING
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -251,7 +252,8 @@ fun QuestionScreen(
                                     quesType = QuestionType.List.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING,
                                     selIndex = viewModel.listTypeAnswerIndex.value,
-                                    enteredAssetAmount = "0"
+                                    enteredAssetAmount = "0",
+                                    questionFlag = BLANK_STRING
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -288,7 +290,8 @@ fun QuestionScreen(
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
-                                val newAnswerOptionModel= OptionsItem( BLANK_STRING,0,0,0,
+                                val newAnswerOptionModel= OptionsItem( display = (if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
+                                else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
                                     BLANK_STRING)
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
@@ -297,10 +300,11 @@ fun QuestionScreen(
                                     assetAmount = if(questionList[it].questionFlag.equals(
                                             QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                                     quesType = QuestionType.Numeric_Field.name,
-                                    summary = (questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
-                                    else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                                    summary = questionList[it].questionSummary?: BLANK_STRING/*(questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                                    else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
                                     selIndex = -1,
-                                    enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
+                                    enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                                    questionFlag = questionList[it].questionFlag ?: QUESTION_FLAG_WEIGHT
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
@@ -354,9 +358,9 @@ fun QuestionScreen(
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
                         /*&& questionList[pagerState.currentPage].questionFlag.equals(
                             QUESTION_FLAG_WEIGHT,true)*/){
-                        val newAnswerOptionModel = OptionsItem(
-                            BLANK_STRING, 0, 0, 0, BLANK_STRING
-                        )
+                        val newAnswerOptionModel= OptionsItem( display = (if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
+                        else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
+                            BLANK_STRING)
                         viewModel.setAnswerToQuestion(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
@@ -364,10 +368,11 @@ fun QuestionScreen(
                             assetAmount = if(questionList[pagerState.currentPage].questionFlag.equals(
                                     QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                             quesType = QuestionType.Numeric_Field.name,
-                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
-                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                            summary = questionList[pagerState.currentPage].questionSummary?: BLANK_STRING  /*(questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
                             selIndex = -1,
-                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
+                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                            questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                         }
@@ -416,11 +421,10 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
-//                    viewModel.calculateTotalAmount(pagerState.currentPage+1)
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name){
-                        val newAnswerOptionModel = OptionsItem(
-                            BLANK_STRING, 0, 0, 0, BLANK_STRING
-                        )
+                        val newAnswerOptionModel= OptionsItem( display = (if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
+                        else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
+                            BLANK_STRING)
                         viewModel.setAnswerToQuestion(
                             didiId =didiId,
                             questionId = questionList[pagerState.currentPage].questionId ?: 0,
@@ -428,10 +432,11 @@ fun QuestionScreen(
                             assetAmount = if(questionList[pagerState.currentPage].questionFlag.equals(
                                     QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
                             quesType = QuestionType.Numeric_Field.name,
-                            summary = (questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
-                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                            summary = questionList[pagerState.currentPage].questionSummary?: BLANK_STRING  /*(questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                            else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
                             selIndex = -1,
-                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value
+                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                            questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
                         }

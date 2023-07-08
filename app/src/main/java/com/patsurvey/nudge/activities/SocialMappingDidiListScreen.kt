@@ -1378,7 +1378,7 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
             }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal,PatSurveyStatus.NOT_AVAILABLE.ordinal -> {
+            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal-> {
                 status = context.getString(R.string.not_avaliable)
             }
             PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
