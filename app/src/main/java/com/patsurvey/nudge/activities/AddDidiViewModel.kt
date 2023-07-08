@@ -212,7 +212,6 @@ class AddDidiViewModel @Inject constructor(
                 } else {
                     updateDidiToNetwork()
                 }
-
             } else {
                 updateDidiToNetwork()
             }
@@ -242,6 +241,7 @@ class AddDidiViewModel @Inject constructor(
                             didiEntity.transactionId = ""
                             didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
                         }
+                        checkUpdateDidiStatus()
                     } else {
                         for (i in 0..(response.data?.size?.minus(1) ?: 0)){
                             didiList[i].transactionId = response.data?.get(i)?.transactionId
@@ -606,10 +606,10 @@ class AddDidiViewModel @Inject constructor(
     }
 
 
-    fun addDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
+    fun addDidisToNetwork() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonDidi = JsonArray()
-            val filteredDidiList = didiDao.fetchAllDidiNeedToPost(true, "")
+            val filteredDidiList = didiDao.fetchAllDidiNeedToAdd(true, "",0)
             if (filteredDidiList.isNotEmpty()) {
                 for(didi in filteredDidiList){
                     val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
@@ -645,7 +645,7 @@ class AddDidiViewModel @Inject constructor(
                         } else {
                             for(i in filteredDidiList.indices){
                                 response.data[i].transactionId.let { it1 ->
-                                    didiDao.updateDidiTransactionId(didiList.value[i].id,
+                                    didiDao.updateDidiTransactionId(filteredDidiList[i].id,
                                         it1
                                     )
                                 }
@@ -658,7 +658,7 @@ class AddDidiViewModel @Inject constructor(
                     checkAddDidiStatus()
                 }
             } else {
-                deleteDidisToNetwork()
+                checkAddDidiStatus()
             }
         }
     }
@@ -704,29 +704,12 @@ class AddDidiViewModel @Inject constructor(
                         didiEntity.transactionId = ""
                         didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
                     }
+                    deleteDidisToNetwork()
                 } else {
-                    deleteDidiFromNetwork(networkCallbackListener = object : NetworkCallbackListener{
-                        override fun onSuccess() {
-
-                        }
-
-                        override fun onFailed() {
-
-                        }
-
-                    })
+                    deleteDidisToNetwork()
                 }
             } else {
-                deleteDidiFromNetwork(networkCallbackListener = object : NetworkCallbackListener{
-                    override fun onSuccess() {
-
-                    }
-
-                    override fun onFailed() {
-
-                    }
-
-                })
+                deleteDidisToNetwork()
             }
         }
     }
@@ -1041,6 +1024,7 @@ class AddDidiViewModel @Inject constructor(
                 networkCallbackListener.onSuccess()
             }
 
+
             /*setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
                     networkCallbackListener.onSuccess()
@@ -1093,6 +1077,8 @@ class AddDidiViewModel @Inject constructor(
 
         }
     }
+
+
     fun fetchDidiDetails(didiId: Int){
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
                 val didi=didiDao.getDidi(didiId)

@@ -308,9 +308,10 @@ class SyncHelper (
                             if (transactionIdResponse.transactionId == didi.transactionId) {
                                 didi.serverId = transactionIdResponse.referenceId
                             }
+                            didiDao.updateDidiDetailAfterSync(id = didi.id, serverId = didi.serverId, needsToPost = false, transactionId = "", createdDate = didi.createdDate?:0, modifiedDate = didi.modifiedDate?:0)
                         }
                     }
-                    updateDidisNeedTOPostList(didiList,networkCallbackListener)
+                    deleteDidisToNetwork(networkCallbackListener)
                 } else
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
@@ -373,10 +374,18 @@ class SyncHelper (
                                         tola.createdDate = tolaDataFromNetwork.createdDate
                                         tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                     }
+                                    tolaDao.updateTolaDetailAfterSync(
+                                        id = tola.id,
+                                        serverId = tola.serverId,
+                                        needsToPost = false,
+                                        transactionId = "",
+                                        createdDate = tola.createdDate?:0L,
+                                        modifiedDate = tola.modifiedDate?:0L
+                                    )
                                     Log.e("tola after update", "$tolaList.size")
                                 }
                             }
-                            updateTolaNeedTOPostList(tolaList,networkCallbackListener)
+                            checkTolaAddStatus(networkCallbackListener)
                             withContext(Dispatchers.Main) {
                                 syncPercentage.value = 0.2f
                             }
@@ -407,10 +416,6 @@ class SyncHelper (
         }
         isPending = 1
         startSyncTimer(networkCallbackListener)
-    }
-
-    private fun updateLocalTransactionIdToLocalDidi(didiList: List<DidiEntity>, networkCallbackListener: NetworkCallbackListener) {
-
     }
 
     fun updateTolaNeedTOPostList(tolaList: List<TolaEntity>,networkCallbackListener: NetworkCallbackListener){
@@ -453,7 +458,7 @@ class SyncHelper (
                             tolaList.forEach { tola ->
                                 tolaDao.updateNeedToPost(tola.id,false)
                             }
-                            addDidisToNetwork(networkCallbackListener)
+                            checkTolaUpdateStatus(networkCallbackListener)
                         } else {
                             for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i].transactionId
@@ -502,7 +507,7 @@ class SyncHelper (
                             tolaList.forEach { tola ->
                                 tolaDao.deleteTola(tola.id)
                             }
-                            updateTolasToNetwork(networkCallbackListener)
+                            checkTolaDeleteStatus(networkCallbackListener)
                        } else {
                             for (i in 0 until response.data.size){
                                 tolaList[i].transactionId = response.data[i]?.transactionId
@@ -526,7 +531,7 @@ class SyncHelper (
                     }
                 }
             } else {
-                updateTolasToNetwork(networkCallbackListener)
+                checkTolaDeleteStatus(networkCallbackListener)
             }
         }
     }
@@ -545,7 +550,6 @@ class SyncHelper (
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
                 if (tola != null) {
                     didi.cohortId = tola.serverId
-//                    didiDao.updateTolaIdForDidi(tola.serverId,didi.id)
                 }
             }
             val jsonDidi = JsonArray()
@@ -564,10 +568,11 @@ class SyncHelper (
                                         didi.createdDate = didiFromNetwork.createdDate
                                         didi.modifiedDate = didiFromNetwork.modifiedDate
                                     }
+                                    didiDao.updateDidiDetailAfterSync(id = didi.id, serverId = didi.serverId, needsToPost = false, transactionId = "", createdDate = didi.createdDate?:0, modifiedDate = didi.modifiedDate?:0)
                                 }
                             }
                         }
-                        updateDidisNeedTOPostList(didiList,networkCallbackListener)
+                        checkAddDidiStatus(networkCallbackListener)
                         withContext(Dispatchers.Main) {
                             syncPercentage.value = 0.4f
                         }
@@ -792,7 +797,7 @@ class SyncHelper (
                                 withContext(Dispatchers.Main) {
                                     syncPercentage.value = 0.6f
                                 }
-                                savePATSummeryToServer(networkCallbackListener)
+                                checkDidiWealthStatus(networkCallbackListener)
                             }
                         } else
                             withContext(Dispatchers.Main){
@@ -822,154 +827,148 @@ class SyncHelper (
                     settingViewModel.stepFourSyncStatus.value = 1
                     settingViewModel.syncPercentage.value = 0.6f
                 }
-                withContext(Dispatchers.IO){
-                    val didiIDList= answerDao.fetchPATSurveyDidiList()
-                    if(didiIDList.isNotEmpty()){
-                        var optionList= emptyList<OptionsItem>()
-                        val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
-                        var surveyId =0
-                        var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
-                        val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
-                        didiIDList.forEachIndexed { index, didi ->
-                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
-                            val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                            val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
-                            if (needToPostQuestionsList.isNotEmpty()) {
-                                needToPostQuestionsList.forEach {
-                                    surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
-                                    if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
-                                        optionList = listOf(
-                                            OptionsItem(
-                                                optionId = it.optionId,
-                                                optionValue = it.optionValue,
-                                                count = 0,
-                                                summary = it.summary,
-                                                display = it.answerValue,
-                                                weight = 0,
-                                                isSelected = false
-                                            )
+                val didiIDList= answerDao.fetchPATSurveyDidiList()
+                if(didiIDList.isNotEmpty()){
+                    var optionList= emptyList<OptionsItem>()
+                    val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var surveyId =0
+                    var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                    val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+                    didiIDList.forEachIndexed { index, didi ->
+                        Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                        val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                        if (needToPostQuestionsList.isNotEmpty()) {
+                            needToPostQuestionsList.forEach {
+                                surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
+                                if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
+                                    optionList = listOf(
+                                        OptionsItem(
+                                            optionId = it.optionId,
+                                            optionValue = it.optionValue,
+                                            count = 0,
+                                            summary = it.summary,
+                                            display = it.answerValue,
+                                            weight = 0,
+                                            isSelected = false
                                         )
-                                    } else {
-                                        val numOptionList =
-                                            numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
-                                        val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
-                                        if (numOptionList.isNotEmpty()) {
-                                            numOptionList.forEach { numOption ->
-                                                tList.add(
-                                                    OptionsItem(
-                                                        optionId = numOption.optionId,
-                                                        optionValue = 0,
-                                                        count = numOption.count,
-                                                        summary = it.summary,
-                                                        display = it.answerValue,
-                                                        weight = numOption.weight,
-                                                        isSelected = false
-                                                    )
-                                                )
-                                            }
-                                            optionList = tList
-                                        }else{
+                                    )
+                                } else {
+                                    val numOptionList =
+                                        numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
+                                    val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
+                                    if (numOptionList.isNotEmpty()) {
+                                        numOptionList.forEach { numOption ->
                                             tList.add(
                                                 OptionsItem(
-                                                    optionId = it.optionId,
+                                                    optionId = numOption.optionId,
                                                     optionValue = 0,
-                                                    count = 0,
+                                                    count = numOption.count,
                                                     summary = it.summary,
                                                     display = it.answerValue,
-                                                    weight = it.weight,
+                                                    weight = numOption.weight,
                                                     isSelected = false
                                                 )
                                             )
-
-                                            optionList = tList
                                         }
-
-                                    }
-                                    try {
-                                        qList.add(
-                                            AnswerDetailDTOListItem(
-                                                questionId = it.questionId,
-                                                section = it.actionType,
-                                                options = optionList,
-                                                assetAmount = it.assetAmount
+                                        optionList = tList
+                                    }else{
+                                        tList.add(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = 0,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = it.weight,
+                                                isSelected = false
                                             )
                                         )
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
-                                    }
-                                }
-                            }
-                            scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
-                                score = didi.score,
-                                comment = didi.comment,
-                                type = PAT_SURVEY,
-                                result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
 
-                            answeredDidiList.add(
-                                PATSummarySaveRequest(
-                                    villageId = prefRepo.getSelectedVillage().id,
-                                    surveyId = surveyId,
-                                    beneficiaryId = didi.serverId,
-                                    languageId = prefRepo.getAppLanguageId() ?: 2,
-                                    stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = 0,
-                                    userType = userType,
-                                    beneficiaryName = didi.name,
-                                    answerDetailDTOList = qList,
-                                    patSurveyStatus = didi.patSurveyStatus,
-                                    section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status,
-                                    shgFlag = didi.shgFlag
-                                )
-                            )
-                        }
-                        if(answeredDidiList.isNotEmpty()){
-                            withContext(Dispatchers.IO){
-                                val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
-                                if(saveAPIResponse.status.equals(SUCCESS,true)){
-                                    if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
-                                        didiIDList.forEach { didiItem ->
-                                            didiDao.updateNeedToPostPAT(
-                                                false,
-                                                didiItem.id,
-                                                prefRepo.getSelectedVillage().id
-                                            )
-                                        }
-                                        withContext(Dispatchers.Main) {
-                                            syncPercentage.value = 0.8f
-                                        }
-                                        savePatScoreToServer(scoreDidiList)
-                                        updateVoStatusToNetwork(networkCallbackListener)
-                                    } else {
-                                        for (i in didiIDList.indices){
-                                            saveAPIResponse.data?.get(i)?.let {
-                                                didiDao.updateDidiTransactionId(didiIDList[i].id,
-                                                    it.transactionId)
-                                            }
-                                            didiDao.updateDidiNeedToPostPat(didiIDList[i].id,true)
-                                        }
-                                        isPending = 8
-                                        startSyncTimer(networkCallbackListener)
-                                        withContext(Dispatchers.Main) {
-                                            syncPercentage.value = 0.7f
-                                        }
+                                        optionList = tList
                                     }
-                                    savePatScoreToServer(scoreDidiList)
-                                } else {
-                                    withContext(Dispatchers.Main){
-                                        networkCallbackListener.onFailed()
-                                    }
+
+                                }
+                                try {
+                                    qList.add(
+                                        AnswerDetailDTOListItem(
+                                            questionId = it.questionId,
+                                            section = it.actionType,
+                                            options = optionList,
+                                            assetAmount = it.assetAmount
+                                        )
+                                    )
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
                                 }
                             }
-                        } else {
-                            updateVoStatusToNetwork(networkCallbackListener)
-                            savePatScoreToServer(scoreDidiList)
+                        }
+                        scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
+                            score = didi.score,
+                            comment = didi.comment,
+                            type = PAT_SURVEY,
+                            result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
+
+                        answeredDidiList.add(
+                            PATSummarySaveRequest(
+                                villageId = prefRepo.getSelectedVillage().id,
+                                surveyId = surveyId,
+                                beneficiaryId = didi.serverId,
+                                languageId = prefRepo.getAppLanguageId() ?: 2,
+                                stateId = prefRepo.getSelectedVillage().stateId,
+                                totalScore = 0,
+                                userType = userType,
+                                beneficiaryName = didi.name,
+                                answerDetailDTOList = qList,
+                                patSurveyStatus = didi.patSurveyStatus,
+                                section2Status = didi.section2Status,
+                                section1Status = didi.section1Status,
+                                shgFlag = didi.shgFlag
+                            )
+                        )
+                    }
+                    if(answeredDidiList.isNotEmpty()){
+                        withContext(Dispatchers.IO){
+                            val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
+                            if(saveAPIResponse.status.equals(SUCCESS,true)){
+                                if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                    didiIDList.forEach { didiItem ->
+                                        didiDao.updateNeedToPostPAT(
+                                            false,
+                                            didiItem.id,
+                                            prefRepo.getSelectedVillage().id
+                                        )
+                                    }
+                                    withContext(Dispatchers.Main) {
+                                        syncPercentage.value = 0.8f
+                                    }
+                                    checkDidiPatStatus(networkCallbackListener)
+                                } else {
+                                    for (i in didiIDList.indices){
+                                        saveAPIResponse.data?.get(i)?.let {
+                                            didiDao.updateDidiTransactionId(didiIDList[i].id,
+                                                it.transactionId)
+                                        }
+                                        didiDao.updateDidiNeedToPostPat(didiIDList[i].id,true)
+                                    }
+                                    isPending = 8
+                                    startSyncTimer(networkCallbackListener)
+                                    withContext(Dispatchers.Main) {
+                                        syncPercentage.value = 0.7f
+                                    }
+                                }
+                            } else {
+                                withContext(Dispatchers.Main){
+                                    networkCallbackListener.onFailed()
+                                }
+                            }
                         }
                     } else {
-                        updateVoStatusToNetwork(networkCallbackListener)
+                        checkDidiPatStatus(networkCallbackListener)
                     }
+                } else {
+                    checkDidiPatStatus(networkCallbackListener)
                 }
-
             }  catch (ex:Exception){
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
