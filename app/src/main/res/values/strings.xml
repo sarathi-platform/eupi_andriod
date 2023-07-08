@@ -161,7 +161,7 @@
     <string name="training_videos">Training Videos</string>
     <string name="language_text">Language</string>
     <string name="productive_asset_owned_by_family"><!--Productive asset owned by Family-->Earning ratio</string>
-    <string name="total_productive_asset_value"> = ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>
     <string name="complete_section_2">Complete Section 2</string>
@@ -302,6 +302,8 @@
     <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
     <string name="added_tolas_text_plural">" added Tolas"</string>
     <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="take_photo_text">Take Photo</string>
+    <string name="retake_photo_text">Retake Photo"</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
 

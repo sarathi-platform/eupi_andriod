@@ -54,7 +54,10 @@ data class SectionAnswerEntity(
     val assetAmount: String? = "0",
 
     @SerializedName("questionImageUrl")
-    var questionImageUrl: String? = BLANK_STRING
+    var questionImageUrl: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "questionFlag")
+    var questionFlag: String? = BLANK_STRING
 
 
 

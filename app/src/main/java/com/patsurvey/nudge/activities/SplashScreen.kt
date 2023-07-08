@@ -65,6 +65,9 @@ fun SplashScreen(
             }
         } else {
             viewModel.fetchLanguageDetails(context) {
+                if(it.isNotEmpty()){
+                    (context as MainActivity).quesImageList = it as MutableList<String>
+                }
                 if (isLoggedIn) {
                     navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
                         popUpTo(AuthScreen.START_SCREEN.route) {

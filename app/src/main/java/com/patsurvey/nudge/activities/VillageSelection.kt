@@ -102,6 +102,12 @@ fun VillageSelectionScreen(
 
 
     LaunchedEffect(key1 = true) {
+        val imagesList= (context as MainActivity).quesImageList
+        if(imagesList.isNotEmpty()){
+            imagesList.forEach {
+                viewModel.downloadImageItem(context,it)
+            }
+        }
         viewModel.saveVideosToDb(context)
     }
     val showRetryLoader = remember {

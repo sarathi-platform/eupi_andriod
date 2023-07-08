@@ -430,14 +430,14 @@ fun PatDidiSummaryScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(45.dp),
-                                buttonTitle = "Retake Photo"
+                                buttonTitle = stringResource(id = R.string.retake_photo_text)
                             ) {
                                 patDidiSummaryViewModel.setCameraExecutor()
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         } else {
                             BlueButtonWithIcon(
-                                buttonText = "Take Photo",
+                                buttonText = stringResource(id = R.string.take_photo_text),
                                 icon = Icons.Default.Add,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -466,7 +466,7 @@ fun PatDidiSummaryScreen(
                         }
                     },
                 negativeButtonRequired = false,
-                positiveButtonText = "Next",
+                positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")

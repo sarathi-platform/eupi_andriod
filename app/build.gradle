@@ -53,7 +53,7 @@ android {
             applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "Nudge STAGE"
 //            versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in"'
         }
         production{
             manifestPlaceholders.app_name= "The Nudge"

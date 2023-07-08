@@ -48,6 +48,7 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 
 @Composable
 fun PatSurveyCompleteSummary(
@@ -215,7 +216,8 @@ fun PatSurveyCompleteSummary(
                                 index = index,
                                 quesSummery = answer.summary.toString(),
                                 answerValue = answer.answerValue?: BLANK_STRING,
-                                questionType = answer.type
+                                questionType = answer.type,
+                                questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                             )
                         }
                     }

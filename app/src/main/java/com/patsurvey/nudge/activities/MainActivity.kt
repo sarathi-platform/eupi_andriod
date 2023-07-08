@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     val isBackFromSummary = mutableStateOf(false)
 
     var downloader: AndroidDownloader? = null
-
+    var quesImageList = mutableListOf<String>()
     private val REQ_USER_CONSENT = 200
     var smsBroadcastReceiver: SmsBroadcastReceiver? = null
 
