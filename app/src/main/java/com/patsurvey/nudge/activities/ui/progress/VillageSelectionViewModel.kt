@@ -83,6 +83,7 @@ import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -148,6 +149,7 @@ class VillageSelectionViewModel @Inject constructor(
                     fetchDataForBpc()
                 }
             }
+
             showLoader.value = false
         }
     }
@@ -649,6 +651,7 @@ class VillageSelectionViewModel @Inject constructor(
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
+                    delay(250)
                     showLoader.value = false
                 }
             }
@@ -699,6 +702,7 @@ class VillageSelectionViewModel @Inject constructor(
                             ApiType.CAST_LIST_API
                         )
                         withContext(Dispatchers.Main) {
+                            delay(250)
                             showLoader.value = false
                         }
                     }
@@ -1209,6 +1213,7 @@ class VillageSelectionViewModel @Inject constructor(
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
+                    delay(250)
                     showLoader.value = false
                 }
             }
@@ -1266,10 +1271,11 @@ class VillageSelectionViewModel @Inject constructor(
                                 apiSuccess()
                             }
 
-                            if (response.data == null)
+                            if (response.data == null) {
                                 withContext(Dispatchers.Main) {
                                     showLoader.value = false
                                 }
+                            }
                         } else if (response.status.equals(FAIL, true)) {
                             withContext(Dispatchers.Main) {
                                 showLoader.value = false

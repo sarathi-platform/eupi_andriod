@@ -186,24 +186,17 @@ fun TransectWalkScreen(
                                 }
                                 if (tolaList.isNotEmpty()) {
                                     Spacer(modifier = Modifier.padding(14.dp))
-                                    if (!tolaList.contains(
-                                            TolaEntity.createEmptyTolaForVillageId(
-                                                villageId
-                                            )
-                                        )
-                                    ) {
-                                        //TODO if required uncomment this to hide add tola button.
-                                        if (!viewModel.isVoEndorsementComplete.value) {
-                                            ButtonOutline(
-                                                modifier = Modifier
-                                                    .weight(0.9f)
-                                                    .height(45.dp),
-                                            ) {
-                                                if (!showAddTolaBox)
-                                                    showAddTolaBox = true
-                                            }
+                                    if (!viewModel.isVoEndorsementComplete.value) {
+                                        ButtonOutline(
+                                            modifier = Modifier
+                                                .weight(0.9f)
+                                                .height(45.dp),
+                                        ) {
+                                            if (!showAddTolaBox)
+                                                showAddTolaBox = true
                                         }
                                     }
+
                                 }
                             }
                         }
@@ -398,14 +391,6 @@ fun TransectWalkScreen(
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
                                             }, villageId = villageId, stepId = stepId)
-                                            /*viewModel.markTransectWalkIncomplete(stepId, villageId, object : NetworkCallbackListener{
-                                                override fun onSuccess() {
-                                                }
-
-                                                override fun onFailed() {
-//                                                    showCustomToast(context, SYNC_FAILED)
-                                                }
-                                            })*/
                                             showAddTolaBox = false
                                             showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },

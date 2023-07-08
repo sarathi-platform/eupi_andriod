@@ -162,10 +162,9 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             ) {
                 val tolaName =
                     if (it.name == EMPTY_TOLA_NAME)
-                        BLANK_STRING
+                        NO_TOLA_TITLE
                     else
                         it.name
-
                 didiViewModel?.selectedTola?.value=Pair(it.id,tolaName)
                 didiViewModel?.saveLastSelectedTolaForVillage(it.id,tolaName)
                 didiViewModel?.validateDidiDetails()
@@ -209,7 +208,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                    })
                 }
                 else{
-                    didiViewModel?.updateDidiIntoDatabase(editDidiId, object : NetworkCallbackListener{
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId, isOnline = (context as MainActivity).isOnline.value ?: false, object : NetworkCallbackListener{
                         override fun onSuccess() {
                         }
 

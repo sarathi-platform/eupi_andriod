@@ -8,9 +8,6 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.CasteEntity
@@ -23,6 +20,7 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddDidiRequest
+import com.patsurvey.nudge.model.request.EditDidiRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
@@ -112,14 +110,14 @@ class AddDidiViewModel @Inject constructor(
                 val casteList = casteListDao.getAllCasteForLanguage(
                     languageId = languageId
                 )
-                AnalyticsHelper.logEvent(
+                /*AnalyticsHelper.logEvent(
                     Events.CASTE_LIST_READ,
                     mapOf(
                         EventParams.LANGUAGE_ID to languageId,
                         EventParams.CASTE_LIST to "$casteList",
                         EventParams.FROM_SCREEN to "Add DidiScreen"
                     )
-                )
+                )*/
                 _casteList.emit(
                     casteList
                 )
@@ -263,7 +261,7 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiIntoDatabase(didiId: Int, networkCallbackListener: NetworkCallbackListener) {
+    fun updateDidiIntoDatabase(didiId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
             filterDidiList
@@ -301,13 +299,20 @@ class AddDidiViewModel @Inject constructor(
                 serverId = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).serverId,
                 needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).needsToPostRanking
+                    .indexOf(didiId)).needsToPostRanking,
+                needsToPost = true
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
 
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
+
+            if (isOnline) {
+                updateDidiToNetwork(updatedDidi, networkCallbackListener)
+            } else {
+                networkCallbackListener.onSuccess()
+            }
 
 //            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
 //                override fun onSuccess() {
@@ -819,7 +824,11 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun deleteDidiOffline(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) {
+    fun deleteDidiOffline(
+        didi: DidiEntity,
+        isOnline: Boolean,
+        networkCallbackListener: NetworkCallbackListener
+    ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             didiDao.deleteDidiOffline(
                 id = didi.id,
@@ -850,6 +859,11 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
             }
+            if (isOnline) {
+                deleteDidiFromNetwork(networkCallbackListener)
+            } else {
+                networkCallbackListener.onSuccess()
+            }
 
             /*setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
@@ -871,35 +885,46 @@ class AddDidiViewModel @Inject constructor(
 
     fun deleteDidiFromNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didisToBeDeleted =
-                didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
-            if (didisToBeDeleted.isNotEmpty()) {
-                val jsonArray = JsonArray()
-                didisToBeDeleted.forEach { didi ->
-                    val jsonObject = JsonObject()
-                    jsonObject.addProperty("id", didi.id)
-                    jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
-                    jsonArray.add(jsonObject)
-                    val deleteDidiApiResponse = apiService.deleteDidi(jsonArray)
-                    if (deleteDidiApiResponse.status.equals(SUCCESS)) {
-                        didiDao.updateDeletedDidiNeedToPostStatus(didi.id, needsToPostDeleteStatus = false)
-                        networkCallbackListener.onSuccess()
-                    } else {
-                        networkCallbackListener.onSuccess()
+            try {
+                val didisToBeDeleted =
+                    didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
+                if (didisToBeDeleted.isNotEmpty()) {
+                    val jsonArray = JsonArray()
+                    didisToBeDeleted.forEach { didi ->
+                        if (didi.serverId != 0) {
+                            val jsonObject = JsonObject()
+                            jsonObject.addProperty("id", didi.id)
+                            jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
+                            jsonArray.add(jsonObject)
+                            val deleteDidiApiResponse = apiService.deleteDidi(jsonArray)
+                            if (deleteDidiApiResponse.status.equals(SUCCESS)) {
+                                didiDao.updateDeletedDidiNeedToPostStatus(
+                                    didi.id,
+                                    needsToPostDeleteStatus = false
+                                )
+                                networkCallbackListener.onSuccess()
+                            } else {
+                                networkCallbackListener.onSuccess()
+                            }
+                        } else {
+                            networkCallbackListener.onSuccess()
+                        }
                     }
                 }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.DIDI_EDIT_API)
             }
+
         }
     }
     fun fetchDidiDetails(didiId: Int){
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
                 val didi=didiDao.getDidi(didiId)
-
                didiName.value=didi.name
                dadaName.value=didi.guardianName
                houseNumber.value=didi.address
-               selectedTola.value= Pair(didi.cohortId,didi.cohortName)
-               selectedCast.value= Pair(didi.castId,didi.castName)
+               selectedTola.value= Pair(didi.cohortId, didi.cohortName)
+               selectedCast.value= Pair(didi.castId, didi.castName)
             }
     }
 
@@ -911,6 +936,45 @@ class AddDidiViewModel @Inject constructor(
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
         return "${formName}_page_$pageNumber"
+    }
+
+    fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            val currentStepIndex = stepList.map { it.id }.indexOf(currentStepId)
+
+            withContext(Dispatchers.Main) {
+                callBack(stepList.sortedBy { it.orderNumber }[currentStepIndex - 1].isComplete == StepStatus.COMPLETED.ordinal)
+            }
+        }
+    }
+
+    fun updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                if (didi.serverId != 0) {
+                    val didiRequestList = arrayListOf<EditDidiRequest>()
+                    didiRequestList.add(
+                        EditDidiRequest(
+                            didi.serverId,
+                            didi.name,
+                            didi.address,
+                            didi.guardianName,
+                            didi.castId,
+                            didi.cohortId
+                        )
+                    )
+                    val response = apiService.updateDidis(didiRequestList)
+                    if (response.status.equals(SUCCESS, true)) {
+                        didiDao.updateNeedToPost(didi.id,false)
+                    }
+                } else {
+                    networkCallbackListener.onSuccess()
+                }
+            } catch (ex: Exception) {
+
+            }
+        }
     }
 
 }
