@@ -705,10 +705,28 @@ class AddDidiViewModel @Inject constructor(
                         didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
                     }
                 } else {
-                    deleteDidiFromNetwork()
+                    deleteDidiFromNetwork(networkCallbackListener = object : NetworkCallbackListener{
+                        override fun onSuccess() {
+
+                        }
+
+                        override fun onFailed() {
+
+                        }
+
+                    })
                 }
             } else {
-                deleteDidiFromNetwork()
+                deleteDidiFromNetwork(networkCallbackListener = object : NetworkCallbackListener{
+                    override fun onSuccess() {
+
+                    }
+
+                    override fun onFailed() {
+
+                    }
+
+                })
             }
         }
     }
