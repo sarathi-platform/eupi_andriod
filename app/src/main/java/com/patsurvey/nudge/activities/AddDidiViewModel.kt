@@ -1018,7 +1018,12 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
             }
-            networkCallbackListener.onSuccess()
+            if (isOnline) {
+                deleteDidiFromNetwork(networkCallbackListener)
+            } else {
+                networkCallbackListener.onSuccess()
+            }
+
 
             /*setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
                 override fun onSuccess() {
@@ -1037,6 +1042,42 @@ class AddDidiViewModel @Inject constructor(
             }
         }
     }
+
+    fun deleteDidiFromNetwork(networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val didisToBeDeleted =
+                    didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
+                if (didisToBeDeleted.isNotEmpty()) {
+                    val jsonArray = JsonArray()
+                    didisToBeDeleted.forEach { didi ->
+                        if (didi.serverId != 0) {
+                            val jsonObject = JsonObject()
+                            jsonObject.addProperty("id", didi.id)
+                            jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
+                            jsonArray.add(jsonObject)
+                            val deleteDidiApiResponse = apiService.deleteDidi(jsonArray)
+                            if (deleteDidiApiResponse.status.equals(SUCCESS)) {
+                                didiDao.updateDeletedDidiNeedToPostStatus(
+                                    didi.id,
+                                    needsToPostDeleteStatus = false
+                                )
+                                networkCallbackListener.onSuccess()
+                            } else {
+                                networkCallbackListener.onSuccess()
+                            }
+                        } else {
+                            networkCallbackListener.onSuccess()
+                        }
+                    }
+                }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.DIDI_EDIT_API)
+            }
+
+        }
+    }
+
 
     fun fetchDidiDetails(didiId: Int){
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
