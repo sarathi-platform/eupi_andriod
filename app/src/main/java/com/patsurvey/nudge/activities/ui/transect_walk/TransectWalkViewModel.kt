@@ -65,6 +65,7 @@ class TransectWalkViewModel @Inject constructor(
     val isVoEndorsementComplete = mutableStateOf(false)
 
     val showLoader = mutableStateOf(false)
+    private var isPending = 0
     init {
 //        fetchTolaList(villageId)
 
@@ -127,7 +128,7 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun addTolasToNetwork(villageId: Int, networkCallbackListener: NetworkCallbackListener) {
+    fun addTolasToNetwork() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val jsonTola = JsonArray()
             val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
@@ -137,7 +138,6 @@ class TransectWalkViewModel @Inject constructor(
                     jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
                 }
                 Log.d("TransectWalkViewModel", "$jsonTola")
-
                 val response = apiInterface.addCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
@@ -156,6 +156,7 @@ class TransectWalkViewModel @Inject constructor(
                                 tola.createdDate = tolaDataFromNetwork.createdDate
                                 tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                             }
+                            checkTolaAddStatus()
                         } else {
                             response.data.forEach { tola ->
                                 for(i in response.data.indices){
@@ -166,76 +167,202 @@ class TransectWalkViewModel @Inject constructor(
                                     }
                                 }
                             }
-                            startSyncTimerForTolaStatus()
+                            isPending = 1
+                            startSyncTimerForStatus()
                         }
-                        networkCallbackListener.onSuccess()
                     }
+                } else {
+                    checkTolaAddStatus()
                 }
-                else {
-                    withContext(Dispatchers.Main){
-                        networkCallbackListener.onFailed()
-                    }
-                }
+            } else {
+                checkTolaAddStatus()
             }
         }
     }
 
-    private fun startSyncTimerForTolaStatus(){
+    private fun startSyncTimerForStatus(){
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
-                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    val tolaList = tolaDao.fetchPendingTola(true,"")
-                    if(tolaList.isNotEmpty()) {
-                        val ids: ArrayList<String> = arrayListOf()
-                        tolaList.forEach { tola ->
-                            tola.transactionId?.let { ids.add(it) }
-                        }
-                        val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.forEach { transactionIdResponse ->
-                                tolaList.forEach { tola ->
-                                    if (transactionIdResponse.transactionId == tola.transactionId) {
-                                        tola.serverId = transactionIdResponse.referenceId
-                                    }
-                                }
-                            }
-                            for(tola in tolaList) {
-                                tolaDao.updateTolaDetailAfterSync(
-                                    id = tola.id,
-                                    serverId = tola.serverId,
-                                    needsToPost = false,
-                                    transactionId = "",
-                                    createdDate = tola.createdDate?:0L,
-                                    modifiedDate = tola.modifiedDate?:0L
-                                )
-                            }
-                        }
+                when(isPending){
+                    1 -> {
+                        checkTolaAddStatus()
+                    }
+                    2 -> {
+                        checkTolaDeleteStatus()
+                    }
+                    3 -> {
+                        checkTolaUpdateStatus()
                     }
                 }
             }
         },10000)
     }
 
-    fun updateTolaNeedTOPostList(villageId: Int){
+    private fun checkTolaAddStatus(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            updateTolaListWithIds(tolaList.value, villageId)
+            val tolaList = tolaDao.fetchPendingTola(true,"")
+            if(tolaList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                tolaList.forEach { tola ->
+                    tola.transactionId?.let { ids.add(it) }
+                }
+                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        tolaList.forEach { tola ->
+                            if (transactionIdResponse.transactionId == tola.transactionId) {
+                                tola.serverId = transactionIdResponse.referenceId
+                            }
+                        }
+                    }
+                    for(tola in tolaList) {
+                        tolaDao.updateTolaDetailAfterSync(
+                            id = tola.id,
+                            serverId = tola.serverId,
+                            needsToPost = false,
+                            transactionId = "",
+                            createdDate = tola.createdDate?:0L,
+                            modifiedDate = tola.modifiedDate?:0L
+                        )
+                    }
+                    deleteTolaToNetwork()
+                } else {
+                    deleteTolaToNetwork()
+                }
+            } else {
+                deleteTolaToNetwork()
+            }
         }
     }
 
-    private fun updateTolaListWithIds(tolaList: List<TolaEntity>, villageId: Int) {
-        tolaList.forEach{ tola ->
-            tolaDao.updateTolaDetailAfterSync(
-                id = tola.id,
-                serverId = tola.serverId,
-                needsToPost = false,
-                transactionId = "",
-                createdDate = tola.createdDate?:0L,
-                modifiedDate = tola.modifiedDate?:0L
-
-            )
+    private fun deleteTolaToNetwork() {
+        Log.e("delete tola","called")
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
+            val jsonTola = JsonArray()
+            if (tolaList.isNotEmpty()) {
+                for (tola in tolaList) {
+                    jsonTola.add(DeleteTolaRequest(tola.serverId, localModifiedDate = System.currentTimeMillis()).toJson())
+                }
+                Log.e("tola need to post","$tolaList.size")
+                val response = apiInterface.deleteCohort(jsonTola)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        if((response.data[0]?.transactionId.isNullOrEmpty())) {
+                            tolaList.forEach { tola ->
+                                tolaDao.deleteTola(tola.id)
+                            }
+                            checkTolaDeleteStatus()
+                        } else {
+                            for (i in 0 until response.data.size){
+                                tolaList[i].transactionId = response.data[i]?.transactionId
+                                tolaList[i].transactionId?.let { it1 ->
+                                    tolaDao.updateTolaTransactionId(tolaList[i].id,
+                                        it1
+                                    )
+                                }
+                            }
+                            isPending = 2
+                            startSyncTimerForStatus()
+                        }
+                    }
+                } else {
+                    checkTolaDeleteStatus()
+                }
+            } else {
+                checkTolaDeleteStatus()
+            }
         }
     }
+
+    private fun updateTolasToNetwork() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
+            val jsonTola = JsonArray()
+            if (tolaList.isNotEmpty()) {
+                for (tola in tolaList) {
+                    jsonTola.add(EditCohortRequest.getRequestObjectForTola(tola).toJson())
+                }
+                Log.e("tola need to post","$tolaList.size")
+                val response = apiInterface.editCohort(jsonTola)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        if((response.data[0].transactionId.isNullOrEmpty())) {
+                            tolaList.forEach { tola ->
+                                tolaDao.updateNeedToPost(tola.id,false)
+                            }
+                            checkTolaUpdateStatus()
+                        } else {
+                            for (i in 0 until response.data.size){
+                                tolaList[i].transactionId = response.data[i].transactionId
+                                tolaList[i].transactionId?.let { it1 ->
+                                    tolaDao.updateTolaTransactionId(tolaList[i].id,
+                                        it1
+                                    )
+                                }
+                            }
+                            isPending = 3
+                            startSyncTimerForStatus()
+                        }
+                    }
+                } else {
+                    checkTolaUpdateStatus()
+                }
+            } else {
+                checkTolaUpdateStatus()
+            }
+        }
+    }
+
+    fun checkTolaUpdateStatus(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaList = tolaDao.fetchAllPendingTolaNeedToUpdate(true,"")
+            if(tolaList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                tolaList.forEach { tola ->
+                    tola.transactionId?.let { ids.add(it) }
+                }
+                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        tolaList.forEach { tola ->
+                            if (transactionIdResponse.transactionId == tola.transactionId) {
+                                tolaDao.updateNeedToPost(tola.id,false)
+                                tolaDao.updateTolaTransactionId(tola.id,"")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    fun checkTolaDeleteStatus(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val tolaList = tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"")
+            if(tolaList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                tolaList.forEach { tola ->
+                    tola.transactionId?.let { ids.add(it) }
+                }
+                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        tolaList.forEach { tola ->
+                            if (transactionIdResponse.transactionId == tola.transactionId) {
+                                tolaDao.deleteTola(tola.id)
+                            }
+                        }
+                    }
+                    updateTolasToNetwork()
+                }
+            } else {
+                updateTolasToNetwork()
+            }
+        }
+    }
+
 
     fun removeTola(tolaId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -245,7 +372,7 @@ class TransectWalkViewModel @Inject constructor(
                 withContext(Dispatchers.Main) {
                     _tolaList.value = updatedTolaList
                 }
-                deleteDidisForTola(tolaId)
+                deleteDidisForTola(tolaId,isOnline)
                 val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
                 if (updatedTolaList.isEmpty()){
                     stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach { newStep ->
@@ -288,27 +415,36 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    private fun deleteDidisForTola(tolaId: Int) {
+    private fun deleteDidisForTola(tolaId: Int , isOnline: Boolean) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val didList = didiDao.getDidisForTola(tolaId)
-                didiDao.deleteDidisForTola(tolaId, activeStatus = DidiStatus.DIID_DELETED.ordinal, needsToPostDeleteStatus = true)
-                val jsonArray = JsonArray()
-                didList.forEach {
-                    val jsonObject = JsonObject()
-                    jsonObject.addProperty("id", it.id)
-                    jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
-                    jsonArray.add(jsonObject)
+                didiDao.deleteDidisForTola(
+                    tolaId,
+                    activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                    needsToPostDeleteStatus = true
+                )
+                if (isOnline) {
+                    val jsonArray = JsonArray()
+                    didList.forEach {
+                        val jsonObject = JsonObject()
+                        jsonObject.addProperty("id", it.id)
+                        jsonObject.addProperty("localModifiedDate", System.currentTimeMillis())
+                        jsonArray.add(jsonObject)
+                    }
+                    val deleteDidiApiRespone = apiInterface.deleteDidi(jsonArray)
+                    if (deleteDidiApiRespone.status.equals(SUCCESS)) {
+                        Log.d("TransectWalkViewModel", "Didids Deleted Successfully")
+                    } else {
+                        Log.d("TransectWalkViewModel", "Didids not Deleted Successfully")
+                    }
                 }
-                val deleteDidiApiRespone = apiInterface.deleteDidi(jsonArray)
-                if (deleteDidiApiRespone.status.equals(SUCCESS)) {
-                    Log.d("TransectWalkViewModel", "Didids Deleted Successfully")
-                } else {
-                    Log.d("TransectWalkViewModel", "Didids not Deleted Successfully")
-                }
-
-            } catch (ex: Exception) {
-                onError("TransectWalkViewModel", "deleteDidisForTola- ${ex.message}: \n${ex.stackTraceToString()}")
+            }
+            catch (ex: Exception) {
+                onError(
+                    "TransectWalkViewModel",
+                    "deleteDidisForTola- ${ex.message}: \n${ex.stackTraceToString()}"
+                )
             }
         }
     }

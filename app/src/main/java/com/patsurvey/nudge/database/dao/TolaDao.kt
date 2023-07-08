@@ -58,7 +58,7 @@ interface TolaDao {
     @Query("SELECT * from $TOLA_TABLE where status = :status")
     fun fetchAllTolaNeedToDelete(status: Int) : List<TolaEntity>
 
-    @Query("SELECT * from $TOLA_TABLE where status = :status and transactionId = :transactionId")
+    @Query("SELECT * from $TOLA_TABLE where status = :status and transactionId != :transactionId")
     fun fetchAllPendingTolaNeedToDelete(status: Int,transactionId: String?) : List<TolaEntity>
 
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")

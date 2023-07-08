@@ -79,6 +79,7 @@ class AddDidiViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
     val pendingDidiCount = mutableStateOf(0)
     val isTolaSynced = mutableStateOf(0)
+    private var isPending = 0
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
@@ -146,6 +147,144 @@ class AddDidiViewModel @Inject constructor(
                 isTolaSynced.value = it
              }
 
+    }
+
+    private fun deleteDidisToNetwork() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val jsonDidi = JsonArray()
+            if (didiList.isNotEmpty()) {
+                for (didi in didiList) {
+                    val jsonObject = JsonObject()
+                    jsonObject.addProperty("id", didi.serverId)
+                    jsonDidi.add(jsonObject)
+                }
+                Log.e("tola need to post","$didiList.size")
+                val response = apiService.deleteDidi(jsonDidi)
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        if((response.data[0].transactionId.isNullOrEmpty())) {
+                            didiList.forEach { tola ->
+                                didiDao.deleteDidi(tola.id)
+                            }
+                            checkDeleteDidiStatus()
+                        } else {
+                            for (i in 0 until response.data.size){
+                                didiList[i].transactionId = response.data[i].transactionId
+                                didiList[i].transactionId?.let { it1 ->
+                                    didiDao.updateDidiTransactionId(didiList[i].id,
+                                        it1
+                                    )
+                                }
+                            }
+                            isPending = 2
+                            startSyncTimerForDidiStatus()
+                        }
+                    }
+                }
+                else {
+                    checkDeleteDidiStatus()
+                }
+            } else {
+                checkDeleteDidiStatus()
+            }
+        }
+    }
+
+    fun checkDeleteDidiStatus(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0)
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { didi ->
+                    didi.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didiDao.deleteDidi(didi.id)
+                            }
+                        }
+                    }
+                    updateDidiToNetwork()
+                } else {
+                    updateDidiToNetwork()
+                }
+
+            } else {
+                updateDidiToNetwork()
+            }
+        }
+    }
+
+    fun updateDidiToNetwork(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
+            if (didiList.isNotEmpty()) {
+                val didiRequestList = arrayListOf<EditDidiRequest>()
+                didiList.forEach { didi->
+                    didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
+                }
+                val response = apiService.updateDidis(didiRequestList)
+                if (response.status.equals(SUCCESS, true)) {
+                    if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                        response.data?.let {
+                            response.data.forEach { _ ->
+                                didiList.forEach { didi ->
+                                    didiDao.updateNeedToPost(didi.id,false)
+                                }
+                            }
+                        }
+                        didiList.forEach(){ didiEntity ->
+                            didiEntity.needsToPost = false
+                            didiEntity.transactionId = ""
+                            didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
+                        }
+                    } else {
+                        for (i in 0..(response.data?.size?.minus(1) ?: 0)){
+                            didiList[i].transactionId = response.data?.get(i)?.transactionId
+                            didiList[i].transactionId?.let {
+                                didiDao.updateDidiTransactionId(didiList[i].id,
+                                    it
+                                )
+                            }
+                        }
+                        isPending = 3
+                        startSyncTimerForDidiStatus()
+                    }
+                } else {
+                    checkUpdateDidiStatus()
+                }
+            } else {
+                checkUpdateDidiStatus()
+            }
+        }
+    }
+
+    private fun checkUpdateDidiStatus() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0)
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { tola ->
+                    tola.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didi.transactionId = ""
+                                didiDao.updateNeedToPost(didi.id,false)
+                                didiDao.updateDidiTransactionId(didi.id,"")
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
     fun saveLastSelectedTolaForVillage(tolaId: Int, tolaName: String) {
@@ -502,6 +641,7 @@ class AddDidiViewModel @Inject constructor(
                                     }
                                 }
                             }
+                            checkAddDidiStatus()
                         } else {
                             for(i in filteredDidiList.indices){
                                 response.data[i].transactionId.let { it1 ->
@@ -510,15 +650,15 @@ class AddDidiViewModel @Inject constructor(
                                     )
                                 }
                             }
+                            isPending = 1
                             startSyncTimerForDidiStatus()
                         }
-                        networkCallbackListener.onSuccess()
                     }
                 } else {
-                    withContext(Dispatchers.Main) {
-                        networkCallbackListener.onFailed()
-                    }
+                    checkAddDidiStatus()
                 }
+            } else {
+                deleteDidisToNetwork()
             }
         }
     }
@@ -527,32 +667,50 @@ class AddDidiViewModel @Inject constructor(
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
-                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    val didiList = didiDao.fetchPendingDidi(true,"")
-                    if(didiList.isNotEmpty()) {
-                        val ids: ArrayList<String> = arrayListOf()
-                        didiList.forEach { tola ->
-                            tola.transactionId?.let { ids.add(it) }
-                        }
-                        val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.forEach { transactionIdResponse ->
-                                didiList.forEach { didi ->
-                                    if (transactionIdResponse.transactionId == didi.transactionId) {
-                                        didi.serverId = transactionIdResponse.referenceId
-                                    }
-                                }
-                            }
-                            didiList.forEach{ didiEntity ->
-                                didiEntity.needsToPost = false
-                                didiEntity.transactionId = ""
-                                didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
-                            }
-                        }
+                when (isPending){
+                    1 ->{
+                        checkAddDidiStatus()
+                    }
+                    2 ->{
+                        checkDeleteDidiStatus()
+                    }
+                    3 ->{
+                        checkUpdateDidiStatus()
                     }
                 }
             }
         },10000)
+    }
+
+    private fun checkAddDidiStatus(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchPendingDidi(true,"")
+            if(didiList.isNotEmpty()) {
+                val ids: ArrayList<String> = arrayListOf()
+                didiList.forEach { tola ->
+                    tola.transactionId?.let { ids.add(it) }
+                }
+                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.forEach { transactionIdResponse ->
+                        didiList.forEach { didi ->
+                            if (transactionIdResponse.transactionId == didi.transactionId) {
+                                didi.serverId = transactionIdResponse.referenceId
+                            }
+                        }
+                    }
+                    didiList.forEach{ didiEntity ->
+                        didiEntity.needsToPost = false
+                        didiEntity.transactionId = ""
+                        didiDao.updateDidiDetailAfterSync(id = didiEntity.id, serverId = didiEntity.serverId, needsToPost = false, transactionId = "", createdDate = didiEntity.createdDate?:0, modifiedDate = didiEntity.modifiedDate?:0)
+                    }
+                } else {
+                    deleteDidiFromNetwork()
+                }
+            } else {
+                deleteDidiFromNetwork()
+            }
+        }
     }
 
     override fun onServerError(error: ErrorModel?) {

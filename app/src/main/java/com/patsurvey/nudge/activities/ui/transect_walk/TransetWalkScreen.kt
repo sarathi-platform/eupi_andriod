@@ -448,15 +448,7 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            viewModel.addTolasToNetwork(villageId, object : NetworkCallbackListener{
-                                override fun onSuccess() {
-                                }
-
-                                override fun onFailed() {
-//                                    showCustomToast(context, SYNC_FAILED)
-                                }
-
-                            })
+                            viewModel.addTolasToNetwork()
                             viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
                                 override fun onSuccess() {
                                 }
