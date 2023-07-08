@@ -1,6 +1,10 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
+import android.location.Location
+import android.location.LocationListener
+import android.os.Build.VERSION.SDK_INT
+import android.os.Bundle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -80,6 +84,8 @@ import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
+import java.text.DecimalFormat
+import java.util.function.Consumer
 
 @Composable
 fun AddTolaBox(
@@ -213,7 +219,83 @@ fun AddTolaBox(
                         )
 
                     ) {
-                        location = LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                        val decimalFormat = DecimalFormat("#.#######")
+                        if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                            var locationByGps: Location? = null
+                            var locationByNetwork: Location? = null
+                            val gpsConsumer = Consumer<Location> { gpsLocation ->
+                                if (gpsLocation != null) {
+                                    locationByGps = gpsLocation
+                                    location = LocationCoordinates(
+                                        decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                                        decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                                    )
+                                }
+                            }
+                            val networkConsumer = Consumer<Location> { networkLocation ->
+                                if (networkLocation != null) {
+                                    locationByNetwork = networkLocation
+                                    location = LocationCoordinates(
+                                        decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                                        decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                                    )
+                                }
+                            }
+                            LocationUtil.getLocation(activity, gpsConsumer, networkConsumer)
+                        } else {
+                            var locationByGps: Location? = null
+                            var locationByNetwork: Location? = null
+
+                            val gpsLocationListener: LocationListener = object : LocationListener {
+                                override fun onLocationChanged(gpsLocation: Location) {
+                                    locationByGps = gpsLocation
+                                    location = LocationCoordinates(
+                                        decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                                        decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                                    )
+                                }
+
+                                override fun onStatusChanged(
+                                    provider: String,
+                                    status: Int,
+                                    extras: Bundle
+                                ) {
+                                }
+
+                                override fun onProviderEnabled(provider: String) {}
+                                override fun onProviderDisabled(provider: String) {}
+                            }
+
+                            val networkLocationListener: LocationListener = object :
+                                LocationListener {
+                                override fun onLocationChanged(networkLocation: Location) {
+                                    locationByNetwork = networkLocation
+                                    location = LocationCoordinates(
+                                        decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                                        decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                                    )
+                                }
+
+                                override fun onStatusChanged(
+                                    provider: String,
+                                    status: Int,
+                                    extras: Bundle
+                                ) {
+                                }
+
+                                override fun onProviderEnabled(provider: String) {}
+                                override fun onProviderDisabled(provider: String) {}
+                            }
+                            LocationUtil.getLocation(
+                                activity,
+                                gpsLocationListener,
+                                networkLocationListener
+                            )
+                        }
                         if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                             locationAdded = true
                         } else {
@@ -499,15 +581,93 @@ fun TolaBox(
                                     )
 
                                 ) {
-                                    location =
-                                        LocationUtil.getLocation(activity) ?: LocationCoordinates()
+                                    val decimalFormat = DecimalFormat("#.#######")
+                                    if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                                        var locationByGps: Location? = null
+                                        var locationByNetwork: Location? = null
+                                        val gpsConsumer = Consumer<Location> { gpsLocation ->
+                                            if (gpsLocation != null) {
+                                                locationByGps = gpsLocation
+                                                location = LocationCoordinates(
+                                                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                                                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                                                )
+                                            }
+                                        }
+                                        val networkConsumer = Consumer<Location> { networkLocation ->
+                                            if (networkLocation != null) {
+                                                locationByNetwork = networkLocation
+                                                location = LocationCoordinates(
+                                                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                                                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                                                )
+                                            }
+                                        }
+                                        LocationUtil.getLocation(
+                                            activity,
+                                            gpsConsumer,
+                                            networkConsumer
+                                        )
+                                    } else {
+                                        var locationByGps: Location? = null
+                                        var locationByNetwork: Location? = null
+
+                                        val gpsLocationListener: LocationListener = object : LocationListener {
+                                            override fun onLocationChanged(gpsLocation: Location) {
+                                                locationByGps = gpsLocation
+                                                location = LocationCoordinates(
+                                                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                                                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                                                )
+                                            }
+
+                                            override fun onStatusChanged(
+                                                provider: String,
+                                                status: Int,
+                                                extras: Bundle
+                                            ) {
+                                            }
+
+                                            override fun onProviderEnabled(provider: String) {}
+                                            override fun onProviderDisabled(provider: String) {}
+                                        }
+
+                                        val networkLocationListener: LocationListener = object :
+                                            LocationListener {
+                                            override fun onLocationChanged(networkLocation: Location) {
+                                                locationByNetwork = networkLocation
+                                                location = LocationCoordinates(
+                                                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                                                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                                                )
+                                            }
+
+                                            override fun onStatusChanged(
+                                                provider: String,
+                                                status: Int,
+                                                extras: Bundle
+                                            ) {
+                                            }
+
+                                            override fun onProviderEnabled(provider: String) {}
+                                            override fun onProviderDisabled(provider: String) {}
+                                        }
+                                        LocationUtil.getLocation(
+                                            activity,
+                                            gpsLocationListener,
+                                            networkLocationListener
+                                        )
+                                    }
                                     if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                                         locationAdded = true
                                     } else {
                                         if (showPermissionDialog) {
                                             shouldRequestPermission.value = true
                                         }
-                                        locationAdded = false
                                     }
                                     focusManager.clearFocus()
                                 }
@@ -520,7 +680,6 @@ fun TolaBox(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-//                                Log.d("TolaBox: ", "Edit Mode - location!!.lat: ${location!!.lat}, location!!.long: ${location!!.long}, ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)): ${((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0))} ")
                                 Icon(
                                     painter = painterResource(id = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
                                     contentDescription = "Get Location",

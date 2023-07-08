@@ -50,6 +50,7 @@ import kotlin.coroutines.suspendCoroutine
 fun CameraView(
     modifier: Modifier = Modifier,
     outputDirectory: File,
+    viewModel: PatDidiSummaryViewModel,
     didiEntity: DidiEntity,
     executor: Executor,
     onImageCaptured: (Uri, String) -> Unit,
@@ -70,7 +71,7 @@ fun CameraView(
         .requireLensFacing(lensFacing)
         .build()
 
-    LaunchedEffect(key1 = lensFacing) {
+    LaunchedEffect(key1 = Unit) {
         val cameraProvider = context.getCameraProvider()
         cameraProvider.unbindAll()
         cameraProvider.bindToLifecycle(
@@ -131,6 +132,8 @@ fun CameraView(
                     )
                 ) {
                     takePhoto(
+                        context = context,
+                        viewModel = viewModel,
                         fileNameFormat = "yyyy-MM-dd-HH-mm-ss-SSS",
                         didiEntity = didiEntity,
                         imageCapture = imageCapture,
@@ -159,12 +162,12 @@ fun CameraView(
         }
 
     }
-
-
 }
 
 fun takePhoto(
     fileNameFormat: String,
+    context: Context,
+    viewModel: PatDidiSummaryViewModel,
     didiEntity: DidiEntity,
     imageCapture: ImageCapture,
     outputDirectory: File,
@@ -173,13 +176,13 @@ fun takePhoto(
     onError: (ImageCaptureException) -> Unit
 ) {
     val photoFile = File(
-        outputDirectory,
+        viewModel.getOutputDirectory(context as MainActivity),
         "${didiEntity.id}-${didiEntity.cohortId}-${didiEntity.villageId}_${System.currentTimeMillis()}.jpg"
     )
 
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
-    imageCapture.takePicture(outputOptions, executor, object : ImageCapture.OnImageSavedCallback {
+    imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(context.applicationContext), object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val saveUri = Uri.fromFile(photoFile)
             Log.d("CameraView", "Take Photo path: ${photoFile.absoluteFile}")

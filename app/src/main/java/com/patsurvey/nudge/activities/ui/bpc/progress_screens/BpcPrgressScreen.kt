@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -91,6 +93,10 @@ fun BpcProgressScreen(
         bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
     }
 
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxSize()
@@ -130,8 +136,7 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
-                                bpcProgreesScreenViewModel.selectedText.value =
-                                    bpcProgreesScreenViewModel.villageList.value[it].name
+                                bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
                                     delay(1000)

@@ -28,7 +28,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 
 @Composable
 fun ProfileScreen(
@@ -140,7 +139,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append(profileScreenVideModel.prefRepo.getPref(PREF_KEY_USER_NAME, ""))
+                        append(profileScreenVideModel.prefRepo.getMobileNumber())
                     }
                 }
             )

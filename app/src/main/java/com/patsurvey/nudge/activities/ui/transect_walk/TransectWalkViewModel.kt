@@ -371,26 +371,28 @@ class TransectWalkViewModel @Inject constructor(
                 val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 withContext(Dispatchers.Main) {
                     _tolaList.value = updatedTolaList
-//                    if (isTransectWalkComplete.value)
-//                        isTransectWalkComplete.value = false
                 }
                 deleteDidisForTola(tolaId,isOnline)
                 val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-                if (_tolaList.value.isEmpty()){
-                    stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach {
-                        if (stepDetails.orderNumber != it.orderNumber) {
-                            if (it.orderNumber == 2) {
-                                stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
-                                stepsListDao.updateNeedToPost(it.id, villageId, true)
-                            } else {
-                                stepsListDao.markStepAsInProgress((it.orderNumber), StepStatus.NOT_STARTED.ordinal, villageId)
-                                stepsListDao.updateNeedToPost(it.id, villageId, true)
-                            }
+                if (updatedTolaList.isEmpty()){
+                    stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach { newStep ->
+                        if (newStep.orderNumber == stepDetails.orderNumber) {
+                            stepsListDao.markStepAsInProgress((stepDetails.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
+                            stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
+                        }
+                        if (newStep.orderNumber > stepDetails.orderNumber) {
+                            stepsListDao.markStepAsInProgress(
+                                (newStep.orderNumber),
+                                StepStatus.NOT_STARTED.ordinal,
+                                villageId
+                            )
+                            stepsListDao.updateNeedToPost(newStep.id, villageId, true)
                         }
                     }
                 }
-                withContext(Dispatchers.IO){
-                    if (isOnline) {
+                if (isOnline) {
+                    val tolaToBeDeleted = tolaDao.fetchSingleTola(tolaId)
+                    if (tolaToBeDeleted?.serverId != 0) {
                         val jsonArray = JsonArray()
                         jsonArray.add(
                             DeleteTolaRequest(
@@ -468,20 +470,16 @@ class TransectWalkViewModel @Inject constructor(
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)
             val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
-            _tolaList.value = updatedTolaList
-//            if (isTransectWalkComplete.value)
-//                isTransectWalkComplete.value = false
-
             withContext(Dispatchers.Main) {
                 _tolaList.value = updatedTolaList
             }
             withContext(Dispatchers.IO){
-                if (isOnline) {
+                if (isOnline && updatedTola.serverId != 0) {
                     val jsonTola = JsonArray()
                     jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
                     val response = apiInterface.editCohort(jsonTola)
                     if (response.status.equals(SUCCESS)) {
-
+                        tolaDao.updateNeedToPost(updatedTola.id, false)
                     } else {
                         tolaDao.setNeedToPost(listOf(updatedTola.id), true)
                         Log.d("updateTola: ", "update tola request failed: ${response.message}")

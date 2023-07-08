@@ -211,7 +211,7 @@ fun ParticipatoryWealthRankingSurvey(
                             }"
                         )
                     } else {
-                        showToast(context, "Previous Step Not Complete.")
+                        showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
                     }
                 }
 

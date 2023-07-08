@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities
 
 import android.content.Context
 import android.net.Uri
-import android.os.Build
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.R
@@ -76,14 +75,23 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+        outputDirectory = getOutputDirectory(activity)
     }
 
     private fun getImagePath(context: Context): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
     }
 
-    private fun getOutputDirectory(activity: MainActivity): File {
+    fun getOutputDirectory(activity: MainActivity): File {
+        val mediaDir = activity.externalCacheDir?.let { file ->
+            File(file, activity.getString(R.string.app_name)).apply { mkdirs() }
+        }
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else activity.filesDir
+    }
+
+   /* private fun getOutputDirectory(activity: MainActivity): File {
         val mediaDir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
             File(
                 "${
@@ -103,8 +111,8 @@ class PatDidiSummaryViewModel @Inject constructor(
             if(!mediaDir.exists())
                 mediaDir.mkdirs()
         }
-        return/* if (mediaDir != null && mediaDir.exists()) mediaDir else */activity.filesDir
-    }
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
+    }*/
 
     fun saveFilePathInDb(
         photoPath: String,

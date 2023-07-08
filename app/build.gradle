@@ -9,7 +9,7 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.0.40"
+def version = "0.0.41"
 android {
     compileSdk 33
 
@@ -53,7 +53,7 @@ android {
             applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "Nudge STAGE"
 //            versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in"'
         }
         production{
             manifestPlaceholders.app_name= "The Nudge"

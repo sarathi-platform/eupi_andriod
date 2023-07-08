@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
+import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import android.util.Log
@@ -9,6 +10,7 @@ import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
@@ -67,6 +69,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -78,11 +81,14 @@ import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.doubleToString
 import com.patsurvey.nudge.utils.findCompleteValue
+import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -126,6 +132,7 @@ class VillageSelectionViewModel @Inject constructor(
     fun init() {
         showLoader.value = true
         fetchUserDetails {
+            fetchQuestions()
             fetchCastList()
             if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                 if ((System.currentTimeMillis() - prefRepo.getPref(
@@ -148,8 +155,72 @@ class VillageSelectionViewModel @Inject constructor(
                     fetchDataForBpc()
                 }
             }
+
             showLoader.value = false
         }
+    }
+
+    private fun fetchQuestions(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val localLanguageList = languageListDao.getAllLanguages()
+            localLanguageList?.let {
+                    localLanguageList.forEach { languageEntity ->
+                        try {
+                            // Fetch QuestionList from Server
+                            val localLanguageQuesList =
+                                questionListDao.getAllQuestionsForLanguage(languageEntity.id)
+                            if (localLanguageQuesList.isEmpty()) {
+                                Log.d("TAG", "fetchQuestions: QuestionList")
+                            val quesListResponse = apiService.fetchQuestionListFromServer(
+                                GetQuestionListRequest(
+                                    languageId = languageEntity.id,
+                                    stateId = stateId.value,
+                                    surveyName = if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY_CONSTANT
+                                )
+                            )
+                            if (quesListResponse.status.equals(SUCCESS, true)) {
+                                quesListResponse.data?.let { questionList ->
+                                    questionList.listOfQuestionSectionList?.forEach { list ->
+                                        list?.questionList?.forEach { question ->
+                                            question?.sectionOrderNumber = list.orderNumber
+                                            question?.actionType = list.actionType
+                                            question?.languageId = languageEntity.id
+                                            question?.surveyId = questionList.surveyId
+                                            question?.thresholdScore =
+                                                questionList.thresholdScore
+                                            question?.surveyPassingMark =
+                                                questionList.surveyPassingMark
+                                        }
+                                        list?.questionList?.let {
+                                            questionListDao.insertAll(it as List<QuestionEntity>)
+                                        }
+                                    }
+                                }
+                            } else {
+                                val ex = ApiResponseFailException(quesListResponse.message)
+                                if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
+                                    ApiType.PAT_BPC_QUESTION_API
+                                )
+                                RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
+                                onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
+                            }
+
+                        }
+                        } catch (ex: Exception) {
+                            if (ex !is JsonSyntaxException) {
+                                if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
+                                    ApiType.PAT_BPC_QUESTION_API
+                                )
+                                RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
+                            }
+                            onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
+                        }
+                    }
+                }
+
+        }
+
+
     }
 
     private fun fetchDataForBpc() {
@@ -186,17 +257,14 @@ class VillageSelectionViewModel @Inject constructor(
                                                     findCompleteValue(steps.status).ordinal
                                             }
                                             stepsListDao.insertAll(it.stepList)
+                                            val bpcStepId = it.stepList.sortedBy { stepEntity -> stepEntity.orderNumber }.last().id
+                                            if (it.stepList[it.stepList.map { it.id }.indexOf(bpcStepId)].status != StepStatus.COMPLETED.name)
+                                                stepsListDao.markStepAsCompleteOrInProgress(
+                                                    bpcStepId,
+                                                    StepStatus.INPROGRESS.ordinal,
+                                                    village.id
+                                                )
                                         }
-                                        val bpcStepId = it.stepList.sortedBy { stepEntity ->
-                                            stepEntity.orderNumber
-                                        }.last().id
-                                        if (it.stepList[it.stepList.map { it.id }
-                                                .indexOf(bpcStepId)].status == StepStatus.NOT_STARTED.name)
-                                            stepsListDao.markStepAsCompleteOrInProgress(
-                                                bpcStepId,
-                                                StepStatus.INPROGRESS.ordinal,
-                                                village.id
-                                            )
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
@@ -438,6 +506,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         )
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
+                                                                val quesDetails= questionListDao.getQuestionForLanguage(answersItem?.questionId?:0,prefRepo.getAppLanguageId()?:2)
                                                                 if (answersItem?.questionType?.equals(
                                                                         QuestionType.Numeric_Field.name
                                                                     ) == true
@@ -468,12 +537,11 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 )?.optionValue) else 0,
                                                                                 totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                                 needsToPost = false,
-                                                                                answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                                                    0
-                                                                                )?.summary?: BLANK_STRING) else BLANK_STRING,
+                                                                                answerValue = answersItem?.totalWeight?.toDouble().toString(),
                                                                                 type = answersItem?.questionType
                                                                                     ?: QuestionType.RadioButton.name,
-                                                                                assetAmount = answersItem?.assetAmount?:"0"
+                                                                                assetAmount = answersItem?.assetAmount?:"0",
+                                                                                questionFlag = quesDetails?.questionFlag?: BLANK_STRING
                                                                             )
                                                                         )
 
@@ -586,62 +654,7 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                         prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
                     }
-                    localLanguageList?.let {
-                        launch {
-                            localLanguageList.forEach { languageEntity ->
-                                try {
-                                    // Fetch QuestionList from Server
-                                    val quesListResponse = apiService.fetchQuestionListFromServer(
-                                        GetQuestionListRequest(
-                                            languageId = languageEntity.id,
-                                            stateId = stateId.value,
-                                            surveyName = BPC_SURVEY_CONSTANT
-                                        )
-                                    )
-                                    if (quesListResponse.status.equals(SUCCESS, true)) {
-                                        quesListResponse.data?.let { questionList ->
-                                            questionList.listOfQuestionSectionList?.forEach { list ->
-                                                list?.questionList?.forEach { question ->
-                                                    question?.sectionOrderNumber = list.orderNumber
-                                                    question?.actionType = list.actionType
-                                                    question?.languageId = languageEntity.id
-                                                    question?.surveyId = questionList.surveyId
-                                                    question?.thresholdScore =
-                                                        questionList.thresholdScore
-                                                    question?.surveyPassingMark =
-                                                        questionList.surveyPassingMark
-                                                }
-                                                list?.questionList?.let {
-                                                    questionListDao.insertAll(it as List<QuestionEntity>)
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        val ex = ApiResponseFailException(quesListResponse.message)
-                                        if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
-                                            ApiType.PAT_BPC_QUESTION_API
-                                        )
-                                        RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                                        onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
-                                    }
 
-                                } catch (ex: Exception) {
-                                    if (ex !is JsonSyntaxException) {
-                                        if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
-                                            ApiType.PAT_BPC_QUESTION_API
-                                        )
-                                        RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                                    }
-                                    onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
-                                }
-                            }
-                        }
-                    }
-                    villageIdList?.let {
-                        launch {
-
-                        }
-                    }
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
@@ -649,13 +662,16 @@ class VillageSelectionViewModel @Inject constructor(
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
+                    delay(250)
                     showLoader.value = false
                 }
             }
         }
         fetchCastList()
     }
+    private fun downloadImageFiles(){
 
+    }
     private fun fetchCastList() {
         showLoader.value = false
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -699,6 +715,7 @@ class VillageSelectionViewModel @Inject constructor(
                             ApiType.CAST_LIST_API
                         )
                         withContext(Dispatchers.Main) {
+                            delay(250)
                             showLoader.value = false
                         }
                     }
@@ -941,6 +958,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         arrayListOf()
                                                     it.forEach { item ->
                                                         try{
+
                                                             didiDao.updatePATProgressStatus(
                                                                 patSurveyStatus = item.patSurveyStatus
                                                                     ?: 0,
@@ -958,6 +976,7 @@ class VillageSelectionViewModel @Inject constructor(
 
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
+                                                                val quesDetails= questionListDao.getQuestionForLanguage(answersItem?.questionId?:0,prefRepo.getAppLanguageId()?:2)
                                                                 if (answersItem?.questionType?.equals(
                                                                         QuestionType.Numeric_Field.name
                                                                     ) == true
@@ -981,11 +1000,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                                                0
-                                                                            )?.summary?: BLANK_STRING) else BLANK_STRING,
+                                                                            answerValue = answersItem?.totalWeight?.toDouble().toString(),
                                                                             type = answersItem?.questionType?: QuestionType.RadioButton.name,
-                                                                            assetAmount = answersItem?.assetAmount?:"0"
+                                                                            assetAmount = answersItem?.assetAmount?:"0",
+                                                                            questionFlag =quesDetails?.questionFlag?: BLANK_STRING
                                                                         )
                                                                     )
 
@@ -1140,68 +1158,6 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                         }
                     }
-
-                    localLanguageList?.let {
-                        launch {
-                            localLanguageList.forEach { languageEntity ->
-                                try {
-                                    // Fetch QuestionList from Server
-                                    val quesListResponse = apiService.fetchQuestionListFromServer(
-                                        GetQuestionListRequest(
-                                            languageEntity.id, stateId.value, PAT_SURVEY_CONSTANT
-                                        )
-                                    )
-//                                    to explicitly throw exception
-//                                    throw ApiResponseFailException("Api Failed for testing")
-
-                                    if (quesListResponse.status.equals(SUCCESS, true)) {
-                                        quesListResponse.data?.let { questionList ->
-                                            if (questionList.listOfQuestionSectionList?.isNotEmpty() == true) {
-                                                questionList.listOfQuestionSectionList?.forEach { list ->
-                                                    list?.questionList?.forEach { question ->
-                                                        question?.sectionOrderNumber =
-                                                            list.orderNumber
-                                                        question?.actionType = list.actionType
-                                                        question?.languageId = languageEntity.id
-                                                        question?.surveyId = questionList.surveyId
-                                                        question?.thresholdScore =
-                                                            questionList.thresholdScore
-                                                        question?.surveyPassingMark =
-                                                            questionList.surveyPassingMark
-                                                    }
-                                                    list?.questionList?.let {
-                                                        it.forEach {q->
-                                                            Log.d("TAG", "fetchVillageList: ${q?.headingProductAssetValue} ")
-                                                        }
-
-                                                        questionListDao.insertAll(it as List<QuestionEntity>)
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    } else {
-                                        val ex = ApiResponseFailException(quesListResponse.message)
-                                        if (!retryApiList.contains(ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
-                                            ApiType.PAT_CRP_QUESTION_API
-                                        )
-                                        RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                                        onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
-                                    }
-                                } catch (ex: Exception) {
-                                    if (ex !is JsonSyntaxException) {
-                                        if (!retryApiList.contains(ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
-                                            ApiType.PAT_CRP_QUESTION_API
-                                        )
-                                        RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                                    }
-                                    onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
-                                }
-
-                                // Fetch QuestionList from Server
-
-                            }
-                        }
-                    }
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
@@ -1209,6 +1165,7 @@ class VillageSelectionViewModel @Inject constructor(
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
+                    delay(250)
                     showLoader.value = false
                 }
             }
@@ -1257,6 +1214,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 villageListDao.insertAll(it.villageList ?: listOf())
+                                stateId.value= it.villageList?.get(0)?.stateId?:1
                                 _villagList.emit(villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2))
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
@@ -1266,10 +1224,11 @@ class VillageSelectionViewModel @Inject constructor(
                                 apiSuccess()
                             }
 
-                            if (response.data == null)
+                            if (response.data == null) {
                                 withContext(Dispatchers.Main) {
                                     showLoader.value = false
                                 }
+                            }
                         } else if (response.status.equals(FAIL, true)) {
                             withContext(Dispatchers.Main) {
                                 showLoader.value = false
@@ -1328,6 +1287,22 @@ class VillageSelectionViewModel @Inject constructor(
         RetryHelper.retryApiList.forEach { apiType ->
             RetryHelper.retryApi(apiType)
         }
+    }
+
+     fun downloadImageItem(context: Context, image: String) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                if (!getImagePath(context, image).exists()) {
+                    val localDownloader = (context as MainActivity).downloader
+                    val downloadManager = context.getSystemService(DownloadManager::class.java)
+                    val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
+
     }
 
 }

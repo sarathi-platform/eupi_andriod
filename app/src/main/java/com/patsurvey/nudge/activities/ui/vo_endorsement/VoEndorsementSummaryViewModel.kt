@@ -89,7 +89,7 @@ class VoEndorsementSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localDidiDetails=didiDao.getDidi(didiId)
             val localQuesList=questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
-            val localDidiList = answerDao.fetchAllDidisForVO(prefRepo.getSelectedVillage().id)
+            val localDidiList = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id) /*answerDao.fetchAllDidisForVO(prefRepo.getSelectedVillage().id)*/
             withContext(Dispatchers.IO){
                  selPageIndex.value= localDidiList.map { it.id }.indexOf(didiId)
                 _quesList.emit((localQuesList))

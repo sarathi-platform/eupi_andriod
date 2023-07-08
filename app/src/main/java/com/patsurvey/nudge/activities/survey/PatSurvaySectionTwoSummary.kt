@@ -68,9 +68,6 @@ fun PatSurvaySectionTwoSummaryScreen(
     val screenHeight = configuration.screenHeightDp
 
     val localDensity = LocalDensity.current
-
-    val context = LocalContext.current
-
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -162,7 +159,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                 ) {
                     itemsIndexed(answerSummeryList) { index, answer ->
                       SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString(),
-                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type)
+                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type, questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
                     }
                 }
             }
@@ -286,7 +283,8 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Preview(showBackground = true)
 @Composable
 fun SectionTwoSummeryItemPreview(){
-    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name)
+    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name,
+        QUESTION_FLAG_WEIGHT)
 }
 
 
@@ -297,7 +295,8 @@ fun SectionTwoSummeryItem(
     index: Int,
     quesSummery:String,
     answerValue:String,
-    questionType: String
+    questionType: String,
+    questionFlag:String
 ) {
     Column(
         modifier = Modifier
@@ -305,13 +304,11 @@ fun SectionTwoSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            var summaryText = "${index+1}. $quesSummery : $answerValue."
+            var summaryText = "$answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
-                if(quesSummery.contains("=")){
-                    summaryText = "${index+1}. $quesSummery"
-                }else{
-                    summaryText = "${index+1}. $answerValue"
-                }
+                summaryText = if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
+                    LocalContext.current.getString(R.string.total_productive_asset_value,answerValue)
+                }else answerValue
             }
             Text(
                 text = buildAnnotatedString {
@@ -333,7 +330,7 @@ fun SectionTwoSummeryItem(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("$answerValue.")
+                        append("$summaryText")
                     }
                 },
                 style = TextStyle(

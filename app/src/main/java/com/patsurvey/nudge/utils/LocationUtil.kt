@@ -3,18 +3,24 @@ package com.patsurvey.nudge.utils
 import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Criteria
+import android.location.Location
+import android.location.LocationListener
 import android.location.LocationManager
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Looper
 import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
+import java.util.function.Consumer
 
 object LocationUtil {
 
@@ -132,6 +138,154 @@ object LocationUtil {
             )
             showPermissionDialog = true
             return null
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.R)
+    fun getLocation(context: Activity, gpsConsumer: Consumer<Location>, networkConsumer: Consumer<Location>) {
+
+        var locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            val hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+            if (hasGps || hasNetwork) {
+                if (hasGps) {
+                    locationManager.getCurrentLocation(
+                        LocationManager.GPS_PROVIDER,
+                        null,
+                        context.mainExecutor,
+                        gpsConsumer
+                    )
+                }
+                if (hasNetwork) {
+                    locationManager.getCurrentLocation(
+                        LocationManager.NETWORK_PROVIDER,
+                        null,
+                        context.mainExecutor,
+                        networkConsumer
+                    )
+                }
+            } else {
+                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            && ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        ) {
+            ActivityCompat.requestPermissions(
+                context,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                1
+            )
+        } else {
+            context.runOnUiThread {
+                Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
+            }
+            AnalyticsHelper.logLocationEvents(
+                Events.LOCATION_PERMISSION_GRANTED,
+                mapOf(
+                    EventParams.PERMISSION_GRANTED to (ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED)
+                )
+            )
+            showPermissionDialog = true
+        }
+    }
+
+    fun getLocation(context: Activity, gpsLocationListener: LocationListener, networkLocationListener: LocationListener) {
+
+        val locationManager: LocationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+
+        if (ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+
+            val hasGps = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)
+            val hasNetwork = locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+
+
+            if (hasGps || hasNetwork) {
+                if (hasGps) {
+                    locationManager.requestSingleUpdate(
+                        LocationManager.GPS_PROVIDER,
+                        gpsLocationListener,
+                        Looper.getMainLooper()
+                    )
+                }
+                if (hasNetwork) {
+                    locationManager.requestSingleUpdate(
+                        LocationManager.NETWORK_PROVIDER,
+                        networkLocationListener,
+                        Looper.getMainLooper()
+                    )
+                }
+
+            } else {
+                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+            }
+
+        } else if (ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            )
+            && ActivityCompat.shouldShowRequestPermissionRationale(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            )
+        ) {
+            ActivityCompat.requestPermissions(
+                context,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ),
+                1
+            )
+        } else {
+            context.runOnUiThread {
+                Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
+            }
+            AnalyticsHelper.logLocationEvents(
+                Events.LOCATION_PERMISSION_GRANTED,
+                mapOf(
+                    EventParams.PERMISSION_GRANTED to (ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                        context,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ) == PackageManager.PERMISSION_GRANTED)
+                )
+            )
+            showPermissionDialog = true
         }
     }
 

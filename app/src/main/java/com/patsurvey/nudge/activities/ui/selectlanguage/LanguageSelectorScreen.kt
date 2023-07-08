@@ -136,6 +136,9 @@ fun LanguageScreen(
                 viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                     it.id?.let { languageId->
                         viewModel.prefRepo.saveAppLanguageId(languageId)
+                        if(!pageFrom.equals(ARG_FROM_HOME,true)){
+                            viewModel.updateSelectedVillage(languageId)
+                        }
                     }
                     it.langCode?.let { code ->
                         viewModel.prefRepo.saveAppLanguage(code)
@@ -147,11 +150,6 @@ fun LanguageScreen(
                 else {
                   viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,false)
                   navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
-//                    navController.navigate(SettingScreens.SETTING_SCREEN.route){
-//                        popUpTo(SettingScreens.SETTING_SCREEN.route){
-//                            inclusive = false
-//                        }
-//                    }
               }
             },
             modifier = Modifier

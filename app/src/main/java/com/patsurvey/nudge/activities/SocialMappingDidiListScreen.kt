@@ -345,6 +345,7 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isOnline = (context as MainActivity).isOnline.value ?: false,
                                             object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
@@ -410,6 +411,7 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isOnline = (context as MainActivity).isOnline.value ?: false,
                                             object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
@@ -456,35 +458,47 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         if (completeTolaAdditionClicked) {
-                            //TODO Integrate Api when backend fixes the response.
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                 if(didiViewModel.isTolaSynced.value == 2) {
-                                    didiViewModel.addDidisToNetwork()
-                                    didiViewModel.deleteDidiFromNetwork()
-                                    didiViewModel.callWorkFlowAPI(
-                                        villageId,
-                                        stepId,
-                                        object : NetworkCallbackListener {
-                                            override fun onSuccess() {
-                                            }
+                            didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+                                if (isPreviousStepComplete) {
+                                    //TODO Integrate Api when backend fixes the response.
+                                    if ((context as MainActivity).isOnline.value ?: false) {
+                                        if (didiViewModel.isTolaSynced.value == 2) {
+                                            didiViewModel.addDidisToNetwork(object :
+                                                NetworkCallbackListener {
+                                                override fun onSuccess() {
+                                                }
 
-                                            override fun onFailed() {
-                                                showCustomToast(context, SYNC_FAILED)
-                                            }
-                                        })
+                                                override fun onFailed() {
+                                                    showCustomToast(context, SYNC_FAILED)
+                                                }
+                                            })
+                                            didiViewModel.callWorkFlowAPI(
+                                                villageId,
+                                                stepId,
+                                                object : NetworkCallbackListener {
+                                                    override fun onSuccess() {
+                                                    }
+
+                                                    override fun onFailed() {
+                                                        showCustomToast(context, SYNC_FAILED)
+                                                    }
+                                                })
+                                        }
+                                    }
+                                    didiViewModel.markSocialMappingComplete(villageId, stepId)
+                                    navController.navigate(
+                                        "sm_step_completion_screen/${
+                                            context.getString(R.string.social_mapping_completed_message)
+                                                .replace(
+                                                    "{VILLAGE_NAME}",
+                                                    didiViewModel.prefRepo.getSelectedVillage().name ?: ""
+                                                )
+                                        }"
+                                    )
+                                } else {
+                                    showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
                                 }
                             }
-                            didiViewModel.markSocialMappingComplete(villageId, stepId)
-                            navController.navigate(
-                                "sm_step_completion_screen/${
-                                    context.getString(R.string.social_mapping_completed_message)
-                                        .replace(
-                                            "{VILLAGE_NAME}",
-                                            didiViewModel.prefRepo.getSelectedVillage().name ?: ""
-                                        )
-                                }"
-                            )
-
                         } else {
                             completeTolaAdditionClicked = true
                         }
@@ -1361,7 +1375,7 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
             }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal,PatSurveyStatus.NOT_AVAILABLE.ordinal -> {
+            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal-> {
                 status = context.getString(R.string.not_avaliable)
             }
             PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
