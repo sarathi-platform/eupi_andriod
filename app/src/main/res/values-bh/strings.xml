@@ -301,8 +301,8 @@
     <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
     <string name="min_battery_text">(Min 30% required)</string>
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
-    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
-    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="vo_endorsement_completed_village_banner_text">वीओ अनुमोदन पूरा हो गया</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC अनुमोदन पूरा हो गया</string>
     <string name="empty_tola_success_message">This Village does not have any tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
@@ -316,5 +316,11 @@
     <string name="retake_photo_text">फ़ोटो दोबारा लें</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+    <string name="latest_status_text">"नवीनतम स्थिति: "</string>
+    <string name="ranking_text_rich">अमीर</string>
+    <string name="ranking_text_medium">मध्यम</string>
+    <string name="ranking_text_poor">गरीब</string>
+    <string name="crp_group_name_text">सीआरपी समूह का नाम</string>
+    <string name="current_status_text">वर्तमान स्थिति:</string>
 
 </resources>

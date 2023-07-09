@@ -1333,7 +1333,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = "Latest Status:",
+                text = stringResource(R.string.latest_status_text),
                 style = didiDetailLabelStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("latestStatusLabel")

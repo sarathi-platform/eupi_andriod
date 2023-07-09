@@ -60,6 +60,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -1088,9 +1089,11 @@ fun TextButtonWithIcon(
         .then(modifier)
     ) {
         Text(
-            text = "Show",
+            text = stringResource(id = R.string.show),
             style = smallTextStyleMediumWeight,
             color = textColorDark,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
         )
         Icon(
             imageVector = Icons.Default.ArrowForward,
