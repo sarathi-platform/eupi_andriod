@@ -179,7 +179,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
 //            val passingScore = questionListDao.getPassingScore()
-            val verifiedDidiCount = didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
+            val verifiedDidiCount = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
             withContext(Dispatchers.Main) {
                 bpcCompletedDidiCount.value = verifiedDidiCount
             }

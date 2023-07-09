@@ -69,7 +69,6 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -81,7 +80,6 @@ import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.doubleToString
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.videoList
@@ -305,7 +303,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     //TODO remove mock data
                                     bpcSummaryDao.insert(
                                         BpcSummaryEntity(
-                                            0, 12, 14, 24, 77, 19, villageId = village.id
+                                            0, 0, 0, 0, 0, 0, villageId = village.id
                                         )
                                     )
 

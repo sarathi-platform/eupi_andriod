@@ -780,8 +780,11 @@ class SurveySummaryViewModel @Inject constructor(
                 )
                 if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
+
                 } else {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, false)
                     networkCallbackListener.onFailed()
                 }
             } catch (ex: Exception) {

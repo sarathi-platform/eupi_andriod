@@ -30,6 +30,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -387,13 +388,13 @@ class SettingViewModel @Inject constructor(
 //        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            val didiIDList =
-            if(!bpcSyncHelper.isBPCDidiNeedToBeReplaced()
+            if(prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)
                 && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
                 && isStatusStepStatusSync(5)
-                && isBPCScoreSaved()){
+                && !isBPCScoreSaved()){
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false
                 }

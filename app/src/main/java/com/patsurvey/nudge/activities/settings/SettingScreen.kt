@@ -893,7 +893,7 @@ fun showSyncDialog(
                         }
 
                         if (isInternetConnected
-                            && (batteryLevel > 30)
+                            && (batteryLevel >= 30)
                             && !settingViewModel.showLoader.value
                             && isDataNeedToBeSynced.value == 1
                         ) {
@@ -1132,7 +1132,7 @@ fun showBPCSyncDialog(
                                 }
 
                                 Text(
-                                    text = "Please don't close the app or switch off the phone.",
+                                    text = stringResource(R.string.do_not_close_app_message),
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
@@ -1147,7 +1147,7 @@ fun showBPCSyncDialog(
                         }
 
                         if ((isInternetConnected
-                                    && (batteryLevel > 30)
+                                    && (batteryLevel >= 30)
                                     && !settingViewModel.showLoader.value)
                                     && (isBPCDataNeedToBeSynced.value)
                         ) {

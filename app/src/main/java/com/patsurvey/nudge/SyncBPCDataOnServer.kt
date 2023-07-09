@@ -64,9 +64,11 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     )
                     if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
                         Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villagId, true)
                         savePATSummeryToServer(networkCallbackListener)
                     } else {
                         Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villagId, false)
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
                         }
@@ -75,6 +77,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
                 }
             } else {
+                prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, true)
                 savePATSummeryToServer(networkCallbackListener)
             }
         }

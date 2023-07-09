@@ -21,9 +21,11 @@ import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Surface
@@ -33,6 +35,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -84,6 +87,7 @@ import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
+import kotlinx.coroutines.delay
 import java.text.DecimalFormat
 import java.util.function.Consumer
 
@@ -111,6 +115,15 @@ fun AddTolaBox(
 
     val shouldRequestPermission = remember {
         mutableStateOf(false)
+    }
+
+    val showLoader = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = showLoader.value) {
+        delay(1500)
+        showLoader.value = false
     }
 
     Box(
@@ -219,6 +232,7 @@ fun AddTolaBox(
                         )
 
                     ) {
+                        showLoader.value = true
                         val decimalFormat = DecimalFormat("#.#######")
                         if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                             var locationByGps: Location? = null
@@ -227,21 +241,32 @@ fun AddTolaBox(
                                 if (gpsLocation != null) {
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
-                                        decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                                        decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
-
+                                        decimalFormat
+                                            .format(locationByGps?.latitude ?: 0.0)
+                                            .toDouble(),
+                                        decimalFormat
+                                            .format(locationByGps?.longitude ?: 0.0)
+                                            .toDouble()
                                     )
+                                    locationAdded = true
                                 }
+                                showLoader.value = false
                             }
                             val networkConsumer = Consumer<Location> { networkLocation ->
                                 if (networkLocation != null) {
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
-                                        decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                                        decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                                        decimalFormat
+                                            .format(locationByNetwork?.latitude ?: 0.0)
+                                            .toDouble(),
+                                        decimalFormat
+                                            .format(locationByNetwork?.longitude ?: 0.0)
+                                            .toDouble()
 
                                     )
+                                    locationAdded = true
                                 }
+                                showLoader.value = false
                             }
                             LocationUtil.getLocation(activity, gpsConsumer, networkConsumer)
                         } else {
@@ -252,10 +277,16 @@ fun AddTolaBox(
                                 override fun onLocationChanged(gpsLocation: Location) {
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
-                                        decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                                        decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+                                        decimalFormat
+                                            .format(locationByGps?.latitude ?: 0.0)
+                                            .toDouble(),
+                                        decimalFormat
+                                            .format(locationByGps?.longitude ?: 0.0)
+                                            .toDouble()
 
                                     )
+                                    locationAdded = true
+                                    showLoader.value = false
                                 }
 
                                 override fun onStatusChanged(
@@ -274,10 +305,16 @@ fun AddTolaBox(
                                 override fun onLocationChanged(networkLocation: Location) {
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
-                                        decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                                        decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                                        decimalFormat
+                                            .format(locationByNetwork?.latitude ?: 0.0)
+                                            .toDouble(),
+                                        decimalFormat
+                                            .format(locationByNetwork?.longitude ?: 0.0)
+                                            .toDouble()
 
                                     )
+                                    locationAdded = true
+                                    showLoader.value = false
                                 }
 
                                 override fun onStatusChanged(
@@ -314,13 +351,25 @@ fun AddTolaBox(
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.icon_get_location),
-                        contentDescription = "Get Location",
-                        modifier = Modifier.absolutePadding(top = 2.dp),
-                        tint = blueDark,
+                    if (showLoader.value) {
+                        Box(contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(
+                                color = blueDark,
+                                modifier = Modifier
+                                    .size(18.dp)
+                                    .align(Alignment.Center),
+                                strokeWidth = 1.5.dp
+                            )
+                        }
+                    } else {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_get_location),
+                            contentDescription = "Get Location",
+                            modifier = Modifier.absolutePadding(top = 2.dp),
+                            tint = blueDark,
 
-                        )
+                            )
+                    }
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
                         text = if (locationAdded) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
@@ -589,22 +638,35 @@ fun TolaBox(
                                             if (gpsLocation != null) {
                                                 locationByGps = gpsLocation
                                                 location = LocationCoordinates(
-                                                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                                                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+                                                    decimalFormat
+                                                        .format(locationByGps?.latitude ?: 0.0)
+                                                        .toDouble(),
+                                                    decimalFormat
+                                                        .format(locationByGps?.longitude ?: 0.0)
+                                                        .toDouble()
 
                                                 )
                                             }
                                         }
-                                        val networkConsumer = Consumer<Location> { networkLocation ->
-                                            if (networkLocation != null) {
-                                                locationByNetwork = networkLocation
-                                                location = LocationCoordinates(
-                                                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                                                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                                        val networkConsumer =
+                                            Consumer<Location> { networkLocation ->
+                                                if (networkLocation != null) {
+                                                    locationByNetwork = networkLocation
+                                                    location = LocationCoordinates(
+                                                        decimalFormat
+                                                            .format(
+                                                                locationByNetwork?.latitude ?: 0.0
+                                                            )
+                                                            .toDouble(),
+                                                        decimalFormat
+                                                            .format(
+                                                                locationByNetwork?.longitude ?: 0.0
+                                                            )
+                                                            .toDouble()
 
-                                                )
+                                                    )
+                                                }
                                             }
-                                        }
                                         LocationUtil.getLocation(
                                             activity,
                                             gpsConsumer,
@@ -614,34 +676,43 @@ fun TolaBox(
                                         var locationByGps: Location? = null
                                         var locationByNetwork: Location? = null
 
-                                        val gpsLocationListener: LocationListener = object : LocationListener {
-                                            override fun onLocationChanged(gpsLocation: Location) {
-                                                locationByGps = gpsLocation
-                                                location = LocationCoordinates(
-                                                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                                                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+                                        val gpsLocationListener: LocationListener =
+                                            object : LocationListener {
+                                                override fun onLocationChanged(gpsLocation: Location) {
+                                                    locationByGps = gpsLocation
+                                                    location = LocationCoordinates(
+                                                        decimalFormat
+                                                            .format(locationByGps?.latitude ?: 0.0)
+                                                            .toDouble(),
+                                                        decimalFormat
+                                                            .format(locationByGps?.longitude ?: 0.0)
+                                                            .toDouble()
 
-                                                )
+                                                    )
+                                                }
+
+                                                override fun onStatusChanged(
+                                                    provider: String,
+                                                    status: Int,
+                                                    extras: Bundle
+                                                ) {
+                                                }
+
+                                                override fun onProviderEnabled(provider: String) {}
+                                                override fun onProviderDisabled(provider: String) {}
                                             }
-
-                                            override fun onStatusChanged(
-                                                provider: String,
-                                                status: Int,
-                                                extras: Bundle
-                                            ) {
-                                            }
-
-                                            override fun onProviderEnabled(provider: String) {}
-                                            override fun onProviderDisabled(provider: String) {}
-                                        }
 
                                         val networkLocationListener: LocationListener = object :
                                             LocationListener {
                                             override fun onLocationChanged(networkLocation: Location) {
                                                 locationByNetwork = networkLocation
                                                 location = LocationCoordinates(
-                                                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                                                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                                                    decimalFormat
+                                                        .format(locationByNetwork?.latitude ?: 0.0)
+                                                        .toDouble(),
+                                                    decimalFormat
+                                                        .format(locationByNetwork?.longitude ?: 0.0)
+                                                        .toDouble()
 
                                                 )
                                             }
