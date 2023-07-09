@@ -382,6 +382,10 @@ fun roundOffDecimal(number: Double): Double? {
     return df.format(number).toDouble()
 }
 
+fun roundOffDecimalPoints(number: Double): String {
+    return String.format("%.2f", number)
+}
+
 fun getImagePath(context: Context, imagePath:String): File {
     val imageName = getFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")

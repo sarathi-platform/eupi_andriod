@@ -78,6 +78,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.IGNORED_REGEX
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
@@ -533,7 +534,9 @@ fun TolaBox(
                         OutlinedTextField(
                             value = mTolaName,
                             onValueChange = {
-                                mTolaName = it
+                                if(!it.contains(IGNORED_REGEX)){
+                                    mTolaName = it
+                                }
                             },
                             placeholder = {
                                 Text(

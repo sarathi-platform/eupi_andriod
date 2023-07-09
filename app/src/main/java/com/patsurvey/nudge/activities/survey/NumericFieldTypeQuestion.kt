@@ -54,6 +54,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.roundOffDecimalPoints
 
 
 @Composable
@@ -183,7 +184,7 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString()
+                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString()
                                 else
                                         (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") || viewModel?.enteredAmount?.value.equals("0")) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
                                 readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),

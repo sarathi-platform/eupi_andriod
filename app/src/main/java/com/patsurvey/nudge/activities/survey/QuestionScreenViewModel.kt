@@ -296,7 +296,7 @@ class QuestionScreenViewModel @Inject constructor(
         }
     }
     fun calculateCountWeight(optionsItem: OptionsItem): Double {
-        return (optionsItem.count?:0).times(optionsItem.weight?:0).toDouble()
+        return (optionsItem.count?:0)/*.times(optionsItem.weight?:0)*/.toDouble()
     }
 
     fun updateAnswerOptions(questionIndex: Int, didiId: Int) {

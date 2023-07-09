@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.utils.IGNORED_REGEX
 
 @Composable
 fun EditTextWithTitle(
@@ -37,6 +38,7 @@ fun EditTextWithTitle(
     hint: String = stringResource(id = R.string.enter),
     onValueChange: (String) -> Unit
 ) {
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
@@ -70,7 +72,9 @@ fun EditTextWithTitle(
         CustomOutlineTextField(
             value = currentString,
             onValueChange = {
-                onValueChange(it)
+                if(!it.contains(IGNORED_REGEX)){
+                    onValueChange(it)
+                }
             },
             placeholder = {
                 Text(

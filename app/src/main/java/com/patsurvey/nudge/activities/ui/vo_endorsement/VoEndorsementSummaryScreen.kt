@@ -207,7 +207,7 @@ fun VoEndorsementSummaryScreen(
                                     SectionOneSummeryItem(
                                         index = index+1,
                                         answerValue = answer.answerValue,
-                                        questionDisplay = answer.summary ?: BLANK_STRING,
+                                        quesSummery = answer?.summary?: BLANK_STRING,
                                         optionValue = answer.optionValue ?: 0,
                                         questionImageUrl = answer.questionImageUrl?: BLANK_STRING
                                     )
