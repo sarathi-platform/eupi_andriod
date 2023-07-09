@@ -75,12 +75,20 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
-        outputDirectory = getOutputDirectory(activity)
+        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
     }
 
+//    private fun getImagePath(context: Context): File {
+//        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+//    }
+
+    /*fun setUpOutputDirectory(activity: MainActivity) {
+//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+        outputDirectory = getOutputDirectory(activity)
+    }*/
+
     private fun getImagePath(context: Context): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath}")
     }
 
     fun getOutputDirectory(activity: MainActivity): File {

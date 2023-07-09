@@ -176,7 +176,7 @@ fun takePhoto(
     onError: (ImageCaptureException) -> Unit
 ) {
     val photoFile = File(
-        viewModel.getOutputDirectory(context as MainActivity),
+        outputDirectory/*viewModel.getOutputDirectory(context as MainActivity)*/,
         "${didiEntity.id}-${didiEntity.cohortId}-${didiEntity.villageId}_${System.currentTimeMillis()}.jpg"
     )
 

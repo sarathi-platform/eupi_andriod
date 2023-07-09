@@ -450,6 +450,15 @@ fun TolaBox(
         mutableStateOf(false)
     }
 
+    val showLoader = remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(key1 = showLoader.value) {
+        delay(1500)
+        showLoader.value = false
+    }
+
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -630,6 +639,7 @@ fun TolaBox(
                                     )
 
                                 ) {
+                                    showLoader.value = true
                                     val decimalFormat = DecimalFormat("#.#######")
                                     if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                                         var locationByGps: Location? = null
@@ -646,7 +656,9 @@ fun TolaBox(
                                                         .toDouble()
 
                                                 )
+                                                locationAdded = true
                                             }
+                                            showLoader.value = false
                                         }
                                         val networkConsumer =
                                             Consumer<Location> { networkLocation ->
@@ -665,7 +677,9 @@ fun TolaBox(
                                                             .toDouble()
 
                                                     )
+                                                    locationAdded = true
                                                 }
+                                                showLoader.value = false
                                             }
                                         LocationUtil.getLocation(
                                             activity,
@@ -689,6 +703,8 @@ fun TolaBox(
                                                             .toDouble()
 
                                                     )
+                                                    locationAdded = true
+                                                    showLoader.value = false
                                                 }
 
                                                 override fun onStatusChanged(
@@ -715,6 +731,8 @@ fun TolaBox(
                                                         .toDouble()
 
                                                 )
+                                                locationAdded = true
+                                                showLoader.value = false
                                             }
 
                                             override fun onStatusChanged(
@@ -751,13 +769,25 @@ fun TolaBox(
                                 horizontalArrangement = Arrangement.Center,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Icon(
-                                    painter = painterResource(id = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
-                                    contentDescription = "Get Location",
-                                    modifier = Modifier.absolutePadding(top = 2.dp),
-                                    tint = blueDark,
+                                if (showLoader.value) {
+                                    Box(contentAlignment = Alignment.Center) {
+                                        CircularProgressIndicator(
+                                            color = blueDark,
+                                            modifier = Modifier
+                                                .size(18.dp)
+                                                .align(Alignment.Center),
+                                            strokeWidth = 1.5.dp
+                                        )
+                                    }
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) R.drawable.baseline_location_icn else R.drawable.icon_get_location),
+                                        contentDescription = "Get Location",
+                                        modifier = Modifier.absolutePadding(top = 2.dp),
+                                        tint = blueDark,
 
-                                    )
+                                        )
+                                }
                                 Spacer(modifier = Modifier.width(8.dp))
                                 Text(
                                     text = if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) stringResource(R.string.location_added_text) else stringResource(R.string.get_location_text),
