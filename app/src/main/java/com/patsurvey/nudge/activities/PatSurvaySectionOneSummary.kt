@@ -31,10 +31,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -185,7 +188,7 @@ fun PatSurvaySectionSummaryScreen(
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, questionDisplay = question.questionSummary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
+                       SectionOneSummeryItem(index = index+1, quesSummery = answer?.summary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
                     }
                 }
             }
@@ -340,7 +343,7 @@ fun SectionOneSummeryItem(
     modifier: Modifier = Modifier,
     index: Int,
     questionImageUrl:String,
-    questionDisplay: String,
+    quesSummery:String,
     answerValue: String,
     optionValue:Int
 ) {
@@ -390,7 +393,7 @@ fun SectionOneSummeryItem(
                 }
             }
             Text(
-                text = "$index. ${questionDisplay}.",
+                text = "$index. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

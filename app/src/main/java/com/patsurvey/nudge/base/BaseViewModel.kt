@@ -38,7 +38,6 @@ abstract class BaseViewModel : ViewModel(){
     val baseOtpNumber = mutableStateOf("")
     val baseSummarySecond = mutableStateOf(0)
 
-
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
