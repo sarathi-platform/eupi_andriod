@@ -60,6 +60,7 @@ import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -653,6 +654,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                         }
                         prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, true)
                     }
 
                 }

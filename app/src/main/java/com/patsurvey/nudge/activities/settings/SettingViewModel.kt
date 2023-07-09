@@ -323,7 +323,7 @@ class SettingViewModel @Inject constructor(
 
     fun syncBPCDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>,syncBPCStatus : MutableState<Int>) {
         bpcSyncStatus = syncBPCStatus
-        hitApiStatus.value = 3
+//        hitApiStatus.value = 3
         showBPCSyncDialog = syncDialog
         bpcSyncStatus.value = 2
         if(isInternetAvailable(cxt)){
@@ -347,6 +347,7 @@ class SettingViewModel @Inject constructor(
 
                 override fun onFailed() {
                     networkErrorMessage.value = SYNC_FAILED
+                    hitApiStatus.value = 3
                     syncBPCPercentage.value = 1f
                     bpcSyncStatus.value = 3
                 }
@@ -394,7 +395,7 @@ class SettingViewModel @Inject constructor(
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
                 && isStatusStepStatusSync(5)
-                && !isBPCScoreSaved()){
+                && isBPCScoreSaved()){
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false
                 }

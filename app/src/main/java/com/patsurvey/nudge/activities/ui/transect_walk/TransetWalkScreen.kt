@@ -150,9 +150,10 @@ fun TransectWalkScreen(
                     modifier = Modifier
                 )
                 val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 val totalCountWithoutEmptyTola = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaCount == 1)
+                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaTolaCount == 1)
                         stringResource(R.string.empty_tola_success_message)
                     else
                         stringResource(
