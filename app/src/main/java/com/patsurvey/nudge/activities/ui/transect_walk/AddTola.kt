@@ -189,7 +189,9 @@ fun AddTolaBox(
             OutlinedTextField(
                 value = mTolaName,
                 onValueChange = {
-                    mTolaName = it
+                    if(!it.contains(IGNORED_REGEX)){
+                        mTolaName = it
+                    }
                 },
                 placeholder = {
                     Text(text = "Enter Name", style = TextStyle(
