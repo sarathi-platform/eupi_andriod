@@ -153,19 +153,13 @@ fun QuestionScreen(
                                 .height(50.dp),
                             )
                         }else {
-                            var imgBitmap: Bitmap? = null
                             if (quesImage?.exists() == true) {
-                                imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
-                            }
-                            if (quesImage?.exists() == true) {
-                                Image(
-                                    painter = rememberAsyncImagePainter(model = imgBitmap),
-                                    contentDescription = "home image",
+                                GlideImage(model = quesImage,
+                                    contentDescription ="Question Image",
                                     modifier = Modifier
                                         .fillMaxWidth()
                                         .width(50.dp)
                                         .height(50.dp),
-                                    colorFilter = ColorFilter.tint(textColorDark)
                                 )
                             } else {
                                 Image(
