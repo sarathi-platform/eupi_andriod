@@ -194,7 +194,7 @@ fun AddTolaBox(
                     }
                 },
                 placeholder = {
-                    Text(text = "Enter Name", style = TextStyle(
+                    Text(text = stringResource(id = R.string.enter_name_text), style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
