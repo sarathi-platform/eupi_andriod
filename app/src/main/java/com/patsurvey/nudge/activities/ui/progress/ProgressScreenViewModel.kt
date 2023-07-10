@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -80,10 +81,15 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun setVoEndorsementCompleteForVillages() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            villageList.value.forEach { village ->
-                val stepList = stepsListDao.getAllStepsForVillage(village.id)
-                isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+            try {
+                villageList.value.forEach { village ->
+                    val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                    isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "setVoEndorsementCompleteForVillages: exception -> $ex")
             }
+
         }
     }
 

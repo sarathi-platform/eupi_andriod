@@ -282,29 +282,27 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
             if (!needToPostPatDidi.isNullOrEmpty()) {
                 val didiRequestList : ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                 needToPostPatDidi.forEach { didi ->
-                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal) {
-                        didiRequestList.add(EditDidiWealthRankingRequest(
-                            id = didi.serverId,
-                            type = BPC_SURVEY_CONSTANT,
-                            result = PatSurveyStatus.COMPLETED.name,
-                            score = didi.score,
-                            comment = if ((didi.score
-                                    ?: 0.0) < passingScore
-                            ) LOW_SCORE else "",
-                            localModifiedDate = System.currentTimeMillis()
-                        ))
-                    } else if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
-                        didiRequestList.add(
-                                EditDidiWealthRankingRequest(
-                                    id = didi.serverId,
-                                    type = BPC_SURVEY_CONSTANT,
-                                    result = PatSurveyStatus.NOT_AVAILABLE.name,
-                                    score = 0.0,
-                                    comment = TYPE_EXCLUSION,
-                                    localModifiedDate = System.currentTimeMillis()
-                                )
-                            )
+                    var comment= BLANK_STRING
+                    if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                        comment= BLANK_STRING
+                    else {
+                        comment =if((didi.score ?: 0.0) < passingScore) LOW_SCORE else {
+                            if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                TYPE_EXCLUSION
+                            }else BLANK_STRING}
                     }
+                    didiRequestList.add(
+                        EditDidiWealthRankingRequest(
+                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            score = didi.score,
+                            comment =comment,
+                            type = BPC_SURVEY_CONSTANT,
+                            result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                            else {
+                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                            }
+                        )
+                    )
                     try {
                         val updatedPatResponse = apiService.updateDidiRanking(didiRequestList)
                         if (updatedPatResponse.status.equals(SUCCESS, true)) {

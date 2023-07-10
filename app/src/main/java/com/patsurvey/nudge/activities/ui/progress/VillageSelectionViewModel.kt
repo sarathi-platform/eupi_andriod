@@ -930,6 +930,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                             localCreatedDate = didi.localCreatedDate,
                                                             localModifiedDate = didi.localModifiedDate,
                                                             score = didi.score,
+                                                            crpScore = didi.crpScore,
+                                                            crpComment = didi.crpComment,
                                                             comment = didi.comment,
 
                                                             )

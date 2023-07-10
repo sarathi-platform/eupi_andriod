@@ -88,7 +88,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     }*/
 
     private fun getImagePath(context: Context): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS)?.absolutePath}")
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
     }
 
     fun getOutputDirectory(activity: MainActivity): File {
