@@ -507,7 +507,7 @@ fun handleImageCapture(
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 
-    var location: LocationCoordinates = LocationCoordinates()
+    var location: LocationCoordinates = LocationCoordinates(0.0,0.0)
 
     val decimalFormat = DecimalFormat("#.#######")
     if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {

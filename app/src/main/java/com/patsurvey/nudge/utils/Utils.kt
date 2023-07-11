@@ -23,6 +23,14 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -38,10 +46,13 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -51,6 +62,9 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
@@ -64,6 +78,7 @@ import java.io.File
 import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.time.format.TextStyle
 import kotlin.math.roundToInt
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
@@ -429,4 +444,36 @@ fun updateLastSyncTime(prefRepo:PrefRepo,lastSyncTime:String){
         }
 
     }else prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+}
+
+
+@Composable
+fun BulletList(
+    modifier: Modifier = Modifier,
+    lineSpacing: Dp = 0.dp,
+    items: List<String>,
+) {
+    Column(modifier = modifier) {
+        items.forEach {
+            Row {
+                Text(
+                    text = "\u2022",
+                    textAlign = TextAlign.Start,
+                    style = buttonTextStyle,
+                    maxLines = 1,
+                    color = textColorDark,
+                )
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Start,
+                    style = smallTextStyleMediumWeight,
+                    color = textColorDark,
+                    modifier = Modifier.fillMaxWidth().padding(start = 5.dp)
+                )
+            }
+            if (lineSpacing > 0.dp && it != items.last()) {
+                Spacer(modifier = Modifier.height(lineSpacing))
+            }
+        }
+    }
 }

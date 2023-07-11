@@ -404,7 +404,7 @@ fun SectionOneSummeryItem(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(start = 5.dp)
+                    .padding(start = 8.dp)
                     .weight(1f)
             )
             Text(
@@ -418,7 +418,7 @@ fun SectionOneSummeryItem(
                 textAlign = TextAlign.Start,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
+                modifier = Modifier.padding(start=2.dp)
             )
         }
         Divider(

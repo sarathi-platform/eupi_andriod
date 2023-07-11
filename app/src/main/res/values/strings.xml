@@ -92,8 +92,8 @@
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
     <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text_plural">Total %1$s new Tolas have \nbeen added successfully</string>
-    <string name="tola_conirmation_text_singular">Total %1$s new Tola has \nbeen added successfully</string>
+    <string name="tola_conirmation_text_plural">%1$s new Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">%1$s new Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
     <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
@@ -312,6 +312,12 @@
     <string name="ranking_text_poor">POOR</string>
     <string name="crp_group_name_text">CRP Group Name</string>
     <string name="current_status_text">Current Status:</string>
+    <string name="pat_completed_for_didi_singular">PAT completed for %1$s didi</string>
+    <string name="pat_completed_for_didi_plural">PAT completed for %1$s didis</string>
+    <string name="pat_marked_not_available_singular">%1$s didi marked as Not Available</string>
+    <string name="pat_marked_not_available_plural">%1$s didis marked as Not Available</string>
+    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultrapoor didis sent for VO Endorsement.</string>
+    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s Ultrapoor didis sent for VO Endorsement.</string>
 
 
 </resources>

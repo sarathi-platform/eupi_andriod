@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -32,6 +34,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class SurveySummaryViewModel @Inject constructor(
@@ -49,12 +52,18 @@ class SurveySummaryViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
+    private val _didiCountList = MutableStateFlow(listOf<String>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
+    val didiCountList: StateFlow<List<String>> get() = _didiCountList
     val notAvailableCount = mutableStateOf(0)
     val isTolaSynced = mutableStateOf(0)
     val isDidiSynced = mutableStateOf(0)
     val isDidiRankingSynced = mutableStateOf(0)
     val isDidiPATSynced = mutableStateOf(0)
+    val totalPatDidiCount = mutableStateOf(0)
+    val notAvailableDidiCount = mutableStateOf(0)
+    val voEndorseDidiCount = mutableStateOf(0)
+
 
     init {
         if (prefRepo.isUserBPC()) {
@@ -881,6 +890,33 @@ class SurveySummaryViewModel @Inject constructor(
 
         return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
 
+    }
+
+    @SuppressLint("StringFormatMatches")
+    fun prepareDidiCountList(context:Context){
+        val list:ArrayList<String> = arrayListOf()
+        context?.let {
+            totalPatDidiCount.value=didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 }.size
+
+            if(totalPatDidiCount.value>1)
+              list.add(context.getString(R.string.pat_completed_for_didi_plural,totalPatDidiCount.value))
+            else list.add(context.getString(R.string.pat_completed_for_didi_singular,totalPatDidiCount.value))
+
+            if(notAvailableDidiCount.value>1)
+                list.add(context.getString(R.string.pat_marked_not_available_plural,notAvailableDidiCount.value))
+            else list.add(context.getString(R.string.pat_marked_not_available_singular,notAvailableDidiCount.value))
+
+            if(voEndorseDidiCount.value>1)
+                list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
+            else list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+
+            if(list.isNotEmpty()){
+                _didiCountList.value=list
+            }
+        }
     }
 
 }

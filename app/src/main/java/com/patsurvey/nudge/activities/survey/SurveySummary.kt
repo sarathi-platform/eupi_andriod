@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -64,6 +65,7 @@ import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
+@SuppressLint("StringFormatMatches", "StateFlowValueCalledInComposition")
 @Composable
 fun SurveySummary(
     modifier: Modifier = Modifier,
@@ -97,6 +99,8 @@ fun SurveySummary(
     LaunchedEffect(key1 = true){
             showDidiListForStatus =
                   Pair((context as MainActivity).isBackFromSummary.value, surveySummaryViewModel.baseSummarySecond.value)
+
+
     }
     BackHandler() {
         if (showDidiListForStatus.first) {
@@ -129,19 +133,28 @@ fun SurveySummary(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
+            if(fromScreen == ARG_FROM_PAT_SURVEY){
+                surveySummaryViewModel.prepareDidiCountList(context)
+            }
             val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
                     it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
             else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),
+                isBulletShow = fromScreen == ARG_FROM_PAT_SURVEY,
+                list = if(fromScreen == ARG_FROM_PAT_SURVEY) surveySummaryViewModel.didiCountList.value else emptyList(),
                 message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
                     stringResource(id = R.string.bpc_final_pat_submition_message)
                 }else{
                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                        if (count > 1)
-                            stringResource(R.string.pat_completion_dialog_message_plural).replace("{COUNT}", count.toString())
-                        else
-                            stringResource(R.string.pat_completion_dialog_message_singular).replace("{COUNT}", count.toString())
+                        if (count > 1){
+                            context.getString(R.string.pat_completed_for_didi_plural,surveySummaryViewModel.totalPatDidiCount.value,surveySummaryViewModel.notAvailableDidiCount.value,surveySummaryViewModel.voEndorseDidiCount.value)
+//                            stringResource(R.string.pat_completed_for_didi_plural).replace("{COUNT}", count.toString())
+                        }else{
+                            context.getString(R.string.pat_completed_for_didi_singular,surveySummaryViewModel.totalPatDidiCount.value,surveySummaryViewModel.notAvailableDidiCount.value,surveySummaryViewModel.voEndorseDidiCount.value)
+//                            stringResource(R.string.pat_completion_dialog_message_plural).replace("{COUNT}", count.toString())
+                        }
+
                     }
                     else {
                         if (count > 1)

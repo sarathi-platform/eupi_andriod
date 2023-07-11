@@ -342,7 +342,7 @@ fun SectionTwoSummeryItem(
                 textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
+                modifier = Modifier.padding(start = 5.dp)
                     .weight(1f)
             )
         }
