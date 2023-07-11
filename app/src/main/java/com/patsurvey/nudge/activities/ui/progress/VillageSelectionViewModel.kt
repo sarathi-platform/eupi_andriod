@@ -85,6 +85,7 @@ import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -409,7 +410,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         bpcScore = didi.bpcScore,
                                                         bpcComment = didi.bpcComment,
                                                         crpComment = didi.crpComment,
-                                                        crpScore = didi.crpScore
+                                                        crpScore = didi.crpScore,
+                                                        crpUploadedImage = didi.crpUploadedImage
                                                     )
                                                 )
                                             }
@@ -933,7 +935,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             crpScore = didi.crpScore,
                                                             crpComment = didi.crpComment,
                                                             comment = didi.comment,
-
+                                                            crpUploadedImage = didi.crpUploadedImage
                                                             )
                                                     )
 //                                                    }
@@ -1247,8 +1249,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
 
                             if(!response.lastSyncTime.isNullOrEmpty()){
-                                Log.d("TAG", "fetchUserDetails: ${response.lastSyncTime} ")
-                                updateLastSyncTime(response.lastSyncTime)
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
                             }
 
                             Log.d("TAG", "fetchUserDetails: ${prefRepo.getPref(LAST_SYNC_TIME,0L)}")
@@ -1283,16 +1284,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun updateLastSyncTime(lastSyncTime:String){
-        val saveSyncTime= prefRepo.getPref(LAST_SYNC_TIME,0L)
-        if(saveSyncTime>0){
-            val compValue=lastSyncTime.toLong().compareTo(saveSyncTime)
-            if(compValue>0){
-                prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
-            }
 
-        }else prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
-    }
 
     fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {
         _villagList.value = villageList

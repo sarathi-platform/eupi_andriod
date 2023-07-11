@@ -28,6 +28,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -213,6 +214,9 @@ class ProgressScreenViewModel @Inject constructor(
                             }
                         }else{
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }

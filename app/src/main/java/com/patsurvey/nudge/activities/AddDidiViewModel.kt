@@ -185,6 +185,9 @@ class AddDidiViewModel @Inject constructor(
                 else {
                     checkDeleteDidiStatus()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkDeleteDidiStatus()
             }
@@ -212,6 +215,11 @@ class AddDidiViewModel @Inject constructor(
                 } else {
                     updateDidiToNetwork()
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 updateDidiToNetwork()
             }
@@ -256,6 +264,9 @@ class AddDidiViewModel @Inject constructor(
                     }
                 } else {
                     checkUpdateDidiStatus()
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkUpdateDidiStatus()
@@ -657,6 +668,9 @@ class AddDidiViewModel @Inject constructor(
                 } else {
                     checkAddDidiStatus()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkAddDidiStatus()
             }
@@ -793,6 +807,9 @@ class AddDidiViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -817,6 +834,10 @@ class AddDidiViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                }
+
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }
@@ -897,6 +918,10 @@ class AddDidiViewModel @Inject constructor(
                             }
                         } else {
                             networkCallbackListener.onFailed()
+                        }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
@@ -1066,6 +1091,9 @@ class AddDidiViewModel @Inject constructor(
                             } else {
                                 networkCallbackListener.onSuccess()
                             }
+                            if(!deleteDidiApiResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,deleteDidiApiResponse.lastSyncTime)
+                            }
                         } else {
                             networkCallbackListener.onSuccess()
                         }
@@ -1130,6 +1158,10 @@ class AddDidiViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         didiDao.updateNeedToPost(didi.id,false)
                     }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
+                    }
+
                 } else {
                     networkCallbackListener.onSuccess()
                 }

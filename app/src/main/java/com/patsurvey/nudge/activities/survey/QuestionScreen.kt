@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -145,12 +146,13 @@ fun QuestionScreen(
                                 )
                             }
                         if(quesImage?.extension.equals(EXTENSION_WEBP,true)){
-                            GlideImage(model = quesImage,
-                                contentDescription ="Question Image",
-                                    modifier = Modifier
+                            GlideImage(
+                                model = quesImage,
+                                contentDescription = "Question Image",
+                                modifier = Modifier
                                     .fillMaxWidth()
-                                .width(50.dp)
-                                .height(50.dp),
+                                    .width(dimensionResource(id = R.dimen.ques_image_width))
+                                    .height(dimensionResource(id = R.dimen.ques_image_height)),
                             )
                         }else {
                             if (quesImage?.exists() == true) {
@@ -158,8 +160,8 @@ fun QuestionScreen(
                                     contentDescription ="Question Image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(50.dp)
-                                        .height(50.dp),
+                                        .width(dimensionResource(id = R.dimen.ques_image_width))
+                                        .height(dimensionResource(id = R.dimen.ques_image_height)),
                                 )
                             } else {
                                 Image(
@@ -167,8 +169,8 @@ fun QuestionScreen(
                                     contentDescription = "home image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(50.dp)
-                                        .height(50.dp),
+                                        .width(dimensionResource(id = R.dimen.ques_image_width))
+                                        .height(dimensionResource(id = R.dimen.ques_image_height)),
                                     colorFilter = ColorFilter.tint(textColorDark)
                                 )
                             }
