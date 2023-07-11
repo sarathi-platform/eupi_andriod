@@ -855,7 +855,7 @@ fun ExpandableFormPictureCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Add Page",
+                        text = stringResource(id = R.string.take_photo_text),
                         color = textColorDark,
                         style = buttonTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)

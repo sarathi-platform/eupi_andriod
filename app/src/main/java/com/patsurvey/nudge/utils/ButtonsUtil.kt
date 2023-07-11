@@ -1175,7 +1175,7 @@ fun IncrementDecrementView(modifier: Modifier,
                            onIncrementClick: (Int)->Unit,
                            onValueChange: (String) -> Unit){
     var currentCount by remember {
-        mutableStateOf(currentValue.toString())
+        mutableStateOf(if(currentValue<=0) BLANK_STRING else currentValue.toString())
     }
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -1268,7 +1268,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     .fillMaxWidth()
                     .clickable {
                         currentCount = incDecValue(0, currentCount)
-                        onDecrementClick(currentCount.toInt())
+                        onDecrementClick(if(currentCount.isEmpty()) 0 else currentCount.toInt())
                     }, horizontalArrangement = Arrangement.Center){
                     Icon(
                         painter = painterResource(id = R.drawable.minus_icon),
@@ -1288,22 +1288,28 @@ fun IncrementDecrementView(modifier: Modifier,
                 .weight(1f)){
                 CustomOutlineTextField(
                     value = currentCount,
-                    readOnly = true,
+                    readOnly = false,
                     onValueChange = {
-                        currentCount = if(it.isEmpty())
-                            "0"
-                        else
-                            it
-                        onValueChange(it)
+                        val currentIt=if(it.isEmpty()) 0 else it.toInt()
+                        if(currentIt<= MAXIMUM_RANGE){
+                            currentCount = if(it.isEmpty() || it == "0")
+                                ""
+                            else
+                                it
+                            onValueChange(it)
+                        }
                     },
                     placeholder = {
                         Text(
-                            text = "0", style = TextStyle(
+                            text = "0",
+                            style = TextStyle(
                                 fontFamily = NotoSans,
                                 fontWeight = FontWeight.SemiBold,
                                 fontSize = 14.sp,
-                                textAlign = TextAlign.Center
-                            ), color = placeholderGrey
+                                textAlign = TextAlign.Center,
+                            ), color = placeholderGrey,
+                               modifier = Modifier
+                                .fillMaxWidth()
                         )
                     },
                     textStyle = TextStyle(
@@ -1351,7 +1357,7 @@ fun IncrementDecrementView(modifier: Modifier,
                 )
                 .clickable {
                     currentCount = incDecValue(1, currentCount)
-                    onIncrementClick(currentCount.toInt())
+                    onIncrementClick(if(currentCount.isEmpty()) 0 else currentCount.toInt())
                 },
                 contentAlignment = Alignment.Center){
                 Icon(
@@ -1382,7 +1388,7 @@ fun incDecValue(operation:Int,value:String):String{
             intValue++
         }
     }
-    return intValue.toString()
+    return if(intValue<=0) BLANK_STRING else intValue.toString()
 }
 
 @Preview(showBackground = true)

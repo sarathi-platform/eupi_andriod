@@ -156,6 +156,17 @@ fun NumericFieldTypeQuestion(
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onValueChange = {
+                                val numericAnswerEntity = NumericAnswerEntity(
+                                    optionId = option.optionId ?: 0,
+                                    weight = option.weight ?: 1,
+                                    questionId = questionId,
+                                    count = if(it.isEmpty()) 0 else it.toInt(),
+                                    didiId = didiId,
+                                    id = 0,
+                                    questionFlag = questionFlag
+                                )
+                                option.count = if(it.isEmpty()) 0 else it.toInt()
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             })
                     }
 

@@ -37,6 +37,7 @@ import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.IGNORED_REGEX
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.setKeyboardToReadjust
 
@@ -151,8 +152,10 @@ fun LoginScreen(
                         textAlign = TextAlign.Start
                     ),
                     onValueChange = {
-                        if (it.text.length <= MOBILE_NUMBER_LENGTH)
-                            viewModel.mobileNumber.value = it
+                        if(!it.text.contains(IGNORED_REGEX)) {
+                            if (it.text.length <= MOBILE_NUMBER_LENGTH)
+                                viewModel.mobileNumber.value = it
+                        }
                     },
                     colors = TextFieldDefaults.textFieldColors(
                         backgroundColor = Color.Transparent,
