@@ -105,6 +105,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 addDidisToNetwork(networkCallbackListener)
             }
@@ -133,6 +136,10 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 updateDidiToNetwork(networkCallbackListener)
             }
@@ -195,6 +202,9 @@ class SyncHelper (
                         syncPercentage.value = 1f
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 withContext(Dispatchers.Main){
@@ -283,10 +293,14 @@ class SyncHelper (
                         }
                     }
                     updateWealthRankingToNetwork(networkCallbackListener)
-                } else
+                } else{
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 updateWealthRankingToNetwork(networkCallbackListener)
             }
@@ -344,6 +358,11 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 deleteTolaToNetwork(networkCallbackListener)
             }
@@ -403,6 +422,10 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkTolaAddStatus(networkCallbackListener)
@@ -481,6 +504,10 @@ class SyncHelper (
                         networkCallbackListener.onFailed()
                     }
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkTolaUpdateStatus(networkCallbackListener)
             }
@@ -530,6 +557,11 @@ class SyncHelper (
                         networkCallbackListener.onFailed()
                     }
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 checkTolaDeleteStatus(networkCallbackListener)
             }
@@ -596,6 +628,9 @@ class SyncHelper (
                         networkCallbackListener.onFailed()
                     }
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkAddDidiStatus(networkCallbackListener)
             }
@@ -646,6 +681,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkUpdateDidiStatus(networkCallbackListener)
@@ -746,6 +784,9 @@ class SyncHelper (
                         networkCallbackListener.onFailed()
                     }
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkDeleteDidiStatus(networkCallbackListener)
             }
@@ -803,6 +844,9 @@ class SyncHelper (
                             withContext(Dispatchers.Main){
                                 networkCallbackListener.onFailed()
                             }
+                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
+                        }
                     } else {
                         checkDidiWealthStatus(networkCallbackListener)
                     }
@@ -984,6 +1028,9 @@ class SyncHelper (
                                     networkCallbackListener.onFailed()
                                 }
                             }
+                            if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
+                            }
                         }
                     } else {
                         checkDidiPatStatus(networkCallbackListener)
@@ -1069,6 +1116,9 @@ class SyncHelper (
                             withContext(Dispatchers.Main){
                                 networkCallbackListener.onFailed()
                             }
+                        }
+                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
                         }
                     } else {
                         checkVOStatus(networkCallbackListener)
@@ -1224,6 +1274,9 @@ class SyncHelper (
                                     stepsListDao.updateNeedToPost(stepId, villageId, false)
                                 }
                             }
+                        }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }

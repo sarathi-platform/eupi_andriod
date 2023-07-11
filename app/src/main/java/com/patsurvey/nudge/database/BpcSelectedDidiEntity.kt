@@ -110,7 +110,10 @@ data class BpcSelectedDidiEntity(
     var needsToPostPAT: Boolean = false,
 
     @ColumnInfo(name = "transactionId")
-    var transactionId: String? = ""
+    var transactionId: String? = "",
+
+    @ColumnInfo(name = "crpUploadedImage")
+    var crpUploadedImage: String? = BLANK_STRING
 ) {
     companion object {
         fun getSelectedDidiEntityFromNonSelectedEntity(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): BpcSelectedDidiEntity {

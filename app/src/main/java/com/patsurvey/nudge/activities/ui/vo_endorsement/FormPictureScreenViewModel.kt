@@ -30,6 +30,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -213,6 +214,9 @@ class FormPictureScreenViewModel @Inject constructor(
                                         } else {
                                             networkCallbackListener.onFailed()
                                         }
+                                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
+                                        }
                                     } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                         val updateWealthRankResponse=apiService.updateDidiRanking(
                                             listOf(
@@ -223,6 +227,10 @@ class FormPictureScreenViewModel @Inject constructor(
                                             didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
                                         } else {
                                             networkCallbackListener.onFailed()
+                                        }
+
+                                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
                                         }
                                     }
                                 }
@@ -258,6 +266,10 @@ class FormPictureScreenViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -282,6 +294,10 @@ class FormPictureScreenViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                }
+
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }

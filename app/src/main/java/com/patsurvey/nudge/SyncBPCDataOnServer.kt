@@ -73,6 +73,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             networkCallbackListener.onFailed()
                         }
                     }
+
+                    if(!updateSelectedDidiResponse.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,updateSelectedDidiResponse.lastSyncTime)
+                    }
                 } catch (ex: Exception) {
                     settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
                 }
@@ -141,6 +145,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 updateBpcPatStatusToNetwork(networkCallbackListener)
             }
@@ -169,6 +177,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 updateBpcPatStatusToNetwork(networkCallbackListener)
             }
@@ -202,6 +214,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 networkCallbackListener.onFailed()
                             }
 //                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
+                        }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
@@ -249,6 +265,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
                         }
+                    }
+                    if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,saveMatchSummaryResponse.lastSyncTime)
                     }
                 } catch (ex: Exception) {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
@@ -338,6 +357,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             withContext(Dispatchers.Main) {
                                 networkCallbackListener.onFailed()
                             }
+                        }
+                        if(!updatedPatResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updatedPatResponse.lastSyncTime)
                         }
                     } catch (ex: Exception) {
                         settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
@@ -504,6 +526,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 withContext(Dispatchers.Main) {
                                     networkCallbackListener.onFailed()
                                 }
+                            }
+                            if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                             }
                             apiService.updateDidiScore(scoreDidiList)
                         }

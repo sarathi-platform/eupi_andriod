@@ -34,6 +34,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -143,6 +144,9 @@ class BpcProgressScreenViewModel @Inject constructor(
                             val error = ApiResponseFailException(response.message)
                             onCatchError(error, ApiType.WORK_FLOW_API)
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
