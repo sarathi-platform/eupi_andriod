@@ -618,7 +618,7 @@ fun showSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)
@@ -679,7 +679,7 @@ fun showSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)
@@ -740,7 +740,7 @@ fun showSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)
@@ -801,7 +801,7 @@ fun showSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)
@@ -862,7 +862,7 @@ fun showSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)
