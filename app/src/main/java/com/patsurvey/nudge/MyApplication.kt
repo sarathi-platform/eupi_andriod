@@ -5,9 +5,8 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
-import com.patsurvey.nudge.database.NudgeDatabase
 import dagger.hilt.android.HiltAndroidApp
-import java.util.*
+import java.util.Locale
 
 @HiltAndroidApp
 class MyApplication: Application() {

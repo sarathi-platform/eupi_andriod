@@ -67,6 +67,7 @@ import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.showCustomToast
@@ -449,6 +450,7 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
+                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
                             viewModel.addTolasToNetwork()
                             viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
                                 override fun onSuccess() {
