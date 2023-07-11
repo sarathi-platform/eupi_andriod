@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.text.format.Formatter.formatShortFileSize
 import android.util.Log
 import android.widget.Toast
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.BuildConfig.DEBUG
 import com.patsurvey.nudge.BuildConfig.VERSION_NAME
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -218,6 +219,7 @@ object LogWriter {
             preamble.add("Build.MODEL                    = " + Build.MODEL)
             preamble.add("Build.PRODUCT                  = " + Build.PRODUCT)
             preamble.add("Build.getRadioVersion()        = " + Build.getRadioVersion())
+            preamble.add("Environment                    = " + BuildConfig.FLAVOR)
         } catch (ex: Exception) {
 
         }
