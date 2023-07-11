@@ -149,7 +149,8 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun uploadDidiImage(@Part image:MultipartBody.Part,
                                  @Part ("id") didiId:RequestBody,
-                                @Part ("userType") String:RequestBody): ApiResponseModel<Object>
+                                 @Part ("userType") userType:RequestBody,
+                                 @Part ("location") location: RequestBody): ApiResponseModel<Object>
 
 
     @POST("/read-api/custom/log")

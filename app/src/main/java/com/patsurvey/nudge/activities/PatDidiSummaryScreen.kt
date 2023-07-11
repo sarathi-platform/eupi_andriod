@@ -477,9 +477,10 @@ fun PatDidiSummaryScreen(
                                 BLANK_STRING
                             )
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
-                        patDidiSummaryViewModel.uploadDidiImage(
+                        patDidiSummaryViewModel.uploadDidiImage(localContext,
                             patDidiSummaryViewModel.photoUri,
-                            id
+                            id,
+                            patDidiSummaryViewModel.didiImageLocation.value
                         )
                     }
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
