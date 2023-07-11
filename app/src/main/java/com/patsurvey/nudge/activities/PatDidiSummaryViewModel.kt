@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import com.patsurvey.nudge.R
@@ -20,6 +21,8 @@ import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -51,6 +54,7 @@ class PatDidiSummaryViewModel @Inject constructor(
 
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
+    var didiImageLocation = mutableStateOf("{0.0,0.0}")
 
     private val _didiEntity = MutableStateFlow(
         DidiEntity(
@@ -133,6 +137,7 @@ class PatDidiSummaryViewModel @Inject constructor(
         didiEntity: DidiEntity
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
             didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
@@ -171,17 +176,20 @@ class PatDidiSummaryViewModel @Inject constructor(
         }
     }
 
-    fun uploadDidiImage(uri: Uri, didiId: Int) {
+    fun uploadDidiImage(context: Context,uri: Uri, didiId: Int,location:String) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
-
+                Log.d("TAG", "uploadDidiImage: $didiId :: $location")
               try {
-                  val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),uri.toFile())
-                  val imageFilePart= MultipartBody.Part.createFormData("file",uri.toFile().name,requestFile)
+                  Log.d("TAG", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
+                  val compressedImageFile = compressImage(uri.toString(),context,uri.toFile().name)
+                  val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedImageFile))
+                  val imageFilePart= MultipartBody.Part.createFormData("file",File(compressedImageFile).name,requestFile)
                   val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
                   val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
-
-                  apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType)
+                  val requestLocation=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),location)
+                  Log.d("TAG", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
+                  apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
                 }   catch (ex:Exception){
                     ex.printStackTrace()
                 }
