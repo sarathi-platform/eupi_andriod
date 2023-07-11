@@ -6,9 +6,11 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.net.Uri
 import android.os.Build
+import android.os.Environment
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
+import android.webkit.MimeTypeMap
 import androidx.activity.ComponentActivity
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
@@ -41,7 +43,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.core.content.FileProvider
-import androidx.core.net.toFile
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -55,6 +56,9 @@ import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.lang.reflect.Type
 import java.math.RoundingMode
@@ -292,6 +296,13 @@ fun stringToDouble(string: String):Double{
     }
    return doubleAmount
 }
+fun doubleToString(double: Double):String{
+    var string= BLANK_STRING
+    if(double>0.0){
+        string = double.toString()
+    }
+    return string
+}
 fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Boolean):Double{
     var score:Double = 0.0
     run breaking@{
@@ -369,4 +380,37 @@ fun roundOffDecimal(number: Double): Double? {
     val df = DecimalFormat("#.##")
     df.roundingMode = RoundingMode.CEILING
     return df.format(number).toDouble()
+}
+
+fun getImagePath(context: Context, imagePath:String): File {
+    val imageName = getFileNameFromURL(imagePath)
+    return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
+}
+
+fun getImageRequestBody(sourceFile: File) : RequestBody? {
+    var requestBody: RequestBody? = null
+    Thread {
+        val mimeType = getMimeType(sourceFile);
+        if (mimeType == null) {
+            Log.e("file error", "Not able to get mime type")
+            return@Thread
+        }
+        try {
+            requestBody = sourceFile.path.toRequestBody("multipart/form-data".toMediaTypeOrNull())
+        } catch (ex: Exception) {
+            ex.printStackTrace()
+            Log.e("File upload", "failed")
+        }
+    }.start()
+
+    return requestBody;
+}
+
+private fun getMimeType(file: File): String? {
+    var type: String? = null
+    val extension = MimeTypeMap.getFileExtensionFromUrl(file.path)
+    if (extension != null) {
+        type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    return type
 }

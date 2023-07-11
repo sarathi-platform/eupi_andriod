@@ -330,7 +330,7 @@ fun SocialMappingDidiListScreen(
                                                 true
                                             ) && !didiViewModel.isSocialMappingComplete.value
                                         ) {
-                                            navController.navigate("add_didi_graph/${it.id}") {
+                                            navController.navigate("add_didiA_graph/${it.id}") {
                                                 launchSingleTop = true
                                             }
                                         } else if (didiViewModel.prefRepo.getFromPage().equals(
@@ -345,6 +345,7 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isOnline = (context as MainActivity).isOnline.value ?: false,
                                             object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
@@ -410,6 +411,7 @@ fun SocialMappingDidiListScreen(
                                     onDeleteClicked = { didi ->
                                         didiViewModel.deleteDidiOffline(
                                             didi,
+                                            isOnline = (context as MainActivity).isOnline.value ?: false,
                                             object : NetworkCallbackListener {
                                                 override fun onSuccess() {
                                                     showCustomToast(
@@ -456,52 +458,39 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         if (completeTolaAdditionClicked) {
-                            //TODO Integrate Api when backend fixes the response.
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                 if(didiViewModel.isTolaSynced.value == 2) {
-                                    didiViewModel.addDidisToNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                        }
+                            didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
+                                if (isPreviousStepComplete) {
+                                    //TODO Integrate Api when backend fixes the response.
+                                    if ((context as MainActivity).isOnline.value ?: false) {
+                                        if (didiViewModel.isTolaSynced.value == 2) {
+                                            didiViewModel.addDidisToNetwork()
+                                            didiViewModel.callWorkFlowAPI(
+                                                villageId,
+                                                stepId,
+                                                object : NetworkCallbackListener {
+                                                    override fun onSuccess() {
+                                                    }
 
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
+                                                    override fun onFailed() {
+                                                        showCustomToast(context, SYNC_FAILED)
+                                                    }
+                                                })
                                         }
-                                    })
-                                    didiViewModel.deleteDidiFromNetwork(object :
-                                        NetworkCallbackListener {
-                                        override fun onSuccess() {
-                                            showCustomToast(context, "Didi Deleted")
-                                        }
-
-                                        override fun onFailed() {
-                                            showCustomToast(context, SYNC_FAILED)
-                                        }
-                                    })
-                                    didiViewModel.callWorkFlowAPI(
-                                        villageId,
-                                        stepId,
-                                        object : NetworkCallbackListener {
-                                            override fun onSuccess() {
-                                            }
-
-                                            override fun onFailed() {
-                                                showCustomToast(context, SYNC_FAILED)
-                                            }
-                                        })
+                                    }
+                                    didiViewModel.markSocialMappingComplete(villageId, stepId)
+                                    navController.navigate(
+                                        "sm_step_completion_screen/${
+                                            context.getString(R.string.social_mapping_completed_message)
+                                                .replace(
+                                                    "{VILLAGE_NAME}",
+                                                    didiViewModel.prefRepo.getSelectedVillage().name ?: ""
+                                                )
+                                        }"
+                                    )
+                                } else {
+                                    showToast(context, context.getString(R.string.previous_step_not_complete_messgae_text))
                                 }
                             }
-                            didiViewModel.markSocialMappingComplete(villageId, stepId)
-                            navController.navigate(
-                                "sm_step_completion_screen/${
-                                    context.getString(R.string.social_mapping_completed_message)
-                                        .replace(
-                                            "{VILLAGE_NAME}",
-                                            didiViewModel.prefRepo.getSelectedVillage().name ?: ""
-                                        )
-                                }"
-                            )
-
                         } else {
                             completeTolaAdditionClicked = true
                         }
@@ -967,24 +956,28 @@ fun DidiItemCard(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("village")
                     )
-                    if (!didiViewModel.prefRepo.getFromPage()
-                            .equals(ARG_FROM_PAT_SURVEY, true)
-                    ) {
-
-                        IconButton(onClick = {
-                                             showMenu.value = !showMenu.value
-                        }, modifier = Modifier
-                            .layoutId("moreActionIcon")
-                            .visible(
-                                !didiViewModel.prefRepo
-                                    .getFromPage()
-                                    .equals(
-                                        ARG_FROM_PAT_SURVEY,
-                                        true
-                                    ) && !didiViewModel.isSocialMappingComplete.value
-                            )) {
-                            Icon(painter = painterResource(id = R.drawable.baseline_more_icon), contentDescription = "more action", tint = textColorDark)
-                        }
+                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal) {
+                            IconButton(
+                                onClick = {
+                                    showMenu.value = !showMenu.value
+                                }, modifier = Modifier
+                                    .layoutId("moreActionIcon")
+                                    .visible(
+                                        !didiViewModel.prefRepo
+                                            .getFromPage()
+                                            .equals(
+                                                ARG_FROM_PAT_SURVEY,
+                                                true
+                                            ) && !didiViewModel.isSocialMappingComplete.value
+                                    )
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_more_icon),
+                                    contentDescription = "more action",
+                                    tint = textColorDark
+                                )
+                            }
 
                         Box(modifier = Modifier.layoutId("moreDropDown")) {
                             DropdownMenu(
@@ -1014,10 +1007,11 @@ fun DidiItemCard(
                                 }
                             }
                         }
+                        }
 
                         CardArrow(
                             modifier = Modifier.layoutId(if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
-                                && !didiViewModel.isSocialMappingComplete.value)"expendArrowImage" else "expendArrowImageEnd"),
+                                && !didiViewModel.isSocialMappingComplete.value && didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal)"expendArrowImage" else "expendArrowImageEnd"),
                             degrees = arrowRotationDegree,
                             iconColor = animateColor,
                             onClick = { onExpendClick(expanded, didi) }
@@ -1373,7 +1367,7 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
             PatSurveyStatus.INPROGRESS.ordinal -> {
                 status = context.getString(R.string.pat_in_progress_status_text)
             }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal,PatSurveyStatus.NOT_AVAILABLE.ordinal -> {
+            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal-> {
                 status = context.getString(R.string.not_avaliable)
             }
             PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {

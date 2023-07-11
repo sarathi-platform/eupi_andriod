@@ -178,7 +178,8 @@ fun ProgressScreen(
                                 )
                             }
                         },
-                        backgroundColor = Color.White
+                        backgroundColor = Color.White,
+                        elevation = 10.dp
                     )
 //                    ProgressScreenTopBar() {
 //                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
@@ -282,13 +283,22 @@ fun ProgressScreen(
                                 }
                                 val subText = when(step.orderNumber) {
                                     1 -> tolaCount.value.let {
-                                        stringResource(id = R.string.transect_walk_sub_text, it)
+                                        if (it > 1)
+                                            stringResource(id = R.string.transect_walk_sub_text_plural, it)
+                                        else
+                                            stringResource(id = R.string.transect_walk_sub_text_singular, it)
                                     }
                                     2 -> didiCount.value.let {
-                                        stringResource(id = R.string.social_mapping_sub_text, it)
+                                        if (it > 1)
+                                            stringResource(id = R.string.social_mapping_sub_text_plural, it)
+                                        else
+                                            stringResource(id = R.string.social_mapping_sub_text_singular, it)
                                     }
                                     3 -> poorDidiCount.value.let {
-                                        stringResource(id = R.string.wealth_ranking_sub_text, it)
+                                        if (it > 1)
+                                            stringResource(id = R.string.wealth_ranking_sub_text_plural, it)
+                                        else
+                                            stringResource(id = R.string.wealth_ranking_sub_text_singular, it)
                                     }
                                     4 -> ultraPoorDidiCount.value.let {
                                         if (it > 1)

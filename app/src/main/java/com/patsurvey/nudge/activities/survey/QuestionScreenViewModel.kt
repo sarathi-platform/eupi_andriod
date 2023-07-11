@@ -46,7 +46,8 @@ class QuestionScreenViewModel @Inject constructor(
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0.0)
-    val enteredAmount = mutableStateOf(0)
+    val enteredAmount = mutableStateOf("")
+    val isAnswerSelected = mutableStateOf(false)
     val nextCTAVisibility = mutableStateOf(true)
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
@@ -182,7 +183,12 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun setAnswerToQuestion(
         didiId: Int, questionId: Int, answerOptionModel: OptionsItem,
-        assetAmount: Double, quesType: String, summary: String, selIndex: Int,
+        assetAmount: Double,
+        enteredAssetAmount: String,
+        quesType: String,
+        summary: String,
+        selIndex: Int,
+        questionFlag:String,
         onAnswerSave: () -> Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -194,42 +200,52 @@ class QuestionScreenViewModel @Inject constructor(
                     questionId = questionId,
                     actionType = sectionType.value
                 )
-                if (alreadyAnsweredModel != null) {
-                    answerDao.updateAnswer(
-                        didiId = didiId, questionId = questionId,
-                        actionType = sectionType.value,
-                        answerValue = answerOptionModel.display?: BLANK_STRING,
-                        optionValue = answerOptionModel.optionValue ?: 0,
-                        optionId = answerOptionModel.optionId?:0,
-                        weight = answerOptionModel.weight ?: 0,
-                        type = quesType,
-                        totalAssetAmount = assetAmount,
-                        summary = summary
-                    )
-                    withContext(Dispatchers.Main) {
-                        onAnswerSave()
-                    }
-                } else {
-                    answerDao.insertAnswer(
-                        SectionAnswerEntity(
-                            id = 0,
-                            optionId = answerOptionModel.optionId?:0,
-                            didiId = didiId,
-                            optionValue = answerOptionModel.optionValue ?: 0,
-                            answerValue = answerOptionModel.display?: BLANK_STRING,
-                            questionId = questionId,
+                try {
+                    if (alreadyAnsweredModel != null) {
+                        answerDao.updateAnswer(
+                            didiId = didiId, questionId = questionId,
                             actionType = sectionType.value,
-                            totalAssetAmount = assetAmount,
+                            answerValue = answerOptionModel.display?: BLANK_STRING,
+                            optionValue = answerOptionModel.optionValue ?: 0,
+                            optionId = answerOptionModel.optionId?:0,
+                            weight = answerOptionModel.weight ?: 0,
                             type = quesType,
+                            totalAssetAmount = assetAmount,
                             summary = summary,
-                            villageId = prefRepo.getSelectedVillage().id,
-                            weight=answerOptionModel.weight ?: 0
+                            assetAmount = enteredAssetAmount,
+                            questionFlag = questionFlag
                         )
-                    )
-                    withContext(Dispatchers.Main) {
-                        onAnswerSave()
+                        answerDao.updateNeedToPost(didiId, questionId, true)
+                        withContext(Dispatchers.Main) {
+                            onAnswerSave()
+                        }
+                    } else {
+                        answerDao.insertAnswer(
+                            SectionAnswerEntity(
+                                id = 0,
+                                optionId = answerOptionModel.optionId?:0,
+                                didiId = didiId,
+                                optionValue = answerOptionModel.optionValue ?: 0,
+                                answerValue = answerOptionModel.display?: BLANK_STRING,
+                                questionId = questionId,
+                                actionType = sectionType.value,
+                                totalAssetAmount = assetAmount,
+                                type = quesType,
+                                summary = summary,
+                                villageId = prefRepo.getSelectedVillage().id,
+                                weight=answerOptionModel.weight ?: 0,
+                                assetAmount = enteredAssetAmount,
+                                questionFlag = questionFlag
+                            )
+                        )
+                        withContext(Dispatchers.Main) {
+                            onAnswerSave()
+                        }
                     }
+                }catch (ex:Exception){
+                    ex.printStackTrace()
                 }
+
                 val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
                 _answerList.emit(localAnswerList)
 //            }
@@ -314,11 +330,12 @@ class QuestionScreenViewModel @Inject constructor(
                     listTypeAnswerIndex.value = index
                     _selIndValue.value = index
                     totalAmount.value =0.0
-                    enteredAmount.value=0
+                    enteredAmount.value= BLANK_STRING
                 } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
                     nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
                     val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
                     val totalAssetAmount= answerDao.getTotalAssetAmount(didiId,questionList.value[quesIndex].questionId?:0)
+                    val totalEnteredAmount= answerDao.fetchEnteredAmount(didiId,questionList.value[quesIndex].questionId?:0)
                     totalAmount.value =  totalDBAmount.toDouble()
                     if(questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_RATIO,true)){
                         totalAmount.value = totalAssetAmount
@@ -326,12 +343,12 @@ class QuestionScreenViewModel @Inject constructor(
 
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    enteredAmount.value= if((totalAssetAmount-totalDBAmount)>0) ((totalAssetAmount-totalDBAmount).toInt()) else 0
+                    enteredAmount.value= totalEnteredAmount.toString()
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
                     totalAmount.value = 0.0
-                    enteredAmount.value=0
+                    enteredAmount.value= BLANK_STRING
                 }
 
             }

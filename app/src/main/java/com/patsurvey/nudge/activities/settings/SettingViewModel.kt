@@ -201,7 +201,7 @@ class SettingViewModel @Inject constructor(
     fun isFourthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepFourSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if (answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
                 && isStatusStepStatusSync(3)
             ) {
@@ -235,7 +235,7 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        Log.e("server error","called")
+        Log.e("server error","called, $error")
         when (hitApiStatus.value) {
             1 -> onLogoutError.value = true
             2 -> {
@@ -264,7 +264,7 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-
+        Log.e("server error","called, ${errorModel?.code}, api: ${errorModel?.apiName}")
     }
 
 /*    fun getStepOneSize(stepOneSize : MutableState<String>) {
@@ -393,7 +393,7 @@ class SettingViewModel @Inject constructor(
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
-                && isStatusStepStatusSync(0)
+                && isStatusStepStatusSync(5)
                 && isBPCScoreSaved()){
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false

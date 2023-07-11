@@ -35,6 +35,7 @@ fun ListTypeQuestion(
     index: Int=-1,
     selectedIndex: Int,
     optionList: List<OptionsItem?>?,
+    isAnswerSelected:Boolean =false,
     onAnswerSelection: (Int) -> Unit
 ) {
 //    var selectedIndex by remember { mutableStateOf(index) }
@@ -78,7 +79,8 @@ fun ListTypeQuestion(
                 itemsIndexed(optionList?: emptyList()){ index, option ->
                   OptionCard(buttonTitle = option?.display?: BLANK_STRING, index = index, selectedIndex = selectedIndex ){
 //                      selectedIndex=it
-                      onAnswerSelection(index)
+                      if(!isAnswerSelected)
+                            onAnswerSelection(index)
                   }
                     Spacer(modifier = Modifier.height(4.dp))
                 }

@@ -91,7 +91,6 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
-import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 
 @Composable
@@ -282,7 +281,7 @@ fun BpcDidiListScreen(
                                 navController = navController,
                                 viewModel = bpcDidiListViewModel,
                                 didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
+                                didiList = newFilteredTolaDidiList[didiKey]
                                     ?: emptyList(),
                                 modifier = modifier,
                                 onNavigate = {

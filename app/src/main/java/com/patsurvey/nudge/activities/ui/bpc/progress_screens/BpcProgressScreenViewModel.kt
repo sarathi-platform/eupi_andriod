@@ -71,11 +71,14 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     val bpcCompletedDidiCount = mutableStateOf(0)
 
+    val isBpcVerificationComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     init {
         fetchVillageList()
         fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
+        setBpcVerificationCompleteForVillages()
     }
 
     fun fetchBpcSummaryData(villageId: Int) {
@@ -90,7 +93,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         val villageId=prefRepo.getSelectedVillage().id
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
-                val villageList=villageListDao.getAllVillages()
+                val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val stepList = stepsListDao.getAllStepsForVillage(villageId = villageId)
 //                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
@@ -103,7 +106,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                         }
                     }
                     _stepsList.value = stepList
-                    selectedText.value = prefRepo.getSelectedVillage().name
+                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
 //                    getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
@@ -296,6 +299,15 @@ class BpcProgressScreenViewModel @Inject constructor(
                     }
                 }
                 didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
+            }
+        }
+    }
+
+    fun setBpcVerificationCompleteForVillages() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            villageList.value.forEach { village ->
+                val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                isBpcVerificationComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal)
             }
         }
     }

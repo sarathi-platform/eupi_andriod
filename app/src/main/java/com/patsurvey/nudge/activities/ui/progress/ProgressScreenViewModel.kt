@@ -23,6 +23,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -122,10 +123,10 @@ class ProgressScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
                 tolaCount.value=_tolaList.value.size
-                didiCount.value=didiList.value.size
-                poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size
-                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal}.size
-                endorsedDidiCount.value = didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size
+                didiCount.value=didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal}.size
+                endorsedDidiCount.value = didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
             }
         }
     }
@@ -138,7 +139,7 @@ class ProgressScreenViewModel @Inject constructor(
         showLoader.value = true
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
-                val villageList=villageListDao.getAllVillages()
+                val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
                 _tolaList.emit(tolaDBList)
@@ -149,7 +150,7 @@ class ProgressScreenViewModel @Inject constructor(
                             villageSelected.value=index
                         }
                     }
-                    selectedText.value = prefRepo.getSelectedVillage().name
+                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
                     getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
@@ -203,7 +204,7 @@ class ProgressScreenViewModel @Inject constructor(
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,it[0].id,villageId,it[0].status)
-                                stepsListDao.updateNeedToPost(stepId,false)
+                                stepsListDao.updateNeedToPost(stepId, villageId, false)
                             }
                         }else{
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")

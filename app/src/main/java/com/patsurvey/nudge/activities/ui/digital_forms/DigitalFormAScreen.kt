@@ -89,6 +89,7 @@ fun DigitalFormAScreen(
             navController.navigate(Graph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
+                    saveState = false
                 }
             }
         }
@@ -146,8 +147,8 @@ fun DigitalFormAScreen(
 
                 if (shouldRequestPermission.value) {
                     ShowDialog(
-                        title = "Permission Required",
-                        message = "Camera Permission requierd, please grant permission.",
+                        title = stringResource(R.string.permission_required_prompt_title),
+                        message = stringResource(R.string.permission_dialog_prompt_message),
                         setShowDialog = {
                             shouldRequestPermission.value = it
                         }
@@ -273,7 +274,7 @@ fun DigitalFormAScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.total) + ":",
+                                text = stringResource(id = R.string.total_poor_didis) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -419,6 +420,7 @@ fun DigitalFormAScreen(
                         navController.navigate(Graph.HOME) {
                             popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                                 inclusive = true
+                                saveState = false
                             }
                         }
                     }

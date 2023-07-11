@@ -104,10 +104,10 @@
     <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
     <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
 
-    <string name="transect_walk_sub_text">%1$s Tolas Done</string>
+    <string name="transect_walk_sub_text_plural">%1$s Tolas Done</string>
 
-    <string name="social_mapping_sub_text">%1$s Didis Identified</string>
-    <string name="wealth_ranking_sub_text">%1$s Poor Didis Identified</string>
+    <string name="social_mapping_sub_text_plural">%1$s Didis Identified</string>
+    <string name="wealth_ranking_sub_text_plural">%1$s Poor Didis Identified</string>
     <string name="pat_sub_text_singular">%1$s Ultra Poor Didi sent for VO Endorsement</string>
     <string name="pat_sub_text_plural">%1$s Ultra Poor Didis sent for VO Endorsement</string>
     <string name="vo_endorsement_sub_text_singular">%1$s Ultra Poor Didi Endorsed</string>
@@ -118,9 +118,9 @@
     <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
     <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
     <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
-    <string name="tola_already_exist">Tola already exist.</string>
+    <string name="tola_already_exist">Tola already exists.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
-    <string name="didi_already_exist">Didi already exist.</string>
+    <string name="didi_already_exist">Didi already exists.</string>
     <string name="location_added_text">Location Added</string>
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
@@ -161,7 +161,7 @@
     <string name="training_videos">Training Videos</string>
     <string name="language_text">Language</string>
     <string name="productive_asset_owned_by_family"><!--Productive asset owned by Family-->Earning ratio</string>
-    <string name="total_productive_asset_value"> = ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">Complete PAT Survey</string>
     <string name="complete">Complete</string>
     <string name="complete_section_2">Complete Section 2</string>
@@ -275,5 +275,37 @@
     <string name="enter_amount">Enter Amount</string>
 
     <string name="bpc_result_text">BPC Result:</string>
+    <string name="permission_dialog_prompt_message">Camera Permission required, please grant permission.</string>
+    <string name="permission_required_prompt_title">Permission Required</string>
+    <string name="ultra_poor_didis_verified_text_plural">"%1$s Ultra poor Didis verified"</string>
+    <string name="ultra_poor_didis_verified_text_singular">"%1$s Ultra poor Didis verified"</string>
+    <string name="no_data_form_a_not_generated_text">No Data! Form A not generated</string>
+    <string name="no_data_form_b_not_generated_text">No Data! Form B not generated</string>
+    <string name="no_data_form_c_not_generated_text">No Data! Form C not generated</string>
+    <string name="no_form_available_yet_text">No Form available yet.</string>
+    <string name="digital_form_a_title">Digital Form A</string>
+    <string name="digital_form_b_title">Digital Form B</string>
+    <string name="digital_form_c_title">Digital Form C</string>
+    <string name="settings_screen_title">Settings</string>
+    <string name="logout_sync_error_message">Sync is required before logout,Please sync your data before logout.</string>
+    <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
+    <string name="min_battery_text">(Min 30% required)</string>
+    <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
+    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="empty_tola_success_message">This Village does not have any tola.</string>
+
+    <string name="total_poor_didis">Total Poor Didis</string>
+    <string name="total_ultra_poor_didis">Total Ultra Poor Didis</string>
+    <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
+    <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
+    <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
+    <string name="added_tolas_text_plural">" added Tolas"</string>
+    <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="take_photo_text">Take Photo</string>
+    <string name="retake_photo_text">Retake Photo"</string>
+    <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
+    <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+
 
 </resources>

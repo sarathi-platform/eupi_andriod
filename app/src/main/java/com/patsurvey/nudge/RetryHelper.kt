@@ -300,7 +300,8 @@ object RetryHelper {
                                             var casteName = BLANK_STRING
                                             val singleTola =
                                                 tolaDao?.fetchSingleTola(didi.cohortId)
-                                            val singleCaste = castListDao?.getCaste(didi.castId)
+                                            val singleCaste = castListDao?.getCaste(didi.castId,
+                                                prefRepo?.getAppLanguageId()?:2)
                                             singleTola?.let {
                                                 tolaName = it.name
                                             }
@@ -476,7 +477,8 @@ object RetryHelper {
                                             patSurveyStatus = item.patSurveyStatus ?: 0,
                                             section1Status = item.section1Status ?: 0,
                                             section2Status = item.section2Status ?: 0,
-                                            didiId = item.beneficiaryId ?: 0
+                                            didiId = item.beneficiaryId ?: 0,
+                                            shgFlag = item.shgFlag ?:-1
                                         )
                                         if (item?.answers?.isNotEmpty() == true) {
                                             item?.answers?.forEach { answersItem ->
@@ -629,7 +631,7 @@ object RetryHelper {
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = castListDao?.getCaste(didi.castId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId,prefRepo?.getAppLanguageId()?:2)
 //                                            singleTola?.let {
 //                                                tolaName = it.name
 //                                            }
@@ -695,7 +697,8 @@ object RetryHelper {
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
-                                                val singleCaste = castListDao?.getCaste(didi.castId)
+                                                val singleCaste = castListDao?.getCaste(didi.castId,
+                                                    prefRepo?.getAppLanguageId()?:2)
 //                                            singleTola?.let {
 //                                                tolaName = it.name
 //                                            }
@@ -812,10 +815,10 @@ object RetryHelper {
         }
     }
 
-    fun retryVillageListApi(saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
+    fun retryVillageListApi(request: String,saveVillageList: (success: Boolean, villageList: List<VillageEntity>?) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val response = apiService?.userAndVillageListAPI(prefRepo?.getAppLanguageId() ?: 2)
+                val response = apiService?.userAndVillageListAPI(request)
                 withContext(Dispatchers.IO) {
                     if (response?.status.equals(SUCCESS, true)) {
                         response?.data?.let {
@@ -829,7 +832,7 @@ object RetryHelper {
                             if (it.villageList?.isNotEmpty() == true) {
                                 villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
-                                saveVillageList(true, villageListDao?.getAllVillages())
+                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
                             } else {
                                 saveVillageList(false, listOf())
                             }

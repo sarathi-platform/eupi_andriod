@@ -2,6 +2,7 @@ package com.patsurvey.nudge.model.response
 
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.database.QuestionEntity
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 data class QuestionListResponse(
 
@@ -52,5 +53,8 @@ data class OptionsItem(
 
 	@SerializedName("count")
 	var count: Int? = 0,
+
+	@SerializedName("optionImage")
+	var optionImage: String? = BLANK_STRING,
 
 )

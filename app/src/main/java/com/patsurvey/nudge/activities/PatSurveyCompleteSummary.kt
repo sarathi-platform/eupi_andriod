@@ -48,6 +48,7 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 
 @Composable
 fun PatSurveyCompleteSummary(
@@ -190,7 +191,7 @@ fun PatSurveyCompleteSummary(
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
                         SectionOneSummeryItem(index = index+1, questionDisplay = question.questionSummary?: BLANK_STRING,
-                            answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0)
+                            answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
                     }
 
                     if (answerSummeryList.isNotEmpty()) {
@@ -215,7 +216,8 @@ fun PatSurveyCompleteSummary(
                                 index = index,
                                 quesSummery = answer.summary.toString(),
                                 answerValue = answer.answerValue?: BLANK_STRING,
-                                questionType = answer.type
+                                questionType = answer.type,
+                                questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                             )
                         }
                     }

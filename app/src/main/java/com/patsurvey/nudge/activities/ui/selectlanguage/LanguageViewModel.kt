@@ -6,6 +6,7 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
   val prefRepo: PrefRepo,
-  val languageListDao: LanguageListDao
+  val languageListDao: LanguageListDao,
+  val villageListDao: VillageListDao
 ) :BaseViewModel(){
 
 
@@ -48,4 +50,14 @@ class LanguageViewModel @Inject constructor(
         networkErrorMessage.value= errorModel?.message.toString()
     }
 
+    fun updateSelectedVillage(languageId:Int) {
+        val villageId=prefRepo.getSelectedVillage().id
+        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                val villageEntity = villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
+                prefRepo.saveSelectedVillage(village = villageEntity)
+            }
+        }
+
+    }
 }

@@ -190,7 +190,8 @@ class SurveySummaryViewModel @Inject constructor(
                                             AnswerDetailDTOListItem(
                                                 questionId = it.questionId,
                                                 section = it.actionType,
-                                                options = optionList
+                                                options = optionList,
+                                                assetAmount = it.assetAmount
                                             )
                                         )
                                     } catch (e: Exception) {
@@ -199,16 +200,25 @@ class SurveySummaryViewModel @Inject constructor(
                                 }
                             }
                             val passingMark=questionDao.getPassingScore()
+                            var comment= BLANK_STRING
+                            if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                 comment= BLANK_STRING
+                            else {
+                               comment =if(didi.score< passingMark) LOW_SCORE else {
+                                   if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                       TYPE_EXCLUSION
+                                   }else BLANK_STRING}
+                            }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
                                     id = if (didi.serverId == 0) didi.id else didi.serverId,
                                     score = didi.score,
-                                    comment = if(didi.score< passingMark) LOW_SCORE else {
-                                                 if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                                        TYPE_EXCLUSION
-                                                            }else BLANK_STRING},
+                                    comment =comment,
                                     type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                    result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                                    else {
+                                        if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    }
                                 )
                             )
                             answeredDidiList.add(
@@ -224,7 +234,8 @@ class SurveySummaryViewModel @Inject constructor(
                                     answerDetailDTOList = qList,
                                     patSurveyStatus = didi.patSurveyStatus,
                                     section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status
+                                    section1Status = didi.section1Status,
+                                    shgFlag = didi.shgFlag
                                 )
                             )
                         }
@@ -314,7 +325,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(stepId, false)
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
@@ -342,7 +353,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
-                                    stepsListDao.updateNeedToPost(step.id, false)
+                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
                                 }
                             }
                         }
@@ -373,7 +384,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -381,7 +392,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -432,7 +443,7 @@ class SurveySummaryViewModel @Inject constructor(
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, true)
+            stepsListDao.updateNeedToPost(stepId, villageId, true)
             val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
             if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
                 stepsListDao.markStepAsInProgress(
@@ -440,7 +451,7 @@ class SurveySummaryViewModel @Inject constructor(
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, true)
+                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
             }
             prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
         }
@@ -748,9 +759,9 @@ class SurveySummaryViewModel @Inject constructor(
 
     fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villagId = prefRepo.getSelectedVillage().id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villagId)
-            val updatedList = didiDao.getAllDidisForVillage(villageId = villagId)
+            val villageId = prefRepo.getSelectedVillage().id
+            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villageId)
+            val updatedList = didiDao.getAllDidisForVillage(villageId = villageId)
             try {
                 val oldBeneficiaryIdSelected = mutableListOf<Int>()
                 oldDidiList.forEach {
@@ -764,7 +775,7 @@ class SurveySummaryViewModel @Inject constructor(
                     BpcUpdateSelectedDidiRequest(
                         oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
                         newBeneficiaryIdSelected = newBeneficiaryIdSelected,
-                        villageId = villagId
+                        villageId = villageId
                     )
                 )
                 if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
@@ -794,7 +805,7 @@ class SurveySummaryViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(bpcStep.id, false)
+                            stepsListDao.updateNeedToPost(bpcStep.id, villageId, false)
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")

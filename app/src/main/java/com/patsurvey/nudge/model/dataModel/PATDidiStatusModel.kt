@@ -38,6 +38,10 @@ data class PATDidiStatusModel(
     var score: Double= 0.0,
 
     @ColumnInfo(name = "comment")
-    var comment: String ?= TYPE_EXCLUSION
+    var comment: String ?= TYPE_EXCLUSION,
+
+    @ColumnInfo(name = "shgFlag")
+    var shgFlag: Int
+
 
 )

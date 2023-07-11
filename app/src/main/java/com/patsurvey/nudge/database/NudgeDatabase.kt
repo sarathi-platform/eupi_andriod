@@ -10,6 +10,7 @@ import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
+import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -26,11 +27,11 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_DATABASE_VERSION = 2
+const val NUDGE_DATABASE_VERSION = 3
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
     TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class,
-    BpcSummaryEntity::class, BpcSelectedDidiEntity::class, BpcNonSelectedDidiEntity::class], version = NUDGE_DATABASE_VERSION, exportSchema = false)
+    BpcSummaryEntity::class, BpcSelectedDidiEntity::class, BpcNonSelectedDidiEntity::class, BpcScorePercentageEntity::class], version = NUDGE_DATABASE_VERSION, exportSchema = false)
 @TypeConverters(IntConverter::class, BeneficiaryStepConverter::class,QuestionsOptionsConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
@@ -49,6 +50,7 @@ abstract class NudgeDatabase: RoomDatabase()  {
     abstract fun bpcSummaryDao(): BpcSummaryDao
     abstract fun bpcSelectedDidiDao(): BpcSelectedDidiDao
     abstract fun bpcNonSelectedDidiDao(): BpcNonSelectedDidiDao
+    abstract fun bpcScorePercentageDao(): BpcScorePercentageDao
 
     companion object {
 

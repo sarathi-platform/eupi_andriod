@@ -6,7 +6,11 @@ import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Entity(tableName = VILLAGE_TABLE_NAME)
 data class VillageEntity(
-    @PrimaryKey
+
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "localVillageId")
+    var localVillageId: Int,
+
     @ColumnInfo(name = "id")
     var id: Int,
 
@@ -18,6 +22,9 @@ data class VillageEntity(
 
     @ColumnInfo(name = "stateId")
     val stateId: Int,
+
+    @ColumnInfo(name = "languageId")
+    val languageId: Int,
 
     @TypeConverters(IntConverter::class)
     @ColumnInfo(name = "steps_completed")

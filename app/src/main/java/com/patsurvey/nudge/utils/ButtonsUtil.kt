@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.utils
 
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -50,6 +52,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -61,6 +64,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.rememberAsyncImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -83,6 +89,8 @@ import com.patsurvey.nudge.activities.ui.theme.rejectColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import java.io.File
+import java.util.Locale
 
 @Composable
 fun BlueButton(
@@ -619,7 +627,7 @@ fun ButtonNegativePreview() {
 @Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
-    buttonTitle: String = "Add Tola",
+    buttonTitle: String = stringResource(id = R.string.add_tola),
     icon: ImageVector = Icons.Default.Add,
     onClick: () -> Unit
 ) {
@@ -670,7 +678,7 @@ fun ButtonOutlinePreview() {
 @Composable
 fun ButtonOutline(
     modifier: Modifier = Modifier,
-    buttonTitle: String = "Add Tola",
+    buttonTitle: String = stringResource(id = R.string.add_tola),
     outlineColor: Color = greyBorder,
     textColor: Color = blueDark,
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
@@ -1153,9 +1161,13 @@ fun OutlineButtonCustomPreview(){
     }
 }
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
-fun IncrementDecrementView(modifier: Modifier,optionText:String,
+fun IncrementDecrementView(modifier: Modifier,
+                           optionText:String,
                            currentValue: Int=0,
+                           optionImageUrl:String,
+                           questionFlag:String,
                            onDecrementClick: (Int)->Unit,
                            onIncrementClick: (Int)->Unit,
                            onValueChange: (String) -> Unit){
@@ -1171,7 +1183,48 @@ fun IncrementDecrementView(modifier: Modifier,optionText:String,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-
+            if (questionFlag.equals(QUESTION_FLAG_WEIGHT, true)){
+            val quesImage: File? =
+                optionImageUrl?.let { it1 ->
+                    getImagePath(
+                        LocalContext.current,
+                        it1
+                    )
+                }
+            if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
+                GlideImage(
+                    model = quesImage,
+                    contentDescription = "Question Image",
+                    modifier = Modifier
+                        .width(40.dp)
+                        .height(40.dp),
+                )
+            } else {
+                var imgBitmap: Bitmap? = null
+                if (quesImage?.exists() == true) {
+                    imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
+                }
+                if (quesImage?.exists() == true) {
+                    Image(
+                        painter = rememberAsyncImagePainter(model = imgBitmap),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(50.dp)
+                            .height(50.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
+                } else {
+                    Image(
+                        painter = painterResource(id = R.drawable.pat_sample_icon),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(0.dp)
+                            .height(0.dp),
+                        colorFilter = ColorFilter.tint(textColorDark)
+                    )
+                }
+            }
+        }
             Text(
                 text = optionText,
                 color = Color.Black,
@@ -1332,7 +1385,7 @@ fun incDecValue(operation:Int,value:String):String{
 @Preview(showBackground = true)
 @Composable
 fun IncrementDecrementViewPreview(){
-    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, onValueChange = {})
+    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, optionImageUrl = BLANK_STRING, questionFlag = BLANK_STRING, onValueChange = {})
 }
 
 @Preview(showBackground = true)
@@ -1491,6 +1544,7 @@ fun BlueButtonWithIconWithFixedWidthWithoutIcon(
                 text = buttonText,
                 color = if (shouldBeActive) Color.White else languageItemInActiveBorderBg,
                 modifier = Modifier,
+                textAlign = TextAlign.Center,
                 style = newMediumTextStyle
             )
         }

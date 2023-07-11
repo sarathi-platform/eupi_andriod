@@ -58,7 +58,7 @@ interface TolaDao {
     @Query("SELECT * from $TOLA_TABLE where status = :status")
     fun fetchAllTolaNeedToDelete(status: Int) : List<TolaEntity>
 
-    @Query("SELECT * from $TOLA_TABLE where status = :status and transactionId = :transactionId")
+    @Query("SELECT * from $TOLA_TABLE where status = :status and transactionId != :transactionId")
     fun fetchAllPendingTolaNeedToDelete(status: Int,transactionId: String?) : List<TolaEntity>
 
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId != :transactionId")
@@ -73,8 +73,8 @@ interface TolaDao {
     @Query("SELECT * from $TOLA_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllTolaNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<TolaEntity>
 
-    @Query("SELECT * from $TOLA_TABLE where serverId = :serverId")
-    fun fetchSingleTolaFromServerId(serverId: Int): TolaEntity?
+    @Query("SELECT * from $TOLA_TABLE where id = :id")
+    fun fetchSingleTolaFromServerId(id: Int): TolaEntity?
 
     @Query("Select COUNT(*) FROM $TOLA_TABLE where name = :name AND villageId= :villageId and status = 1")
     fun getTolaExist(name:String,villageId:Int):Int

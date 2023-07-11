@@ -26,10 +26,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,9 +68,6 @@ fun PatSurvaySectionTwoSummaryScreen(
     val screenHeight = configuration.screenHeightDp
 
     val localDensity = LocalDensity.current
-
-    val context = LocalContext.current
-
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -159,7 +159,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                 ) {
                     itemsIndexed(answerSummeryList) { index, answer ->
                       SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString(),
-                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type)
+                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type, questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
                     }
                 }
             }
@@ -283,7 +283,8 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Preview(showBackground = true)
 @Composable
 fun SectionTwoSummeryItemPreview(){
-    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name)
+    SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name,
+        QUESTION_FLAG_WEIGHT)
 }
 
 
@@ -294,7 +295,8 @@ fun SectionTwoSummeryItem(
     index: Int,
     quesSummery:String,
     answerValue:String,
-    questionType: String
+    questionType: String,
+    questionFlag:String
 ) {
     Column(
         modifier = Modifier
@@ -302,16 +304,35 @@ fun SectionTwoSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            var summaryText = "${index+1}. $quesSummery : $answerValue."
+            var summaryText = "$answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
-                if(quesSummery.contains("=")){
-                    summaryText = "${index+1}. $quesSummery."
-                }else{
-                    summaryText = "${index+1}. $answerValue."
-                }
+                summaryText = if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
+                    LocalContext.current.getString(R.string.total_productive_asset_value,answerValue)
+                }else answerValue
             }
             Text(
-                text = summaryText,
+                text = buildAnnotatedString {
+                    withStyle(
+                        SpanStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("${index + 1}. $quesSummery:  ")
+                    }
+                    withStyle(
+                        SpanStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("$summaryText")
+                    }
+                },
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

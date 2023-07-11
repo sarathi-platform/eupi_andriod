@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -87,6 +89,13 @@ fun BpcProgressScreen(
         mutableStateOf(Offset(0f, 0f))
     }
 
+    LaunchedEffect(key1 = true) {
+        bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
+    }
+
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
 
     Surface(
         modifier = Modifier
@@ -118,7 +127,8 @@ fun BpcProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                isVoEndorsementComplete = /*bpcProgreesScreenViewModel.isVoEndorsementComplete.value[village.id] ?:*/ true
+                                isBpcUser = true,
+                                isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it/*
@@ -126,8 +136,7 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
-                                bpcProgreesScreenViewModel.selectedText.value =
-                                    bpcProgreesScreenViewModel.villageList.value[it].name
+                                bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
                                     delay(1000)
@@ -650,6 +659,8 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
                             }
 
+                            bpcProgreesScreenViewModel.isBpcVerificationComplete.value[bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id] = isStepCompleted == StepStatus.COMPLETED.ordinal
+
                             item {
                                 StepsBoxForBpc(
                                     boxTitle = "BPC Verification",
@@ -844,7 +855,8 @@ fun StepsBoxForBpc(
                     if (isCompleted) {
 //                        Spacer(modifier = Modifier.height(4.dp))
                         //TODO add string for other steps when steps is complete.
-                        val subText = "${viewModel.bpcCompletedDidiCount.value} Ultrapoor Didis verified"
+                        val count = viewModel.bpcCompletedDidiCount.value
+                        val subText = if (count > 1) stringResource(R.string.ultra_poor_didis_verified_text_plural, count) else stringResource(R.string.ultra_poor_didis_verified_text_singular, count)
                         if (subText != null || subText != "") {
                             Text(
                                 text = subText,

@@ -109,6 +109,7 @@ fun SurveySummary(
                 navController.navigate(Graph.HOME) {
                     popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                         inclusive = true
+                        saveState = false
                     }
                 }
             } else {

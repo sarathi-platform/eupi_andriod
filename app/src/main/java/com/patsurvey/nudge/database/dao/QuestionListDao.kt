@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.QuestionEntity
-import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.QUESTION_TABLE
 
 @Dao
@@ -16,6 +15,9 @@ interface QuestionListDao {
 
     @Query("Select * FROM $QUESTION_TABLE where questionId = :id")
     fun getQuestion(id: Int): QuestionEntity
+
+    @Query("Select * FROM $QUESTION_TABLE where questionId = :id AND languageId=:languageId")
+    fun getQuestionForLanguage(id: Int,languageId:Int): QuestionEntity
 
     @Query("Select * FROM $QUESTION_TABLE where actionType = :type AND languageId=:languageId ORDER BY `order`")
     fun getQuestionForType(type: String,languageId:Int): List<QuestionEntity>
@@ -30,4 +32,7 @@ interface QuestionListDao {
 
     @Query("SELECT surveyPassingMark from $QUESTION_TABLE LIMIT 1")
     fun getPassingScore(): Int
+
+    @Query("SELECT * FROM $QUESTION_TABLE where languageId=:languageId")
+    fun getAllQuestionsForLanguage(languageId: Int): List<QuestionEntity>
 }

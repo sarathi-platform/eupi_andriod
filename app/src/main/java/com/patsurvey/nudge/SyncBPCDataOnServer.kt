@@ -92,8 +92,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         updatedList.forEach {
             newBeneficiaryIdSelected.add(it.serverId)
         }
-        for(id in oldBeneficiaryIdSelected){
-            if(newBeneficiaryIdSelected.indexOf(id) == -1){
+        for(id in newBeneficiaryIdSelected){
+            if(oldBeneficiaryIdSelected.indexOf(id) == -1){
                 return true
             }
         }
@@ -192,7 +192,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(bpcStep.id, false)
+                            stepsListDao.updateNeedToPost(bpcStep.id, villageId,false)
                             sendBpcMatchScore(networkCallbackListener)
                         }else{
                             withContext(Dispatchers.Main) {
@@ -206,7 +206,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
-                settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }
@@ -249,7 +249,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     }
                 } catch (ex: Exception) {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
-                    settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                    settingViewModel.onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
                     networkCallbackListener.onFailed()
                 }
             } else {
@@ -339,7 +339,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             }
                         }
                     } catch (ex: Exception) {
-                        settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                        settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
                     }
                 }
             } else {
@@ -403,6 +403,20 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             )
                                         }
                                         optionList = tList
+                                    }else{
+                                        tList.add(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = 0,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = it.weight,
+                                                isSelected = false
+                                            )
+                                        )
+
+                                        optionList = tList
                                     }
                                 }
                                 try {
@@ -410,7 +424,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                         AnswerDetailDTOListItem(
                                             questionId = it.questionId,
                                             section = it.actionType,
-                                            options = optionList
+                                            options = optionList,
+                                            assetAmount = it.assetAmount
                                         )
                                     )
                                 } catch (e: Exception) {
@@ -444,7 +459,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 answerDetailDTOList = qList,
                                 patSurveyStatus = didi.patSurveyStatus,
                                 section2Status = didi.section2Status,
-                                section1Status = didi.section1Status
+                                section1Status = didi.section1Status,
+                                shgFlag = didi.shgFlag
                             )
                         )
                     }
@@ -490,7 +506,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     networkCallbackListener.onFailed()
                 }
                 ex.printStackTrace()
-                settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
+                settingViewModel.onCatchError(ex, ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY)
             }
         }
     }

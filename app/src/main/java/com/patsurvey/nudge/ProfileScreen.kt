@@ -4,7 +4,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -24,7 +28,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 
 @Composable
 fun ProfileScreen(
@@ -51,7 +54,8 @@ fun ProfileScreen(
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },
-                backgroundColor = Color.White
+                backgroundColor = Color.White,
+                elevation = 10.dp
             )
         }
     ) {
@@ -135,7 +139,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append(profileScreenVideModel.prefRepo.getPref(PREF_KEY_USER_NAME, ""))
+                        append(profileScreenVideModel.prefRepo.getMobileNumber())
                     }
                 }
             )

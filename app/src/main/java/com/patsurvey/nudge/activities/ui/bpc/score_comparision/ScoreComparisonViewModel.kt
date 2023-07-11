@@ -2,10 +2,12 @@ package com.patsurvey.nudge.activities.ui.bpc.score_comparision
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
@@ -18,6 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,7 +28,8 @@ class ScoreComparisonViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao
+    val answerDao: AnswerDao,
+    val bpcScorePercentageDao: BpcScorePercentageDao
 ): BaseViewModel() {
 
 
@@ -43,8 +47,20 @@ class ScoreComparisonViewModel @Inject constructor(
 
     val exclusionListResponse = mutableStateMapOf<Int, String>()
 
-    init {
+    var minMatchPercentage: Int = 0
+
+    val showLoader = mutableStateOf(false)
+
+    fun init() {
+        getBpcScorePercentage()
         fetchDidiList()
+    }
+
+    private fun getBpcScorePercentage() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val bpcScorePercentageForVillage = bpcScorePercentageDao.getBpcScorePercentageForState(prefRepo.getSelectedVillage().stateId)
+            minMatchPercentage = bpcScorePercentageForVillage.percentage
+        }
     }
 
     fun fetchDidiList() {
@@ -69,6 +85,9 @@ class ScoreComparisonViewModel @Inject constructor(
                     }
                     exclusionListResponse[didi.id] = exclusionResponse
                 }
+            }
+            withContext(Dispatchers.Main) {
+                showLoader.value = false
             }
         }
     }

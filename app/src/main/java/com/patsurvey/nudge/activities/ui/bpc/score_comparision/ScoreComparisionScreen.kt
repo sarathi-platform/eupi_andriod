@@ -34,11 +34,13 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -93,7 +95,6 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.MATCH_PERCENTAGE
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import java.io.File
 
@@ -103,6 +104,11 @@ fun ScoreComparisionScreen(
     navController: NavHostController,
     viewModel: ScoreComparisonViewModel
 ) {
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.showLoader.value = true
+        viewModel.init()
+    }
 
     val filterdDidiList = viewModel.filterDidiList.collectAsState()
 
@@ -132,7 +138,7 @@ fun ScoreComparisionScreen(
     }
 
     val transition = updateTransition(expandBox.value, label = "transition")
-    val colorTransistion = updateTransition(targetState = passPercentage.value > MATCH_PERCENTAGE, label = "colorTransistion")
+    val colorTransistion = updateTransition(targetState = passPercentage.value > viewModel.minMatchPercentage, label = "colorTransistion")
 
     val animateColor by colorTransistion.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
@@ -201,136 +207,152 @@ fun ScoreComparisionScreen(
                         .fillMaxWidth()
                 )
 
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = white)
-                        .pointerInput(true) {
-                            detectTapGestures(onTap = {
-                                focusManager.clearFocus()
-                            })
-                        }
-                        .weight(1f)
-                ) {
-
-                    item {
-                        Spacer(
+                if (viewModel.showLoader.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                            .padding(top = 30.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            color = blueDark,
                             modifier = Modifier
-                                .height(14.dp)
-                                .fillMaxWidth()
+                                .size(28.dp)
+                                .align(Alignment.Center)
                         )
                     }
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = white)
+                            .pointerInput(true) {
+                                detectTapGestures(onTap = {
+                                    focusManager.clearFocus()
+                                })
+                            }
+                            .weight(1f)
+                    ) {
 
-                    item {
-                        Box(
-                            modifier = Modifier
-                                .border(
-                                    width = 1.dp,
-                                    color = animateColor,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .background(animatedBoxBgColor, shape = RoundedCornerShape(6.dp))
-                                .fillMaxWidth()
-                        ) {
-                            Column(Modifier) {
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.Top,
-                                    modifier = Modifier
-                                        .padding(16.dp)
-                                        .clickable {
-                                            if (passPercentage.value < MATCH_PERCENTAGE)
-                                                expandBox.value = !expandBox.value
-                                        },
-                                ) {
-                                    Text(
-                                        text = stringResource(R.string.match_percentage_box_text)
-                                            .replace("{PERCENTAGE}", passPercentage.value.toString(), true),
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(14.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+
+                        item {
+                            Box(
+                                modifier = Modifier
+                                    .border(
+                                        width = 1.dp,
                                         color = animateColor,
-                                        fontFamily = NotoSans,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontSize = 16.sp,
-                                        overflow = TextOverflow.Ellipsis,
-                                        maxLines = 2,
-                                        modifier = Modifier.weight(1f)
+                                        shape = RoundedCornerShape(6.dp)
                                     )
-
-                                    if (passPercentage.value < MATCH_PERCENTAGE) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
-                                            contentDescription = "Expandable Arrow",
-                                            modifier = Modifier
-                                                .rotate(degrees = arrowRotationDegree),
-                                            tint = textColorDark
+                                    .background(animatedBoxBgColor, shape = RoundedCornerShape(6.dp))
+                                    .fillMaxWidth()
+                            ) {
+                                Column(Modifier) {
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.Top,
+                                        modifier = Modifier
+                                            .padding(16.dp)
+                                            .clickable {
+                                                if (passPercentage.value < viewModel.minMatchPercentage)
+                                                    expandBox.value = !expandBox.value
+                                            },
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.match_percentage_box_text)
+                                                .replace("{PERCENTAGE}", passPercentage.value.toString(), true),
+                                            color = animateColor,
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontSize = 16.sp,
+                                            overflow = TextOverflow.Ellipsis,
+                                            maxLines = 2,
+                                            modifier = Modifier.weight(1f)
                                         )
+
+                                        if (passPercentage.value < viewModel.minMatchPercentage) {
+                                            Icon(
+                                                painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
+                                                contentDescription = "Expandable Arrow",
+                                                modifier = Modifier
+                                                    .rotate(degrees = arrowRotationDegree),
+                                                tint = textColorDark
+                                            )
+                                        }
+                                    }
+                                    ExpandableSummaryBox(expanded = expandBox.value)
+                                }
+                            }
+                        }
+
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(10.dp)
+                                    .fillMaxWidth()
+                            )
+                        }
+
+                        item {
+                            Text(
+                                text = buildAnnotatedString
+                                {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(stringResource(R.string.showing_text))
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = greenOnline,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append("${filterdDidiList.value.size}")
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(if (filterdDidiList.value.size > 1) stringResource(R.string.result_text_plural) else  stringResource(R.string.result_text_singular))
                                     }
                                 }
-                                ExpandableSummaryBox(expanded = expandBox.value)
-                            }
+                            )
                         }
-                    }
 
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(10.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-
-                    item {
-                        Text(
-                            text = buildAnnotatedString
-                            {
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = textColorDark,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    )
-                                ) {
-                                    append(stringResource(R.string.showing_text))
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = greenOnline,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    )
-                                ) {
-                                    append("${filterdDidiList.value.size}")
-                                }
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = textColorDark,
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.SemiBold,
-                                        fontFamily = NotoSans
-                                    )
-                                ) {
-                                    append(if (filterdDidiList.value.size > 1) stringResource(R.string.result_text_plural) else  stringResource(R.string.result_text_singular))
-                                }
-                            }
-                        )
-                    }
-
-                    item {
-                        Spacer(
-                            modifier = Modifier
-                                .height(10.dp)
-                                .fillMaxWidth()
-                        )
-                    }
-
-                    itemsIndexed(filterdDidiList.value) { index, didi ->
-                        ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, viewModel = viewModel, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
-                            navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                        item {
+                            Spacer(
+                                modifier = Modifier
+                                    .height(10.dp)
+                                    .fillMaxWidth()
+                            )
                         }
-                        Spacer(modifier = Modifier.height(10.dp))
-                    }
 
+                        itemsIndexed(filterdDidiList.value) { index, didi ->
+                            ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, viewModel = viewModel, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
+                                navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                            }
+                            Spacer(modifier = Modifier.height(10.dp))
+                        }
+
+                    }
                 }
             }
         }

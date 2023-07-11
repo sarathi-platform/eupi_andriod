@@ -4,8 +4,11 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.location.Location
+import android.location.LocationListener
 import android.net.Uri
 import android.os.Build
+import android.os.Bundle
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
@@ -49,6 +52,8 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
+import java.text.DecimalFormat
+import java.util.function.Consumer
 
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -93,7 +98,7 @@ fun PatDidiSummaryScreen(
     LaunchedEffect(key1 = localContext) {
         patDidiSummaryViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, patDidiSummaryViewModel) {
-            shouldRequestPermission.value = true
+            shouldRequestPermission.value = it
         }
     }
 
@@ -124,6 +129,7 @@ fun PatDidiSummaryScreen(
                 CameraView(
                     modifier = Modifier.fillMaxSize(),
                     outputDirectory = patDidiSummaryViewModel.outputDirectory,
+                    viewModel = patDidiSummaryViewModel,
                     didiEntity = didi.value,
                     executor = patDidiSummaryViewModel.cameraExecutor,
                     onImageCaptured = { uri, photoPath ->
@@ -152,8 +158,8 @@ fun PatDidiSummaryScreen(
 
                     if (shouldRequestPermission.value) {
                         ShowDialog(
-                            title = "Permission Required",
-                            message = "Camera Permission required, please grant permission.",
+                            title = stringResource(R.string.permission_required_prompt_title),
+                            message = stringResource(R.string.permission_dialog_prompt_message),
                             setShowDialog = {
                                 shouldRequestPermission.value = it
                             }
@@ -309,7 +315,8 @@ fun PatDidiSummaryScreen(
                                     Modifier
                                         .padding(0.dp)
                                         .onGloballyPositioned { coordinates ->
-                                            yesNoButtonViewHeight.value = with(localDensity) { coordinates.size.height.toDp() }
+                                            yesNoButtonViewHeight.value =
+                                                with(localDensity) { coordinates.size.height.toDp() }
 
                                         }
                                 ) {
@@ -405,7 +412,8 @@ fun PatDidiSummaryScreen(
                                 ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.photo_camera_icon),
-                                        contentDescription = null
+                                        contentDescription = null,
+                                        tint = textColorDark50
                                     )
                                     Spacer(modifier = Modifier.height(6.dp))
                                     Text(
@@ -422,14 +430,14 @@ fun PatDidiSummaryScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .height(45.dp),
-                                buttonTitle = "Retake Photo"
+                                buttonTitle = stringResource(id = R.string.retake_photo_text)
                             ) {
                                 patDidiSummaryViewModel.setCameraExecutor()
                                 patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         } else {
                             BlueButtonWithIcon(
-                                buttonText = "Take Photo",
+                                buttonText = stringResource(id = R.string.take_photo_text),
                                 icon = Icons.Default.Add,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -458,7 +466,7 @@ fun PatDidiSummaryScreen(
                         }
                     },
                 negativeButtonRequired = false,
-                positiveButtonText = "Next",
+                positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")
@@ -484,14 +492,106 @@ fun handleImageCapture(
     viewModal.photoUri = uri
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
-    val location = LocationUtil.getLocation(context) ?: LocationCoordinates(0.0, 0.0)
+
+    var location: LocationCoordinates = LocationCoordinates()
+
+    val decimalFormat = DecimalFormat("#.#######")
+    if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+        var locationByGps: Location? = null
+        var locationByNetwork: Location? = null
+        val gpsConsumer = Consumer<Location> { gpsLocation ->
+            if (gpsLocation != null) {
+                locationByGps = gpsLocation
+                location = LocationCoordinates(
+                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                )
+            }
+        }
+        val networkConsumer = Consumer<Location> { networkLocation ->
+            if (networkLocation != null) {
+                locationByNetwork = networkLocation
+                location = LocationCoordinates(
+                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                )
+            }
+        }
+        LocationUtil.getLocation(
+            context = context,
+            gpsConsumer,
+            networkConsumer
+        )
+    } else {
+        var locationByGps: Location? = null
+        var locationByNetwork: Location? = null
+
+        val gpsLocationListener: LocationListener = object : LocationListener {
+            override fun onLocationChanged(gpsLocation: Location) {
+                locationByGps = gpsLocation
+                location = LocationCoordinates(
+                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
+                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+
+                )
+            }
+
+            override fun onStatusChanged(
+                provider: String,
+                status: Int,
+                extras: Bundle
+            ) {
+            }
+
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+
+        val networkLocationListener: LocationListener = object :
+            LocationListener {
+            override fun onLocationChanged(networkLocation: Location) {
+                locationByNetwork = networkLocation
+                location = LocationCoordinates(
+                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
+                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+
+                )
+            }
+
+            override fun onStatusChanged(
+                provider: String,
+                status: Int,
+                extras: Bundle
+            ) {
+            }
+
+            override fun onProviderEnabled(provider: String) {}
+            override fun onProviderDisabled(provider: String) {}
+        }
+        LocationUtil.getLocation(
+            context = context,
+            gpsLocationListener,
+            networkLocationListener
+        )
+    }
+
     viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
+
+//    val requestFile=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),uri.toFile())
+//    val imageFilePart=MultipartBody.Part.createFormData("file",uri.toFile().name,requestFile)
+//    val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiEntity.id.toString())
+//
+//
+//    viewModal.uploadDidiImage(imageFilePart,requestDidiId)
+
 }
 
 private fun requestCameraPermission(
     context: Activity,
     viewModal: PatDidiSummaryViewModel,
-    requestPermission: () -> Unit
+    requestPermission: (Boolean) -> Unit
 ) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
         when {
@@ -508,6 +608,7 @@ private fun requestCameraPermission(
                 Manifest.permission.READ_EXTERNAL_STORAGE
             ) == PackageManager.PERMISSION_GRANTED -> {
                 Log.i("PatImagePreviewScreen", "Permission previously granted")
+                requestPermission(false)
             }
 
             ActivityCompat.shouldShowRequestPermissionRationale(
@@ -536,7 +637,7 @@ private fun requestCameraPermission(
             else -> {
                 viewModal.shouldShowCamera.value = false
                 Log.d("requestCameraPermission: ", "permission not granted")
-                requestPermission()
+                requestPermission(true)
             }
         }
     } else {
@@ -568,7 +669,7 @@ private fun requestCameraPermission(
             else -> {
                 viewModal.shouldShowCamera.value = false
                 Log.d("requestCameraPermission: ", "permission not granted")
-                requestPermission()
+                requestPermission(true)
             }
         }
     }
