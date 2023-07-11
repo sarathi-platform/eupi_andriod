@@ -28,6 +28,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
@@ -216,12 +217,8 @@ class SettingViewModel @Inject constructor(
     fun isFifthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostPATDidi(
-                    needsToPostPAT = true,
-                    villageId = prefRepo.getSelectedVillage().id
-                ).isEmpty()
-                && didiDao.getAllNeedToPostPATDidi(
-                    needsToPostPAT = true,
+            if (didiDao.getAllNeedToPostVoDidi(
+                    needsToPostVo  = true,
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
                 && isStatusStepStatusSync(4)
@@ -250,7 +247,7 @@ class SettingViewModel @Inject constructor(
                 syncBPCPercentage.value = 1f
                 showSyncDialog.value = false
                 showBPCSyncDialog.value = false
-                bpcSyncStatus.value = 3
+                bpcSyncStatus.value = 1
             }
         }
         /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -349,7 +346,7 @@ class SettingViewModel @Inject constructor(
                     networkErrorMessage.value = SYNC_FAILED
                     hitApiStatus.value = 3
                     syncBPCPercentage.value = 1f
-                    bpcSyncStatus.value = 3
+                    bpcSyncStatus.value = 1
                 }
             })
         }
@@ -409,22 +406,26 @@ class SettingViewModel @Inject constructor(
         showAPILoader.value = true
         hitApiStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiInterface.performLogout()
-            if (response.status.equals(SUCCESS, true)) {
-                withContext(Dispatchers.Main) {
-                    networkCallbackListener.onSuccess()
+            try {
+                val response = apiInterface.performLogout()
+                if (response.status.equals(SUCCESS, true)) {
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onSuccess()
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                    networkCallbackListener.onFailed()
-                }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.LOGOUT_API)
             }
         }
     }
 
     fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            casteListDao.deleteCasteTable()
+            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()

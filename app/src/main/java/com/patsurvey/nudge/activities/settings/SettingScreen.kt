@@ -269,7 +269,7 @@ fun SettingScreen(
                                     if(!viewModel.prefRepo.isUserBPC()) {
                                         viewModel.showSyncDialog.value = true
                                     } else {
-                                        syncBPCStatus.value = 0
+                                        syncBPCStatus.value = viewModel.bpcSyncStatus.value
                                         isBPCDataNeedToBeSynced.value = false
                                         viewModel.showBPCSyncDialog.value = true
                                     }

@@ -21,7 +21,8 @@ enum class ApiType {
     PAT_BPC_SURVEY_SUMMARY,
     BPC_PAT_SAVE_ANSWER_SUMMARY,
     BPC_UPDATE_DIDI_LIST_API,
-    BPC_SAVE_MATCH_PERCENTAGE_API;
+    BPC_SAVE_MATCH_PERCENTAGE_API,
+    LOGOUT_API;
 
     /*    fun fromString(apiName: String): ApiType {
             when (apiName) {

@@ -300,10 +300,10 @@
     <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
     <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
     <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
-    <string name="added_tolas_text_plural">" added Tolas"</string>
-    <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="added_tolas_text_plural"> added Tolas</string>
+    <string name="added_tolas_text_singular"> added Tola</string>
     <string name="take_photo_text">Take Photo</string>
-    <string name="retake_photo_text">Retake Photo"</string>
+    <string name="retake_photo_text">Retake Photo</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
     <string name="latest_status_text">"Latest Status: "</string>

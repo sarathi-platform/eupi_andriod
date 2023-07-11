@@ -10,6 +10,7 @@ import com.patsurvey.nudge.utils.ApiType.DIDI_EDIT_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
 import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
+import com.patsurvey.nudge.utils.ApiType.LOGOUT_API
 import com.patsurvey.nudge.utils.ApiType.PAT_BPC_QUESTION_API
 import com.patsurvey.nudge.utils.ApiType.PAT_BPC_SURVEY_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_QUESTION_API
@@ -28,6 +29,7 @@ object ApiServicesHelper {
 
     const val SUBPATH_AUTH_GENERATE_OTP = "/auth-api/user/generate-otp"
     const val SUBPATH_AUTH_VALIDATE_OTP = "/auth-api/user/validate-otp"
+    const val SUBPATH_AUTH_LOGOUT = "/auth-api/user/logout"
 
     const val SUBPATH_USER_VILLAGE_LIST = "/read-api/user/view"
     const val SUBPATH_STEP_LIST = "/read-api/config/step/get"
@@ -76,6 +78,7 @@ object ApiServicesHelper {
             BPC_SAVE_MATCH_PERCENTAGE_API -> SUBPATH_BPC_SAVE_MATCH_PERCENTAGE
             ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY -> SUBPATH_PAT_SAVE_SUMMARY
             ApiType.DIDI_DELETE_API -> SUBPATH_DELETE_DIDI
+            LOGOUT_API -> SUBPATH_AUTH_LOGOUT
 
         }
     }

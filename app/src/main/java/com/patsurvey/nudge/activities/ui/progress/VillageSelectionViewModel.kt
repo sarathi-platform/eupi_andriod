@@ -671,7 +671,7 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
-        fetchCastList()
+//        fetchCastList()
     }
     private fun downloadImageFiles(){
 

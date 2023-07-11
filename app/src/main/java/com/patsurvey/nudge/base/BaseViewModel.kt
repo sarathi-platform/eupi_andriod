@@ -147,13 +147,13 @@ abstract class BaseViewModel : ViewModel(){
                 Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
-                        if(!RetryHelper.tokenExpired.value) {
+                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
                             RetryHelper.tokenExpired.value = true
                         }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
                     }
                     RESPONSE_CODE_CONFLICT -> {
-                        if(!RetryHelper.tokenExpired.value) {
+                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
                             RetryHelper.tokenExpired.value = true
                         }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, message = e.response()?.message()))

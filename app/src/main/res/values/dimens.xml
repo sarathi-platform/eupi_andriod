@@ -60,10 +60,10 @@
     <dimen name="otp_box_width">56dp</dimen>
     <dimen name="otp_box_height_for_dialog">46dp</dimen>
     <dimen name="otp_box_width_for_dialog">44dp</dimen>
-    <dimen name="filter_image_height">40</dimen>
-    <dimen name="filter_image_width">40</dimen>
-    <dimen name="ques_image_width">60</dimen>
-    <dimen name="ques_image_height">60</dimen>
+    <dimen name="filter_image_height">40dp</dimen>
+    <dimen name="filter_image_width">40dp</dimen>
+    <dimen name="ques_image_width">60dp</dimen>
+    <dimen name="ques_image_height">60dp</dimen>
 
 
 </resources>

@@ -40,6 +40,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0f
             }
             if(isBPCDidiNeedToBeReplaced()) {
@@ -141,10 +142,11 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         }
                     }
                     updateBpcPatStatusToNetwork(networkCallbackListener)
-                } else
-                    withContext(Dispatchers.Main){
+                } else {
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
+                }
                 if(!response.lastSyncTime.isNullOrEmpty()){
                     updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
@@ -173,10 +175,11 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         }
                     }
                     updateBpcPatStatusToNetwork(networkCallbackListener)
-                } else
-                    withContext(Dispatchers.Main){
+                } else {
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
+                }
                 if(!response.lastSyncTime.isNullOrEmpty()){
                     updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
@@ -192,17 +195,19 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.Main) {
+                    delay(1000)
                     syncPercentage.value = 0.4f
                 }
                 val villageId = prefRepo.getSelectedVillage().id
                 val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 val bpcStep = stepList.last()
                 if(bpcStep.workFlowId>0){
-                    val response = apiService.editWorkFlow(
+
+                    withContext(Dispatchers.IO){
+                        val response = apiService.editWorkFlow(
                         listOf(
                             EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.getStepFromOrdinal(bpcStep.isComplete))
                         ) )
-                    withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
@@ -234,6 +239,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0.6f
             }
             if (!settingViewModel.isBPCScoreSaved()) {
@@ -244,10 +250,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val bpcStep =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                             .last()
-                    val matchPercentage = calculateMatchPercentage(
-                        didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal },
-                        passingScore
-                    )
+                    val matchPercentage = calculateMatchPercentage(didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }, passingScore)
                     val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                         programId = bpcStep.programId,
                         score = matchPercentage,
@@ -293,6 +296,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0.8f
             }
             val needToPostPatDidi =
@@ -378,6 +382,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
+                    delay(1000)
                     syncPercentage.value = 0.2f
                 }
                 var optionList= emptyList<OptionsItem>()
