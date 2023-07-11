@@ -3,7 +3,6 @@ package com.patsurvey.nudge.utils
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Criteria
 import android.location.Location
@@ -176,7 +175,8 @@ object LocationUtil {
                     )
                 }
             } else {
-                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
+//                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(
                 context,
@@ -249,7 +249,8 @@ object LocationUtil {
                 }
 
             } else {
-                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
+                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
+//                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
 
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(

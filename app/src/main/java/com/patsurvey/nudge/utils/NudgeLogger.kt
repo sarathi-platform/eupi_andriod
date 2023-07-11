@@ -96,7 +96,7 @@ object LogWriter {
     private const val FILE_NAME_SUFFIX = ".log"
 
     // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
-    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 128L else 1L) *1024*1024 // collect up to 1 MB of log files // 128MB for debug builds
+    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 1L) *1024*1024 // collect up to 1 MB of log files // 128MB for debug builds
     private const val SUPPORT_LOG_FILE_NAME_PREFIX = "nudge_log_"
     private const val SUPPORT_LOG_FILE_NAME_SUFFIX = ".txt"
 
@@ -358,7 +358,7 @@ object LogWriter {
         val context = NudgeCore.getAppContext()
         try {
 
-            val logDir = context.cacheDir
+            val logDir = NudgeCore.getAppContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
             val logFile = File(logDir, getSupportLogFileName())
             if (logFile.isFile) logFile.delete()
 
@@ -374,7 +374,7 @@ object LogWriter {
             val subject = "Sarathi debug log - Email: $email UserId: $sub"
             val message = "The following individual logs are contained within the attachment:\n\n"
             withContext(Dispatchers.Main) {
-                share(context = context, logFile, arrayOf("anupam.bhardwaj@tothenew.com"), subject, message)?.let {
+                share(context = context, logFile, arrayOf("anupam.bhardwaj@tothenew.com", "anas.mansoori@tothenew.com", "suchit.kapoor@tothenew.com", "varun.mittal@tothenew.com"), subject, message)?.let {
                     NudgeCore.startExternalApp(it)
                 }
             }

@@ -13,6 +13,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,7 +47,11 @@ class ConfigViewModel @Inject constructor(
                 }*/
                 withContext(Dispatchers.IO) {
                     if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
+                        response.data?.let { it ->
+                            it.languageList.forEach { language ->
+                                NudgeLogger.d("ConfigViewModel", "$language")
+                            }
+
                             languageListDao.insertAll(it.languageList)
                             /*it.image_profile_link.forEach {
                                 //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
