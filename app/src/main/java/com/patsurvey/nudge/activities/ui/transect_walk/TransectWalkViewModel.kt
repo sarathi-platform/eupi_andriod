@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.transect_walk
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -130,7 +131,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun addTolasToNetwork() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val jsonTola = JsonArray()
             val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
 //            val filteredTolaList = tolaList
@@ -204,7 +205,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun checkTolaAddStatus(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val tolaList = tolaDao.fetchPendingTola(true,"")
             if(tolaList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
@@ -246,7 +247,7 @@ class TransectWalkViewModel @Inject constructor(
 
     private fun deleteTolaToNetwork() {
         NudgeLogger.e("delete tola","called")
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
@@ -290,7 +291,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun updateTolasToNetwork() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
@@ -332,7 +333,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun checkTolaUpdateStatus(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val tolaList = tolaDao.fetchAllPendingTolaNeedToUpdate(true,"")
             if(tolaList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
@@ -360,7 +361,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun checkTolaDeleteStatus(){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val tolaList = tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"")
             if(tolaList.isNotEmpty()) {
                 val ids: ArrayList<String> = arrayListOf()
@@ -390,7 +391,7 @@ class TransectWalkViewModel @Inject constructor(
 
 
     fun removeTola(tolaId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
                 val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
@@ -447,7 +448,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     private fun deleteDidisForTola(tolaId: Int , isOnline: Boolean) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 val didList = didiDao.getDidisForTola(tolaId)
                 didiDao.deleteDidisForTola(
@@ -484,7 +485,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun updateTola(id: Int, newName: String, newLocation: LocationCoordinates?, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val updatedTola = TolaEntity(
                 id = id,
                 name = newName,
@@ -530,7 +531,7 @@ class TransectWalkViewModel @Inject constructor(
 
     fun fetchTolaList(villageId: Int){
         showLoader.value = true
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 _tolaList.emit(tolaDao.getAllTolasForVillage(villageId))
                 showLoader.value = false
@@ -542,7 +543,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun setVillage(villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val village = villageListDao.getVillage(villageId)
             withContext(Dispatchers.Main) {
                 villageEntity.value = village
@@ -555,7 +556,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun markTransectWalkComplete(villageId: Int, stepId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkComplete -> called")
             val existingList = villageListDao.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
@@ -598,7 +599,7 @@ class TransectWalkViewModel @Inject constructor(
         isOnline: Boolean,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> called")
             val step = stepsListDao.getStepForVillage(villageId, stepId)
             stepsListDao.markStepAsCompleteOrInProgress(
@@ -674,7 +675,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun isTransectWalkComplete(stepId: Int, villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val isComplete = stepsListDao.isStepComplete(
                 stepId,
                 villageId = villageId
@@ -686,7 +687,7 @@ class TransectWalkViewModel @Inject constructor(
     }
 
     fun isVoEndorsementCompleteForVillage(villageId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber}
             val isComplete = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
             isVoEndorsementComplete.value = isComplete == StepStatus.COMPLETED.ordinal
@@ -698,7 +699,7 @@ class TransectWalkViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
                 NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> called")
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)

@@ -5,8 +5,15 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.patsurvey.nudge.utils.NudgeLogger
 import dagger.hilt.android.HiltAndroidApp
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
 
 @HiltAndroidApp
 class MyApplication: Application() {
@@ -15,11 +22,34 @@ class MyApplication: Application() {
         instance = this
     }
     companion object {
+        private val TAG = MyApplication::class.java.simpleName
+
         lateinit var instance: MyApplication
 
         fun applicationContext(): Context {
             return instance.applicationContext
         }
+
+        private val applicationScope = CoroutineScope(SupervisorJob())
+        private fun scope(): CoroutineScope {
+            return applicationScope
+        }
+
+        fun appScopeLaunch(coroutineContext: CoroutineContext = Dispatchers.Default, tag: String = TAG, message: String? = "appScopeLaunch", func: suspend () -> Unit): Job? {
+            try {
+                return scope().launch(coroutineContext) {
+                    try {
+                        func()
+                    } catch (ex: Throwable) {
+                        NudgeLogger.e(tag, "appScopeLaunch $message", ex, true)
+                    }
+                }
+            } catch (ex: Throwable) {
+                NudgeLogger.e(tag, message ?: "appScopeLaunch", ex)
+            }
+            return null
+        }
+
     }
     private val localizationDelegate = LocalizationApplicationDelegate()
 
