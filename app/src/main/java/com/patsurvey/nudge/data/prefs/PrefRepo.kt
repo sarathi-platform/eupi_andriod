@@ -62,4 +62,8 @@ interface PrefRepo {
 
    fun isUserBPC(): Boolean
 
+   fun setLastSyncTime(lastSyncTime: Long)
+
+   fun getLastSyncTime(): Long
+
 }

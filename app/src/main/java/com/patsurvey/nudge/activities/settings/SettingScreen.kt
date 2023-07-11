@@ -270,7 +270,7 @@ fun SettingScreen(
                                     if(!viewModel.prefRepo.isUserBPC()) {
                                         viewModel.showSyncDialog.value = true
                                     } else {
-                                        syncBPCStatus.value = 0
+                                        syncBPCStatus.value = viewModel.bpcSyncStatus.value
                                         isBPCDataNeedToBeSynced.value = false
                                         viewModel.showBPCSyncDialog.value = true
                                     }
@@ -612,6 +612,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -662,6 +672,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -714,6 +734,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -765,6 +795,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -815,6 +855,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -897,7 +947,7 @@ fun showSyncDialog(
                         }
 
                         if (isInternetConnected
-                            && (batteryLevel > 30)
+                            && (batteryLevel >= 30)
                             && !settingViewModel.showLoader.value
                             && isDataNeedToBeSynced.value == 1
                         ) {
@@ -1101,6 +1151,16 @@ fun showBPCSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                         }
@@ -1136,7 +1196,7 @@ fun showBPCSyncDialog(
                                 }
 
                                 Text(
-                                    text = "Please don't close the app or switch off the phone.",
+                                    text = stringResource(R.string.do_not_close_app_message),
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
@@ -1151,7 +1211,7 @@ fun showBPCSyncDialog(
                         }
 
                         if ((isInternetConnected
-                                    && (batteryLevel > 30)
+                                    && (batteryLevel >= 30)
                                     && !settingViewModel.showLoader.value)
                                     && (isBPCDataNeedToBeSynced.value)
                         ) {

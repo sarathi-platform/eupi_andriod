@@ -275,8 +275,8 @@
     <string name="min_battery_text">(ন্যূনতম 30% প্রয়োজন)</string>
     <string name="do_not_close_app_message">অনুগ্রহ করে অ্যাপটি বন্ধ করবেন না বা ফোনটি বন্ধ করবেন না।</string>
 
-    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
-    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="vo_endorsement_completed_village_banner_text">VO অনুমোদন সম্পন্ন</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC অনুমোদন সম্পন্ন</string>
     <string name="empty_tola_success_message">This Village does not have any tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
@@ -284,11 +284,17 @@
     <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
     <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
     <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
-    <string name="added_tolas_text_plural">" added Tolas"</string>
-    <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="added_tolas_text_plural"> added Tolas</string>
+    <string name="added_tolas_text_singular"> added Tola</string>
     <string name="take_photo_text">ছবি তোল</string>
     <string name="retake_photo_text">ছবি আবার তুলুন</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+    <string name="latest_status_text">"সর্বশেষ অবস্থা: "</string>
+    <string name="ranking_text_rich">ধনী</string>
+    <string name="ranking_text_medium">মধ্যম</string>
+    <string name="ranking_text_poor">দরিদ্র</string>
+    <string name="crp_group_name_text">CRP গ্রুপের নাম</string>
+    <string name="current_status_text">এখনকার অবস্থা:</string>
 
 </resources>

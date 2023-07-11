@@ -52,6 +52,7 @@ import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.video.VideoItem
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -382,6 +383,10 @@ fun roundOffDecimal(number: Double): Double? {
     return df.format(number).toDouble()
 }
 
+fun roundOffDecimalPoints(number: Double): String {
+    return String.format("%.2f", number)
+}
+
 fun getImagePath(context: Context, imagePath:String): File {
     val imageName = getFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
@@ -413,4 +418,15 @@ private fun getMimeType(file: File): String? {
         type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     }
     return type
+}
+
+fun updateLastSyncTime(prefRepo:PrefRepo,lastSyncTime:String){
+    val saveSyncTime= prefRepo.getPref(LAST_SYNC_TIME,0L)
+    if(saveSyncTime>0){
+        val compValue=lastSyncTime.toLong().compareTo(saveSyncTime)
+        if(compValue>0){
+            prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+        }
+
+    }else prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
 }

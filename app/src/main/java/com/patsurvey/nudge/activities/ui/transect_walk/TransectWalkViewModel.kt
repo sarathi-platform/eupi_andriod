@@ -35,6 +35,7 @@ import com.patsurvey.nudge.utils.TOLA_COUNT
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -174,6 +175,9 @@ class TransectWalkViewModel @Inject constructor(
                 } else {
                     checkTolaAddStatus()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkTolaAddStatus()
             }
@@ -230,6 +234,10 @@ class TransectWalkViewModel @Inject constructor(
                 } else {
                     deleteTolaToNetwork()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 deleteTolaToNetwork()
             }
@@ -270,6 +278,11 @@ class TransectWalkViewModel @Inject constructor(
                 } else {
                     checkTolaDeleteStatus()
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 checkTolaDeleteStatus()
             }
@@ -309,6 +322,9 @@ class TransectWalkViewModel @Inject constructor(
                 } else {
                     checkTolaUpdateStatus()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 checkTolaUpdateStatus()
             }
@@ -334,6 +350,11 @@ class TransectWalkViewModel @Inject constructor(
                         }
                     }
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             }
         }
     }
@@ -357,6 +378,10 @@ class TransectWalkViewModel @Inject constructor(
                     }
                     updateTolasToNetwork()
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 updateTolasToNetwork()
             }
@@ -407,6 +432,12 @@ class TransectWalkViewModel @Inject constructor(
                             tolaDao.setNeedToPost(listOf(tolaId), true)
                             networkCallbackListener.onFailed()
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
+
+
                     }
                 }
             } catch (ex: Exception) {
@@ -437,6 +468,9 @@ class TransectWalkViewModel @Inject constructor(
                         Log.d("TransectWalkViewModel", "Didids Deleted Successfully")
                     } else {
                         Log.d("TransectWalkViewModel", "Didids not Deleted Successfully")
+                    }
+                    if(!deleteDidiApiRespone.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,deleteDidiApiRespone.lastSyncTime)
                     }
                 }
             }
@@ -484,6 +518,9 @@ class TransectWalkViewModel @Inject constructor(
                         tolaDao.setNeedToPost(listOf(updatedTola.id), true)
                         Log.d("updateTola: ", "update tola request failed: ${response.message}")
                         networkCallbackListener.onFailed()
+                    }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
                     }
                 } else {
                     tolaDao.updateNeedToPost(updatedTola.id, true)
@@ -618,6 +655,10 @@ class TransectWalkViewModel @Inject constructor(
                             } else {
                                 networkCallbackListener.onFailed()
                             }
+
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            }
                         }
                     }
                 }
@@ -676,6 +717,10 @@ class TransectWalkViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -700,6 +745,10 @@ class TransectWalkViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(step.id, villageId, false)
+                                }
+
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }

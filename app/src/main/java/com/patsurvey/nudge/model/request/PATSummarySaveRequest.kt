@@ -5,7 +5,6 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.USER_CRP
 
 data class PATSummarySaveRequest(
     @SerializedName("surveyId")
@@ -24,7 +23,7 @@ data class PATSummarySaveRequest(
     val userType: String? = BLANK_STRING,
 
     @SerializedName("totalScore")
-    val totalScore: Int? = 0,
+    val totalScore: Double? = 0.0,
 
     @SerializedName("villageId")
     val villageId: Int? = 0,

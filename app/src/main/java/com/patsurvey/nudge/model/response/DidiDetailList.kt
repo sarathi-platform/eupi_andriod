@@ -21,5 +21,6 @@ data class DidiDetailList(
     @SerializedName("bpcScore") var bpcScore: Double,
     @SerializedName("bpcComment") var bpcComment: String,
     @SerializedName("crpScore") var crpScore: Double,
-    @SerializedName("crpComment") var crpComment: String
+    @SerializedName("crpComment") var crpComment: String,
+    @SerializedName("crpUploadedImage") var crpUploadedImage: String
 )

@@ -5,6 +5,7 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import android.util.Log
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.wwdablu.soumya.simplypdf.SimplyPdf

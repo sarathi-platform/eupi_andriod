@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.Uri
 import android.os.Environment
 import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toFile
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -13,9 +14,12 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -23,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
@@ -75,12 +80,20 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun setUpOutputDirectory(activity: MainActivity) {
-//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
-        outputDirectory = getOutputDirectory(activity)
+        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
     }
 
+//    private fun getImagePath(context: Context): File {
+//        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+//    }
+
+    /*fun setUpOutputDirectory(activity: MainActivity) {
+//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+        outputDirectory = getOutputDirectory(activity)
+    }*/
+
     private fun getImagePath(context: Context): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
     }
 
     fun getOutputDirectory(activity: MainActivity): File {
@@ -158,11 +171,17 @@ class PatDidiSummaryViewModel @Inject constructor(
         }
     }
 
-    fun uploadDidiImage(image: MultipartBody.Part, didiId: RequestBody) {
+    fun uploadDidiImage(uri: Uri, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
+
               try {
-                  apiService.uploadDidiImage(image,didiId)
+                  val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),uri.toFile())
+                  val imageFilePart= MultipartBody.Part.createFormData("file",uri.toFile().name,requestFile)
+                  val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
+                  val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
+
+                  apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType)
                 }   catch (ex:Exception){
                     ex.printStackTrace()
                 }

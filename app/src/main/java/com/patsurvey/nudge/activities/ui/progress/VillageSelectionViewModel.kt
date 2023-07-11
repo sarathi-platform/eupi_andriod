@@ -57,8 +57,10 @@ import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -69,7 +71,6 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -80,10 +81,11 @@ import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.doubleToString
 import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -305,7 +307,7 @@ class VillageSelectionViewModel @Inject constructor(
                                     //TODO remove mock data
                                     bpcSummaryDao.insert(
                                         BpcSummaryEntity(
-                                            0, 12, 14, 24, 77, 19, villageId = village.id
+                                            0, 0, 0, 0, 0, 0, villageId = village.id
                                         )
                                     )
 
@@ -408,7 +410,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         bpcScore = didi.bpcScore,
                                                         bpcComment = didi.bpcComment,
                                                         crpComment = didi.crpComment,
-                                                        crpScore = didi.crpScore
+                                                        crpScore = didi.crpScore,
+                                                        crpUploadedImage = didi.crpUploadedImage
                                                     )
                                                 )
                                             }
@@ -653,6 +656,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                         }
                         prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, true)
                     }
 
                 }
@@ -667,7 +671,7 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
-        fetchCastList()
+//        fetchCastList()
     }
     private fun downloadImageFiles(){
 
@@ -779,8 +783,6 @@ class VillageSelectionViewModel @Inject constructor(
                 withContext(Dispatchers.IO) {
                     val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                     val localStepsList = stepsListDao.getAllSteps()
-                    val localTolaList = tolaDao.getAllTolas()
-                    val localLanguageList = languageListDao.getAllLanguages()
                     val villageIdList: ArrayList<Int> = arrayListOf()
                     if (localStepsList.isNotEmpty()) {
                         stepsListDao.deleteAllStepsFromDB()
@@ -930,8 +932,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                             localCreatedDate = didi.localCreatedDate,
                                                             localModifiedDate = didi.localModifiedDate,
                                                             score = didi.score,
+                                                            crpScore = didi.crpScore,
+                                                            crpComment = didi.crpComment,
                                                             comment = didi.comment,
-
+                                                            crpUploadedImage = didi.crpUploadedImage
                                                             )
                                                     )
 //                                                    }
@@ -957,7 +961,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                     val numAnswerList: ArrayList<NumericAnswerEntity> =
                                                         arrayListOf()
                                                     it.forEach { item ->
-                                                        try{
+                                                        if (item.userType.equals(USER_CRP, true)){
+                                                        try {
 
                                                             didiDao.updatePATProgressStatus(
                                                                 patSurveyStatus = item.patSurveyStatus
@@ -967,16 +972,25 @@ class VillageSelectionViewModel @Inject constructor(
                                                                 section2Status = item.section2Status
                                                                     ?: 0,
                                                                 didiId = item.beneficiaryId ?: 0,
-                                                                shgFlag = item.shgFlag ?:-1
+                                                                shgFlag = item.shgFlag ?: -1
                                                             )
-                                                        }catch (ex:Exception){
+                                                        } catch (ex: Exception) {
                                                             ex.printStackTrace()
-                                                            Log.e("TAG", "fetchVillageList: Eroor ${ex.message}")
+                                                            Log.e(
+                                                                "TAG",
+                                                                "fetchVillageList: Eroor ${ex.message}"
+                                                            )
                                                         }
 
                                                         if (item?.answers?.isNotEmpty() == true) {
                                                             item?.answers?.forEach { answersItem ->
-                                                                val quesDetails= questionListDao.getQuestionForLanguage(answersItem?.questionId?:0,prefRepo.getAppLanguageId()?:2)
+                                                                val quesDetails =
+                                                                    questionListDao.getQuestionForLanguage(
+                                                                        answersItem?.questionId
+                                                                            ?: 0,
+                                                                        prefRepo.getAppLanguageId()
+                                                                            ?: 2
+                                                                    )
                                                                 if (answersItem?.questionType?.equals(
                                                                         QuestionType.Numeric_Field.name
                                                                     ) == true
@@ -995,15 +1009,19 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
                                                                             summary = answersItem?.summary,
-                                                                            optionValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                            optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.totalWeight?.toDouble().toString(),
-                                                                            type = answersItem?.questionType?: QuestionType.RadioButton.name,
-                                                                            assetAmount = answersItem?.assetAmount?:"0",
-                                                                            questionFlag =quesDetails?.questionFlag?: BLANK_STRING
+                                                                            answerValue = answersItem?.totalWeight?.toDouble()
+                                                                                .toString(),
+                                                                            type = answersItem?.questionType
+                                                                                ?: QuestionType.RadioButton.name,
+                                                                            assetAmount = answersItem?.assetAmount
+                                                                                ?: "0",
+                                                                            questionFlag = quesDetails?.questionFlag
+                                                                                ?: BLANK_STRING
                                                                         )
                                                                     )
 
@@ -1045,12 +1063,12 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: TYPE_EXCLUSION,
                                                                             weight = 0,
                                                                             summary = answersItem?.summary,
-                                                                            optionValue = if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                            optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
                                                                             totalAssetAmount = answersItem?.totalWeight?.toDouble(),
                                                                             needsToPost = false,
-                                                                            answerValue =  if(answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                            answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.display
                                                                                 ?: BLANK_STRING) else BLANK_STRING,
@@ -1062,7 +1080,7 @@ class VillageSelectionViewModel @Inject constructor(
 
                                                             }
                                                         }
-
+                                                    }
                                                     }
                                                     if (answerList.isNotEmpty()) {
                                                         answerDao.insertAll(answerList)
@@ -1229,6 +1247,13 @@ class VillageSelectionViewModel @Inject constructor(
                                     showLoader.value = false
                                 }
                             }
+
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            }
+
+                            Log.d("TAG", "fetchUserDetails: ${prefRepo.getPref(LAST_SYNC_TIME,0L)}")
+
                         } else if (response.status.equals(FAIL, true)) {
                             withContext(Dispatchers.Main) {
                                 showLoader.value = false
@@ -1258,6 +1283,8 @@ class VillageSelectionViewModel @Inject constructor(
             }
         }
     }
+
+
 
     fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {
         _villagList.value = villageList

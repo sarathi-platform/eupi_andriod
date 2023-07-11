@@ -29,6 +29,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -128,6 +129,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -152,6 +157,9 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(step.id, villageId, false)
+                                }
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }
@@ -300,6 +308,11 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 }
                             }
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
+
                     }
                 }
             }

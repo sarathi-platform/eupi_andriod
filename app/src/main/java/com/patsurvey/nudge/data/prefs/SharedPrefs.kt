@@ -28,6 +28,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val SELECTED_VILLAGE_ID = "selected_village_id"
         const val PREF_KEY_SELECTED_VILLAGE = "selected_village"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
+        const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -172,5 +173,13 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun isUserBPC(): Boolean {
        return prefs.getBoolean(PREF_KEY_USER_BPC,false)
+    }
+
+    override fun setLastSyncTime(lastSyncTime: Long) {
+        prefs.edit().putLong(PREF_KEY_LAST_SYNC_TIME,lastSyncTime).apply()
+    }
+
+    override fun getLastSyncTime(): Long {
+        return prefs.getLong(PREF_KEY_LAST_SYNC_TIME,0)
     }
 }

@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.animation.*
 import androidx.compose.animation.core.*
@@ -386,7 +387,7 @@ fun ExpandableCard(
                                         textAlign = TextAlign.Start,
                                     )
                                     Text(
-                                        text = didiEntity.wealth_ranking,
+                                        text = getRankInLanguage(context, didiEntity.wealth_ranking),
                                         color = wealthRankTextColor,
                                         fontSize = 14.sp,
                                         fontFamily = NotoSans,
@@ -452,6 +453,15 @@ fun ExpandableCard(
             }
         }
 
+    }
+}
+
+fun getRankInLanguage(context: Context, wealthRanking: String): String {
+    return when (wealthRanking) {
+        WealthRank.RICH.rank -> context.getString(R.string.ranking_text_rich)
+        WealthRank.MEDIUM.rank -> context.getString(R.string.ranking_text_medium)
+        WealthRank.POOR.rank -> context.getString(R.string.ranking_text_poor)
+        else -> BLANK_STRING
     }
 }
 

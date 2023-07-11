@@ -201,13 +201,18 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                             val passingMark=questionDao.getPassingScore()
                             var comment= BLANK_STRING
-                            if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                 comment= BLANK_STRING
+                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                BLANK_STRING
                             else {
-                               comment =if(didi.score< passingMark) LOW_SCORE else {
-                                   if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                       TYPE_EXCLUSION
-                                   }else BLANK_STRING}
+                                if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                    TYPE_EXCLUSION
+                                } else {
+                                    if (didi.score < passingMark)
+                                        LOW_SCORE
+                                    else {
+                                        BLANK_STRING
+                                    }
+                                }
                             }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
@@ -228,7 +233,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                     languageId = prefRepo.getAppLanguageId() ?: 2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = 0,
+                                    totalScore = didi.score,
                                     userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     beneficiaryName = didi.name,
                                     answerDetailDTOList = qList,
@@ -266,6 +271,9 @@ class SurveySummaryViewModel @Inject constructor(
                                     checkDidiPatStatus()
                                 } else {
                                     networkCallbackListener.onFailed()
+                                }
+                                if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                                 }
                                 apiService.updateDidiScore(scoreDidiList)
                             }
@@ -330,6 +338,10 @@ class SurveySummaryViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -354,6 +366,9 @@ class SurveySummaryViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(step.id, villageId, false)
+                                }
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }
@@ -780,9 +795,15 @@ class SurveySummaryViewModel @Inject constructor(
                 )
                 if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
+
                 } else {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, false)
                     networkCallbackListener.onFailed()
+                }
+                if(!updateSelectedDidiResponse.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,updateSelectedDidiResponse.lastSyncTime)
                 }
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
@@ -809,6 +830,10 @@ class SurveySummaryViewModel @Inject constructor(
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
@@ -838,6 +863,9 @@ class SurveySummaryViewModel @Inject constructor(
                 } else {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
                     networkCallbackListener.onFailed()
+                }
+                if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,saveMatchSummaryResponse.lastSyncTime)
                 }
             } catch (ex: Exception){
                 prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
