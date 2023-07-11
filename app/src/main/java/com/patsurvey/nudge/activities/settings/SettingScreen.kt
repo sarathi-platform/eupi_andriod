@@ -608,6 +608,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -658,6 +668,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -710,6 +730,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -761,6 +791,16 @@ fun showSyncDialog(
                                         color = textColorDark,
                                         strokeWidth = 1.dp
                                     )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
+                                    )
                                 }
                             }
                             Box(Modifier.fillMaxWidth()) {
@@ -811,6 +851,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -1096,6 +1146,16 @@ fun showBPCSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
