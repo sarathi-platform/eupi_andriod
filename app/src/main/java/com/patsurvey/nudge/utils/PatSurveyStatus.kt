@@ -27,9 +27,9 @@ enum class SHGFlag(val value: Int) {
     companion object {
         fun fromInt(downloadState: Int) : SHGFlag {
             return when(downloadState) {
-                YES.ordinal -> YES
-                NO.ordinal -> NO
-                else -> NOT_MARKED
+                YES.value -> YES
+                NO.value -> NO
+                else -> NO
             }
         }
     }

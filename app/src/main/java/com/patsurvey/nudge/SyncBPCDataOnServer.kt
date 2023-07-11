@@ -439,10 +439,19 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             EditDidiWealthRankingRequest(
                                 id = if (didi.serverId == 0) didi.id else didi.serverId,
                                 score = didi.score,
-                                comment = if(didi.score< passingMark) LOW_SCORE else {
+                                comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                    BLANK_STRING
+                                else {
                                     if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
                                         TYPE_EXCLUSION
-                                    }else BLANK_STRING},
+                                    } else {
+                                        if (didi.score < passingMark)
+                                            LOW_SCORE
+                                        else {
+                                            BLANK_STRING
+                                        }
+                                    }
+                                },
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                 result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
                             )
@@ -454,7 +463,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
-                                totalScore = 0,
+                                totalScore = didi.score,
                                 userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                 beneficiaryName = didi.name,
                                 answerDetailDTOList = qList,

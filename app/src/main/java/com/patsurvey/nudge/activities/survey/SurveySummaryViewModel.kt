@@ -201,13 +201,18 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                             val passingMark=questionDao.getPassingScore()
                             var comment= BLANK_STRING
-                            if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                 comment= BLANK_STRING
+                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                BLANK_STRING
                             else {
-                               comment =if(didi.score< passingMark) LOW_SCORE else {
-                                   if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                       TYPE_EXCLUSION
-                                   }else BLANK_STRING}
+                                if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                    TYPE_EXCLUSION
+                                } else {
+                                    if (didi.score < passingMark)
+                                        LOW_SCORE
+                                    else {
+                                        BLANK_STRING
+                                    }
+                                }
                             }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
@@ -228,7 +233,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                     languageId = prefRepo.getAppLanguageId() ?: 2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = 0,
+                                    totalScore = didi.score,
                                     userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     beneficiaryName = didi.name,
                                     answerDetailDTOList = qList,

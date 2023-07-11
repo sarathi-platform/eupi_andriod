@@ -905,13 +905,18 @@ class SyncHelper (
                         }
                         val passingMark=questionDao.getPassingScore()
                         var comment= BLANK_STRING
-                        if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                            comment= BLANK_STRING
+                        comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                            BLANK_STRING
                         else {
-                            comment =if(didi.score< passingMark) LOW_SCORE else {
-                                if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                    TYPE_EXCLUSION
-                                }else BLANK_STRING}
+                            if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                TYPE_EXCLUSION
+                            } else {
+                                if (didi.score < passingMark)
+                                    LOW_SCORE
+                                else {
+                                    BLANK_STRING
+                                }
+                            }
                         }
                         scoreDidiList.add(
                             EditDidiWealthRankingRequest(
@@ -932,7 +937,7 @@ class SyncHelper (
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
-                                totalScore = 0,
+                                totalScore = didi.score,
                                 userType = userType,
                                 beneficiaryName = didi.name,
                                 answerDetailDTOList = qList,
@@ -1183,6 +1188,41 @@ class SyncHelper (
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(stepId,step.workFlowId,villageId,it[0].status)
                                 stepsListDao.updateNeedToPost(stepId, villageId,false)
+                            }
+                        }
+                    }
+                } else {
+                    val response = apiService.addWorkFlow(
+                        listOf(
+                            AddWorkFlowRequest(
+                                StepStatus.INPROGRESS.name,
+                                villageId,
+                                step.programId,
+                                stepId
+                            )
+                        )
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            stepsListDao.updateWorkflowId(stepId, it[0].id, villageId, it[0].status)
+                            val responseForStepUpdation = apiService.editWorkFlow(
+                                listOf(
+                                    EditWorkFlowRequest(
+                                        step.workFlowId,
+                                        StepStatus.getStepFromOrdinal(step.isComplete)
+                                    )
+                                )
+                            )
+                            if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                                responseForStepUpdation.data?.let {
+                                    stepsListDao.updateWorkflowId(
+                                        stepId,
+                                        step.workFlowId,
+                                        villageId,
+                                        it[0].status
+                                    )
+                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                }
                             }
                         }
                     }

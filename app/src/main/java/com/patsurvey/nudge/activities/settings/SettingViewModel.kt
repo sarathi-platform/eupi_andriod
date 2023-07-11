@@ -439,7 +439,7 @@ class SettingViewModel @Inject constructor(
             bpcSummaryDao.deleteAllSummary()
             clearSharedPreference()
             //cleared cache in case of logout
-            context.cacheDir.deleteRecursively()
+//            context.cacheDir.deleteRecursively()
             withContext(Dispatchers.Main){
                 showAPILoader.value = false
                 logout.value = true
