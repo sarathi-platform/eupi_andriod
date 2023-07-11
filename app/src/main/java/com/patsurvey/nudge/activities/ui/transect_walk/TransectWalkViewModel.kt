@@ -132,56 +132,62 @@ class TransectWalkViewModel @Inject constructor(
 
     fun addTolasToNetwork() {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val jsonTola = JsonArray()
-            val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
+            try {
+                val jsonTola = JsonArray()
+                val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
 //            val filteredTolaList = tolaList
-            if (tolaList.isNotEmpty()) {
-                for (tola in tolaList) {
-                    jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
-                }
-                NudgeLogger.d("TransectWalkViewModel", "$jsonTola")
-                val response = apiInterface.addCohort(jsonTola)
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        if(response.data[0].transactionId.isNullOrEmpty()) {
-                            for(i in response.data.indices){
-                                val tola = tolaList[i]
-                                val tolaDataFromNetwork = response.data[i]
-                                val createdTime = tolaDataFromNetwork.createdDate
-                                val modifiedDate = tolaDataFromNetwork.modifiedDate
-                                tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
-                                    false,
-                                    "",
-                                    createdTime,
-                                    modifiedDate)
-                                tola.serverId = tolaDataFromNetwork.id
-                                tola.createdDate = tolaDataFromNetwork.createdDate
-                                tola.modifiedDate = tolaDataFromNetwork.modifiedDate
-                            }
-                            checkTolaAddStatus()
-                        } else {
-                            response.data.forEach { tola ->
+                if (tolaList.isNotEmpty()) {
+                    for (tola in tolaList) {
+                        jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
+                    }
+                    NudgeLogger.d("TransectWalkViewModel", "$jsonTola")
+                    val response = apiInterface.addCohort(jsonTola)
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            if(response.data[0].transactionId.isNullOrEmpty()) {
                                 for(i in response.data.indices){
-                                    response.data[i].transactionId.let { it1 ->
-                                        tolaDao.updateTolaTransactionId(tolaList[i].id,
-                                            it1
-                                        )
+                                    val tola = tolaList[i]
+                                    val tolaDataFromNetwork = response.data[i]
+                                    val createdTime = tolaDataFromNetwork.createdDate
+                                    val modifiedDate = tolaDataFromNetwork.modifiedDate
+                                    tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
+                                        false,
+                                        "",
+                                        createdTime,
+                                        modifiedDate)
+                                    tola.serverId = tolaDataFromNetwork.id
+                                    tola.createdDate = tolaDataFromNetwork.createdDate
+                                    tola.modifiedDate = tolaDataFromNetwork.modifiedDate
+                                }
+                                checkTolaAddStatus()
+                            } else {
+                                response.data.forEach { tola ->
+                                    for(i in response.data.indices){
+                                        response.data[i].transactionId.let { it1 ->
+                                            tolaDao.updateTolaTransactionId(tolaList[i].id,
+                                                it1
+                                            )
+                                        }
                                     }
                                 }
+                                isPending = 1
+                                startSyncTimerForStatus()
                             }
-                            isPending = 1
-                            startSyncTimerForStatus()
                         }
+                    } else {
+                        checkTolaAddStatus()
+                    }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
                     }
                 } else {
                     checkTolaAddStatus()
                 }
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
-            } else {
-                checkTolaAddStatus()
+            }  catch (ex: Exception) {
+                onError(tag = "TransectWalkViewModel", "addTolasToNetwork -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.TOLA_LIST_API)
             }
+
         }
     }
 
@@ -766,7 +772,8 @@ class TransectWalkViewModel @Inject constructor(
                 }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+                onError(tag = "TransectWalkViewModel", "callWorkFlowAPI -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }

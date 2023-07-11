@@ -79,6 +79,7 @@ object ApiServicesHelper {
             ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY -> SUBPATH_PAT_SAVE_SUMMARY
             ApiType.DIDI_DELETE_API -> SUBPATH_DELETE_DIDI
             LOGOUT_API -> SUBPATH_AUTH_LOGOUT
+            ApiType.TOLA_ADD_API -> SUBPATH_ADD_COHORT
 
         }
     }
