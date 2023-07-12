@@ -5,11 +5,15 @@ enum class ApiType {
     STEP_LIST_API,
     TOLA_LIST_API,
     TOLA_ADD_API,
+    TOLA_DELETE_API,
+    TOLA_EDIT_API,
     DIDI_LIST_API,
+    DIDI_ADD_API,
     DIDI_RANKING_API,
     PAT_CRP_QUESTION_API,
     PAT_CRP_SURVEY_SUMMARY,
     WORK_FLOW_API,
+    ADD_WORK_FLOW_API,
     VILLAGE_LIST_API,
     VALIDATE_OTP_API,
     GENERATE_OTP_API,
@@ -23,7 +27,8 @@ enum class ApiType {
     BPC_PAT_SAVE_ANSWER_SUMMARY,
     BPC_UPDATE_DIDI_LIST_API,
     BPC_SAVE_MATCH_PERCENTAGE_API,
-    LOGOUT_API;
+    LOGOUT_API,
+    STATUS_CALL_BACK_API;
 
     /*    fun fromString(apiName: String): ApiType {
             when (apiName) {

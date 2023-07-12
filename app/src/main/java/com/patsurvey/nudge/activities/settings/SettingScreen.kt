@@ -334,9 +334,7 @@ fun SettingScreen(
                                 stepFourStatus,
                                 stepFiveStatus
                             )
-                            if (isDataNeedToBeSynced.value == 0
-                                || isDataNeedToBeSynced.value == 2
-                            ) {
+                            if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
                                 viewModel.performLogout(object : NetworkCallbackListener {
                                     override fun onFailed() {
                                         logout(context, viewModel, logout, rootNavController)
@@ -1157,7 +1155,7 @@ fun showBPCSyncDialog(
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
-                                        tint = greenDark,
+                                        tint = redIconColor,
                                         modifier = Modifier
                                             .align(Alignment.CenterEnd)
                                             .size(24.dp)

@@ -23,6 +23,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
@@ -223,6 +224,7 @@ class ProgressScreenViewModel @Inject constructor(
                 }
 
             }catch (ex:Exception){
+                onCatchError(ex, ApiType.ADD_WORK_FLOW_API)
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }

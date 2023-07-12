@@ -107,9 +107,7 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 
 @Composable
@@ -177,29 +175,29 @@ fun ParticipatoryWealthRankingSurvey(
                 viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         if ((context as MainActivity).isOnline.value ?: false) {
-                            if(viewModel.isTolaSynced.value == 2
-                                && viewModel.isDidiSynced.value == 2) {
+//                            if(viewModel.isTolaSynced.value == 2
+//                                && viewModel.isDidiSynced.value == 2) {
                                 viewModel.updateWealthRankingToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
+                                        viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
+                                        NetworkCallbackListener {
+                                        override fun onSuccess() {
+                                        }
+
+                                        override fun onFailed() {
+//                                            showCustomToast(context, SYNC_FAILED)
+                                        }
+                                    })
                                     }
 
                                     override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
+//                                        showCustomToast(context, SYNC_FAILED)
                                     }
                                 })
-                                viewModel.callWorkFlowAPI(viewModel.villageId, stepId, object :
-                                    NetworkCallbackListener {
-                                    override fun onSuccess() {
-                                    }
 
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-                                })
-                            }
+//                            }
                         }
-
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                         viewModel.saveWealthRankingCompletionDate()
                         navController.navigate(

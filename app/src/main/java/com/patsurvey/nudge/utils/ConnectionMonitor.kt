@@ -11,10 +11,10 @@ import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
 
-const val TAG = "ConnectionMonitor"
+
 
 class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
-
+    val TAG = "ConnectionMonitor"
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback

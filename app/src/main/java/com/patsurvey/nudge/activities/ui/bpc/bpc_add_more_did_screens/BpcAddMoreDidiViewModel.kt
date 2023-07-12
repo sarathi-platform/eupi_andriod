@@ -18,7 +18,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -122,7 +121,7 @@ class BpcAddMoreDidiViewModel @Inject constructor(
             }
         }catch (ex: Exception){
             ex.printStackTrace()
-            Log.e(TAG, "Exception1 : performQuery: ${ex.message}" )
+            Log.e("BpcAddMoreDidiViewModel", "performQuery -> Exception1 : performQuery: ${ex.message}" )
         }
 
     }

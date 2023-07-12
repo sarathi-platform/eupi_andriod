@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
-import android.annotation.SuppressLint
 import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -9,10 +8,16 @@ import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.*
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -68,7 +73,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
 
             } catch (ex: Exception) {
                 ex.printStackTrace()
-                Log.e(TAG, "fetchDidisFromDB Exception: ${ex.message}")
+                Log.e("VoEndorsementScreenViewModel", "fetchDidisFromDB -> fetchDidisFromDB Exception: ${ex.message}")
             }
         }
     }
@@ -136,7 +141,7 @@ class VoEndorsementScreenViewModel @Inject constructor(
             }
         }catch (ex:Exception){
             ex.printStackTrace()
-            Log.e(TAG, "Exception1 : performQuery: ${ex.message}" )
+            Log.e("VoEndorsementScreenViewModel", "performQuery -> Exception1 : performQuery: ${ex.message}" )
         }
 
     }
