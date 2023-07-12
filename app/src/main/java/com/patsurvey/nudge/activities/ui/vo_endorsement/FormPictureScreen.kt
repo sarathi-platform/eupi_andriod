@@ -245,11 +245,18 @@ fun FormPictureScreen(
                                     formPictureScreenViewModel.retakeImageIndex.value + 1
                                 )
 //                                "${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.retakeImageIndex.value + 1}"
-                            else
-                                formPictureScreenViewModel.getFormSubPath(
-                                    formPictureScreenViewModel.shouldShowCamera.value.first,
-                                    formPictureScreenViewModel.formCPageList.value.size + 1
-                                )
+                            else{
+                                if( formPictureScreenViewModel.shouldShowCamera.value.first== FORM_C){
+                                    formPictureScreenViewModel.getFormSubPath(
+                                        formPictureScreenViewModel.shouldShowCamera.value.first,
+                                        formPictureScreenViewModel.formCPageList.value.size + 1)
+                                }else{
+                                    formPictureScreenViewModel.getFormSubPath(
+                                        formPictureScreenViewModel.shouldShowCamera.value.first,
+                                        formPictureScreenViewModel.formDPageList.value.size + 1)
+                                }
+                            }
+
                             /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
                             executor = formPictureScreenViewModel.cameraExecutor,
                             onImageCaptured = { uri, photoPath ->

@@ -336,22 +336,26 @@ class FormPictureScreenViewModel @Inject constructor(
             withContext(Dispatchers.IO){
                 try {
                     if(formCImageList.value.isNotEmpty()){
-                        formCImageList.value.forEach {
+                        formCImageList.value.onEachIndexed { index, it ->
                           if(it.value.isNotEmpty()){
+                              val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
                               val compressedFormC = compressImage(it.value,context,getFileNameFromURL(it.value))
                               val requestFormC= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormC))
                               val formCFilePart= MultipartBody.Part.createFormData("formC",File(compressedFormC).name,requestFormC)
+//                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
                               formList.add(formCFilePart)
                           }
 
                         }
                     }
                     if(formDImageList.value.isNotEmpty()){
-                        formDImageList.value.forEach {
+                        formDImageList.value.onEachIndexed { index, it ->
                             if(it.value.isNotEmpty()){
+                                val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
                                 val compressedFormD = compressImage(it.value,context,getFileNameFromURL(it.value))
                                 val requestFormD= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormD))
                                 val formDFilePart= MultipartBody.Part.createFormData("formD",File(compressedFormD).name,requestFormD)
+//                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
                                 formList.add(formDFilePart)
                             }
 
