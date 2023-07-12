@@ -39,6 +39,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -84,6 +85,7 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
+import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -94,6 +96,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.File
@@ -116,7 +119,8 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+    val downloader: AndroidDownloader
 
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -939,6 +943,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                             )
                                                     )
 //                                                    }
+                                                    if(!didi.crpUploadedImage.isNullOrEmpty()){
+                                                        downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                                    }
                                                 }
                                             } catch (ex: Exception) {
                                                 onError(
@@ -1330,6 +1337,37 @@ class VillageSelectionViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun downloadAuthorizedImageItem(id:Int,image: String,prefRepo: PrefRepo) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val imageFile = getAuthImagePath(downloader.mContext, image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                        onDownloadComplete = {
+                            didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                        }, onDownloadFailed = {
+
+                        })
+                    }
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
     }
 
 }

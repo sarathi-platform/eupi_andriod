@@ -6,6 +6,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -147,6 +148,10 @@ class PatDidiSummaryViewModel @Inject constructor(
     fun getDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiEntity.emit(didiDao.getDidi(didiId))
+            if(!_didiEntity.value.localPath.isNullOrEmpty()){
+                photoUri=_didiEntity.value.localPath.toUri()
+                shouldShowPhoto.value=true
+            }
         }
     }
 

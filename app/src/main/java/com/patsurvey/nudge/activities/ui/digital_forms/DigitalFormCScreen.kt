@@ -163,7 +163,7 @@ fun DigitalFormCScreen(
                 }
 
                 Text(
-                    text = "Digital Form C",
+                    text = stringResource(id = R.string.digital_form_c_title),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,
@@ -373,7 +373,7 @@ fun DigitalFormCScreen(
                                     )
                                     Column() {
                                         Text(
-                                            text = "Link Form C",
+                                            text = stringResource(id = R.string.link_form_c),
                                             style = TextStyle(
                                                 fontFamily = NotoSans,
                                                 fontWeight = FontWeight.SemiBold,
@@ -390,7 +390,7 @@ fun DigitalFormCScreen(
                                         )
                                         Spacer(modifier = Modifier.height(4.dp))
                                         Text(
-                                            text = "Link Form D",
+                                            text = stringResource(id = R.string.link_form_d),
                                             style = TextStyle(
                                                 fontFamily = NotoSans,
                                                 fontWeight = FontWeight.SemiBold,

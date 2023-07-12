@@ -303,6 +303,8 @@
     <string name="pat_marked_not_available_plural">%1$s दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया है</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s अल्ट्रापूर दीदी ने वीओ समर्थन के लिए भेजा।</string>
     <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s अल्ट्रापूर दीदी को वीओ समर्थन के लिए भेजा गया है।</string>
+    <string name="link_form_c">लिंक फॉर्म सी</string>
+    <string name="link_form_d">लिंक फॉर्म डी</string>
 
 
 </resources>

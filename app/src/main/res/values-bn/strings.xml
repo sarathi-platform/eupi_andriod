@@ -302,5 +302,7 @@
     <string name="pat_marked_not_available_plural">%1$sটি উপলভ্য নয় হিসাবে চিহ্নিত করা হয়েছে৷</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">VO অনুমোদনের জন্য %1$s অতিপুরো দিদি পাঠানো হয়েছে৷</string>
     <string name="pat_didi_sent_to_vo_endorsement_plural">VO অনুমোদনের জন্য %1$s আল্ট্রাপুর ডিডি পাঠানো হয়েছে৷</string>
+    <string name="link_form_c">লিঙ্ক ফর্ম সি</string>
+    <string name="link_form_d">লিঙ্ক ফর্ম ডি</string>
 
 </resources>

@@ -102,6 +102,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
@@ -465,6 +466,7 @@ fun FormPictureScreen(
                         negativeButtonRequired = false,
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
+                            formPictureScreenViewModel.uploadFormsCAndD(context)
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {

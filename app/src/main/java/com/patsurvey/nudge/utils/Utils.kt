@@ -376,6 +376,9 @@ fun calculateScore(list: List<WeightageRatioModal>,totalAmount:Double,isRatio:Bo
 fun getFileNameFromURL(url: String): String{
     return url.substring(url.lastIndexOf('/') + 1, url.length)
 }
+fun getAuthImageFileNameFromURL(url: String): String{
+    return url.substring(url.lastIndexOf('=') + 1, url.length)
+}
 
 data class DottedShape(
     val step: Dp,
@@ -413,6 +416,11 @@ fun roundOffDecimalPoints(number: Double): String {
 
 fun getImagePath(context: Context, imagePath:String): File {
     val imageName = getFileNameFromURL(imagePath)
+    return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
+}
+
+fun getAuthImagePath(context: Context, imagePath:String): File {
+    val imageName = getAuthImageFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
 }
 

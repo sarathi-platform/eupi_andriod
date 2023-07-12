@@ -29,7 +29,11 @@ import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -37,6 +41,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -321,6 +328,48 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
         return "${formName}_page_$pageNumber"
+    }
+
+    fun uploadFormsCAndD(context: Context) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formList = arrayListOf<MultipartBody.Part>()
+            withContext(Dispatchers.IO){
+                try {
+                    if(formCImageList.value.isNotEmpty()){
+                        formCImageList.value.forEach {
+                          if(it.value.isNotEmpty()){
+                              val compressedFormC = compressImage(it.value,context,getFileNameFromURL(it.value))
+                              val requestFormC= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormC))
+                              val formCFilePart= MultipartBody.Part.createFormData("formC",File(compressedFormC).name,requestFormC)
+                              formList.add(formCFilePart)
+                          }
+
+                        }
+                    }
+                    if(formDImageList.value.isNotEmpty()){
+                        formDImageList.value.forEach {
+                            if(it.value.isNotEmpty()){
+                                val compressedFormD = compressImage(it.value,context,getFileNameFromURL(it.value))
+                                val requestFormD= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormD))
+                                val formDFilePart= MultipartBody.Part.createFormData("formD",File(compressedFormD).name,requestFormD)
+                                formList.add(formDFilePart)
+                            }
+
+                        }
+                    }
+
+
+                    val requestVillageId=
+                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),prefRepo.getSelectedVillage().id.toString())
+                    val requestUserType=
+                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
+                    apiService.uploadDocument(formList,requestVillageId,requestUserType)
+                }   catch (ex:Exception){
+                    ex.printStackTrace()
+                }
+
+            }
+        }
     }
 
 }
