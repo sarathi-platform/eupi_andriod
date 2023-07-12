@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -16,14 +17,13 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.compressImage
-import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -137,7 +137,7 @@ class PatDidiSummaryViewModel @Inject constructor(
         locationCoordinates: LocationCoordinates,
         didiEntity: DidiEntity
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
@@ -175,26 +175,27 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             didiDao.updateDidiShgStatus(didiId = didiId, shgFlag = flagStatus.value)
 
         }
     }
 
     fun uploadDidiImage(context: Context,uri: Uri, didiId: Int,location:String) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             withContext(Dispatchers.IO){
-                Log.d("TAG", "uploadDidiImage: $didiId :: $location")
+                NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage: $didiId :: $location")
               try {
-                  Log.d("TAG", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
+                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
                   val compressedImageFile = compressImage(uri.toString(),context,uri.toFile().name)
                   val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedImageFile))
                   val imageFilePart= MultipartBody.Part.createFormData("file",File(compressedImageFile).name,requestFile)
                   val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
                   val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
                   val requestLocation=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),location)
-                  Log.d("TAG", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
-                  apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
+                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
+                  val imageUploadRequest = apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
+                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage imageUploadRequest: ${imageUploadRequest.data ?: ""}")
                 }   catch (ex:Exception){
                     ex.printStackTrace()
                 }

@@ -1,27 +1,39 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Handler
 import android.os.Looper
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExtendedFloatingActionButton
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -29,7 +41,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
@@ -40,7 +51,17 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.EXTENSION_WEBP
+import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.stringToDouble
+import com.patsurvey.nudge.utils.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -151,8 +172,8 @@ fun QuestionScreen(
                                 contentDescription = "Question Image",
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .width(dimensionResource(id = R.dimen.ques_image_width))
-                                    .height(dimensionResource(id = R.dimen.ques_image_height)),
+                                    .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
+                                    .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
                             )
                         }else {
                             if (quesImage?.exists() == true) {
@@ -160,8 +181,8 @@ fun QuestionScreen(
                                     contentDescription ="Question Image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(dimensionResource(id = R.dimen.ques_image_width))
-                                        .height(dimensionResource(id = R.dimen.ques_image_height)),
+                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
+                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
                                 )
                             } else {
                                 Image(
@@ -169,8 +190,8 @@ fun QuestionScreen(
                                     contentDescription = "home image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(dimensionResource(id = R.dimen.ques_image_width))
-                                        .height(dimensionResource(id = R.dimen.ques_image_height)),
+                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
+                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
                                     colorFilter = ColorFilter.tint(textColorDark)
                                 )
                             }

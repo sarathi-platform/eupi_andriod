@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.base
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
@@ -12,6 +11,7 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.RESPONSE_CODE_500
 import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
@@ -85,7 +85,7 @@ abstract class BaseViewModel : ViewModel(){
     }
 
     open fun onError(tag: String = "BaseViewModel", message: String) {
-        Log.e(tag, message)
+        NudgeLogger.e(tag, message)
     }
     abstract fun onServerError(error: ErrorModel?)
 
@@ -95,10 +95,10 @@ abstract class BaseViewModel : ViewModel(){
         job?.cancel()
     }
     open fun onCatchError(e:Exception) {
-        Log.d(TAG, "onCatchError: ${e.message}")
+        NudgeLogger.e(TAG, "onCatchError: ${e.message}")
         when (e) {
             is HttpException -> {
-                Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                NudgeLogger.e(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         if(!RetryHelper.tokenExpired.value) {
@@ -140,20 +140,20 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
     open fun onCatchError(e:Exception, api: ApiType) {
-        Log.d(TAG, "onCatchError: ${e.message}")
+        NudgeLogger.d(TAG, "onCatchError: ${e.message}")
         AnalyticsHelper.logServiceFailedEvent(exception = e, apiType = api)
         when (e) {
             is HttpException -> {
-                Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                NudgeLogger.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
-                        if(!RetryHelper.tokenExpired.value) {
+                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
                             RetryHelper.tokenExpired.value = true
                         }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE))
                     }
                     RESPONSE_CODE_CONFLICT -> {
-                        if(!RetryHelper.tokenExpired.value) {
+                        if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
                             RetryHelper.tokenExpired.value = true
                         }
                         onServerError(ErrorModel(e.response()?.code() ?: 0, message = e.response()?.message()))

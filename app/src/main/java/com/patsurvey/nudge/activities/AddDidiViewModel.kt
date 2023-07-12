@@ -159,7 +159,7 @@ class AddDidiViewModel @Inject constructor(
                     jsonObject.addProperty("id", didi.serverId)
                     jsonDidi.add(jsonObject)
                 }
-                Log.e("tola need to post","$didiList.size")
+                Log.e("didi need to post","$didiList.size")
                 val response = apiService.deleteDidi(jsonDidi)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {

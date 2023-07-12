@@ -458,7 +458,7 @@ fun TolaBox(
     }
 
     LaunchedEffect(key1 = showLoader.value) {
-        delay(1500)
+        delay(2000)
         showLoader.value = false
     }
 
@@ -661,8 +661,8 @@ fun TolaBox(
                                                         .toDouble()
 
                                                 )
-                                                locationAdded = true
                                             }
+                                            locationAdded = true
                                             showLoader.value = false
                                         }
                                         val networkConsumer =
@@ -682,8 +682,8 @@ fun TolaBox(
                                                             .toDouble()
 
                                                     )
-                                                    locationAdded = true
                                                 }
+                                                locationAdded = true
                                                 showLoader.value = false
                                             }
                                         LocationUtil.getLocation(

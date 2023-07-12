@@ -25,6 +25,7 @@ import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -128,7 +129,7 @@ class ProgressScreenViewModel @Inject constructor(
             }
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                tolaCount.value=_tolaList.value.size
+                tolaCount.value=_tolaList.value.filter { it.name != EMPTY_TOLA_NAME }.size
                 didiCount.value=didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal}.size

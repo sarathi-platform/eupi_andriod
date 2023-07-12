@@ -60,6 +60,7 @@ import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
@@ -675,7 +676,7 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
-        fetchCastList()
+//        fetchCastList()
     }
     private fun downloadImageFiles(){
 
@@ -816,6 +817,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     findCompleteValue(steps.status).ordinal
                                                 steps.needToPost = false
                                             }
+                                            NudgeLogger.d("VillageSelectionViewModel", "it.stepList: ${it.stepList}")
                                             stepsListDao.insertAll(it.stepList)
                                         }
                                         prefRepo.savePref(
@@ -1273,7 +1275,15 @@ class VillageSelectionViewModel @Inject constructor(
                         }
                     }
                 }
-
+                NudgeLogger.d("VillageSelectionViewModel", "UserDetails => " + "\n" +
+                        "MOBILE NUMBER: ${prefRepo.getMobileNumber()}\n" +
+                        "PREF_KEY_USER_NAME: ${prefRepo.getPref(PREF_KEY_USER_NAME, "")}\n" +
+                        "PREF_KEY_NAME: ${prefRepo.getPref(PREF_KEY_NAME, "")}\n" +
+                        "PREF_KEY_EMAIL: ${prefRepo.getPref(PREF_KEY_EMAIL, "")}\n" +
+                        "PREF_KEY_IDENTITY_NUMBER: ${prefRepo.getPref(PREF_KEY_IDENTITY_NUMBER, "")}\n" +
+                        "PREF_KEY_PROFILE_IMAGE: ${prefRepo.getPref(PREF_KEY_PROFILE_IMAGE, "")}\n" +
+                        "PREF_KEY_ROLE_NAME: ${prefRepo.getPref(PREF_KEY_ROLE_NAME, "")}\n" +
+                        "PREF_KEY_TYPE_NAME: ${prefRepo.getPref(PREF_KEY_TYPE_NAME, "")}")
             } catch (ex: Exception) {
                 Log.d("VillageSelectionViewModel", "fetchUserDetails: catch called")
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)

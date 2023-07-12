@@ -2,7 +2,6 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import android.os.CountDownTimer
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -28,8 +27,11 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.LogWriter
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.SUCCESS
@@ -144,20 +146,23 @@ class SettingViewModel @Inject constructor(
                 && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
                 && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()
                 && isStatusStepStatusSync(0)) {
+                NudgeLogger.d("SettingViewModel", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
+            } else {
+                NudgeLogger.d("SettingViewModel", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 0")
                 isNeedToBeSync.value = 0
+            }
         }
     }
 
     fun isStatusStepStatusSync(step : Int) : Boolean{
-        Log.e("step","->$step")
+        NudgeLogger.e("step","->$step")
         val villageId = prefRepo.getSelectedVillage().id
         val stepList = stepsListDao.getAllStepsForVillage(villageId)
-        Log.e("status","-> "+stepList[step].status)
-        Log.e("iscomplete","-> "+getStepStatusFromOrdinal(stepList[step].isComplete))
+        NudgeLogger.e("status","-> "+stepList[step].status)
+        NudgeLogger.e("iscomplete","-> "+getStepStatusFromOrdinal(stepList[step].isComplete))
         return !stepList[step].needToPost
     }
 
@@ -171,16 +176,21 @@ class SettingViewModel @Inject constructor(
             && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
             && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()
             && isStatusStepStatusSync(1)) {
+            NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
-                isNeedToBeSync.value = 0
+            } else {
+            NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 0")
+            isNeedToBeSync.value = 0
+        }
         }
     }
 
     fun isBPCScoreSaved() : Boolean{
-        return prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id,false)
+        val isBpcScoreSaved = prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id,false)
+        NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
+        return isBpcScoreSaved
     }
 
     fun isThirdStepNeedToBeSync(isNeedToBeSync : MutableState<Int>){
@@ -190,11 +200,14 @@ class SettingViewModel @Inject constructor(
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
                 && isStatusStepStatusSync(2)
             ) {
+                NudgeLogger.d("SettingViewModel", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
+            } else {
+                NudgeLogger.d("SettingViewModel", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 0")
                 isNeedToBeSync.value = 0
+            }
         }
     }
 
@@ -205,39 +218,44 @@ class SettingViewModel @Inject constructor(
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
                 && isStatusStepStatusSync(3)
             ) {
+                NudgeLogger.d("SettingViewModel", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
+            } else {
+                NudgeLogger.d("SettingViewModel", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 0")
                 isNeedToBeSync.value = 0
+            }
         }
     }
 
     fun isFifthStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostPATDidi(
-                    needsToPostPAT = true,
-                    villageId = prefRepo.getSelectedVillage().id
-                ).isEmpty()
-                && didiDao.getAllNeedToPostPATDidi(
-                    needsToPostPAT = true,
+            if (didiDao.getAllNeedToPostVoDidi(
+                    needsToPostVo  = true,
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
                 && isStatusStepStatusSync(4)
             ) {
+                NudgeLogger.d("SettingViewModel", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
+            } else {
+                NudgeLogger.d("SettingViewModel", "isFifthStepNeedToBeSync ->isNeedToBeSync.value = 0")
                 isNeedToBeSync.value = 0
+            }
         }
     }
 
     override fun onServerError(error: ErrorModel?) {
-        Log.e("server error","called, $error")
+        NudgeLogger.e("SettingViewModel","server error called -> $error")
+        NudgeLogger.e("SettingViewModel","server error called -> ${hitApiStatus.value}")
         when (hitApiStatus.value) {
-            1 -> onLogoutError.value = true
+            1 -> {
+                onLogoutError.value = true
+            }
             2 -> {
                 showLoader.value = false
                 syncPercentage.value = 1f
@@ -250,7 +268,7 @@ class SettingViewModel @Inject constructor(
                 syncBPCPercentage.value = 1f
                 showSyncDialog.value = false
                 showBPCSyncDialog.value = false
-                bpcSyncStatus.value = 3
+                bpcSyncStatus.value = 1
             }
         }
         /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -264,7 +282,7 @@ class SettingViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        Log.e("server error","called, ${errorModel?.code}, api: ${errorModel?.apiName}")
+        NudgeLogger.e("SettingViewModel","server error called -> ${errorModel?.code}, api: ${errorModel?.apiName}")
     }
 
 /*    fun getStepOneSize(stepOneSize : MutableState<String>) {
@@ -288,6 +306,7 @@ class SettingViewModel @Inject constructor(
     }*/
 
     fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
+        NudgeLogger.e("SettingViewModel","syncDataOnServer -> start")
         hitApiStatus.value = 2
         showSyncDialog = syncDialog
         resetPosition()
@@ -295,6 +314,7 @@ class SettingViewModel @Inject constructor(
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                     override fun onSuccess() {
+                        NudgeLogger.e("SettingViewModel","syncDataOnServer -> onSuccess")
                         object: CountDownTimer(0, 1000){
                             override fun onTick(p0: Long) {
 
@@ -306,6 +326,7 @@ class SettingViewModel @Inject constructor(
                                 val updatedSyncTime = System.currentTimeMillis()
                                 lastSyncTime.value = updatedSyncTime
                                 prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
+                                NudgeLogger.e("SettingViewModel","syncDataOnServer -> onFinish")
                             }
                         }.start()
 
@@ -316,12 +337,17 @@ class SettingViewModel @Inject constructor(
                         syncPercentage.value = 1f
                         showSyncDialog.value = false
                         showLoader.value = false
+                        NudgeLogger.e("SettingViewModel","syncDataOnServer -> onFailed")
                     }
             })
+        } else {
+            NudgeLogger.e("SettingViewModel","syncDataOnServer -> isInternetAvailable = false")
         }
+        NudgeLogger.e("SettingViewModel","syncDataOnServer -> end")
     }
 
     fun syncBPCDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>,syncBPCStatus : MutableState<Int>) {
+        NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> start")
         bpcSyncStatus = syncBPCStatus
 //        hitApiStatus.value = 3
         showBPCSyncDialog = syncDialog
@@ -330,6 +356,7 @@ class SettingViewModel @Inject constructor(
             bpcSyncHelper.syncBPCDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {
+                    NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> onSuccess")
                     object: CountDownTimer(0, 1000){
                         override fun onTick(p0: Long) {
 
@@ -341,6 +368,8 @@ class SettingViewModel @Inject constructor(
                             prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
                             syncBPCPercentage.value = 1f
                             bpcSyncStatus.value = 3
+                            NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> onFinish")
+
                         }
                     }.start()
                 }
@@ -349,13 +378,21 @@ class SettingViewModel @Inject constructor(
                     networkErrorMessage.value = SYNC_FAILED
                     hitApiStatus.value = 3
                     syncBPCPercentage.value = 1f
-                    bpcSyncStatus.value = 3
+                    bpcSyncStatus.value = 1
+                    NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> onFailed")
+
                 }
             })
+        } else {
+            NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> isInternetAvailable = false")
+
         }
+        NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> end")
+
     }
 
     private fun resetPosition() {
+        NudgeLogger.e("SettingViewModel","resetPosition called")
         syncPercentage.value = 0f
         stepOneSyncStatus.value = 0
         stepTwoSyncStatus.value = 0
@@ -371,6 +408,7 @@ class SettingViewModel @Inject constructor(
         stepFourStatus: MutableState<Int>,
         stepFiveStatus: MutableState<Int>
     ) {
+        NudgeLogger.e("SettingViewModel","isDataNeedToBeSynced called")
         stepOneSyncStatus = stepOneStatus
         stepTwoSyncStatus = stepTwoStatus
         stepThreeSyncStatus = stepThreeStatus
@@ -386,6 +424,7 @@ class SettingViewModel @Inject constructor(
     fun isBPCDataNeedToBeSynced(
         isBPCDataNeedToBeSynced: MutableState<Boolean>
     ) {
+        NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced called")
 //        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            val didiIDList =
@@ -396,35 +435,44 @@ class SettingViewModel @Inject constructor(
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
                 && isStatusStepStatusSync(5)
                 && isBPCScoreSaved()){
+                NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced -> isBPCDataNeedToBeSynced.value = false")
                 withContext(Dispatchers.Main) {
                     isBPCDataNeedToBeSynced.value = false
                 }
             } else {
+                NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced -> isBPCDataNeedToBeSynced.value = ${bpcSyncStatus.value == 0}")
                 isBPCDataNeedToBeSynced.value = bpcSyncStatus.value == 0
             }
         }
     }
 
     fun performLogout(networkCallbackListener: NetworkCallbackListener){
+        NudgeLogger.e("SettingViewModel","performLogout called")
         showAPILoader.value = true
         hitApiStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = apiInterface.performLogout()
-            if (response.status.equals(SUCCESS, true)) {
-                withContext(Dispatchers.Main) {
-                    networkCallbackListener.onSuccess()
+            try {
+                val response = apiInterface.performLogout()
+                if (response.status.equals(SUCCESS, true)) {
+                    NudgeLogger.e("SettingViewModel","performLogout SUCCESS")
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onSuccess()
+                    }
+                } else {
+                    NudgeLogger.e("SettingViewModel","performLogout FAIL")
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                    networkCallbackListener.onFailed()
-                }
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.LOGOUT_API)
             }
         }
     }
 
     fun clearLocalDB(context: Context, logout: MutableState<Boolean>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            casteListDao.deleteCasteTable()
+            casteListDao.deleteCasteTable()
             tolaDao.deleteAllTola()
             didiDao.deleteAllDidi()
             lastSelectedTolaDao.deleteAllLastSelectedTola()
@@ -453,5 +501,11 @@ class SettingViewModel @Inject constructor(
         prefRepo.clearSharedPreference()
         prefRepo.saveAppLanguage(language)
         prefRepo.saveAppLanguageId(languageId)
+    }
+
+    fun buildAndShareLogs() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            LogWriter.buildSupportLogAndShare()
+        }
     }
 }
