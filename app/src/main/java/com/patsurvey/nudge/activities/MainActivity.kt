@@ -171,7 +171,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             override fun onSuccess(intent: Intent?) {
 
                 val client = SmsRetriever.getClient(context)
-                client.startSmsUserConsent(SENDER_NUMBER)
+                client.startSmsUserConsent(null)
                 startActivityForResult(intent!!, REQ_USER_CONSENT)
 
             }
