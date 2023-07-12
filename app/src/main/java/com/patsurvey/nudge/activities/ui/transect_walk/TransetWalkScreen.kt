@@ -67,6 +67,7 @@ import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.showCustomToast
@@ -150,9 +151,10 @@ fun TransectWalkScreen(
                     modifier = Modifier
                 )
                 val tolaCount = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
                 val totalCountWithoutEmptyTola = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaCount == 1)
+                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaTolaCount == 1)
                         stringResource(R.string.empty_tola_success_message)
                     else
                         stringResource(
@@ -448,6 +450,7 @@ fun TransectWalkScreen(
                     if (completeTolaAdditionClicked) {
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
+                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
                             viewModel.addTolasToNetwork()
                             viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
                                 override fun onSuccess() {

@@ -105,6 +105,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 addDidisToNetwork(networkCallbackListener)
             }
@@ -133,6 +136,10 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 updateDidiToNetwork(networkCallbackListener)
             }
@@ -186,18 +193,24 @@ class SyncHelper (
                         }
                     }
                     withContext(Dispatchers.Main){
+                        delay(1000)
                         syncPercentage.value = 1f
                         settingViewModel.stepFifthSyncStatus.value = 2
                         networkCallbackListener.onSuccess()
                     }
                 } else {
                     withContext(Dispatchers.Main){
+                        delay(1000)
                         syncPercentage.value = 1f
                         networkCallbackListener.onFailed()
                     }
                 }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 withContext(Dispatchers.Main){
+                    delay(1000)
                     syncPercentage.value = 1f
                     networkCallbackListener.onSuccess()
                 }
@@ -253,10 +266,14 @@ class SyncHelper (
                         }
                     }
                     savePATSummeryToServer(networkCallbackListener)
-                } else
-                    withContext(Dispatchers.Main){
+                } else {
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 savePATSummeryToServer(networkCallbackListener)
             }
@@ -283,10 +300,14 @@ class SyncHelper (
                         }
                     }
                     updateWealthRankingToNetwork(networkCallbackListener)
-                } else
+                } else{
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
             } else {
                 updateWealthRankingToNetwork(networkCallbackListener)
             }
@@ -344,6 +365,11 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 deleteTolaToNetwork(networkCallbackListener)
             }
@@ -387,6 +413,7 @@ class SyncHelper (
                             }
                             checkTolaAddStatus(networkCallbackListener)
                             withContext(Dispatchers.Main) {
+                                delay(1000)
                                 syncPercentage.value = 0.2f
                             }
                         } else {
@@ -395,6 +422,7 @@ class SyncHelper (
                             }
                             updateLocalTransactionIdToLocalTola(tolaList,networkCallbackListener)
                             withContext(Dispatchers.Main) {
+                                delay(1000)
                                 syncPercentage.value = 0.1f
                             }
                         }
@@ -403,6 +431,10 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkTolaAddStatus(networkCallbackListener)
@@ -442,6 +474,7 @@ class SyncHelper (
     private fun updateTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.syncPercentage.value = 0.14f
             }
             val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
@@ -471,6 +504,7 @@ class SyncHelper (
                             isPending = 3
                             startSyncTimer(networkCallbackListener)
                             withContext(Dispatchers.Main) {
+                                delay(1000)
                                 syncPercentage.value = 0.1f
                             }
                         }
@@ -480,6 +514,10 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkTolaUpdateStatus(networkCallbackListener)
@@ -491,6 +529,7 @@ class SyncHelper (
         Log.e("delete tola","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.syncPercentage.value = 0.07f
             }
             val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
@@ -520,6 +559,7 @@ class SyncHelper (
                             isPending = 2
                             startSyncTimer(networkCallbackListener)
                             withContext(Dispatchers.Main) {
+                                delay(1000)
                                 syncPercentage.value = 0.1f
                             }
                         }
@@ -530,6 +570,11 @@ class SyncHelper (
                         networkCallbackListener.onFailed()
                     }
                 }
+
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 checkTolaDeleteStatus(networkCallbackListener)
             }
@@ -541,6 +586,7 @@ class SyncHelper (
         Log.e("add didi","called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.stepOneSyncStatus.value = 3
                 settingViewModel.stepTwoSyncStatus.value = 1
                 settingViewModel.syncPercentage.value = 0.2f
@@ -574,6 +620,7 @@ class SyncHelper (
                         }
                         checkAddDidiStatus(networkCallbackListener)
                         withContext(Dispatchers.Main) {
+                            delay(1000)
                             syncPercentage.value = 0.4f
                         }
                     } else {
@@ -588,6 +635,7 @@ class SyncHelper (
                         isPending = 4
                         startSyncTimer(networkCallbackListener)
                         withContext(Dispatchers.Main) {
+                            delay(1000)
                             syncPercentage.value = 0.3f
                         }
                     }
@@ -595,6 +643,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkAddDidiStatus(networkCallbackListener)
@@ -605,6 +656,7 @@ class SyncHelper (
     fun updateDidiToNetwork(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.syncPercentage.value = 0.34f
             }
             val didiList = didiDao.fetchAllDidiNeedToUpdate(true,"",0)
@@ -625,6 +677,7 @@ class SyncHelper (
                         }
                         updateDidisNeedTOPostList(didiList,networkCallbackListener)
                         withContext(Dispatchers.Main) {
+                            delay(1000)
                             syncPercentage.value = 0.4f
                         }
                     } else {
@@ -639,6 +692,7 @@ class SyncHelper (
                         isPending = 6
                         startSyncTimer(networkCallbackListener)
                         withContext(Dispatchers.Main) {
+                            delay(1000)
                             syncPercentage.value = 0.3f
                         }
                     }
@@ -646,6 +700,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkUpdateDidiStatus(networkCallbackListener)
@@ -705,6 +762,7 @@ class SyncHelper (
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.syncPercentage.value = 0.27f
             }
             val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
@@ -736,6 +794,7 @@ class SyncHelper (
                             isPending = 5
                             startSyncTimer(networkCallbackListener)
                             withContext(Dispatchers.Main) {
+                                delay(1000)
                                 syncPercentage.value = 0.1f
                             }
                         }
@@ -745,6 +804,9 @@ class SyncHelper (
                     withContext(Dispatchers.Main){
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
                 checkDeleteDidiStatus(networkCallbackListener)
@@ -757,6 +819,7 @@ class SyncHelper (
         callWorkFlowAPIForStep(2)
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 settingViewModel.stepTwoSyncStatus.value = 3
                 settingViewModel.stepThreeSyncStatus.value = 1
                 settingViewModel.syncPercentage.value = 0.4f
@@ -788,6 +851,7 @@ class SyncHelper (
                                 isPending = 7
                                 startSyncTimer(networkCallbackListener)
                                 withContext(Dispatchers.Main) {
+                                    delay(1000)
                                     syncPercentage.value = 0.5f
                                 }
                             } else {
@@ -795,14 +859,19 @@ class SyncHelper (
                                     didiDao.updateDidiNeedToPostWealthRank(didi.id,false)
                                 }
                                 withContext(Dispatchers.Main) {
+                                    delay(1000)
                                     syncPercentage.value = 0.6f
                                 }
                                 checkDidiWealthStatus(networkCallbackListener)
                             }
-                        } else
-                            withContext(Dispatchers.Main){
+                        } else {
+                            withContext(Dispatchers.Main) {
                                 networkCallbackListener.onFailed()
                             }
+                        }
+                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
+                        }
                     } else {
                         checkDidiWealthStatus(networkCallbackListener)
                     }
@@ -823,6 +892,7 @@ class SyncHelper (
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.Main) {
+                    delay(1000)
                     settingViewModel.stepThreeSyncStatus.value = 3
                     settingViewModel.stepFourSyncStatus.value = 1
                     settingViewModel.syncPercentage.value = 0.6f
@@ -903,12 +973,33 @@ class SyncHelper (
                                 }
                             }
                         }
-                        scoreDidiList.add(EditDidiWealthRankingRequest(id = if(didi.serverId == 0) didi.id else didi.serverId,
-                            score = didi.score,
-                            comment = didi.comment,
-                            type = PAT_SURVEY,
-                            result = if(didi.forVoEndorsement==0) DIDI_REJECTED else COMPLETED_STRING))
-
+                        val passingMark=questionDao.getPassingScore()
+                        var comment= BLANK_STRING
+                        comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                            BLANK_STRING
+                        else {
+                            if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                TYPE_EXCLUSION
+                            } else {
+                                if (didi.score < passingMark)
+                                    LOW_SCORE
+                                else {
+                                    BLANK_STRING
+                                }
+                            }
+                        }
+                        scoreDidiList.add(
+                            EditDidiWealthRankingRequest(
+                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment =comment,
+                                type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                                else {
+                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                }
+                            )
+                        )
                         answeredDidiList.add(
                             PATSummarySaveRequest(
                                 villageId = prefRepo.getSelectedVillage().id,
@@ -916,7 +1007,7 @@ class SyncHelper (
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
                                 stateId = prefRepo.getSelectedVillage().stateId,
-                                totalScore = 0,
+                                totalScore = didi.score,
                                 userType = userType,
                                 beneficiaryName = didi.name,
                                 answerDetailDTOList = qList,
@@ -940,6 +1031,7 @@ class SyncHelper (
                                         )
                                     }
                                     withContext(Dispatchers.Main) {
+                                        delay(1000)
                                         syncPercentage.value = 0.8f
                                     }
                                     checkDidiPatStatus(networkCallbackListener)
@@ -954,13 +1046,18 @@ class SyncHelper (
                                     isPending = 8
                                     startSyncTimer(networkCallbackListener)
                                     withContext(Dispatchers.Main) {
+                                        delay(1000)
                                         syncPercentage.value = 0.7f
                                     }
                                 }
+                                savePatScoreToServer(scoreDidiList)
                             } else {
                                 withContext(Dispatchers.Main){
                                     networkCallbackListener.onFailed()
                                 }
+                            }
+                            if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                             }
                         }
                     } else {
@@ -992,6 +1089,7 @@ class SyncHelper (
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.Main) {
+                    delay(1000)
                     settingViewModel.stepFifthSyncStatus.value = 1
                     settingViewModel.stepFourSyncStatus.value = 3
                     settingViewModel.syncPercentage.value = 0.8f
@@ -1037,8 +1135,9 @@ class SyncHelper (
                                         didiDao.updateDidiTransactionId(didi.id, "")*/
                                     }
                                 }
-                                settingViewModel.stepFifthSyncStatus.value = 2
                                 withContext(Dispatchers.Main) {
+                                    delay(1000)
+                                    settingViewModel.stepFifthSyncStatus.value = 2
                                     syncPercentage.value = 1f
                                 }
                                 checkVOStatus(networkCallbackListener)
@@ -1047,6 +1146,9 @@ class SyncHelper (
                             withContext(Dispatchers.Main){
                                 networkCallbackListener.onFailed()
                             }
+                        }
+                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
                         }
                     } else {
                         checkVOStatus(networkCallbackListener)
@@ -1167,6 +1269,45 @@ class SyncHelper (
                                 stepsListDao.updateWorkflowId(stepId,step.workFlowId,villageId,it[0].status)
                                 stepsListDao.updateNeedToPost(stepId, villageId,false)
                             }
+                        }
+                    }
+                } else {
+                    val response = apiService.addWorkFlow(
+                        listOf(
+                            AddWorkFlowRequest(
+                                StepStatus.INPROGRESS.name,
+                                villageId,
+                                step.programId,
+                                stepId
+                            )
+                        )
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            stepsListDao.updateWorkflowId(stepId, it[0].id, villageId, it[0].status)
+                            delay(100)
+                            val responseForStepUpdation = apiService.editWorkFlow(
+                                listOf(
+                                    EditWorkFlowRequest(
+                                        step.workFlowId,
+                                        StepStatus.getStepFromOrdinal(step.isComplete)
+                                    )
+                                )
+                            )
+                            if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                                responseForStepUpdation.data?.let {
+                                    stepsListDao.updateWorkflowId(
+                                        stepId,
+                                        step.workFlowId,
+                                        villageId,
+                                        it[0].status
+                                    )
+                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                }
+                            }
+                        }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }

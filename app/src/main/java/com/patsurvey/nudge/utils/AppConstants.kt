@@ -49,8 +49,8 @@ const val BPC_SELECTED_DIDI_TABLE = "bpc_selected_didi_table"
 const val BPC_NON_SELECTED_DIDI_TABLE = "bpc_non_selected_didi_table"
 const val BPC_SCORE_PERCENTAGE_TABLE = "bpc_score_percentage_table"
 
-const val EMPTY_TOLA_NAME = "EMPTY_TOLA"
-const val NO_TOLA_TITLE = "No Tola"
+const val EMPTY_TOLA_NAME = "NO TOLA"
+const val NO_TOLA_TITLE = "NO TOLA"
 
 const val ONLINE_STATUS = "online_status"
 const val SEC_30_STRING="00:30"
@@ -107,6 +107,7 @@ const val PREF_PAT_COMPLETION_DATE = "pat_completion_date"
 const val PREF_BPC_PAT_COMPLETION_DATE = "bpc_pat_completion_date"
 const val PREF_VO_ENDORSEMENT_COMPLETION_DATE = "vo_endorsement_completion_date"
 const val VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_ = "vo_endorsement_complete_for_village_"
+const val PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ = "pref_bpc_didi_list_sync_for_village_"
 const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
@@ -169,7 +170,7 @@ val UNREACHABLE_ERROR_MSG =
 val GENERIC_ERROR_MSG =
     "Oops! An error has occurred on our server. Please check internet connection and try to playback again!"
 const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on, then try again."
-const val COMMON_ERROR_MSG = "The operation couldn’t be completed."
+const val COMMON_ERROR_MSG = "No network available."
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"
@@ -207,5 +208,7 @@ const val NUDGE_IMAGE_FOLDER = "nudge_images"
 
 const val SENDER_NUMBER = "TM-DYNRLM"
 const val PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ = "NEED_TO_POST_BPC_MATCH_SCORE_FOR_"
+const val DOUBLE_ZERO = "0.00"
+val IGNORED_REGEX = Regex("[$&+,:;=\\\\?@#|/'<>.^*(){}[\\\\]%!-]")
 
 

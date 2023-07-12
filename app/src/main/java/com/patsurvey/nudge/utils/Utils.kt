@@ -1,12 +1,20 @@
 package com.patsurvey.nudge.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
 import android.util.TypedValue
@@ -23,6 +31,13 @@ import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -38,10 +53,12 @@ import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
@@ -51,7 +68,11 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -60,10 +81,14 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.io.FileNotFoundException
+import java.io.FileOutputStream
+import java.io.IOException
 import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
+
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
 private object Invisible : LayoutModifier {
@@ -382,6 +407,10 @@ fun roundOffDecimal(number: Double): Double? {
     return df.format(number).toDouble()
 }
 
+fun roundOffDecimalPoints(number: Double): String {
+    return String.format("%.2f", number)
+}
+
 fun getImagePath(context: Context, imagePath:String): File {
     val imageName = getFileNameFromURL(imagePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
@@ -413,4 +442,187 @@ private fun getMimeType(file: File): String? {
         type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
     }
     return type
+}
+
+fun updateLastSyncTime(prefRepo:PrefRepo,lastSyncTime:String){
+    val saveSyncTime= prefRepo.getPref(LAST_SYNC_TIME,0L)
+    if(saveSyncTime>0){
+        val compValue=lastSyncTime.toLong().compareTo(saveSyncTime)
+        if(compValue>0){
+            prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+        }
+
+    }else prefRepo.savePref(LAST_SYNC_TIME,lastSyncTime.toLong())
+}
+
+
+@Composable
+fun BulletList(
+    modifier: Modifier = Modifier,
+    lineSpacing: Dp = 0.dp,
+    items: List<String>,
+) {
+    Column(modifier = modifier) {
+        items.forEach {
+            Row {
+                Text(
+                    text = "\u2022",
+                    textAlign = TextAlign.Start,
+                    style = buttonTextStyle,
+                    maxLines = 1,
+                    color = textColorDark,
+                )
+                Text(
+                    text = it,
+                    textAlign = TextAlign.Start,
+                    style = smallTextStyleMediumWeight,
+                    color = textColorDark,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 5.dp)
+                )
+            }
+            if (lineSpacing > 0.dp && it != items.last()) {
+                Spacer(modifier = Modifier.height(lineSpacing))
+            }
+        }
+    }
+}
+
+fun compressImage(imageUri: String, activity: Context,name:String): String? {
+    var filename: String? = ""
+    try {
+        val filePath = getRealPathFromURI(imageUri, activity)
+        var scaledBitmap: Bitmap? = null
+        val options = BitmapFactory.Options()
+        options.inJustDecodeBounds = true
+        var bmp = BitmapFactory.decodeFile(filePath, options)
+        var actualHeight = options.outHeight
+        var actualWidth = options.outWidth
+        val maxHeight = 816.0f
+        val maxWidth = 612.0f
+        var imgRatio = (actualWidth / actualHeight).toFloat()
+        val maxRatio = maxWidth / maxHeight
+        if (actualHeight > maxHeight || actualWidth > maxWidth) {
+            if (imgRatio < maxRatio) {
+                imgRatio = maxHeight / actualHeight
+                actualWidth = (imgRatio * actualWidth).toInt()
+                actualHeight = maxHeight.toInt()
+            } else if (imgRatio > maxRatio) {
+                imgRatio = maxWidth / actualWidth
+                actualHeight = (imgRatio * actualHeight).toInt()
+                actualWidth = maxWidth.toInt()
+            } else {
+                actualHeight = maxHeight.toInt()
+                actualWidth = maxWidth.toInt()
+            }
+        }
+        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight)
+        options.inJustDecodeBounds = false
+        options.inDither = false
+        options.inPurgeable = true
+        options.inInputShareable = true
+        options.inTempStorage = ByteArray(16 * 1024)
+        try {
+            bmp = BitmapFactory.decodeFile(filePath, options)
+        } catch (exception: OutOfMemoryError) {
+            exception.printStackTrace()
+        }
+        try {
+            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888)
+        } catch (exception: OutOfMemoryError) {
+            exception.printStackTrace()
+        }
+        val ratioX = actualWidth / options.outWidth.toFloat()
+        val ratioY = actualHeight / options.outHeight.toFloat()
+        val middleX = actualWidth / 2.0f
+        val middleY = actualHeight / 2.0f
+        val scaleMatrix = Matrix()
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
+        val canvas: Canvas
+        if (scaledBitmap != null) {
+            canvas = Canvas(scaledBitmap)
+            canvas.setMatrix(scaleMatrix)
+            canvas.drawBitmap(
+                bmp,
+                middleX - bmp.width / 2,
+                middleY - bmp.height / 2,
+                Paint(Paint.FILTER_BITMAP_FLAG)
+            )
+        }
+        val exif: ExifInterface
+        try {
+            exif = filePath?.let { ExifInterface(it) }!!
+            val orientation: Int = exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, 0)
+            val matrix = Matrix()
+            if (orientation == 6) {
+                matrix.postRotate(90F)
+            } else if (orientation == 3) {
+                matrix.postRotate(180F)
+            } else if (orientation == 8) {
+                matrix.postRotate(270F)
+            }
+            if (scaledBitmap != null) {
+                scaledBitmap = Bitmap.createBitmap(
+                    scaledBitmap,
+                    0,
+                    0,
+                    scaledBitmap.width,
+                    scaledBitmap.height,
+                    matrix,
+                    true
+                )
+            }
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        val out: FileOutputStream
+        filename = name
+        try {
+            val path =File("${activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}",filename).absolutePath
+            out = FileOutputStream(path)
+           val success= scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
+            return if(success == true){
+                path
+            }else BLANK_STRING
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        }
+    } catch (e: java.lang.Exception) {
+        e.printStackTrace()
+    }
+    return BLANK_STRING
+}
+
+private fun calculateInSampleSize(
+    options: BitmapFactory.Options,
+    reqWidth: Int,
+    reqHeight: Int
+): Int {
+    val height = options.outHeight
+    val width = options.outWidth
+    var inSampleSize = 1
+    if (height > reqHeight || width > reqWidth) {
+        val heightRatio = Math.round(height.toFloat() / reqHeight.toFloat())
+        val widthRatio = Math.round(width.toFloat() / reqWidth.toFloat())
+        inSampleSize = if (heightRatio < widthRatio) heightRatio else widthRatio
+    }
+    val totalPixels = (width * height).toFloat()
+    val totalReqPixelsCap = (reqWidth * reqHeight * 2).toFloat()
+    while (totalPixels / (inSampleSize * inSampleSize) > totalReqPixelsCap) {
+        inSampleSize++
+    }
+    return inSampleSize
+}
+
+private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
+    val contentUri = Uri.parse(contentURI)
+    val cursor = activity.contentResolver.query(contentUri, null, null, null, null)
+    return if (cursor == null) {
+        contentUri.path
+    } else {
+        cursor.moveToFirst()
+        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+        cursor.getString(idx)
+    }
 }

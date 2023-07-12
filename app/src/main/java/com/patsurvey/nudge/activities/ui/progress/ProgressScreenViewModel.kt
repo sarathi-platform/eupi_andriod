@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
@@ -24,10 +25,11 @@ import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -81,10 +83,15 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun setVoEndorsementCompleteForVillages() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            villageList.value.forEach { village ->
-                val stepList = stepsListDao.getAllStepsForVillage(village.id)
-                isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+            try {
+                villageList.value.forEach { village ->
+                    val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                    isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "setVoEndorsementCompleteForVillages: exception -> $ex")
             }
+
         }
     }
 
@@ -122,10 +129,10 @@ class ProgressScreenViewModel @Inject constructor(
             }
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                tolaCount.value=_tolaList.value.size
+                tolaCount.value=_tolaList.value.filter { it.name != EMPTY_TOLA_NAME }.size
                 didiCount.value=didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal}.size
+                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal}.size
                 endorsedDidiCount.value = didiList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
             }
         }
@@ -208,6 +215,9 @@ class ProgressScreenViewModel @Inject constructor(
                             }
                         }else{
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }

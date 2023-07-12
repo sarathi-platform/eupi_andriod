@@ -34,6 +34,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -144,6 +145,9 @@ class BpcProgressScreenViewModel @Inject constructor(
                             onCatchError(error, ApiType.WORK_FLOW_API)
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
 
@@ -179,7 +183,7 @@ class BpcProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
 //            val passingScore = questionListDao.getPassingScore()
-            val verifiedDidiCount = didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
+            val verifiedDidiCount = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
             withContext(Dispatchers.Main) {
                 bpcCompletedDidiCount.value = verifiedDidiCount
             }

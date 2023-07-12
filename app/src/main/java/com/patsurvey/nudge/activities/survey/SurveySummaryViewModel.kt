@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -32,6 +34,7 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class SurveySummaryViewModel @Inject constructor(
@@ -49,12 +52,18 @@ class SurveySummaryViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
+    private val _didiCountList = MutableStateFlow(listOf<String>())
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
+    val didiCountList: StateFlow<List<String>> get() = _didiCountList
     val notAvailableCount = mutableStateOf(0)
     val isTolaSynced = mutableStateOf(0)
     val isDidiSynced = mutableStateOf(0)
     val isDidiRankingSynced = mutableStateOf(0)
     val isDidiPATSynced = mutableStateOf(0)
+    val totalPatDidiCount = mutableStateOf(0)
+    val notAvailableDidiCount = mutableStateOf(0)
+    val voEndorseDidiCount = mutableStateOf(0)
+
 
     init {
         if (prefRepo.isUserBPC()) {
@@ -201,13 +210,18 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                             val passingMark=questionDao.getPassingScore()
                             var comment= BLANK_STRING
-                            if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                 comment= BLANK_STRING
+                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                BLANK_STRING
                             else {
-                               comment =if(didi.score< passingMark) LOW_SCORE else {
-                                   if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                       TYPE_EXCLUSION
-                                   }else BLANK_STRING}
+                                if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                    TYPE_EXCLUSION
+                                } else {
+                                    if (didi.score < passingMark)
+                                        LOW_SCORE
+                                    else {
+                                        BLANK_STRING
+                                    }
+                                }
                             }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
@@ -228,7 +242,7 @@ class SurveySummaryViewModel @Inject constructor(
                                     beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                     languageId = prefRepo.getAppLanguageId() ?: 2,
                                     stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = 0,
+                                    totalScore = didi.score,
                                     userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
                                     beneficiaryName = didi.name,
                                     answerDetailDTOList = qList,
@@ -266,6 +280,9 @@ class SurveySummaryViewModel @Inject constructor(
                                     checkDidiPatStatus()
                                 } else {
                                     networkCallbackListener.onFailed()
+                                }
+                                if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                                 }
                                 apiService.updateDidiScore(scoreDidiList)
                             }
@@ -330,6 +347,10 @@ class SurveySummaryViewModel @Inject constructor(
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                         }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                        }
                     }
                 }
                 launch {
@@ -354,6 +375,9 @@ class SurveySummaryViewModel @Inject constructor(
                                         )
                                     }
                                     stepsListDao.updateNeedToPost(step.id, villageId, false)
+                                }
+                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                                 }
                             }
                         }
@@ -780,9 +804,15 @@ class SurveySummaryViewModel @Inject constructor(
                 )
                 if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
+
                 } else {
                     Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, false)
                     networkCallbackListener.onFailed()
+                }
+                if(!updateSelectedDidiResponse.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,updateSelectedDidiResponse.lastSyncTime)
                 }
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
@@ -809,6 +839,10 @@ class SurveySummaryViewModel @Inject constructor(
                         }else{
                             networkCallbackListener.onFailed()
                             onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
@@ -839,6 +873,9 @@ class SurveySummaryViewModel @Inject constructor(
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
                     networkCallbackListener.onFailed()
                 }
+                if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,saveMatchSummaryResponse.lastSyncTime)
+                }
             } catch (ex: Exception){
                 prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
                 onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
@@ -853,6 +890,33 @@ class SurveySummaryViewModel @Inject constructor(
 
         return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
 
+    }
+
+    @SuppressLint("StringFormatMatches")
+    fun prepareDidiCountList(context:Context){
+        val list:ArrayList<String> = arrayListOf()
+        context?.let {
+            totalPatDidiCount.value=didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 }.size
+
+            if(totalPatDidiCount.value>1)
+              list.add(context.getString(R.string.pat_completed_for_didi_plural,totalPatDidiCount.value))
+            else list.add(context.getString(R.string.pat_completed_for_didi_singular,totalPatDidiCount.value))
+
+            if(notAvailableDidiCount.value>1)
+                list.add(context.getString(R.string.pat_marked_not_available_plural,notAvailableDidiCount.value))
+            else list.add(context.getString(R.string.pat_marked_not_available_singular,notAvailableDidiCount.value))
+
+            if(voEndorseDidiCount.value>1)
+                list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
+            else list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+
+            if(list.isNotEmpty()){
+                _didiCountList.value=list
+            }
+        }
     }
 
 }

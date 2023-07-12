@@ -272,7 +272,7 @@ fun BpcProgressScreen(
                                 ) {
                                     Column(modifier = Modifier) {
                                         Text(
-                                            text = "CRP Group Name",
+                                            text = stringResource(R.string.crp_group_name_text),
                                             textAlign = TextAlign.Start,
                                             style = mediumTextStyle,
                                             color = textColorDark,
@@ -440,7 +440,7 @@ fun BpcProgressScreen(
                                             )
 
                                             Text(
-                                                text = "Current Status:",
+                                                text = stringResource(R.string.current_status_text),
                                                 style = buttonTextStyle,
                                                 color = textColorDark
                                             )

@@ -1,7 +1,6 @@
 package com.patsurvey.nudge
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
@@ -40,6 +39,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0f
             }
             if(isBPCDidiNeedToBeReplaced()) {
@@ -51,10 +51,12 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     oldDidiList.forEach {
                         oldBeneficiaryIdSelected.add(it.serverId)
                     }
+                    NudgeLogger.d("SyncBPCDataOnServer", "sendBpcUpdatedDidiList: newBeneficiaryIdSelected -> $oldBeneficiaryIdSelected")
                     val newBeneficiaryIdSelected = mutableListOf<Int>()
                     updatedList.forEach {
                         newBeneficiaryIdSelected.add(it.serverId)
                     }
+                    NudgeLogger.d("SyncBPCDataOnServer", "sendBpcUpdatedDidiList: newBeneficiaryIdSelected -> $newBeneficiaryIdSelected")
                     val updateSelectedDidiResponse = apiService.sendSelectedDidiList(
                         BpcUpdateSelectedDidiRequest(
                             oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
@@ -63,18 +65,25 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         )
                     )
                     if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
-                        Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
+                        NudgeLogger.d("SyncBPCDataOnServer", "sendBpcUpdatedDidiList: $SUCCESS")
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villagId, true)
                         savePATSummeryToServer(networkCallbackListener)
                     } else {
-                        Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
+                        NudgeLogger.d("SyncBPCDataOnServer", "sendBpcUpdatedDidiList: $FAIL")
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villagId, false)
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
                         }
+                    }
+
+                    if(!updateSelectedDidiResponse.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,updateSelectedDidiResponse.lastSyncTime)
                     }
                 } catch (ex: Exception) {
                     settingViewModel.onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
                 }
             } else {
+                prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, true)
                 savePATSummeryToServer(networkCallbackListener)
             }
         }
@@ -117,6 +126,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     }
 
     private fun checkPendingPatStatus(networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("SyncBPCDataOnServer", "checkPendingPatStatus -> called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiIDList= didiDao.fetchPendingPatStatusDidi(true,"")
             if(didiIDList.isNotEmpty()) {
@@ -124,8 +134,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 didiIDList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
+                NudgeLogger.d("SyncBPCDataOnServer", "checkPendingPatStatus -> TransactionIdRequest = $ids")
                 val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
                 if (response.status.equals(SUCCESS, true)) {
+                    NudgeLogger.d("SyncBPCDataOnServer", "checkPendingPatStatus -> SUCCESS")
                     response.data?.forEach { transactionIdResponse ->
                         didiIDList.forEach { didiEntity ->
                             if (transactionIdResponse.transactionId == didiEntity.transactionId) {
@@ -134,11 +146,18 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         }
                     }
                     updateBpcPatStatusToNetwork(networkCallbackListener)
-                } else
-                    withContext(Dispatchers.Main){
+                } else {
+                    NudgeLogger.d("SyncBPCDataOnServer", "checkPendingPatStatus -> FAIL")
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
+                NudgeLogger.d("SyncBPCDataOnServer", "checkPendingPatStatus -> didiIDList is empty")
                 updateBpcPatStatusToNetwork(networkCallbackListener)
             }
         }
@@ -162,10 +181,15 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         }
                     }
                     updateBpcPatStatusToNetwork(networkCallbackListener)
-                } else
-                    withContext(Dispatchers.Main){
+                } else {
+                    withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
                     }
+                }
+                if(!response.lastSyncTime.isNullOrEmpty()){
+                    updateLastSyncTime(prefRepo,response.lastSyncTime)
+                }
+
             } else {
                 updateBpcPatStatusToNetwork(networkCallbackListener)
             }
@@ -177,17 +201,19 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.Main) {
+                    delay(1000)
                     syncPercentage.value = 0.4f
                 }
                 val villageId = prefRepo.getSelectedVillage().id
                 val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 val bpcStep = stepList.last()
                 if(bpcStep.workFlowId>0){
-                    val response = apiService.editWorkFlow(
+
+                    withContext(Dispatchers.IO){
+                        val response = apiService.editWorkFlow(
                         listOf(
                             EditWorkFlowRequest(bpcStep.workFlowId, StepStatus.getStepFromOrdinal(bpcStep.isComplete))
                         ) )
-                    withContext(Dispatchers.IO){
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(bpcStep.id, bpcStep.workFlowId,villageId,it[0].status)
@@ -199,6 +225,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 networkCallbackListener.onFailed()
                             }
 //                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
+                        }
+
+                        if(!response.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
                     }
                 }
@@ -215,6 +245,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0.6f
             }
             if (!settingViewModel.isBPCScoreSaved()) {
@@ -225,10 +256,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val bpcStep =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                             .last()
-                    val matchPercentage = calculateMatchPercentage(
-                        didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal },
-                        passingScore
-                    )
+                    val matchPercentage = calculateMatchPercentage(didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }, passingScore)
                     val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                         programId = bpcStep.programId,
                         score = matchPercentage,
@@ -246,6 +274,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
                         }
+                    }
+                    if(!saveMatchSummaryResponse.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,saveMatchSummaryResponse.lastSyncTime)
                     }
                 } catch (ex: Exception) {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
@@ -271,6 +302,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
+                delay(1000)
                 syncPercentage.value = 0.8f
             }
             val needToPostPatDidi =
@@ -279,29 +311,27 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
             if (!needToPostPatDidi.isNullOrEmpty()) {
                 val didiRequestList : ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                 needToPostPatDidi.forEach { didi ->
-                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal) {
-                        didiRequestList.add(EditDidiWealthRankingRequest(
-                            id = didi.serverId,
-                            type = BPC_SURVEY_CONSTANT,
-                            result = PatSurveyStatus.COMPLETED.name,
-                            score = didi.score,
-                            comment = if ((didi.score
-                                    ?: 0.0) < passingScore
-                            ) LOW_SCORE else "",
-                            localModifiedDate = System.currentTimeMillis()
-                        ))
-                    } else if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
-                        didiRequestList.add(
-                                EditDidiWealthRankingRequest(
-                                    id = didi.serverId,
-                                    type = BPC_SURVEY_CONSTANT,
-                                    result = PatSurveyStatus.NOT_AVAILABLE.name,
-                                    score = 0.0,
-                                    comment = TYPE_EXCLUSION,
-                                    localModifiedDate = System.currentTimeMillis()
-                                )
-                            )
+                    var comment= BLANK_STRING
+                    if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                        comment= BLANK_STRING
+                    else {
+                        comment =if((didi.score ?: 0.0) < passingScore) LOW_SCORE else {
+                            if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                TYPE_EXCLUSION
+                            }else BLANK_STRING}
                     }
+                    didiRequestList.add(
+                        EditDidiWealthRankingRequest(
+                            id = if (didi.serverId == 0) didi.id else didi.serverId,
+                            score = didi.score,
+                            comment =comment,
+                            type = BPC_SURVEY_CONSTANT,
+                            result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                            else {
+                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                            }
+                        )
+                    )
                     try {
                         val updatedPatResponse = apiService.updateDidiRanking(didiRequestList)
                         if (updatedPatResponse.status.equals(SUCCESS, true)) {
@@ -338,6 +368,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 networkCallbackListener.onFailed()
                             }
                         }
+                        if(!updatedPatResponse.lastSyncTime.isNullOrEmpty()){
+                            updateLastSyncTime(prefRepo,updatedPatResponse.lastSyncTime)
+                        }
                     } catch (ex: Exception) {
                         settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
                     }
@@ -355,6 +388,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO) {
+                    delay(1000)
                     syncPercentage.value = 0.2f
                 }
                 var optionList= emptyList<OptionsItem>()
@@ -365,7 +399,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                 if(didiIDList.isNotEmpty()){
                     didiIDList.forEach { didi->
-                        Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                         val qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if(needToPostQuestionsList.isNotEmpty()){
@@ -438,34 +472,46 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             EditDidiWealthRankingRequest(
                                 id = if (didi.serverId == 0) didi.id else didi.serverId,
                                 score = didi.score,
-                                comment = if(didi.score< passingMark) LOW_SCORE else {
+                                comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                                    BLANK_STRING
+                                else {
                                     if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
                                         TYPE_EXCLUSION
-                                    }else BLANK_STRING},
+                                    } else {
+                                        if (didi.score < passingMark)
+                                            LOW_SCORE
+                                        else {
+                                            BLANK_STRING
+                                        }
+                                    }
+                                },
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                 result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
                             )
                         )
+                        val patSummarySaveRequest = PATSummarySaveRequest(
+                            villageId = prefRepo.getSelectedVillage().id,
+                            surveyId = surveyId,
+                            beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                            languageId = prefRepo.getAppLanguageId() ?: 2,
+                            stateId = prefRepo.getSelectedVillage().stateId,
+                            totalScore = didi.score,
+                            userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                            beneficiaryName = didi.name,
+                            answerDetailDTOList = qList,
+                            patSurveyStatus = didi.patSurveyStatus,
+                            section2Status = didi.section2Status,
+                            section1Status = didi.section1Status,
+                            shgFlag = didi.shgFlag
+                        )
+                        NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest")
                         answeredDidiList.add(
-                            PATSummarySaveRequest(
-                                villageId = prefRepo.getSelectedVillage().id,
-                                surveyId = surveyId,
-                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
-                                languageId = prefRepo.getAppLanguageId() ?: 2,
-                                stateId = prefRepo.getSelectedVillage().stateId,
-                                totalScore = 0,
-                                userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
-                                beneficiaryName = didi.name,
-                                answerDetailDTOList = qList,
-                                patSurveyStatus = didi.patSurveyStatus,
-                                section2Status = didi.section2Status,
-                                section1Status = didi.section1Status,
-                                shgFlag = didi.shgFlag
-                            )
+                            patSummarySaveRequest
                         )
                     }
                     if(answeredDidiList.isNotEmpty()){
                         withContext(Dispatchers.IO){
+                            NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer answeredDidiList: $answeredDidiList")
                             val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                             if(saveAPIResponse.status.equals(SUCCESS,true)){
                                 if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -476,6 +522,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             prefRepo.getSelectedVillage().id
                                         )
                                     }
+                                    NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer -> saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()")
                                     updateBpcPatStatusToNetwork(networkCallbackListener)
                                 } else {
                                     for(i in didiIDList.indices) {
@@ -486,6 +533,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             )
                                         }
                                     }
+                                    NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer -> !saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()")
+
                                     isPending = 1
                                     startSyncTimer(networkCallbackListener)
                                 }
@@ -495,6 +544,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     networkCallbackListener.onFailed()
                                 }
                             }
+                            if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
+                            }
+                            NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer scoreDidiList: $scoreDidiList")
                             apiService.updateDidiScore(scoreDidiList)
                         }
                     }

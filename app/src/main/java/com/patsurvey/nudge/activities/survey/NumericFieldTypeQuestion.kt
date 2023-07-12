@@ -54,6 +54,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.roundOffDecimalPoints
 
 
 @Composable
@@ -155,6 +156,17 @@ fun NumericFieldTypeQuestion(
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onValueChange = {
+                                val numericAnswerEntity = NumericAnswerEntity(
+                                    optionId = option.optionId ?: 0,
+                                    weight = option.weight ?: 1,
+                                    questionId = questionId,
+                                    count = if(it.isEmpty()) 0 else it.toInt(),
+                                    didiId = didiId,
+                                    id = 0,
+                                    questionFlag = questionFlag
+                                )
+                                option.count = if(it.isEmpty()) 0 else it.toInt()
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             })
                     }
 
@@ -183,7 +195,7 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) viewModel?.totalAmount?.value.toString()
+                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString()
                                 else
                                         (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") || viewModel?.enteredAmount?.value.equals("0")) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
                                 readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),

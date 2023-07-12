@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.settings
 import android.content.Context
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
@@ -76,6 +75,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -108,6 +108,7 @@ import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import java.text.SimpleDateFormat
@@ -144,6 +145,7 @@ fun SettingScreen(
     list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
     list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
     list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
+    if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, "Share Logs", BLANK_STRING))
     viewModel.createSettingMenu(list)
 //    }
     LaunchedEffect(key1 = true) {
@@ -269,7 +271,7 @@ fun SettingScreen(
                                     if(!viewModel.prefRepo.isUserBPC()) {
                                         viewModel.showSyncDialog.value = true
                                     } else {
-                                        syncBPCStatus.value = 0
+                                        syncBPCStatus.value = viewModel.bpcSyncStatus.value
                                         isBPCDataNeedToBeSynced.value = false
                                         viewModel.showBPCSyncDialog.value = true
                                     }
@@ -289,6 +291,9 @@ fun SettingScreen(
 
                                 4 -> {
                                     navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                }
+                                5 -> {
+                                    viewModel.buildAndShareLogs()
                                 }
 
                                 else -> {
@@ -443,6 +448,7 @@ private fun logout(
     logout: MutableState<Boolean>,
     navController: NavController
 ){
+    NudgeLogger.e("SettingScreen","logout called")
     viewModel.clearLocalDB(context, logout)
 }
 
@@ -462,7 +468,7 @@ fun showSyncDialog(
     val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
     val syncPercentage: Float = settingViewModel.syncPercentage.value
-    Log.e("sync", "->$syncPercentage")
+    NudgeLogger.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
         targetValue =  settingViewModel.syncPercentage.value,
@@ -587,7 +593,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3) {
-                                    Log.e("sync dialog", "step one tick")
+                                    NudgeLogger.e("sync dialog", "step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -599,7 +605,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepOneSyncStatus.value == 1) {
-                                    Log.e("sync dialog","step one circle")
+                                    NudgeLogger.e("sync dialog","step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -607,6 +613,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -638,7 +654,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3) {
-                                    Log.e("sync dialog","step two tick")
+                                    NudgeLogger.e("sync diaNudgeLogger","step two tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -650,7 +666,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepTwoSyncStatus.value == 1) {
-                                    Log.e("sync dialog","step two circle")
+                                    NudgeLogger.e("sync diaNudgeLogger","step two circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -658,6 +674,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -689,7 +715,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3) {
-                                    Log.e("sync dialog","step three tick")
+                                    NudgeLogger.e("sync diaNudgeLogger","step three tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -701,7 +727,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepThreeSyncStatus.value == 1) {
-                                    Log.e("sync dialog","step three circle")
+                                    NudgeLogger.e("sync diaNudgeLogger","step three circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -709,6 +735,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -740,7 +776,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3) {
-                                    Log.e("sync dialog","step four tick")
+                                    NudgeLogger.e("sync diaNudgeLogger","step four tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -752,7 +788,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepFourSyncStatus.value == 1) {
-                                    Log.e("sync dialog","step four circle")
+                                    NudgeLogger.e("sync diaNudgeLogger","step four circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -760,6 +796,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -791,7 +837,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3) {
-                                    Log.e("sync dialog","step fifth tick")
+                                    NudgeLogger.e("sync diaNudgeLogger","step fifth tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -803,7 +849,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepFifthSyncStatus.value == 1) {
-                                    Log.e("sync dialog","step fifth circle")
+                                    NudgeLogger.e("sync diaNudgeLogger","step fifth circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -811,6 +857,16 @@ fun showSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = redIconColor,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -893,7 +949,7 @@ fun showSyncDialog(
                         }
 
                         if (isInternetConnected
-                            && (batteryLevel > 30)
+                            && (batteryLevel >= 30)
                             && !settingViewModel.showLoader.value
                             && isDataNeedToBeSynced.value == 1
                         ) {
@@ -957,7 +1013,7 @@ fun showBPCSyncDialog(
     val progressIndicatorColor = Color(0xFF2EE08E)
     val numberStyle: TextStyle = mediumTextStyle
     val syncPercentage: Float = settingViewModel.syncPercentage.value
-    Log.e("sync", "->$syncPercentage")
+    NudgeLogger.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
         targetValue =  settingViewModel.syncPercentage.value,
@@ -1076,7 +1132,7 @@ fun showBPCSyncDialog(
                                 if (!isBPCDataNeedToBeSynced.value
                                     && (syncBPCStatus.value == 3
                                             || syncBPCStatus.value == 0)) {
-                                    Log.e("sync dialog", "step one tick")
+                                    NudgeLogger.e("sync dialog", "step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -1088,7 +1144,7 @@ fun showBPCSyncDialog(
                                     )
                                 }
                                 else if (syncBPCStatus.value == 2) {
-                                    Log.e("sync dialog","step one circle")
+                                    NudgeLogger.e("sync dialog","step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -1096,6 +1152,16 @@ fun showBPCSyncDialog(
                                             .padding(4.dp),
                                         color = textColorDark,
                                         strokeWidth = 1.dp
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        contentDescription = null,
+                                        tint = greenDark,
+                                        modifier = Modifier
+                                            .align(Alignment.CenterEnd)
+                                            .size(24.dp)
+                                            .padding(4.dp)
                                     )
                                 }
                             }
@@ -1132,7 +1198,7 @@ fun showBPCSyncDialog(
                                 }
 
                                 Text(
-                                    text = "Please don't close the app or switch off the phone.",
+                                    text = stringResource(R.string.do_not_close_app_message),
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
@@ -1147,7 +1213,7 @@ fun showBPCSyncDialog(
                         }
 
                         if ((isInternetConnected
-                                    && (batteryLevel > 30)
+                                    && (batteryLevel >= 30)
                                     && !settingViewModel.showLoader.value)
                                     && (isBPCDataNeedToBeSynced.value)
                         ) {

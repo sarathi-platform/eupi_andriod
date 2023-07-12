@@ -26,6 +26,7 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.utils.IGNORED_REGEX
 
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
@@ -58,9 +59,11 @@ fun OtpInputField(
         modifier = Modifier.focusRequester(focusRequester),
         value = otpValue,
         onValueChange = { value->
-            if(value.length<=otpLength){
-                otpValue=value
-                onOtpChanged(otpValue)
+            if(!value.contains(IGNORED_REGEX)) {
+                if (value.length <= otpLength) {
+                    otpValue = value
+                    onOtpChanged(otpValue)
+                }
             }
 
     }, decorationBox ={

@@ -19,14 +19,14 @@ data class CasteEntity(
 ) {
     companion object {
         fun getDefaultCasteListForLanguage(languageId: Int): List<CasteEntity> {
-            return when (languageId) {
+           when (languageId) {
                 1 -> {
                     val castListForLanguage = mutableListOf<CasteEntity>()
                     castListForLanguage.add(CasteEntity(id = 1, casteName = "सामान्य जाति", languageId = languageId))
                     castListForLanguage.add(CasteEntity(id = 2, casteName = "अन्य पिछड़ी जाति", languageId = languageId))
                     castListForLanguage.add(CasteEntity(id = 3, casteName = "अनुसूचित जाति", languageId = languageId ))
                     castListForLanguage.add(CasteEntity(id = 4, casteName = "अनुसूचित जनजाति", languageId = languageId))
-                    castListForLanguage
+                    return castListForLanguage
                 }
                 2 -> {
                     val castListForLanguage = mutableListOf<CasteEntity>()
@@ -35,7 +35,7 @@ data class CasteEntity(
                     castListForLanguage.add(CasteEntity(id = 3, casteName = "SC- Scheduled Caste", languageId = languageId ))
                     castListForLanguage.add(CasteEntity(id = 4, casteName = "ST- Scheduled Tribes", languageId = languageId))
 
-                    castListForLanguage
+                    return castListForLanguage
                 }
                 3 -> {
                     val castListForLanguage = mutableListOf<CasteEntity>()
@@ -43,10 +43,10 @@ data class CasteEntity(
                     castListForLanguage.add(CasteEntity(id = 2, casteName = "ওবিসি- অন্যান্য অনগ্রসর শ্রেণী", languageId = languageId))
                     castListForLanguage.add(CasteEntity(id = 3, casteName = "SC- তফসিলি জাতি", languageId = languageId ))
                     castListForLanguage.add(CasteEntity(id = 4, casteName = "ST- তফসিলি উপজাতি", languageId = languageId))
-                    castListForLanguage
+                    return castListForLanguage
                 }
                 else -> {
-                    listOf()
+                    return listOf()
                 }
             }
         }

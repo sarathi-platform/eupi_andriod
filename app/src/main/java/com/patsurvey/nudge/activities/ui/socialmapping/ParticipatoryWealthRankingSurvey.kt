@@ -101,6 +101,7 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
+import com.patsurvey.nudge.utils.BulletList
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -382,10 +383,17 @@ fun ParticipatoryWealthRankingSurvey(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ShowDialogPreview(){
+    ShowDialog("Title","New Message", setShowDialog = {}, list = emptyList(), positiveButtonClicked = {})
+}
 @Composable
 fun ShowDialog(
     title: String,
     message: String,
+    isBulletShow:Boolean?=false,
+    list: List<String> ?= emptyList(),
     setShowDialog: (Boolean) -> Unit,
     positiveButtonClicked: () -> Unit
 ) {
@@ -408,14 +416,20 @@ fun ShowDialog(
                         overflow = TextOverflow.Ellipsis,
                         modifier = Modifier.fillMaxWidth()
                     )
-                    Text(
-                        text = message,
-                        textAlign = TextAlign.Start,
-                        style = smallTextStyleMediumWeight,
-                        maxLines = 2,
-                        color = textColorDark,
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    if(isBulletShow == false){
+                        Text(
+                            text = message,
+                            textAlign = TextAlign.Start,
+                            style = smallTextStyleMediumWeight,
+                            color = textColorDark,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }else{
+                        if (list != null) {
+                            BulletList(items = list)
+                        }
+                    }
+
                     Row(modifier = Modifier.fillMaxWidth()) {
                         ButtonNegative(
                             buttonTitle = stringResource(id = R.string.cancel_tola_text),

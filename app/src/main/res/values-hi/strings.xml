@@ -64,7 +64,7 @@
     <string name="verification_text">सत्यापन</string>
     <string name="rejected">अस्वीकार कर दिया</string>
     <string name="go_back_text">वापस जाओ</string>
-    <string name="show">अधिक जानकारी के लिए यहाँ क्लिक करे</string>
+    <string name="show">देखे</string>
     <string name="training_videos">प्रशिक्षण वीडियो</string>
     <string name="logout">लॉग आउट</string>
     <string name="profile">प्रोफ़ाइल</string>
@@ -134,8 +134,8 @@
     <string name="location_unavailable">स्थान उपलब्ध नहीं है</string>
     <string name="user_id_text">पहचान: </string>
     <string name="empty_tola_string">कोई तोला नहीं जोड़ा गया</string>
-    <string name="tola_conirmation_text_plural">कुल %1$s नए टोले \nसफलतापूर्वक जोड़े गए हैं</string>
-    <string name="tola_conirmation_text_singular">कुल %1$s नया टोला \nसफलतापूर्वक जोड़ा गया है</string>
+    <string name="tola_conirmation_text_plural">%1$s नए टोले \nसफलतापूर्वक जोड़े गए हैं</string>
+    <string name="tola_conirmation_text_singular">%1$s नया टोला \nसफलतापूर्वक जोड़ा गया है</string>
     <string name="complete_transect_walk_text">पूर्ण ट्रांसेक्ट वॉक</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} के लिए ट्रांसेक्ट वॉक पूरा हो गया है</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME} के लिए सहभागी धन रैंकिंग पूरी हो गई है</string>
@@ -275,8 +275,8 @@
     <string name="min_battery_text">(न्यूनतम 30% आवश्यक)</string>
     <string name="do_not_close_app_message">कृपया ऐप बंद न करें या फ़ोन बंद न करें।</string>
 
-    <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
-    <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
+    <string name="vo_endorsement_completed_village_banner_text">वीओ अनुमोदन पूरा हो गया</string>
+    <string name="bpc_verification_completed_village_banner_text">BPC अनुमोदन पूरा हो गया</string>
     <string name="empty_tola_success_message">This Village does not have any tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
@@ -284,12 +284,25 @@
     <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
     <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
     <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
-    <string name="added_tolas_text_plural">" added Tolas"</string>
-    <string name="added_tolas_text_singular">" added Tola"</string>
+    <string name="added_tolas_text_plural"> added Tolas</string>
+    <string name="added_tolas_text_singular"> added Tola</string>
     <string name="take_photo_text">फोटो लो</string>
     <string name="retake_photo_text">फ़ोटो दोबारा लें</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
     <string name="vo_endorsement_inprogress_village_banner_text">VO Endorsement In progress</string>
+
+    <string name="latest_status_text">"नवीनतम स्थिति: "</string>
+    <string name="ranking_text_rich">अमीर</string>
+    <string name="ranking_text_medium">मध्यम</string>
+    <string name="ranking_text_poor">गरीब</string>
+    <string name="crp_group_name_text">सीआरपी समूह का नाम</string>
+    <string name="current_status_text">वर्तमान स्थिति:</string>
+    <string name="pat_completed_for_didi_singular">%1$s दीदी के लिए PAT पूरा हो गया</string>
+    <string name="pat_completed_for_didi_plural">%1$s दीदियों के लिए PAT पूरा हो गया</string>
+    <string name="pat_marked_not_available_singular">%1$s दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया</string>
+    <string name="pat_marked_not_available_plural">%1$s दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया है</string>
+    <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s अल्ट्रापूर दीदी ने वीओ समर्थन के लिए भेजा।</string>
+    <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s अल्ट्रापूर दीदी को वीओ समर्थन के लिए भेजा गया है।</string>
 
 
 </resources>

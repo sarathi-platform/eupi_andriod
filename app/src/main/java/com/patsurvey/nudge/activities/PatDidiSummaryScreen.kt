@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toFile
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -52,6 +53,9 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.text.DecimalFormat
 import java.util.function.Consumer
 
@@ -468,6 +472,17 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
+                    if((localContext as MainActivity).isOnline.value) {
+                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId.equals(
+                                BLANK_STRING
+                            )
+                        ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
+                        patDidiSummaryViewModel.uploadDidiImage(localContext,
+                            patDidiSummaryViewModel.photoUri,
+                            id,
+                            patDidiSummaryViewModel.didiImageLocation.value
+                        )
+                    }
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")
                     } else {
@@ -493,7 +508,7 @@ fun handleImageCapture(
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 
-    var location: LocationCoordinates = LocationCoordinates()
+    var location: LocationCoordinates = LocationCoordinates(0.0,0.0)
 
     val decimalFormat = DecimalFormat("#.#######")
     if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -578,13 +593,6 @@ fun handleImageCapture(
     }
 
     viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
-
-//    val requestFile=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),uri.toFile())
-//    val imageFilePart=MultipartBody.Part.createFormData("file",uri.toFile().name,requestFile)
-//    val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiEntity.id.toString())
-//
-//
-//    viewModal.uploadDidiImage(imageFilePart,requestDidiId)
 
 }
 
