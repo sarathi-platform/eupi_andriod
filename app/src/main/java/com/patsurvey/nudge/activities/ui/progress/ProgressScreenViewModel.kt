@@ -148,19 +148,31 @@ class ProgressScreenViewModel @Inject constructor(
         showLoader.value = true
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
-                val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                var villageList = emptyList<VillageEntity>()
+                val villageCountList= villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                villageList = villageCountList.ifEmpty {
+                    villageListDao.getAllVillages(2)
+                }
+
+                Log.d("TAG", "fetchVillageList size: ${villageList.size} ")
+
                 val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
                 _tolaList.emit(tolaDBList)
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
-                withContext(Dispatchers.Main){
-                    villageList.mapIndexed { index, villageEntity ->
-                        if(prefRepo.getSelectedVillage().id==villageEntity.id){
-                            villageSelected.value=index
+                withContext(Dispatchers.Main) {
+                    Log.d("TAG", "fetchVillageList VillageList Size: ${villageList.size} ")
+                    if (villageList.isNotEmpty()) {
+                        villageList.mapIndexed { index, villageEntity ->
+                            if (prefRepo.getSelectedVillage().id == villageEntity.id) {
+                                villageSelected.value = index
+                                selectedText.value = villageEntity.name
+                            }
                         }
+//                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
+//                    selectedText.value = villageList[villageSelected.value].name
+                        getStepsList(prefRepo.getSelectedVillage().id)
                     }
-                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
-                    getStepsList(prefRepo.getSelectedVillage().id)
                     showLoader.value = false
                 }
             }

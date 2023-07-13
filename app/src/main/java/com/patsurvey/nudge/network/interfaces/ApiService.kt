@@ -151,6 +151,12 @@ interface ApiService {
                                  @Part ("id") didiId:RequestBody,
                                  @Part ("userType") userType:RequestBody,
                                  @Part ("location") location: RequestBody): ApiResponseModel<Object>
+ @Multipart
+    @POST("/write-api/form/uploadDocument")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun uploadDocument(@Part imageList:List<MultipartBody.Part>,
+                                 @Part ("villageId") villageId:RequestBody,
+                                 @Part ("flowType") userType:RequestBody): ApiResponseModel<Object>
 
 
     @POST("/read-api/custom/log")

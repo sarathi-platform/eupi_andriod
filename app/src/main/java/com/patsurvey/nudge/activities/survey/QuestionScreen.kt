@@ -160,13 +160,15 @@ fun QuestionScreen(
                 ) {
                     Column(modifier = Modifier.fillMaxWidth()) {
                         Spacer(modifier = Modifier.height(10.dp))
-                        val quesImage:File?=
+                        if (questionList[it].questionImageUrl?.isNotEmpty() == true){
+                        val quesImage: File? =
                             questionList[it].questionImageUrl?.let { it1 ->
-                                getImagePath(context,
+                                getImagePath(
+                                    context,
                                     it1
                                 )
                             }
-                        if(quesImage?.extension.equals(EXTENSION_WEBP,true)){
+                        if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
                             GlideImage(
                                 model = quesImage,
                                 contentDescription = "Question Image",
@@ -175,27 +177,34 @@ fun QuestionScreen(
                                     .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
                                     .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
                             )
-                        }else {
+                        } else {
                             if (quesImage?.exists() == true) {
-                                GlideImage(model = quesImage,
-                                    contentDescription ="Question Image",
+                                GlideImage(
+                                    model = quesImage,
+                                    contentDescription = "Question Image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
-                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
+                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                            60.dp
+                                        )
+                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                            60.dp
+                                        ),
                                 )
-                            } else {
+                            }
+                            /*else {
                                 Image(
                                     painter = painterResource(id = R.drawable.pat_sample_icon),
                                     contentDescription = "home image",
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp)
-                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/60.dp),
+                                        .width(*//*dimensionResource(id = R.dimen.ques_image_width)*//*60.dp)
+                                        .height(*//*dimensionResource(id = R.dimen.ques_image_width)*//*60.dp),
                                     colorFilter = ColorFilter.tint(textColorDark)
                                 )
-                            }
+                            }*/
                         }
+                    }
                         Spacer(modifier = Modifier.height(10.dp))
                         if (questionList[it].type == QuestionType.RadioButton.name) {
                             val sortedOptionList =

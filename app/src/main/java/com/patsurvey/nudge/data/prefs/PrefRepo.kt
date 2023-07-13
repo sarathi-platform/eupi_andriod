@@ -66,4 +66,8 @@ interface PrefRepo {
 
    fun getLastSyncTime(): Long
 
+   fun saveSettingOpenFrom(openFrom: Int)
+
+   fun settingOpenFrom(): Int
+
 }

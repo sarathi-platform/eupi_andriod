@@ -243,4 +243,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET isExclusionYesSelected = :isExclusionYesSelected WHERE id = :didiId")
     fun updateExclusionStatus(didiId: Int, isExclusionYesSelected: Int)
 
+    @Query("UPDATE $DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
+    fun updateImageLocalPath(didiId: Int, localPath: String)
+
 }

@@ -418,7 +418,7 @@ fun ExpandableCard(
 
             }
             //Expandable Content
-            if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+//            if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
                 Column {
                     Spacer(
                         modifier = Modifier
@@ -443,13 +443,13 @@ fun ExpandableCard(
                         onCardArrowClick(false)
                     }
                 }
-            } else {
+           /* } else {
                 Spacer(
                     modifier = Modifier
                         .height(14.dp)
                         .fillMaxWidth()
                 )
-            }
+            }*/
         }
 
     }

@@ -281,10 +281,14 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 } catch (ex: Exception) {
                     prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
                     settingViewModel.onCatchError(ex, ApiType.BPC_SAVE_MATCH_PERCENTAGE_API)
-                    networkCallbackListener.onFailed()
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
                 }
             } else {
-                networkCallbackListener.onSuccess()
+                withContext(Dispatchers.Main) {
+                    networkCallbackListener.onSuccess()
+                }
             }
         }
     }

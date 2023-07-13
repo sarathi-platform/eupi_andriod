@@ -63,6 +63,8 @@ class PatSectionSummaryViewModel @Inject constructor(
 
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
+    private val _inclusionQuestionList = MutableStateFlow(listOf<QuestionEntity>())
+    val inclusionQuestionList: StateFlow<List<QuestionEntity>> get() = _inclusionQuestionList
 
     private val _answerList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val answerList: StateFlow<List<SectionAnswerEntity>> get() = _answerList
@@ -79,6 +81,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
            val localDidiDetails=didiDao.getDidi(didiId)
             val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION,prefRepo.getAppLanguageId()?:2)
+            val inclusionQuestionList = questionListDao.getQuestionForType(TYPE_INCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
             val localSummeryList = answerDao.getAnswerForDidi(TYPE_INCLUSION, didiId = didiId)
             if(sectionType.value.equals(TYPE_INCLUSION,true)){
@@ -87,6 +90,7 @@ class PatSectionSummaryViewModel @Inject constructor(
             withContext(Dispatchers.IO){
                 _didiEntity.emit(localDidiDetails)
                 _questionList.emit(questionList)
+                _inclusionQuestionList.emit(inclusionQuestionList)
                 _answerList.emit(localAnswerList)
                 _answerSummeryList.emit(localSummeryList)
             }

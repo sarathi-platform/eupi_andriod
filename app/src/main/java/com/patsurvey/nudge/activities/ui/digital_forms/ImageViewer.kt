@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.digital_forms
 
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -53,8 +54,10 @@ fun FormImageViewerScreen(
 
         for (i in 1..5) {
             imageList.value = imageList.value.also {
+                Log.d("TAG", "FormImageViewerScreen: ${viewModel.getFormPathKey(viewModel.getFormSubPath(fileName, i))}")
                 val imagePath =
                     viewModel.prefRepo.getPref(viewModel.getFormPathKey(viewModel.getFormSubPath(fileName, i)), "")
+                Log.d("TAG", "FormImageViewerScreen: Index $i :: ${imagePath} ")
                 if (!imagePath.isNullOrEmpty())
                     it.add(imagePath)
             }
@@ -62,8 +65,10 @@ fun FormImageViewerScreen(
 
 
         imageList.value.forEach {
-            if (it.isNotEmpty())
+            if (it.isNotEmpty()) {
+                Log.d("TAG", "FormImageViewerScreen: FileDetails : $it")
                 uriList.add(uriFromFile(context, File(it)))
+            }
         }
     }
 
@@ -79,7 +84,7 @@ fun FormImageViewerScreen(
     if (uriList.isNotEmpty()) {
         Box(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(pageCount = uriList.size, state = pagerState) {currentItem ->
-
+                Log.d("TAG", "FormImageViewerScreenURI: ${uriList[currentItem]} ")
                 val painter = rememberImagePainter(uriList[currentItem])
                 painter.state.painter?.intrinsicSize?.let { it1 -> zoomState.setContentSize(it1) }
                 Box() {

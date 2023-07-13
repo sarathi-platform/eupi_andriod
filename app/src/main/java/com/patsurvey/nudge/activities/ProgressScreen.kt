@@ -167,6 +167,7 @@ fun ProgressScreen(
                         actions = {
                             IconButton(onClick = {
                                 viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                                viewModel.prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
                                 onNavigateToSetting()
                             }) {
                                 Icon(

@@ -100,6 +100,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -109,6 +110,7 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import java.text.SimpleDateFormat
@@ -130,22 +132,31 @@ fun SettingScreen(
     val changeGraph = remember {
         mutableStateOf(false)
     }
+    val isChangeGraphCalled = remember {
+        mutableStateOf(true)
+    }
 
-    val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
-    val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
-    list.add(
-        SettingOptionModel(
-            1,
-            context.getString(R.string.sync_up),
-            context.getString(R.string.last_syncup_text)
-                .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
+    if(viewModel.prefRepo.settingOpenFrom()==PageFrom.VILLAGE_PAGE.ordinal){
+        list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
+        list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
+        list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
+    }else {
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
+        val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
+        list.add(
+            SettingOptionModel(
+                1,
+                context.getString(R.string.sync_up),
+                context.getString(R.string.last_syncup_text)
+                    .replace("{LAST_SYNC_TIME}", lastSyncTime.toString())
+            )
         )
-    )
-    list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
-    list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
-    list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
-    list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
-    if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, "Share Logs", BLANK_STRING))
+        list.add(SettingOptionModel(2, context.getString(R.string.profile), BLANK_STRING))
+        list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
+        list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
+        list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
+        if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, "Share Logs", BLANK_STRING))
+    }
     viewModel.createSettingMenu(list)
 //    }
     LaunchedEffect(key1 = true) {
@@ -198,11 +209,15 @@ fun SettingScreen(
         mutableStateOf(false)
     }
     BackHandler() {
-        navController.navigate(Graph.HOME) {
-            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                inclusive = true
-                saveState = false
+        if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+            navController.navigate(Graph.HOME) {
+                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                    inclusive = true
+                    saveState = false
+                }
             }
+        }else {
+            navController.popBackStack()
         }
     }
 
@@ -224,13 +239,18 @@ fun SettingScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = {
-                        navController.navigate(Graph.HOME) {
-                            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                inclusive = true
-                                saveState = false
+                        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+                            navController.navigate(Graph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                    inclusive = true
+                                    saveState = false
+                                }
                             }
+                        } else {
+                            navController.popBackStack()
                         }
-                    }) {
+                    }
+                    ) {
                         Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
                     }
                 },
@@ -268,21 +288,27 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
-                                    if(!viewModel.prefRepo.isUserBPC()) {
-                                        viewModel.showSyncDialog.value = true
-                                    } else {
-                                        syncBPCStatus.value = viewModel.bpcSyncStatus.value
-                                        isBPCDataNeedToBeSynced.value = false
-                                        viewModel.showBPCSyncDialog.value = true
-                                    }
+                                    if(viewModel.prefRepo.settingOpenFrom()== PageFrom.HOME_PAGE.ordinal) {
+                                        if (!viewModel.prefRepo.isUserBPC()) {
+                                            viewModel.showSyncDialog.value = true
+                                        } else {
+                                            syncBPCStatus.value = viewModel.bpcSyncStatus.value
+                                            isBPCDataNeedToBeSynced.value = false
+                                            viewModel.showBPCSyncDialog.value = true
+                                        }
+                                    }else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
                                 }
 
                                 1 -> {
-                                    navController.navigate(SettingScreens.PROFILE_SCREEN.route)
-                                }
+                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                        navController.navigate(SettingScreens.PROFILE_SCREEN.route)
+                                    else navController.navigate(AuthScreen.VIDEO_LIST_SCREEN.route)
+                                  }
 
                                 2 -> {
-                                    expanded.value = !expanded.value
+                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                         expanded.value = !expanded.value
+                                    else navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                                 }
 
                                 3 -> {
@@ -435,7 +461,13 @@ fun SettingScreen(
     }
 
     if(changeGraph.value){
-        navController.navigate(Graph.LOGOUT_GRAPH)
+        if(isChangeGraphCalled.value) {
+            if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
+                navController.navigate(AuthScreen.LOGIN.route)
+                isChangeGraphCalled.value=false
+            } else navController.navigate(Graph.LOGOUT_GRAPH)
+        }
+
         changeGraph.value=false
     }
 }

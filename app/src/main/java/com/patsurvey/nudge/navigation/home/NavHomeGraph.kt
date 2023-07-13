@@ -778,15 +778,17 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController){
         }
 
         composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel())
+            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(Graph.SETTING_GRAPH)
+            }
         }
     }
 }
 
 sealed class LogoutScreens(val route: String) {
-    object LOG_LOGIN_SCREEN : LogoutScreens(route = "log_login_screen")
-    object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "log_village_selection_screen")
-    object LOG_OTP_VERIFICATION : LogoutScreens(route = "log_otp_verification_screen/{$ARG_MOBILE_NUMBER}")
+    object LOG_LOGIN_SCREEN : LogoutScreens(route = "login_screen")
+    object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = "village_selection_screen")
+    object LOG_OTP_VERIFICATION : LogoutScreens(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
 
 }
 
