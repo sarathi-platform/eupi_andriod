@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.network
 
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.ApiType.ADD_WORK_FLOW_API
 import com.patsurvey.nudge.utils.ApiType.BPC_DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.BPC_SAVE_MATCH_PERCENTAGE_API
 import com.patsurvey.nudge.utils.ApiType.BPC_SUMMARY_API
@@ -15,6 +16,7 @@ import com.patsurvey.nudge.utils.ApiType.PAT_BPC_QUESTION_API
 import com.patsurvey.nudge.utils.ApiType.PAT_BPC_SURVEY_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_QUESTION_API
 import com.patsurvey.nudge.utils.ApiType.PAT_CRP_SURVEY_SUMMARY
+import com.patsurvey.nudge.utils.ApiType.STATUS_CALL_BACK_API
 import com.patsurvey.nudge.utils.ApiType.STEP_LIST_API
 import com.patsurvey.nudge.utils.ApiType.TOLA_LIST_API
 import com.patsurvey.nudge.utils.ApiType.VALIDATE_OTP_API
@@ -62,7 +64,10 @@ object ApiServicesHelper {
         return when(api) {
             STEP_LIST_API -> SUBPATH_STEP_LIST
             TOLA_LIST_API -> SUBPATH_GET_COHORT
+            ApiType.TOLA_DELETE_API -> SUBPATH_DELETE_COHORT
+            ApiType.TOLA_EDIT_API -> SUBPATH_EDIT_COHORT
             DIDI_LIST_API -> SUBPATH_GET_DIDI
+            ApiType.DIDI_ADD_API -> SUBPATH_ADD_DIDI
             DIDI_RANKING_API -> SUBPATH_GET_DIDI
             PAT_CRP_QUESTION_API, PAT_BPC_QUESTION_API -> SUBPATH_GET_PAT_QUESTION
             PAT_CRP_SURVEY_SUMMARY, PAT_BPC_SURVEY_SUMMARY -> SUBPATH_GET_PAT_SUMMARY
@@ -80,6 +85,9 @@ object ApiServicesHelper {
             ApiType.DIDI_DELETE_API -> SUBPATH_DELETE_DIDI
             LOGOUT_API -> SUBPATH_AUTH_LOGOUT
             ApiType.TOLA_ADD_API -> SUBPATH_ADD_COHORT
+            STATUS_CALL_BACK_API -> SUBPATH_CALLBACK_STATUS
+            ADD_WORK_FLOW_API -> SUBPATH_ADD_WORKFLOW
+
 
         }
     }

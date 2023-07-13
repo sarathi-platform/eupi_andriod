@@ -158,11 +158,9 @@ class SettingViewModel @Inject constructor(
     }
 
     fun isStatusStepStatusSync(step : Int) : Boolean{
-        NudgeLogger.e("step","->$step")
         val villageId = prefRepo.getSelectedVillage().id
         val stepList = stepsListDao.getAllStepsForVillage(villageId)
-        NudgeLogger.e("status","-> "+stepList[step].status)
-        NudgeLogger.e("iscomplete","-> "+getStepStatusFromOrdinal(stepList[step].isComplete))
+        NudgeLogger.e("SettingViewModel", "step -> $step, status -> ${stepList[step].status}  isComplete,->  ${getStepStatusFromOrdinal(stepList[step].isComplete)}, needToPost -> ${stepList[step].needToPost}")
         return !stepList[step].needToPost
     }
 
@@ -504,6 +502,7 @@ class SettingViewModel @Inject constructor(
     }
 
     fun buildAndShareLogs() {
+        NudgeLogger.d("SettingViewModel", "buildAndShareLogs---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             LogWriter.buildSupportLogAndShare()
         }

@@ -34,7 +34,6 @@ import kotlinx.coroutines.withContext
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class SurveySummaryViewModel @Inject constructor(
@@ -140,7 +139,7 @@ class SurveySummaryViewModel @Inject constructor(
                     val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
-                            Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                            Log.d("SurveySummaryViewModel", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
@@ -210,9 +209,9 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                             val passingMark=questionDao.getPassingScore()
                             var comment= BLANK_STRING
-                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                BLANK_STRING
-                            else {
+                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                PatSurveyStatus.NOT_AVAILABLE.name
+                            } else {
                                 if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
                                     TYPE_EXCLUSION
                                 } else {

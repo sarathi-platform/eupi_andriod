@@ -905,7 +905,7 @@ class SyncHelper (
                     var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
                     didiIDList.forEachIndexed { index, didi ->
-                        Log.d(TAG, "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        Log.d("SyncHelper", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -1256,7 +1256,7 @@ class SyncHelper (
     fun callWorkFlowAPI(villageId: Int,stepId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                Log.e("work flow","called")
+                Log.e("SyncHelper","work flow called")
                 val step=stepsListDao.getStepForVillage(villageId, stepId)
                 if(step.workFlowId>0 && step.needToPost){
                     val response = apiService.editWorkFlow(

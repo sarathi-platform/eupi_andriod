@@ -183,9 +183,6 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
 
-    @Query("UPDATE $DIDI_TABLE SET serverId = :serverId,createdDate = :createdDate,modifiedDate = :modifiedDate,needsToPost = 0 WHERE name = :name AND guardianName =:guardianName AND villageId =:villageId AND castId=:castId AND cohortId =:cohortId")
-    fun updateDidiServerId(name: String, guardianName: String,villageId:Int,castId:Int,cohortId:Int,serverId:Int,createdDate:Long,modifiedDate:Long)
-
     @Query("UPDATE $DIDI_TABLE SET cohortId = :cohortId WHERE id =:id")
     fun updateTolaIdForDidi(cohortId:Int,id:Int)
 

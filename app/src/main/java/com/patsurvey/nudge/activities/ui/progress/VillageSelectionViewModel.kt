@@ -817,7 +817,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     findCompleteValue(steps.status).ordinal
                                                 steps.needToPost = false
                                             }
-                                            NudgeLogger.d("VillageSelectionViewModel", "it.stepList: ${it.stepList}")
+                                            NudgeLogger.d("VillageSelectionViewModel", "it.stepList: ${it.stepList} \n")
                                             stepsListDao.insertAll(it.stepList)
                                         }
                                         prefRepo.savePref(

@@ -130,8 +130,9 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
-    fun addTolasToNetwork() {
+    fun addTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: called")
             try {
                 val jsonTola = JsonArray()
                 val tolaList = tolaDao.fetchTolaNeedToPost(true,"",0)
@@ -140,257 +141,354 @@ class TransectWalkViewModel @Inject constructor(
                     for (tola in tolaList) {
                         jsonTola.add(AddCohortRequest.getRequestObjectForTola(tola).toJson())
                     }
-                    NudgeLogger.d("TransectWalkViewModel", "$jsonTola")
+                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: tolaList: $jsonTola")
                     val response = apiInterface.addCohort(jsonTola)
+                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if(response.data[0].transactionId.isNullOrEmpty()) {
+                                NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: transactionId empty")
                                 for(i in response.data.indices){
                                     val tola = tolaList[i]
                                     val tolaDataFromNetwork = response.data[i]
                                     val createdTime = tolaDataFromNetwork.createdDate
                                     val modifiedDate = tolaDataFromNetwork.modifiedDate
+                                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaDetailAfterSync before for tola = $tola")
                                     tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
                                         false,
                                         "",
                                         createdTime,
                                         modifiedDate)
+                                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaDetailAfterSync after for tola = $tola")
                                     tola.serverId = tolaDataFromNetwork.id
                                     tola.createdDate = tolaDataFromNetwork.createdDate
                                     tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                 }
-                                checkTolaAddStatus()
+                                checkTolaAddStatus(networkCallbackListener)
                             } else {
+                                NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: transactionId not empty")
                                 response.data.forEach { tola ->
                                     for(i in response.data.indices){
                                         response.data[i].transactionId.let { it1 ->
+                                            NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
                                             tolaDao.updateTolaTransactionId(tolaList[i].id,
                                                 it1
                                             )
+                                            NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
+
                                         }
                                     }
                                 }
                                 isPending = 1
-                                startSyncTimerForStatus()
+                                startSyncTimerForStatus(networkCallbackListener)
                             }
                         }
                     } else {
-                        checkTolaAddStatus()
+                        NudgeLogger.d("TransectWalkScreen", "addTolasToNetwork -> onFailed")
+                        networkCallbackListener.onFailed()
                     }
                     if(!response.lastSyncTime.isNullOrEmpty()){
                         updateLastSyncTime(prefRepo,response.lastSyncTime)
                     }
                 } else {
-                    checkTolaAddStatus()
+                    checkTolaAddStatus(networkCallbackListener)
                 }
             }  catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+                NudgeLogger.d("TransectWalkScreen", "addTolasToNetwork -> onFailed")
                 onError(tag = "TransectWalkViewModel", "addTolasToNetwork -> Error : ${ex.localizedMessage}")
-                onCatchError(ex, ApiType.TOLA_LIST_API)
+                onCatchError(ex, ApiType.TOLA_ADD_API)
             }
 
         }
     }
 
-    private fun startSyncTimerForStatus(){
+    private fun startSyncTimerForStatus(networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("TransectWalkViewModel","startSyncTimerForStatus: called")
         val timer = Timer()
         timer.schedule(object : TimerTask(){
             override fun run() {
+
                 when(isPending){
                     1 -> {
-                        checkTolaAddStatus()
+                        NudgeLogger.d("TransectWalkViewModel","startSyncTimerForStatus: isPending: $isPending")
+                        checkTolaAddStatus(networkCallbackListener)
                     }
                     2 -> {
-                        checkTolaDeleteStatus()
+                        NudgeLogger.d("TransectWalkViewModel","startSyncTimerForStatus: isPending: $isPending")
+                        checkTolaDeleteStatus(networkCallbackListener)
                     }
                     3 -> {
-                        checkTolaUpdateStatus()
+                        NudgeLogger.d("TransectWalkViewModel","startSyncTimerForStatus: isPending: $isPending")
+                        checkTolaUpdateStatus(networkCallbackListener)
                     }
                 }
             }
         },10000)
     }
 
-    private fun checkTolaAddStatus(){
+    private fun checkTolaAddStatus(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val tolaList = tolaDao.fetchPendingTola(true,"")
-            if(tolaList.isNotEmpty()) {
-                val ids: ArrayList<String> = arrayListOf()
-                tolaList.forEach { tola ->
-                    tola.transactionId?.let { ids.add(it) }
-                }
-                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.forEach { transactionIdResponse ->
-                        tolaList.forEach { tola ->
-                            if (transactionIdResponse.transactionId == tola.transactionId) {
-                                tola.serverId = transactionIdResponse.referenceId
-                            }
-                        }
+            NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus called")
+            try {
+                val tolaList = tolaDao.fetchPendingTola(true,"")
+                if(tolaList.isNotEmpty()) {
+                    val ids: ArrayList<String> = arrayListOf()
+                    tolaList.forEach { tola ->
+                        tola.transactionId?.let { ids.add(it) }
                     }
-                    for(tola in tolaList) {
-                        tolaDao.updateTolaDetailAfterSync(
-                            id = tola.id,
-                            serverId = tola.serverId,
-                            needsToPost = false,
-                            transactionId = "",
-                            createdDate = tola.createdDate?:0L,
-                            modifiedDate = tola.modifiedDate?:0L
-                        )
-                    }
-                    deleteTolaToNetwork()
-                } else {
-                    deleteTolaToNetwork()
-                }
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
-
-            } else {
-                deleteTolaToNetwork()
-            }
-        }
-    }
-
-    private fun deleteTolaToNetwork() {
-        NudgeLogger.e("delete tola","called")
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
-            val jsonTola = JsonArray()
-            if (tolaList.isNotEmpty()) {
-                for (tola in tolaList) {
-                    jsonTola.add(DeleteTolaRequest(tola.serverId, localModifiedDate = System.currentTimeMillis()).toJson())
-                }
-                NudgeLogger.e("tola need to post","$tolaList.size")
-                val response = apiInterface.deleteCohort(jsonTola)
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        if((response.data[0]?.transactionId.isNullOrEmpty())) {
+                    NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus tolaList: $tolaList, size: ${tolaList.size}")
+                    val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                    NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.forEach { transactionIdResponse ->
                             tolaList.forEach { tola ->
-                                tolaDao.deleteTola(tola.id)
-                            }
-                            checkTolaDeleteStatus()
-                        } else {
-                            for (i in 0 until response.data.size){
-                                tolaList[i].transactionId = response.data[i]?.transactionId
-                                tolaList[i].transactionId?.let { it1 ->
-                                    tolaDao.updateTolaTransactionId(tolaList[i].id,
-                                        it1
-                                    )
+                                if (transactionIdResponse.transactionId == tola.transactionId) {
+                                    tola.serverId = transactionIdResponse.referenceId
                                 }
                             }
-                            isPending = 2
-                            startSyncTimerForStatus()
                         }
+                        for(tola in tolaList) {
+                            NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus ->  updateTolaDetailAfterSync: before for tola: $tola")
+                            tolaDao.updateTolaDetailAfterSync(
+                                id = tola.id,
+                                serverId = tola.serverId,
+                                needsToPost = false,
+                                transactionId = "",
+                                createdDate = tola.createdDate?:0L,
+                                modifiedDate = tola.modifiedDate?:0L
+                            )
+                            NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus ->  updateTolaDetailAfterSync: after for tola: $tola")
+                        }
+                        deleteTolaToNetwork(networkCallbackListener)
+                    } else {
+                        NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus onFailed")
+                        networkCallbackListener.onFailed()
                     }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
+                    }
+
                 } else {
-                    checkTolaDeleteStatus()
+                    deleteTolaToNetwork(networkCallbackListener)
                 }
-
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
-
-            } else {
-                checkTolaDeleteStatus()
+            } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+                NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus -> onFailed")
+                onError(tag = "TransectWalkViewModel", "checkTolaAddStatus -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
             }
         }
     }
 
-    private fun updateTolasToNetwork() {
+    private fun deleteTolaToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
-            val jsonTola = JsonArray()
-            if (tolaList.isNotEmpty()) {
-                for (tola in tolaList) {
-                    jsonTola.add(EditCohortRequest.getRequestObjectForTola(tola).toJson())
-                }
-                NudgeLogger.e("tola need to post","$tolaList.size")
-                val response = apiInterface.editCohort(jsonTola)
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        if((response.data[0].transactionId.isNullOrEmpty())) {
-                            tolaList.forEach { tola ->
-                                tolaDao.updateNeedToPost(tola.id,false)
+            NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork called")
+            try {
+                val tolaList = tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal)
+                val jsonTola = JsonArray()
+                if (tolaList.isNotEmpty()) {
+                    for (tola in tolaList) {
+                        jsonTola.add(DeleteTolaRequest(tola.serverId, localModifiedDate = System.currentTimeMillis()).toJson())
+                    }
+                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork: tola need to post: $tolaList, size: ${tolaList.size}")
+                    val response = apiInterface.deleteCohort(jsonTola)
+                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            if((response.data[0]?.transactionId.isNullOrEmpty())) {
+                                NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  transactionId is empty")
+                                tolaList.forEach { tola ->
+                                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.deleteTola before for tola: $tola")
+                                    tolaDao.deleteTola(tola.id)
+                                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.deleteTola after for tola: $tola")
+                                }
+
+                                checkTolaDeleteStatus(networkCallbackListener)
+                            } else {
+                                NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  transactionId is not empty")
+                                for (i in 0 until response.data.size){
+                                    tolaList[i].transactionId = response.data[i]?.transactionId
+                                    tolaList[i].transactionId?.let { it1 ->
+                                        NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
+                                        tolaDao.updateTolaTransactionId(tolaList[i].id,
+                                            it1
+                                        )
+                                        NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
+                                    }
+                                }
+                                isPending = 2
+                                startSyncTimerForStatus(networkCallbackListener)
                             }
-                            checkTolaUpdateStatus()
-                        } else {
-                            for (i in 0 until response.data.size){
-                                tolaList[i].transactionId = response.data[i].transactionId
-                                tolaList[i].transactionId?.let { it1 ->
-                                    tolaDao.updateTolaTransactionId(tolaList[i].id,
-                                        it1
-                                    )
+                        }
+                    } else {
+                        NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork: onFailed")
+                        networkCallbackListener.onFailed()
+                    }
+
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
+                    }
+
+                } else {
+                    checkTolaDeleteStatus(networkCallbackListener)
+                }
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork: onFailed")
+                networkCallbackListener.onFailed()
+                onError(tag = "TransectWalkViewModel", "deleteTolaToNetwork -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.TOLA_DELETE_API)
+            }
+        }
+    }
+
+    private fun updateTolasToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: called")
+            try {
+                val tolaList = tolaDao.fetchAllTolaNeedToUpdate(true,"",0)
+                val jsonTola = JsonArray()
+                if (tolaList.isNotEmpty()) {
+                    for (tola in tolaList) {
+                        jsonTola.add(EditCohortRequest.getRequestObjectForTola(tola).toJson())
+                    }
+                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: tolaList: $tolaList, size: ${tolaList.size}")
+                    val response = apiInterface.editCohort(jsonTola)
+                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            if((response.data[0].transactionId.isNullOrEmpty())) {
+                                NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: transactionId empty")
+                                tolaList.forEach { tola ->
+                                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: tolaDao.updateNeedToPost before for tola: $tola")
+                                    tolaDao.updateNeedToPost(tola.id,false)
+                                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: tolaDao.updateNeedToPost after for tola: $tola")
+
+                                }
+                                checkTolaUpdateStatus(networkCallbackListener)
+                            } else {
+                                NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: transactionId not empty")
+                                for (i in 0 until response.data.size){
+                                    tolaList[i].transactionId = response.data[i].transactionId
+                                    tolaList[i].transactionId?.let { it1 ->
+                                        NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork:  tolaDao.updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
+                                        tolaDao.updateTolaTransactionId(tolaList[i].id,
+                                            it1
+                                        )
+                                        NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork:  tolaDao.updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
+                                    }
+                                }
+                                isPending = 3
+                                startSyncTimerForStatus(networkCallbackListener)
+                            }
+                        }
+                    } else {
+                        networkCallbackListener.onFailed()
+                    }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
+                    }
+                } else {
+                    checkTolaUpdateStatus(networkCallbackListener)
+                }
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: onFailed")
+                networkCallbackListener.onFailed()
+                onError(tag = "TransectWalkViewModel", "updateTolasToNetwork -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.TOLA_EDIT_API)
+            }
+        }
+    }
+
+    fun checkTolaUpdateStatus(networkCallbackListener: NetworkCallbackListener){
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: called")
+            try {
+                val tolaList = tolaDao.fetchAllPendingTolaNeedToUpdate(true,"")
+                if(tolaList.isNotEmpty()) {
+                    val ids: ArrayList<String> = arrayListOf()
+                    tolaList.forEach { tola ->
+                        tola.transactionId?.let { ids.add(it) }
+                    }
+                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaList: $tolaList, size: ${tolaList.size}")
+                    val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.forEach { transactionIdResponse ->
+                            tolaList.forEach { tola ->
+                                if (transactionIdResponse.transactionId == tola.transactionId) {
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateNeedToPost before for tola: $tola")
+                                    tolaDao.updateNeedToPost(tola.id,false)
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateNeedToPost after for tola: $tola")
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateTolaTransactionId before for tola: $tola")
+                                    tolaDao.updateTolaTransactionId(tola.id,"")
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateTolaTransactionId after for tola: $tola")
                                 }
                             }
-                            isPending = 3
-                            startSyncTimerForStatus()
                         }
+                        NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: onSuccess")
+                        networkCallbackListener.onSuccess()
+                    } else {
+                        NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: onFailed")
+                        networkCallbackListener.onFailed()
+                    }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
                     }
                 } else {
-                    checkTolaUpdateStatus()
+                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: onSuccess")
+                    networkCallbackListener.onSuccess()
                 }
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
-            } else {
-                checkTolaUpdateStatus()
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: onFailed")
+                networkCallbackListener.onFailed()
+                onError(tag = "TransectWalkViewModel", "checkTolaUpdateStatus -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
             }
         }
     }
 
-    fun checkTolaUpdateStatus(){
+    fun checkTolaDeleteStatus(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val tolaList = tolaDao.fetchAllPendingTolaNeedToUpdate(true,"")
-            if(tolaList.isNotEmpty()) {
-                val ids: ArrayList<String> = arrayListOf()
-                tolaList.forEach { tola ->
-                    tola.transactionId?.let { ids.add(it) }
-                }
-                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.forEach { transactionIdResponse ->
-                        tolaList.forEach { tola ->
-                            if (transactionIdResponse.transactionId == tola.transactionId) {
-                                tolaDao.updateNeedToPost(tola.id,false)
-                                tolaDao.updateTolaTransactionId(tola.id,"")
+            NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: called")
+            try {
+                val tolaList = tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"")
+                if(tolaList.isNotEmpty()) {
+                    val ids: ArrayList<String> = arrayListOf()
+                    tolaList.forEach { tola ->
+                        tola.transactionId?.let { ids.add(it) }
+                    }
+                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: tolaList: $tolaList, size: ${tolaList.size}")
+                    val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
+                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus:  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.forEach { transactionIdResponse ->
+                            tolaList.forEach { tola ->
+                                if (transactionIdResponse.transactionId == tola.transactionId) {
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: tolaDao.deleteTola before for tola: $tola")
+                                    tolaDao.deleteTola(tola.id)
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: tolaDao.deleteTola after for tola: $tola")
+
+                                }
                             }
                         }
+                        updateTolasToNetwork(networkCallbackListener)
+                    } else {
+                        NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: onFailed")
+                        networkCallbackListener.onFailed()
                     }
-                }
-
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
-
-            }
-        }
-    }
-
-    fun checkTolaDeleteStatus(){
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val tolaList = tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"")
-            if(tolaList.isNotEmpty()) {
-                val ids: ArrayList<String> = arrayListOf()
-                tolaList.forEach { tola ->
-                    tola.transactionId?.let { ids.add(it) }
-                }
-                val response = apiInterface.getPendingStatus(TransactionIdRequest("",ids))
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.forEach { transactionIdResponse ->
-                        tolaList.forEach { tola ->
-                            if (transactionIdResponse.transactionId == tola.transactionId) {
-                                tolaDao.deleteTola(tola.id)
-                            }
-                        }
+                    if(!response.lastSyncTime.isNullOrEmpty()){
+                        updateLastSyncTime(prefRepo,response.lastSyncTime)
                     }
-                    updateTolasToNetwork()
-                }
-                if(!response.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,response.lastSyncTime)
-                }
 
-            } else {
-                updateTolasToNetwork()
+                } else {
+                    updateTolasToNetwork(networkCallbackListener)
+                }
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: onFailed")
+                networkCallbackListener.onFailed()
+                onError(tag = "TransectWalkViewModel", "checkTolaDeleteStatus -> Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.TOLA_DELETE_API)
             }
         }
     }
@@ -518,6 +616,7 @@ class TransectWalkViewModel @Inject constructor(
                 val jsonTola = JsonArray()
                 jsonTola.add(EditCohortRequest.getRequestObjectForTola(updatedTola).toJson())
                 val response = apiInterface.editCohort(jsonTola)
+                NudgeLogger.d("TransectWalkViewModel", "updateTola -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                 if (response.status.equals(SUCCESS)) {
                     tolaDao.updateNeedToPost(updatedTola.id, false)
                 } else {
@@ -573,23 +672,25 @@ class TransectWalkViewModel @Inject constructor(
             }
             updatedCompletedStepsList.add(stepId)
             villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
+
             stepsListDao.markStepAsCompleteOrInProgress(
                 stepId,
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress -> markStepAsCompleteOrInProgress($stepId, StepStatus.COMPLETED.ordinal, $villageId)")
-
+            NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.COMPLETED.ordinal, $villageId)")
             stepsListDao.updateNeedToPost(stepId, villageId, true)
-            val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
-            if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
-                NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress -> stepDetails.orderNumber: ${stepDetails.orderNumber}")
+            val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+            val currentStep = stepList[stepList.map { it.orderNumber }.indexOf(1)]
+            if (currentStep.orderNumber < stepList.size && currentStep.orderNumber > 1) {
+                NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress ->currentStep: $currentStep")
+                val nextStepId = (stepList[stepList.map { it.orderNumber }.indexOf(2)].id)
                 stepsListDao.markStepAsInProgress(
-                    (stepDetails.orderNumber + 1),
+                    nextStepId,
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress -> stepsListDao.markStepAsInProgress(${stepDetails.orderNumber + 1}, StepStatus.INPROGRESS.ordinal, $villageId)")
+                NudgeLogger.d("TransectWalkViewModel", "markStepAsCompleteOrInProgress -> stepsListDao.markStepAsInProgress($nextStepId, StepStatus.INPROGRESS.ordinal, $villageId)")
                 prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
                     prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
@@ -607,18 +708,18 @@ class TransectWalkViewModel @Inject constructor(
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> called")
-            val step = stepsListDao.getStepForVillage(villageId, stepId)
+            val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
             stepsListDao.markStepAsCompleteOrInProgress(
-                stepId,
-                StepStatus.INPROGRESS.ordinal,
-                villageId
+                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
+                isComplete = StepStatus.INPROGRESS.ordinal,
+                villageId = villageId
             )
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.INPROGRESS.ordinal, $villageId)")
             stepsListDao.updateNeedToPost(stepId, villageId, true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
                 it.forEach { newStep ->
-                    if (newStep.orderNumber > step.orderNumber) {
+                    if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
                         stepsListDao.markStepAsCompleteOrInProgress(
                             newStep.id,
                             StepStatus.INPROGRESS.ordinal,
@@ -629,54 +730,62 @@ class TransectWalkViewModel @Inject constructor(
                     }
                 }
             }
-            if (isOnline) {
-                val apiRequest = mutableListOf<EditWorkFlowRequest>()
-                apiRequest.add(
-                    EditWorkFlowRequest(
-                        step.workFlowId,
-                        StepStatus.INPROGRESS.name
+            try {
+                if (isOnline) {
+                    val apiRequest = mutableListOf<EditWorkFlowRequest>()
+                    apiRequest.add(
+                        EditWorkFlowRequest(
+                            stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
+                            StepStatus.INPROGRESS.name
+                        )
                     )
-                )
-                completeStepList.let {
-                    it.forEach { newStep ->
-                        if (newStep.orderNumber > step.orderNumber) {
-                            if (newStep.workFlowId > 0) {
-                                apiRequest.add(
-                                    EditWorkFlowRequest(
-                                        newStep.workFlowId,
-                                        StepStatus.INPROGRESS.name
+                    completeStepList.let { it ->
+                        it.forEach { newStep ->
+                            if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
+                                if (newStep.workFlowId > 0) {
+                                    apiRequest.add(
+                                        EditWorkFlowRequest(
+                                            newStep.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
                                     )
-                                )
-                            }
-                        }
-                    }
-                    if (apiRequest.isNotEmpty()) {
-                        NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> apiRequest: $apiRequest")
-                        val response = apiInterface.editWorkFlow(apiRequest)
-                        if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response ->
-                                response.forEach {
-                                    stepsListDao.updateWorkflowId(
-                                        stepId,
-                                        it.id,
-                                        villageId,
-                                        it.status
-                                    )
-
                                 }
                             }
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                        } else {
-                            networkCallbackListener.onFailed()
                         }
+                        if (apiRequest.isNotEmpty()) {
+                            NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> apiRequest: $apiRequest")
+                            val response = apiInterface.editWorkFlow(apiRequest)
+                            NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                            if (response.status.equals(SUCCESS)) {
+                                response.data?.let { response ->
+                                    response.forEach { it ->
+                                        stepsListDao.updateWorkflowId(
+                                            stepId = it.programsProcessId,
+                                            workflowId = it.id,
+                                            villageId = villageId,
+                                            status = it.status
+                                        )
+                                        stepsListDao.updateNeedToPost(it.programsProcessId, villageId, false)
+                                    }
+                                    NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onSuccess")
+                                    networkCallbackListener.onSuccess()
+                                }
+                            } else {
+                                NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onFailed")
+                                networkCallbackListener.onFailed()
+                            }
 
-                        if (!response.lastSyncTime.isNullOrEmpty()) {
-                            updateLastSyncTime(prefRepo, response.lastSyncTime)
+                            if (!response.lastSyncTime.isNullOrEmpty()) {
+                                updateLastSyncTime(prefRepo, response.lastSyncTime)
+                            }
                         }
                     }
                 }
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onFailed")
+                networkCallbackListener.onFailed()
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
-
         }
     }
 
@@ -706,60 +815,59 @@ class TransectWalkViewModel @Inject constructor(
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> called")
             try {
-                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> called")
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
-                    val response = apiInterface.editWorkFlow(
-                        listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        )
-                    )
+                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId, StepStatus.COMPLETED.name))
+                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
+                    val response = apiInterface.editWorkFlow(primaryWorkFlowRequest)
+                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> response = SUCCESS, data:  ${response.data}")
                             stepsListDao.updateWorkflowId(
-                                stepId,
-                                dbResponse.workFlowId,
-                                villageId,
-                                it[0].status
+                                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
+                                workflowId = stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
+                                villageId = villageId,
+                                status = it[0].status
                             )
                         }
-                        stepsListDao.updateNeedToPost(stepId, villageId, false)
+                        stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(1)].id, villageId, false)
                     } else {
-                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> response = FAIL")
                         networkCallbackListener.onFailed()
-                        onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        onError(tag = "TransectWalkViewModel", "Error : ${response.message}")
                     }
-
                     if (!response.lastSyncTime.isNullOrEmpty()) {
                         updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
                 }
                 try {
+                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> second try = called")
                     stepList.forEach { step ->
-                        if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
-                            val inProgressStepResponse = apiInterface.editWorkFlow(
-                                listOf(
-                                    EditWorkFlowRequest(
-                                        step.workFlowId,
-                                        StepStatus.INPROGRESS.name
-                                    )
-                                )
-                            )
-                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
+                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> step = $step" +
+                                "step.orderNumber > 1 && step.workFlowId > 0: " +
+                                "${step.orderNumber > 1} && ${step.workFlowId > 0}")
+                        if (step.orderNumber > 1 &&  step.workFlowId > 0) {
+                            val inProgressStepRequest = listOf(EditWorkFlowRequest(step.workFlowId, StepStatus.INPROGRESS.name))
+                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
+                            val inProgressStepResponse = apiInterface.editWorkFlow(inProgressStepRequest)
+                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
                             if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                 inProgressStepResponse.data?.let {
-                                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse = SUCCESS, inProgressStepResponse.data = ${inProgressStepResponse.data}")
                                     stepsListDao.updateWorkflowId(
-                                        step.id,
-                                        step.workFlowId,
-                                        villageId,
-                                        it[0].status
+                                        stepId = it[0].programsProcessId,
+                                        workflowId = it[0].id,
+                                        villageId = villageId,
+                                        status = it[0].status
                                     )
                                 }
                                 stepsListDao.updateNeedToPost(step.id, villageId, false)
+                            } else {
+                                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
+                                networkCallbackListener.onFailed()
                             }
 
                             if (!inProgressStepResponse.lastSyncTime.isNullOrEmpty()) {
@@ -768,9 +876,12 @@ class TransectWalkViewModel @Inject constructor(
                         }
                     }
                 } catch (ex: Exception) {
+                    NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> second try- onFailed()")
+                    networkCallbackListener.onFailed()
                     onCatchError(ex, ApiType.WORK_FLOW_API)
                 }
             } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> onFailed()")
                 networkCallbackListener.onFailed()
                 onError(tag = "TransectWalkViewModel", "callWorkFlowAPI -> Error : ${ex.localizedMessage}")
                 onCatchError(ex, ApiType.WORK_FLOW_API)

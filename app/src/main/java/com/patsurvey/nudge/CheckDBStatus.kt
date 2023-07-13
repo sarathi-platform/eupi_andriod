@@ -6,6 +6,9 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.TolaDao
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.TolaStatus
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -15,16 +18,18 @@ class CheckDBStatus (val viewModel : BaseViewModel){
     fun isFirstStepNeedToBeSync(tolaDao : TolaDao, onResult:(Int)->Unit) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
             if (tolaDao.fetchTolaNeedToPost(true, "",0).isEmpty()
-                && tolaDao.fetchPendingTola(true, "").isEmpty())
-            {
-                withContext(Dispatchers.Main){
+                && tolaDao.fetchPendingTola(true, "").isEmpty()
+                && tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal).isEmpty()
+                && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
+                && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
+                && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()) {
+                NudgeLogger.d("CheckDBStatus", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2")
+                withContext(Dispatchers.Main) {
                     onResult(2)
-
                 }
             } else {
-                withContext(Dispatchers.Main){
-                    onResult(0)
-                }
+                NudgeLogger.d("CheckDBStatus", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 0")
+                onResult(0)
             }
 
         }
@@ -32,17 +37,21 @@ class CheckDBStatus (val viewModel : BaseViewModel){
     fun isSecondStepNeedToBeSync(didiDao :DidiDao, onResult:(Int)->Unit) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
             if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
-                && didiDao.fetchPendingDidi(true,"").isEmpty()) {
-                withContext(Dispatchers.Main){
+                && didiDao.fetchPendingDidi(true,"").isEmpty()
+                && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal).isEmpty()
+                && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
+                && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
+                && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()) {
+                NudgeLogger.d("CheckDBStatus", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 2")
+                withContext(Dispatchers.Main) {
                     onResult(2)
-
                 }
-            } else{
-                withContext(Dispatchers.Main){
-                    onResult(0)
-                }
+            } else {
+                NudgeLogger.d("CheckDBStatus", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 0")
+                onResult(0)
             }
         }
+
     }
 
     fun isThirdStepNeedToBeSync(didiDao : DidiDao, onResult:(Int)->Unit){

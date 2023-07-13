@@ -451,15 +451,24 @@ fun TransectWalkScreen(
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
                             NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")
-                            viewModel.addTolasToNetwork()
-                            viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
+                            viewModel.addTolasToNetwork(object : NetworkCallbackListener {
                                 override fun onSuccess() {
+                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onSuccess")
+                                    viewModel.callWorkFlowAPI(villageId, stepId, object : NetworkCallbackListener{
+                                        override fun onSuccess() {
+
+                                        }
+                                        override fun onFailed() {
+                                            NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked callWorkFlowAPI -> onFailed")
+                                        }
+                                    })
+                                }
+                                override fun onFailed() {
+                                    NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> onFailed")
                                 }
 
-                                override fun onFailed() {
-//                                    showCustomToast(context, SYNC_FAILED)
-                                }
                             })
+
 //                            viewModel.updateTolaNeedTOPostList(villageId)
                         }
                         viewModel.markTransectWalkComplete(villageId, stepId)
