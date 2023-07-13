@@ -687,17 +687,19 @@ class AddDidiViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if(response.data[0].transactionId.isNullOrEmpty()) {
+                                for(i in filteredDidiList.indices){
+                                    val didiFromNetwork = response.data[i]
+                                    val didi = filteredDidiList[i]
+                                    didiDao.updateDidiDetailAfterSync(
+                                        id = didi.id,
+                                        modifiedDate = didiFromNetwork.modifiedDate,
+                                        createdDate = didiFromNetwork.createdDate,
+                                        serverId = didiFromNetwork.id,
+                                        needsToPost = false,
+                                        transactionId = ""
+                                    )
+                                }
                                 response.data.forEach { didiFromNetwork ->
-                                    filteredDidiList.forEach { didi ->
-                                        didiDao.updateDidiDetailAfterSync(
-                                            id = didi.id,
-                                            modifiedDate = didiFromNetwork.modifiedDate,
-                                            createdDate = didiFromNetwork.createdDate,
-                                            serverId = didiFromNetwork.id,
-                                            needsToPost = false,
-                                            transactionId = ""
-                                        )
-                                    }
                                     didiList.value.forEach{ didi ->
                                         if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
                                             didi.serverId = didiFromNetwork.id
