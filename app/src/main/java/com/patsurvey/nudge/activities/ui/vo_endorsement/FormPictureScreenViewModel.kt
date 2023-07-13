@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
@@ -195,44 +196,57 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
-                withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostVoDidi(needsToPostVo = true, villageId = prefRepo.getSelectedVillage().id)
-                    if(needToPostDidiList.isNotEmpty()){
-                        needToPostDidiList.forEach { didi->
-                            launch {
-                                didi.voEndorsementStatus.let {
-                                    if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        val updateWealthRankResponse=apiService.updateDidiRanking(
-                                            listOf(
-                                                EditDidiWealthRankingRequest(if (didi.serverId == 0) didi.id else didi.serverId, StepType.VO_ENDROSEMENT.name, ACCEPTED),
-                                            )
-                                        )
-                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
-                                        } else {
-                                            networkCallbackListener.onFailed()
-                                        }
-                                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
-                                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
-                                        }
-                                    } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                        val updateWealthRankResponse=apiService.updateDidiRanking(
-                                            listOf(
-                                                EditDidiWealthRankingRequest(if (didi.serverId == 0) didi.id else didi.serverId, StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name),
-                                            )
-                                        )
-                                        if(updateWealthRankResponse.status.equals(SUCCESS,true)){
-                                            didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
-                                        } else {
-                                            networkCallbackListener.onFailed()
-                                        }
+                val needToPostDidiList = didiDao.getAllNeedToPostVoDidi(
+                    needsToPostVo = true,
+                    villageId = prefRepo.getSelectedVillage().id
+                )
+                if (needToPostDidiList.isNotEmpty()) {
+                    needToPostDidiList.forEach { didi ->
+                        didi.voEndorsementStatus.let {
+                            if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                val updateWealthRankResponse = apiService.updateDidiRanking(
+                                    listOf(
+                                        EditDidiWealthRankingRequest(
+                                            if (didi.serverId == 0) didi.id else didi.serverId,
+                                            StepType.VO_ENDROSEMENT.name,
+                                            ACCEPTED
+                                        ),
+                                    )
+                                )
+                                if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                                    didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                } else {
+                                    networkCallbackListener.onFailed()
+                                }
+                                if (!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()) {
+                                    updateLastSyncTime(
+                                        prefRepo,
+                                        updateWealthRankResponse.lastSyncTime
+                                    )
+                                }
+                            } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
+                                val updateWealthRankResponse = apiService.updateDidiRanking(
+                                    listOf(
+                                        EditDidiWealthRankingRequest(
+                                            if (didi.serverId == 0) didi.id else didi.serverId,
+                                            StepType.VO_ENDROSEMENT.name,
+                                            DidiEndorsementStatus.REJECTED.name
+                                        ),
+                                    )
+                                )
+                                if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                                    didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                } else {
+                                    networkCallbackListener.onFailed()
+                                }
 
-                                        if(!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()){
-                                            updateLastSyncTime(prefRepo,updateWealthRankResponse.lastSyncTime)
-                                        }
-                                    }
+                                if (!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()) {
+                                    updateLastSyncTime(
+                                        prefRepo,
+                                        updateWealthRankResponse.lastSyncTime
+                                    )
                                 }
                             }
                         }

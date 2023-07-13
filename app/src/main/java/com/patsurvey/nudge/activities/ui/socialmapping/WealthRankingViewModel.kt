@@ -1,10 +1,8 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -17,9 +15,8 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.WealthRank
@@ -145,7 +142,8 @@ class WealthRankingViewModel @Inject constructor(
             try {
                 var didiId=didiEntity.id
                 val updatedDidiList = didiList.value
-                if(didiEntity.serverId == 0){
+                if(didiEntity.serverId == 0) {
+                    NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> didiEntity: $didiEntity, rank: $rank, didiEntity.serverId: ${didiEntity.serverId}")
                     didiDao.updateDidiRank(didiEntity.id, rank)
                     didiDao.updateDidiNeedToPostWealthRank(didiEntity.id,true)
                     didiDao.updateModifiedDate(System.currentTimeMillis(),didiEntity.id)
@@ -162,7 +160,8 @@ class WealthRankingViewModel @Inject constructor(
                             BeneficiaryProcessStatusModel(StepType.WEALTH_RANKING.name, rank)
                         )
                     )
-                }else{
+                } else {
+                    NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> didiEntity: $didiEntity, rank: $rank, didiEntity.serverId: ${didiEntity.serverId}")
                     didiId=didiEntity.serverId
                     didiDao.updateDidiRankUsingServerId(didiEntity.serverId, rank)
                     didiDao.updateDidiNeedToPostWealthRankServerId(didiEntity.serverId,true)
@@ -183,7 +182,7 @@ class WealthRankingViewModel @Inject constructor(
                 }
 
 
-                updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
+                /*updatedDidiList[updatedDidiList.map { it.serverId }.indexOf(didiId)].wealth_ranking = rank
                 _didiList.value = updatedDidiList
 //                onError("WealthRankingViewModel", "here is error")
                 CheckDBStatus(this@WealthRankingViewModel).isFirstStepNeedToBeSync(tolaDao){
@@ -221,10 +220,10 @@ class WealthRankingViewModel @Inject constructor(
                             }
                         }
                     }
-                }
+                }*/
             } catch (ex: Exception) {
-                Log.e("exception",ex.printStackTrace().toString())
-                Log.e("exception",ex.toString())
+                NudgeLogger.e("WealthRankingViewModel","updateDidiRankInDb", ex)
+                NudgeLogger.d("WealthRankingViewModel","updateDidiRankInDb -> onFailed")
                 networkCallbackListener.onFailed()
                 onError("WealthRankingViewModel", "here is error: ${ex.message} \n${ex.stackTrace}")
             }

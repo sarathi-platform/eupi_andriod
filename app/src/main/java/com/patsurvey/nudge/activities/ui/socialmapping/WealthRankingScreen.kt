@@ -437,9 +437,8 @@ fun ExpandableCard(
                                 }
 
                                 override fun onFailed() {
-                                    showCustomToast(context, SYNC_FAILED)
+//                                    showCustomToast(context, SYNC_FAILED)
                                 }
-
                             })
                         onCardArrowClick(false)
                     }
