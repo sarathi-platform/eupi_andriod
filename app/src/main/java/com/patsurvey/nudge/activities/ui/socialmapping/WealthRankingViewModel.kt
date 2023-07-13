@@ -163,7 +163,7 @@ class WealthRankingViewModel @Inject constructor(
                         )
                     )
                 }else{
-                     didiId=didiEntity.serverId
+                    didiId=didiEntity.serverId
                     didiDao.updateDidiRankUsingServerId(didiEntity.serverId, rank)
                     didiDao.updateDidiNeedToPostWealthRankServerId(didiEntity.serverId,true)
                     didiDao.updateModifiedDateServerId(System.currentTimeMillis(),didiEntity.serverId)

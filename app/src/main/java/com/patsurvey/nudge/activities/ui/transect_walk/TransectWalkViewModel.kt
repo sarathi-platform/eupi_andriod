@@ -708,18 +708,18 @@ class TransectWalkViewModel @Inject constructor(
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> called")
-            val step = stepsListDao.getStepForVillage(villageId, stepId)
+            val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
             stepsListDao.markStepAsCompleteOrInProgress(
-                stepId,
-                StepStatus.INPROGRESS.ordinal,
-                villageId
+                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
+                isComplete = StepStatus.INPROGRESS.ordinal,
+                villageId = villageId
             )
             NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress($stepId, StepStatus.INPROGRESS.ordinal, $villageId)")
             stepsListDao.updateNeedToPost(stepId, villageId, true)
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
                 it.forEach { newStep ->
-                    if (newStep.orderNumber > step.orderNumber) {
+                    if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
                         stepsListDao.markStepAsCompleteOrInProgress(
                             newStep.id,
                             StepStatus.INPROGRESS.ordinal,
@@ -730,55 +730,62 @@ class TransectWalkViewModel @Inject constructor(
                     }
                 }
             }
-            if (isOnline) {
-                val apiRequest = mutableListOf<EditWorkFlowRequest>()
-                apiRequest.add(
-                    EditWorkFlowRequest(
-                        step.workFlowId,
-                        StepStatus.INPROGRESS.name
+            try {
+                if (isOnline) {
+                    val apiRequest = mutableListOf<EditWorkFlowRequest>()
+                    apiRequest.add(
+                        EditWorkFlowRequest(
+                            stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
+                            StepStatus.INPROGRESS.name
+                        )
                     )
-                )
-                completeStepList.let {
-                    it.forEach { newStep ->
-                        if (newStep.orderNumber > step.orderNumber) {
-                            if (newStep.workFlowId > 0) {
-                                apiRequest.add(
-                                    EditWorkFlowRequest(
-                                        newStep.workFlowId,
-                                        StepStatus.INPROGRESS.name
+                    completeStepList.let { it ->
+                        it.forEach { newStep ->
+                            if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
+                                if (newStep.workFlowId > 0) {
+                                    apiRequest.add(
+                                        EditWorkFlowRequest(
+                                            newStep.workFlowId,
+                                            StepStatus.INPROGRESS.name
+                                        )
                                     )
-                                )
-                            }
-                        }
-                    }
-                    if (apiRequest.isNotEmpty()) {
-                        NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> apiRequest: $apiRequest")
-                        val response = apiInterface.editWorkFlow(apiRequest)
-                        NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
-                        if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response ->
-                                response.forEach {
-                                    stepsListDao.updateWorkflowId(
-                                        stepId,
-                                        it.id,
-                                        villageId,
-                                        it.status
-                                    )
-
                                 }
                             }
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                        } else {
-                            networkCallbackListener.onFailed()
                         }
+                        if (apiRequest.isNotEmpty()) {
+                            NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> apiRequest: $apiRequest")
+                            val response = apiInterface.editWorkFlow(apiRequest)
+                            NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                            if (response.status.equals(SUCCESS)) {
+                                response.data?.let { response ->
+                                    response.forEach { it ->
+                                        stepsListDao.updateWorkflowId(
+                                            stepId = it.programsProcessId,
+                                            workflowId = it.id,
+                                            villageId = villageId,
+                                            status = it.status
+                                        )
+                                        stepsListDao.updateNeedToPost(it.programsProcessId, villageId, false)
+                                    }
+                                    NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onSuccess")
+                                    networkCallbackListener.onSuccess()
+                                }
+                            } else {
+                                NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onFailed")
+                                networkCallbackListener.onFailed()
+                            }
 
-                        if (!response.lastSyncTime.isNullOrEmpty()) {
-                            updateLastSyncTime(prefRepo, response.lastSyncTime)
+                            if (!response.lastSyncTime.isNullOrEmpty()) {
+                                updateLastSyncTime(prefRepo, response.lastSyncTime)
+                            }
                         }
                     }
                 }
+            } catch (ex: Exception) {
+                NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> onFailed")
+                networkCallbackListener.onFailed()
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
-
         }
     }
 
@@ -815,20 +822,20 @@ class TransectWalkViewModel @Inject constructor(
                 val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
-                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[0].workFlowId, StepStatus.COMPLETED.name))
+                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId, StepStatus.COMPLETED.name))
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiInterface.editWorkFlow(primaryWorkFlowRequest)
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             stepsListDao.updateWorkflowId(
-                                stepList[0].id,
-                                stepList[0].workFlowId,
-                                villageId,
-                                it[0].status
+                                stepId = stepList[stepList.map { it.orderNumber }.indexOf(1)].id,
+                                workflowId = stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId,
+                                villageId = villageId,
+                                status = it[0].status
                             )
                         }
-                        stepsListDao.updateNeedToPost(stepId, villageId, false)
+                        stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(1)].id, villageId, false)
                     } else {
                         networkCallbackListener.onFailed()
                         onError(tag = "TransectWalkViewModel", "Error : ${response.message}")
@@ -840,22 +847,21 @@ class TransectWalkViewModel @Inject constructor(
                 try {
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> second try = called")
                     stepList.forEach { step ->
-                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> step = $step")
-                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> " +
-                                "step.orderNumber > 1 && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0: " +
-                                "${step.orderNumber > 1} && ${step.orderNumber > dbResponse.orderNumber} && ${step.workFlowId > 0}")
-                        if (step.orderNumber > 1 && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                        NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> step = $step" +
+                                "step.orderNumber > 1 && step.workFlowId > 0: " +
+                                "${step.orderNumber > 1} && ${step.workFlowId > 0}")
+                        if (step.orderNumber > 1 &&  step.workFlowId > 0) {
                             val inProgressStepRequest = listOf(EditWorkFlowRequest(step.workFlowId, StepStatus.INPROGRESS.name))
                             NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
                             val inProgressStepResponse = apiInterface.editWorkFlow(inProgressStepRequest)
-                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse: $inProgressStepResponse")
+                            NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
                             if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                 inProgressStepResponse.data?.let {
                                     stepsListDao.updateWorkflowId(
-                                        step.id,
-                                        step.workFlowId,
-                                        villageId,
-                                        it[0].status
+                                        stepId = it[0].programsProcessId,
+                                        workflowId = it[0].id,
+                                        villageId = villageId,
+                                        status = it[0].status
                                     )
                                 }
                                 stepsListDao.updateNeedToPost(step.id, villageId, false)
