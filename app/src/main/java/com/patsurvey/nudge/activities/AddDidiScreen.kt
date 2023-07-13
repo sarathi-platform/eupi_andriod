@@ -188,7 +188,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             ) {
                 didiViewModel?.validateDidiDetails()
                 if(didiDetailId == 0) {
-                   didiViewModel?.saveDidiIntoDatabase(object :LocalDbListener{
+                   didiViewModel?.saveDidiIntoDatabase((context as MainActivity).isOnline.value ?: false, object :LocalDbListener{
                        override fun onInsertionSuccess() {
                            onNavigation()
                            showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added))

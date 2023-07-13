@@ -399,6 +399,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     fun saveDidiIntoDatabase(
+        isOnline: Boolean,
         localDbListener: LocalDbListener,
         networkCallbackListener: NetworkCallbackListener
     ) {
@@ -438,7 +439,7 @@ class AddDidiViewModel @Inject constructor(
 
                 _didiList.value = didiDao.getAllDidisForVillage(villageId)
                 filterDidiList = didiDao.getAllDidisForVillage(villageId)
-                setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
+                setSocialMappingINProgress(stepId, villageId, isOnline, object : NetworkCallbackListener {
                     override fun onSuccess() {
 
                     }
@@ -855,25 +856,29 @@ class AddDidiViewModel @Inject constructor(
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
+                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId, StepStatus.COMPLETED.name))
+                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiService.editWorkFlow(
-                        listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        )
+                        primaryWorkFlowRequest
                     )
+                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(
-                                    stepId,
-                                    dbResponse.workFlowId,
+                                    stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
+                                    stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
                                     villageId,
                                     it[0].status
                                 )
-                                stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(2)].id, villageId, false)
                             }
                         } else {
                             networkCallbackListener.onFailed()
@@ -885,16 +890,26 @@ class AddDidiViewModel @Inject constructor(
                     }
                 }
                 try {
+                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> second try = called")
                     stepList.forEach { step ->
-                        if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
-                            val inProgressStepResponse = apiService.editWorkFlow(
-                                listOf(
-                                    EditWorkFlowRequest(
-                                        step.workFlowId,
-                                        StepStatus.INPROGRESS.name
-                                    )
+                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> step = $step")
+                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> " +
+                                "step.orderNumber > 2 && step.workFlowId > 0: " +
+                                "${step.orderNumber > 2} && ${step.workFlowId > 0}")
+                        if (step.orderNumber > 2 &&  step.workFlowId > 0) {
+                            val inProgressStepRequest = listOf(
+                                EditWorkFlowRequest(
+                                    step.workFlowId,
+                                    StepStatus.INPROGRESS.name
                                 )
                             )
+
+                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
+
+                            val inProgressStepResponse = apiService.editWorkFlow(inProgressStepRequest)
+
+                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
+
                             if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                 inProgressStepResponse.data?.let {
                                     stepsListDao.updateWorkflowId(
@@ -905,6 +920,9 @@ class AddDidiViewModel @Inject constructor(
                                     )
                                 }
                                 stepsListDao.updateNeedToPost(stepId, villageId, false)
+                            } else {
+                                NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
+                                networkCallbackListener.onFailed()
                             }
 
                             if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
@@ -913,11 +931,14 @@ class AddDidiViewModel @Inject constructor(
                         }
                     }
                 } catch (ex: Exception) {
+                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> second try- onFailed()")
+                    networkCallbackListener.onFailed()
                     onCatchError(ex, ApiType.WORK_FLOW_API)
                 }
             } catch (ex: Exception) {
+                NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> onFailed()")
                 networkCallbackListener.onFailed()
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+                onError(tag = "AddDidiViewModel", "callWorkFlowAPI -> Error : ${ex.localizedMessage}")
                 onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
@@ -926,76 +947,117 @@ class AddDidiViewModel @Inject constructor(
     fun setSocialMappingINProgress(
         stepId: Int,
         villageId: Int,
+        isOnline: Boolean,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val step = stepsListDao.getStepForVillage(villageId, stepId)
-            stepsListDao.markStepAsCompleteOrInProgress(
-                stepId,
-                StepStatus.INPROGRESS.ordinal,
-                villageId
-            )
-            stepsListDao.updateNeedToPost(stepId, villageId, true)
-            val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
-            completeStepList.let {
-                it.forEach { newStep ->
-                    if (newStep.orderNumber > step.orderNumber) {
-                        if (filterDidiList.isEmpty()) {
-                            stepsListDao.markStepAsCompleteOrInProgress(
-                                newStep.stepId,
-                                StepStatus.NOT_STARTED.ordinal,
-                                villageId = villageId
-                            )
-                        }
-                        else {
-                            stepsListDao.markStepAsCompleteOrInProgress(
-                                newStep.id,
-                                StepStatus.INPROGRESS.ordinal,
-                                villageId
-                            )
-                        }
-                        stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
-                    }
-                }
-            }
-            completeStepList.let {
-                val apiRequest = mutableListOf<EditWorkFlowRequest>()
-                it.forEach { newStep ->
-                    if (newStep.orderNumber > step.orderNumber) {
-                        if (newStep.workFlowId > 0) {
-                            apiRequest.add(
-                                EditWorkFlowRequest(
-                                    newStep.workFlowId,
-                                    StepStatus.INPROGRESS.name
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> called")
+            try {
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> stepsList: $stepList \n\n")
+
+                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
+                        "stepId = ${stepList[stepList.map { it.orderNumber }.indexOf(2)].id},\n" +
+                        "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                        "villageId = $villageId \n")
+
+                stepsListDao.markStepAsCompleteOrInProgress(
+                    stepId = stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
+                    isComplete = StepStatus.INPROGRESS.ordinal,
+                    villageId = villageId
+                )
+                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
+                        "stepId = ${stepList[stepList.map { it.orderNumber }.indexOf(2)].id},\n" +
+                        "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                        "villageId = $villageId \n")
+                stepsListDao.updateNeedToPost(stepId, villageId, true)
+                val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
+                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> completeStepList: $completeStepList \n\n")
+                completeStepList.let {
+                    it.forEach { newStep ->
+                        if (newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber) {
+                            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: true" +
+                                    "newStep.orderNumber: ${newStep.orderNumber}")
+                            if (filterDidiList.isEmpty()) {
+                                stepsListDao.markStepAsCompleteOrInProgress(
+                                    newStep.stepId,
+                                    StepStatus.NOT_STARTED.ordinal,
+                                    villageId = villageId
                                 )
-                            )
+                            } else {
+                                stepsListDao.markStepAsCompleteOrInProgress(
+                                    newStep.id,
+                                    StepStatus.INPROGRESS.ordinal,
+                                    villageId
+                                )
+                            }
+                            stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
+                        } else {
+                            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: false, newStep.orderNumber: ${newStep.orderNumber}")
                         }
                     }
                 }
-                if (apiRequest.isNotEmpty()) {
-                    launch {
-                        val response = apiService.editWorkFlow(apiRequest)
-                        if (response.status.equals(SUCCESS)) {
-                            response.data?.let { response ->
-                                response.forEach { it ->
-                                    stepsListDao.updateWorkflowId(
-                                        stepId,
-                                        it.id,
-                                        villageId,
-                                        it.status
-                                    )
-                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
+                try {
+                    if (isOnline) {
+                        val apiRequest = mutableListOf<EditWorkFlowRequest>()
+                        apiRequest.add(
+                            EditWorkFlowRequest(
+                                stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
+                                StepStatus.INPROGRESS.name
+                            )
+                        )
+                        completeStepList.let {
+                            it.forEach { newStep ->
+                                if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
+                                        .indexOf(2)].orderNumber) {
+                                    if (newStep.workFlowId > 0) {
+                                        apiRequest.add(
+                                            EditWorkFlowRequest(
+                                                newStep.workFlowId,
+                                                StepStatus.INPROGRESS.name
+                                            )
+                                        )
+                                    }
                                 }
                             }
-                        } else {
-                            networkCallbackListener.onFailed()
-                        }
+                            if (apiRequest.isNotEmpty()) {
+                                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> apiRequest: $apiRequest")
+                                val response = apiService.editWorkFlow(apiRequest)
+                                NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                                if (response.status.equals(SUCCESS)) {
+                                    response.data?.let { response ->
+                                        response.forEach {
+                                            stepsListDao.updateWorkflowId(
+                                                it.programsProcessId,
+                                                it.id,
+                                                villageId,
+                                                it.status
+                                            )
+                                            stepsListDao.updateNeedToPost(it.programsProcessId, villageId, false)
+                                        }
+                                        NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> onSuccess")
+                                        networkCallbackListener.onSuccess()
+                                    }
 
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                                } else {
+                                    NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> onFailed")
+                                    networkCallbackListener.onFailed()
+                                }
+
+                                if (!response.lastSyncTime.isNullOrEmpty()) {
+                                    updateLastSyncTime(prefRepo, response.lastSyncTime)
+                                }
+                            }
                         }
                     }
+                } catch (ex: Exception) {
+                    NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> onFailed")
+                    networkCallbackListener.onFailed()
+                    onCatchError(ex, ApiType.WORK_FLOW_API)
                 }
+            } catch (ex: Exception) {
+                networkCallbackListener.onFailed()
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }

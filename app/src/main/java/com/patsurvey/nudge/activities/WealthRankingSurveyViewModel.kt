@@ -235,11 +235,11 @@ class WealthRankingSurveyViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onServerError: message = ${error?.message}")
+        NudgeLogger.d("WealthRankingSurveyViewModel", "onServerError -> onServerError: message = ${error?.message}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onServerError: message = ${errorModel?.message}, api = ${errorModel?.apiName?.name}")
+        NudgeLogger.d("WealthRankingSurveyViewModel", "onServerError -> onServerError: message = ${errorModel?.message}, api = ${errorModel?.apiName?.name}")
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
@@ -262,6 +262,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             needToPostDidiList.forEach{didi ->
                                 didiDao.setNeedToPostRanking(didi.id, false)
                             }
+                            networkCallbackListener.onSuccess()
                         } else {
                             val size = updateWealthRankResponse.data?.indices
                             if (size != null) {
