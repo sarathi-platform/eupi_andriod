@@ -281,6 +281,25 @@ class SettingViewModel @Inject constructor(
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         NudgeLogger.e("SettingViewModel","server error called -> ${errorModel?.code}, api: ${errorModel?.apiName}")
+        when (hitApiStatus.value) {
+            1 -> {
+                onLogoutError.value = true
+            }
+            2 -> {
+                showLoader.value = false
+                syncPercentage.value = 1f
+                showSyncDialog.value = false
+                showAPILoader.value = false
+                networkErrorMessage.value = errorModel?.message.toString()
+            }
+            3 -> {
+                networkErrorMessage.value = SYNC_FAILED
+                syncBPCPercentage.value = 1f
+                showSyncDialog.value = false
+                showBPCSyncDialog.value = false
+                bpcSyncStatus.value = 1
+            }
+        }
     }
 
 /*    fun getStepOneSize(stepOneSize : MutableState<String>) {
