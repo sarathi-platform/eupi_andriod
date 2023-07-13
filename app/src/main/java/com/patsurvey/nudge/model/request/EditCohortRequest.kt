@@ -22,7 +22,7 @@ data class EditCohortRequest(
                 name = tola.name,
                 type = tola.type,
                 villageId = tola.villageId,
-                id = tola.id,
+                id = tola.serverId,
                 localModifiedDate = tola.localModifiedDate ?:0
             )
         }

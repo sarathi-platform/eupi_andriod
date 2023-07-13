@@ -175,8 +175,8 @@ fun ParticipatoryWealthRankingSurvey(
                 viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         if ((context as MainActivity).isOnline.value ?: false) {
-//                            if(viewModel.isTolaSynced.value == 2
-//                                && viewModel.isDidiSynced.value == 2) {
+                            if(viewModel.isTolaSynced.value == 2
+                                && viewModel.isDidiSynced.value == 2) {
                                 viewModel.updateWealthRankingToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
@@ -196,7 +196,7 @@ fun ParticipatoryWealthRankingSurvey(
                                     }
                                 })
 
-//                            }
+                            }
                         }
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
                         viewModel.saveWealthRankingCompletionDate()

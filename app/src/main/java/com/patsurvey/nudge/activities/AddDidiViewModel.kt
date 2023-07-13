@@ -688,18 +688,20 @@ class AddDidiViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if(response.data[0].transactionId.isNullOrEmpty()) {
+                                for(i in filteredDidiList.indices){
+                                    val didiFromNetwork = response.data[i]
+                                    val didi = filteredDidiList[i]
+                                    didiDao.updateDidiDetailAfterSync(
+                                        id = didi.id,
+                                        modifiedDate = didiFromNetwork.modifiedDate,
+                                        createdDate = didiFromNetwork.createdDate,
+                                        serverId = didiFromNetwork.id,
+                                        needsToPost = false,
+                                        transactionId = ""
+                                    )
+                                }
                                 response.data.forEach { didiFromNetwork ->
-                                    didiList.value.forEach { didi ->
-                                        didiDao.updateDidiServerId(
-                                            villageId = prefRepo.getSelectedVillage().id,
-                                            modifiedDate = didiFromNetwork.modifiedDate,
-                                            createdDate = didiFromNetwork.createdDate,
-                                            cohortId = didiFromNetwork.cohortId,
-                                            castId = didiFromNetwork.castId,
-                                            serverId = didiFromNetwork.id,
-                                            guardianName = didiFromNetwork.guardianName,
-                                            name = didiFromNetwork.name
-                                        )
+                                    didiList.value.forEach{ didi ->
                                         if (TextUtils.equals(didiFromNetwork.name, didi.name)) {
                                             didi.serverId = didiFromNetwork.id
                                             didi.createdDate = didiFromNetwork.createdDate
