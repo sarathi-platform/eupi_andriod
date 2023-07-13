@@ -27,6 +27,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
@@ -204,22 +205,37 @@ class ProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}")
                 if(dbResponse.workFlowId==0){
-                    val response = apiInterface.addWorkFlow(
-                        listOf(AddWorkFlowRequest(StepStatus.INPROGRESS.name,villageId,
-                            programId,stepId)) )
-                    withContext(Dispatchers.IO){
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,it[0].id,villageId,it[0].status)
-                                stepsListDao.updateNeedToPost(stepId, villageId, false)
-                            }
-                        }else{
-                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                    val workFlowRequest = listOf(
+                        AddWorkFlowRequest(
+                            StepStatus.INPROGRESS.name, villageId,
+                            programId, stepId
+                        )
+                    )
+                    NudgeLogger.d(
+                        "ProgressScreenViewModel",
+                        "callWorkFlowAPI -> workFlowRequest: ${workFlowRequest}"
+                    )
+                    val response = apiInterface.addWorkFlow(workFlowRequest)
+                    NudgeLogger.d(
+                        "ProgressScreenViewModel",
+                        "callWorkFlowAPI -> response: ${response}"
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId before for stepId: $stepId, workFlowId: ${it[0].id}")
+                            stepsListDao.updateWorkflowId(stepId, it[0].id, villageId, it[0].status)
+                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId after for stepId: $stepId, villageId: $villageId, workFlowId: ${it[0].id}")
+                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before for stepId: $stepId, villageId: $villageId, needToPost: false")
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
+                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after for stepId: $stepId, villageId: $villageId, needToPost: false")
                         }
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
+                    } else {
+                        onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                    }
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
                 }
 
