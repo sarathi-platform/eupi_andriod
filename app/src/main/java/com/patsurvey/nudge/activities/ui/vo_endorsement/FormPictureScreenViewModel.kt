@@ -415,7 +415,6 @@ class FormPictureScreenViewModel @Inject constructor(
                         }
                     }
 
-
                     val requestVillageId=
                         RequestBody.create("multipart/form-data".toMediaTypeOrNull(),prefRepo.getSelectedVillage().id.toString())
                     val requestUserType=
