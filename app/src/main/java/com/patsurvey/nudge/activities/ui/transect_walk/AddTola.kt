@@ -124,7 +124,7 @@ fun AddTolaBox(
     }
 
     LaunchedEffect(key1 = showLoader.value) {
-        delay(1500)
+        delay(5000)
         showLoader.value = false
     }
 
