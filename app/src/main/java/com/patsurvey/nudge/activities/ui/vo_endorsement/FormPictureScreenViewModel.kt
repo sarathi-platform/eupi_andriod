@@ -23,6 +23,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
@@ -41,7 +42,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -204,131 +204,171 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            var onFailCounter = 0
+            NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork called")
             try {
                 val needToPostDidiList = didiDao.getAllNeedToPostVoDidi(
                     needsToPostVo = true,
                     villageId = prefRepo.getSelectedVillage().id
                 )
+
+                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> needToPostDidiList: $needToPostDidiList \n\n")
+
                 if (needToPostDidiList.isNotEmpty()) {
                     needToPostDidiList.forEach { didi ->
+                        NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didi: $didi \n\n")
                         didi.voEndorsementStatus.let {
                             if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                val updateWealthRankResponse = apiService.updateDidiRanking(
-                                    listOf(
-                                        EditDidiWealthRankingRequest(
-                                            if (didi.serverId == 0) didi.id else didi.serverId,
-                                            StepType.VO_ENDROSEMENT.name,
-                                            ACCEPTED
-                                        ),
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didi.voEndorsementStatus: DidiEndorsementStatus.ENDORSED.ordinal \n\n")
+
+                                val updateVoStatusRequest = listOf(
+                                    EditDidiWealthRankingRequest(
+                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        StepType.VO_ENDROSEMENT.name,
+                                        ACCEPTED
                                     )
                                 )
-                                if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
-                                    didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
+                                        " $updateVoStatusRequest \n\n")
+
+                                val updateVoStatusResponse = apiService.updateDidiRanking(
+                                    updateVoStatusRequest
+                                )
+
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
+                                        "updateVoStatusResponse: status = ${updateVoStatusResponse.status}, message = ${updateVoStatusResponse.message}, data = ${updateVoStatusResponse.data.toString()}")
+
+                                if (updateVoStatusResponse.status.equals(SUCCESS, true)) {
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
+                                            "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
+                                    didiDao.updateNeedToPostVO(needsToPostVo = false, didi.id, didi.villageId)
+
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
+
                                 } else {
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
+                                            "updateVoStatusResponse: onFailed")
+                                    onFailCounter = onFailCounter++
                                     networkCallbackListener.onFailed()
                                 }
-                                if (!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()) {
+                                if (!updateVoStatusResponse.lastSyncTime.isNullOrEmpty()) {
                                     updateLastSyncTime(
                                         prefRepo,
-                                        updateWealthRankResponse.lastSyncTime
+                                        updateVoStatusResponse.lastSyncTime
                                     )
                                 }
                             } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
-                                val updateWealthRankResponse = apiService.updateDidiRanking(
-                                    listOf(
-                                        EditDidiWealthRankingRequest(
-                                            if (didi.serverId == 0) didi.id else didi.serverId,
-                                            StepType.VO_ENDROSEMENT.name,
-                                            DidiEndorsementStatus.REJECTED.name
-                                        ),
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didi.voEndorsementStatus: DidiEndorsementStatus.ENDORSED.ordinal \n\n")
+
+                                val updateVoStatusRequest = listOf(
+                                    EditDidiWealthRankingRequest(
+                                        if (didi.serverId == 0) didi.id else didi.serverId,
+                                        StepType.VO_ENDROSEMENT.name,
+                                        DidiEndorsementStatus.REJECTED.name
                                     )
                                 )
-                                if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
+                                        " $updateVoStatusRequest \n\n")
+
+                                val updateVoStatusResponse = apiService.updateDidiRanking(
+                                    updateVoStatusRequest
+                                )
+                                NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
+                                        "updateVoStatusResponse: status = ${updateVoStatusResponse.status}, message = ${updateVoStatusResponse.message}, data = ${updateVoStatusResponse.data.toString()}")
+
+
+                                if (updateVoStatusResponse.status.equals(SUCCESS, true)) {
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
+                                            "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
+
                                     didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
                                 } else {
+                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
+                                            "updateVoStatusResponse: onFailed")
+                                    onFailCounter = onFailCounter++
                                     networkCallbackListener.onFailed()
                                 }
 
-                                if (!updateWealthRankResponse.lastSyncTime.isNullOrEmpty()) {
+                                if (!updateVoStatusResponse.lastSyncTime.isNullOrEmpty()) {
                                     updateLastSyncTime(
                                         prefRepo,
-                                        updateWealthRankResponse.lastSyncTime
+                                        updateVoStatusResponse.lastSyncTime
                                     )
                                 }
                             }
                         }
                     }
+                    networkCallbackListener.onSuccess()
+                } else {
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> onSuccess")
+                    networkCallbackListener.onSuccess()
                 }
             } catch (ex: Exception) {
                 onCatchError(ex)
                 networkCallbackListener.onFailed()
-                onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
+                onError("FormPictureScreenViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
             }
         }
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
+
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepList = $stepList")
+
                 if(dbResponse.workFlowId>0){
+                    val primaryWorkFlowRequest = listOf(
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId, StepStatus.COMPLETED.name)
+                    )
+                    NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
+
                     val response = apiService.editWorkFlow(
-                        listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        ) )
-                    withContext(Dispatchers.IO){
-                        if (response.status.equals(SUCCESS, true)) {
+                        primaryWorkFlowRequest
+                    )
+                    NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> " +
+                            "response: status = ${response.status}, " +
+                            "message = ${response.message}, " +
+                            "data = ${response.data.toString()}")
+
+
+                    if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
+                                stepsListDao.updateWorkflowId(
+                                    stepId = stepList[stepList.map { it.orderNumber }.indexOf(5)].id,
+                                    workflowId = stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
+                                    villageId,
+                                    it[0].status)
                             }
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                        }else{
-                            networkCallbackListener.onFailed()
-                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
-                        }
+                        NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: stepId = ${stepList[stepList.map { it.orderNumber }
+                            .indexOf(5)].id}, villageId = $villageId, needToPost = false \n")
 
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
+                        stepsListDao.updateNeedToPost(stepId, villageId, false)
+
+                        NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n")
+                        networkCallbackListener.onSuccess()
+                    } else {
+                        NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> onFailed")
+                        networkCallbackListener.onFailed()
+                        onError(tag = "FormPictureScreenViewModel", "Error : ${response.message}")
+                    }
+
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
                 }
-                launch {
-                    try {
-                        stepList.forEach { step ->
-                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
-                                val inProgressStepResponse = apiService.editWorkFlow(
-                                    listOf(
-                                        EditWorkFlowRequest(
-                                            step.workFlowId,
-                                            StepStatus.INPROGRESS.name
-                                        )
-                                    )
-                                )
-                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
-                                    inProgressStepResponse.data?.let {
-                                        stepsListDao.updateWorkflowId(
-                                            step.id,
-                                            step.workFlowId,
-                                            villageId,
-                                            it[0].status
-                                        )
-                                    }
-                                    stepsListDao.updateNeedToPost(stepId, villageId, false)
-                                }
 
-                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
-                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
-                                }
-                            }
-                        }
-                    } catch (ex: Exception) {
-                        onCatchError(ex, ApiType.WORK_FLOW_API)
-                    }
-                }
             }catch (ex:Exception){
+                NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> onFailed")
                 networkCallbackListener.onFailed()
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+                onError(tag = "FormPictureScreenViewModel", "Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }
@@ -345,9 +385,8 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun uploadFormsCAndD(context: Context) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             val formList = arrayListOf<MultipartBody.Part>()
-            withContext(Dispatchers.IO){
                 try {
                     if(formCImageList.value.isNotEmpty()){
                         formCImageList.value.onEachIndexed { index, it ->
@@ -386,7 +425,6 @@ class FormPictureScreenViewModel @Inject constructor(
                     ex.printStackTrace()
                 }
 
-            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
 import androidx.compose.runtime.mutableStateOf
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -12,6 +13,7 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -120,11 +122,28 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
 
     fun updateVoEndorsementStatus(didiId: Int,status:Int){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
-                didiDao.updateVOEndorsementStatus(prefRepo.getSelectedVillage().id,didiId,status)
-                didiDao.updateNeedToPostVO(didiId = didiId, needsToPostVo = true, villageId = prefRepo.getSelectedVillage().id)
-            }
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val villageId = prefRepo.getSelectedVillage().id
+            NudgeLogger.e("VoEndorsementSummaryViewModel",
+                "updateVoEndorsementStatus -> didiDao.updateVOEndorsementStatus before: villageId = $villageId, didiId = $didiId" +
+                        "status: $status")
+
+            didiDao.updateVOEndorsementStatus(villageId = villageId, didiId, status)
+
+            NudgeLogger.e("VoEndorsementSummaryViewModel",
+                "updateVoEndorsementStatus -> didiDao.updateVOEndorsementStatus after")
+
+            NudgeLogger.e("VoEndorsementSummaryViewModel",
+                "updateVoEndorsementStatus -> didiDao.updateNeedToPostVO before: didiId = $didiId, villageId: $villageId, needsToPostVo = true")
+
+            didiDao.updateNeedToPostVO(
+                didiId = didiId,
+                needsToPostVo = true,
+                villageId = villageId
+            )
+
+            NudgeLogger.e("VoEndorsementSummaryViewModel",
+                "updateVoEndorsementStatus -> didiDao.updateNeedToPostVO after")
         }
     }
 
@@ -138,10 +157,10 @@ class VoEndorsementSummaryViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        TODO("Not yet implemented")
+        NudgeLogger.e("VoEndorsementSummaryViewModel", "onServerError -> error: ${error.toString()}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.e("VoEndorsementSummaryViewModel", "onServerError -> errorMessage: ${errorModel?.message}, api: ${errorModel?.apiName}")
     }
 }
