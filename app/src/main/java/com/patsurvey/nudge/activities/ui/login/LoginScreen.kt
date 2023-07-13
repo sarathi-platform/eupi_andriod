@@ -198,7 +198,7 @@ fun LoginScreen(
                         viewModel.generateOtp { success, message ->
                             if (success) {
                                 if(navController.graph.route?.equals(Graph.HOME,true) == true){
-                                    navController.navigate(route = "log_otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                                 }else
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                             } else {

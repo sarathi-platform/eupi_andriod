@@ -102,6 +102,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
@@ -244,11 +245,18 @@ fun FormPictureScreen(
                                     formPictureScreenViewModel.retakeImageIndex.value + 1
                                 )
 //                                "${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.retakeImageIndex.value + 1}"
-                            else
-                                formPictureScreenViewModel.getFormSubPath(
-                                    formPictureScreenViewModel.shouldShowCamera.value.first,
-                                    formPictureScreenViewModel.formCPageList.value.size + 1
-                                )
+                            else{
+                                if( formPictureScreenViewModel.shouldShowCamera.value.first== FORM_C){
+                                    formPictureScreenViewModel.getFormSubPath(
+                                        formPictureScreenViewModel.shouldShowCamera.value.first,
+                                        formPictureScreenViewModel.formCPageList.value.size + 1)
+                                }else{
+                                    formPictureScreenViewModel.getFormSubPath(
+                                        formPictureScreenViewModel.shouldShowCamera.value.first,
+                                        formPictureScreenViewModel.formDPageList.value.size + 1)
+                                }
+                            }
+
                             /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
                             executor = formPictureScreenViewModel.cameraExecutor,
                             onImageCaptured = { uri, photoPath ->
@@ -465,6 +473,7 @@ fun FormPictureScreen(
                         negativeButtonRequired = false,
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
+                            formPictureScreenViewModel.uploadFormsCAndD(context)
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {

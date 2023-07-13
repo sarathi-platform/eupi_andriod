@@ -155,8 +155,38 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 }
             }
         }
+
         localizationDelegate.addOnLocaleChangedListener(this)
         localizationDelegate.onCreate()
+
+        downloader = AndroidDownloader(applicationContext)
+
+        RetryHelper.init(
+            prefRepo = mViewModel.prefRepo,
+            apiService = mViewModel.apiService,
+            tolaDao = mViewModel.tolaDao,
+            stepsListDao = mViewModel.stepsListDao,
+            villageListDao = mViewModel.villegeListDao,
+            didiDao = mViewModel.didiDao,
+            answerDao = mViewModel.answerDao,
+            numericAnswerDao = mViewModel.numericAnswerDao,
+            questionDao = mViewModel.questionDao,
+            castListDao = mViewModel.casteListDao,
+            bpcSummaryDao = mViewModel.bpcSummaryDao,
+            bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
+            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
+        )
+
+        AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)
+
+        connectionLiveData = ConnectionMonitor(this)
+        connectionLiveData.observe(this) { isNetworkAvailable ->
+            isOnline.value = isNetworkAvailable
+        }
+
+        startSmartUserConsent()
+
+
     }
 
 
@@ -245,36 +275,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     override fun onBeforeLocaleChanged() {
     }
 
-    public override fun onResume() {
+    override fun onResume() {
+        localizationDelegate.onResume(applicationContext)
         super.onResume()
-        localizationDelegate.onResume(this)
-        downloader = AndroidDownloader(applicationContext)
-
-        RetryHelper.init(
-            prefRepo = mViewModel.prefRepo,
-            apiService = mViewModel.apiService,
-            tolaDao = mViewModel.tolaDao,
-            stepsListDao = mViewModel.stepsListDao,
-            villageListDao = mViewModel.villegeListDao,
-            didiDao = mViewModel.didiDao,
-            answerDao = mViewModel.answerDao,
-            numericAnswerDao = mViewModel.numericAnswerDao,
-            questionDao = mViewModel.questionDao,
-            castListDao = mViewModel.casteListDao,
-            bpcSummaryDao = mViewModel.bpcSummaryDao,
-            bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
-            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
-        )
-
-        AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)
-
-        connectionLiveData = ConnectionMonitor(this)
-        connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value = isNetworkAvailable
-        }
-
-        startSmartUserConsent()
-
     }
 
     override fun attachBaseContext(newBase: Context) {

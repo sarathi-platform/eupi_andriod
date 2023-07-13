@@ -353,21 +353,23 @@ fun SectionOneSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            val quesImage:File?=
+            if (questionImageUrl.isNotEmpty()){
+            val quesImage: File? =
                 questionImageUrl?.let { it1 ->
                     getImagePath(
                         LocalContext.current,
                         it1
                     )
                 }
-            if(quesImage?.extension.equals(EXTENSION_WEBP,true)){
-                GlideImage(model = quesImage,
-                    contentDescription ="Question Image",
+            if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
+                GlideImage(
+                    model = quesImage,
+                    contentDescription = "Question Image",
                     modifier = Modifier
                         .width(30.dp)
                         .height(30.dp),
                 )
-            }else {
+            } else {
                 var imgBitmap: Bitmap? = null
                 if (quesImage?.exists() == true) {
                     imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
@@ -392,6 +394,7 @@ fun SectionOneSummeryItem(
                     )
                 }
             }
+        }
             Text(
                 text = "$index. ${quesSummery}.",
                 style = TextStyle(

@@ -1216,7 +1216,7 @@ fun IncrementDecrementView(modifier: Modifier,
                             .height(50.dp),
                         colorFilter = ColorFilter.tint(textColorDark)
                     )
-                } else {
+                } /*else {
                     Image(
                         painter = painterResource(id = R.drawable.pat_sample_icon),
                         contentDescription = "home image",
@@ -1225,7 +1225,7 @@ fun IncrementDecrementView(modifier: Modifier,
                             .height(0.dp),
                         colorFilter = ColorFilter.tint(textColorDark)
                     )
-                }
+                }*/
             }
         }
             Text(
@@ -1290,13 +1290,15 @@ fun IncrementDecrementView(modifier: Modifier,
                     value = currentCount,
                     readOnly = false,
                     onValueChange = {
-                        val currentIt=if(it.isEmpty()) 0 else it.toInt()
-                        if(currentIt<= MAXIMUM_RANGE){
-                            currentCount = if(it.isEmpty() || it == "0")
-                                ""
-                            else
-                                it
-                            onValueChange(it)
+                        if(!it.contains(IGNORED_REGEX)) {
+                            val currentIt = if (it.isEmpty()) 0 else it.toInt()
+                            if (currentIt <= MAXIMUM_RANGE) {
+                                currentCount = if (it.isEmpty() || it == "0")
+                                    ""
+                                else
+                                    it
+                                onValueChange(it)
+                            }
                         }
                     },
                     placeholder = {

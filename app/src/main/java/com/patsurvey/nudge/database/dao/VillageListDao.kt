@@ -14,6 +14,9 @@ interface VillageListDao {
     @Query("SELECT * FROM $VILLAGE_TABLE_NAME where languageId=:languageId")
     fun getAllVillages(languageId:Int): List<VillageEntity>
 
+    @Query("SELECT * FROM $VILLAGE_TABLE_NAME")
+    fun getAllLanguageVillages(): List<VillageEntity>
+
     @Query("Select * FROM $VILLAGE_TABLE_NAME where id = :id")
     fun getVillage(id: Int): VillageEntity
 
@@ -30,5 +33,9 @@ interface VillageListDao {
     fun fetchVillageDetailsForLanguage(villageId: Int, languageId: Int):VillageEntity
     @Query("DELETE from $VILLAGE_TABLE_NAME")
     fun deleteAllVilleges()
+
+    @Query("SELECT COUNT(*) FROM $VILLAGE_TABLE_NAME where languageId=:languageId")
+    fun getAllVillagesCount(languageId:Int): Long
+
 
 }

@@ -9,6 +9,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.download.FileType
@@ -28,7 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VideoListViewModel @Inject constructor(
-    val trainingVideoDao: TrainingVideoDao
+    val trainingVideoDao: TrainingVideoDao,
+    val prefRepo: PrefRepo
 ) : BaseViewModel() {
 
     override fun onServerError(error: ErrorModel?) {

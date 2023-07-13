@@ -36,6 +36,7 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.navigation.home.SettingScreens
 import com.patsurvey.nudge.utils.*
@@ -86,8 +87,12 @@ fun LanguageScreen(
     }
 
     BackHandler {
-        if (pageFrom == ARG_FROM_HOME)
-            (context as? Activity)?.finish()
+        if (pageFrom == ARG_FROM_HOME){
+            if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal)
+                navController.popBackStack()
+            else
+              (context as? Activity)?.finish()
+        }
         else
             navController.popBackStack()
     }
@@ -133,24 +138,37 @@ fun LanguageScreen(
 
         Button(
             onClick = {
+                val isLanguageVillageAvailable= mutableStateOf(true)
                 viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                     it.id?.let { languageId->
                         viewModel.prefRepo.saveAppLanguageId(languageId)
                         if(!pageFrom.equals(ARG_FROM_HOME,true)){
-                            viewModel.updateSelectedVillage(languageId)
+                            viewModel.updateSelectedVillage(languageId){
+                                isLanguageVillageAvailable.value=false
+                                viewModel.prefRepo.saveAppLanguageId(2)
+                            }
                         }
                     }
                     it.langCode?.let { code ->
-                        viewModel.prefRepo.saveAppLanguage(code)
-                        (context as MainActivity).setLanguage(code)
+                        if(isLanguageVillageAvailable.value){
+                            viewModel.prefRepo.saveAppLanguage(code)
+                            (context as MainActivity).setLanguage(code)
+                        }else{
+                            viewModel.prefRepo.saveAppLanguage("en")
+                            (context as MainActivity).setLanguage("en")
+                        }
                     }
                 }
-              if(pageFrom.equals(ARG_FROM_HOME,true))
-                    navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
-                else {
-                  viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,false)
-                  navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
-              }
+                if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
+                    navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
+                }else {
+                    if (pageFrom.equals(ARG_FROM_HOME, true))
+                        navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                    else {
+                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
+                        navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
+                    }
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()

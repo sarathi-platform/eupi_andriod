@@ -25,6 +25,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -45,6 +46,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -72,13 +74,16 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomToast
 
 @Composable
 fun VillageSelectionScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
-    viewModel: VillageSelectionViewModel
+    viewModel: VillageSelectionViewModel,
+    onNavigateToSetting:()->Unit
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.init()
@@ -178,13 +183,33 @@ fun VillageSelectionScreen(
                     .fillMaxWidth()
                     .then(modifier)
             ) {
-                Text(
-                    text = stringResource(R.string.seletc_village_screen_text),
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 24.sp, color = textColorDark,
-                    modifier = Modifier
-                )
+
+                Row(modifier = Modifier
+                    .padding(start = 16.dp, top = 12.dp)
+                    .fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.seletc_village_screen_text),
+                        fontFamily = NotoSans,
+                        textAlign = TextAlign.Center,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 24.sp, color = textColorDark,
+                        modifier = Modifier.weight(1f)
+                    )
+                    IconButton(onClick = {
+                        viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                        onNavigateToSetting()
+                    }) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.more_icon),
+                            contentDescription = "more action button",
+                            tint = blueDark,
+                            modifier = Modifier
+                                .padding(10.dp)
+                        )
+                    }
+                }
+
                 if (viewModel.showLoader.value) {
                     Box(
                         modifier = Modifier

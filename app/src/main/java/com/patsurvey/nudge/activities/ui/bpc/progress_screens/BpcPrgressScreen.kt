@@ -171,6 +171,7 @@ fun BpcProgressScreen(
                         actions = {
                             IconButton(onClick = {
                                 bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
+                                bpcProgreesScreenViewModel.prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
                                 onNavigateToSetting()
                             }) {
                                 Icon(

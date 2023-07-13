@@ -898,7 +898,7 @@ class SurveySummaryViewModel @Inject constructor(
             totalPatDidiCount.value=didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
                     it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
             notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
-            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 }.size
+            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 && it.section2Status == 2 }.size
 
             if(totalPatDidiCount.value>1)
               list.add(context.getString(R.string.pat_completed_for_didi_plural,totalPatDidiCount.value))
@@ -908,9 +908,17 @@ class SurveySummaryViewModel @Inject constructor(
                 list.add(context.getString(R.string.pat_marked_not_available_plural,notAvailableDidiCount.value))
             else list.add(context.getString(R.string.pat_marked_not_available_singular,notAvailableDidiCount.value))
 
-            if(voEndorseDidiCount.value>1)
-                list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
-            else list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+            if(prefRepo.isUserBPC()){
+                if(voEndorseDidiCount.value>1)
+                    list.add(context.getString(R.string.pat_didi_sent_to_bpm_approval_singular,voEndorseDidiCount.value))
+                else list.add(context.getString(R.string.pat_didi_sent_to_bpm_approval_plural,voEndorseDidiCount.value))
+
+            }else{
+                if(voEndorseDidiCount.value>1)
+                    list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_plural,voEndorseDidiCount.value))
+                else list.add(context.getString(R.string.pat_didi_sent_to_vo_endorsement_singular,voEndorseDidiCount.value))
+
+            }
 
             if(list.isNotEmpty()){
                 _didiCountList.value=list
