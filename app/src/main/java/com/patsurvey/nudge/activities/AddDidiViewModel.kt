@@ -857,13 +857,14 @@ class AddDidiViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
                 NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
                 val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepList = $stepList")
+
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId, StepStatus.COMPLETED.name))
                     NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
@@ -871,24 +872,29 @@ class AddDidiViewModel @Inject constructor(
                         primaryWorkFlowRequest
                     )
                     NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
-                    withContext(Dispatchers.IO) {
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                stepsListDao.updateWorkflowId(
-                                    stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
-                                    stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
-                                    villageId,
-                                    it[0].status
-                                )
-                                stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(2)].id, villageId, false)
-                            }
-                        } else {
-                            networkCallbackListener.onFailed()
-                            onError(tag = "AddDidiViewModel", "Error : ${response.message}")
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            stepsListDao.updateWorkflowId(
+                                stepList[stepList.map { it.orderNumber }.indexOf(2)].id,
+                                stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
+                                villageId,
+                                it[0].status
+                            )
+                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: stepId = ${stepList[stepList.map { it.orderNumber }
+                                .indexOf(2)].id}, villageId = $villageId, needToPost = false \n")
+
+                            stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }
+                                .indexOf(2)].id, villageId, false)
+
+                            NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n")
                         }
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
+                        networkCallbackListener.onSuccess()
+                    } else {
+                        networkCallbackListener.onFailed()
+                        onError(tag = "AddDidiViewModel", "Error : ${response.message}")
+                    }
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
                 }
                 try {
@@ -922,6 +928,7 @@ class AddDidiViewModel @Inject constructor(
                                     )
                                 }
                                 stepsListDao.updateNeedToPost(stepId, villageId, false)
+                                networkCallbackListener.onSuccess()
                             } else {
                                 NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
                                 networkCallbackListener.onFailed()

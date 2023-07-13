@@ -247,39 +247,23 @@ fun SurveySummary(
                                         surveySummaryViewModel.savePATSummeryToServer(object :
                                             NetworkCallbackListener {
                                             override fun onSuccess() {
+                                                surveySummaryViewModel.callWorkFlowAPI(
+                                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                                    stepId,
+                                                    object :
+                                                        NetworkCallbackListener {
+                                                        override fun onSuccess() {
+                                                        }
 
+                                                        override fun onFailed() {
+                                                            showCustomToast(context, SYNC_FAILED)
+                                                        }
+                                                    })
                                             }
-
                                             override fun onFailed() {
                                                 showCustomToast(context, SYNC_FAILED)
                                             }
-
                                         })
-
-                                        /*surveySummaryViewModel.updatePatStatusToNetwork(object :
-                                    NetworkCallbackListener {
-                                    override fun onSuccess() {
-
-                                    }
-
-                                    override fun onFailed() {
-                                        showCustomToast(context, SYNC_FAILED)
-                                    }
-
-                                })*/
-
-                                        surveySummaryViewModel.callWorkFlowAPI(
-                                            surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                            stepId,
-                                            object :
-                                                NetworkCallbackListener {
-                                                override fun onSuccess() {
-                                                }
-
-                                                override fun onFailed() {
-                                                    showCustomToast(context, SYNC_FAILED)
-                                                }
-                                            })
                                     }
                                 }
                             }

@@ -115,23 +115,24 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(stepList[2].workFlowId, StepStatus.COMPLETED.name)
+                        EditWorkFlowRequest(stepList[3].workFlowId, StepStatus.COMPLETED.name)
                     )
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiService.editWorkFlow(primaryWorkFlowRequest)
-                    NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> response = ${response.toString()}")
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()} \n")
 
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(
-                                    stepId,
-                                    dbResponse.workFlowId,
+                                    stepList[stepList.map { it.orderNumber }.indexOf(3)].id,
+                                    stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
                                     villageId,
                                     it[0].status
                                 )
                             }
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
+                            stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(3)].id, villageId, false)
                         } else {
+                            NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> response: onFailed")
                             networkCallbackListener.onFailed()
                             onError(tag = "WealthRankingSurveyViewModel", "Error : ${response.message}")
                         }
@@ -143,7 +144,11 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 }
                 try {
                     stepList.forEach { step ->
-                        if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                        NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> step = $step")
+                        NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> " +
+                                "step.orderNumber > 3 && step.workFlowId > 0: " +
+                                "${step.orderNumber > 3} && ${step.workFlowId > 0}")
+                        if (step.orderNumber > 3 &&  step.workFlowId > 0) {
                             val inProgressStepResponse = apiService.editWorkFlow(
                                 listOf(
                                     EditWorkFlowRequest(
@@ -245,8 +250,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             try {
-                val needToPostDidiList =
-                    didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
+                val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
                 NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> needToPostDidiList: $needToPostDidiList")
                 if (needToPostDidiList.isNotEmpty()) {
                     val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -329,6 +333,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             if(!response.lastSyncTime.isNullOrEmpty()){
                                 updateLastSyncTime(prefRepo,response.lastSyncTime)
                             }
+                        } else {
+                            networkCallbackListener.onSuccess()
                         }
                     } catch (ex: Exception) {
                         networkCallbackListener.onFailed()

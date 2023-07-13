@@ -54,7 +54,7 @@ object NudgeLogger {
         }
     }
 
-    fun e(tag: String, msg: String, ex: Throwable?, stackTrace: Boolean = DEBUG, lineCount: Int = 8) {
+    fun e(tag: String, msg: String, ex: Throwable?, stackTrace: Boolean = DEBUG, lineCount: Int = 28) {
         CoroutineScope(Dispatchers.IO).launch {
             var trace = ""
             if (stackTrace) {
