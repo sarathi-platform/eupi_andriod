@@ -85,6 +85,7 @@ import com.patsurvey.nudge.utils.IGNORED_REGEX
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
@@ -241,7 +242,9 @@ fun AddTolaBox(
                             var locationByGps: Location? = null
                             var locationByNetwork: Location? = null
                             val gpsConsumer = Consumer<Location> { gpsLocation ->
+                                NudgeLogger.d("AddTola", "gpsConsumer: called")
                                 if (gpsLocation != null) {
+                                    NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation != null => gpsLocation: $gpsLocation")
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
                                         decimalFormat
@@ -252,11 +255,17 @@ fun AddTolaBox(
                                             .toDouble()
                                     )
                                     locationAdded = true
+                                } else {
+                                    NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation == null")
                                 }
+                                locationAdded = true
                                 showLoader.value = false
                             }
                             val networkConsumer = Consumer<Location> { networkLocation ->
+                                NudgeLogger.d("AddTola", "networkLocation: called")
                                 if (networkLocation != null) {
+                                    NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation != null => gpsLocation: $networkLocation")
+
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
                                         decimalFormat
@@ -268,16 +277,20 @@ fun AddTolaBox(
 
                                     )
                                     locationAdded = true
+                                } else {
+                                    NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation == null")
                                 }
+                                locationAdded = true
                                 showLoader.value = false
                             }
                             LocationUtil.getLocation(activity, gpsConsumer, networkConsumer)
                         } else {
                             var locationByGps: Location? = null
                             var locationByNetwork: Location? = null
-
+                            NudgeLogger.d("AddTola", "gpsLocationListener called")
                             val gpsLocationListener: LocationListener = object : LocationListener {
                                 override fun onLocationChanged(gpsLocation: Location) {
+                                    NudgeLogger.d("AddTola", "gpsLocationListener onLocationChanged: location => $location")
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
                                         decimalFormat
@@ -297,15 +310,21 @@ fun AddTolaBox(
                                     status: Int,
                                     extras: Bundle
                                 ) {
+                                    NudgeLogger.d("AddTola", "gpsLocationListener onStatusChanged: provider => $provider status: $status")
                                 }
 
-                                override fun onProviderEnabled(provider: String) {}
-                                override fun onProviderDisabled(provider: String) {}
+                                override fun onProviderEnabled(provider: String) {
+                                    NudgeLogger.d("AddTola", "gpsLocationListener onProviderEnabled: provider => $provider")
+                                }
+                                override fun onProviderDisabled(provider: String) {
+                                    NudgeLogger.d("AddTola", "gpsLocationListener onProviderDisabled: provider => $provider")
+                                }
                             }
-
+                            NudgeLogger.d("AddTola", "networkLocationListener called")
                             val networkLocationListener: LocationListener = object :
                                 LocationListener {
                                 override fun onLocationChanged(networkLocation: Location) {
+                                    NudgeLogger.d("AddTola", "networkLocationListener onLocationChanged: location => $location")
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
                                         decimalFormat
@@ -325,10 +344,15 @@ fun AddTolaBox(
                                     status: Int,
                                     extras: Bundle
                                 ) {
+                                    NudgeLogger.d("AddTola", "networkLocationListener onStatusChanged: provider => $provider status: $status")
                                 }
 
-                                override fun onProviderEnabled(provider: String) {}
-                                override fun onProviderDisabled(provider: String) {}
+                                override fun onProviderEnabled(provider: String) {
+                                    NudgeLogger.d("AddTola", "networkLocationListener onProviderEnabled: provider => $provider")
+                                }
+                                override fun onProviderDisabled(provider: String) {
+                                    NudgeLogger.d("AddTola", "networkLocationListener onProviderEnabled: provider => $provider")
+                                }
                             }
                             LocationUtil.getLocation(
                                 activity,
@@ -649,8 +673,10 @@ fun TolaBox(
                                     if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                                         var locationByGps: Location? = null
                                         var locationByNetwork: Location? = null
+                                        NudgeLogger.d("TolaBox", "gpsConsumer: called")
                                         val gpsConsumer = Consumer<Location> { gpsLocation ->
                                             if (gpsLocation != null) {
+                                                NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation != null => gpsLocation: $gpsLocation")
                                                 locationByGps = gpsLocation
                                                 location = LocationCoordinates(
                                                     decimalFormat
@@ -661,13 +687,18 @@ fun TolaBox(
                                                         .toDouble()
 
                                                 )
+                                            } else {
+                                                NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation == null")
+
                                             }
                                             locationAdded = true
                                             showLoader.value = false
                                         }
                                         val networkConsumer =
                                             Consumer<Location> { networkLocation ->
+                                                NudgeLogger.d("TolaBox", "networkLocation: called")
                                                 if (networkLocation != null) {
+                                                    NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation != null => gpsLocation: $networkLocation")
                                                     locationByNetwork = networkLocation
                                                     location = LocationCoordinates(
                                                         decimalFormat
@@ -682,6 +713,8 @@ fun TolaBox(
                                                             .toDouble()
 
                                                     )
+                                                } else {
+                                                    NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation == null")
                                                 }
                                                 locationAdded = true
                                                 showLoader.value = false
@@ -694,10 +727,11 @@ fun TolaBox(
                                     } else {
                                         var locationByGps: Location? = null
                                         var locationByNetwork: Location? = null
-
+                                        NudgeLogger.d("TolaBox", "gpsLocationListener called")
                                         val gpsLocationListener: LocationListener =
                                             object : LocationListener {
                                                 override fun onLocationChanged(gpsLocation: Location) {
+                                                    NudgeLogger.d("TolaBox", "gpsLocationListener onLocationChanged: location => $location")
                                                     locationByGps = gpsLocation
                                                     location = LocationCoordinates(
                                                         decimalFormat
@@ -717,15 +751,22 @@ fun TolaBox(
                                                     status: Int,
                                                     extras: Bundle
                                                 ) {
+                                                    NudgeLogger.d("TolaBox", "gpsLocationListener onStatusChanged: provider => $provider status: $status")
                                                 }
 
-                                                override fun onProviderEnabled(provider: String) {}
-                                                override fun onProviderDisabled(provider: String) {}
+                                                override fun onProviderEnabled(provider: String) {
+                                                    NudgeLogger.d("TolaBox", "gpsLocationListener onProviderEnabled: provider => $provider")
+                                                }
+                                                override fun onProviderDisabled(provider: String) {
+                                                    NudgeLogger.d("TolaBox", "gpsLocationListener onProviderDisabled: provider => $provider")
+                                                }
                                             }
 
+                                        NudgeLogger.d("TolaBox", "networkLocationListener called")
                                         val networkLocationListener: LocationListener = object :
                                             LocationListener {
                                             override fun onLocationChanged(networkLocation: Location) {
+                                                NudgeLogger.d("TolaBox", "networkLocationListener onLocationChanged: location => $location")
                                                 locationByNetwork = networkLocation
                                                 location = LocationCoordinates(
                                                     decimalFormat
@@ -745,10 +786,15 @@ fun TolaBox(
                                                 status: Int,
                                                 extras: Bundle
                                             ) {
+                                                NudgeLogger.d("TolaBox", "networkLocationListener onStatusChanged: provider => $provider status: $status")
                                             }
 
-                                            override fun onProviderEnabled(provider: String) {}
-                                            override fun onProviderDisabled(provider: String) {}
+                                            override fun onProviderEnabled(provider: String) {
+                                                NudgeLogger.d("TolaBox", "networkLocationListener onProviderEnabled: provider => $provider")
+                                            }
+                                            override fun onProviderDisabled(provider: String) {
+                                                NudgeLogger.d("TolaBox", "networkLocationListener onProviderEnabled: provider => $provider")
+                                            }
                                         }
                                         LocationUtil.getLocation(
                                             activity,

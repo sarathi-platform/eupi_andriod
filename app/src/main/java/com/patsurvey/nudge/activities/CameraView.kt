@@ -41,6 +41,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.utils.NudgeLogger
 import java.io.File
 import java.util.concurrent.Executor
 import kotlin.coroutines.resume
@@ -179,18 +180,18 @@ fun takePhoto(
         outputDirectory/*viewModel.getOutputDirectory(context as MainActivity)*/,
         "${didiEntity.id}-${didiEntity.cohortId}-${didiEntity.villageId}_${System.currentTimeMillis()}.jpg"
     )
-
+    NudgeLogger.d("CameraView", "photoFile: $photoFile")
     val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
 
     imageCapture.takePicture(outputOptions, ContextCompat.getMainExecutor(context.applicationContext), object : ImageCapture.OnImageSavedCallback {
         override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
             val saveUri = Uri.fromFile(photoFile)
-            Log.d("CameraView", "Take Photo path: ${photoFile.absoluteFile}")
+            NudgeLogger.d("CameraView", "Take Photo path: ${photoFile.absoluteFile}")
             onImageCaptured(saveUri, photoFile.absolutePath)
         }
 
         override fun onError(exception: ImageCaptureException) {
-            Log.e("CameraView", "Take Photo error: ", exception)
+            NudgeLogger.e("CameraView", "Take Photo error: ", exception)
             onError(exception)
         }
 

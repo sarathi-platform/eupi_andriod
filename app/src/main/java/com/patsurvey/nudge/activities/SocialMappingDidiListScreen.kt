@@ -463,18 +463,26 @@ fun SocialMappingDidiListScreen(
                                     //TODO Integrate Api when backend fixes the response.
                                     if ((context as MainActivity).isOnline.value ?: false) {
                                         if (didiViewModel.isTolaSynced.value == 2) {
-                                            didiViewModel.addDidisToNetwork()
-                                            didiViewModel.callWorkFlowAPI(
-                                                villageId,
-                                                stepId,
-                                                object : NetworkCallbackListener {
-                                                    override fun onSuccess() {
-                                                    }
+                                            didiViewModel.addDidisToNetwork(object : NetworkCallbackListener {
+                                                override fun onSuccess() {
+                                                    didiViewModel.callWorkFlowAPI(
+                                                        villageId,
+                                                        stepId,
+                                                        object : NetworkCallbackListener {
+                                                            override fun onSuccess() {
+                                                            }
 
-                                                    override fun onFailed() {
-                                                        showCustomToast(context, SYNC_FAILED)
-                                                    }
-                                                })
+                                                            override fun onFailed() {
+//                                                                showCustomToast(context, SYNC_FAILED)
+                                                            }
+                                                        })
+                                                }
+                                                override fun onFailed() {
+
+                                                }
+
+                                            })
+
                                         }
                                     }
                                     didiViewModel.markSocialMappingComplete(villageId, stepId)
@@ -523,7 +531,7 @@ fun SocialMappingDidiListScreen(
                     ),
                     positiveButtonOnClick = {
                         didiViewModel.getPatStepStatus(stepId) {
-                            Log.d(TAG, "SocialMappingDidiListScreen: ${it}")
+                            Log.d("SocialMappingDidiListScreen", "getPatStepStatus -> $it")
                             navController.navigate("pat_survey_summary/$stepId/$it")
                         }
                     },

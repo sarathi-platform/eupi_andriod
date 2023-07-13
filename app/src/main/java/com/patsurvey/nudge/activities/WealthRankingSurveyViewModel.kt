@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -23,6 +24,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
 import com.patsurvey.nudge.utils.SUCCESS
@@ -104,17 +106,21 @@ class WealthRankingSurveyViewModel @Inject constructor(
         stepId: Int,
         networkCallbackListener: NetworkCallbackListener
     ) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
-                    val response = apiService.editWorkFlow(
-                        listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        )
+                    val primaryWorkFlowRequest = listOf(
+                        EditWorkFlowRequest(stepList[2].workFlowId, StepStatus.COMPLETED.name)
                     )
-                    withContext(Dispatchers.IO) {
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
+                    val response = apiService.editWorkFlow(primaryWorkFlowRequest)
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> response = ${response.toString()}")
+
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(
@@ -127,49 +133,48 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             stepsListDao.updateNeedToPost(stepId, villageId, false)
                         } else {
                             networkCallbackListener.onFailed()
-                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                            onError(tag = "WealthRankingSurveyViewModel", "Error : ${response.message}")
                         }
 
                         if(!response.lastSyncTime.isNullOrEmpty()){
                             updateLastSyncTime(prefRepo,response.lastSyncTime)
                         }
-                    }
+
                 }
-                launch {
-                    try {
-                        stepList.forEach { step ->
-                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
-                                val inProgressStepResponse = apiService.editWorkFlow(
-                                    listOf(
-                                        EditWorkFlowRequest(
-                                            step.workFlowId,
-                                            StepStatus.INPROGRESS.name
-                                        )
+                try {
+                    stepList.forEach { step ->
+                        if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
+                            val inProgressStepResponse = apiService.editWorkFlow(
+                                listOf(
+                                    EditWorkFlowRequest(
+                                        step.workFlowId,
+                                        StepStatus.INPROGRESS.name
                                     )
                                 )
-                                if (inProgressStepResponse.status.equals(SUCCESS, true)) {
-                                    inProgressStepResponse.data?.let {
-                                        stepsListDao.updateWorkflowId(
-                                            step.id,
-                                            step.workFlowId,
-                                            villageId,
-                                            it[0].status
-                                        )
-                                    }
-                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
+                            )
+                            if (inProgressStepResponse.status.equals(SUCCESS, true)) {
+                                inProgressStepResponse.data?.let {
+                                    stepsListDao.updateWorkflowId(
+                                        step.id,
+                                        step.workFlowId,
+                                        villageId,
+                                        it[0].status
+                                    )
                                 }
-                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
-                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
-                                }
+                                stepsListDao.updateNeedToPost(step.id, villageId, false)
+                            }
+                            if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
                             }
                         }
-                    } catch (ex: Exception) {
-                        onCatchError(ex, ApiType.WORK_FLOW_API)
                     }
+                } catch (ex: Exception) {
+                    onCatchError(ex, ApiType.WORK_FLOW_API)
                 }
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+                onError(tag = "WealthRankingSurveyViewModel", "Error : ${ex.localizedMessage}")
+                onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }
@@ -230,89 +235,108 @@ class WealthRankingSurveyViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onServerError: message = ${error?.message}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onServerError: message = ${errorModel?.message}, api = ${errorModel?.apiName?.name}")
     }
 
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             try {
-                withContext(Dispatchers.IO) {
-                    val needToPostDidiList =
-                        didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
-                    if (needToPostDidiList.isNotEmpty()) {
-                        val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
-                        needToPostDidiList.forEach { didi ->
-                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
-                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
-                        }
-                        val updateWealthRankResponse = apiService.updateDidiRanking(didiRequestList)
-                        if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
-                            if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
-                                needToPostDidiList.forEach{didi ->
-                                    didiDao.setNeedToPostRanking(didi.id, false)
-                                }
-                            } else {
-                                val size = updateWealthRankResponse.data?.indices
-                                if (size != null) {
-                                    for(i in size) {
-                                        val serverResponseDidi = updateWealthRankResponse.data.get(i)
-                                        val localDidi = needToPostDidiList[i]
-                                        serverResponseDidi.transactionId?.let {
-                                            didiDao.updateDidiTransactionId(localDidi.id,
-                                                it
-                                            )
-                                        }
-                                    }
-                                    checkDidiWealthStatus()
-                                }
+                val needToPostDidiList =
+                    didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
+                NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> needToPostDidiList: $needToPostDidiList")
+                if (needToPostDidiList.isNotEmpty()) {
+                    val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
+                    needToPostDidiList.forEach { didi ->
+                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
+                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
+                    }
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiRequestList")
+                    val updateWealthRankResponse = apiService.updateDidiRanking(didiRequestList)
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> response: status = ${updateWealthRankResponse.status}, message = ${updateWealthRankResponse.message}, data = ${updateWealthRankResponse.data.toString()}")
+                    if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
+                        if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                            needToPostDidiList.forEach{didi ->
+                                didiDao.setNeedToPostRanking(didi.id, false)
                             }
                         } else {
-                            networkCallbackListener.onFailed()
+                            val size = updateWealthRankResponse.data?.indices
+                            if (size != null) {
+                                for(i in size) {
+                                    val serverResponseDidi = updateWealthRankResponse.data.get(i)
+                                    val localDidi = needToPostDidiList[i]
+                                    serverResponseDidi.transactionId?.let {
+                                        didiDao.updateDidiTransactionId(localDidi.id,
+                                            it
+                                        )
+                                    }
+                                }
+                                checkDidiWealthStatus(networkCallbackListener)
+                            }
                         }
+                    } else {
+                        networkCallbackListener.onFailed()
                     }
+                } else {
+                    networkCallbackListener.onSuccess()
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
                 networkCallbackListener.onFailed()
+                NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onFailed")
                 onError(
                     "WealthRankingSurveyViewModel",
                     "onError: ${ex.message}, \n${ex.stackTrace}"
                 )
+                onCatchError(ex, ApiType.DIDI_EDIT_API)
             }
         }
     }
 
-    private fun checkDidiWealthStatus() {
+    private fun checkDidiWealthStatus(networkCallbackListener: NetworkCallbackListener) {
         val timer = Timer()
         timer.schedule(object : TimerTask() {
             override fun run() {
-                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    val didiList = didiDao.fetchPendingWealthStatusDidi(true, "")
-                    if (didiList.isNotEmpty()) {
-                        val ids: ArrayList<String> = arrayListOf()
-                        didiList.forEach { didi ->
-                            didi.transactionId?.let { ids.add(it) }
-                        }
-                        val response = apiService.getPendingStatus(TransactionIdRequest("", ids))
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.forEach { transactionIdResponse ->
-                                didiList.forEach { didi ->
-                                    if (transactionIdResponse.transactionId == didi.transactionId) {
-                                        didiDao.updateDidiNeedToPostWealthRank(didi.id, false)
-                                        didiDao.updateDidiTransactionId(didi.id, "")
+                job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
+                    try {
+                        val didiList = didiDao.fetchPendingWealthStatusDidi(true, "")
+                        if (didiList.isNotEmpty()) {
+                            val ids: ArrayList<String> = arrayListOf()
+                            didiList.forEach { didi ->
+                                didi.transactionId?.let { ids.add(it) }
+                            }
+                            NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiList: $didiList")
+                            val response = apiService.getPendingStatus(TransactionIdRequest("", ids))
+                            NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> response: ${response.toString()}")
+                            if (response.status.equals(SUCCESS, true)) {
+                                response.data?.forEach { transactionIdResponse ->
+                                    didiList.forEach { didi ->
+                                        if (transactionIdResponse.transactionId == didi.transactionId) {
+                                            didiDao.updateDidiNeedToPostWealthRank(didi.id, false)
+                                            didiDao.updateDidiTransactionId(didi.id, "")
+                                        }
                                     }
                                 }
+                                NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onSuccess")
+                                networkCallbackListener.onSuccess()
+                            } else {
+                                NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onFailed")
+                                networkCallbackListener.onFailed()
+                            }
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
                             }
                         }
-
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
-
+                    } catch (ex: Exception) {
+                        networkCallbackListener.onFailed()
+                        NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> onFailed")
+                        onError(
+                            "WealthRankingSurveyViewModel",
+                            "onError: ${ex.message}, \n${ex.stackTrace}"
+                        )
+                        onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
                     }
                 }
             }

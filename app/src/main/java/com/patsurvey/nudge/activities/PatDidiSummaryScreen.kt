@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
 import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -53,9 +52,6 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import java.text.DecimalFormat
 import java.util.function.Consumer
 
@@ -148,7 +144,7 @@ fun PatDidiSummaryScreen(
                     onCloseButtonClicked = {
                         patDidiSummaryViewModel.shouldShowCamera.value = false
                     },
-                    onError = { Log.e("PatImagePreviewScreen", "View error:", it) }
+                    onError = { NudgeLogger.e("PatDidiSummaryScreen", "View error:", it) }
                 )
             }
             AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {

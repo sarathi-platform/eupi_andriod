@@ -68,7 +68,6 @@ import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepType
-import com.patsurvey.nudge.utils.TAG
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
@@ -908,10 +907,10 @@ object RetryHelper {
     }
 
     private fun onCatchError(e: Exception, api: ApiType) {
-        Log.d(TAG, "onCatchError: ${e.message}")
+        Log.d("RetryHelper", "onCatchError: ${e.message}")
         when (e) {
             is HttpException -> {
-                Log.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                Log.d("RetryHelper", "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED ->
                         onServerError(

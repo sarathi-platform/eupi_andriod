@@ -22,7 +22,6 @@ import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
 import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
 import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
-import com.patsurvey.nudge.utils.TAG
 import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
@@ -95,10 +94,10 @@ abstract class BaseViewModel : ViewModel(){
         job?.cancel()
     }
     open fun onCatchError(e:Exception) {
-        NudgeLogger.e(TAG, "onCatchError: ${e.message}")
+        NudgeLogger.e("BaseViewModel", "onCatchError: ${e.message}")
         when (e) {
             is HttpException -> {
-                NudgeLogger.e(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                NudgeLogger.e("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         if(!RetryHelper.tokenExpired.value) {
@@ -140,11 +139,11 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
     open fun onCatchError(e:Exception, api: ApiType) {
-        NudgeLogger.d(TAG, "onCatchError: ${e.message}")
+        NudgeLogger.d("BaseViewModel", "onCatchError: ${e.message}")
         AnalyticsHelper.logServiceFailedEvent(exception = e, apiType = api)
         when (e) {
             is HttpException -> {
-                NudgeLogger.d(TAG, "onCatchError code: ${e.response()?.code() ?: 0}")
+                NudgeLogger.d("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {
