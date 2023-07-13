@@ -317,7 +317,7 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank)
+//                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank)
                     onCardArrowClick(true)
             }
             .padding(
@@ -404,7 +404,7 @@ fun ExpandableCard(
                     }
                 }
                 // Arrow Icon
-                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+//                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
                     Column(
                         modifier = Modifier,
                         horizontalAlignment = Alignment.End
@@ -414,7 +414,7 @@ fun ExpandableCard(
                             onClick = { onCardArrowClick(true) }
                         )
                     }
-                }
+//                }
 
             }
             //Expandable Content
