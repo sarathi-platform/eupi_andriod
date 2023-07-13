@@ -1216,7 +1216,7 @@ fun IncrementDecrementView(modifier: Modifier,
                             .height(50.dp),
                         colorFilter = ColorFilter.tint(textColorDark)
                     )
-                } else {
+                } /*else {
                     Image(
                         painter = painterResource(id = R.drawable.pat_sample_icon),
                         contentDescription = "home image",
@@ -1225,7 +1225,7 @@ fun IncrementDecrementView(modifier: Modifier,
                             .height(0.dp),
                         colorFilter = ColorFilter.tint(textColorDark)
                     )
-                }
+                }*/
             }
         }
             Text(

@@ -305,6 +305,8 @@
     <string name="pat_didi_sent_to_vo_endorsement_plural">%1$s अल्ट्रापूर दीदी को वीओ समर्थन के लिए भेजा गया है।</string>
     <string name="link_form_c">लिंक फॉर्म सी</string>
     <string name="link_form_d">लिंक फॉर्म डी</string>
+    <string name="pat_didi_sent_to_bpm_approval_singular">%1$s अल्ट्रापूर दीदी ने बीपीएम अनुमोदन के लिए भेजा।</string>
+    <string name="pat_didi_sent_to_bpm_approval_plural">%1$s अल्ट्रापूर दीदी को बीपीएम अनुमोदन के लिए भेजा गया है।</string>
 
 
 </resources>

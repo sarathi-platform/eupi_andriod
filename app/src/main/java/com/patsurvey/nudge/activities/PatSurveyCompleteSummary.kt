@@ -96,6 +96,7 @@ fun PatSurveyCompleteSummary(
     val answerSummeryList by patSectionSummaryViewModel.answerSummeryList.collectAsState()
 
     val questionList by patSectionSummaryViewModel.questionList.collectAsState()
+    val inclusionQuestionList by patSectionSummaryViewModel.inclusionQuestionList.collectAsState()
     val answerList by patSectionSummaryViewModel.answerList.collectAsState()
 
     LaunchedEffect(key1 = Unit) {
@@ -212,11 +213,13 @@ fun PatSurveyCompleteSummary(
                         item { Spacer(modifier = Modifier.height(4.dp)) }
 
                         itemsIndexed(answerSummeryList) { index, answer ->
+                            val question = inclusionQuestionList.find { it.questionId == answer.questionId }
                             SectionTwoSummeryItem(
                                 index = index,
                                 quesSummery = answer.summary.toString(),
                                 answerValue = answer.answerValue?: BLANK_STRING,
                                 questionType = answer.type,
+                                questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                             )
                         }

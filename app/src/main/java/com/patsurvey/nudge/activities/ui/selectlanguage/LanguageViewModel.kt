@@ -50,12 +50,21 @@ class LanguageViewModel @Inject constructor(
         networkErrorMessage.value= errorModel?.message.toString()
     }
 
-    fun updateSelectedVillage(languageId:Int) {
+    fun updateSelectedVillage(languageId:Int,onVillageSelectionFailed:()->Unit) {
         val villageId=prefRepo.getSelectedVillage().id
         job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
             withContext(Dispatchers.IO){
-                val villageEntity = villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
-                prefRepo.saveSelectedVillage(village = villageEntity)
+                try {
+                    val villageEntity = villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
+                    if(villageEntity!=null){
+                        prefRepo.saveSelectedVillage(village = villageEntity)
+                    }else onVillageSelectionFailed()
+
+                }catch (ex:Exception){
+//                    ex.printStackTrace()
+                    onVillageSelectionFailed()
+                }
+
             }
         }
 

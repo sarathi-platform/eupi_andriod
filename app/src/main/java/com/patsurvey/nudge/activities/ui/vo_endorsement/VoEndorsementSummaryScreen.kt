@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -61,6 +60,7 @@ fun VoEndorsementSummaryScreen(
 ){
     val answerSection1List by viewModel.answerSection1List.collectAsState()
     val answerSection2List by viewModel.answerSection2List.collectAsState()
+    val quesList by viewModel.quesList.collectAsState()
     val voDidiList by viewModel.didiList.collectAsState()
     val localDensity = LocalDensity.current
 
@@ -233,11 +233,13 @@ fun VoEndorsementSummaryScreen(
                                     }
 
                                     itemsIndexed(answerSection2List) { index, answer ->
+                                        val question = quesList.find { it.questionId == answer.questionId }
                                         SectionTwoSummeryItem(
                                             index = index,
                                             quesSummery = answer.summary ?: BLANK_STRING,
                                             answerValue = answer.answerValue ?: BLANK_STRING,
                                             questionType = answer.type,
+                                            questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                                         )
                                     }

@@ -1,7 +1,10 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -18,6 +21,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -39,7 +43,11 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
+import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
+import com.bumptech.glide.integration.compose.GlideImage
+import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -72,6 +80,7 @@ fun PatSurvaySectionTwoSummaryScreen(
         mutableStateOf(0.dp)
     }
     val didi = patSectionSummaryViewModel.didiEntity.collectAsState()
+    val inclusionQuesList = patSectionSummaryViewModel.inclusionQuestionList.collectAsState()
     val answerSummeryList by patSectionSummaryViewModel.answerSummeryList.collectAsState()
 
     val showDialog = remember { mutableStateOf(false) }
@@ -158,8 +167,12 @@ fun PatSurvaySectionTwoSummaryScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     itemsIndexed(answerSummeryList) { index, answer ->
+                        val question = inclusionQuesList.value.find { it.questionId == answer.questionId }
                       SectionTwoSummeryItem(index = index, quesSummery = answer.summary.toString(),
-                          answerValue = answer.answerValue?: BLANK_STRING, questionType =  answer.type, questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
+                          answerValue = answer.answerValue?: BLANK_STRING,
+                          questionType =  answer.type,
+                          questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
+                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
                     }
                 }
             }
@@ -284,11 +297,12 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Composable
 fun SectionTwoSummeryItemPreview(){
     SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name,
-        QUESTION_FLAG_WEIGHT)
+        BLANK_STRING,QUESTION_FLAG_WEIGHT)
 }
 
 
 
+@OptIn(ExperimentalGlideComposeApi::class)
 @Composable
 fun SectionTwoSummeryItem(
     modifier: Modifier = Modifier,
@@ -296,6 +310,7 @@ fun SectionTwoSummeryItem(
     quesSummery:String,
     answerValue:String,
     questionType: String,
+    questionImageUrl: String,
     questionFlag:String
 ) {
     Column(
@@ -304,6 +319,49 @@ fun SectionTwoSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            if (questionImageUrl.isNotEmpty()){
+                val quesImage: File? =
+                    questionImageUrl?.let { it1 ->
+                        getImagePath(
+                            LocalContext.current,
+                            it1
+                        )
+                    }
+                if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
+                    GlideImage(
+                        model = quesImage,
+                        contentDescription = "Question Image",
+                        modifier = Modifier
+                            .width(30.dp)
+                            .height(30.dp),
+                    )
+                } else {
+                    var imgBitmap: Bitmap? = null
+                    if (quesImage?.exists() == true) {
+                        imgBitmap = BitmapFactory.decodeFile(quesImage.absolutePath)
+                    }
+                    if (quesImage?.exists() == true) {
+                        Image(
+                            painter = rememberAsyncImagePainter(model = imgBitmap),
+                            contentDescription = "home image",
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp),
+                            colorFilter = ColorFilter.tint(textColorDark)
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(id = R.drawable.pat_sample_icon),
+                            contentDescription = "home image",
+                            modifier = Modifier
+                                .width(30.dp)
+                                .height(30.dp),
+                            colorFilter = ColorFilter.tint(textColorDark)
+                        )
+                    }
+                }
+            }
+
             var summaryText = "$answerValue."
             if(questionType.equals(QuestionType.Numeric_Field.name,true)){
                 summaryText = if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
@@ -342,7 +400,8 @@ fun SectionTwoSummeryItem(
                 textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(start = 5.dp)
+                modifier = Modifier
+                    .padding(start = 5.dp)
                     .weight(1f)
             )
         }
