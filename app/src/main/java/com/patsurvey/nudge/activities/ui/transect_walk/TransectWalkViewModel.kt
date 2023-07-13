@@ -147,28 +147,35 @@ class TransectWalkViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if(response.data[0].transactionId.isNullOrEmpty()) {
+                                NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: transactionId empty")
                                 for(i in response.data.indices){
                                     val tola = tolaList[i]
                                     val tolaDataFromNetwork = response.data[i]
                                     val createdTime = tolaDataFromNetwork.createdDate
                                     val modifiedDate = tolaDataFromNetwork.modifiedDate
+                                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaDetailAfterSync before for tola = $tola")
                                     tolaDao.updateTolaDetailAfterSync(tola.id,tolaDataFromNetwork.id,
                                         false,
                                         "",
                                         createdTime,
                                         modifiedDate)
+                                    NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaDetailAfterSync after for tola = $tola")
                                     tola.serverId = tolaDataFromNetwork.id
                                     tola.createdDate = tolaDataFromNetwork.createdDate
                                     tola.modifiedDate = tolaDataFromNetwork.modifiedDate
                                 }
                                 checkTolaAddStatus(networkCallbackListener)
                             } else {
+                                NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: transactionId not empty")
                                 response.data.forEach { tola ->
                                     for(i in response.data.indices){
                                         response.data[i].transactionId.let { it1 ->
+                                            NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
                                             tolaDao.updateTolaTransactionId(tolaList[i].id,
                                                 it1
                                             )
+                                            NudgeLogger.d("TransectWalkViewModel", "addTolasToNetwork: updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
+
                                         }
                                     }
                                 }
@@ -242,6 +249,7 @@ class TransectWalkViewModel @Inject constructor(
                             }
                         }
                         for(tola in tolaList) {
+                            NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus ->  updateTolaDetailAfterSync: before for tola: $tola")
                             tolaDao.updateTolaDetailAfterSync(
                                 id = tola.id,
                                 serverId = tola.serverId,
@@ -250,6 +258,7 @@ class TransectWalkViewModel @Inject constructor(
                                 createdDate = tola.createdDate?:0L,
                                 modifiedDate = tola.modifiedDate?:0L
                             )
+                            NudgeLogger.d("TransectWalkScreen", "checkTolaAddStatus ->  updateTolaDetailAfterSync: after for tola: $tola")
                         }
                         deleteTolaToNetwork(networkCallbackListener)
                     } else {
@@ -288,18 +297,24 @@ class TransectWalkViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if((response.data[0]?.transactionId.isNullOrEmpty())) {
+                                NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  transactionId is empty")
                                 tolaList.forEach { tola ->
+                                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.deleteTola before for tola: $tola")
                                     tolaDao.deleteTola(tola.id)
+                                    NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.deleteTola after for tola: $tola")
                                 }
 
                                 checkTolaDeleteStatus(networkCallbackListener)
                             } else {
+                                NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  transactionId is not empty")
                                 for (i in 0 until response.data.size){
                                     tolaList[i].transactionId = response.data[i]?.transactionId
                                     tolaList[i].transactionId?.let { it1 ->
+                                        NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
                                         tolaDao.updateTolaTransactionId(tolaList[i].id,
                                             it1
                                         )
+                                        NudgeLogger.d("TransectWalkViewModel","deleteTolaToNetwork:  tolaDao.updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
                                     }
                                 }
                                 isPending = 2
@@ -343,17 +358,24 @@ class TransectWalkViewModel @Inject constructor(
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if((response.data[0].transactionId.isNullOrEmpty())) {
+                                NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: transactionId empty")
                                 tolaList.forEach { tola ->
+                                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: tolaDao.updateNeedToPost before for tola: $tola")
                                     tolaDao.updateNeedToPost(tola.id,false)
+                                    NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: tolaDao.updateNeedToPost after for tola: $tola")
+
                                 }
                                 checkTolaUpdateStatus(networkCallbackListener)
                             } else {
+                                NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork: transactionId not empty")
                                 for (i in 0 until response.data.size){
                                     tolaList[i].transactionId = response.data[i].transactionId
                                     tolaList[i].transactionId?.let { it1 ->
+                                        NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork:  tolaDao.updateTolaTransactionId before for tola: ${tolaList[i]}, transactionId: $it1")
                                         tolaDao.updateTolaTransactionId(tolaList[i].id,
                                             it1
                                         )
+                                        NudgeLogger.d("TransectWalkViewModel","updateTolasToNetwork:  tolaDao.updateTolaTransactionId after for tola: ${tolaList[i]}, transactionId: $it1")
                                     }
                                 }
                                 isPending = 3
@@ -395,8 +417,12 @@ class TransectWalkViewModel @Inject constructor(
                         response.data?.forEach { transactionIdResponse ->
                             tolaList.forEach { tola ->
                                 if (transactionIdResponse.transactionId == tola.transactionId) {
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateNeedToPost before for tola: $tola")
                                     tolaDao.updateNeedToPost(tola.id,false)
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateNeedToPost after for tola: $tola")
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateTolaTransactionId before for tola: $tola")
                                     tolaDao.updateTolaTransactionId(tola.id,"")
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaUpdateStatus: tolaDao.updateTolaTransactionId after for tola: $tola")
                                 }
                             }
                         }
@@ -439,7 +465,10 @@ class TransectWalkViewModel @Inject constructor(
                         response.data?.forEach { transactionIdResponse ->
                             tolaList.forEach { tola ->
                                 if (transactionIdResponse.transactionId == tola.transactionId) {
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: tolaDao.deleteTola before for tola: $tola")
                                     tolaDao.deleteTola(tola.id)
+                                    NudgeLogger.d("TransectWalkViewModel","checkTolaDeleteStatus: tolaDao.deleteTola after for tola: $tola")
+
                                 }
                             }
                         }
