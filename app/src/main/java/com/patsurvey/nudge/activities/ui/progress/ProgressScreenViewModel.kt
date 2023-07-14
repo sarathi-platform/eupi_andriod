@@ -232,7 +232,7 @@ class ProgressScreenViewModel @Inject constructor(
                     val response = apiInterface.addWorkFlow(workFlowRequest)
                     NudgeLogger.d(
                         "ProgressScreenViewModel",
-                        "callWorkFlowAPI -> response: ${response}"
+                        "callWorkFlowAPI -> response: status: ${response.status}, message: ${response.message}, data: ${response.data.toString()}"
                     )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {

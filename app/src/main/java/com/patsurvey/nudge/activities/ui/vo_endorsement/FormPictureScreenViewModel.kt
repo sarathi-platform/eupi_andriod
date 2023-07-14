@@ -188,11 +188,11 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.d("FormPictureScreenViewModel", "onServerError -> onServerError: message = ${error?.message}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.d("FormPictureScreenViewModel", "onServerError -> onServerError: message = ${errorModel?.message}, api = ${errorModel?.apiName?.name}")
     }
 
     fun updateFormCImageCount(size: Int) {

@@ -2,7 +2,6 @@ package com.patsurvey.nudge.utils
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -74,7 +73,6 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyShare
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
-import com.patsurvey.nudge.activities.ui.theme.decrementCounterColor
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
@@ -86,12 +84,12 @@ import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.redLight
+import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.rejectColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import java.io.File
-import java.util.Locale
 
 @Composable
 fun BlueButton(
@@ -1257,7 +1255,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     )
                 )
                 .background(
-                    decrementCounterColor,
+                    white,
                     RoundedCornerShape(
                         topStart = 6.dp,
                         bottomStart = 6.dp
@@ -1273,8 +1271,8 @@ fun IncrementDecrementView(modifier: Modifier,
                     Icon(
                         painter = painterResource(id = R.drawable.minus_icon),
                         contentDescription = "decrement counter",
-                        tint = Color.White,
-                        modifier = Modifier.size(14.dp)
+                        tint = redOffline,
+                        modifier = Modifier.size(16.dp)
                     )
                 }
 
@@ -1351,7 +1349,7 @@ fun IncrementDecrementView(modifier: Modifier,
                     )
                 )
                 .background(
-                    greenOnline,
+                    white,
                     RoundedCornerShape(
                         topEnd = 6.dp,
                         bottomEnd = 6.dp
@@ -1365,8 +1363,8 @@ fun IncrementDecrementView(modifier: Modifier,
                 Icon(
                     painter = painterResource(id = R.drawable.plus_icon),
                     contentDescription = "increment counter",
-                    tint = Color.White,
-                    modifier = Modifier.size(14.dp)
+                    tint = greenOnline,
+                    modifier = Modifier.size(16.dp)
                 )
             }
         }
