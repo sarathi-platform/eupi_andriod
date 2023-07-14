@@ -1119,8 +1119,8 @@ class SyncHelper (
                             val didiListResponse = updateWealthRankResponse.data
                             if (didiListResponse?.get(0)?.transactionId != null) {
                                 for (i in didiListResponse.indices) {
-                                    val didiResponse = didiListResponse.get(i)
-                                    val didi = didiRequestList[i]
+                                    val didiResponse = didiListResponse[i]
+                                    val didi = needToPostDidiList[i]
                                     didiResponse.transactionId?.let {
                                         didiDao.updateDidiTransactionId(didi.id,
                                             it
