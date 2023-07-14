@@ -115,8 +115,8 @@ class BpcProgressScreenViewModel @Inject constructor(
         }
     }
 
-    fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
-        return stepsListDao.isStepCompleteLive(stepId,villageId)
+    fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int>? {
+        return stepsListDao.isStepCompleteLiveForBpc(stepId,villageId)
     }
 
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
@@ -133,27 +133,31 @@ class BpcProgressScreenViewModel @Inject constructor(
                         listOf(
                             AddWorkFlowRequest(
                                 StepStatus.INPROGRESS.name, prefRepo.getSelectedVillage().id,
-                                bpcStep.programId, bpcStep.id)
-                        ) )
-                    withContext(Dispatchers.IO){
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                stepsListDao.updateWorkflowId(bpcStep.id, it[0].id, prefRepo.getSelectedVillage().id, it[0].status)
-                            }
-                        }else{
-                            val error = ApiResponseFailException(response.message)
-                            onCatchError(error, ApiType.WORK_FLOW_API)
-                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                                bpcStep.programId, bpcStep.id
+                            )
+                        )
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            stepsListDao.updateWorkflowId(
+                                bpcStep.id,
+                                it[0].id,
+                                prefRepo.getSelectedVillage().id,
+                                it[0].status
+                            )
                         }
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
+                    } else {
+                        val error = ApiResponseFailException(response.message)
+                        onCatchError(error, ApiType.WORK_FLOW_API)
+                        onError(tag = "BpcProgressScreenViewModel", "Error : ${response.message}")
+                    }
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
                 }
-
             }catch (ex:Exception){
                 onCatchError(ex, ApiType.WORK_FLOW_API)
-                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+                onError(tag = "BpcProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }

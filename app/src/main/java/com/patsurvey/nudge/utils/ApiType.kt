@@ -2,6 +2,7 @@ package com.patsurvey.nudge.utils
 
 enum class ApiType {
 
+    LANGUAGE_API,
     STEP_LIST_API,
     TOLA_LIST_API,
     TOLA_ADD_API,
@@ -25,10 +26,15 @@ enum class ApiType {
     DIDI_DELETE_API,
     PAT_BPC_SURVEY_SUMMARY,
     BPC_PAT_SAVE_ANSWER_SUMMARY,
+    CRP_PAT_SAVE_ANSWER_SUMMARY,
     BPC_UPDATE_DIDI_LIST_API,
     BPC_SAVE_MATCH_PERCENTAGE_API,
     LOGOUT_API,
-    STATUS_CALL_BACK_API;
+    STATUS_CALL_BACK_API,
+    FETCH_ALL_DATA, /*General Type for fetch all data on village screen*/
+    DOCUMENT_UPLOAD_API,
+    DIDI_IMAGE_UPLOAD_API;
+
 
     /*    fun fromString(apiName: String): ApiType {
             when (apiName) {

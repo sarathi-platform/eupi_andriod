@@ -880,7 +880,7 @@ class SyncHelper (
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
-                    settingViewModel.onCatchError(ex)
+                    settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
                 }
             }
         }
@@ -1069,7 +1069,7 @@ class SyncHelper (
             }  catch (ex:Exception){
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
-                    settingViewModel.onCatchError(ex)
+                    settingViewModel.onCatchError(ex, ApiType.STATUS_CALL_BACK_API)
                 }
                 ex.printStackTrace()
             }
@@ -1158,7 +1158,7 @@ class SyncHelper (
             } catch (ex: Exception) {
                 withContext(Dispatchers.Main){
                     networkCallbackListener.onFailed()
-                    settingViewModel.onCatchError(ex)
+                    settingViewModel.onCatchError(ex, ApiType.DIDI_EDIT_API)
                 }
             }
         }
@@ -1312,7 +1312,7 @@ class SyncHelper (
                     }
                 }
             }catch (ex:Exception){
-                settingViewModel.onCatchError(ex)
+                settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
 //                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }

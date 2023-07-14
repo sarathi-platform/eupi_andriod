@@ -10,6 +10,8 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -28,6 +30,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -43,7 +46,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.patsurvey.nudge.R
@@ -86,6 +89,8 @@ fun PatDidiSummaryScreen(
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     val permissionsState = rememberMultiplePermissionsState(
         permissions = listOf(
@@ -382,7 +387,20 @@ fun PatDidiSummaryScreen(
                         }
                         Spacer(modifier = Modifier.height(10.dp))
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
-                            Image(
+                            AsyncImage(
+                                model = patDidiSummaryViewModel.photoUri,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .height((screenHeight/2).dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(
+                                        languageItemActiveBg,
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                contentScale = ContentScale.FillHeight
+                            )
+                            /*Image(
                                 painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
                                 contentDescription = null,
                                 modifier = Modifier
@@ -394,7 +412,7 @@ fun PatDidiSummaryScreen(
                                         shape = RoundedCornerShape(6.dp)
                                     ),
                                 contentScale = ContentScale.FillWidth
-                            )
+                            )*/
                         } else {
                             Box(
                                 modifier = Modifier
@@ -425,6 +443,18 @@ fun PatDidiSummaryScreen(
                             }
                         }
                         Spacer(modifier = Modifier.height(10.dp))
+
+                        var hasImage by remember {
+                            mutableStateOf(false)
+                        }
+
+                        val cameraLauncher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.TakePicture(),
+                            onResult = { success ->
+                                hasImage = success
+                            }
+                        )
+
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(
                                 modifier = Modifier
@@ -469,11 +499,10 @@ fun PatDidiSummaryScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
                     if((localContext as MainActivity).isOnline.value) {
-                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId.equals(
-                                BLANK_STRING
-                            )
+                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
-                        patDidiSummaryViewModel.uploadDidiImage(localContext,
+                        patDidiSummaryViewModel.uploadDidiImage(
+                            localContext,
                             patDidiSummaryViewModel.photoUri,
                             id,
                             patDidiSummaryViewModel.didiImageLocation.value

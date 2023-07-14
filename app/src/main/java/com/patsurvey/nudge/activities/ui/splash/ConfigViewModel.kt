@@ -12,6 +12,7 @@ import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
@@ -86,7 +87,7 @@ class ConfigViewModel @Inject constructor(
                 }
 
             } catch (ex: Exception) {
-                onCatchError(ex)
+                onCatchError(ex, ApiType.LANGUAGE_API)
                 withContext(Dispatchers.Main) {
                     callBack(listOf())
                 }

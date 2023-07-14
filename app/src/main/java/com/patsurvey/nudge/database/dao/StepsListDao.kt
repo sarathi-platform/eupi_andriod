@@ -31,7 +31,10 @@ interface StepsListDao {
     fun isStepComplete(id: Int,villageId: Int): Int
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
-    fun isStepCompleteLive(id: Int,villageId: Int) : LiveData<Int>
+    fun isStepCompleteLiveForBpc(id: Int, villageId: Int) : LiveData<Int>?
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
+    fun isStepCompleteLiveForCrp(id: Int,villageId: Int) : LiveData<Int>
 
     @Query("DELETE from $STEPS_LIST_TABLE")
     fun deleteAllStepsFromDB()

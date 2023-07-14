@@ -139,9 +139,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                 if (didiIDList.isNotEmpty()) {
                     didiIDList.forEach { didi ->
-                        Log.d(
+                        NudgeLogger.d(
                             "SurveySummaryViewModel",
-                            "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}"
+                            "savePATSummeryToServer didiId: ${didi.id} :: didi.patSurveyStatus: ${didi.patSurveyStatus}"
                         )
                         var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
@@ -292,9 +292,10 @@ class SurveySummaryViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
+                NudgeLogger.e("SurveySummaryViewModel", "savePATSummeryToServer: onFailed =>", ex)
                 networkCallbackListener.onFailed()
                 ex.printStackTrace()
-                onCatchError(ex)
+                onCatchError(ex, ApiType.CRP_PAT_SAVE_ANSWER_SUMMARY)
             }
         }
     }
@@ -366,7 +367,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 status = primaryWorkFlowResponse[0].status
                             )
                         }
-                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: for primaryWorkFlowResponse\n")
+                        NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: for primaryWorkFlowResponse\n")
 
                         stepsListDao.updateNeedToPost(
                             id = if (!prefRepo.isUserBPC())
@@ -377,7 +378,7 @@ class SurveySummaryViewModel @Inject constructor(
                             needsToPost = false
                         )
 
-                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after: for primaryWorkFlowResponse\n")
+                        NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after: for primaryWorkFlowResponse\n")
 
                         networkCallbackListener.onSuccess()
                     } else {
@@ -919,7 +920,7 @@ class SurveySummaryViewModel @Inject constructor(
                 val villageId = prefRepo.getSelectedVillage().id
                 val passingScore = questionDao.getPassingScore()
                 val bpcStep = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.last()
-                val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }, passingScore)
+                val matchPercentage = calculateMatchPercentage(didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
                     score = matchPercentage,
@@ -950,7 +951,6 @@ class SurveySummaryViewModel @Inject constructor(
                     && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
 
         return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
-
     }
 
     @SuppressLint("StringFormatMatches")
