@@ -385,15 +385,22 @@ fun SectionOneSummeryItem(
                     )
                 } else {
                     Image(
-                        painter = painterResource(id = R.drawable.pat_sample_icon),
+                        painter = painterResource(id = R.drawable.white_background),
                         contentDescription = "home image",
                         modifier = Modifier
                             .width(30.dp)
-                            .height(30.dp),
-                        colorFilter = ColorFilter.tint(textColorDark)
+                            .height(30.dp)
                     )
                 }
             }
+        }else {
+                Image(
+                    painter = painterResource(id = R.drawable.white_background),
+                    contentDescription = "home image",
+                    modifier = Modifier
+                        .width(30.dp)
+                        .height(30.dp)
+                )
         }
             Text(
                 text = "$index. ${quesSummery}.",

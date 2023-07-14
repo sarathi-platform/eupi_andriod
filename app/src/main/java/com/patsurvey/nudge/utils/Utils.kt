@@ -87,6 +87,8 @@ import java.io.IOException
 import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.SimpleDateFormat
+import java.util.Locale
 import kotlin.math.roundToInt
 
 
@@ -632,5 +634,16 @@ private fun getRealPathFromURI(contentURI: String, activity: Context): String? {
         cursor.moveToFirst()
         val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
         cursor.getString(idx)
+    }
+}
+
+fun formatDateAndTime(page:String,lastSyncTime: String):String{
+    return try {
+        val currentTime = if(lastSyncTime.isEmpty()) 0L else lastSyncTime.toLong()
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        dateFormat.format(currentTime)
+    }catch (ex:Exception){
+        ex.message?.let { NudgeLogger.d("$page DateTimeParse Issue : ", it) }
+        BLANK_STRING
     }
 }
