@@ -256,7 +256,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val bpcStep =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                             .last()
-                    val matchPercentage = calculateMatchPercentage(didiList.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }, passingScore)
+                    val matchPercentage = calculateMatchPercentage(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
                     val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                         programId = bpcStep.programId,
                         score = matchPercentage,

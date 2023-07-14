@@ -671,14 +671,15 @@ fun BpcProgressScreen(
                                         if ((context as MainActivity).isOnline.value ?: false) {
                                             bpcProgreesScreenViewModel.callWorkFlowApiToGetWorkFlowId()
                                         }
+//                                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, false)
                                         if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                             if (!steps.isNullOrEmpty()) {
                                                 val stepId =
                                                     steps.sortedBy { it.orderNumber }.last().id
-                                                    onNavigateToStep(
-                                                        bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
-                                                        stepId,
-                                                    )
+                                                onNavigateToStep(
+                                                    bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
+                                                    stepId,
+                                                )
                                             } else {
                                                 showCustomToast(context, "Something went wrong!")
                                             }

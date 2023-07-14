@@ -31,7 +31,9 @@ enum class ApiType {
     BPC_SAVE_MATCH_PERCENTAGE_API,
     LOGOUT_API,
     STATUS_CALL_BACK_API,
-    FETCH_ALL_DATA /*General Type for fetch all data on village screen*/;
+    FETCH_ALL_DATA, /*General Type for fetch all data on village screen*/
+    DOCUMENT_UPLOAD_API,
+    DIDI_IMAGE_UPLOAD_API;
 
 
     /*    fun fromString(apiName: String): ApiType {

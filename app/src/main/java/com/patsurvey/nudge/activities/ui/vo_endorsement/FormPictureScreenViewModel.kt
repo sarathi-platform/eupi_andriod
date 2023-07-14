@@ -385,45 +385,67 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun uploadFormsCAndD(context: Context) {
-        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val formList = arrayListOf<MultipartBody.Part>()
-                try {
-                    if(formCImageList.value.isNotEmpty()){
-                        formCImageList.value.onEachIndexed { index, it ->
-                          if(it.value.isNotEmpty()){
-                              val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
-                              val compressedFormC = compressImage(it.value,context,getFileNameFromURL(it.value))
-                              val requestFormC= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormC))
-                              val formCFilePart= MultipartBody.Part.createFormData("formC",File(compressedFormC).name,requestFormC)
+            try {
+                if (formCImageList.value.isNotEmpty()) {
+                    formCImageList.value.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+                            val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormC =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormC = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormC)
+                            )
+                            val formCFilePart = MultipartBody.Part.createFormData(
+                                "formC",
+                                File(compressedFormC).name,
+                                requestFormC
+                            )
 //                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
-                              formList.add(formCFilePart)
-                          }
-
+                            formList.add(formCFilePart)
                         }
+
                     }
-                    if(formDImageList.value.isNotEmpty()){
-                        formDImageList.value.onEachIndexed { index, it ->
-                            if(it.value.isNotEmpty()){
-                                val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
-                                val compressedFormD = compressImage(it.value,context,getFileNameFromURL(it.value))
-                                val requestFormD= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormD))
-                                val formDFilePart= MultipartBody.Part.createFormData("formD",File(compressedFormD).name,requestFormD)
+                }
+                if (formDImageList.value.isNotEmpty()) {
+                    formDImageList.value.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+                            val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormD =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormD = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormD)
+                            )
+                            val formDFilePart = MultipartBody.Part.createFormData(
+                                "formD",
+                                File(compressedFormD).name,
+                                requestFormD
+                            )
 //                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
-                                formList.add(formDFilePart)
-                            }
-
+                            formList.add(formDFilePart)
                         }
-                    }
 
-                    val requestVillageId=
-                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),prefRepo.getSelectedVillage().id.toString())
-                    val requestUserType=
-                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
-                    apiService.uploadDocument(formList,requestVillageId,requestUserType)
-                }   catch (ex:Exception){
-                    ex.printStackTrace()
+                    }
                 }
 
+                val requestVillageId =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        prefRepo.getSelectedVillage().id.toString()
+                    )
+                val requestUserType =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                apiService.uploadDocument(formList, requestVillageId, requestUserType)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
+            }
         }
     }
 

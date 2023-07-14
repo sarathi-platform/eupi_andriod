@@ -139,9 +139,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                 if (didiIDList.isNotEmpty()) {
                     didiIDList.forEach { didi ->
-                        Log.d(
+                        NudgeLogger.d(
                             "SurveySummaryViewModel",
-                            "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}"
+                            "savePATSummeryToServer didiId: ${didi.id} :: didi.patSurveyStatus: ${didi.patSurveyStatus}"
                         )
                         var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
@@ -292,6 +292,7 @@ class SurveySummaryViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
+                NudgeLogger.e("SurveySummaryViewModel", "savePATSummeryToServer: onFailed =>", ex)
                 networkCallbackListener.onFailed()
                 ex.printStackTrace()
                 onCatchError(ex, ApiType.CRP_PAT_SAVE_ANSWER_SUMMARY)

@@ -469,11 +469,10 @@ fun PatDidiSummaryScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
                     if((localContext as MainActivity).isOnline.value) {
-                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId.equals(
-                                BLANK_STRING
-                            )
+                        val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
-                        patDidiSummaryViewModel.uploadDidiImage(localContext,
+                        patDidiSummaryViewModel.uploadDidiImage(
+                            localContext,
                             patDidiSummaryViewModel.photoUri,
                             id,
                             patDidiSummaryViewModel.didiImageLocation.value
