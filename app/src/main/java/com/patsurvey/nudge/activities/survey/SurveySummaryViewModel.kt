@@ -5,6 +5,7 @@ import android.content.Context
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
@@ -128,91 +129,95 @@ class SurveySummaryViewModel @Inject constructor(
 
     @SuppressLint("SuspiciousIndentation")
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
-                withContext(Dispatchers.IO){
-                    var optionList= emptyList<OptionsItem>()
-                    var answeredDidiList:ArrayList<PATSummarySaveRequest> = arrayListOf()
-                    var scoreDidiList:ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
-                    var surveyId =0
+                var optionList: List<OptionsItem>
+                var answeredDidiList: ArrayList<PATSummarySaveRequest> = arrayListOf()
+                var scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                var surveyId = 0
 
-                    val didiIDList= answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
-                    if(didiIDList.isNotEmpty()){
-                        didiIDList.forEach { didi->
-                            Log.d("SurveySummaryViewModel", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
-                            var qList:ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                            val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
-                            if(needToPostQuestionsList.isNotEmpty()){
-                                needToPostQuestionsList.forEach {
-                                    surveyId= questionDao.getQuestion(it.questionId).surveyId?:0
-                                    if(!it.type.equals(QuestionType.Numeric_Field.name,true)){
-                                        optionList= listOf(
-                                            OptionsItem(optionId = it.optionId,
-                                                optionValue = it.optionValue,
-                                                count = 0,
-                                                summary = it.summary,
-                                                display = it.answerValue,
-                                                weight = 0,
-                                                isSelected = false
-                                            )
+                val didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                if (didiIDList.isNotEmpty()) {
+                    didiIDList.forEach { didi ->
+                        Log.d(
+                            "SurveySummaryViewModel",
+                            "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}"
+                        )
+                        var qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                        val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                        if (needToPostQuestionsList.isNotEmpty()) {
+                            needToPostQuestionsList.forEach {
+                                surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
+                                if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
+                                    optionList = listOf(
+                                        OptionsItem(
+                                            optionId = it.optionId,
+                                            optionValue = it.optionValue,
+                                            count = 0,
+                                            summary = it.summary,
+                                            display = it.answerValue,
+                                            weight = 0,
+                                            isSelected = false
                                         )
-                                    } else {
-                                        val numOptionList = numericAnswerDao.getSingleQueOptions(
-                                            it.questionId,
-                                            it.didiId
-                                        )
-                                        val tList: ArrayList<OptionsItem> = arrayListOf()
-                                        if (numOptionList.isNotEmpty()) {
-                                            numOptionList.forEach { numOption ->
-                                                tList.add(
-                                                    OptionsItem(
-                                                        optionId = numOption.optionId,
-                                                        optionValue = 0,
-                                                        count = numOption.count,
-                                                        summary = it.summary,
-                                                        display = it.answerValue,
-                                                        weight = numOption.weight,
-                                                        isSelected = false
-                                                    )
-                                                )
-                                            }
-                                            optionList = tList
-                                        }else{
+                                    )
+                                } else {
+                                    val numOptionList = numericAnswerDao.getSingleQueOptions(
+                                        it.questionId,
+                                        it.didiId
+                                    )
+                                    val tList: ArrayList<OptionsItem> = arrayListOf()
+                                    if (numOptionList.isNotEmpty()) {
+                                        numOptionList.forEach { numOption ->
                                             tList.add(
                                                 OptionsItem(
-                                                    optionId = it.optionId,
+                                                    optionId = numOption.optionId,
                                                     optionValue = 0,
-                                                    count = 0,
+                                                    count = numOption.count,
                                                     summary = it.summary,
                                                     display = it.answerValue,
-                                                    weight = it.weight,
+                                                    weight = numOption.weight,
                                                     isSelected = false
                                                 )
                                             )
-
-                                            optionList = tList
                                         }
-                                    }
-                                    try {
-                                        qList.add(
-                                            AnswerDetailDTOListItem(
-                                                questionId = it.questionId,
-                                                section = it.actionType,
-                                                options = optionList,
-                                                assetAmount = it.assetAmount
+                                        optionList = tList
+                                    } else {
+                                        tList.add(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = 0,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = it.weight,
+                                                isSelected = false
                                             )
                                         )
-                                    } catch (e: Exception) {
-                                        e.printStackTrace()
+
+                                        optionList = tList
                                     }
                                 }
+                                try {
+                                    qList.add(
+                                        AnswerDetailDTOListItem(
+                                            questionId = it.questionId,
+                                            section = it.actionType,
+                                            options = optionList,
+                                            assetAmount = it.assetAmount
+                                        )
+                                    )
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
                             }
-                            val passingMark=questionDao.getPassingScore()
-                            var comment= BLANK_STRING
-                            comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                        }
+                        val passingMark = questionDao.getPassingScore()
+                        var comment = BLANK_STRING
+                        comment =
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                 PatSurveyStatus.NOT_AVAILABLE.name
                             } else {
-                                if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
+                                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
                                     TYPE_EXCLUSION
                                 } else {
                                     if (didi.score < passingMark)
@@ -222,69 +227,67 @@ class SurveySummaryViewModel @Inject constructor(
                                     }
                                 }
                             }
-                            scoreDidiList.add(
-                                EditDidiWealthRankingRequest(
-                                    id = if (didi.serverId == 0) didi.id else didi.serverId,
-                                    score = didi.score,
-                                    comment =comment,
-                                    type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                    result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
-                                    else {
-                                        if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
-                                    }
-                                )
+                        scoreDidiList.add(
+                            EditDidiWealthRankingRequest(
+                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment = comment,
+                                type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
+                                else {
+                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                }
                             )
-                            answeredDidiList.add(
-                                PATSummarySaveRequest(
-                                    villageId = prefRepo.getSelectedVillage().id,
-                                    surveyId = surveyId,
-                                    beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
-                                    languageId = prefRepo.getAppLanguageId() ?: 2,
-                                    stateId = prefRepo.getSelectedVillage().stateId,
-                                    totalScore = didi.score,
-                                    userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
-                                    beneficiaryName = didi.name,
-                                    answerDetailDTOList = qList,
-                                    patSurveyStatus = didi.patSurveyStatus,
-                                    section2Status = didi.section2Status,
-                                    section1Status = didi.section1Status,
-                                    shgFlag = didi.shgFlag
-                                )
+                        )
+                        answeredDidiList.add(
+                            PATSummarySaveRequest(
+                                villageId = prefRepo.getSelectedVillage().id,
+                                surveyId = surveyId,
+                                beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
+                                languageId = prefRepo.getAppLanguageId() ?: 2,
+                                stateId = prefRepo.getSelectedVillage().stateId,
+                                totalScore = didi.score,
+                                userType = if (prefRepo.isUserBPC()) USER_BPC else USER_CRP,
+                                beneficiaryName = didi.name,
+                                answerDetailDTOList = qList,
+                                patSurveyStatus = didi.patSurveyStatus,
+                                section2Status = didi.section2Status,
+                                section1Status = didi.section1Status,
+                                shgFlag = didi.shgFlag
                             )
-                        }
-                        if(answeredDidiList.isNotEmpty()){
-                            withContext(Dispatchers.IO){
-                                val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
-                                if(saveAPIResponse.status.equals(SUCCESS,true)){
-                                    if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
-                                        didiIDList.forEach { didiItem ->
-                                            didiDao.updateNeedToPostPAT(
-                                                false,
-                                                didiItem.id,
-                                                prefRepo.getSelectedVillage().id
-                                            )
-                                        }
-                                    } else {
-                                        for(i in didiIDList.indices) {
-                                            saveAPIResponse.data?.get(i)?.let {
-                                                didiDao.updateDidiTransactionId(
-                                                    didiIDList[i].id,
-                                                    it.transactionId
-                                                )
-                                            }
-                                        }
-
+                        )
+                    }
+                    if (answeredDidiList.isNotEmpty()) {
+                        withContext(Dispatchers.IO) {
+                            val saveAPIResponse = apiService.savePATSurveyToServer(answeredDidiList)
+                            if (saveAPIResponse.status.equals(SUCCESS, true)) {
+                                if (saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
+                                    didiIDList.forEach { didiItem ->
+                                        didiDao.updateNeedToPostPAT(
+                                            false,
+                                            didiItem.id,
+                                            prefRepo.getSelectedVillage().id
+                                        )
                                     }
                                     networkCallbackListener.onSuccess()
-                                    checkDidiPatStatus()
                                 } else {
-                                    networkCallbackListener.onFailed()
+                                    for (i in didiIDList.indices) {
+                                        saveAPIResponse.data?.get(i)?.let {
+                                            didiDao.updateDidiTransactionId(
+                                                didiIDList[i].id,
+                                                it.transactionId
+                                            )
+                                        }
+                                    }
+                                    checkDidiPatStatus()
                                 }
-                                if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
-                                    updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
-                                }
-                                apiService.updateDidiScore(scoreDidiList)
+                            } else {
+                                networkCallbackListener.onFailed()
                             }
+                            if (!saveAPIResponse.lastSyncTime.isNullOrEmpty()) {
+                                updateLastSyncTime(prefRepo, saveAPIResponse.lastSyncTime)
+                            }
+                            val updateScoreResponse = apiService.updateDidiScore(scoreDidiList)
                         }
                     }
                 }
@@ -327,43 +330,90 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun callWorkFlowAPI(villageId: Int,stepId: Int, networkCallbackListener: NetworkCallbackListener){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> called")
             try {
                 val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId)
-                if(dbResponse.workFlowId>0){
+                NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
+                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> stepList = $stepList \n\n")
+                if (dbResponse.workFlowId > 0) {
+                    val primaryWorkFlowRequest =
+                        listOf(EditWorkFlowRequest(
+                            if (!prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
+                                .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
+                                .indexOf(6)].workFlowId, StepStatus.COMPLETED.name
+                        )
+                        )
+                    NudgeLogger.d(
+                        "SurveySummaryViewModel",
+                        "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
+                    )
                     val response = apiService.editWorkFlow(
-                        listOf(
-                            EditWorkFlowRequest(dbResponse.workFlowId, StepStatus.COMPLETED.name)
-                        ) )
-                    withContext(Dispatchers.IO){
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                stepsListDao.updateWorkflowId(stepId,dbResponse.workFlowId,villageId,it[0].status)
-                            }
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                        }else{
-                            networkCallbackListener.onFailed()
-                            onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
+                        primaryWorkFlowRequest
+                    )
+                    NudgeLogger.d(
+                        "SurveySummaryViewModel",
+                        "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()} \n"
+                    )
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let { primaryWorkFlowResponse ->
+                            //Here programsProcessId == id for our local db.
+                            stepsListDao.updateWorkflowId(
+                                stepId = primaryWorkFlowResponse[0].programsProcessId,
+                                workflowId = primaryWorkFlowResponse[0].id,
+                                villageId = villageId,
+                                status = primaryWorkFlowResponse[0].status
+                            )
                         }
+                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: for primaryWorkFlowResponse\n")
 
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
+                        stepsListDao.updateNeedToPost(
+                            id = if (!prefRepo.isUserBPC())
+                                stepList[stepList.map { it.orderNumber }.indexOf(4)].id
+                            else
+                                stepList[stepList.map { it.orderNumber }.indexOf(6)].id,
+                            villageId = villageId,
+                            needsToPost = false
+                        )
+
+                        NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after: for primaryWorkFlowResponse\n")
+
+                        networkCallbackListener.onSuccess()
+                    } else {
+                        NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> response: onFailed")
+                        networkCallbackListener.onFailed()
+                        onError(tag = "SurveySummaryViewModel", "Error : ${response.message}")
                     }
+
+                    if (!response.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(prefRepo, response.lastSyncTime)
+                    }
+
                 }
-                launch {
-                    try {
-                        stepList.forEach { step ->
-                            if (step.id != stepId && step.orderNumber > dbResponse.orderNumber && step.workFlowId > 0) {
-                                val inProgressStepResponse = apiService.editWorkFlow(
-                                    listOf(
-                                        EditWorkFlowRequest(
-                                            step.workFlowId,
-                                            StepStatus.INPROGRESS.name
-                                        )
+                try {
+                    NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> second try = called")
+                    stepList.forEach { step ->
+                        if (!prefRepo.isUserBPC()) {
+                            NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> !prefRepo.isUserBPC() = true")
+                            NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> step = $step")
+                            NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> " +
+                                    "step.orderNumber > 4 && step.workFlowId > 0: " +
+                                    "${step.orderNumber > 4} && ${step.workFlowId > 0}")
+                            if (step.orderNumber > 4 &&  step.workFlowId > 0) {
+                                val inProgressStepRequest = listOf(
+                                    EditWorkFlowRequest(
+                                        step.workFlowId,
+                                        StepStatus.INPROGRESS.name
                                     )
                                 )
+                                NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
+
+                                val inProgressStepResponse = apiService.editWorkFlow(inProgressStepRequest)
+
+                                NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()}")
+
+
                                 if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                     inProgressStepResponse.data?.let {
                                         stepsListDao.updateWorkflowId(
@@ -373,16 +423,28 @@ class SurveySummaryViewModel @Inject constructor(
                                             it[0].status
                                         )
                                     }
+                                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before for inProgressStepResponse")
+
                                     stepsListDao.updateNeedToPost(step.id, villageId, false)
+
+                                    NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after for inProgressStepResponse")
+
+                                    networkCallbackListener.onSuccess()
+                                } else {
+                                    NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> inProgressStepResponse = FAIL")
+                                    networkCallbackListener.onFailed()
                                 }
-                                if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
-                                    updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
+                                if (!inProgressStepResponse.lastSyncTime.isNullOrEmpty()) {
+                                    updateLastSyncTime(prefRepo, inProgressStepResponse.lastSyncTime)
                                 }
                             }
+                        } else {
+                            networkCallbackListener.onSuccess()
+                            NudgeLogger.d("SurveySummaryViewModel", "callWorkFlowAPI -> !prefRepo.isUserBPC() = false")
                         }
-                    } catch (ex: Exception) {
-                        onCatchError(ex, ApiType.WORK_FLOW_API)
                     }
+                } catch (ex: Exception) {
+                    onCatchError(ex, ApiType.WORK_FLOW_API)
                 }
             }catch (ex:Exception){
                 networkCallbackListener.onFailed()
@@ -895,8 +957,12 @@ class SurveySummaryViewModel @Inject constructor(
     fun prepareDidiCountList(context:Context){
         val list:ArrayList<String> = arrayListOf()
         context?.let {
+
             totalPatDidiCount.value=didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
                     it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            if(prefRepo.isUserBPC()){
+                totalPatDidiCount.value= didiList.value.filter {  it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal}.size
+            }
             notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
             voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 && it.section2Status == 2 }.size
 

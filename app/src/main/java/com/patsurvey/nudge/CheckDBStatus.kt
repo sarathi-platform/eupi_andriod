@@ -59,11 +59,13 @@ class CheckDBStatus (val viewModel : BaseViewModel){
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
             ) {
+                NudgeLogger.d("CheckDBStatus", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main){
                     onResult(2)
 
                 }
             } else {
+                NudgeLogger.d("CheckDBStatus", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 0")
                 withContext(Dispatchers.Main){
                     onResult(0)
                 }
@@ -76,11 +78,13 @@ class CheckDBStatus (val viewModel : BaseViewModel){
             if (answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
             ) {
+                NudgeLogger.d("CheckDBStatus", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main){
                     onResult(2)
 
                 }
             } else{
+                NudgeLogger.d("CheckDBStatus", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 0")
                 withContext(Dispatchers.Main){
                     onResult(0)
                 }
@@ -99,11 +103,16 @@ class CheckDBStatus (val viewModel : BaseViewModel){
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
             ) {
+                NudgeLogger.d("CheckDBStatus", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
                 }
-            } else
-                isNeedToBeSync.value = 0
+            } else {
+                NudgeLogger.d("CheckDBStatus", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 0")
+                withContext(Dispatchers.Main) {
+                    isNeedToBeSync.value = 0
+                }
+            }
         }
     }
 }
