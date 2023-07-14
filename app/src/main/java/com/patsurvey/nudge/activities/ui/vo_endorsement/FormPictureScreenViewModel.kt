@@ -386,8 +386,8 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun uploadFormsCAndD(context: Context) {
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
-            val formList = arrayListOf<MultipartBody.Part>()
                 try {
+                    val formList = arrayListOf<MultipartBody.Part>()
                     if(formCImageList.value.isNotEmpty()){
                         formCImageList.value.onEachIndexed { index, it ->
                           if(it.value.isNotEmpty()){

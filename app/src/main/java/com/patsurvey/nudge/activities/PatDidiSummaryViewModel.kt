@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -17,13 +16,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.SHGFlag
-import com.patsurvey.nudge.utils.TYPE_EXCLUSION
-import com.patsurvey.nudge.utils.USER_BPC
-import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -185,21 +178,23 @@ class PatDidiSummaryViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             withContext(Dispatchers.IO){
                 NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage: $didiId :: $location")
-              try {
-                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
-                  val compressedImageFile = compressImage(uri.toString(),context,uri.toFile().name)
-                  val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedImageFile))
-                  val imageFilePart= MultipartBody.Part.createFormData("file",File(compressedImageFile).name,requestFile)
-                  val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
-                  val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
-                  val requestLocation=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),location)
-                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
-                  val imageUploadRequest = apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
-                  NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage imageUploadRequest: ${imageUploadRequest.data ?: ""}")
-                }   catch (ex:Exception){
+                try {
+                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
+                    val compressedImageFile = compressImage(uri.toString(),context,uri.toFile().name)
+                    val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedImageFile))
+                    val imageFilePart= MultipartBody.Part.createFormData("file",File(compressedImageFile).name,requestFile)
+                    val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
+                    val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
+                    val requestLocation=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),location)
+                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
+                    val imageUploadResponse = apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
+                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}")
+                    if(imageUploadResponse.status == SUCCESS){
+                        didiDao.updateNeedToPostImage(didiId,false)
+                    }
+                } catch (ex:Exception){
                     ex.printStackTrace()
                 }
-
             }
         }
     }
