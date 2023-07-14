@@ -154,9 +154,11 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun updateDidiVoEndorsementStatus() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus called")
             val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             didiList.forEach {didi ->
+                NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus didi: $didi \n\n")
                 if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
                     var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
@@ -164,7 +166,11 @@ class FormPictureScreenViewModel @Inject constructor(
                         updatedStatus.add(it)
                     }
                     updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "ACCEPTED"))
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
+
                 } else if (didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
                     var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
@@ -172,7 +178,13 @@ class FormPictureScreenViewModel @Inject constructor(
                         updatedStatus.add(it)
                     }
                     updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "REJECTED"))
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
+
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
+
                 } else {
                     didiDao.updateNeedToPostVO(false, didiId = didi.id, didi.villageId)
                 }
