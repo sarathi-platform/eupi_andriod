@@ -1,9 +1,13 @@
 package com.patsurvey.nudge
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.core.net.toFile
+import androidx.core.net.toUri
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -18,6 +22,10 @@ import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
 import java.util.Timer
 import java.util.TimerTask
 
@@ -340,6 +348,69 @@ class SyncHelper (
             } else {
                 deleteDidisToNetwork(networkCallbackListener)
             }
+        }
+    }
+
+    private fun uploadDidiImagesToServer(context : Context,location: String){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val didiList = didiDao.fetchAllDidiNeedToPostImage(true)
+            for(didi in didiList) {
+                NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $location")
+                try {
+                    val uri = didi.localPath.toUri()
+                    NudgeLogger.d(
+                        "Synchelper",
+                        "uploadDidiImage Prev: $uri.toFile().totalSpace} "
+                    )
+                    val compressedImageFile =
+                        compressImage(uri.toString(), context, uri.toFile().name)
+                    val requestFile = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        File(compressedImageFile)
+                    )
+                    val imageFilePart = MultipartBody.Part.createFormData(
+                        "file",
+                        File(compressedImageFile).name,
+                        requestFile
+                    )
+                    val requestDidiId = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        didi.id.toString()
+                    )
+                    val requestUserType = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                    val requestLocation =
+                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(), location)
+                    NudgeLogger.d(
+                        "Synchelper",
+                        "uploadDidiImage Details: ${requestDidiId.contentType().toString()}"
+                    )
+                    val imageUploadResponse = apiService.uploadDidiImage(
+                        imageFilePart,
+                        requestDidiId,
+                        requestUserType,
+                        requestLocation
+                    )
+                    NudgeLogger.d(
+                        "Synchelper",
+                        "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
+                    )
+                    if (imageUploadResponse.status == SUCCESS) {
+                        didiDao.updateNeedToPostImage(didi.id, false)
+                    }
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                }
+            }
+        }
+    }
+
+    fun uploadDidiImage(context: Context, uri: Uri, didiId: Int, location:String) {
+        job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+
+
         }
     }
 
