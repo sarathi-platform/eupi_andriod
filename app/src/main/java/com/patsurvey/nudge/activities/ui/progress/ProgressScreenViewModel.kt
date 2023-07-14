@@ -180,7 +180,7 @@ class ProgressScreenViewModel @Inject constructor(
     }
 
     fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
-        return stepsListDao.isStepCompleteLive(stepId,villageId)
+        return stepsListDao.isStepCompleteLiveForCrp(stepId,villageId)
     }
 
     fun updateSelectedStep(stepId: Int) {

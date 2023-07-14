@@ -139,11 +139,11 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
     open fun onCatchError(e:Exception, api: ApiType) {
-        NudgeLogger.d("BaseViewModel", "onCatchError: ${e.message}")
+        NudgeLogger.d("BaseViewModel", "onCatchError: message: ${e.message}, api: ${api.name}")
         AnalyticsHelper.logServiceFailedEvent(exception = e, apiType = api)
         when (e) {
             is HttpException -> {
-                NudgeLogger.d("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}")
+                NudgeLogger.d("BaseViewModel", "onCatchError code: ${e.response()?.code() ?: 0}, api: ${api.name}")
                 when (e.response()?.code() ?: 0) {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         if(!RetryHelper.tokenExpired.value && api != ApiType.LOGOUT_API) {

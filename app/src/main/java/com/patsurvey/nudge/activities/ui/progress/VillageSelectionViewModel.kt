@@ -97,7 +97,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.File
@@ -162,8 +161,6 @@ class VillageSelectionViewModel @Inject constructor(
                     fetchDataForBpc()
                 }
             }
-
-            showLoader.value = false
         }
     }
 
@@ -294,8 +291,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 onCatchError(ex, ApiType.STEP_LIST_API)
                             }
                             try {
-                                val bpcSummaryResponse =
-                                    apiService.getBpcSummary(villageId = village.id)
+                                val bpcSummaryResponse = apiService.getBpcSummary(villageId = village.id)
                                 if (bpcSummaryResponse.status.equals(SUCCESS, true)) {
                                     bpcSummaryResponse.data?.let {
                                         val bpcSummary = BpcSummaryEntity(
@@ -309,7 +305,6 @@ class VillageSelectionViewModel @Inject constructor(
                                         bpcSummaryDao.insert(bpcSummary)
                                     }
                                 } else {
-                                    //TODO remove mock data
                                     bpcSummaryDao.insert(
                                         BpcSummaryEntity(
                                             0, 0, 0, 0, 0, 0, villageId = village.id
@@ -324,6 +319,11 @@ class VillageSelectionViewModel @Inject constructor(
                                     onCatchError(ex, ApiType.BPC_SUMMARY_API)
                                 }
                             } catch (ex: Exception) {
+                                bpcSummaryDao.insert(
+                                    BpcSummaryEntity(
+                                        0, 0, 0, 0, 0, 0, villageId = village.id
+                                    )
+                                )
                                 if (ex !is JsonSyntaxException) {
                                     if (!retryApiList.contains(ApiType.BPC_SUMMARY_API)) retryApiList.add(
                                         ApiType.BPC_SUMMARY_API
@@ -663,10 +663,9 @@ class VillageSelectionViewModel @Inject constructor(
                         prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
                         prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, true)
                     }
-
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
+                onCatchError(ex, ApiType.FETCH_ALL_DATA)
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()
@@ -1187,7 +1186,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
+                onCatchError(ex, ApiType.FETCH_ALL_DATA)
             } finally {
                 prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
                 startRetryIfAny()

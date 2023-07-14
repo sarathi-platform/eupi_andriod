@@ -291,7 +291,7 @@ class SurveySummaryViewModel @Inject constructor(
             } catch (ex: Exception) {
                 networkCallbackListener.onFailed()
                 ex.printStackTrace()
-                onCatchError(ex)
+                onCatchError(ex, ApiType.CRP_PAT_SAVE_ANSWER_SUMMARY)
             }
         }
     }

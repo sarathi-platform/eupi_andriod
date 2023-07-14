@@ -246,7 +246,7 @@ class FormPictureScreenViewModel @Inject constructor(
                     }
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
+                onCatchError(ex, ApiType.DIDI_EDIT_API)
                 networkCallbackListener.onFailed()
                 onError("SurveySummaryViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
             }
