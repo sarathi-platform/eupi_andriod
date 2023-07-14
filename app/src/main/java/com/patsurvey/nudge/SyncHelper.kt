@@ -198,7 +198,7 @@ class SyncHelper (
                         delay(1000)
                         syncPercentage.value = 1f
                         settingViewModel.stepFifthSyncStatus.value = 2
-                        callWorkFlowAPIForStep(5)
+                        networkCallbackListener.onSuccess()
                     }
                 } else {
                     withContext(Dispatchers.Main){
@@ -216,6 +216,7 @@ class SyncHelper (
                 withContext(Dispatchers.Main){
                     delay(1000)
                     syncPercentage.value = 1f
+                    settingViewModel.stepFifthSyncStatus.value = 2
                     networkCallbackListener.onSuccess()
                 }
             }
@@ -1156,7 +1157,6 @@ class SyncHelper (
                         }
                     } else {
                         checkVOStatus(networkCallbackListener)
-                        callWorkFlowAPIForStep(5)
                     }
                 }
             } catch (ex: Exception) {
