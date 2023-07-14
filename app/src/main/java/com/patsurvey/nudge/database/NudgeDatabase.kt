@@ -27,7 +27,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_DATABASE_VERSION = 4
+const val NUDGE_DATABASE_VERSION = 1
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
     TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class,

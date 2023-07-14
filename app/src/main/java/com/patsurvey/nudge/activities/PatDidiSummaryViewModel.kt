@@ -57,6 +57,8 @@ class PatDidiSummaryViewModel @Inject constructor(
     var shouldShowPhoto = mutableStateOf(false)
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
 
+    var imagePath = ""
+
     private val _didiEntity = MutableStateFlow(
         DidiEntity(
             id = 0,
@@ -97,7 +99,7 @@ class PatDidiSummaryViewModel @Inject constructor(
         outputDirectory = getOutputDirectory(activity)
     }*/
 
-    private fun getImagePath(context: Context): File {
+    fun getImagePath(context: Context): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
     }
 
@@ -138,10 +140,16 @@ class PatDidiSummaryViewModel @Inject constructor(
         didiEntity: DidiEntity
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
+
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
         }
     }
 
@@ -149,7 +157,10 @@ class PatDidiSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiEntity.emit(didiDao.getDidi(didiId))
             if(!_didiEntity.value.localPath.isNullOrEmpty()){
-                photoUri=_didiEntity.value.localPath.toUri()
+                photoUri=if (didiEntity.value.localPath.contains("|"))
+                    didiEntity.value.localPath.split("|")[0].toUri()
+                else
+                    _didiEntity.value.localPath.toUri()
                 shouldShowPhoto.value=true
             }
         }
@@ -231,5 +242,11 @@ class PatDidiSummaryViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun getFileName(context: Context, didi: DidiEntity): File {
+        val directory = getImagePath(context)
+        val filePath = File(directory, "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png")
+        return filePath
     }
 }
