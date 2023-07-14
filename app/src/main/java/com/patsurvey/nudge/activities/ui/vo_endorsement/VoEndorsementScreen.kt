@@ -79,6 +79,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -299,6 +300,7 @@ fun VoEndorsementScreen(
                 positiveButtonText = stringResource(id = R.string.next),
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
+                    NudgeLogger.d("VoEndorsementScreen", "Next Button Clicked")
                     val stepStatus = false
                     navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
                 },

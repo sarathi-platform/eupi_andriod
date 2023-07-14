@@ -131,7 +131,7 @@ fun PatDidiSummaryScreen(
         ) {
 
             AnimatedVisibility(patDidiSummaryViewModel.shouldShowCamera.value) {
-                CameraView(
+                /*CameraView(
                     modifier = Modifier.fillMaxSize(),
                     outputDirectory = patDidiSummaryViewModel.outputDirectory,
                     viewModel = patDidiSummaryViewModel,
@@ -150,7 +150,7 @@ fun PatDidiSummaryScreen(
                         patDidiSummaryViewModel.shouldShowCamera.value = false
                     },
                     onError = { NudgeLogger.e("PatDidiSummaryScreen", "View error:", it) }
-                )
+                )*/
             }
             AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {
                 Column(
@@ -398,7 +398,7 @@ fun PatDidiSummaryScreen(
                                         languageItemActiveBg,
                                         shape = RoundedCornerShape(6.dp)
                                     ),
-                                contentScale = ContentScale.FillHeight
+                                contentScale = ContentScale.FillBounds
                             )
                             /*Image(
                                 painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
@@ -416,7 +416,7 @@ fun PatDidiSummaryScreen(
                         } else {
                             Box(
                                 modifier = Modifier
-                                    .height(200.dp)
+                                    .height((screenHeight/2).dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(
@@ -452,6 +452,8 @@ fun PatDidiSummaryScreen(
                             contract = ActivityResultContracts.TakePicture(),
                             onResult = { success ->
                                 hasImage = success
+                                NudgeLogger.d("PatDidiSummaryScreen", "rememberLauncherForActivityResult -> onResult = success: $success")
+                                handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
                             }
                         )
 
@@ -462,9 +464,18 @@ fun PatDidiSummaryScreen(
                                     .height(45.dp),
                                 buttonTitle = stringResource(id = R.string.retake_photo_text)
                             ) {
-                                patDidiSummaryViewModel.setCameraExecutor()
-                                patDidiSummaryViewModel.shouldShowCamera.value = true
+                                val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                val uri = uriFromFile(localContext, imageFile)
+                                NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
+                                patDidiSummaryViewModel.photoUri = uri
+                                cameraLauncher.launch(uri)
+                                patDidiSummaryViewModel.shouldShowPhoto.value = false
+
+//                                patDidiSummaryViewModel.setCameraExecutor()
+//                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
+
                         } else {
                             BlueButtonWithIcon(
                                 buttonText = stringResource(id = R.string.take_photo_text),
@@ -473,9 +484,17 @@ fun PatDidiSummaryScreen(
                                     .fillMaxWidth()
                                     .height(45.dp)
                             ) {
-                                patDidiSummaryViewModel.shouldShowCamera.value = true
+                                val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                val uri = uriFromFile(localContext, imageFile)
+                                patDidiSummaryViewModel.photoUri = uri
+                                cameraLauncher.launch(uri)
+//                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         }
+                        Spacer(modifier = Modifier
+                            .height(30.dp)
+                            .fillMaxWidth())
                     }
                 }
             }
@@ -528,12 +547,14 @@ fun handleImageCapture(
     didiEntity: DidiEntity,
     viewModal: PatDidiSummaryViewModel
 ) {
-    viewModal.shouldShowCamera.value = false
-    viewModal.photoUri = uri
+
+    NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> called")
+//    viewModal.shouldShowCamera.value = false
+//    viewModal.photoUri = uri
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 
-    var location: LocationCoordinates = LocationCoordinates(0.0,0.0)
+    var location = LocationCoordinates(0.0,0.0)
 
     val decimalFormat = DecimalFormat("#.#######")
     if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
@@ -617,8 +638,10 @@ fun handleImageCapture(
         )
     }
 
-    viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
+    NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> viewModal.saveFilePathInDb called")
 
+
+    viewModal.saveFilePathInDb(photoPath, location, didiEntity = didiEntity)
 }
 
 private fun requestCameraPermission(

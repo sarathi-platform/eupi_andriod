@@ -1352,7 +1352,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     fun startRetryIfAny() {
-        Log.d("startRetryIfAny: ", "shouldRetyCalled")
+        NudgeLogger.d("startRetryIfAny: ", "shouldRetyCalled")
         RetryHelper.retryApiList.forEach { apiType ->
             RetryHelper.retryApi(apiType)
         }
