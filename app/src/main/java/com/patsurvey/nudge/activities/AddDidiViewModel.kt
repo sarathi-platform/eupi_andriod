@@ -808,7 +808,7 @@ class AddDidiViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        /*TODO("Not yet implemented")*/
     }
 
     /*private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {

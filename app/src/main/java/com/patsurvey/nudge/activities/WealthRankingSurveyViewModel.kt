@@ -272,13 +272,15 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
                 NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> needToPostDidiList: $needToPostDidiList")
                 if (needToPostDidiList.isNotEmpty()) {
-                    val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
+                    val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
+                    val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
-                        didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
+                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
+                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
                     }
-                    NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiRequestList")
-                    val updateWealthRankResponse = apiService.updateDidiRanking(didiRequestList)
+                    didiWealthRequestList.addAll(didiStepRequestList)
+                    NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiWealthRequestList")
+                    val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> response: status = ${updateWealthRankResponse.status}, message = ${updateWealthRankResponse.message}, data = ${updateWealthRankResponse.data.toString()}")
                     if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
                         if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -287,19 +289,17 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             }
                             networkCallbackListener.onSuccess()
                         } else {
-                            val size = updateWealthRankResponse.data?.indices
-                            if (size != null) {
-                                for(i in size) {
-                                    val serverResponseDidi = updateWealthRankResponse.data.get(i)
-                                    val localDidi = needToPostDidiList[i]
-                                    serverResponseDidi.transactionId?.let {
-                                        didiDao.updateDidiTransactionId(localDidi.id,
-                                            it
-                                        )
-                                    }
+                            val size = needToPostDidiList.indices
+                            for(i in size) {
+                                val serverResponseDidi = updateWealthRankResponse.data?.get(i)
+                                val localDidi = needToPostDidiList[i]
+                                serverResponseDidi?.transactionId?.let {
+                                    didiDao.updateDidiTransactionId(localDidi.id,
+                                        it
+                                    )
                                 }
-                                checkDidiWealthStatus(networkCallbackListener)
                             }
+                            checkDidiWealthStatus(networkCallbackListener)
                         }
                     } else {
                         networkCallbackListener.onFailed()
