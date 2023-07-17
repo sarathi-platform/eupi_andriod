@@ -522,7 +522,7 @@ fun PatDidiSummaryScreen(
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
                         patDidiSummaryViewModel.uploadDidiImage(
                             localContext,
-                            patDidiSummaryViewModel.photoUri,
+                            patDidiSummaryViewModel.updatedLocalPath.value,
                             id,
                             patDidiSummaryViewModel.didiImageLocation.value
                         )
@@ -551,6 +551,7 @@ fun handleImageCapture(
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> called")
 //    viewModal.shouldShowCamera.value = false
 //    viewModal.photoUri = uri
+    viewModal.updatedLocalPath.value = photoPath
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 

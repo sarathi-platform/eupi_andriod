@@ -64,6 +64,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.text.isDigitsOnly
 import coil.compose.rememberAsyncImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -1289,13 +1290,15 @@ fun IncrementDecrementView(modifier: Modifier,
                     readOnly = false,
                     onValueChange = {
                         if(!it.contains(IGNORED_REGEX)) {
-                            val currentIt = if (it.isEmpty()) 0 else it.toInt()
-                            if (currentIt <= MAXIMUM_RANGE) {
-                                currentCount = if (it.isEmpty() || it == "0")
-                                    ""
-                                else
-                                    it
-                                onValueChange(it)
+                            if(it.isDigitsOnly()) {
+                                val currentIt = if (it.isEmpty()) 0 else it.toInt()
+                                if (currentIt <= MAXIMUM_RANGE) {
+                                    currentCount = if (it.isEmpty() || it == "0")
+                                        ""
+                                    else
+                                        it
+                                    onValueChange(it)
+                                }
                             }
                         }
                     },
