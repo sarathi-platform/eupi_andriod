@@ -137,7 +137,10 @@ data class DidiEntity(
     var isExclusionYesSelected: Int = 0,
 
     @ColumnInfo(name = "crpUploadedImage")
-    var crpUploadedImage: String? = BLANK_STRING
+    var crpUploadedImage: String? = BLANK_STRING,
+
+    @ColumnInfo(name = "needToPostImage")
+    var needToPostImage: Boolean = true
 
 ){
     companion object{
