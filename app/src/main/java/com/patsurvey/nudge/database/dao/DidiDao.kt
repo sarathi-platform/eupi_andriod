@@ -246,4 +246,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
     fun updateImageLocalPath(didiId: Int, localPath: String)
 
+    @Query("UPDATE $DIDI_TABLE SET needToPostImage = :needsToPostImage WHERE id =:id")
+    fun updateNeedToPostImage(id:Int, needsToPostImage: Boolean)
+
+    @Query("SELECT * from $DIDI_TABLE where needToPostImage = :needToPostImage")
+    fun fetchAllDidiNeedToPostImage(needToPostImage: Boolean) : List<DidiEntity>
 }

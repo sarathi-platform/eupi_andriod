@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -24,6 +25,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -240,6 +242,7 @@ class PatDidiSummaryViewModel @Inject constructor(
                     ex.printStackTrace()
                     onCatchError(ex, ApiType.DIDI_IMAGE_UPLOAD_API)
                 }
+
             }
         }
     }
