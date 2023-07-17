@@ -208,6 +208,34 @@ fun SettingScreen(
     val isBPCDataNeedToBeSynced = remember {
         mutableStateOf(false)
     }
+
+    LaunchedEffect(key1 = Unit) {
+        if (!viewModel.prefRepo.isUserBPC()) {
+            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+            if(stepOneStatus.value == 0
+                || stepTwoStatus.value == 0
+                || stepThreeStatus.value == 0
+                || stepFourStatus.value == 0
+                || stepFiveStatus.value == 0)
+                isDataNeedToBeSynced.value = 1
+            else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
+                isDataNeedToBeSynced.value = 2
+            else
+                isDataNeedToBeSynced.value = 0
+            viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+        } else {
+            viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
+        }
+    }
+
     BackHandler() {
         if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
             navController.navigate(Graph.HOME) {
@@ -353,13 +381,26 @@ fun SettingScreen(
                 ) {
                     if ((context as MainActivity).isOnline.value) {
                         if (!viewModel.prefRepo.isUserBPC()) {
-                            viewModel.isDataNeedToBeSynced(
-                                stepOneStatus,
-                                stepTwoStatus,
-                                stepThreeStatus,
-                                stepFourStatus,
-                                stepFiveStatus
-                            )
+                            viewModel.isFirstStepNeedToBeSync(stepOneStatus)
+                            viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
+                            viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
+                            viewModel.isFourthStepNeedToBeSync(stepFourStatus)
+                            viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
+                            if(stepOneStatus.value == 0
+                                || stepTwoStatus.value == 0
+                                || stepThreeStatus.value == 0
+                                || stepFourStatus.value == 0
+                                || stepFiveStatus.value == 0)
+                                isDataNeedToBeSynced.value = 1
+                            else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                                && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                                && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                                && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
+                                isDataNeedToBeSynced.value = 2
+                            else
+                                isDataNeedToBeSynced.value = 0
+                            viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
                             if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
                                 viewModel.performLogout(object : NetworkCallbackListener {
                                     override fun onFailed() {
@@ -374,6 +415,7 @@ fun SettingScreen(
                                 })
 //                        RootNavigationGraph(navController = rememberNavController(), prefRepo =viewModel.prefRepo)
                             } else {
+                                viewModel.showAPILoader.value = false
                                 showToast(
                                     context,
                                     context.getString(R.string.logout_sync_error_message)
@@ -623,7 +665,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3) {
-                                    NudgeLogger.e("sync dialog", "step one tick")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -635,7 +677,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepOneSyncStatus.value == 1) {
-                                    NudgeLogger.e("sync dialog","step one circle")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -645,6 +687,7 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
+                                    NudgeLogger.d("NudgeLogger","sync dialog step one not sync icon")
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
@@ -684,7 +727,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step two tick")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step two tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -696,7 +739,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepTwoSyncStatus.value == 1) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step two circle")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step two circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -706,6 +749,7 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
+                                    NudgeLogger.d("NudgeLogger","sync dialog step two not sync icon")
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
@@ -745,7 +789,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step three tick")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step three tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -757,7 +801,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepThreeSyncStatus.value == 1) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step three circle")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step three circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -767,6 +811,7 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
+                                    NudgeLogger.d("NudgeLogger","sync dialog step three not sync icon")
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
@@ -806,7 +851,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step four tick")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step four tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -818,7 +863,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepFourSyncStatus.value == 1) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step four circle")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step four circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -828,6 +873,7 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
+                                    NudgeLogger.d("NudgeLogger","sync dialog step four not sync icon")
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,
@@ -867,7 +913,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step fifth tick")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -879,7 +925,7 @@ fun showSyncDialog(
                                     )
                                 }
                                 else if (settingViewModel.stepFifthSyncStatus.value == 1) {
-                                    NudgeLogger.e("sync diaNudgeLogger","step fifth circle")
+                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -889,6 +935,7 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
+                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth not sync icon")
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon),
                                         contentDescription = null,

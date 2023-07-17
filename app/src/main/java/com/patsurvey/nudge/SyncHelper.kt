@@ -41,7 +41,7 @@ class SyncHelper (
     private val pendingTimerTime : Long= 10000
     private var isPending = 0
     fun syncDataToServer(networkCallbackListener: NetworkCallbackListener){
-        Log.e("progress","started")
+        NudgeLogger.d("SyncHelper","sync progress started")
         addTolasToNetwork(networkCallbackListener)
     }
 
@@ -716,10 +716,10 @@ class SyncHelper (
     }
 
     private fun callWorkFlowAPIForStep(step: Int) {
-        Log.e("workflow api"," called")
+        NudgeLogger.d("SyncHelper","callWorkFlowAPIForStep -> called")
         val villageId = prefRepo.getSelectedVillage().id
         val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-        Log.e("workflow api called","$villageId -> $stepList -> $step")
+        NudgeLogger.e("SyncHelper","callWorkFlowAPIForStep called -> $villageId -> $stepList -> $step")
         when(step){
             1->{
                 if(stepList[stepList.map { it.orderNumber }.indexOf(step)].needToPost){

@@ -171,7 +171,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.e("PatDidiSummaryViewModel", "onServerError -> errorModel: ${errorModel.toString()}")
     }
 
     fun isPatStarted(didiId: Int, callBack:(Boolean) -> Unit) {
