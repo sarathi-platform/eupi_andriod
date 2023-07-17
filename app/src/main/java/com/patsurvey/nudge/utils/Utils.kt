@@ -502,7 +502,7 @@ fun BulletList(
 fun compressImage(imageUri: String, activity: Context,name:String): String? {
     var filename: String? = ""
     try {
-        val filePath = getRealPathFromURI(imageUri, activity)
+        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -646,4 +646,16 @@ fun formatDateAndTime(page:String,lastSyncTime: String):String{
         ex.message?.let { NudgeLogger.d("$page DateTimeParse Issue : ", it) }
         BLANK_STRING
     }
+}
+
+fun findImageFilePath(uri:String):String{
+    if(uri.isNotEmpty()){
+        return if(uri.contains("|")){
+            if(uri.split("|")[0].contains("content:/")) uri.split("|")[0].replace("content:/","file:/") else uri.split("|")[0]
+        }else{
+            if(uri.contains("content:/")) uri.replace("content:/","file:/") else uri
+        }
+
+    }
+    return BLANK_STRING
 }
