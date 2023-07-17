@@ -323,5 +323,11 @@
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s Ultrapoor didis sent for BPM Approval.</string>
     <string name="link_form_c">Link Form C</string>
     <string name="link_form_d">Link Form D</string>
+    <string name="step_transect_walk">Transect Walk</string>
+    <string name="step_social_mapping">Social Mapping</string>
+    <string name="step_participatory_wealth_ranking">Participatory Wealth Ranking</string>
+    <string name="step_pat_survey">Pat Survey</string>
+    <string name="step_vo_endorsement">VO Endorsement</string>
+    <string name="step_bpc_verification">BPC Verification</string>
 
 </resources>

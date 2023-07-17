@@ -304,7 +304,12 @@
     <string name="link_form_d">लिंक फॉर्म डी</string>
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s अल्ट्रापूर दीदी ने बीपीएम अनुमोदन के लिए भेजा।</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s अल्ट्रापूर दीदी को बीपीएम अनुमोदन के लिए भेजा गया है।</string>
-
+    <string name="step_transect_walk">गाँव की सैर</string>
+    <string name="step_social_mapping">सामाजिक मानचित्रण</string>
+    <string name="step_participatory_wealth_ranking">भागीदारी धन रैंकिंग</string>
+    <string name="step_pat_survey">PAT सर्वेक्षण</string>
+    <string name="step_vo_endorsement">"VO एंडोर्समेंट "</string>
+    <string name="step_bpc_verification">बीपीसी सत्यापन</string>
 
 
 </resources>

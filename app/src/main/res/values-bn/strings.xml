@@ -305,5 +305,11 @@
     <string name="link_form_d">লিঙ্ক ফর্ম ডি</string>
     <string name="pat_didi_sent_to_bpm_approval_singular">%1$s আল্ট্রাপুর দিদি BPM অনুমোদনের জন্য পাঠানো হয়েছে।</string>
     <string name="pat_didi_sent_to_bpm_approval_plural">BPM অনুমোদনের জন্য %1$s আল্ট্রাপুর ডিডি পাঠানো হয়েছে।</string>
+    <string name="step_transect_walk">গ্রাম সফর</string>
+    <string name="step_social_mapping">সামাজিক ম্যাপিং</string>
+    <string name="step_participatory_wealth_ranking">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
+    <string name="step_pat_survey">PAT জরিপ</string>
+    <string name="step_vo_endorsement">VO অনুমোদন</string>
+    <string name="step_bpc_verification">BPC যাচাইকরণ</string>
 
 </resources>

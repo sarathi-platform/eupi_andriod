@@ -321,7 +321,7 @@ fun ProgressScreen(
                                     else -> ""
                                 }
                                 StepsBox(
-                                    boxTitle = step.name,
+                                    boxTitle = findStepNameForSelectedLanguage(context,step.id),
                                     subTitle = subText,
                                     stepNo = step.orderNumber,
                                     index = index,
