@@ -78,7 +78,8 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
-    init {
+    fun init() {
+        showLoader.value = true
         fetchVillageList()
         setVoEndorsementCompleteForVillages()
     }
@@ -93,7 +94,6 @@ class ProgressScreenViewModel @Inject constructor(
             } catch (ex: Exception) {
                 Log.d("TAG", "setVoEndorsementCompleteForVillages: exception -> $ex")
             }
-
         }
     }
 
@@ -154,14 +154,14 @@ class ProgressScreenViewModel @Inject constructor(
                     villageListDao.getAllVillages(2)
                 }
 
-                Log.d("TAG", "fetchVillageList size: ${villageList.size} ")
+                NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList size: ${villageList.size} ")
 
                 val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
                 _tolaList.emit(tolaDBList)
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 withContext(Dispatchers.Main) {
-                    Log.d("TAG", "fetchVillageList VillageList Size: ${villageList.size} ")
+                    NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList VillageList Size: ${villageList.size} ")
                     if (villageList.isNotEmpty()) {
                         villageList.mapIndexed { index, villageEntity ->
                             if (prefRepo.getSelectedVillage().id == villageEntity.id) {
@@ -180,7 +180,7 @@ class ProgressScreenViewModel @Inject constructor(
     }
 
     fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
-        return stepsListDao.isStepCompleteLive(stepId,villageId)
+        return stepsListDao.isStepCompleteLiveForCrp(stepId,villageId)
     }
 
     fun updateSelectedStep(stepId: Int) {
@@ -232,7 +232,7 @@ class ProgressScreenViewModel @Inject constructor(
                     val response = apiInterface.addWorkFlow(workFlowRequest)
                     NudgeLogger.d(
                         "ProgressScreenViewModel",
-                        "callWorkFlowAPI -> response: ${response}"
+                        "callWorkFlowAPI -> response: status: ${response.status}, message: ${response.message}, data: ${response.data.toString()}"
                     )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
@@ -249,6 +249,8 @@ class ProgressScreenViewModel @Inject constructor(
                     if (!response.lastSyncTime.isNullOrEmpty()) {
                         updateLastSyncTime(prefRepo, response.lastSyncTime)
                     }
+                } else {
+                    NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> workFlowId != 0")
                 }
 
             }catch (ex:Exception){

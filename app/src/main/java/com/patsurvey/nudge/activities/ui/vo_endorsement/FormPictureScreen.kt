@@ -106,6 +106,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
@@ -472,6 +473,7 @@ fun FormPictureScreen(
                         negativeButtonRequired = false,
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
+                            NudgeLogger.d("FormPictureScreen", "submit button clicked")
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {

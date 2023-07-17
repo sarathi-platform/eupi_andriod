@@ -212,7 +212,7 @@ fun BpcProgressScreen(
                             bpcProgreesScreenViewModel.isStepComplete(
                                 steps.sortedBy { it.orderNumber }.last().id,
                                 bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id
-                            ).observeAsState().value ?: 0
+                            )?.observeAsState()?.value ?: 0
                         } else {
                             1
                         }
@@ -652,10 +652,6 @@ fun BpcProgressScreen(
                                 }
                             }
 
-                            if ((context as MainActivity).isOnline.value ?: false) {
-                                bpcProgreesScreenViewModel.callWorkFlowApiToGetWorkFlowId()
-                            }
-
                             if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
                             }
@@ -672,11 +668,22 @@ fun BpcProgressScreen(
                                     shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal,
                                     onclick = {
-                                        if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
-                                            onNavigateToStep(
-                                                bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
-                                                steps.sortedBy { it.orderNumber }.last().id,
-                                            )
+                                        if ((context as MainActivity).isOnline.value ?: false) {
+                                            bpcProgreesScreenViewModel.callWorkFlowApiToGetWorkFlowId()
+                                        }
+//                                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id, false)
+                                        if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal) {
+                                            if (!steps.isNullOrEmpty()) {
+                                                val stepId =
+                                                    steps.sortedBy { it.orderNumber }.last().id
+                                                onNavigateToStep(
+                                                    bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
+                                                    stepId,
+                                                )
+                                            } else {
+                                                showCustomToast(context, "Something went wrong!")
+                                            }
+                                        }
                                     }
                                 )
                             }
@@ -762,6 +769,8 @@ fun StepsBoxForBpc(
     if (stepNo == 6)
         Spacer(modifier = Modifier.height(20.dp))
 
+    val context = LocalContext.current
+
     ConstraintLayout(
         modifier = Modifier
             .background(Color.White)
@@ -783,7 +792,11 @@ fun StepsBoxForBpc(
                 )
                 .background(Color.White)
                 .clickable {
-                    onclick(index)
+                    if (!viewModel.stepList.value.isNullOrEmpty()) {
+                        onclick(index)
+                    } else {
+                        showCustomToast(context, "Something went wrong!") //Confirm this message.
+                    }
                 }
                 .constrainAs(stepBox) {
                     start.linkTo(parent.start)
@@ -886,7 +899,11 @@ fun StepsBoxForBpc(
 
                         )
                         {
-                            onclick(index)
+                            if (!viewModel.stepList.value.isNullOrEmpty()) {
+                                onclick(index)
+                            } else {
+                                showCustomToast(context, "Something went wrong!")
+                            }
                         }
                     } else {
                         IconButtonForward(
@@ -898,7 +915,11 @@ fun StepsBoxForBpc(
                                 }
                                 .size(40.dp)
                         ) {
-                            onclick(index)
+                            if (!viewModel.stepList.value.isNullOrEmpty()) {
+                                onclick(index)
+                            } else {
+                                showCustomToast(context, "Something went wrong!")
+                            }
                         }
                     }
                 } else {

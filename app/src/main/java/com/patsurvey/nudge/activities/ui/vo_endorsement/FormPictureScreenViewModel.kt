@@ -154,9 +154,11 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun updateDidiVoEndorsementStatus() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus called")
             val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
             didiList.forEach {didi ->
+                NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus didi: $didi \n\n")
                 if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
                     var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
@@ -164,7 +166,11 @@ class FormPictureScreenViewModel @Inject constructor(
                         updatedStatus.add(it)
                     }
                     updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "ACCEPTED"))
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
+
                 } else if (didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
                     var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
@@ -172,7 +178,13 @@ class FormPictureScreenViewModel @Inject constructor(
                         updatedStatus.add(it)
                     }
                     updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "REJECTED"))
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
+
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+
+                    NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
+
                 } else {
                     didiDao.updateNeedToPostVO(false, didiId = didi.id, didi.villageId)
                 }
@@ -188,11 +200,11 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.d("FormPictureScreenViewModel", "onServerError -> onServerError: message = ${error?.message}")
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.d("FormPictureScreenViewModel", "onServerError -> onServerError: message = ${errorModel?.message}, api = ${errorModel?.apiName?.name}")
     }
 
     fun updateFormCImageCount(size: Int) {
@@ -306,7 +318,7 @@ class FormPictureScreenViewModel @Inject constructor(
                     networkCallbackListener.onSuccess()
                 }
             } catch (ex: Exception) {
-                onCatchError(ex)
+                onCatchError(ex, ApiType.DIDI_EDIT_API)
                 networkCallbackListener.onFailed()
                 onError("FormPictureScreenViewModel", "updateVoStatusToNetwork-> onError: ${ex.message}, \n${ex.stackTrace}")
             }
@@ -385,45 +397,67 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun uploadFormsCAndD(context: Context) {
-        job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
-                try {
-                    val formList = arrayListOf<MultipartBody.Part>()
-                    if(formCImageList.value.isNotEmpty()){
-                        formCImageList.value.onEachIndexed { index, it ->
-                          if(it.value.isNotEmpty()){
-                              val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
-                              val compressedFormC = compressImage(it.value,context,getFileNameFromURL(it.value))
-                              val requestFormC= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormC))
-                              val formCFilePart= MultipartBody.Part.createFormData("formC",File(compressedFormC).name,requestFormC)
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val formList = arrayListOf<MultipartBody.Part>()
+            try {
+                if (formCImageList.value.isNotEmpty()) {
+                    formCImageList.value.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+                            val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormC =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormC = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormC)
+                            )
+                            val formCFilePart = MultipartBody.Part.createFormData(
+                                "formC",
+                                File(compressedFormC).name,
+                                requestFormC
+                            )
 //                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
-                              formList.add(formCFilePart)
-                          }
-
+                            formList.add(formCFilePart)
                         }
+
                     }
-                    if(formDImageList.value.isNotEmpty()){
-                        formDImageList.value.onEachIndexed { index, it ->
-                            if(it.value.isNotEmpty()){
-                                val pageKey= getFormPathKey(File(it.value).nameWithoutExtension)
-                                val compressedFormD = compressImage(it.value,context,getFileNameFromURL(it.value))
-                                val requestFormD= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedFormD))
-                                val formDFilePart= MultipartBody.Part.createFormData("formD",File(compressedFormD).name,requestFormD)
+                }
+                if (formDImageList.value.isNotEmpty()) {
+                    formDImageList.value.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+                            val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormD =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormD = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormD)
+                            )
+                            val formDFilePart = MultipartBody.Part.createFormData(
+                                "formD",
+                                File(compressedFormD).name,
+                                requestFormD
+                            )
 //                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
-                                formList.add(formDFilePart)
-                            }
-
+                            formList.add(formDFilePart)
                         }
-                    }
 
-                    val requestVillageId=
-                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),prefRepo.getSelectedVillage().id.toString())
-                    val requestUserType=
-                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
-                    apiService.uploadDocument(formList,requestVillageId,requestUserType)
-                }   catch (ex:Exception){
-                    ex.printStackTrace()
+                    }
                 }
 
+                val requestVillageId =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        prefRepo.getSelectedVillage().id.toString()
+                    )
+                val requestUserType =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                apiService.uploadDocument(formList, requestVillageId, requestUserType)
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
+            }
         }
     }
 

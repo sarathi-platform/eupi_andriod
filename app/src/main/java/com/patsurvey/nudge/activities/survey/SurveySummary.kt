@@ -57,6 +57,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
@@ -284,6 +285,7 @@ fun SurveySummary(
                                     }"
                                 )
                             } else {
+                                NudgeLogger.d("SurveySummary", "navigate to form_picture_screen")
                                 navController.navigate("form_picture_screen/$stepId")
                             }
                         } else {

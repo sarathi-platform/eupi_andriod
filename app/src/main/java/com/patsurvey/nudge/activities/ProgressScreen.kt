@@ -53,6 +53,11 @@ fun ProgressScreen(
     onNavigateToStep:(Int, Int, Int, Boolean) ->Unit,
     onNavigateToSetting:()->Unit
 ) {
+    LaunchedEffect(key1 = Unit) {
+        viewModel.init()
+        delay(1000)
+        viewModel.showLoader.value = false
+    }
 
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)

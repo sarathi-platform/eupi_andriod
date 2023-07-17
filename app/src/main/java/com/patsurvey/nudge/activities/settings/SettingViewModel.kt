@@ -43,6 +43,7 @@ import com.patsurvey.nudge.utils.getStepStatusFromOrdinal
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -468,6 +469,7 @@ class SettingViewModel @Inject constructor(
         showAPILoader.value = true
         hitApiStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            delay(1000)
             try {
                 val response = apiInterface.performLogout()
                 if (response.status.equals(SUCCESS, true)) {

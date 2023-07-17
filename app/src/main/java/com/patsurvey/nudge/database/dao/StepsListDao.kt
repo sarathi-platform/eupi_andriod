@@ -31,7 +31,10 @@ interface StepsListDao {
     fun isStepComplete(id: Int,villageId: Int): Int
 
     @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
-    fun isStepCompleteLive(id: Int,villageId: Int) : LiveData<Int>
+    fun isStepCompleteLiveForBpc(id: Int, villageId: Int) : LiveData<Int>?
+
+    @Query("SELECT isComplete from $STEPS_LIST_TABLE where id = :id AND villageId = :villageId")
+    fun isStepCompleteLiveForCrp(id: Int,villageId: Int) : LiveData<Int>
 
     @Query("DELETE from $STEPS_LIST_TABLE")
     fun deleteAllStepsFromDB()
@@ -47,6 +50,9 @@ interface StepsListDao {
 
     @Query("UPDATE $STEPS_LIST_TABLE SET status = :status, workFlowId = :workflowId where id = :stepId AND villageId = :villageId")
     fun updateWorkflowId(stepId: Int, workflowId: Int,villageId:Int,status:String)
+
+    @Query("UPDATE $STEPS_LIST_TABLE SET workFlowId = :workflowId where id = :stepId AND villageId = :villageId")
+    fun updateOnlyWorkFlowId(workflowId: Int, villageId: Int, stepId: Int)
 
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId AND isComplete = 2 ORDER BY orderNumber ASC")
     fun getAllCompleteStepsForVillage(villageId: Int): List<StepListEntity>

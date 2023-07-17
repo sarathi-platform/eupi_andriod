@@ -12,7 +12,7 @@ interface BpcScorePercentageDao {
     @Insert
     fun insert(bpcScorePercentageEntity: BpcScorePercentageEntity)
 
-    @Query("Select * from $BPC_SCORE_PERCENTAGE_TABLE where stateId = :stateId")
+    @Query("Select * from $BPC_SCORE_PERCENTAGE_TABLE where stateId = :stateId  LIMIT 1")
     fun getBpcScorePercentageForState(stateId: Int): BpcScorePercentageEntity
 
 }

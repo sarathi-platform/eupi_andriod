@@ -7,9 +7,11 @@ import com.patsurvey.nudge.utils.ApiType.BPC_SAVE_MATCH_PERCENTAGE_API
 import com.patsurvey.nudge.utils.ApiType.BPC_SUMMARY_API
 import com.patsurvey.nudge.utils.ApiType.BPC_UPDATE_DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.CAST_LIST_API
+import com.patsurvey.nudge.utils.ApiType.CRP_PAT_SAVE_ANSWER_SUMMARY
 import com.patsurvey.nudge.utils.ApiType.DIDI_EDIT_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_LIST_API
 import com.patsurvey.nudge.utils.ApiType.DIDI_RANKING_API
+import com.patsurvey.nudge.utils.ApiType.FETCH_ALL_DATA
 import com.patsurvey.nudge.utils.ApiType.GENERATE_OTP_API
 import com.patsurvey.nudge.utils.ApiType.LOGOUT_API
 import com.patsurvey.nudge.utils.ApiType.PAT_BPC_QUESTION_API
@@ -60,6 +62,9 @@ object ApiServicesHelper {
     const val SUBPATH_UPDATE_SELECTED_DIDI_LIST = "/write-api/bpc/update-beneficiary-selection"
     const val SUBPATH_BPC_SAVE_MATCH_PERCENTAGE = "/write-api/bpc/save-summary"
 
+    const val SUBPATH_DIDI_IMAGE_UPLOAD = "/write-api/beneficiary/upload-image"
+    const val SUBPATH_DOCUMENT_IMAGE_UPLOAD = "/write-api/form/uploadDocument"
+
     fun getApiSubPath (api: ApiType): String {
         return when(api) {
             STEP_LIST_API -> SUBPATH_STEP_LIST
@@ -81,12 +86,16 @@ object ApiServicesHelper {
             DIDI_EDIT_API -> SUBPATH_EDIT_DIDI
             BPC_UPDATE_DIDI_LIST_API -> SUBPATH_UPDATE_SELECTED_DIDI_LIST
             BPC_SAVE_MATCH_PERCENTAGE_API -> SUBPATH_BPC_SAVE_MATCH_PERCENTAGE
-            ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY -> SUBPATH_PAT_SAVE_SUMMARY
+            ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY, CRP_PAT_SAVE_ANSWER_SUMMARY -> SUBPATH_PAT_SAVE_SUMMARY
             ApiType.DIDI_DELETE_API -> SUBPATH_DELETE_DIDI
             LOGOUT_API -> SUBPATH_AUTH_LOGOUT
             ApiType.TOLA_ADD_API -> SUBPATH_ADD_COHORT
             STATUS_CALL_BACK_API -> SUBPATH_CALLBACK_STATUS
             ADD_WORK_FLOW_API -> SUBPATH_ADD_WORKFLOW
+            ApiType.LANGUAGE_API -> SUBPATH_CONFIG_GET_LANGUAGE
+            ApiType.DIDI_IMAGE_UPLOAD_API -> SUBPATH_DIDI_IMAGE_UPLOAD
+            ApiType.DOCUMENT_UPLOAD_API -> SUBPATH_DOCUMENT_IMAGE_UPLOAD
+            FETCH_ALL_DATA -> ""
 
 
         }

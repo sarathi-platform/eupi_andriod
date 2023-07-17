@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -16,6 +17,14 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -49,6 +58,8 @@ class PatDidiSummaryViewModel @Inject constructor(
     lateinit var photoUri: Uri
     var shouldShowPhoto = mutableStateOf(false)
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
+
+    var imagePath = ""
 
     private val _didiEntity = MutableStateFlow(
         DidiEntity(
@@ -90,7 +101,7 @@ class PatDidiSummaryViewModel @Inject constructor(
         outputDirectory = getOutputDirectory(activity)
     }*/
 
-    private fun getImagePath(context: Context): File {
+    fun getImagePath(context: Context): File {
         return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
     }
 
@@ -131,10 +142,16 @@ class PatDidiSummaryViewModel @Inject constructor(
         didiEntity: DidiEntity
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
+
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
             didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
         }
     }
 
@@ -142,7 +159,10 @@ class PatDidiSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiEntity.emit(didiDao.getDidi(didiId))
             if(!_didiEntity.value.localPath.isNullOrEmpty()){
-                photoUri=_didiEntity.value.localPath.toUri()
+                photoUri=if (didiEntity.value.localPath.contains("|"))
+                    didiEntity.value.localPath.split("|")[0].toUri()
+                else
+                    _didiEntity.value.localPath.toUri()
                 shouldShowPhoto.value=true
             }
         }
@@ -153,7 +173,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
+        NudgeLogger.e("PatDidiSummaryViewModel", "onServerError -> errorModel: ${errorModel.toString()}")
     }
 
     fun isPatStarted(didiId: Int, callBack:(Boolean) -> Unit) {
@@ -174,28 +194,62 @@ class PatDidiSummaryViewModel @Inject constructor(
         }
     }
 
-    fun uploadDidiImage(context: Context,uri: Uri, didiId: Int,location:String) {
+    fun uploadDidiImage(context: Context, uri: Uri, didiId: Int, location: String) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.IO) {
                 NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage: $didiId :: $location")
                 try {
-                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Prev: ${uri.toFile().totalSpace} ")
-                    val compressedImageFile = compressImage(uri.toString(),context,uri.toFile().name)
-                    val requestFile= RequestBody.create("multipart/form-data".toMediaTypeOrNull(),File(compressedImageFile))
-                    val imageFilePart= MultipartBody.Part.createFormData("file",File(compressedImageFile).name,requestFile)
-                    val requestDidiId=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),didiId.toString())
-                    val requestUserType=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),if(prefRepo.isUserBPC()) USER_BPC else USER_CRP)
-                    val requestLocation=RequestBody.create("multipart/form-data".toMediaTypeOrNull(),location)
-                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage Details: ${requestDidiId.contentType().toString()}")
-                    val imageUploadResponse = apiService.uploadDidiImage(imageFilePart,requestDidiId,requestUserType,requestLocation)
-                    NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}")
-                    if(imageUploadResponse.status == SUCCESS){
-                        didiDao.updateNeedToPostImage(didiId,false)
-                    }
-                } catch (ex:Exception){
+                    NudgeLogger.d(
+                        "PatDidiSummaryViewModel",
+                        "uploadDidiImage Prev: ${uri.toFile().totalSpace} "
+                    )
+                    val compressedImageFile =
+                        compressImage(uri.toString(), context, uri.toFile().name)
+                    val requestFile = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        File(compressedImageFile)
+                    )
+                    val imageFilePart = MultipartBody.Part.createFormData(
+                        "file",
+                        File(compressedImageFile).name,
+                        requestFile
+                    )
+                    val requestDidiId = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        didiId.toString()
+                    )
+                    val requestUserType = RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                    val requestLocation =
+                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(), location)
+                    NudgeLogger.d(
+                        "PatDidiSummaryViewModel",
+                        "uploadDidiImage Details: ${requestDidiId.contentType().toString()}"
+                    )
+                    val imageUploadRequest = apiService.uploadDidiImage(
+                        imageFilePart,
+                        requestDidiId,
+                        requestUserType,
+                        requestLocation
+                    )
+                    NudgeLogger.d(
+                        "PatDidiSummaryViewModel",
+                        "uploadDidiImage imageUploadRequest: ${imageUploadRequest.data ?: ""}"
+                    )
+                } catch (ex: Exception) {
                     ex.printStackTrace()
+                    onCatchError(ex, ApiType.DIDI_IMAGE_UPLOAD_API)
                 }
+
             }
         }
+    }
+
+    fun getFileName(context: Context, didi: DidiEntity): File {
+        val directory = getImagePath(context)
+        val filePath = File(directory, "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png")
+        return filePath
     }
 }
