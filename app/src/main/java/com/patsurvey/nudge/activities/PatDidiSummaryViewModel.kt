@@ -200,7 +200,6 @@ class PatDidiSummaryViewModel @Inject constructor(
     fun uploadDidiImage(context: Context, uri: String, didiId: Int, location: String) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             withContext(Dispatchers.IO) {
-                Log.d("TAG", "uploadDidiImage: ${uri.toString()}")
                 try {
                        NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage: $didiId :: $location :: $uri")
                        val compressedImageFile =
