@@ -1292,10 +1292,7 @@ fun IncrementDecrementView(modifier: Modifier,
                         if(onlyNumberField(it)) {
                                 val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                 if (currentIt <= MAXIMUM_RANGE) {
-                                    currentCount = if (it.isEmpty() || it == "0")
-                                        ""
-                                    else
-                                        it
+                                    currentCount = it.ifEmpty { "" }
                                     onValueChange(it)
                                 }
                             }

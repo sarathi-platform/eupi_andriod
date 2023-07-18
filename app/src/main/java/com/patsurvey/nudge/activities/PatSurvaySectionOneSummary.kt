@@ -9,6 +9,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -171,24 +172,20 @@ fun PatSurvaySectionSummaryScreen(
                     }
 
                 }
-//                Text(
-//                    text = stringResource(R.string.summary_text),
-//                    style = TextStyle(
-//                        color = textColorDark,
-//                        fontSize = 12.sp,
-//                        fontWeight = FontWeight.SemiBold,
-//                        fontFamily = NotoSans
-//                    ),
-//                    textAlign = TextAlign.Start,
-//                    modifier = Modifier.fillMaxWidth()
-//                )
                 LazyColumn(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                       SectionOneSummeryItem(index = index+1, quesSummery = answer?.summary?: BLANK_STRING, answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
+                       SectionOneSummeryItem(index = index,
+                           quesSummery = answer?.summary?: BLANK_STRING,
+                           answerValue = answer?.answerValue?: BLANK_STRING,
+                           optionValue =  answer?.optionValue?:0,
+                           questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
+                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                           navController.navigate("yes_no_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
+                       }
                     }
                 }
             }
@@ -233,9 +230,10 @@ fun PatSurvaySectionSummaryScreen(
                         showPatCompletion.value = true
                     }
                 } else {
+                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
                     if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
-                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
-                    }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION")
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
+                    }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                 }
             },
             negativeButtonOnClick = {/*Nothing to do here*/ }
@@ -345,14 +343,20 @@ fun SectionOneSummeryItem(
     questionImageUrl:String,
     quesSummery:String,
     answerValue: String,
-    optionValue:Int
+    optionValue:Int,
+    onCardClick:(Int)->Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable {
+                    onCardClick(index)
+                }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
             val quesImage: File? =
                 questionImageUrl?.let { it1 ->
@@ -403,7 +407,7 @@ fun SectionOneSummeryItem(
                 )
         }
             Text(
-                text = "$index. ${quesSummery}.",
+                text = "${index+1}. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,

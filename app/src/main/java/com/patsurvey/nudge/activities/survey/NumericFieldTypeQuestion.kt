@@ -53,6 +53,8 @@ import com.patsurvey.nudge.utils.ASSET_VALUE_LENGTH
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
@@ -131,6 +133,8 @@ fun NumericFieldTypeQuestion(
                             questionFlag = questionFlag,
                             optionImageUrl = option.optionImage?: BLANK_STRING,
                             onDecrementClick = {
+                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,
@@ -144,6 +148,8 @@ fun NumericFieldTypeQuestion(
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onIncrementClick = {
+                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,
@@ -157,6 +163,8 @@ fun NumericFieldTypeQuestion(
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
                             },
                             onValueChange = {
+                                if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 val numericAnswerEntity = NumericAnswerEntity(
                                     optionId = option.optionId ?: 0,
                                     weight = option.weight ?: 1,

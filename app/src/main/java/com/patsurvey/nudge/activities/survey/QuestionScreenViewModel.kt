@@ -19,6 +19,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QuestionType
@@ -138,7 +139,8 @@ class QuestionScreenViewModel @Inject constructor(
     fun setDidiDetails(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didi = didiDao.getDidi(didiId)
-            updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
+            if(prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal)
+                updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
             withContext(Dispatchers.Main) {
                 didiName.value = didi.name
                 mDidiId.value = didi.id

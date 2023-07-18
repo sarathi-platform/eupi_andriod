@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.login
 
-import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.BasicTextField
@@ -60,7 +59,7 @@ fun OtpInputField(
         modifier = Modifier.focusRequester(focusRequester),
         value = otpValue,
         onValueChange = { value->
-            if(value.contains(NUMBER_REGEX)) {
+            if(onlyNumberField(value)) {
                 if (value.length <= otpLength) {
                     otpValue = value
                     onOtpChanged(otpValue)

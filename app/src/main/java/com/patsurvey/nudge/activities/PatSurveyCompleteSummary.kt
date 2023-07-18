@@ -48,7 +48,10 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
 
 @Composable
 fun PatSurveyCompleteSummary(
@@ -191,8 +194,14 @@ fun PatSurveyCompleteSummary(
 
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
-                        SectionOneSummeryItem(index = index+1, quesSummery = answer?.summary?: BLANK_STRING,
-                            answerValue = answer?.answerValue?: BLANK_STRING, optionValue =  answer?.optionValue?:0, questionImageUrl =question.questionImageUrl?: BLANK_STRING )
+                        SectionOneSummeryItem(index = index,
+                            quesSummery = answer?.summary?: BLANK_STRING,
+                            answerValue = answer?.answerValue?: BLANK_STRING,
+                            optionValue =  answer?.optionValue?:0,
+                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
+                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_PAGE.ordinal)
+                            navController.navigate("yes_no_question_screen/${didiId}/$TYPE_EXCLUSION/$it")
+                        }
                     }
 
                     if (answerSummeryList.isNotEmpty()) {
@@ -221,7 +230,10 @@ fun PatSurveyCompleteSummary(
                                 questionType = answer.type,
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
-                            )
+                            ){
+                                patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_PAGE.ordinal)
+                                navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
+                            }
                         }
                     }
                 }

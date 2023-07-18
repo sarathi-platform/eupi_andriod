@@ -55,6 +55,8 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.EXTENSION_WEBP
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
@@ -74,7 +76,8 @@ fun QuestionScreen(
     modifier: Modifier,
     viewModel: QuestionScreenViewModel,
     didiId: Int,
-    sectionType:String
+    sectionType:String,
+    questionIndex:Int
 ) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
@@ -89,6 +92,12 @@ fun QuestionScreen(
         if (mAnsweredQuestion > 0) {
             viewModel.isAnswerSelected.value=false
             pagerState.animateScrollToPage(mAnsweredQuestion)
+        }
+
+        if(viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_PAGE.ordinal
+            || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal
+            || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal){
+            pagerState.animateScrollToPage(questionIndex)
         }
     }
 
@@ -108,9 +117,18 @@ fun QuestionScreen(
 
     val context = LocalContext.current
     BackHandler() {
-        if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
-            navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
-        else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        if(viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
+            if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
+                    BPC_USER_TYPE,
+                    true
+                )
+            )
+                navController.popBackStack(
+                    BpcDidiListScreens.BPC_DIDI_LIST.route,
+                    inclusive = false
+                )
+            else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }else navController.popBackStack()
     }
 
     val prevButtonVisible = remember {
@@ -223,7 +241,7 @@ fun QuestionScreen(
                                 optionList = sortedOptionList,
                                 isLastIndex = (it == questionList.size-1),
                                 isAnswerSelected = viewModel.isAnswerSelected.value
-                            ) { selectedIndex ->
+                            ) { selectedIndex,nextButtonClick ->
                                 viewModel.isAnswerSelected.value =true
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
@@ -236,6 +254,11 @@ fun QuestionScreen(
                                     enteredAssetAmount = "0",
                                     questionFlag = BLANK_STRING
                                 ) {
+                                    if(viewModel.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal){
+                                        if(!nextButtonClick)
+                                                viewModel.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
+                                    }
+
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {
                                         if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
@@ -269,7 +292,8 @@ fun QuestionScreen(
                                 isAnswerSelected = viewModel.isAnswerSelected.value
                             ) { selectedIndex ->
                                 viewModel.isAnswerSelected.value=true
-
+                                if(viewModel.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    viewModel.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
