@@ -159,14 +159,18 @@ fun BpcProgressScreen(
                 topBar = {
                     TopAppBar(
                         title = {
-                            Text(
-                                text = "SARATHI",
-                                color = textColorDark,
-                                fontFamily = NotoSans,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                                Icon(painter = painterResource(id = R.drawable.sarathi_logo_mini), contentDescription = "app bar icon", tint = textColorDark,modifier= Modifier.size(26.dp))
+                                Spacer(modifier = Modifier.size(5.dp))
+                                Text(
+                                    text = "SARATHI",
+                                    color = textColorDark,
+                                    fontFamily = NotoSans,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier
+                                )
+                            }
                         },
                         actions = {
                             IconButton(onClick = {

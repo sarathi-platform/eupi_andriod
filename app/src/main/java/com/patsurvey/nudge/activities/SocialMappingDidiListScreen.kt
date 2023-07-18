@@ -182,7 +182,7 @@ fun SocialMappingDidiListScreen(
                                     50.dp
                                 }
                             ),
-                        contentPadding = PaddingValues(bottom = 10.dp, start = 16.dp, end = 16.dp),
+                        contentPadding = PaddingValues(bottom = 10.dp, start = 20.dp, end = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item {
