@@ -348,7 +348,7 @@ fun QuestionScreen(
                                     questionId = questionList[it].questionId ?: 0,
                                     answerOptionModel= newAnswerOptionModel,
                                     assetAmount = if(questionList[it].questionFlag.equals(
-                                            QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
+                                            QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)),
                                     quesType = QuestionType.Numeric_Field.name,
                                     summary = questionList[it].questionSummary?: BLANK_STRING/*(questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
                                     else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
