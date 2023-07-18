@@ -58,6 +58,12 @@ fun BpcProgressScreen(
     onNavigateToSetting:()->Unit
 ) {
 
+    LaunchedEffect(key1 = Unit) {
+        bpcProgreesScreenViewModel.init()
+        delay(1000)
+        bpcProgreesScreenViewModel.showLoader.value = false
+    }
+
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
