@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -60,6 +59,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -672,4 +672,11 @@ fun findStepNameForSelectedLanguage(context: Context,stepId:Int):String{
        else -> {
            BLANK_STRING}
    }
+}
+
+fun onlyNumberField(value:String):Boolean{
+    if(value.isDigitsOnly() && value != "_" && value != "N"){
+        return true
+    }
+    return false
 }

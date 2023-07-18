@@ -54,6 +54,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 
 
@@ -207,7 +208,7 @@ fun NumericFieldTypeQuestion(
                                             viewModel?.enteredAmount?.value = BLANK_STRING
                                         }else {
                                             if(it.length<ASSET_VALUE_LENGTH){
-                                                if(it.isDigitsOnly()){
+                                                if(onlyNumberField(it)){
                                                     viewModel?.enteredAmount?.value = it
                                                 }
 

@@ -210,5 +210,6 @@ const val SENDER_NUMBER = "TM-DYNRLM"
 const val PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ = "NEED_TO_POST_BPC_MATCH_SCORE_FOR_"
 const val DOUBLE_ZERO = "0.00"
 val IGNORED_REGEX = Regex("[$&+,:;=\\\\?@#|/'<>.^*(){}[\\\\]%!-]")
+val NUMBER_REGEX = Regex("[0-9]")
 
 
