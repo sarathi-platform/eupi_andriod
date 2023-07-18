@@ -832,23 +832,24 @@ class SyncHelper (
             try {
                 withContext(Dispatchers.IO){
                     val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
-                    if(needToPostDidiList.isNotEmpty()){
-                        val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
-                        needToPostDidiList.forEach { didi->
-                            didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking,
-                                localModifiedDate = didi.localModifiedDate))
+                    if (needToPostDidiList.isNotEmpty()) {
+                        val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
+                        val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
+                        needToPostDidiList.forEach { didi ->
+                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
+                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
                         }
-                        val updateWealthRankResponse=apiService.updateDidiRanking(
-                            didiRequestList
-                        )
+                        didiWealthRequestList.addAll(didiStepRequestList)
+                        val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
-                                for(i in needToPostDidiList.indices){
-                                    needToPostDidiList[i].transactionId = didiListResponse?.get(i)?.transactionId
-                                    needToPostDidiList[i].transactionId?.let {
-                                        didiDao.updateDidiTransactionId(
-                                            needToPostDidiList[i].id,
+                                val size = needToPostDidiList.indices
+                                for(i in size) {
+                                    val serverResponseDidi = updateWealthRankResponse.data?.get(i)
+                                    val localDidi = needToPostDidiList[i]
+                                    serverResponseDidi?.transactionId?.let {
+                                        didiDao.updateDidiTransactionId(localDidi.id,
                                             it
                                         )
                                     }
