@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.content.Context
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
@@ -25,6 +26,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.utils.findImageFilePath
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.*
