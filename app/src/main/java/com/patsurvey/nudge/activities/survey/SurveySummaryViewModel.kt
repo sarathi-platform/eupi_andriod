@@ -233,9 +233,15 @@ class SurveySummaryViewModel @Inject constructor(
                                 score = didi.score,
                                 comment = comment,
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
-                                else {
-                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                    DIDI_NOT_AVAILABLE
+                                } else {
+                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                        if (prefRepo.isUserBPC())
+                                            VERIFIED_STRING
+                                        else
+                                            COMPLETED_STRING
+                                    }
                                 }
                             )
                         )

@@ -143,7 +143,7 @@ fun TransectWalkScreen(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(horizontal = 16.dp)
+                    .padding(horizontal = 20.dp)
             ) {
                 VillageDetailView(
                     villageName = viewModel.prefRepo.getSelectedVillage().name ?: BLANK_STRING,

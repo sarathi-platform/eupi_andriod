@@ -939,6 +939,12 @@ fun DidiItemCard(
                                     .padding(5.dp)
                                     .layoutId("successImage"))
                             }
+
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                Text(text = stringResource(R.string.not_avaliable), style = smallTextStyle, color = lightGrayTranslucent, modifier = Modifier
+                                    .padding(5.dp)
+                                    .layoutId("successImage"))
+                            }
                         }
                     }
 
