@@ -63,6 +63,7 @@ import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -71,7 +72,10 @@ import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
@@ -264,6 +268,20 @@ class VillageSelectionViewModel @Inject constructor(
                                             steps.villageId = village.id
                                             steps.isComplete =
                                                 findCompleteValue(steps.status).ordinal
+
+//                                            if(steps.id == 46){
+//                                                prefRepo.savePref(
+//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
+//                                            }
+
+                                            if(steps.id == 45){
+                                                prefRepo.savePref(
+                                                    PREF_BPC_PAT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+//                                            if(steps.id == 44){
+//                                                prefRepo.savePref(
+//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
+//                                            }
                                         }
                                         stepsListDao.insertAll(it.stepList)
                                         val bpcStepId =
@@ -835,6 +853,20 @@ class VillageSelectionViewModel @Inject constructor(
                                                 steps.isComplete =
                                                     findCompleteValue(steps.status).ordinal
                                                 steps.needToPost = false
+
+                                                if(steps.id == 46){
+                                                    prefRepo.savePref(
+                                                        PREF_WEALTH_RANKING_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                }
+
+                                                if(steps.id == 43){
+                                                    prefRepo.savePref(
+                                                        PREF_PAT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                }
+                                                if(steps.id == 44){
+                                                    prefRepo.savePref(
+                                                        PREF_VO_ENDORSEMENT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                }
                                             }
                                             NudgeLogger.d("VillageSelectionViewModel", "it.stepList: ${it.stepList} \n")
                                             stepsListDao.insertAll(it.stepList)

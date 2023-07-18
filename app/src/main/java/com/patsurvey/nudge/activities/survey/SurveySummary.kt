@@ -239,6 +239,14 @@ fun SurveySummary(
                 } else {
                     surveySummaryViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                         if (isPreviousStepComplete) {
+                            if(fromScreen == ARG_FROM_PAT_SURVEY){
+                                surveySummaryViewModel.updateDidiPatStatus()
+                                surveySummaryViewModel.markPatComplete(
+                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
+                                    stepId
+                                )
+                                surveySummaryViewModel.savePatCompletionDate()
+                            }
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 if (surveySummaryViewModel.isTolaSynced.value == 2
                                     && surveySummaryViewModel.isDidiSynced.value == 2
@@ -269,12 +277,7 @@ fun SurveySummary(
                                 }
                             }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                surveySummaryViewModel.updateDidiPatStatus()
-                                surveySummaryViewModel.markPatComplete(
-                                    surveySummaryViewModel.prefRepo.getSelectedVillage().id,
-                                    stepId
-                                )
-                                surveySummaryViewModel.savePatCompletionDate()
+
                                 navController.navigate(
                                     "pat_step_completion_screen/${
                                         context.getString(R.string.pat_survey_completed_message)

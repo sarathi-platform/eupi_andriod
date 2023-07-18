@@ -174,6 +174,8 @@ fun ParticipatoryWealthRankingSurvey(
                 }) {
                 viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
+                        viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                        viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {
                             if(viewModel.isTolaSynced.value == 2
                                 && viewModel.isDidiSynced.value == 2) {
@@ -198,8 +200,6 @@ fun ParticipatoryWealthRankingSurvey(
 
                             }
                         }
-                        viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
-                        viewModel.saveWealthRankingCompletionDate()
                         navController.navigate(
                             "wr_step_completion_screen/${
                                 context.getString(R.string.wealth_ranking_completed_message)

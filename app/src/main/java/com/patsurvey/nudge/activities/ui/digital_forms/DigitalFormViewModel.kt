@@ -14,15 +14,17 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
-import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
+import com.patsurvey.nudge.utils.changeMilliDateToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -62,7 +64,8 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormAPdf(context = context, villageEntity = villageEntity,
-                didiDetailList = didiDetailList.value, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE, "") ?: "")
+                didiDetailList = didiDetailList.value, changeMilliDateToDate(prefRepo.getPref(
+                    PREF_WEALTH_RANKING_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
                 val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.name) else null
@@ -76,7 +79,7 @@ class DigitalFormViewModel @Inject constructor(
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(),
                 didiDetailList = didiDetailList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
-                prefRepo.getPref(PREF_PAT_COMPLETION_DATE, "") ?: "")
+                changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
                 val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.name) else null
@@ -90,7 +93,7 @@ class DigitalFormViewModel @Inject constructor(
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormCPdf(context, villageEntity = prefRepo.getSelectedVillage(),
                 didiDetailList = didiDetailList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal },
-                prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, "") ?: "")
+                changeMilliDateToDate(prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
                 val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.name) else null

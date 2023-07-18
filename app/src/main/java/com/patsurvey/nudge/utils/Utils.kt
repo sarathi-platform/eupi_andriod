@@ -680,3 +680,8 @@ fun onlyNumberField(value:String):Boolean{
     }
     return false
 }
+
+fun changeMilliDateToDate(millDate:Long):String?{
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        return dateFormat.format(millDate)
+}
