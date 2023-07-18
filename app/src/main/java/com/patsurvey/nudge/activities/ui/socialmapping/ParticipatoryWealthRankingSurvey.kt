@@ -469,9 +469,9 @@ fun WealthRankingBox(
         }
     }
     val boxTitle = when (wealthRank) {
-        WealthRank.RICH -> "Rich"
-        WealthRank.MEDIUM -> "Medium"
-        WealthRank.POOR -> "Poor"
+        WealthRank.RICH -> stringResource(id = R.string.rich_text)
+        WealthRank.MEDIUM -> stringResource(id = R.string.medium_text)
+        WealthRank.POOR -> stringResource(id = R.string.poor_text)
         else -> {
             ""
         }

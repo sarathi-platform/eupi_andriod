@@ -49,6 +49,7 @@
     <string name="poor_text">দরিদ্র</string>
     <string name="medium_text">মধ্যম</string>
 
+    <string name="rich_text">ধনী</string>
     <string name="search_video">ভিডিও অনুসন্ধান করুন</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s দিদির বাকি আছে</string>
