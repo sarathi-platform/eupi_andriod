@@ -70,4 +70,8 @@ interface PrefRepo {
 
    fun settingOpenFrom(): Int
 
+   fun saveQuestionScreenOpenFrom(openFrom: Int)
+
+   fun questionScreenOpenFrom(): Int
+
 }

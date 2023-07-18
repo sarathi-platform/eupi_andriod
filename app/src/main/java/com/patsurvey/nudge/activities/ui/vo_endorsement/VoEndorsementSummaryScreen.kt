@@ -205,12 +205,14 @@ fun VoEndorsementSummaryScreen(
                                 }
                                 itemsIndexed(answerSection1List) { index, answer ->
                                     SectionOneSummeryItem(
-                                        index = index+1,
+                                        index = index,
                                         answerValue = answer.answerValue,
                                         quesSummery = answer?.summary?: BLANK_STRING,
                                         optionValue = answer.optionValue ?: 0,
                                         questionImageUrl = answer.questionImageUrl?: BLANK_STRING
-                                    )
+                                    ){
+
+                                    }
                                 }
                                 if (answerSection2List.isNotEmpty()) {
                                     item {
@@ -241,7 +243,9 @@ fun VoEndorsementSummaryScreen(
                                             questionType = answer.type,
                                             questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
-                                        )
+                                        ){
+
+                                        }
                                     }
                                 }
                             }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.utils
 
-import android.app.Activity
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
@@ -60,6 +59,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
+import androidx.core.text.isDigitsOnly
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
@@ -67,6 +67,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
@@ -502,7 +503,7 @@ fun BulletList(
 fun compressImage(imageUri: String, activity: Context,name:String): String? {
     var filename: String? = ""
     try {
-        val filePath = getRealPathFromURI(imageUri, activity)
+        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -646,4 +647,41 @@ fun formatDateAndTime(page:String,lastSyncTime: String):String{
         ex.message?.let { NudgeLogger.d("$page DateTimeParse Issue : ", it) }
         BLANK_STRING
     }
+}
+
+fun findImageFilePath(uri:String):String{
+    if(uri.isNotEmpty()){
+        return if(uri.contains("|")){
+            if(uri.split("|")[0].contains("content:/")) uri.split("|")[0].replace("content:/","file:/") else uri.split("|")[0]
+        }else{
+            if(uri.contains("content:/")) uri.replace("content:/","file:/") else uri
+        }
+
+    }
+    return BLANK_STRING
+}
+
+fun findStepNameForSelectedLanguage(context: Context,stepId:Int):String{
+   return when(stepId){
+       40-> context.getString(R.string.step_transect_walk)
+       41-> context.getString(R.string.step_social_mapping)
+       43-> context.getString(R.string.step_pat_survey)
+       44-> context.getString(R.string.step_vo_endorsement)
+       45-> context.getString(R.string.step_bpc_verification)
+       46-> context.getString(R.string.step_participatory_wealth_ranking)
+       else -> {
+           BLANK_STRING}
+   }
+}
+
+fun onlyNumberField(value:String):Boolean{
+    if(value.isDigitsOnly() && value != "_" && value != "N"){
+        return true
+    }
+    return false
+}
+
+fun changeMilliDateToDate(millDate:Long):String?{
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+        return dateFormat.format(millDate)
 }

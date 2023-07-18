@@ -27,7 +27,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
@@ -46,8 +46,6 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -194,9 +192,9 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun saveVoEndorsementDate() {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, date)
+//        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+//        val date = dateFormat.format(currentTime)
+        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_, currentTime)
     }
 
     override fun onServerError(error: ErrorModel?) {

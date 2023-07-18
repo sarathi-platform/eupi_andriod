@@ -523,15 +523,15 @@ fun PatDidiSummaryScreen(
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId
                         patDidiSummaryViewModel.uploadDidiImage(
                             localContext,
-                            patDidiSummaryViewModel.photoUri,
+                            patDidiSummaryViewModel.updatedLocalPath.value,
                             id,
                             patDidiSummaryViewModel.didiImageLocation.value
                         )
                     }
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
-                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
                     } else {
-                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}")
+                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/0")
                     }
                 },
                 negativeButtonOnClick = {}
@@ -552,6 +552,7 @@ fun handleImageCapture(
     NudgeLogger.d("PatDidiSummaryScreen", "handleImageCapture -> called")
 //    viewModal.shouldShowCamera.value = false
 //    viewModal.photoUri = uri
+    viewModal.updatedLocalPath.value = photoPath
     viewModal.shouldShowPhoto.value = true
     viewModal.cameraExecutor.shutdown()
 

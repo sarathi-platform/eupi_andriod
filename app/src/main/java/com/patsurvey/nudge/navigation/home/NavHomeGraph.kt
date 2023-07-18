@@ -62,6 +62,7 @@ import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
 import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.ARG_QUESTION_INDEX
 import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
 import com.patsurvey.nudge.utils.ARG_STEP_ID
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
@@ -424,6 +425,8 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 type = NavType.IntType
             }, navArgument(ARG_SECTION_TYPE){
                 type = NavType.StringType
+            }, navArgument(ARG_QUESTION_INDEX){
+                type = NavType.IntType
             })
         ) {
             QuestionScreen(
@@ -431,7 +434,8 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
-                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION,
+                questionIndex = it.arguments?.getInt(ARG_QUESTION_INDEX) ?: 0
             )
         }
         composable(
@@ -528,7 +532,7 @@ sealed class PatScreens(val route: String) {
     object PAT_LIST_SCREEN : PatScreens(route = "pat_list_screen")
     object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
 
-    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object STEP_COMPLETION_SCREEN :
         PatScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
@@ -838,6 +842,8 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 type = NavType.IntType
             }, navArgument(ARG_SECTION_TYPE){
                 type = NavType.StringType
+            }, navArgument(ARG_QUESTION_INDEX){
+                type = NavType.IntType
             })
         ) {
             QuestionScreen(
@@ -845,7 +851,8 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize(),
                 viewModel = hiltViewModel(),
                 didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
-                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION,
+                questionIndex = it.arguments?.getInt(ARG_QUESTION_INDEX) ?: 0
             )
         }
 

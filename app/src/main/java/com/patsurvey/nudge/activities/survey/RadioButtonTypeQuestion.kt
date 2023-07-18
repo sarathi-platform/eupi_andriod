@@ -48,7 +48,7 @@ fun RadioButtonTypeQuestion(
     selectedOptionIndex: Int=-1,
     optionList: List<OptionsItem?>?,
     isAnswerSelected:Boolean =false,
-    onAnswerSelection: (Int) -> Unit
+    onAnswerSelection: (Int,Boolean) -> Unit
 ) {
     var selectedIndex by remember { mutableStateOf(selectedOptionIndex) }
 
@@ -114,7 +114,7 @@ fun RadioButtonTypeQuestion(
                             ) {
                                 if(!isAnswerSelected) {
                                     selectedIndex = it
-                                    onAnswerSelection(index)
+                                    onAnswerSelection(index,false)
                                 }
                             }
                         }
@@ -143,7 +143,7 @@ fun RadioButtonTypeQuestion(
                         modifier = Modifier.height(45.dp)
                     ) {
                         if(!isAnswerSelected)
-                             onAnswerSelection(selectedIndex)
+                             onAnswerSelection(selectedIndex,true)
                     }
                 }
 

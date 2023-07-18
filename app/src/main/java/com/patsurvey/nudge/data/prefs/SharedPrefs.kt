@@ -30,6 +30,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
         const val PREF_KEY_SETTING_OPEN_FROM = "setting_open_from"
+        const val PREF_KEY_QUESTIONS_OPEN_FROM = "questions_open_from"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -191,5 +192,15 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun settingOpenFrom(): Int {
         return prefs.getInt(PREF_KEY_SETTING_OPEN_FROM,0)
+    }
+
+    override fun saveQuestionScreenOpenFrom(openFrom: Int) {
+        prefs.edit().putInt(PREF_KEY_QUESTIONS_OPEN_FROM,openFrom).apply()
+
+    }
+
+    override fun questionScreenOpenFrom(): Int {
+        return prefs.getInt(PREF_KEY_QUESTIONS_OPEN_FROM,0)
+
     }
 }
