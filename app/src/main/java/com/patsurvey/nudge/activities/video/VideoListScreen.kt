@@ -92,7 +92,7 @@ fun VideoListScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Training Videos",
+                        text = stringResource(id = R.string.training_videos),
                         color = textColorDark,
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -177,7 +177,9 @@ fun VideoItemCard(
     val showDialog = remember { mutableStateOf(false) }
 
     if (showDialog.value) {
-        ShowDialog(title = "Are you sure?", message = "You want to delete ${videoItem.title}", setShowDialog ={showDialog.value = it}) {
+        ShowDialog(title = stringResource(id = R.string.confirmation_dialog_titile), message = context.getString(R.string.you_want_to_delete_video,
+            videoItem.title
+        ), setShowDialog ={showDialog.value = it}) {
             videoListViewModel.removeDownload(context, videoItem)
 
         }
@@ -248,7 +250,9 @@ fun VideoItemCard(
                 }
                 DownloadStatus.DOWNLOADING -> {
                     CircularProgressBarWithOutText(
-                        modifier = Modifier.size(28.dp).absolutePadding(top = 4.dp),
+                        modifier = Modifier
+                            .size(28.dp)
+                            .absolutePadding(top = 4.dp),
                         circleRadius = 28f,
                         initialPosition = mainActivity.downloader?.initialPosition?.get(videoItem.id) ?: 0f,
                         borderThickness = 7.dp

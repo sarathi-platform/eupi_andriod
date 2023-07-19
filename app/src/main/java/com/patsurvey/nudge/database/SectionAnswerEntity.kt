@@ -51,7 +51,7 @@ data class SectionAnswerEntity(
     var needsToPost: Boolean = true,
 
     @SerializedName("assetAmount")
-    val assetAmount: String? = "0",
+    val assetAmount: String? = BLANK_STRING,
 
     @SerializedName("questionImageUrl")
     var questionImageUrl: String? = BLANK_STRING,
