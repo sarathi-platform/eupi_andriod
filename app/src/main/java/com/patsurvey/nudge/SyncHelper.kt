@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.core.net.toFile
 import androidx.core.net.toUri
+import com.google.firebase.installations.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -356,13 +357,18 @@ class SyncHelper (
         }
     }
 
-    private fun uploadDidiImagesToServer(context : Context,location: String){
+    private fun uploadDidiImagesToServer(context : Context){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchAllDidiNeedToPostImage(true)
             for(didi in didiList) {
-                NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $location")
+                val path = findImageLocationFromPath(didi.localPath)
+                NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
+                val imageFilePart = ArrayList<MultipartBody.Part>()
+                val requestDidiId = ArrayList<RequestBody>()
+                val requestUserType = ArrayList<RequestBody>()
+                val requestLocation = ArrayList<RequestBody>()
                 try {
-                    val uri = didi.localPath.toUri()
+                    val uri = path[0].toUri()
                     NudgeLogger.d(
                         "Synchelper",
                         "uploadDidiImage Prev: $uri.toFile().totalSpace} "
@@ -373,26 +379,25 @@ class SyncHelper (
                         "multipart/form-data".toMediaTypeOrNull(),
                         File(compressedImageFile)
                     )
-                    val imageFilePart = MultipartBody.Part.createFormData(
+                    imageFilePart.add(MultipartBody.Part.createFormData(
                         "file",
                         File(compressedImageFile).name,
                         requestFile
-                    )
-                    val requestDidiId = RequestBody.create(
+                    ))
+                    requestDidiId.add(RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
-                        didi.id.toString()
-                    )
-                    val requestUserType = RequestBody.create(
+                        didi.serverId.toString()
+                    ))
+                    requestUserType.add(RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
-                    )
-                    val requestLocation =
-                        RequestBody.create("multipart/form-data".toMediaTypeOrNull(), location)
+                    ))
+                    requestLocation.add(RequestBody.create("multipart/form-data".toMediaTypeOrNull(), path.get(1)))
                     NudgeLogger.d(
                         "Synchelper",
-                        "uploadDidiImage Details: ${requestDidiId.contentType().toString()}"
+                        "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
                     )
-                    val imageUploadResponse = apiService.uploadDidiImage(
+                    val imageUploadResponse = apiService.uploadDidiBulkImage(
                         imageFilePart,
                         requestDidiId,
                         requestUserType,
@@ -976,7 +981,8 @@ class SyncHelper (
                 }
                 val didiIDList= answerDao.fetchPATSurveyDidiList()
                 if(didiIDList.isNotEmpty()){
-                    var optionList= emptyList<OptionsItem>()
+                    var optionList: List<OptionsItem>
+                    uploadDidiImagesToServer(MyApplication.applicationContext())
                     val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
                     var surveyId =0
                     var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
