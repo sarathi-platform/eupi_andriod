@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -19,6 +18,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
@@ -73,6 +73,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     fun getAllQuestionsAnswers(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            NudgeLogger.d("QuestionScreenViewModel", "getAllQuestionsAnswers called")
             try {
                 val questionList = questionListDao.getQuestionForType(
                     sectionType.value,
@@ -80,43 +81,42 @@ class QuestionScreenViewModel @Inject constructor(
                 )
                 val localAnswerList = answerDao.getAnswerForDidi(sectionType.value, didiId = didiId)
                 val localNumAnswerList = numericAnswerDao.getAllAnswersForDidi(didiId)
-                withContext(Dispatchers.IO) {
-                    try {
-                        if (localNumAnswerList.isNotEmpty()) {
-                            questionList.forEach { que ->
-                                if (que.type == QuestionType.Numeric_Field.name) {
-                                    que.options.forEach { optionsItem ->
-                                        val cIndex = localNumAnswerList.map { it.optionId }
-                                            .indexOf(optionsItem.optionId)
-                                        if (cIndex != -1) {
-                                            if (localNumAnswerList[cIndex].optionId == optionsItem.optionId) {
-                                                optionsItem.count = localNumAnswerList[cIndex].count
-                                            }
+
+                try {
+                    if (localNumAnswerList.isNotEmpty()) {
+                        questionList.forEach { que ->
+                            if (que.type == QuestionType.Numeric_Field.name) {
+                                que.options.forEach { optionsItem ->
+                                    val cIndex = localNumAnswerList.map { it.optionId }
+                                        .indexOf(optionsItem.optionId)
+                                    if (cIndex != -1) {
+                                        if (localNumAnswerList[cIndex].optionId == optionsItem.optionId) {
+                                            optionsItem.count = localNumAnswerList[cIndex].count
                                         }
-
                                     }
 
-                                    // Calculate Total Asset Amount
-                                    val aIndex = localAnswerList.map { it.questionId }
-                                        .indexOf(que.questionId)
-                                    if (aIndex != -1) {
-                                        _totalAssetAmount.value =
-                                            localAnswerList[aIndex].totalAssetAmount ?: 0.0
-                                    }
+                                }
+
+                                // Calculate Total Asset Amount
+                                val aIndex = localAnswerList.map { it.questionId }
+                                    .indexOf(que.questionId)
+                                if (aIndex != -1) {
+                                    _totalAssetAmount.value =
+                                        localAnswerList[aIndex].totalAssetAmount ?: 0.0
                                 }
                             }
                         }
-                        _questionList.value = questionList
-                        _answerList.value = localAnswerList
-                        maxQuesCount.value = questionList.size
-                        updateAnswerOptions(0, didiId)
-                    } catch (ex: Exception) {
-                        ex.printStackTrace()
                     }
-
+                    _questionList.value = questionList
+                    _answerList.value = localAnswerList
+                    maxQuesCount.value = questionList.size
+                    updateAnswerOptions(0, didiId)
+                } catch (ex: Exception) {
+                    NudgeLogger.e("QuestionScreenViewModel", "inner catch getAllQuestionsAnswers ->", ex)
                 }
+
             } catch (ex: Exception) {
-                Log.d("QuestionScreenViewModel", "getAllQuestionsAnswers: ${ex.stackTrace}")
+                NudgeLogger.e("QuestionScreenViewModel", "outer catch getAllQuestionsAnswers ->", ex)
             }
         }
     }

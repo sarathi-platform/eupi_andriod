@@ -45,8 +45,8 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
-import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
@@ -54,6 +54,7 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.EXTENSION_WEBP
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -82,16 +83,20 @@ fun QuestionScreen(
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(key1 = true) {
-        viewModel.setDidiDetails(didiId)
-        viewModel.sectionType.value=sectionType
-        viewModel.getAllQuestionsAnswers(didiId)
-        delay(300)
-        val mAnswerList  = viewModel.answerList.value
-        val mAnsweredQuestion = mAnswerList.size
-        if (mAnsweredQuestion > 0) {
-            viewModel.isAnswerSelected.value=false
-            pagerState.animateScrollToPage(mAnsweredQuestion)
+    LaunchedEffect(key1 = Unit) {
+        try {
+            viewModel.setDidiDetails(didiId)
+            viewModel.sectionType.value=sectionType
+            viewModel.getAllQuestionsAnswers(didiId)
+            delay(300)
+            val mAnswerList  = viewModel.answerList.value
+            val mAnsweredQuestion = mAnswerList.size
+            if (mAnsweredQuestion > 0 && !mAnswerList.isNullOrEmpty()) {
+                viewModel.isAnswerSelected.value=false
+                pagerState.animateScrollToPage(mAnsweredQuestion)
+            }
+        } catch (ex: Exception) {
+            NudgeLogger.e("QuestionScreen", "LaunchedEffect -> exception", ex)
         }
 
         if(viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_PAGE.ordinal
@@ -113,6 +118,20 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
 
+    LaunchedEffect(key1 = Unit, key2 = !questionList.isNullOrEmpty()) {
+        try {
+            delay(100)
+            val mAnswerList  = viewModel.answerList.value
+            val mAnsweredQuestion = mAnswerList.size
+            if (mAnsweredQuestion > 0 && !mAnswerList.isNullOrEmpty()) {
+                viewModel.isAnswerSelected.value=false
+                if (pagerState.currentPage != mAnsweredQuestion)
+                    pagerState.animateScrollToPage(mAnsweredQuestion)
+            }
+        } catch (ex: Exception) {
+            NudgeLogger.e("QuestionScreen", "LaunchedEffect(key1 = Unit, key2 = !questionList.isNullOrEmpty())  -> exception", ex)
+        }
+    }
 
 
     val context = LocalContext.current
@@ -435,11 +454,11 @@ fun QuestionScreen(
                         modifier = Modifier
                             .height(20.dp)
                             .absolutePadding(top = 2.dp),
-                        colorFilter = ColorFilter.tint(textColorDark)
+                        colorFilter = ColorFilter.tint(blueDark)
                     )
 
                     Text(text = "Q${pagerState.currentPage}",
-                        color = textColorDark,
+                        color = blueDark,
                         style = TextStyle(
                             fontFamily = NotoSans,
                             fontWeight = FontWeight.SemiBold,
@@ -496,7 +515,7 @@ fun QuestionScreen(
                 },
                 text = {
                     Text(text = "Q${pagerState.currentPage + 2}",
-                        color = textColorDark,
+                        color = blueDark,
                         style = TextStyle(
                             fontFamily = NotoSans,
                             fontWeight = FontWeight.SemiBold,
@@ -509,7 +528,7 @@ fun QuestionScreen(
                         modifier = Modifier
                             .height(20.dp)
                             .absolutePadding(top = 2.dp),
-                        colorFilter = ColorFilter.tint(textColorDark)
+                        colorFilter = ColorFilter.tint(blueDark)
                     )
 
                 },

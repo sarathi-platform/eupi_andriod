@@ -332,7 +332,12 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             type = BPC_SURVEY_CONSTANT,
                             result = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
-                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                    if (prefRepo.isUserBPC())
+                                        VERIFIED_STRING
+                                    else
+                                        COMPLETED_STRING
+                                }
                             }
                         )
                     )

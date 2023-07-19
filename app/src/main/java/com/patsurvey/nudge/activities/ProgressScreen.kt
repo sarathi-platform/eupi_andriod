@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.app.Activity
 import android.content.Context
+import android.graphics.drawable.RippleDrawable
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,6 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -160,14 +164,18 @@ fun ProgressScreen(
                 topBar = {
                     TopAppBar(
                         title = {
-                            Text(
-                                text = "SARATHI",
-                                color = textColorDark,
-                                fontFamily = NotoSans,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                modifier = Modifier
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start) {
+                                Icon(painter = painterResource(id = R.drawable.sarathi_logo_mini), contentDescription = "app bar icon", tint = textColorDark,modifier= Modifier.size(26.dp))
+                                Spacer(modifier = Modifier.size(5.dp))
+                                Text(
+                                    text = "SARATHI",
+                                    color = textColorDark,
+                                    fontFamily = NotoSans,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    modifier = Modifier
+                                )
+                            }
                         },
                         actions = {
                             IconButton(onClick = {

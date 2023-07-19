@@ -182,7 +182,7 @@ fun SocialMappingDidiListScreen(
                                     50.dp
                                 }
                             ),
-                        contentPadding = PaddingValues(bottom = 10.dp, start = 16.dp, end = 16.dp),
+                        contentPadding = PaddingValues(bottom = 10.dp, start = 20.dp, end = 20.dp),
                         verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         item {
@@ -936,6 +936,12 @@ fun DidiItemCard(
 
                             if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                 Text(text = stringResource(R.string.pat_inprogresee_status_text), style = smallTextStyle, color = inprogressYellow, modifier = Modifier
+                                    .padding(5.dp)
+                                    .layoutId("successImage"))
+                            }
+
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                Text(text = stringResource(R.string.not_avaliable), style = smallTextStyle, color = textColorBlueLight, modifier = Modifier
                                     .padding(5.dp)
                                     .layoutId("successImage"))
                             }

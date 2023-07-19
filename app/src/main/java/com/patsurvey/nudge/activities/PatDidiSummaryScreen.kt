@@ -181,8 +181,9 @@ fun PatDidiSummaryScreen(
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState())
-                            .padding(bottom = bottomPadding),
+                            .padding(bottom = bottomPadding)
+                            .padding(horizontal = 4.dp)
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
                         Row(

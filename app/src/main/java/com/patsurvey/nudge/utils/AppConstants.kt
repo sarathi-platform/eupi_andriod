@@ -112,6 +112,7 @@ const val PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ = "pref_bpc_didi_list_sync_for_
 const val HUSBAND_STRING = "Husband"
 const val INPROGRESS_STRING = "INPROGRESS"
 const val COMPLETED_STRING = "COMPLETED"
+const val VERIFIED_STRING = "VERIFIED"
 const val PAT_SURVEY_CONSTANT = "PAT SURVEY"
 const val PAT_SURVEY = "PAT_SURVEY"
 const val BPC_SURVEY_CONSTANT = "BPC_SURVEY"
