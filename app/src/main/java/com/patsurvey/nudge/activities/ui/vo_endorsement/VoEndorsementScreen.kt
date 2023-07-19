@@ -497,7 +497,7 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(didiRow) {
-            start.linkTo(didiImage.end, 10.dp)
+            start.linkTo(didiImage.end, 6.dp)
             top.linkTo(parent.top, 10.dp)
             end.linkTo(expendArrowImage.start, margin = 10.dp)
             width = Dimension.fillToConstraints
@@ -509,9 +509,9 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top)
+            top.linkTo(village.top, margin = 3.dp)
             bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiName.start, margin = 3.dp)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
