@@ -1391,29 +1391,6 @@ class SyncHelper (
 
                 } else if(needToEditStep.size>0){
                     updateStepsToServer(needToEditStep)
-                    /*NudgeLogger.e(
-                        "SyncHelper",
-                        "callWorkFlowAPI editWorkFlowRequest: $editWorkFlowRequest \n\n"
-                    )
-
-                    val response = apiService.editWorkFlow(editWorkFlowRequest)
-
-                    NudgeLogger.e(
-                        "SyncHelper",
-                        "callWorkFlowAPI response: status: ${response.status}, message: ${response.message}, data: ${response.data} \n\n"
-                    )
-
-                    if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let {
-                            stepsListDao.updateWorkflowId(
-                                stepId,
-                                step.workFlowId,
-                                villageId,
-                                it[0].status
-                            )
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                        }
-                    }*/
                 }
 
             }catch (ex:Exception){
@@ -1447,10 +1424,6 @@ class SyncHelper (
             if (responseForStepUpdation.status.equals(SUCCESS, true)) {
                 responseForStepUpdation.data?.let {
 
-//                    NudgeLogger.e(
-//                        "SyncHelper",
-//                        "callWorkFlowAPI stepsListDao.updateWorkflowId before stepId: $stepId, it[0].id: ${it[0].id}, villageId: $villageId, status: ${it[0].status}"
-//                    )
                     for(i in responseForStepUpdation.data.indices) {
                         val step = needToEdiStep[i]
                         stepsListDao.updateWorkflowId(
