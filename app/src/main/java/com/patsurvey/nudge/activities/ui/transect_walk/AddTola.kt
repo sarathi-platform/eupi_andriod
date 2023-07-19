@@ -123,10 +123,10 @@ fun AddTolaBox(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(key1 = showLoader.value) {
+    /*LaunchedEffect(key1 = showLoader.value) {
         delay(5000)
         showLoader.value = false
-    }
+    }*/
 
     Box(
         modifier = Modifier
@@ -237,7 +237,7 @@ fun AddTolaBox(
 
                     ) {
                         showLoader.value = true
-                        val decimalFormat = DecimalFormat("#.#######")
+//                        val decimalFormat = DecimalFormat("#.#######")
                         if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                             var locationByGps: Location? = null
                             var locationByNetwork: Location? = null
@@ -247,19 +247,15 @@ fun AddTolaBox(
                                     NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation != null => gpsLocation: $gpsLocation")
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
-                                        decimalFormat
-                                            .format(locationByGps?.latitude ?: 0.0)
-                                            .toDouble(),
-                                        decimalFormat
-                                            .format(locationByGps?.longitude ?: 0.0)
-                                            .toDouble()
-                                    )
+                                        locationByGps?.latitude ?: 0.0,
+                                        locationByGps?.longitude ?: 0.0)
                                     locationAdded = true
+                                    showLoader.value = false
                                 } else {
+                                    showLoader.value = false
                                     NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation == null")
                                 }
                                 locationAdded = true
-                                showLoader.value = false
                             }
                             val networkConsumer = Consumer<Location> { networkLocation ->
                                 NudgeLogger.d("AddTola", "networkLocation: called")
@@ -268,20 +264,17 @@ fun AddTolaBox(
 
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
-                                        decimalFormat
-                                            .format(locationByNetwork?.latitude ?: 0.0)
-                                            .toDouble(),
-                                        decimalFormat
-                                            .format(locationByNetwork?.longitude ?: 0.0)
-                                            .toDouble()
-
+                                        locationByNetwork?.latitude ?: 0.0,
+                                        locationByNetwork?.longitude ?: 0.0
                                     )
                                     locationAdded = true
+                                    showLoader.value = false
                                 } else {
+                                    showLoader.value = false
                                     NudgeLogger.d("AddTola", "gpsConsumer: gpsLocation == null")
                                 }
                                 locationAdded = true
-                                showLoader.value = false
+
                             }
                             LocationUtil.getLocation(activity, gpsConsumer, networkConsumer)
                         } else {
@@ -293,13 +286,8 @@ fun AddTolaBox(
                                     NudgeLogger.d("AddTola", "gpsLocationListener onLocationChanged: location => $location")
                                     locationByGps = gpsLocation
                                     location = LocationCoordinates(
-                                        decimalFormat
-                                            .format(locationByGps?.latitude ?: 0.0)
-                                            .toDouble(),
-                                        decimalFormat
-                                            .format(locationByGps?.longitude ?: 0.0)
-                                            .toDouble()
-
+                                        locationByGps?.latitude ?: 0.0,
+                                        locationByGps?.longitude ?: 0.0
                                     )
                                     locationAdded = true
                                     showLoader.value = false
@@ -327,13 +315,8 @@ fun AddTolaBox(
                                     NudgeLogger.d("AddTola", "networkLocationListener onLocationChanged: location => $location")
                                     locationByNetwork = networkLocation
                                     location = LocationCoordinates(
-                                        decimalFormat
-                                            .format(locationByNetwork?.latitude ?: 0.0)
-                                            .toDouble(),
-                                        decimalFormat
-                                            .format(locationByNetwork?.longitude ?: 0.0)
-                                            .toDouble()
-
+                                        locationByNetwork?.latitude ?: 0.0,
+                                        locationByNetwork?.longitude ?: 0.0
                                     )
                                     locationAdded = true
                                     showLoader.value = false
@@ -691,6 +674,7 @@ fun TolaBox(
                                                 NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation == null")
 
                                             }
+                                            showCustomToast(context, "Location Updated")
                                             locationAdded = true
                                             showLoader.value = false
                                         }
@@ -716,6 +700,7 @@ fun TolaBox(
                                                 } else {
                                                     NudgeLogger.d("TolaBox", "gpsConsumer: gpsLocation == null")
                                                 }
+                                                showCustomToast(context, "Location Updated")
                                                 locationAdded = true
                                                 showLoader.value = false
                                             }
@@ -742,6 +727,7 @@ fun TolaBox(
                                                             .toDouble()
 
                                                     )
+                                                    showCustomToast(context, "Location Updated")
                                                     locationAdded = true
                                                     showLoader.value = false
                                                 }
@@ -777,6 +763,7 @@ fun TolaBox(
                                                         .toDouble()
 
                                                 )
+                                                showCustomToast(context, "Location Updated")
                                                 locationAdded = true
                                                 showLoader.value = false
                                             }

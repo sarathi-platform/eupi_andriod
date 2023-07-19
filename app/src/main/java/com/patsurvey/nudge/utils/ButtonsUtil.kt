@@ -1289,18 +1289,13 @@ fun IncrementDecrementView(modifier: Modifier,
                     value = currentCount,
                     readOnly = false,
                     onValueChange = {
-                        if(!it.contains(IGNORED_REGEX)) {
-                            if(it.isDigitsOnly()) {
+                        if(onlyNumberField(it)) {
                                 val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                 if (currentIt <= MAXIMUM_RANGE) {
-                                    currentCount = if (it.isEmpty() || it == "0")
-                                        ""
-                                    else
-                                        it
+                                    currentCount = it.ifEmpty { "" }
                                     onValueChange(it)
                                 }
                             }
-                        }
                     },
                     placeholder = {
                         Text(

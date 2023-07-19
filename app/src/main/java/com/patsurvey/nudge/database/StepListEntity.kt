@@ -39,6 +39,9 @@ data class StepListEntity(
     var programId: Int = 0,
     @ColumnInfo(name = "workFlowId")
     var workFlowId: Int = 0,
+
+    @ColumnInfo(name = "localModifiedDate")
+    var localModifiedDate: Long ?= 0L,
 ) {
 
     fun compare(other: StepListEntity, ignoreIds: Boolean = false): Boolean {

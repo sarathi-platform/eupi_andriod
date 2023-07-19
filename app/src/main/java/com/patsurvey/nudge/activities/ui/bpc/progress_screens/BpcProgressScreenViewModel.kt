@@ -76,7 +76,8 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
-    init {
+    fun init() {
+        showLoader.value = true
         fetchVillageList()
         fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
         setBpcVerificationCompleteForVillages()

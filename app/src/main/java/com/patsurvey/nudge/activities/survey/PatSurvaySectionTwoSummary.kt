@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -172,7 +173,10 @@ fun PatSurvaySectionTwoSummaryScreen(
                           answerValue = answer.answerValue?: BLANK_STRING,
                           questionType =  answer.type,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
-                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
+                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT){
+                          patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                          navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
+                      }
                     }
                 }
             }
@@ -297,7 +301,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Composable
 fun SectionTwoSummeryItemPreview(){
     SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name,
-        BLANK_STRING,QUESTION_FLAG_WEIGHT)
+        BLANK_STRING,QUESTION_FLAG_WEIGHT, onCardClick = {})
 }
 
 
@@ -311,14 +315,17 @@ fun SectionTwoSummeryItem(
     answerValue:String,
     questionType: String,
     questionImageUrl: String,
-    questionFlag:String
+    questionFlag:String,
+    onCardClick:(Int)->Unit
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier)
     ) {
-        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(Modifier.fillMaxWidth().clickable {
+           onCardClick(index)
+        }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
                 val quesImage: File? =
                     questionImageUrl?.let { it1 ->

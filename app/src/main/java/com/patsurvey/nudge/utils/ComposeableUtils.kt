@@ -158,7 +158,7 @@ fun DidiItemCardForPat(
                             ),
                         )
 
-                        Image(
+                        /*Image(
                             painter = painterResource(id = R.drawable.ic_completed_tick),
                             contentDescription = "home image",
                             modifier = Modifier
@@ -166,7 +166,7 @@ fun DidiItemCardForPat(
                                 .height(30.dp)
                                 .padding(5.dp)
                                 .layoutId("successImage")
-                        )
+                        )*/
                     }
                     Image(
                         painter = painterResource(id = R.drawable.home_icn),

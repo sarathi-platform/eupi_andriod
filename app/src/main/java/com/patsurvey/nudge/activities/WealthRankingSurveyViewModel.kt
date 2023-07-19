@@ -26,7 +26,7 @@ import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
@@ -39,8 +39,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
 import javax.inject.Inject
@@ -115,7 +113,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId, StepStatus.COMPLETED.name)
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
+                            StepStatus.COMPLETED.name, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_,System.currentTimeMillis().toString()))
                     )
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiService.editWorkFlow(primaryWorkFlowRequest)
@@ -240,9 +239,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun saveWealthRankingCompletionDate() {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE, date)
+        prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE_, currentTime)
     }
 
     fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {

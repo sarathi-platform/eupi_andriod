@@ -54,10 +54,13 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
 import com.patsurvey.nudge.utils.uriFromFile
@@ -223,10 +226,8 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = viewModel.prefRepo.getPref(
-                                    PREF_PAT_COMPLETION_DATE,
-                                    ""
-                                ) ?: "",
+                                text = changeMilliDateToDate(viewModel.prefRepo.getPref(
+                                    PREF_PAT_COMPLETION_DATE_ +viewModel.prefRepo.getSelectedVillage().id,0L)) ?: BLANK_STRING,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,

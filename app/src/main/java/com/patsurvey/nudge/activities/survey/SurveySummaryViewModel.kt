@@ -233,9 +233,15 @@ class SurveySummaryViewModel @Inject constructor(
                                 score = didi.score,
                                 comment = comment,
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
-                                else {
-                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                    DIDI_NOT_AVAILABLE
+                                } else {
+                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                        if (prefRepo.isUserBPC())
+                                            VERIFIED_STRING
+                                        else
+                                            COMPLETED_STRING
+                                    }
                                 }
                             )
                         )
@@ -501,16 +507,16 @@ class SurveySummaryViewModel @Inject constructor(
 
     fun savePatCompletionDate() {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_PAT_COMPLETION_DATE, date)
+//        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+//        val date = dateFormat.format(currentTime)
+        prefRepo.savePref(PREF_PAT_COMPLETION_DATE_, currentTime)
     }
 
     fun saveBpcPatCompletionDate() {
         val currentTime = System.currentTimeMillis()
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
         val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_BPC_PAT_COMPLETION_DATE, date)
+        prefRepo.savePref(PREF_BPC_PAT_COMPLETION_DATE_, date)
     }
 
     fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
@@ -545,9 +551,9 @@ class SurveySummaryViewModel @Inject constructor(
 
     fun saveVoEndorsementDate() {
         val currentTime = System.currentTimeMillis()
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE, date)
+//        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
+//        val date = dateFormat.format(currentTime)
+        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_, currentTime.toString())
     }
 
     fun updateDidiPatStatus() {

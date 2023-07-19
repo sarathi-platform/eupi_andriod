@@ -529,9 +529,9 @@ fun PatDidiSummaryScreen(
                         )
                     }
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
-                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION")
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
                     } else {
-                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}")
+                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/0")
                     }
                 },
                 negativeButtonOnClick = {}
