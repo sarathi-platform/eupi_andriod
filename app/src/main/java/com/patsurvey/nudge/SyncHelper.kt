@@ -14,6 +14,7 @@ import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
@@ -26,8 +27,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SyncHelper (
     val settingViewModel: SettingViewModel,
@@ -788,10 +789,11 @@ class SyncHelper (
 
     private fun callWorkFlowAPIForStep(step: Int) {
         NudgeLogger.d("SyncHelper","callWorkFlowAPIForStep -> called")
-        val villageId = prefRepo.getSelectedVillage().id
-        val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-        NudgeLogger.e("SyncHelper","callWorkFlowAPIForStep called -> $villageId -> $stepList -> $step")
-        when(step){
+//        val villageId = prefRepo.getSelectedVillage().id
+        val stepList = stepsListDao.getAllStepsByOrder(step,true).sortedBy { it.orderNumber }
+        NudgeLogger.e("SyncHelper","callWorkFlowAPIForStep called -> $stepList -> $step")
+        callWorkFlowAPI(stepList)
+        /*when(step){
             1->{
                 if(stepList[stepList.map { it.orderNumber }.indexOf(step)].needToPost){
                     callWorkFlowAPI(villageId,stepList[stepList.map { it.orderNumber }.indexOf(step)].id)
@@ -817,7 +819,7 @@ class SyncHelper (
                     callWorkFlowAPI(villageId,stepList[stepList.map { it.orderNumber }.indexOf(step)].id)
                 }
             }
-        }
+        }*/
     }
 
     fun updateDidisNeedTOPostList(didiList : List<DidiEntity>,networkCallbackListener: NetworkCallbackListener){
@@ -1329,111 +1331,157 @@ class SyncHelper (
         }
     }
 
-    fun callWorkFlowAPI(villageId: Int,stepId: Int){
+    fun callWorkFlowAPI(steps: List<StepListEntity>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 NudgeLogger.e("SyncHelper","callWorkFlowAPI called")
-                val step=stepsListDao.getStepForVillage(villageId, stepId)
-                NudgeLogger.e("SyncHelper","callWorkFlowAPI step: $step")
-                if (step.needToPost) {
+                val addWorkFlowRequest = mutableListOf<AddWorkFlowRequest>()
+                val editWorkFlowRequest = mutableListOf<EditWorkFlowRequest>()
+                val needToEditStep = mutableListOf<StepListEntity>()
+                val needToAddStep = mutableListOf<StepListEntity>()
+                for(step in steps){
                     if (step.workFlowId > 0) {
-                        val editWorkFlowRequest = listOf(
-                            EditWorkFlowRequest(
-                                step.workFlowId,
-                                StepStatus.getStepFromOrdinal(step.isComplete)
-                            )
-                        )
-                        NudgeLogger.e("SyncHelper","callWorkFlowAPI editWorkFlowRequest: $editWorkFlowRequest \n\n")
-
-                        val response = apiService.editWorkFlow(editWorkFlowRequest)
-
-                        NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${response.status}, message: ${response.message}, data: ${response.data} \n\n")
-
-                        if (response.status.equals(SUCCESS, true)) {
-                            response.data?.let {
-                                stepsListDao.updateWorkflowId(
-                                    stepId,
-                                    step.workFlowId,
-                                    villageId,
-                                    it[0].status
-                                )
-                                stepsListDao.updateNeedToPost(stepId, villageId, false)
-                            }
-                        }
-                    } else
-                        if (step.workFlowId == 0) {
-
-                            val addWorkFlowRequest = listOf(
-                                AddWorkFlowRequest(
-                                    StepStatus.INPROGRESS.name,
-                                    villageId,
-                                    step.programId,
-                                    stepId
-                                )
-                            )
-
-                            NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
-
-                            val addWorkFlowResponse = apiService.addWorkFlow(addWorkFlowRequest)
-
-                            NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
-
-                            if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
-                                addWorkFlowResponse.data?.let {
-
-                                    NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId before stepId: $stepId, it[0].id: ${it[0].id}, villageId: $villageId")
-                                    stepsListDao.updateOnlyWorkFlowId(
-                                        stepId,
-                                        it[0].id,
-                                        villageId
-                                    )
-                                    NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId after")
-                                    step.workFlowId = it[0].id
-                                    delay(100)
-
-                                    val requestForStepUpdation = listOf(
-                                        EditWorkFlowRequest(
-                                            step.workFlowId,
-                                            StepStatus.getStepFromOrdinal(step.isComplete)
-                                        )
-                                    )
-
-                                    NudgeLogger.e("SyncHelper", "callWorkFlowAPI requestForStepUpdation: $requestForStepUpdation, StepStatus.getStepFromOrdinal(step.isComplete): {${StepStatus.getStepFromOrdinal(step.isComplete)}, isComplete: ${step.isComplete}} \n\n")
-
-                                    val responseForStepUpdation = apiService.editWorkFlow(requestForStepUpdation)
-
-                                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n")
-
-
-                                    if (responseForStepUpdation.status.equals(SUCCESS, true)) {
-                                        responseForStepUpdation.data?.let {
-
-                                            NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateWorkflowId before stepId: $stepId, it[0].id: ${it[0].id}, villageId: $villageId, status: ${it[0].status}")
-
-                                            stepsListDao.updateWorkflowId(
-                                                stepId,
-                                                step.workFlowId,
-                                                villageId,
-                                                it[0].status
-                                            )
-
-                                            NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateWorkflowId after ")
-
-                                            NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $stepId")
-                                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                                            NudgeLogger.e("SyncHelper","callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $stepId")
-                                        }
-                                    }
-                                    if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
-                                        updateLastSyncTime(prefRepo, responseForStepUpdation.lastSyncTime)
-                                    }
-                                }
-                            }
-                        }
+                        editWorkFlowRequest.add((EditWorkFlowRequest(
+                            step.workFlowId,
+                            StepStatus.getStepFromOrdinal(step.isComplete)
+                        )))
+                        needToEditStep.add(step)
+                    } else {
+                        needToAddStep.add(step)
+                        addWorkFlowRequest.add((AddWorkFlowRequest(
+                            StepStatus.INPROGRESS.name, step.villageId,
+                            step.programId, step.id
+                        )))
+                    }
                 }
+                if (addWorkFlowRequest.size > 0) {
+
+                    NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
+
+                    val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
+
+                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
+
+                    if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
+                        addWorkFlowResponse.data?.let {
+                            if (addWorkFlowResponse.data[0].transactionId.isNullOrEmpty()) {
+                                for (i in addWorkFlowResponse.data.indices) {
+                                    val step = needToAddStep[i]
+                                    stepsListDao.updateOnlyWorkFlowId(
+                                        it[i].id,
+                                        step.villageId,
+                                        step.id
+                                    )
+                                    step.workFlowId = it[0].id
+                                    NudgeLogger.e(
+                                        "SyncHelper",
+                                        "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId before stepId: $step.stepId, it[0].id: ${it[0].id}, villageId: $step.villageId"
+                                    )
+                                }
+                                NudgeLogger.e(
+                                    "SyncHelper",
+                                    "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId after"
+                                )
+                                delay(100)
+                                needToAddStep.addAll(needToEditStep)
+                                updateStepsToServer(needToAddStep)
+                            }
+                        }
+                    }
+
+                } else if(needToEditStep.size>0){
+                    updateStepsToServer(needToEditStep)
+                    /*NudgeLogger.e(
+                        "SyncHelper",
+                        "callWorkFlowAPI editWorkFlowRequest: $editWorkFlowRequest \n\n"
+                    )
+
+                    val response = apiService.editWorkFlow(editWorkFlowRequest)
+
+                    NudgeLogger.e(
+                        "SyncHelper",
+                        "callWorkFlowAPI response: status: ${response.status}, message: ${response.message}, data: ${response.data} \n\n"
+                    )
+
+                    if (response.status.equals(SUCCESS, true)) {
+                        response.data?.let {
+                            stepsListDao.updateWorkflowId(
+                                stepId,
+                                step.workFlowId,
+                                villageId,
+                                it[0].status
+                            )
+                            stepsListDao.updateNeedToPost(stepId, villageId, false)
+                        }
+                    }*/
+                }
+
             }catch (ex:Exception){
                 settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
 //                onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
+            }
+        }
+    }
+
+    private fun updateStepsToServer(needToEdiStep: MutableList<StepListEntity>) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
+            for (step in needToEdiStep) {
+                requestForStepUpdation.add(
+                    EditWorkFlowRequest(
+                        step.workFlowId,
+                        StepStatus.getStepFromOrdinal(step.isComplete)
+                    )
+                )
+            }
+
+            val responseForStepUpdation =
+                apiService.editWorkFlow(requestForStepUpdation)
+
+            NudgeLogger.e(
+                "SyncHelper",
+                "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
+            )
+
+
+            if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                responseForStepUpdation.data?.let {
+
+//                    NudgeLogger.e(
+//                        "SyncHelper",
+//                        "callWorkFlowAPI stepsListDao.updateWorkflowId before stepId: $stepId, it[0].id: ${it[0].id}, villageId: $villageId, status: ${it[0].status}"
+//                    )
+                    for(i in responseForStepUpdation.data.indices) {
+                        val step = needToEdiStep[i]
+                        stepsListDao.updateWorkflowId(
+                            step.stepId,
+                            step.workFlowId,
+                            step.villageId,
+                            step.status
+                        )
+
+                        NudgeLogger.e(
+                            "SyncHelper",
+                            "callWorkFlowAPI stepsListDao.updateWorkflowId after "
+                        )
+                        NudgeLogger.e(
+                            "SyncHelper",
+                            "callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $step.stepId"
+                        )
+                        stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                        NudgeLogger.e(
+                            "SyncHelper",
+                            "callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $step.stepId"
+                        )
+
+                    }
+                }
+            }
+            if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
+                updateLastSyncTime(
+                    prefRepo,
+                    responseForStepUpdation.lastSyncTime
+                )
             }
         }
     }
