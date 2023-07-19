@@ -668,7 +668,8 @@ fun findImageLocationFromPath(uri:String):List<String>{
             if (path[0].contains("content:/"))
                 path[0].replace("content:/", "file:/")
             return path
-        }
+        } else if (uri.contains("content:/"))
+            uri.replace("content:/", "file:/")
     }
     return ArrayList()
 }
