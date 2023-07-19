@@ -175,7 +175,7 @@ fun VoEndorsementScreen(
                             .fillMaxWidth()
                             .background(color = white)
                             .weight(1f),
-                        contentPadding = PaddingValues(vertical = 10.dp)
+                        contentPadding = PaddingValues(vertical = 10.dp, horizontal = 4.dp)
                     ) {
 
                         item {
