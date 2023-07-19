@@ -312,5 +312,14 @@
     <string name="step_pat_survey">PAT জরিপ</string>
     <string name="step_vo_endorsement">VO অনুমোদন</string>
     <string name="step_bpc_verification">BPC যাচাইকরণ</string>
+    <string name="profile_name">নাম</string>
+    <string name="profile_email">ইমেইল</string>
+    <string name="profile_phone">ফোন নম্বর</string>
+    <string name="profile_identity_num">পরিচয় সংখ্যা</string>
+    <string name="user_profile_text">ব্যবহারকারী প্রোফাইল</string>
+    <string name="edit_didi">সম্পাদনা করুন</string>
+    <string name="delete_didi">মুছে ফেলা</string>
+    <string name="you_want_to_delete_video">আপনি %1$s মুছতে চান</string>
+    <string name="share_logs">লগ শেয়ার করুন</string>
 
 </resources>

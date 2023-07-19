@@ -155,7 +155,7 @@ fun DigitalFormBScreen(
                 }
 
                 Text(
-                    text = "Digital Form B",
+                    text = stringResource(id = R.string.digital_form_b_title),
                     color = Color.Black,
                     fontSize = 20.sp,
                     fontFamily = NotoSans,

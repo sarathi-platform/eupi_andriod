@@ -329,5 +329,14 @@
     <string name="step_pat_survey">Pat Survey</string>
     <string name="step_vo_endorsement">VO Endorsement</string>
     <string name="step_bpc_verification">BPC Verification</string>
+    <string name="profile_name">Name</string>
+    <string name="profile_email">Email</string>
+    <string name="profile_phone">Phone Number</string>
+    <string name="profile_identity_num">Identity Number</string>
+    <string name="user_profile_text">User Profile</string>
+    <string name="edit_didi">Edit</string>
+    <string name="delete_didi">Delete</string>
+    <string name="you_want_to_delete_video">You want to delete %1$s</string>
+    <string name="share_logs">Share Logs</string>
 
 </resources>
