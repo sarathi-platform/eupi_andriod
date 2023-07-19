@@ -50,6 +50,12 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(key1 = true) {
+        if(didiDetailId!=0){
+            didiViewModel?.fetchDidiDetails(didiDetailId)
+            editDidiId=didiDetailId
+        }else{
+            didiViewModel?.fetchLastSelectedTola()
+        }
         delay(200)
         didiViewModel?.checkIfTolaIsNotDeleted()
         didiViewModel?.checkIfTolaIsUpdated()
@@ -226,13 +232,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
         }
 
 
-    }
-
-    LaunchedEffect(key1 = true){
-        if(didiDetailId != 0){
-            didiViewModel?.fetchDidiDetails(didiDetailId)
-            editDidiId=didiDetailId
-        }
     }
     CustomSnackBarShow(state = snackState)
 }

@@ -345,7 +345,7 @@ class QuestionScreenViewModel @Inject constructor(
 
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    enteredAmount.value= totalEnteredAmount.toString()
+                    enteredAmount.value= if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1

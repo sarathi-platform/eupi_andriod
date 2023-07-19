@@ -353,7 +353,7 @@ fun QuestionScreen(
                                     summary = questionList[it].questionSummary?: BLANK_STRING/*(questionList[it].questionSummary?: BLANK_STRING) + " " + if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
                                     else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
                                     selIndex = -1,
-                                    enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                                    enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) BLANK_STRING else viewModel.enteredAmount.value,
                                     questionFlag = questionList[it].questionFlag ?: QUESTION_FLAG_WEIGHT
                                 ) {
                                     Handler(Looper.getMainLooper()).postDelayed(Runnable {

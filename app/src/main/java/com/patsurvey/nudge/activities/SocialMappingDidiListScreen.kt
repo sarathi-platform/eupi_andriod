@@ -998,7 +998,7 @@ fun DidiItemCard(
                                     onItemClick(didi)
                                 }) {
                                     Text(
-                                        text = "Edit",
+                                        text = stringResource(id = R.string.edit_didi),
                                         style = quesOptionTextStyle,
                                         color = textColorDark
                                     )
@@ -1008,7 +1008,7 @@ fun DidiItemCard(
                                     onDeleteClicked(didi)
                                 }) {
                                     Text(
-                                        text = "Delete",
+                                        text = stringResource(id = R.string.delete_didi),
                                         style = quesOptionTextStyle,
                                         color = textColorDark
                                     )
