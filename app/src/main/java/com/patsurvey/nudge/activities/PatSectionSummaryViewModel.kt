@@ -17,6 +17,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
@@ -199,6 +200,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                 _inclusiveQueList.value = answerDao.getAllInclusiveQues(didiId = didiId)
                 if (_inclusiveQueList.value.isNotEmpty()) {
                     var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+                    NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: $totalWightWithoutNumQue")
                     val numQueList =
                         _inclusiveQueList.value.filter { it.type == QuestionType.Numeric_Field.name }
                     if (numQueList.isNotEmpty()) {
@@ -214,6 +216,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                                         false
                                     )
                                     totalWightWithoutNumQue += newScore
+                                    NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue")
                                 }
                             } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
                                 val ratioList = toWeightageRatio(numQue.json.toString())
@@ -223,6 +226,7 @@ class PatSectionSummaryViewModel @Inject constructor(
                                     true
                                 )
                                 totalWightWithoutNumQue += newScore
+                                NudgeLogger.d("PatSectionSummaryViewModel", "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue")
                             }
                         }
                     }

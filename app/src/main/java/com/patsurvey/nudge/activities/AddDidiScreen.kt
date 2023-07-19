@@ -83,18 +83,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
             )
 
             EditTextWithTitle(
-                stringResource(id = R.string.house_number),
-                modifier = Modifier
-                    .padding(top = topPadding, start = startPadding, end = endPadding)
-                    .fillMaxWidth(),
-                currentString = didiViewModel?.houseNumber?.value ?: BLANK_STRING,
-                isRequiredField = false
-            ) {
-                didiViewModel?.houseNumber?.value = it
-                didiViewModel?.validateDidiDetails()
-            }
-
-            EditTextWithTitle(
                 stringResource(id = R.string.didi_name),
                 modifier = Modifier
                     .padding(top = topPadding, start = startPadding, end = endPadding)
@@ -117,6 +105,19 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 didiViewModel?.dadaName?.value = it
                 didiViewModel?.validateDidiDetails()
             }
+
+            EditTextWithTitle(
+                stringResource(id = R.string.house_number),
+                modifier = Modifier
+                    .padding(top = topPadding, start = startPadding, end = endPadding)
+                    .fillMaxWidth(),
+                currentString = didiViewModel?.houseNumber?.value ?: BLANK_STRING,
+                isRequiredField = false
+            ) {
+                didiViewModel?.houseNumber?.value = it
+                didiViewModel?.validateDidiDetails()
+            }
+
             DropDownWithTitle(
                 title = stringResource(id = R.string.caste),
                 items = didiViewModel?.casteList?.value?: emptyList(),

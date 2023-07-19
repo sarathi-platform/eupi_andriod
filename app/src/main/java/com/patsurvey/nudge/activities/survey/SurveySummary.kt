@@ -421,15 +421,28 @@ fun SurveySummary(
                                         )
                                     }
                                 } else {
-                                    itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
-                                        DidiItemCardForVo(
-                                            navController = navController,
-                                            didi = didi,
-                                            modifier = modifier,
-                                            onItemClick = {
-                                                navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
-                                            }
-                                        )
+                                    if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                        itemsIndexed(didids.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }) { index, didi ->
+                                            DidiItemCardForVo(
+                                                navController = navController,
+                                                didi = didi,
+                                                modifier = modifier,
+                                                onItemClick = {
+                                                    navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                }
+                                            )
+                                        }
+                                    } else {
+                                        itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
+                                            DidiItemCardForVo(
+                                                navController = navController,
+                                                didi = didi,
+                                                modifier = modifier,
+                                                onItemClick = {
+                                                    navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                }
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -447,7 +460,7 @@ fun SurveySummary(
                         count = if (fromScreen == ARG_FROM_PAT_SURVEY)
                             didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
                         else
-                            didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size,
+                            didids.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }.size,
                         boxColor = blueLighter,
                         boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(R.string.pat_completed_box_title) else stringResource(
                             id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size <= 1) R.string.didi_endorsed_text_singula else R.string.didi_endorsed_text_plural

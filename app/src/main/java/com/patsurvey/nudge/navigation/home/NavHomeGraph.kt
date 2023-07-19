@@ -15,6 +15,7 @@ import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
+import com.patsurvey.nudge.activities.FinalStepCompletionScreen
 import com.patsurvey.nudge.activities.PatDidiSummaryScreen
 import com.patsurvey.nudge.activities.PatSurvaySectionSummaryScreen
 import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
@@ -711,14 +712,23 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            StepCompletionScreen(
+
+            FinalStepCompletionScreen(
+                navController = navController,
+                modifier = Modifier,
+                message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: "")
+            {
+                navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
+            }
+
+            /*StepCompletionScreen(
                 navController = navController,
                 modifier = Modifier,
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
                 navController.navigate(VoEndorsmentScreeens.VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN.route)
 
-            }
+            }*/
         }
 
         composable(

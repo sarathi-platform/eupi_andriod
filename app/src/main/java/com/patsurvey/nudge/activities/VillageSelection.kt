@@ -265,11 +265,12 @@ fun VillageSelectionScreen(
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(villages) { index, village ->
-                                VillageAndVoBox(
+                                VillageAndVoBoxForBottomSheet(
                                     tolaName = village.name,
                                     voName = village.federationName,
                                     index = index,
-                                    viewModel.villageSelected.value,
+                                    selectedIndex = viewModel.villageSelected.value,
+                                    isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false
                                 ) {
                                     viewModel.villageSelected.value = it
                                     viewModel.updateSelectedVillage()
