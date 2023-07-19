@@ -124,13 +124,6 @@ class AddDidiViewModel @Inject constructor(
                     casteList
                 )
                 _tolaList.value = tolaDao.getAllTolasForVillage(villageId)
-                if (lastSelectedTolaDao.getTolaCountForVillage(villageId = villageId) > 0) {
-                    val selectedDBTola = lastSelectedTolaDao.getTolaForVillage(villageId)
-                    withContext(Dispatchers.Main) {
-                        selectedTola.value = Pair(selectedDBTola.tolaId, selectedDBTola.tolaName)
-                    }
-
-                }
                 pendingDidiCount.value =
                     didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
                 filterDidiList = didiList.value
@@ -148,6 +141,19 @@ class AddDidiViewModel @Inject constructor(
                 isTolaSynced.value = it
              }
 
+    }
+
+    fun fetchLastSelectedTola(){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (lastSelectedTolaDao.getTolaCountForVillage(villageId = villageId) > 0) {
+                val selectedDBTola = lastSelectedTolaDao.getTolaForVillage(villageId)
+                withContext(Dispatchers.Main) {
+                    selectedTola.value =
+                        Pair(selectedDBTola.tolaId, selectedDBTola.tolaName)
+                }
+
+            }
+        }
     }
 
     private fun deleteDidisToNetwork(networkCallbackListener: NetworkCallbackListener) {

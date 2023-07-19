@@ -937,7 +937,7 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(didiRow) {
-            start.linkTo(didiImage.end, 10.dp)
+            start.linkTo(didiImage.end, 6.dp)
             top.linkTo(parent.top, 10.dp)
             end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
@@ -949,9 +949,9 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top)
+            top.linkTo(village.top, margin = 3.dp)
             bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiName.start, margin = 3.dp)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
@@ -1008,24 +1008,9 @@ private fun didiDetailConstraintsForWealthCard(): ConstraintSet {
             start.linkTo(parent.start)
         }
 
-        constrain(houseNumberLabel) {
+        constrain(dadaNameLabel) {
             start.linkTo(parent.start, margin = 15.dp)
             top.linkTo(divider.bottom, margin = 15.dp)
-            end.linkTo(centerGuideline)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(houseNumber) {
-            start.linkTo(centerGuideline)
-            top.linkTo(houseNumberLabel.top)
-            bottom.linkTo(houseNumberLabel.bottom)
-            end.linkTo(parent.end, margin = 10.dp)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(dadaNameLabel) {
-            start.linkTo(houseNumberLabel.start)
-            top.linkTo(houseNumberLabel.bottom, margin = 20.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
         }
@@ -1037,9 +1022,24 @@ private fun didiDetailConstraintsForWealthCard(): ConstraintSet {
             end.linkTo(parent.end, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
-        constrain(casteLabel) {
-            start.linkTo(houseNumberLabel.start)
+
+        constrain(houseNumberLabel) {
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(dadaNameLabel.bottom, margin = 20.dp)
+            end.linkTo(centerGuideline)
+            width = Dimension.fillToConstraints
+        }
+
+        constrain(houseNumber) {
+            start.linkTo(centerGuideline)
+            top.linkTo(houseNumberLabel.top)
+            bottom.linkTo(houseNumberLabel.bottom)
+            end.linkTo(parent.end, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(casteLabel) {
+            start.linkTo(dadaNameLabel.start)
+            top.linkTo(houseNumberLabel.bottom, margin = 20.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
         }
@@ -1052,7 +1052,7 @@ private fun didiDetailConstraintsForWealthCard(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(tolaLabel) {
-            start.linkTo(houseNumberLabel.start)
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(casteLabel.bottom, margin = 15.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
@@ -1067,7 +1067,7 @@ private fun didiDetailConstraintsForWealthCard(): ConstraintSet {
         }
 
         constrain(latestStatusLabel) {
-            start.linkTo(houseNumberLabel.start)
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(tolaLabel.bottom, margin = 15.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints

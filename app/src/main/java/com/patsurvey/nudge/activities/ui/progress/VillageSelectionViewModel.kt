@@ -137,6 +137,8 @@ class VillageSelectionViewModel @Inject constructor(
     val shouldRetry = mutableStateOf(false)
     val multiVillageRequest = mutableStateOf("2")
 
+    val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
+
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     fun init() {
@@ -870,6 +872,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             }
                                             NudgeLogger.d("VillageSelectionViewModel", "it.stepList: ${it.stepList} \n")
                                             stepsListDao.insertAll(it.stepList)
+                                            setVoEndorsementCompleteForVillages()
                                         }
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
@@ -1279,6 +1282,7 @@ class VillageSelectionViewModel @Inject constructor(
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList
+                    setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
                 } else {
                     val response = apiService.userAndVillageListAPI(villageReq)
@@ -1358,6 +1362,18 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
+    fun setVoEndorsementCompleteForVillages() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                villageList.value.forEach { village ->
+                    val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                    isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+                }
+            } catch (ex: Exception) {
+                Log.d("TAG", "setVoEndorsementCompleteForVillages: exception -> $ex")
+            }
+        }
+    }
 
 
     fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {

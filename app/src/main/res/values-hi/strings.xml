@@ -310,6 +310,15 @@
     <string name="step_pat_survey">PAT सर्वेक्षण</string>
     <string name="step_vo_endorsement">"VO एंडोर्समेंट "</string>
     <string name="step_bpc_verification">बीपीसी सत्यापन</string>
+    <string name="profile_name">नाम</string>
+    <string name="profile_email">ईमेल</string>
+    <string name="profile_phone">फ़ोन नंबर</string>
+    <string name="profile_identity_num">पहचान संख्या</string>
+    <string name="user_profile_text">उपयोगकर्ता रूपरेखा</string>
+    <string name="edit_didi">संपादन करना</string>
+    <string name="delete_didi">मिटाना</string>
+    <string name="you_want_to_delete_video">आप %1$s को हटाना चाहते हैं</string>
+    <string name="share_logs">लॉग साझा करें</string>
 
 
 </resources>

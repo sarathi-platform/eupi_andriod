@@ -206,7 +206,7 @@ fun NumericFieldTypeQuestion(
                             OutlinedTextField(
                                 value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString()
                                 else
-                                        (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") || viewModel?.enteredAmount?.value.equals("0")) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
+                                        (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") /*|| viewModel?.enteredAmount?.value.equals("0")*/) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
                                 readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),
                                 onValueChange = {
                                     if(questionFlag.equals(QUESTION_FLAG_RATIO,true)){

@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -41,7 +42,7 @@ fun ProfileScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "User Profile",
+                        text = stringResource(id = R.string.user_profile_text),
                         color = textColorDark,
                         modifier = Modifier
                             .fillMaxWidth(),
@@ -79,7 +80,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("Name: ")
+                        append("${stringResource(id = R.string.profile_name)}: ")
                     }
                     withStyle(
                         style = SpanStyle(
@@ -104,7 +105,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("Email: ")
+                        append("${stringResource(id = R.string.profile_email)}: ")
                     }
                     withStyle(
                         style = SpanStyle(
@@ -129,7 +130,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("Phone Number: ")
+                        append("${stringResource(id = R.string.profile_phone)}: ")
                     }
                     withStyle(
                         style = SpanStyle(
@@ -154,7 +155,7 @@ fun ProfileScreen(
                             fontFamily = NotoSans
                         )
                     ) {
-                        append("Identity Number: ")
+                        append("${stringResource(id = R.string.profile_identity_num)}: ")
                     }
                     withStyle(
                         style = SpanStyle(
