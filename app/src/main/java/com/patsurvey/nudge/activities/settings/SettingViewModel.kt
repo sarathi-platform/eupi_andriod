@@ -146,7 +146,7 @@ class SettingViewModel @Inject constructor(
                 && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
                 && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
                 && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()
-                && isStatusStepStatusSync(0)) {
+                && isStepStatusSync(0)) {
                 NudgeLogger.d("SettingViewModel", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -158,11 +158,15 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    fun isStatusStepStatusSync(step : Int) : Boolean{
-        val villageId = prefRepo.getSelectedVillage().id
-        val stepList = stepsListDao.getAllStepsForVillage(villageId)
-        NudgeLogger.e("SettingViewModel", "step -> $step, status -> ${stepList[step].status}  isComplete,->  ${getStepStatusFromOrdinal(stepList[step].isComplete)}, needToPost -> ${stepList[step].needToPost}")
-        return !stepList[step].needToPost
+    private fun isStepStatusSync(orderNumber : Int) : Boolean{
+        val stepList = stepsListDao.getAllStepsWithOrderNumber(orderNumber)
+        var isSync = true
+        for (step in stepList){
+            if(step.needToPost)
+                isSync =  false
+        }
+        NudgeLogger.e("SettingViewModel", "step -> $orderNumber, status -> $isSync ")
+        return isSync
     }
 
     fun isSecondStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
@@ -174,7 +178,7 @@ class SettingViewModel @Inject constructor(
             && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
             && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
             && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()
-            && isStatusStepStatusSync(1)) {
+            && isStepStatusSync(1)) {
             NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -197,7 +201,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
-                && isStatusStepStatusSync(2)
+                && isStepStatusSync(2)
             ) {
                 NudgeLogger.d("SettingViewModel", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -215,7 +219,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
-                && isStatusStepStatusSync(3)
+                && isStepStatusSync(3)
             ) {
                 NudgeLogger.d("SettingViewModel", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -235,7 +239,7 @@ class SettingViewModel @Inject constructor(
                     needsToPostVo  = true,
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
-                && isStatusStepStatusSync(4)
+                && isStepStatusSync(4)
             ) {
                 NudgeLogger.d("SettingViewModel", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -451,7 +455,7 @@ class SettingViewModel @Inject constructor(
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
-                && isStatusStepStatusSync(5)
+                && isStepStatusSync(5)
                 && isBPCScoreSaved()){
                 NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced -> isBPCDataNeedToBeSynced.value = false")
                 withContext(Dispatchers.Main) {
