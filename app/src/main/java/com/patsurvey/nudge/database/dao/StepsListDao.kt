@@ -42,6 +42,9 @@ interface StepsListDao {
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
     fun getAllStepsForVillage(villageId: Int): List<StepListEntity>
 
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE orderNumber = :orderNumber ORDER BY orderNumber ASC")
+    fun getAllStepsWithOrderNumber(orderNumber: Int): List<StepListEntity>
+
     @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId AND id = :stepId")
     fun getStepForVillage(villageId: Int,stepId: Int): StepListEntity
 
