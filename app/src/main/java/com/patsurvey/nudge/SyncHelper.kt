@@ -1085,13 +1085,14 @@ class SyncHelper (
                                 }
                             )
                         )
+                        val stateId = villegeListDao.getVillage(didi.villageId).stateId
                         answeredDidiList.add(
                             PATSummarySaveRequest(
-                                villageId = prefRepo.getSelectedVillage().id,
+                                villageId = didi.villageId,
                                 surveyId = surveyId,
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
-                                stateId = prefRepo.getSelectedVillage().stateId,
+                                stateId = stateId,
                                 totalScore = didi.score,
                                 userType = userType,
                                 beneficiaryName = didi.name,
@@ -1111,8 +1112,7 @@ class SyncHelper (
                                     didiIDList.forEach { didiItem ->
                                         didiDao.updateNeedToPostPAT(
                                             false,
-                                            didiItem.id,
-                                            prefRepo.getSelectedVillage().id
+                                            didiItem.id
                                         )
                                     }
                                     withContext(Dispatchers.Main) {
