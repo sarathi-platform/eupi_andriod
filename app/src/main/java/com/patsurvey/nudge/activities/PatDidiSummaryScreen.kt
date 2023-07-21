@@ -537,6 +537,8 @@ fun PatDidiSummaryScreen(
                             id,
                             patDidiSummaryViewModel.didiImageLocation.value
                         )
+                    } else {
+                        patDidiSummaryViewModel.setNeedToPostImage(true)
                     }
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")

@@ -155,10 +155,10 @@ interface ApiService {
     @Multipart
     @POST("/write-api/beneficiary/upload-bulkImages")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun uploadDidiBulkImage(@Part image:ArrayList<MultipartBody.Part>,
-                                @Part ("id") didiId:ArrayList<RequestBody>,
-                                @Part ("userType") userType:ArrayList<RequestBody>,
-                                @Part ("location") location: ArrayList<RequestBody>): ApiResponseModel<Object>
+    suspend fun uploadDidiBulkImage(@Part  image:ArrayList<MultipartBody.Part>,
+                                @Part ("ids") didiId:ArrayList<RequestBody>,
+                                @Part ("userTypes") userType:ArrayList<RequestBody>,
+                                @Part ("locations") location: ArrayList<RequestBody>): ApiResponseModel<Object>
 
     @Multipart
     @POST("/write-api/form/uploadDocument")

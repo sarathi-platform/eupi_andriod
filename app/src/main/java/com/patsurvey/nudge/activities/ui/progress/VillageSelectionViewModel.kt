@@ -997,6 +997,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             crpComment = didi.crpComment,
                                                             comment = didi.comment,
                                                             crpUploadedImage = didi.crpUploadedImage,
+                                                            needsToPostImage = false,
                                                             rankingEdit = didi.rankingEdit
                                                         )
                                                     )
