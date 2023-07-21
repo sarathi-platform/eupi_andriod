@@ -4,6 +4,9 @@ import android.content.Context
 import android.os.CountDownTimer
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.res.stringResource
+import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -69,6 +72,7 @@ class SettingViewModel @Inject constructor(
     var stepFifthSyncStatus = mutableStateOf(0)
     var bpcSyncStatus = mutableStateOf(0)
     var hitApiStatus = mutableStateOf(0)
+    var syncErrorMessage = mutableStateOf("")
     private val _optionList = MutableStateFlow(listOf<SettingOptionModel>())
     val optionList: StateFlow<List<SettingOptionModel>> get() = _optionList
     val showLoader = mutableStateOf(false)
@@ -263,8 +267,9 @@ class SettingViewModel @Inject constructor(
             }
             2 -> {
                 showLoader.value = false
+                syncErrorMessage.value = SYNC_FAILED
                 syncPercentage.value = 1f
-                showSyncDialog.value = false
+//                showSyncDialog.value = false
                 showAPILoader.value = false
                 networkErrorMessage.value = error?.message.toString()
             }
@@ -332,6 +337,7 @@ class SettingViewModel @Inject constructor(
     fun syncDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>) {
         NudgeLogger.e("SettingViewModel","syncDataOnServer -> start")
         hitApiStatus.value = 2
+        syncErrorMessage.value = ""
         showSyncDialog = syncDialog
         resetPosition()
         if(isInternetAvailable(cxt)){
@@ -358,9 +364,10 @@ class SettingViewModel @Inject constructor(
 
                     override fun onFailed() {
                         networkErrorMessage.value = SYNC_FAILED
+                        syncErrorMessage.value = SYNC_FAILED
                         syncPercentage.value = 1f
-                        showSyncDialog.value = false
-                        showLoader.value = false
+//                        showSyncDialog.value = false
+//                        showLoader.value = false
                         NudgeLogger.e("SettingViewModel","syncDataOnServer -> onFailed")
                     }
             })
@@ -372,6 +379,7 @@ class SettingViewModel @Inject constructor(
 
     fun syncBPCDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>,syncBPCStatus : MutableState<Int>) {
         NudgeLogger.e("SettingViewModel","syncBPCDataOnServer -> start")
+        syncErrorMessage.value = MyApplication.applicationContext().getString(R.string.do_not_close_app_message)
         bpcSyncStatus = syncBPCStatus
 //        hitApiStatus.value = 3
         showBPCSyncDialog = syncDialog

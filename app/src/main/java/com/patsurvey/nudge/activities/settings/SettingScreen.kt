@@ -952,7 +952,8 @@ fun showSyncDialog(
                         Divider(thickness = 1.dp, color = greyBorder)
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        if (settingViewModel.showLoader.value) {
+                        if (settingViewModel.showLoader.value
+                            || settingViewModel.syncErrorMessage.value.isNotEmpty()) {
                             LinearProgressIndicator(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1011,7 +1012,7 @@ fun showSyncDialog(
 
 
                                 Text(
-                                    text = stringResource(R.string.do_not_close_app_message),
+                                    text = if(settingViewModel.syncErrorMessage.value.isEmpty()) stringResource(R.string.do_not_close_app_message) else settingViewModel.syncErrorMessage.value,
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
