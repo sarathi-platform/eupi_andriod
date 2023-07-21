@@ -20,24 +20,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.ACCEPTED
-import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.DidiEndorsementStatus
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
-import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
-import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
-import com.patsurvey.nudge.utils.USER_BPC
-import com.patsurvey.nudge.utils.USER_CRP
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
-import com.patsurvey.nudge.utils.compressImage
-import com.patsurvey.nudge.utils.getFileNameFromURL
-import com.patsurvey.nudge.utils.updateLastSyncTime
-import com.patsurvey.nudge.utils.uriFromFile
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -451,7 +434,11 @@ class FormPictureScreenViewModel @Inject constructor(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                if(response.status == SUCCESS){
+                    prefRepo.savePref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                }
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
