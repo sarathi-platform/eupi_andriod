@@ -1410,10 +1410,38 @@ class SyncHelper (
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
             for (step in needToEdiStep) {
+                var stepCompletionDate = BLANK_STRING
+                if(step.isComplete == StepStatus.COMPLETED.ordinal){
+                    if(step.id == 40){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_TRANSECT_WALK_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 41){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_SOCIAL_MAPPING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 46){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 43){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_PAT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+                    if(step.id == 44){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+                }
+
                 requestForStepUpdation.add(
                     EditWorkFlowRequest(
                         step.workFlowId,
-                        StepStatus.getStepFromOrdinal(step.isComplete)
+                        StepStatus.getStepFromOrdinal(step.isComplete),
+                        stepCompletionDate
                     )
                 )
             }
