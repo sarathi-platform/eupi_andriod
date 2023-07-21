@@ -373,6 +373,8 @@ fun SocialMappingDidiListScreen(
                                     )
                                 }
                             }
+                            if (!didiViewModel.isSocialMappingComplete.value)
+                                item { Spacer(modifier = Modifier.height(bottomPadding)) }
                         } else {
                             itemsIndexed(
                                 if (didiViewModel.prefRepo.getFromPage()

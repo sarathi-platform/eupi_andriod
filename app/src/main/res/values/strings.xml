@@ -45,7 +45,7 @@
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s Didis Pending</string>
     <string name="count_didis_pending_singular">%1s Didi Pending</string>
-    <string name="expiry_login_verify_otp" translatable="false">%s s</string>
+    <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s</string>
     <string name="social_mapping">Social Mapping</string>
     <string name="showing_added_tolas">Showing %s added Tolas</string>
     <string name="showing">Showing</string>
