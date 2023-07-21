@@ -102,15 +102,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.utils.DoubleButtonBox
-import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.FORM_C
-import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.SYNC_FAILED
-import com.patsurvey.nudge.utils.openSettings
-import com.patsurvey.nudge.utils.showCustomToast
-import com.patsurvey.nudge.utils.showToast
+import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -487,7 +479,7 @@ fun FormPictureScreen(
                                                 }
 
                                                 override fun onFailed() {
-                                                    showCustomToast(context, SYNC_FAILED)
+                                                    NudgeLogger.e("FormPictureScreen","")
                                                 }
                                             })
                                     }
@@ -499,6 +491,9 @@ fun FormPictureScreen(
                                 formPictureScreenViewModel.uploadFormsCAndD(context)
 
                             }
+                            formPictureScreenViewModel.prefRepo.savePref(
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
+
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
                                 formPictureScreenViewModel.prefRepo.getSelectedVillage().id,

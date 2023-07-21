@@ -6,6 +6,7 @@ import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
 import com.google.gson.JsonArray
@@ -201,6 +202,7 @@ class SyncHelper (
                             }
                         }
                     }
+                    uploadFormsCAndD(MyApplication.applicationContext())
                     callWorkFlowAPIForStep(5)
                     delay(1500)
                     withContext(Dispatchers.Main){
@@ -220,6 +222,7 @@ class SyncHelper (
                     updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
+                uploadFormsCAndD(MyApplication.applicationContext())
                 callWorkFlowAPIForStep(5)
                 delay(1500)
                 withContext(Dispatchers.Main){
@@ -429,10 +432,109 @@ class SyncHelper (
         }
     }
 
-    fun uploadDidiImage(context: Context, uri: Uri, didiId: Int, location:String) {
+    fun getFormPathKey(subPath: String,villageName: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${villageName}_${subPath}"
+    }
+
+    fun uploadFormsCAndD(context: Context) {
         job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val languageId = prefRepo.getAppLanguageId() ?: 2
+            val villageList = villegeListDao.getAllVillages(languageId)
+            for (village in villageList) {
+                if (prefRepo.getPref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,
+                        false
+                    )
+                ) {
+                    uploadFormCAndD(village.id, context)
+                }
+            }
+        }
+    }
 
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
+    }
 
+    fun uploadFormCAndD(villageId : Int,context: Context) {
+        job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val formList = arrayListOf<MultipartBody.Part>()
+            val villageName = villegeListDao.getVillage(villageId).name
+            try {
+                val formCImageList = (mutableMapOf<String, String>())
+                for (i in 0..4) {
+                    formCImageList[getFormSubPath(FORM_C, i)] =
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i), villageName), "").toString()
+                }
+                val formDImageList = (mutableMapOf<String, String>())
+                for (i in 0..4) {
+                    formDImageList[getFormSubPath(FORM_D, i)] =
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i), villageName), "").toString()
+                }
+                if (formCImageList.isNotEmpty()) {
+                    formCImageList.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+//                        val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormC =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormC = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormC)
+                            )
+                            val formCFilePart = MultipartBody.Part.createFormData(
+                                "formC",
+                                File(compressedFormC).name,
+                                requestFormC
+                            )
+//                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
+                            formList.add(formCFilePart)
+                        }
+
+                    }
+                }
+                if (formDImageList.isNotEmpty()) {
+                    formDImageList.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+//                        val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormD =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormD = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormD)
+                            )
+                            val formDFilePart = MultipartBody.Part.createFormData(
+                                "formD",
+                                File(compressedFormD).name,
+                                requestFormD
+                            )
+//                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
+                            formList.add(formDFilePart)
+                        }
+
+                    }
+                }
+
+                val requestVillageId =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        prefRepo.getSelectedVillage().id.toString()
+                    )
+                val requestUserType =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                if(response.status == SUCCESS){
+                    prefRepo.savePref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                settingViewModel.onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
+            }
         }
     }
 
