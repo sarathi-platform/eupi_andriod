@@ -141,7 +141,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
     }else {
-        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm:ss", Locale.US)
+        val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
         list.add(
             SettingOptionModel(
@@ -521,7 +521,8 @@ private fun logout(
     navController: NavController
 ){
     NudgeLogger.e("SettingScreen","logout called")
-    viewModel.clearLocalDB(context, logout)
+    if (!logout.value)
+        viewModel.clearLocalDB(context, logout)
 }
 
 @Composable

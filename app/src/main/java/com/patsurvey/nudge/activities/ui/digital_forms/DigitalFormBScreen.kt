@@ -58,8 +58,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
@@ -269,7 +267,7 @@ fun DigitalFormBScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
-                                text = stringResource(id = R.string.total_poor_didis) + ":",
+                                text = stringResource(id = R.string.total_ultra_poor_didis) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -279,7 +277,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size.toString(),
+                                text = didiList.filter { it.forVoEndorsement == 1  }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -321,7 +319,7 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }) { card ->
+                        items( didiList.filter { it.forVoEndorsement == 1  }) { card ->
                             DidiVillageItem(card)
                         }
                     }

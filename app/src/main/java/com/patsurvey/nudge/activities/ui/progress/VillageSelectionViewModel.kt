@@ -995,8 +995,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                             crpScore = didi.crpScore,
                                                             crpComment = didi.crpComment,
                                                             comment = didi.comment,
-                                                            crpUploadedImage = didi.crpUploadedImage
-                                                            )
+                                                            crpUploadedImage = didi.crpUploadedImage,
+                                                            rankingEdit = didi.rankingEdit
+                                                        )
                                                     )
 //                                                    }
                                                     if(!didi.crpUploadedImage.isNullOrEmpty()){

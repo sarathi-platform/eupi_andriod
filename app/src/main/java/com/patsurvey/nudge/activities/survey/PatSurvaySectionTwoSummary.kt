@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -48,7 +47,6 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.google.gson.Gson
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -173,7 +171,8 @@ fun PatSurvaySectionTwoSummaryScreen(
                           answerValue = answer.answerValue?: BLANK_STRING,
                           questionType =  answer.type,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
-                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT){
+                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
+                      {
                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
                           navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                       }

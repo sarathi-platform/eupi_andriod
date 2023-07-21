@@ -175,6 +175,7 @@ fun ParticipatoryWealthRankingSurvey(
                 viewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                     if (isPreviousStepComplete) {
                         viewModel.markWealthRakningComplete(viewModel.villageId, stepId)
+                        viewModel.updateWealthRankingFlagForDidis()
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {
                             if(viewModel.isTolaSynced.value == 2

@@ -104,6 +104,7 @@ fun SurveySummary(
 
     }
     BackHandler() {
+        (context as MainActivity).isBackFromSummary.value = false
         if (showDidiListForStatus.first) {
             showDidiListForStatus =
                 Pair(!showDidiListForStatus.first, PatSurveyStatus.NOT_STARTED.ordinal)
@@ -328,7 +329,7 @@ fun SurveySummary(
                         .padding(vertical = 2.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.pat_survey),
+                        text = stringResource(id = if (fromScreen == ARG_FROM_PAT_SURVEY) R.string.pat_survey else R.string.vo_endorsement),
                         modifier = Modifier
                             .align(Alignment.Center)
                             .fillMaxWidth(),

@@ -88,6 +88,7 @@ import com.patsurvey.nudge.utils.ButtonNegativeForPAT
 import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.ButtonPositiveForPAT
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -521,11 +522,13 @@ fun DidiItemCardForBpc(
                         if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal){
                             navController.navigate("bcp_didi_pat_summary/${didi.id}")
                         } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal){
+                            val quesIndex=0
+                            viewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                             if (didi.section1Status == 0 || didi.section1Status == 1) {
-                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION")
+                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
                             }
                             else if (didi.section2Status == 0 || didi.section2Status == 1){
-                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_INCLUSION")
+                                navController.navigate("bpc_yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
                             }
 
                         }

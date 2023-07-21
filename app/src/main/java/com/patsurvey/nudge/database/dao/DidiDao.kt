@@ -251,4 +251,7 @@ interface DidiDao {
 
     @Query("SELECT * from $DIDI_TABLE where needToPostImage = :needToPostImage")
     fun fetchAllDidiNeedToPostImage(needToPostImage: Boolean) : List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET rankingEdit = :rankingEdit where villageId = :villageId")
+    fun updateRankEditFlag(villageId: Int, rankingEdit: Boolean)
 }
