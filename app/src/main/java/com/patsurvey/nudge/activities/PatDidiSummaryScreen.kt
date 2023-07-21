@@ -55,6 +55,7 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.delay
 import java.text.DecimalFormat
 import java.util.function.Consumer
 
@@ -72,9 +73,14 @@ fun PatDidiSummaryScreen(
 ) {
 
 //    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
+    val shgFlag = remember {
+        mutableStateOf(-1)
+    }
 
     LaunchedEffect(key1 = true) {
         patDidiSummaryViewModel.getDidiDetails(didiId)
+        delay(100)
+        shgFlag.value = patDidiSummaryViewModel.didiEntity.value.shgFlag
     }
 
     val didi = patDidiSummaryViewModel.didiEntity
@@ -118,9 +124,6 @@ fun PatDidiSummaryScreen(
             .then(modifier)
     ) {
 
-        val shgFlag = remember {
-            mutableStateOf(-1)
-        }
 
         val (bottomActionBox, mainBox) = createRefs()
         Box(modifier = Modifier
@@ -454,7 +457,13 @@ fun PatDidiSummaryScreen(
                             onResult = { success ->
                                 hasImage = success
                                 NudgeLogger.d("PatDidiSummaryScreen", "rememberLauncherForActivityResult -> onResult = success: $success")
-                                handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
+                                if (success) {
+                                    patDidiSummaryViewModel.photoUri = patDidiSummaryViewModel.tempUri
+                                    handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
+                                } else {
+                                    patDidiSummaryViewModel.shouldShowPhoto.value =
+                                        !(patDidiSummaryViewModel.photoUri == null || patDidiSummaryViewModel.photoUri == Uri.EMPTY)
+                                }
                             }
                         )
 
@@ -469,7 +478,8 @@ fun PatDidiSummaryScreen(
                                 patDidiSummaryViewModel.imagePath = imageFile.absolutePath
                                 val uri = uriFromFile(localContext, imageFile)
                                 NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
-                                patDidiSummaryViewModel.photoUri = uri
+                                patDidiSummaryViewModel.tempUri = uri
+//                                patDidiSummaryViewModel.photoUri = uri
                                 cameraLauncher.launch(uri)
                                 patDidiSummaryViewModel.shouldShowPhoto.value = false
 
@@ -488,7 +498,7 @@ fun PatDidiSummaryScreen(
                                 val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
                                 patDidiSummaryViewModel.imagePath = imageFile.absolutePath
                                 val uri = uriFromFile(localContext, imageFile)
-                                patDidiSummaryViewModel.photoUri = uri
+                                patDidiSummaryViewModel.tempUri = uri
                                 cameraLauncher.launch(uri)
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }

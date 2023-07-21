@@ -64,7 +64,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.text.isDigitsOnly
 import coil.compose.rememberAsyncImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
@@ -1447,7 +1446,8 @@ fun AcceptRejectButtonBox(
             .padding(0.dp)
             .fillMaxWidth()
             .background(Color.White)
-            .then(modifier)
+            .then(modifier),
+        elevation = 8.dp
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -1499,6 +1499,96 @@ fun AcceptRejectButtonBox(
     }
 }
 
+@Composable
+fun AcceptRejectButtonBoxPreFilled(
+    modifier: Modifier = Modifier,
+    positiveButtonText: String,
+    negativeButtonRequired: Boolean = true,
+    preFilledValue: Int,
+    negativeButtonText: String = "",
+    positiveButtonOnClick: () -> Unit,
+    negativeButtonOnClick: () -> Unit,
+) {
+    Surface(
+        modifier = Modifier
+            .padding(0.dp)
+            .fillMaxWidth()
+            .background(Color.White)
+            .then(modifier),
+        elevation = 8.dp
+    ) {
+        Box(modifier = Modifier.fillMaxWidth()) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 14.dp)
+            ) {
+                if (negativeButtonRequired) {
+
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(6.dp))
+                            .background(if (preFilledValue == DidiEndorsementStatus.REJECTED.ordinal) blueDark else languageItemActiveBg)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = true,
+                                    color = redLight
+                                )
+                            ) {
+                                negativeButtonOnClick()
+                            },
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            modifier =Modifier.padding(all = 10.dp),
+                            text = negativeButtonText,
+                            color = if (preFilledValue == DidiEndorsementStatus.REJECTED.ordinal) white else textColorDark,
+                            style = /*mediumTextStyle*/TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            ),
+                        )
+                    }
+                    Spacer(modifier = Modifier.width(10.dp))
+                }
+
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(if (preFilledValue == DidiEndorsementStatus.ENDORSED.ordinal) blueDark else languageItemActiveBg)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                color = redLight
+                            )
+                        ) {
+                            positiveButtonOnClick()
+                        },
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Text(
+                        modifier =Modifier.padding(all = 10.dp),
+                        text = positiveButtonText,
+                        color = if (preFilledValue == DidiEndorsementStatus.ENDORSED.ordinal) white else textColorDark,
+                        style = /*mediumTextStyle*/TextStyle(
+                            fontFamily = NotoSans,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        ),
+                    )
+                }
+            }
+        }
+    }
+}
+
 @Preview (showBackground = true)
 @Composable
 fun AcceptRejectButtonBoxPreview(){
@@ -1511,6 +1601,22 @@ fun AcceptRejectButtonBoxPreview(){
         negativeButtonOnClick = {}
     )
 }
+
+@Preview (showBackground = true)
+@Composable
+fun AcceptRejectButtonBoxPreFilledPreview(){
+    AcceptRejectButtonBoxPreFilled(
+        modifier = Modifier.shadow(10.dp),
+        negativeButtonRequired = true,
+        positiveButtonText = "Accept",
+        negativeButtonText = "Reject",
+        preFilledValue = 2,
+        positiveButtonOnClick = {},
+        negativeButtonOnClick = {}
+    )
+}
+
+
 
 @Composable
 fun BlueButtonWithIconWithFixedWidthWithoutIcon(

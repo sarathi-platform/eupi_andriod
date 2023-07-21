@@ -240,6 +240,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchDataForBpc() {
+        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
