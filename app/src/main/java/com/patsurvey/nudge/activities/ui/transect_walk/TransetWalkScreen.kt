@@ -448,6 +448,7 @@ fun TransectWalkScreen(
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     if (completeTolaAdditionClicked) {
+                        viewModel.saveTransectWalkCompletionDate()
                         //TODO Integrate Api when backend fixes the response.
                         if ((context as MainActivity).isOnline.value ?: false) {
                             NudgeLogger.d("TransectWalkScreen", "completeTolaAdditionClicked -> isOnline")

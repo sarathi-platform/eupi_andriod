@@ -52,6 +52,8 @@ import com.patsurvey.nudge.utils.PREF_LANGUAGE_ID_TO_RETRY
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
 import com.patsurvey.nudge.utils.PREF_RETRY_API_LIST
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VILLAGE_ID_TO_RETRY
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
@@ -253,6 +255,16 @@ object RetryHelper {
                                             steps.isComplete =
                                                 findCompleteValue(steps.status).ordinal
 
+                                            if(steps.id == 40){
+                                                prefRepo?.savePref(
+                                                    PREF_TRANSECT_WALK_COMPLETION_DATE_ +id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+
+                                            if(steps.id == 41){
+                                                prefRepo?.savePref(
+                                                    PREF_SOCIAL_MAPPING_COMPLETION_DATE_ +id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+
                                             if(steps.id == 46){
                                                 prefRepo?.savePref(
                                                     PREF_WEALTH_RANKING_COMPLETION_DATE_+id, steps.localModifiedDate?: System.currentTimeMillis())
@@ -266,6 +278,7 @@ object RetryHelper {
                                                 prefRepo?.savePref(
                                                     PREF_VO_ENDORSEMENT_COMPLETION_DATE_+id, steps.localModifiedDate?: System.currentTimeMillis())
                                             }
+
                                         }
                                         stepsListDao?.insertAll(it.stepList)
                                         prefRepo?.savePref(

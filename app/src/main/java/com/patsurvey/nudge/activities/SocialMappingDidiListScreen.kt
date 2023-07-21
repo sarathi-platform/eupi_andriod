@@ -462,6 +462,7 @@ fun SocialMappingDidiListScreen(
                         if (completeTolaAdditionClicked) {
                             didiViewModel.checkIfLastStepIsComplete(stepId) { isPreviousStepComplete ->
                                 if (isPreviousStepComplete) {
+                                    didiViewModel.saveSocialMappingCompletionDate()
                                     //TODO Integrate Api when backend fixes the response.
                                     if ((context as MainActivity).isOnline.value ?: false) {
                                         if (didiViewModel.isTolaSynced.value == 2) {

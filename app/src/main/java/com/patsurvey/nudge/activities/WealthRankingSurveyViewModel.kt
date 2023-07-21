@@ -115,7 +115,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
-                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_,System.currentTimeMillis()))
+                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
                         )
                     )
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
@@ -241,7 +241,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun saveWealthRankingCompletionDate() {
         val currentTime = System.currentTimeMillis()
-        prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE_, currentTime)
+        prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id, currentTime)
     }
 
     fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
