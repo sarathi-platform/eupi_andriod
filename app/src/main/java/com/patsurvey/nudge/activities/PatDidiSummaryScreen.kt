@@ -528,6 +528,7 @@ fun PatDidiSummaryScreen(
                             patDidiSummaryViewModel.didiImageLocation.value
                         )
                     }
+                    patDidiSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
                     } else {

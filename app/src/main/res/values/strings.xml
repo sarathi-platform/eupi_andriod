@@ -325,7 +325,7 @@
     <string name="link_form_d">Link Form D</string>
     <string name="step_transect_walk">Transect Walk</string>
     <string name="step_social_mapping">Social Mapping</string>
-    <string name="step_participatory_wealth_ranking">Wealth Ranking</string>
+    <string name="step_participatory_wealth_ranking">Participatory Wealth Ranking</string>
     <string name="step_pat_survey">Pat Survey</string>
     <string name="step_vo_endorsement">VO Endorsement</string>
     <string name="step_bpc_verification">BPC Verification</string>
@@ -338,5 +338,6 @@
     <string name="delete_didi">Delete</string>
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
     <string name="share_logs">Share Logs</string>
-
+    <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
+    <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
 </resources>

@@ -31,6 +31,7 @@ import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -114,7 +115,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
-                            StepStatus.COMPLETED.name, prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_,System.currentTimeMillis().toString()))
+                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_,System.currentTimeMillis()))
+                        )
                     )
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiService.editWorkFlow(primaryWorkFlowRequest)

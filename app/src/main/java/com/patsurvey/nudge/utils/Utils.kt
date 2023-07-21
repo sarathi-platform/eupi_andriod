@@ -697,3 +697,11 @@ fun changeMilliDateToDate(millDate:Long):String?{
         val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
         return dateFormat.format(millDate)
 }
+
+fun longToString(value:Long):String{
+    return try {
+        value.toString()
+    }catch (ex:Exception){
+        BLANK_STRING
+    }
+}
