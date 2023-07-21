@@ -22,7 +22,6 @@ import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -78,7 +77,7 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(),
-                didiDetailList = didiDetailList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
+                didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1  },
                 changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)

@@ -978,7 +978,7 @@ sealed class BpcDidiListScreens(val route: String) {
 
     object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
 
-    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}")
+    object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object STEP_COMPLETION_SCREEN :
         BpcDidiListScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 

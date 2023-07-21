@@ -270,6 +270,7 @@ fun VillageSelectionScreen(
                                     voName = village.federationName,
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
+                                    isBpcUser = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
                                     isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false
                                 ) {
                                     viewModel.villageSelected.value = it

@@ -140,7 +140,10 @@ data class DidiEntity(
     var crpUploadedImage: String? = BLANK_STRING,
 
     @ColumnInfo(name = "needsToPostImage")
-    var needsToPostImage: Boolean = false
+    var needsToPostImage: Boolean = false,
+
+    @ColumnInfo(name = "rankingEdit")
+    var rankingEdit: Boolean = true
 
 ){
     companion object{

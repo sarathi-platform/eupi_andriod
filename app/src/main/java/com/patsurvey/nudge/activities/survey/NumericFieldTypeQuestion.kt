@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -38,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.text.isDigitsOnly
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -58,6 +58,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
+import com.patsurvey.nudge.utils.showToast
 
 
 @Composable
@@ -74,7 +75,7 @@ fun NumericFieldTypeQuestion(
     showNextButton: Boolean = true,
     onSubmitClick: () -> Unit
 ) {
-
+val context = LocalContext.current
 
     Box {
         ConstraintLayout(modifier = modifier
@@ -126,12 +127,14 @@ fun NumericFieldTypeQuestion(
                     }
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    itemsIndexed(optionList) { index, option ->
+                    itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
                             questionFlag = questionFlag,
                             optionImageUrl = option.optionImage?: BLANK_STRING,
+                            optionValue = option.optionValue,
+                            optionList = optionList.sortedBy { it.optionValue },
                             onDecrementClick = {
                                 if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
@@ -176,6 +179,8 @@ fun NumericFieldTypeQuestion(
                                 )
                                 option.count = if(it.isEmpty()) 0 else it.toInt()
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
+                            }, onLimitFailed = {
+                                showToast(context, context.getString(R.string.earning_member_can_not_be_more_than_family_members))
                             })
                     }
 
@@ -204,28 +209,10 @@ fun NumericFieldTypeQuestion(
                                 )
                         ) {
                             OutlinedTextField(
-                                value = if(questionFlag.equals(QUESTION_FLAG_RATIO,true)) roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString()
-                                else
-                                        (if(viewModel?.enteredAmount?.value.isNullOrEmpty() || viewModel?.enteredAmount?.value.equals("0.0") /*|| viewModel?.enteredAmount?.value.equals("0")*/) BLANK_STRING else viewModel?.enteredAmount?.value.toString()),
-                                readOnly = questionFlag.equals(QUESTION_FLAG_RATIO,true),
+                                value = roundOffDecimalPoints(viewModel?.totalAmount?.value?:0.00).toString(),
+                                readOnly = true,
                                 onValueChange = {
-                                    if(questionFlag.equals(QUESTION_FLAG_RATIO,true)){
-                                        viewModel?.totalAmount?.value = it.toDouble()
-                                    }else{
-                                        if(it.isEmpty() || it.equals(BLANK_STRING) || it.equals("0.0")){
-                                            viewModel?.enteredAmount?.value = BLANK_STRING
-                                        }else {
-                                            if(it.length<ASSET_VALUE_LENGTH){
-                                                if(onlyNumberField(it)){
-                                                    viewModel?.enteredAmount?.value = it
-                                                }
-
-                                            }
-                                        }
-
-                                    }
-
-                                },
+                                        viewModel?.totalAmount?.value = it.toDouble()                                },
                                 placeholder = {
                                     Text(
                                         text = stringResource(id = R.string.enter_amount), style = TextStyle(
@@ -308,6 +295,7 @@ fun NumericFieldTypeQuestionPreview() {
         onAssetValueChange = {}
     ) {}*/
 }
+
 
 @Composable
 fun NumericOptionCard(

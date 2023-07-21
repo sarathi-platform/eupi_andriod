@@ -105,6 +105,8 @@ const val USER_BPC = "BPC"
 
 const val PREF_PROGRAM_NAME = "programName"
 const val PREF_OPEN_FROM_HOME = "open_from_home"
+const val PREF_TRANSECT_WALK_COMPLETION_DATE_ = "transect_walk_completion_date_"
+const val PREF_SOCIAL_MAPPING_COMPLETION_DATE_ = "social_mapping_completion_date_"
 const val PREF_WEALTH_RANKING_COMPLETION_DATE_ = "wealth_ranking_completion_date_"
 const val PREF_PAT_COMPLETION_DATE_ = "pat_completion_date_"
 const val PREF_BPC_PAT_COMPLETION_DATE_ = "bpc_pat_completion_date_"

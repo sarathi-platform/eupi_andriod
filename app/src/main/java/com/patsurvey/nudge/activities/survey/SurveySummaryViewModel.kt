@@ -349,9 +349,10 @@ class SurveySummaryViewModel @Inject constructor(
                         listOf(EditWorkFlowRequest(
                             if (!prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
                                 .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
-                                .indexOf(6)].workFlowId, StepStatus.COMPLETED.name
-                        )
-                        )
+                                .indexOf(6)].workFlowId, StepStatus.COMPLETED.name,
+                            longToString(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+
+                        ))
                     NudgeLogger.d(
                         "SurveySummaryViewModel",
                         "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"
@@ -507,9 +508,7 @@ class SurveySummaryViewModel @Inject constructor(
 
     fun savePatCompletionDate() {
         val currentTime = System.currentTimeMillis()
-//        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-//        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_PAT_COMPLETION_DATE_, currentTime)
+        prefRepo.savePref(PREF_PAT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id, currentTime)
     }
 
     fun saveBpcPatCompletionDate() {
@@ -971,6 +970,9 @@ class SurveySummaryViewModel @Inject constructor(
             }
             notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
             voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 && it.section2Status == 2 }.size
+            if(prefRepo.isUserBPC()){
+                voEndorseDidiCount.value = totalPatDidiCount.value
+            }
 
             if(totalPatDidiCount.value>1)
               list.add(context.getString(R.string.pat_completed_for_didi_plural,totalPatDidiCount.value))

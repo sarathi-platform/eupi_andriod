@@ -670,7 +670,7 @@ fun BpcProgressScreen(
 
                             item {
                                 StepsBoxForBpc(
-                                    boxTitle = "BPC Verification",
+                                    boxTitle = stringResource(id = R.string.step_bpc_verification),
                                     stepNo = 6,
                                     index = 1,
                                     iconId = 6,

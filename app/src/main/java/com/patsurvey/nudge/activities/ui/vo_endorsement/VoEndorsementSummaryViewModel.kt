@@ -10,11 +10,13 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +33,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val answerDao: AnswerDao,
-    val questionListDao: QuestionListDao
+    val questionListDao: QuestionListDao,
+    val stepsListDao: StepsListDao
 ):BaseViewModel() {
 
     private val _didiEntity = MutableStateFlow(
@@ -84,6 +87,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
     private val _quesList = MutableStateFlow(listOf<QuestionEntity>())
     val quesList: StateFlow<List<QuestionEntity>> get() = _quesList
 
+    val voEndorsementStatus = mutableStateOf(StepStatus.INPROGRESS.ordinal)
+
     val selPageIndex = mutableStateOf(0)
     val quesImageUrl= mutableStateOf(BLANK_STRING)
 
@@ -92,6 +97,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             val localDidiDetails=didiDao.getDidi(didiId)
             val localQuesList=questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
             val localDidiList = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id) /*answerDao.fetchAllDidisForVO(prefRepo.getSelectedVillage().id)*/
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }
+            voEndorsementStatus.value = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
             withContext(Dispatchers.IO){
                  selPageIndex.value= localDidiList.map { it.id }.indexOf(didiId)
                 _quesList.emit((localQuesList))

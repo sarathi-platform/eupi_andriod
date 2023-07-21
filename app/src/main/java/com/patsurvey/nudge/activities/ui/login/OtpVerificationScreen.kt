@@ -136,7 +136,7 @@ fun OtpVerificationScreen(
             }
             AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
                 Row(
-                    horizontalArrangement = Arrangement.End,
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.fillMaxWidth(),
 
                     ) {
@@ -169,39 +169,45 @@ fun OtpVerificationScreen(
                         color = textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
+                        fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Start,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = dimensionResource(id = R.dimen.dp_10))
+                            .padding(start = 2.dp)
                             .background(Color.Transparent)
                     )
                 }
             }
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth()
-            ) {
 
-                Text(
-                    text = stringResource(id = R.string.resend_otp),
-                    color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    textDecoration = TextDecoration.Underline,
-                    modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
-                        viewModel.resendOtp() { success, message ->
-                            snackState.addMessage(message = context.getString(R.string.otp_resend_to_mobile_number_message,mobileNumber), isSuccess = true, isCustomIcon = false)
+            AnimatedVisibility(visible = isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text(
+                        text = stringResource(id = R.string.resend_otp),
+                        color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Start,
+                        textDecoration = TextDecoration.Underline,
+                        modifier = Modifier.padding(start = 2.dp).clickable(enabled = isResendOTPEnable.value) {
+                            viewModel.resendOtp() { success, message ->
+                                snackState.addMessage(
+                                    message = context.getString(
+                                        R.string.otp_resend_to_mobile_number_message,
+                                        mobileNumber
+                                    ), isSuccess = true, isCustomIcon = false
+                                )
+                            }
+                            formattedTime.value = SEC_30_STRING
+                            isResendOTPEnable.value = false
                         }
-                        formattedTime.value = SEC_30_STRING
-                        isResendOTPEnable.value = false
-                    }
-                )
+                    )
+                }
             }
-
-
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
             Button(
                 onClick = {
