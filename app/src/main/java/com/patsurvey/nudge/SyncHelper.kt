@@ -360,61 +360,71 @@ class SyncHelper (
     private fun uploadDidiImagesToServer(context : Context){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val didiList = didiDao.fetchAllDidiNeedsToPostImage(true)
-            val imageFilePart = ArrayList<MultipartBody.Part>()
-            val requestDidiId = ArrayList<RequestBody>()
-            val requestUserType = ArrayList<RequestBody>()
-            val requestLocation = ArrayList<RequestBody>()
-            try {
-                for(didi in didiList) {
-                    val path = findImageLocationFromPath(didi.localPath)
-                    NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
-                    val uri = path[0].toUri()
-                    NudgeLogger.d(
-                        "Synchelper",
-                        "uploadDidiImage Prev: $uri.toFile().totalSpace} "
-                    )
-                    val compressedImageFile =
-                        compressImage(uri.toString(), context, uri.toFile().name)
-                    val requestFile = RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        File(compressedImageFile)
-                    )
-                    imageFilePart.add(MultipartBody.Part.createFormData(
-                        "file",
-                        File(compressedImageFile).name,
-                        requestFile
-                    ))
-                    requestDidiId.add(RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        didi.serverId.toString()
-                    ))
-                    requestUserType.add(RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
-                    ))
-                    requestLocation.add(RequestBody.create("multipart/form-data".toMediaTypeOrNull(), path.get(1)))
-                    NudgeLogger.d(
-                        "Synchelper",
-                        "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
-                    )
-                }
-                val imageUploadResponse = apiService.uploadDidiBulkImage(
-                    imageFilePart,
-                    requestDidiId,
-                    requestUserType,
-                    requestLocation
-                )
-                NudgeLogger.d(
-                    "Synchelper",
-                    "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
-                )
-                if (imageUploadResponse.status == SUCCESS) {
+            if(didiList.isNotEmpty()){
+                val imageFilePart = ArrayList<MultipartBody.Part>()
+                val requestDidiId = ArrayList<RequestBody>()
+                val requestUserType = ArrayList<RequestBody>()
+                val requestLocation = ArrayList<RequestBody>()
+                try {
                     for(didi in didiList) {
-                        didiDao.updateNeedsToPostImage(didi.id, false)
+                        if(imageFilePart.size == 5) {
+                            break
+                        }
+                        val path = findImageLocationFromPath(didi.localPath)
+                        NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
+                        val uri = path[0]
+                        NudgeLogger.d(
+                            "Synchelper",
+                            "uploadDidiImage Prev: ${uri}"
+                        )
+                        val compressedImageFile =
+                            compressImage(uri.toString(), context, getFileNameFromURL(uri))
+                        val requestFile = RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            File(compressedImageFile)
+                        )
+                        imageFilePart.add(MultipartBody.Part.createFormData(
+                            "files",
+                            File(compressedImageFile).name,
+                            requestFile
+                        ))
+                        requestDidiId.add(RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            didi.serverId.toString()
+                        ))
+                        requestUserType.add(RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                        ))
+                        requestLocation.add(RequestBody.create("multipart/form-data".toMediaTypeOrNull(), path.get(1)))
+                        NudgeLogger.d(
+                            "Synchelper",
+                            "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
+                        )
                     }
+                    val imageUploadResponse = apiService.uploadDidiBulkImage(
+                        imageFilePart,
+                        requestDidiId,
+                        requestUserType,
+                        requestLocation
+                    )
+                    NudgeLogger.d(
+                        "Synchelper",
+                        "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
+                    )
+                    if (imageUploadResponse.status == SUCCESS) {
+                        for(i in didiList.indices) {
+                            if(i == 5)
+                                break
+                            didiDao.updateNeedsToPostImage(didiList[i].id, false)
+                        }
+                        if(didiList.size>5) {
+                            uploadDidiImagesToServer(context)
+                        }
+                    }
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
                 }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
             }
         }
     }
@@ -983,9 +993,9 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.6f
                 }
                 val didiIDList= answerDao.fetchPATSurveyDidiList()
+                uploadDidiImagesToServer(MyApplication.applicationContext())
                 if(didiIDList.isNotEmpty()){
                     var optionList: List<OptionsItem>
-                    uploadDidiImagesToServer(MyApplication.applicationContext())
                     val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
                     var surveyId =0
                     var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()

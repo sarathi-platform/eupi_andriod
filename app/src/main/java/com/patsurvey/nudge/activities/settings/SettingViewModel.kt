@@ -219,6 +219,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
+                && didiDao.fetchAllDidiNeedsToPostImage(true).isEmpty()
                 && isStepStatusSync(3)
             ) {
                 NudgeLogger.d("SettingViewModel", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 2")
