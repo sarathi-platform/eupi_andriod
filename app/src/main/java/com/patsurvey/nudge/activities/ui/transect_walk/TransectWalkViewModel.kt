@@ -30,12 +30,15 @@ import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TOLA_COUNT
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -809,6 +812,10 @@ class TransectWalkViewModel @Inject constructor(
         }
     }
 
+    fun saveTransectWalkCompletionDate() {
+        val currentTime = System.currentTimeMillis()
+        prefRepo.savePref(PREF_TRANSECT_WALK_COMPLETION_DATE_ +prefRepo.getSelectedVillage().id, currentTime)
+    }
     fun callWorkFlowAPI(
         villageId: Int,
         stepId: Int,
@@ -822,7 +829,10 @@ class TransectWalkViewModel @Inject constructor(
                 val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
-                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId, StepStatus.COMPLETED.name))
+                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(1)].workFlowId
+                        , StepStatus.COMPLETED.name, longToString(prefRepo.getPref(
+                            PREF_TRANSECT_WALK_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    ))
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiInterface.editWorkFlow(primaryWorkFlowRequest)
                     NudgeLogger.d("TransectWalkViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")

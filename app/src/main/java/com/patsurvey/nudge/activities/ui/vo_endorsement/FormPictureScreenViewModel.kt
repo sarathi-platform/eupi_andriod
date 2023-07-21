@@ -27,6 +27,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -36,6 +37,7 @@ import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
+import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.uriFromFile
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -192,9 +194,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun saveVoEndorsementDate() {
         val currentTime = System.currentTimeMillis()
-//        val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-//        val date = dateFormat.format(currentTime)
-        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_, currentTime)
+        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id, currentTime)
     }
 
     override fun onServerError(error: ErrorModel?) {
@@ -335,7 +335,10 @@ class FormPictureScreenViewModel @Inject constructor(
 
                 if(dbResponse.workFlowId>0){
                     val primaryWorkFlowRequest = listOf(
-                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId, StepStatus.COMPLETED.name)
+                        EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
+                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                        )
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
 

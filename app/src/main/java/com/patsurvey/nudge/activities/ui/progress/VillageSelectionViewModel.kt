@@ -74,6 +74,8 @@ import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_PROGRAM_NAME
+import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -855,6 +857,16 @@ class VillageSelectionViewModel @Inject constructor(
                                                 steps.isComplete =
                                                     findCompleteValue(steps.status).ordinal
                                                 steps.needToPost = false
+
+                                                if(steps.id == 40){
+                                                    prefRepo.savePref(
+                                                        PREF_TRANSECT_WALK_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                }
+
+                                                if(steps.id == 41){
+                                                    prefRepo.savePref(
+                                                        PREF_SOCIAL_MAPPING_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                }
 
                                                 if(steps.id == 46){
                                                     prefRepo.savePref(

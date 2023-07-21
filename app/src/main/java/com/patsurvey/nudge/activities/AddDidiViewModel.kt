@@ -858,6 +858,10 @@ class AddDidiViewModel @Inject constructor(
         didiDao.insertAll(didis)
     }*/
 
+    fun saveSocialMappingCompletionDate() {
+        val currentTime = System.currentTimeMillis()
+        prefRepo.savePref(PREF_SOCIAL_MAPPING_COMPLETION_DATE_ +prefRepo.getSelectedVillage().id, currentTime)
+    }
     fun callWorkFlowAPI(
         villageId: Int,
         stepId: Int,
@@ -872,7 +876,9 @@ class AddDidiViewModel @Inject constructor(
                 NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> stepList = $stepList")
 
                 if (dbResponse.workFlowId > 0) {
-                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId, StepStatus.COMPLETED.name))
+                    val primaryWorkFlowRequest = listOf(EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(2)].workFlowId,
+                        StepStatus.COMPLETED.name,longToString(prefRepo.getPref(
+                            PREF_SOCIAL_MAPPING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))))
                     NudgeLogger.d("AddDidiViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
                     val response = apiService.editWorkFlow(
                         primaryWorkFlowRequest
