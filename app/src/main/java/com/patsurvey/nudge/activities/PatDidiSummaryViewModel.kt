@@ -257,4 +257,10 @@ class PatDidiSummaryViewModel @Inject constructor(
         val filePath = File(directory, "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png")
         return filePath
     }
+
+    fun setNeedToPostImage(needToPostImage: Boolean) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            didiDao.updateNeedsToPostImage(didiEntity.value.id, needToPostImage)
+        }
+    }
 }

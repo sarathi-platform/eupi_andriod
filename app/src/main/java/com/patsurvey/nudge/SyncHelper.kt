@@ -8,7 +8,6 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.core.net.toFile
 import androidx.core.net.toUri
-import com.google.firebase.installations.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -360,15 +359,15 @@ class SyncHelper (
 
     private fun uploadDidiImagesToServer(context : Context){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToPostImage(true)
-            for(didi in didiList) {
-                val path = findImageLocationFromPath(didi.localPath)
-                NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
-                val imageFilePart = ArrayList<MultipartBody.Part>()
-                val requestDidiId = ArrayList<RequestBody>()
-                val requestUserType = ArrayList<RequestBody>()
-                val requestLocation = ArrayList<RequestBody>()
-                try {
+            val didiList = didiDao.fetchAllDidiNeedsToPostImage(true)
+            val imageFilePart = ArrayList<MultipartBody.Part>()
+            val requestDidiId = ArrayList<RequestBody>()
+            val requestUserType = ArrayList<RequestBody>()
+            val requestLocation = ArrayList<RequestBody>()
+            try {
+                for(didi in didiList) {
+                    val path = findImageLocationFromPath(didi.localPath)
+                    NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
                     val uri = path[0].toUri()
                     NudgeLogger.d(
                         "Synchelper",
@@ -398,22 +397,24 @@ class SyncHelper (
                         "Synchelper",
                         "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
                     )
-                    val imageUploadResponse = apiService.uploadDidiBulkImage(
-                        imageFilePart,
-                        requestDidiId,
-                        requestUserType,
-                        requestLocation
-                    )
-                    NudgeLogger.d(
-                        "Synchelper",
-                        "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
-                    )
-                    if (imageUploadResponse.status == SUCCESS) {
-                        didiDao.updateNeedToPostImage(didi.id, false)
-                    }
-                } catch (ex: Exception) {
-                    ex.printStackTrace()
                 }
+                val imageUploadResponse = apiService.uploadDidiBulkImage(
+                    imageFilePart,
+                    requestDidiId,
+                    requestUserType,
+                    requestLocation
+                )
+                NudgeLogger.d(
+                    "Synchelper",
+                    "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
+                )
+                if (imageUploadResponse.status == SUCCESS) {
+                    for(didi in didiList) {
+                        didiDao.updateNeedsToPostImage(didi.id, false)
+                    }
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
             }
         }
     }

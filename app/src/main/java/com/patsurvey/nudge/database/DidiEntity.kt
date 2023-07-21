@@ -139,8 +139,8 @@ data class DidiEntity(
     @ColumnInfo(name = "crpUploadedImage")
     var crpUploadedImage: String? = BLANK_STRING,
 
-    @ColumnInfo(name = "needToPostImage")
-    var needToPostImage: Boolean = true
+    @ColumnInfo(name = "needsToPostImage")
+    var needsToPostImage: Boolean = false
 
 ){
     companion object{
