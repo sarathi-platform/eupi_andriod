@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
@@ -11,9 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.*
@@ -58,7 +55,6 @@ import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.delay
 import java.text.DecimalFormat
 import java.util.function.Consumer
@@ -394,6 +390,26 @@ fun PatDidiSummaryScreen(
                             }
                         }
                         Spacer(modifier = Modifier.height(10.dp))
+
+                        var hasImage by remember {
+                            mutableStateOf(false)
+                        }
+
+                        val cameraLauncher = rememberLauncherForActivityResult(
+                            contract = ActivityResultContracts.TakePicture(),
+                            onResult = { success ->
+                                hasImage = success
+                                NudgeLogger.d("PatDidiSummaryScreen", "rememberLauncherForActivityResult -> onResult = success: $success")
+                                if (success) {
+                                    patDidiSummaryViewModel.photoUri = patDidiSummaryViewModel.tempUri
+                                    handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
+                                } else {
+                                    patDidiSummaryViewModel.shouldShowPhoto.value =
+                                        !(patDidiSummaryViewModel.photoUri == null || patDidiSummaryViewModel.photoUri == Uri.EMPTY)
+                                }
+                            }
+                        )
+
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             AsyncImage(
                                 model = patDidiSummaryViewModel.photoUri,
@@ -431,6 +447,13 @@ fun PatDidiSummaryScreen(
                                         languageItemActiveBg,
                                         shape = RoundedCornerShape(6.dp)
                                     )
+                                    .clickable {
+                                        val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                        patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                        val uri = uriFromFile(localContext, imageFile)
+                                        patDidiSummaryViewModel.tempUri = uri
+                                        cameraLauncher.launch(uri)
+                                    }
                             ) {
                                 Column(
                                     modifier = Modifier.align(Alignment.Center),
@@ -451,25 +474,6 @@ fun PatDidiSummaryScreen(
                             }
                         }
                         Spacer(modifier = Modifier.height(10.dp))
-
-                        var hasImage by remember {
-                            mutableStateOf(false)
-                        }
-
-                        val cameraLauncher = rememberLauncherForActivityResult(
-                            contract = ActivityResultContracts.TakePicture(),
-                            onResult = { success ->
-                                hasImage = success
-                                NudgeLogger.d("PatDidiSummaryScreen", "rememberLauncherForActivityResult -> onResult = success: $success")
-                                if (success) {
-                                    patDidiSummaryViewModel.photoUri = patDidiSummaryViewModel.tempUri
-                                    handleImageCapture(uri = patDidiSummaryViewModel.photoUri, photoPath = patDidiSummaryViewModel.imagePath, context = (localContext as MainActivity), didi.value, viewModal = patDidiSummaryViewModel)
-                                } else {
-                                    patDidiSummaryViewModel.shouldShowPhoto.value =
-                                        !(patDidiSummaryViewModel.photoUri == null || patDidiSummaryViewModel.photoUri == Uri.EMPTY)
-                                }
-                            }
-                        )
 
                         if (patDidiSummaryViewModel.shouldShowPhoto.value) {
                             ButtonOutline(

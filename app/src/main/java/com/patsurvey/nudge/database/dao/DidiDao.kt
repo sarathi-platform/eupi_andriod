@@ -255,4 +255,3 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET rankingEdit = :rankingEdit where villageId = :villageId")
     fun updateRankEditFlag(villageId: Int, rankingEdit: Boolean)
 }
-}
