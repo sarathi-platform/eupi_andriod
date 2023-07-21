@@ -661,6 +661,18 @@ fun findImageFilePath(uri:String):String{
     return BLANK_STRING
 }
 
+fun findImageLocationFromPath(uri:String):List<String>{
+    if(uri.isNotEmpty()){
+        if(uri.contains("|")) {
+            val path: List<String> = uri.split("|")
+            if (path[0].contains("content:/"))
+                path[0].replace("content:/", "file:/")
+            return path
+        }
+    }
+    return ArrayList()
+}
+
 fun findStepNameForSelectedLanguage(context: Context,stepId:Int):String{
    return when(stepId){
        40-> context.getString(R.string.step_transect_walk)

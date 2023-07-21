@@ -19,6 +19,9 @@ data class PATDidiStatusModel(
     @ColumnInfo(name = "patSurveyStatus")
     var patSurveyStatus: Int=0,
 
+    @ColumnInfo(name = "villageId")
+    var villageId: Int=0,
+
     @ColumnInfo(name = "section1Status")
     var section1Status: Int=0,
 
