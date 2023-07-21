@@ -27,19 +27,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
-import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
-import com.patsurvey.nudge.utils.LogWriter
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
-import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.SYNC_FAILED
-import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TolaStatus
-import com.patsurvey.nudge.utils.getStepStatusFromOrdinal
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -136,6 +124,7 @@ class SettingViewModel @Inject constructor(
             }
         }
     }
+
 
     fun isFirstStepNeedToBeSync(isNeedToBeSync : MutableState<Int>) {
         stepOneSyncStatus = isNeedToBeSync
@@ -241,6 +230,7 @@ class SettingViewModel @Inject constructor(
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
                 && isStepStatusSync(4)
+                && !isFormNeedToBeUpload()
             ) {
                 NudgeLogger.d("SettingViewModel", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -251,6 +241,17 @@ class SettingViewModel @Inject constructor(
                 isNeedToBeSync.value = 0
             }
         }
+    }
+
+    private fun isFormNeedToBeUpload(): Boolean {
+        val languageId = prefRepo.getAppLanguageId()?:2
+        val villageList = villegeListDao.getAllVillages(languageId)
+        for(village in villageList){
+            if(prefRepo.getPref(
+                PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false))
+              return true
+        }
+        return false
     }
 
     override fun onServerError(error: ErrorModel?) {

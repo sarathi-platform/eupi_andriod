@@ -20,6 +20,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -454,7 +455,11 @@ class FormPictureScreenViewModel @Inject constructor(
                         "multipart/form-data".toMediaTypeOrNull(),
                         if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                if(response.status == SUCCESS){
+                    prefRepo.savePref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                }
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
