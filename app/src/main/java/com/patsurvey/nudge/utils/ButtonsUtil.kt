@@ -89,6 +89,7 @@ import com.patsurvey.nudge.activities.ui.theme.rejectColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.model.response.OptionsItem
 import java.io.File
 
 @Composable
@@ -1169,9 +1170,12 @@ fun IncrementDecrementView(modifier: Modifier,
                            currentValue: Int=0,
                            optionImageUrl:String,
                            questionFlag:String,
+                           optionList: List<OptionsItem>,
+                           optionValue:Int?=0,
                            onDecrementClick: (Int)->Unit,
                            onIncrementClick: (Int)->Unit,
-                           onValueChange: (String) -> Unit){
+                           onValueChange: (String) -> Unit,
+                           onLimitFailed: (String) -> Unit){
     var currentCount by remember {
         mutableStateOf(if(currentValue<=0) BLANK_STRING else currentValue.toString())
     }
@@ -1265,8 +1269,23 @@ fun IncrementDecrementView(modifier: Modifier,
                 Row(modifier = Modifier
                     .fillMaxWidth()
                     .clickable {
-                        currentCount = incDecValue(0, currentCount)
-                        onDecrementClick(if(currentCount.isEmpty()) 0 else currentCount.toInt())
+                        var isValidCount = true
+                        if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
+                            val otherOptionValueCount =
+                                findOptionValueCount(optionList, optionValue ?: 1)
+                            val newCurrentCount = incDecValue(0, currentCount)
+                            val intCnt =
+                                if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
+                            if (optionValue == 1) {
+                                if (intCnt < otherOptionValueCount)
+                                    isValidCount = false
+                            }
+                        }
+
+                        if (isValidCount) {
+                            currentCount = incDecValue(0, currentCount)
+                            onDecrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
+                        } else onLimitFailed("Low Limit")
                     }, horizontalArrangement = Arrangement.Center){
                     Icon(
                         painter = painterResource(id = R.drawable.minus_icon),
@@ -1289,11 +1308,28 @@ fun IncrementDecrementView(modifier: Modifier,
                     readOnly = false,
                     onValueChange = {
                         if(onlyNumberField(it)) {
+                            var isValidCount = true
+                            if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
+                                val otherOptionValueCount =  findOptionValueCount(optionList,optionValue?:1)
+                                val intCnt =
+                                    if (it.isEmpty()) 0 else it.toInt()
+                                if (optionValue == 1) {
+                                    if (intCnt < otherOptionValueCount)
+                                        isValidCount = false
+                                }
+
+                                if (optionValue == 2) {
+                                    if (intCnt > (otherOptionValueCount ?: 0))
+                                        isValidCount = false
+                                }
+                            }
+                            if(isValidCount) {
                                 val currentIt = if (it.isEmpty()) 0 else it.toInt()
                                 if (currentIt <= MAXIMUM_RANGE) {
                                     currentCount = it.ifEmpty { "" }
                                     onValueChange(it)
                                 }
+                            }else onLimitFailed("Limit Entered Exceeded")
                             }
                     },
                     placeholder = {
@@ -1353,8 +1389,23 @@ fun IncrementDecrementView(modifier: Modifier,
                     )
                 )
                 .clickable {
-                    currentCount = incDecValue(1, currentCount)
-                    onIncrementClick(if(currentCount.isEmpty()) 0 else currentCount.toInt())
+                    var isValidCount = true
+                    if (questionFlag.equals(QUESTION_FLAG_RATIO, true)) {
+                        val otherOptionValueCount =
+                            findOptionValueCount(optionList, optionValue ?: 1)
+                        val newCurrentCount = incDecValue(1, currentCount)
+                        val intCnt =
+                            if (newCurrentCount.isEmpty()) 0 else newCurrentCount.toInt()
+                        if (optionValue == 2) {
+                            if (intCnt > (otherOptionValueCount ?: 0))
+                                isValidCount = false
+                        }
+                    }
+                    if (isValidCount) {
+                        currentCount = incDecValue(1, currentCount)
+                        onIncrementClick(if (currentCount.isEmpty()) 0 else currentCount.toInt())
+                    } else onLimitFailed("Limit Exceeded")
+
                 },
                 contentAlignment = Alignment.Center){
                 Icon(
@@ -1369,6 +1420,17 @@ fun IncrementDecrementView(modifier: Modifier,
 
     }
 
+}
+
+fun findOptionValueCount(optionList: List<OptionsItem>, optionValue:Int):Int{
+    optionList?.let {
+        it.forEach {
+            if(optionValue != it.optionValue){
+                return it.count?:0
+            }
+        }
+    }
+    return 0
 }
 
 fun incDecValue(operation:Int,value:String):String{
@@ -1391,7 +1453,7 @@ fun incDecValue(operation:Int,value:String):String{
 @Preview(showBackground = true)
 @Composable
 fun IncrementDecrementViewPreview(){
-    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, optionImageUrl = BLANK_STRING, questionFlag = BLANK_STRING, onValueChange = {})
+    IncrementDecrementView(modifier = Modifier,"Goat",0, onDecrementClick = {}, onIncrementClick = {}, optionImageUrl = BLANK_STRING, questionFlag = BLANK_STRING, onValueChange = {}, optionList = emptyList(),onLimitFailed = {})
 }
 
 @Preview(showBackground = true)

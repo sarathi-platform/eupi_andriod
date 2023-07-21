@@ -230,7 +230,7 @@ fun PatSurvaySectionSummaryScreen(
                         showPatCompletion.value = true
                     }
                 } else {
-                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+//                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
                     if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")

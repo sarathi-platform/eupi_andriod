@@ -250,7 +250,10 @@ fun ScoreComparisionScreen(
                                         color = animateColor,
                                         shape = RoundedCornerShape(6.dp)
                                     )
-                                    .background(animatedBoxBgColor, shape = RoundedCornerShape(6.dp))
+                                    .background(
+                                        animatedBoxBgColor,
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
                                     .fillMaxWidth()
                             ) {
                                 Column(Modifier) {
@@ -560,7 +563,7 @@ fun ExpandableSummaryBox(
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text(
-                    text = "The Match % should be more than 70%",
+                    text = stringResource(id = R.string.match_percentage_should_be_more_than_70),
                     color = textColorDark,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,

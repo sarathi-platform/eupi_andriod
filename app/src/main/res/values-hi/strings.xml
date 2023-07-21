@@ -151,7 +151,7 @@
     <string name="training_videos">प्रशिक्षण विडियो</string>
     <string name="language_text">भाषा</string>
     <string name="productive_asset_owned_by_family">कमाई का अनुपात</string>
-    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">PAT सर्वे पूर्ण करें</string>
     <string name="complete">पूर्ण</string>
     <string name="complete_section_2">अनुभाग २ पूरा करें</string>
@@ -306,7 +306,7 @@
     <string name="pat_didi_sent_to_bpm_approval_plural">%1$s अल्ट्रापूर दीदी को बीपीएम अनुमोदन के लिए भेजा गया है।</string>
     <string name="step_transect_walk">गाँव की सैर</string>
     <string name="step_social_mapping">सामाजिक मानचित्रण</string>
-    <string name="step_participatory_wealth_ranking">धन रैंकिंग</string>
+    <string name="step_participatory_wealth_ranking">भागीदारी धन रैंकिंग</string>
     <string name="step_pat_survey">PAT सर्वेक्षण</string>
     <string name="step_vo_endorsement">"VO एंडोर्समेंट "</string>
     <string name="step_bpc_verification">बीपीसी सत्यापन</string>
@@ -319,6 +319,8 @@
     <string name="delete_didi">मिटाना</string>
     <string name="you_want_to_delete_video">आप %1$s को हटाना चाहते हैं</string>
     <string name="share_logs">लॉग साझा करें</string>
+    <string name="earning_member_can_not_be_more_than_family_members">कमाऊ सदस्य परिवार के सदस्यों से अधिक नहीं हो सकते</string>
+    <string name="match_percentage_should_be_more_than_70">मिलान % 70% से अधिक होना चाहिए</string>
 
 
 </resources>

@@ -337,15 +337,12 @@ class QuestionScreenViewModel @Inject constructor(
                     nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
                     val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
                     val totalAssetAmount= answerDao.getTotalAssetAmount(didiId,questionList.value[quesIndex].questionId?:0)
-                    val totalEnteredAmount= answerDao.fetchEnteredAmount(didiId,questionList.value[quesIndex].questionId?:0)
+//                    val totalEnteredAmount= answerDao.fetchEnteredAmount(didiId,questionList.value[quesIndex].questionId?:0)
                     totalAmount.value =  totalDBAmount.toDouble()
-                    if(questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_RATIO,true)){
-                        totalAmount.value = totalAssetAmount
-                    }
 
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    enteredAmount.value= if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()
+                    enteredAmount.value="0.00" /*if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()*/
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1

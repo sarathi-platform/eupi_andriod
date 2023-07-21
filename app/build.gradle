@@ -26,13 +26,24 @@ android {
         }
     }
 
+    signingConfigs {
+        release {
+            storeFile file("../cert_thenudge.jks")
+            storePassword "nudge1234"
+            keyAlias "the_nudge"
+            keyPassword "nudge1234"
+        }
+    }
+
     buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
             debuggable false
             jniDebuggable = false
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            manifestPlaceholders.crashlyticsCollectionEnabled = "true"
         }
         debug{
             shrinkResources false
@@ -53,12 +64,13 @@ android {
             applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "Nudge STAGE"
 //            versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in"'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
+            applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "The Nudge"
-            versionName '0.0.0'
-            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
+//            versionName '0.0.0'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
     }
     compileOptions {
@@ -96,7 +108,7 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.6.1"
     implementation "androidx.fragment:fragment-ktx:1.5.6"
 
-    implementation "com.google.android.material:material:1.8.0"
+    implementation "com.google.android.material:material:1.9.0"
 
     implementation "androidx.constraintlayout:constraintlayout:2.1.4"
 

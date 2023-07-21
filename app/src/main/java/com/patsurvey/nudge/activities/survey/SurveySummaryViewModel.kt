@@ -348,12 +348,11 @@ class SurveySummaryViewModel @Inject constructor(
                     val primaryWorkFlowRequest =
                         listOf(EditWorkFlowRequest(
                             if (!prefRepo.isUserBPC()) stepList[stepList.map { it.orderNumber }
-                                .indexOf(4)].workFlowId
-                            else
-                                stepList[stepList.map { it.orderNumber }
-                                    .indexOf(6)].workFlowId, StepStatus.COMPLETED.name
-                        )
-                        )
+                                .indexOf(4)].workFlowId else stepList[stepList.map { it.orderNumber }
+                                .indexOf(6)].workFlowId, StepStatus.COMPLETED.name,
+                            longToString(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_,System.currentTimeMillis()))
+
+                        ))
                     NudgeLogger.d(
                         "SurveySummaryViewModel",
                         "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest"

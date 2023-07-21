@@ -152,7 +152,7 @@
     <string name="training_videos">প্রশিক্ষণ ভিডিও</string>
     <string name="language_text">ভাষা</string>
     <string name="productive_asset_owned_by_family">উপার্জন অনুপাত</string>
-    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">সম্পূর্ণ PAT সমীক্ষা</string>
     <string name="complete">সম্পূর্ণ</string>
     <string name="complete_section_2">ভাগ 2 সম্পূর্ণ</string>
@@ -308,7 +308,7 @@
     <string name="pat_didi_sent_to_bpm_approval_plural">BPM অনুমোদনের জন্য %1$s আল্ট্রাপুর ডিডি পাঠানো হয়েছে।</string>
     <string name="step_transect_walk">গ্রাম সফর</string>
     <string name="step_social_mapping">সামাজিক ম্যাপিং</string>
-    <string name="step_participatory_wealth_ranking">সম্পদ র্যাঙ্কিং</string>
+    <string name="step_participatory_wealth_ranking">অংশীদারিত্ব সম্পদ র্যাঙ্কিং</string>
     <string name="step_pat_survey">PAT জরিপ</string>
     <string name="step_vo_endorsement">VO অনুমোদন</string>
     <string name="step_bpc_verification">BPC যাচাইকরণ</string>
@@ -321,5 +321,7 @@
     <string name="delete_didi">মুছে ফেলা</string>
     <string name="you_want_to_delete_video">আপনি %1$s মুছতে চান</string>
     <string name="share_logs">লগ শেয়ার করুন</string>
+    <string name="earning_member_can_not_be_more_than_family_members">উপার্জনকারী সদস্য পরিবারের সদস্যের বেশি হতে পারে না</string>
+    <string name="match_percentage_should_be_more_than_70">মিল % 70% এর বেশি হওয়া উচিত</string>
 
 </resources>
