@@ -68,12 +68,12 @@ class SurveySummaryViewModel @Inject constructor(
     val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     init {
-        setVillage(prefRepo.getSelectedVillage().id)
         if (prefRepo.isUserBPC()) {
             fetchDidisForBpcFromDB()
         } else {
             fetchDidisFromDB()
         }
+        setVillage(prefRepo.getSelectedVillage().id)
     }
 
     private fun fetchDidisForBpcFromDB() {

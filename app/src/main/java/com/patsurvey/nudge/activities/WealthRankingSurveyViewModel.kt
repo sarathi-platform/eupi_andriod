@@ -71,7 +71,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     var selectedVillage: VillageEntity? = null
 
     init {
-        setVillage(prefRepo.getSelectedVillage().id)
+        selectedVillage = prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
         CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(tolaDao){
@@ -79,15 +79,6 @@ class WealthRankingSurveyViewModel @Inject constructor(
         }
         CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(didiDao){
             isDidiSynced.value = it
-        }
-    }
-
-    private fun setVillage(villageId: Int) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
-            withContext(Dispatchers.Main) {
-                selectedVillage = village
-            }
         }
     }
 

@@ -48,7 +48,6 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.yellowLight
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
-import com.patsurvey.nudge.activities.ui.vo_endorsement.DidiItemCardForVo
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -433,7 +432,7 @@ fun SurveySummary(
                                                 it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
                                                         && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal
                                             }) { index, didi ->
-                                                DidiItemCardForVo(
+                                                DidiItemCardForVoForSummary(
                                                     navController = navController,
                                                     didi = didi,
                                                     modifier = modifier,
