@@ -54,7 +54,7 @@
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s দিদির বাকি আছে</string>
     <string name="count_didis_pending_singular">%1s দিদি বাকি আছে</string>
-    <string name="expiry_login_verify_otp" translatable="false">%s s</string>
+    <string name="expiry_login_verify_otp" translatable="false">%s OTP পুনরায় পাঠান</string>
     <string name="social_mapping">সামাজিক মানচিত্র</string>
     <string name="showing_added_tolas">%s পাদা সংযোজন দেখাচ্ছে</string>
     <string name="showing">প্রদর্শন</string>
@@ -323,5 +323,9 @@
     <string name="share_logs">লগ শেয়ার করুন</string>
     <string name="earning_member_can_not_be_more_than_family_members">উপার্জনকারী সদস্য পরিবারের সদস্যের বেশি হতে পারে না</string>
     <string name="match_percentage_should_be_more_than_70">মিল % 70% এর বেশি হওয়া উচিত</string>
+
+    <string name="location_permission_dialog_prompt_message">অবস্থান অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
+    <string name="empty_tola_button_text">পারা যোগ ছাড়া চালিয়ে যান</string>
+
 
 </resources>

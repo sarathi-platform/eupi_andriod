@@ -30,7 +30,6 @@ import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
@@ -652,7 +651,7 @@ class TransectWalkViewModel @Inject constructor(
 
     fun setVillage(villageId: Int) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val village = villageListDao.getVillage(villageId)
+            var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
             withContext(Dispatchers.Main) {
                 villageEntity.value = village
             }

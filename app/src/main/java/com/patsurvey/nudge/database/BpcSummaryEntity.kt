@@ -13,22 +13,22 @@ data class BpcSummaryEntity(
     var id: Int = 0,
 
     @ColumnInfo(name = "cohortCount")
-    var cohortCount: Int,
+    var cohortCount: Int?,
 
     @ColumnInfo(name = "mobilisedCount")
-    var mobilisedCount: Int,
+    var mobilisedCount: Int?,
 
     @ColumnInfo(name = "poorDidiCount")
-    var poorDidiCount: Int,
+    var poorDidiCount: Int?,
 
     @ColumnInfo(name = "sentVoEndorsementCount")
-    var sentVoEndorsementCount: Int,
+    var sentVoEndorsementCount: Int?,
 
     @ColumnInfo(name = "voEndorsedCount")
-    var voEndorsedCount: Int,
+    var voEndorsedCount: Int?,
 
     @ColumnInfo(name = "villageId")
-    var villageId: Int
+    var villageId: Int?
 
 ) {
     companion object {

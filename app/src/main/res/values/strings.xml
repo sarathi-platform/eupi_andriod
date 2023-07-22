@@ -340,4 +340,8 @@
     <string name="share_logs">Share Logs</string>
     <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
+
+    <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
+    <string name="empty_tola_button_text">Continue without Tola addition</string>
+
 </resources>

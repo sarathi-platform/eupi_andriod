@@ -309,7 +309,7 @@ fun BpcProgressScreen(
                                                     ) {
 
 
-                                                        append(String.format("%03d", summaryData.value.cohortCount))
+                                                        append(String.format("%03d", summaryData.value.cohortCount ?: 0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -320,7 +320,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.cohortCount > 1)
+                                                            if ((summaryData.value.cohortCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_tolas_added_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_tolas_added_text_singular)
@@ -339,7 +339,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.mobilisedCount))
+                                                        append(String.format("%03d", summaryData.value.mobilisedCount ?: 0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -350,7 +350,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.mobilisedCount > 1)
+                                                            if ((summaryData.value.mobilisedCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_didis_mobilised_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_didis_mobilised_text_singular)
@@ -369,7 +369,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.poorDidiCount))
+                                                        append(String.format("%03d", summaryData.value.poorDidiCount ?: 0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -380,7 +380,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.poorDidiCount > 1)
+                                                            if ((summaryData.value.poorDidiCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_wealth_ranking_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_wealth_ranking_text_singular)
@@ -399,7 +399,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount))
+                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount ?: 0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -410,7 +410,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.sentVoEndorsementCount > 1)
+                                                            if ((summaryData.value.sentVoEndorsementCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_vo_endoresement_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_vo_endoresement_text_singular)
@@ -429,7 +429,7 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.voEndorsedCount))
+                                                        append(String.format("%03d", summaryData.value.voEndorsedCount ?: 0))
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -440,7 +440,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.voEndorsedCount > 1)
+                                                            if ((summaryData.value.voEndorsedCount ?: 0) > 1)
                                                                 stringResource(R.string.didis_endorsed_by_vo_plural)
                                                             else stringResource(
                                                                 R.string.didi_endorsed_by_vo_singular)

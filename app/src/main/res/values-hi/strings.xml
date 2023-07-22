@@ -53,7 +53,7 @@
     <string name="otp_text" translatable="false">ओ.टी.पी.</string>
     <string name="count_didis_pending_plural">%1s प्रतिशत दीदीयां बाक़ी है</string>
     <string name="count_didis_pending_singular">%1s प्रतिशत दीदी बाक़ी है</string>
-    <string name="expiry_login_verify_otp" translatable="false">%s s</string>
+    <string name="expiry_login_verify_otp" translatable="false">%s ओ.टी.पी. दुबारा भेजे</string>
     <string name="social_mapping">सामाजिक मानचित्र</string>
     <string name="showing_added_tolas">%s जोड़े गये टोले दर्शाये गये है</string>
     <string name="showing">दर्शाये जा रहे है</string>
@@ -322,5 +322,8 @@
     <string name="earning_member_can_not_be_more_than_family_members">कमाऊ सदस्य परिवार के सदस्यों से अधिक नहीं हो सकते</string>
     <string name="match_percentage_should_be_more_than_70">मिलान % 70% से अधिक होना चाहिए</string>
 
+
+    <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>
+    <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
 
 </resources>

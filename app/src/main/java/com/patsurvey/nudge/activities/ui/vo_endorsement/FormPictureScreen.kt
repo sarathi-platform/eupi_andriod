@@ -102,7 +102,15 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
+import com.patsurvey.nudge.utils.openSettings
+import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -505,7 +513,7 @@ fun FormPictureScreen(
                                     localContext.getString(R.string.vo_endorsement_completed_message)
                                         .replace(
                                             "{VILLAGE_NAME}",
-                                            formPictureScreenViewModel.prefRepo.getSelectedVillage().name
+                                            formPictureScreenViewModel.villageEntity.value?.name ?: BLANK_STRING
                                         )
                                 }"
                             )

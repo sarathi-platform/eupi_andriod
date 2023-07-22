@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -103,7 +102,7 @@ fun VillageSelectionScreen(
     }
 
     BackHandler {
-        (context as? Activity)?.finish()
+        (context as? MainActivity)?.finish()
     }
 
 

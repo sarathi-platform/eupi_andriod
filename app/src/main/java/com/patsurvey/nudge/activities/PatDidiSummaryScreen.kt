@@ -549,10 +549,11 @@ fun PatDidiSummaryScreen(
                         patDidiSummaryViewModel.setNeedToPostImage(true)
                     }
                     patDidiSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                    val questionIndex = 0
                     if (patDidiSummaryViewModel.prefRepo.isUserBPC()){
-                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/$questionIndex")
                     } else {
-                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/0")
+                        navController.navigate("yes_no_question_screen/${didi.value.id}/${TYPE_EXCLUSION}/$questionIndex")
                     }
                 },
                 negativeButtonOnClick = {}

@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.LocalDbListener
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
@@ -84,8 +85,10 @@ class AddDidiViewModel @Inject constructor(
 
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
 
+    val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     init {
+        setVillage(prefRepo.getSelectedVillage().id)
         villageId = prefRepo.getSelectedVillage().id
         if (didiList.value.isNotEmpty()) {
             _didiList.value = emptyList()
@@ -141,6 +144,15 @@ class AddDidiViewModel @Inject constructor(
                 isTolaSynced.value = it
              }
 
+    }
+
+    private fun setVillage(villageId: Int) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
+            withContext(Dispatchers.Main) {
+                villageEntity.value = village
+            }
+        }
     }
 
     fun fetchLastSelectedTola(){

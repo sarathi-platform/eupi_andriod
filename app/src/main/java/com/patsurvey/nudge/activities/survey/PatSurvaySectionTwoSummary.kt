@@ -323,7 +323,7 @@ fun SectionTwoSummeryItem(
             .then(modifier)
     ) {
         Row(Modifier.fillMaxWidth().clickable {
-           onCardClick(index)
+//           onCardClick(index)
         }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
                 val quesImage: File? =

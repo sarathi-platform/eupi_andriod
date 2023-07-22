@@ -54,6 +54,7 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
@@ -235,7 +236,7 @@ fun SurveySummary(
                     surveySummaryViewModel.saveBpcPatCompletionDate()
                     navController.navigate(
                         "bpc_pat_step_completion_screen/${
-                            context.getString(R.string.pat_survey_completed_message).replace("{VILLAGE_NAME}", surveySummaryViewModel.prefRepo.getSelectedVillage().name)
+                            context.getString(R.string.pat_survey_completed_message).replace("{VILLAGE_NAME}", surveySummaryViewModel.villageEntity.value?.name ?: BLANK_STRING)
                         }"
                     )
                 } else {
@@ -285,7 +286,7 @@ fun SurveySummary(
                                         context.getString(R.string.pat_survey_completed_message)
                                             .replace(
                                                 "{VILLAGE_NAME}",
-                                                surveySummaryViewModel.prefRepo.getSelectedVillage().name
+                                                surveySummaryViewModel.villageEntity.value?.name ?: BLANK_STRING
                                             )
                                     }"
                                 )

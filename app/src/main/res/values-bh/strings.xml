@@ -350,4 +350,7 @@
     <string name="earning_member_can_not_be_more_than_family_members">कमाऊ सदस्य परिवार के सदस्यों से अधिक नहीं हो सकते</string>
     <string name="match_percentage_should_be_more_than_70">मिलान % 70% से अधिक होना चाहिए</string>
 
+    <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>
+    <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
+
 </resources>

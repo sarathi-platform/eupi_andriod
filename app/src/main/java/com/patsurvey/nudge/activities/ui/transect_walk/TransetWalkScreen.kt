@@ -359,7 +359,7 @@ fun TransectWalkScreen(
                                             modifier = Modifier.padding(top = 32.dp)
                                         )*/
                                         BlueButtonWithIconWithFixedWidthWithoutIcon(
-                                            buttonText = "Continue without Tola addition",
+                                            buttonText = stringResource(R.string.empty_tola_button_text),
                                             modifier = Modifier.padding(top = 16.dp)
                                         ) {
                                             viewModel.addEmptyTola()

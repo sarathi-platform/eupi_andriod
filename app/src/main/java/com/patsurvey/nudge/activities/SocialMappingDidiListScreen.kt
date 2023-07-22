@@ -494,7 +494,7 @@ fun SocialMappingDidiListScreen(
                                             context.getString(R.string.social_mapping_completed_message)
                                                 .replace(
                                                     "{VILLAGE_NAME}",
-                                                    didiViewModel.prefRepo.getSelectedVillage().name ?: ""
+                                                    didiViewModel.villageEntity.value?.name ?: ""
                                                 )
                                         }"
                                     )
