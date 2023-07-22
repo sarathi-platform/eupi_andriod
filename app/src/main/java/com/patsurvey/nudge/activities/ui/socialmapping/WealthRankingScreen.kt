@@ -317,7 +317,7 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-//                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank)
+                if (didiEntity.rankingEdit)
                     onCardArrowClick(true)
             }
             .padding(
@@ -404,7 +404,7 @@ fun ExpandableCard(
                     }
                 }
                 // Arrow Icon
-//                if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+                if (didiEntity.rankingEdit) {
                     Column(
                         modifier = Modifier,
                         horizontalAlignment = Alignment.End
@@ -414,11 +414,10 @@ fun ExpandableCard(
                             onClick = { onCardArrowClick(true) }
                         )
                     }
-//                }
-
+                }
             }
             //Expandable Content
-//            if (didiEntity.wealth_ranking == WealthRank.NOT_RANKED.rank) {
+            if (didiEntity.rankingEdit) {
                 Column {
                     Spacer(
                         modifier = Modifier
@@ -443,13 +442,13 @@ fun ExpandableCard(
                         onCardArrowClick(false)
                     }
                 }
-           /* } else {
+            } else {
                 Spacer(
                     modifier = Modifier
                         .height(14.dp)
                         .fillMaxWidth()
                 )
-            }*/
+            }
         }
 
     }

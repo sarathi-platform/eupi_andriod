@@ -373,6 +373,8 @@ fun SocialMappingDidiListScreen(
                                     )
                                 }
                             }
+                            if (!didiViewModel.isSocialMappingComplete.value)
+                                item { Spacer(modifier = Modifier.height(bottomPadding)) }
                         } else {
                             itemsIndexed(
                                 if (didiViewModel.prefRepo.getFromPage()
@@ -935,7 +937,7 @@ fun DidiItemCard(
                                 )
                             }
 
-                            if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                            if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                 Text(text = stringResource(R.string.pat_inprogresee_status_text), style = smallTextStyle, color = inprogressYellow, modifier = Modifier
                                     .padding(5.dp)
                                     .layoutId("successImage"))
@@ -1010,15 +1012,17 @@ fun DidiItemCard(
                                         color = textColorDark
                                     )
                                 }
-                                DropdownMenuItem(onClick = {
-                                    showMenu.value = false
-                                    onDeleteClicked(didi)
-                                }) {
-                                    Text(
-                                        text = stringResource(id = R.string.delete_didi),
-                                        style = quesOptionTextStyle,
-                                        color = textColorDark
-                                    )
+                                if (didi.rankingEdit) {
+                                    DropdownMenuItem(onClick = {
+                                        showMenu.value = false
+                                        onDeleteClicked(didi)
+                                    }) {
+                                        Text(
+                                            text = stringResource(id = R.string.delete_didi),
+                                            style = quesOptionTextStyle,
+                                            color = textColorDark
+                                        )
+                                    }
                                 }
                             }
                         }

@@ -6,9 +6,9 @@ import android.net.Uri
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import androidx.core.net.toUri
-import com.google.firebase.installations.Utils
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -202,6 +202,7 @@ class SyncHelper (
                             }
                         }
                     }
+                    uploadFormsCAndD(MyApplication.applicationContext())
                     callWorkFlowAPIForStep(5)
                     delay(1500)
                     withContext(Dispatchers.Main){
@@ -221,6 +222,7 @@ class SyncHelper (
                     updateLastSyncTime(prefRepo,response.lastSyncTime)
                 }
             } else {
+                uploadFormsCAndD(MyApplication.applicationContext())
                 callWorkFlowAPIForStep(5)
                 delay(1500)
                 withContext(Dispatchers.Main){
@@ -360,44 +362,49 @@ class SyncHelper (
 
     private fun uploadDidiImagesToServer(context : Context){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToPostImage(true)
-            for(didi in didiList) {
-                val path = findImageLocationFromPath(didi.localPath)
-                NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
+            val didiList = didiDao.fetchAllDidiNeedsToPostImage(true)
+            if(didiList.isNotEmpty()){
                 val imageFilePart = ArrayList<MultipartBody.Part>()
                 val requestDidiId = ArrayList<RequestBody>()
                 val requestUserType = ArrayList<RequestBody>()
                 val requestLocation = ArrayList<RequestBody>()
                 try {
-                    val uri = path[0].toUri()
-                    NudgeLogger.d(
-                        "Synchelper",
-                        "uploadDidiImage Prev: $uri.toFile().totalSpace} "
-                    )
-                    val compressedImageFile =
-                        compressImage(uri.toString(), context, uri.toFile().name)
-                    val requestFile = RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        File(compressedImageFile)
-                    )
-                    imageFilePart.add(MultipartBody.Part.createFormData(
-                        "file",
-                        File(compressedImageFile).name,
-                        requestFile
-                    ))
-                    requestDidiId.add(RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        didi.serverId.toString()
-                    ))
-                    requestUserType.add(RequestBody.create(
-                        "multipart/form-data".toMediaTypeOrNull(),
-                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
-                    ))
-                    requestLocation.add(RequestBody.create("multipart/form-data".toMediaTypeOrNull(), path.get(1)))
-                    NudgeLogger.d(
-                        "Synchelper",
-                        "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
-                    )
+                    for(didi in didiList) {
+                        if(imageFilePart.size == 5) {
+                            break
+                        }
+                        val path = findImageLocationFromPath(didi.localPath)
+                        NudgeLogger.d("Synchelper", "uploadDidiImage: $didi.id :: $path[1]")
+                        val uri = path[0]
+                        NudgeLogger.d(
+                            "Synchelper",
+                            "uploadDidiImage Prev: ${uri}"
+                        )
+                        val compressedImageFile =
+                            compressImage(uri.toString(), context, getFileNameFromURL(uri))
+                        val requestFile = RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            File(compressedImageFile)
+                        )
+                        imageFilePart.add(MultipartBody.Part.createFormData(
+                            "files",
+                            File(compressedImageFile).name,
+                            requestFile
+                        ))
+                        requestDidiId.add(RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            didi.serverId.toString()
+                        ))
+                        requestUserType.add(RequestBody.create(
+                            "multipart/form-data".toMediaTypeOrNull(),
+                            if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                        ))
+                        requestLocation.add(RequestBody.create("multipart/form-data".toMediaTypeOrNull(), path.get(1)))
+                        NudgeLogger.d(
+                            "Synchelper",
+                            "uploadDidiImage Details: ${requestDidiId[requestDidiId.size-1].contentType().toString()}"
+                        )
+                    }
                     val imageUploadResponse = apiService.uploadDidiBulkImage(
                         imageFilePart,
                         requestDidiId,
@@ -409,7 +416,14 @@ class SyncHelper (
                         "uploadDidiImage imageUploadRequest: ${imageUploadResponse.data ?: ""}"
                     )
                     if (imageUploadResponse.status == SUCCESS) {
-                        didiDao.updateNeedToPostImage(didi.id, false)
+                        for(i in didiList.indices) {
+                            if(i == 5)
+                                break
+                            didiDao.updateNeedsToPostImage(didiList[i].id, false)
+                        }
+                        if(didiList.size>5) {
+                            uploadDidiImagesToServer(context)
+                        }
                     }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
@@ -418,10 +432,109 @@ class SyncHelper (
         }
     }
 
-    fun uploadDidiImage(context: Context, uri: Uri, didiId: Int, location:String) {
+    fun getFormPathKey(subPath: String,villageName: String): String {
+        //val subPath formPictureScreenViewModel.pageItemClicked.value
+        //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${villageName}_${subPath}"
+    }
+
+    fun uploadFormsCAndD(context: Context) {
         job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val languageId = prefRepo.getAppLanguageId() ?: 2
+            val villageList = villegeListDao.getAllVillages(languageId)
+            for (village in villageList) {
+                if (prefRepo.getPref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,
+                        false
+                    )
+                ) {
+                    uploadFormCAndD(village.id, context)
+                }
+            }
+        }
+    }
 
+    fun getFormSubPath(formName: String, pageNumber: Int): String {
+        return "${formName}_page_$pageNumber"
+    }
 
+    fun uploadFormCAndD(villageId : Int,context: Context) {
+        job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            val formList = arrayListOf<MultipartBody.Part>()
+            val villageName = villegeListDao.getVillage(villageId).name
+            try {
+                val formCImageList = (mutableMapOf<String, String>())
+                for (i in 0..4) {
+                    formCImageList[getFormSubPath(FORM_C, i)] =
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i), villageName), "").toString()
+                }
+                val formDImageList = (mutableMapOf<String, String>())
+                for (i in 0..4) {
+                    formDImageList[getFormSubPath(FORM_D, i)] =
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i), villageName), "").toString()
+                }
+                if (formCImageList.isNotEmpty()) {
+                    formCImageList.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+//                        val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormC =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormC = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormC)
+                            )
+                            val formCFilePart = MultipartBody.Part.createFormData(
+                                "formC",
+                                File(compressedFormC).name,
+                                requestFormC
+                            )
+//                              prefRepo.savePref(pageKey,File(compressedFormC).absolutePath)
+                            formList.add(formCFilePart)
+                        }
+
+                    }
+                }
+                if (formDImageList.isNotEmpty()) {
+                    formDImageList.onEachIndexed { index, it ->
+                        if (it.value.isNotEmpty()) {
+//                        val pageKey = getFormPathKey(File(it.value).nameWithoutExtension)
+                            val compressedFormD =
+                                compressImage(it.value, context, getFileNameFromURL(it.value))
+                            val requestFormD = RequestBody.create(
+                                "multipart/form-data".toMediaTypeOrNull(),
+                                File(compressedFormD)
+                            )
+                            val formDFilePart = MultipartBody.Part.createFormData(
+                                "formD",
+                                File(compressedFormD).name,
+                                requestFormD
+                            )
+//                                prefRepo.savePref(pageKey,File(compressedFormD).absolutePath)
+                            formList.add(formDFilePart)
+                        }
+
+                    }
+                }
+
+                val requestVillageId =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        prefRepo.getSelectedVillage().id.toString()
+                    )
+                val requestUserType =
+                    RequestBody.create(
+                        "multipart/form-data".toMediaTypeOrNull(),
+                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                    )
+                val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                if(response.status == SUCCESS){
+                    prefRepo.savePref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                settingViewModel.onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
+            }
         }
     }
 
@@ -914,8 +1027,8 @@ class SyncHelper (
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi ->
-                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
-                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
+                            didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
+                            didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = didi.rankingEdit, localModifiedDate = System.currentTimeMillis()))
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
@@ -982,9 +1095,9 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.6f
                 }
                 val didiIDList= answerDao.fetchPATSurveyDidiList()
+                uploadDidiImagesToServer(MyApplication.applicationContext())
                 if(didiIDList.isNotEmpty()){
                     var optionList: List<OptionsItem>
-                    uploadDidiImagesToServer(MyApplication.applicationContext())
                     val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
                     var surveyId =0
                     var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
@@ -1085,13 +1198,14 @@ class SyncHelper (
                                 }
                             )
                         )
+                        val stateId = villegeListDao.getVillage(didi.villageId).stateId
                         answeredDidiList.add(
                             PATSummarySaveRequest(
-                                villageId = prefRepo.getSelectedVillage().id,
+                                villageId = didi.villageId,
                                 surveyId = surveyId,
                                 beneficiaryId = didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
-                                stateId = prefRepo.getSelectedVillage().stateId,
+                                stateId = stateId,
                                 totalScore = didi.score,
                                 userType = userType,
                                 beneficiaryName = didi.name,
@@ -1111,8 +1225,7 @@ class SyncHelper (
                                     didiIDList.forEach { didiItem ->
                                         didiDao.updateNeedToPostPAT(
                                             false,
-                                            didiItem.id,
-                                            prefRepo.getSelectedVillage().id
+                                            didiItem.id
                                         )
                                     }
                                     withContext(Dispatchers.Main) {

@@ -242,6 +242,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchDataForBpc() {
+        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
@@ -1007,8 +1008,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                             crpScore = didi.crpScore,
                                                             crpComment = didi.crpComment,
                                                             comment = didi.comment,
-                                                            crpUploadedImage = didi.crpUploadedImage
-                                                            )
+                                                            crpUploadedImage = didi.crpUploadedImage,
+                                                            needsToPostImage = false,
+                                                            rankingEdit = didi.rankingEdit
+                                                        )
                                                     )
 //                                                    }
                                                     if(!didi.crpUploadedImage.isNullOrEmpty()){

@@ -274,8 +274,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                     needToPostDidiList.forEach { didi ->
-                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, localModifiedDate = System.currentTimeMillis()))
-                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, localModifiedDate = System.currentTimeMillis()))
+                        didiWealthRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.WEALTH_RANKING.name,didi.wealth_ranking, rankingEdit = false, localModifiedDate = System.currentTimeMillis()))
+                        didiStepRequestList.add(EditDidiWealthRankingRequest(didi.serverId, StepType.SOCIAL_MAPPING.name,StepStatus.COMPLETED.name, rankingEdit = false, localModifiedDate = System.currentTimeMillis()))
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiWealthRequestList")
@@ -388,6 +388,13 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
         return "${formName}_page_$pageNumber"
+    }
+
+    fun updateWealthRankingFlagForDidis() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val villageId = prefRepo.getSelectedVillage().id
+            didiDao.updateRankEditFlag(villageId, false)
+        }
     }
 
 }

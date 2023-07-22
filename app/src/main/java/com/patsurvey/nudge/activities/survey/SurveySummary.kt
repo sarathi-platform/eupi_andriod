@@ -57,6 +57,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiItemCardForPat
+import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -104,6 +105,7 @@ fun SurveySummary(
 
     }
     BackHandler() {
+        (context as MainActivity).isBackFromSummary.value = false
         if (showDidiListForStatus.first) {
             showDidiListForStatus =
                 Pair(!showDidiListForStatus.first, PatSurveyStatus.NOT_STARTED.ordinal)
@@ -322,178 +324,200 @@ fun SurveySummary(
                     modifier = Modifier
                 )
 
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.pat_survey),
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth(),
-                        style = mediumTextStyle,
-                        color = textColorDark,
-                        textAlign = TextAlign.Start
-                    )
-                }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 2.dp)
-                ) {
-                    Text(
-                        text = stringResource(
-                            id = if (showDidiListForStatus.first) {
-                                if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                    if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
-                                        R.string.didi_pat_complete_text
-                                    } else {
-                                        R.string.didi_not_available_sub_heading_text
-                                    }
-                                } else {
-                                    if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        R.string.didi_endorsed_text_plural
-                                    } else {
-                                        R.string.didi_rejected_text_plural
-                                    }
-                                }
-                            } else R.string.summary_text
-                        ),
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .fillMaxWidth(),
-                        style = TextStyle(
-                            fontSize = 14.sp,
-                            fontWeight = FontWeight.Normal,
-                            fontFamily = NotoSans
-                        ),
-                        color = textColorDark80,
-                        textAlign = TextAlign.Start
-                    )
-                }
-
-                AnimatedVisibility(visible = showDidiListForStatus.first) {
+                Column( modifier = Modifier
+                    .padding(horizontal = 4.dp)){
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(vertical = 8.dp)
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
                     ) {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp),
-                            contentPadding = PaddingValues(bottom = bottomPadding),
-                            modifier = Modifier.padding(bottom = 10.dp)
-                        ) {
-                            item {
-                                Spacer(modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(6.dp))
-                            }
-                            if (surveySummaryViewModel.prefRepo.isUserBPC()) {
-                                itemsIndexed(
-                                    if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                        didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
-                                else
-                                    didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
-                                ) { index, didi ->
-                                    DidiItemCardForPat(
-                                        didi = didi,
-                                        modifier = modifier,
-                                        onItemClick = {
-                                            navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                        Text(
+                            text = stringResource(id = if (fromScreen == ARG_FROM_PAT_SURVEY) R.string.pat_survey else R.string.vo_endorsement),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            style = mediumTextStyle,
+                            color = textColorDark,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 2.dp)
+                    ) {
+                        Text(
+                            text = stringResource(
+                                id = if (showDidiListForStatus.first) {
+                                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                        if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
+                                            R.string.didi_pat_complete_text
+                                        } else {
+                                            R.string.didi_not_available_sub_heading_text
                                         }
+                                    } else {
+                                        if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                            R.string.didi_endorsed_text_plural
+                                        } else {
+                                            R.string.didi_rejected_text_plural
+                                        }
+                                    }
+                                } else R.string.summary_text
+                            ),
+                            modifier = Modifier
+                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            style = TextStyle(
+                                fontSize = 14.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = NotoSans
+                            ),
+                            color = textColorDark80,
+                            textAlign = TextAlign.Start
+                        )
+                    }
+
+                    AnimatedVisibility(visible = showDidiListForStatus.first) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = 8.dp)
+                        ) {
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp),
+                                contentPadding = PaddingValues(bottom = bottomPadding),
+                                modifier = Modifier.padding(bottom = 10.dp)
+                            ) {
+                                item {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
                                     )
                                 }
-                            } else {
-                                if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                    itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                        didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
-                                    else
-                                        didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
+                                if (surveySummaryViewModel.prefRepo.isUserBPC()) {
+                                    itemsIndexed(
+                                        if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
+                                        else
+                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
+                                    ) { index, didi ->
                                         DidiItemCardForPat(
                                             didi = didi,
                                             modifier = modifier,
                                             onItemClick = {
-                                                if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
-                                                    navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                                                }
+                                                navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                                             }
                                         )
                                     }
                                 } else {
-                                    if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                        itemsIndexed(didids.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }) { index, didi ->
-                                            DidiItemCardForVo(
-                                                navController = navController,
+                                    if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                        itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                                            didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
+                                        else
+                                            didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
+                                            DidiItemCardForPat(
                                                 didi = didi,
                                                 modifier = modifier,
                                                 onItemClick = {
-                                                    navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                    if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
+                                                        navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                                    }
                                                 }
                                             )
                                         }
                                     } else {
-                                        itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
-                                            DidiItemCardForVo(
-                                                navController = navController,
-                                                didi = didi,
-                                                modifier = modifier,
-                                                onItemClick = {
-                                                    navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
-                                                }
-                                            )
+                                        if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                            itemsIndexed(didids.value.filter {
+                                                it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                                                        && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal
+                                            }) { index, didi ->
+                                                DidiItemCardForVo(
+                                                    navController = navController,
+                                                    didi = didi,
+                                                    modifier = modifier,
+                                                    onItemClick = {
+                                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                    }
+                                                )
+                                            }
+                                        } else {
+                                            itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
+                                                DidiItemCardForVoForSummary(
+                                                    navController = navController,
+                                                    didi = didi,
+                                                    modifier = modifier,
+                                                    onItemClick = {
+                                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                    }
+                                                )
+                                            }
                                         }
                                     }
                                 }
+                                item {
+                                    Spacer(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(6.dp)
+                                    )
+                                }
                             }
-                            item { Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(6.dp)) }
                         }
                     }
-                }
 
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    SummaryBox(
-                        count = if (fromScreen == ARG_FROM_PAT_SURVEY)
-                            didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
-                        else
-                            didids.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal }.size,
-                        boxColor = blueLighter,
-                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(R.string.pat_completed_box_title) else stringResource(
-                            id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size <= 1) R.string.didi_endorsed_text_singula else R.string.didi_endorsed_text_plural
-                        ),
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(14.dp)
                     ) {
-                        if(fromScreen == ARG_FROM_PAT_SURVEY){
-                            showDidiListForStatus=  Pair(
-                                true,
-                                PatSurveyStatus.COMPLETED.ordinal
-                            )
-                            surveySummaryViewModel.baseSummarySecond.value =PatSurveyStatus.COMPLETED.ordinal
+                        SummaryBox(
+                            count = if (fromScreen == ARG_FROM_PAT_SURVEY)
+                                didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size
+                            else
+                                didids.value.filter {
+                                    it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                                            && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal
+                                }.size,
+                            boxColor = blueLighter,
+                            boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(R.string.pat_completed_box_title) else stringResource(
+                                id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size <= 1) R.string.didi_endorsed_text_singula else R.string.didi_endorsed_text_plural
+                            ),
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                        ) {
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                showDidiListForStatus = Pair(
+                                    true,
+                                    PatSurveyStatus.COMPLETED.ordinal
+                                )
+                                surveySummaryViewModel.baseSummarySecond.value =
+                                    PatSurveyStatus.COMPLETED.ordinal
 
-                        }else showDidiListForStatus = Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
+                            } else showDidiListForStatus =
+                                Pair(true, DidiEndorsementStatus.ENDORSED.ordinal)
 
-                    }
-                    SummaryBox(
-                        count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }.size
-                        else
-                            didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
-                        boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
-                        boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(id = if (surveySummaryViewModel.notAvailableCount.value <= 1)
-                            R.string.didi_not_available_text_singular else R.string.didi_not_available_text_plural) else stringResource(
-                            id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size <= 1)
-                                R.string.didi_rejected_text_singula else R.string.didi_rejected_text_plural
-                        ),
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
-                    ) {
-                        if(fromScreen == ARG_FROM_PAT_SURVEY){
-                            showDidiListForStatus = Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                            surveySummaryViewModel.baseSummarySecond.value =PatSurveyStatus.NOT_AVAILABLE.ordinal
-                        }else showDidiListForStatus = Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
+                        }
+                        SummaryBox(
+                            count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }.size
+                            else
+                                didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size,
+                            boxColor = if (fromScreen == ARG_FROM_PAT_SURVEY) yellowLight else redLight,
+                            boxTitle = if (fromScreen == ARG_FROM_PAT_SURVEY) stringResource(
+                                id = if (surveySummaryViewModel.notAvailableCount.value <= 1)
+                                    R.string.didi_not_available_text_singular else R.string.didi_not_available_text_plural
+                            ) else stringResource(
+                                id = if (didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size <= 1)
+                                    R.string.didi_rejected_text_singula else R.string.didi_rejected_text_plural
+                            ),
+                            modifier = Modifier.padding(vertical = 8.dp, horizontal = 20.dp)
+                        ) {
+                            if (fromScreen == ARG_FROM_PAT_SURVEY) {
+                                showDidiListForStatus =
+                                    Pair(true, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                                surveySummaryViewModel.baseSummarySecond.value =
+                                    PatSurveyStatus.NOT_AVAILABLE.ordinal
+                            } else showDidiListForStatus =
+                                Pair(true, DidiEndorsementStatus.REJECTED.ordinal)
 
+                        }
                     }
                 }
             }

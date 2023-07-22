@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,12 +44,16 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -221,6 +226,140 @@ fun DidiItemCardForPat(
                             .size(24.dp)
                     )
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun DidiItemCardForVoForSummary(
+    navController: NavHostController,
+    didi: DidiEntity,
+    modifier: Modifier,
+    onItemClick: (DidiEntity) -> Unit
+) {
+
+    Card(
+        elevation = 10.dp,
+        shape = RoundedCornerShape(6.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(bgGreyLight, RoundedCornerShape(6.dp))
+            .border(width = 1.dp, color = bgGreyLight, shape = RoundedCornerShape(6.dp))
+            .clickable {
+                if (didi.voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal)
+                    onItemClick(didi)
+            }
+            .then(modifier)
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            BoxWithConstraints {
+                val constraintSet = decoupledConstraints()
+                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
+                    CircularDidiImage(
+                        modifier = Modifier.layoutId("didiImage")
+                    )
+                    Row(
+                        modifier = Modifier
+                            .layoutId("didiRow")
+                            .fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(
+                            text = didi.name,
+                            style = TextStyle(
+                                color = textColorDark,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans,
+                                textAlign = TextAlign.Start
+                            ),
+                        )
+
+                        if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_completed_tick),
+                                contentDescription = "home image",
+                                modifier = Modifier
+                                    .width(30.dp)
+                                    .height(30.dp)
+                                    .padding(5.dp)
+                                    .layoutId("successImage")
+                            )
+                        }
+                    }
+
+
+                    Image(
+                        painter = painterResource(id = R.drawable.home_icn),
+                        contentDescription = "home image",
+                        modifier = Modifier
+                            .width(18.dp)
+                            .height(14.dp)
+                            .layoutId("homeImage"),
+                        colorFilter = ColorFilter.tint(textColorBlueLight)
+                    )
+
+                    Text(
+                        text = didi.cohortName,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("village")
+                    )
+
+
+                }
+            }
+            Divider(
+                color = borderGreyLight,
+                thickness = 1.dp,
+                modifier = Modifier
+                    .layoutId("divider")
+                    .padding(bottom = 14.dp, top = 14.dp)
+            )
+            Row(modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 10.dp)
+                .clickable {
+                    onItemClick(didi)
+                }
+                .then(modifier),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+
+                Text(
+                    text = stringResource(id = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) R.string.endorsed else R.string.rejected),
+                    style = smallTextStyleMediumWeight,
+                    color = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) acceptEndorsementTextColor else rejectEndorsementTextColor,
+                )
+
+                Row() {
+                    Text(
+                        text = stringResource(id = R.string.show),
+                        style = smallTextStyleMediumWeight,
+                        color = textColorDark,
+                    )
+                    Spacer(modifier = Modifier.width(2.dp))
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = blueDark,
+                        modifier = Modifier
+                            .absolutePadding(top = 4.dp, left = 2.dp)
+                            .size(24.dp)
+                    )
+                }
+
             }
         }
     }

@@ -110,7 +110,7 @@ fun ShowOptDialogForVillageScreen(
 
                         AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
                             Row(
-                                horizontalArrangement = Arrangement.End,
+                                horizontalArrangement = Arrangement.Start,
                                 modifier = Modifier.fillMaxWidth(),
 
                                 ) {
@@ -143,17 +143,18 @@ fun ShowOptDialogForVillageScreen(
                                     color = textColorDark,
                                     fontSize = 14.sp,
                                     fontFamily = NotoSans,
-                                    fontWeight = FontWeight.SemiBold,
+                                    fontWeight = FontWeight.Normal,
                                     textAlign = TextAlign.Start,
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(horizontal = dimensionResource(id = R.dimen.dp_8))
+                                        .padding(start = 2.dp)
                                         .background(Color.Transparent)
                                 )
                             }
                         }
+                    AnimatedVisibility(visible = isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
                         Row(
-                            horizontalArrangement = Arrangement.Center,
+                            horizontalArrangement = Arrangement.Start,
                             modifier = Modifier.fillMaxWidth()
                         ) {
 
@@ -163,19 +164,22 @@ fun ShowOptDialogForVillageScreen(
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
                                 fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Center,
+                                textAlign = TextAlign.Start,
                                 textDecoration = TextDecoration.Underline,
-                                modifier = Modifier.clickable(enabled = isResendOTPEnable.value) {
+                                modifier = Modifier.padding(start = 2.dp).clickable(enabled = isResendOTPEnable.value) {
                                     RetryHelper.generateOtp() { success, message, mobileNumber ->
                                         snackState.addMessage(
-                                            message = context.getString(R.string.otp_resend_to_mobile_number_message_for_relogin).replace("{MOBILE_NUMBER}", mobileNumber, true),
-                                            isSuccess = true, isCustomIcon = false)
+                                            message = context.getString(R.string.otp_resend_to_mobile_number_message_for_relogin)
+                                                .replace("{MOBILE_NUMBER}", mobileNumber, true),
+                                            isSuccess = true, isCustomIcon = false
+                                        )
                                     }
                                     formattedTime.value = SEC_30_STRING
                                     isResendOTPEnable.value = false
                                 }
                             )
                         }
+                    }
 
                     Spacer(modifier = Modifier.height(8.dp))
 

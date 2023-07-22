@@ -2,6 +2,7 @@ package com.patsurvey.nudge.di
 
 import android.app.Application
 import android.content.Context
+import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.patsurvey.nudge.BuildConfig
@@ -176,16 +177,10 @@ object NetworkModule {
              }
            }
         }
-
-        if(BuildConfig.FLAVOR.equals("staging")){
-          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_STAGE)
-        }
-        else if(BuildConfig.FLAVOR.equals("uat")){
-          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_UAT)
-        }
-        else{
-          requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_PROD)
-        }
+        requestBuilder.addHeader(KEY_SOURCE_TYPE, KEY_SOURCE_PLATFORM)
+        requestBuilder.addHeader(KEY_APP_VERSION,BuildConfig.VERSION_NAME)
+        requestBuilder.addHeader(KEY_SDK_INT, Build.VERSION.SDK_INT.toString())
+        requestBuilder.addHeader(KEY_DEVICE_DETAILS, Build.BRAND+"|"+Build.DEVICE)
         val method = chain.request().method
         if(method.equals("POST", true)){
           requestBuilder.cacheControl(CacheControl.FORCE_NETWORK)

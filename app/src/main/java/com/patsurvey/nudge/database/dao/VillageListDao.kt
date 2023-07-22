@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.utils.TOLA_TABLE
 import com.patsurvey.nudge.utils.VILLAGE_TABLE_NAME
 
 @Dao

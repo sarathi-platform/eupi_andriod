@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import androidx.core.text.isDigitsOnly
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -128,15 +127,14 @@ val context = LocalContext.current
                     }
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    itemsIndexed(optionList) { index, option ->
-
+                    itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
                             questionFlag = questionFlag,
                             optionImageUrl = option.optionImage?: BLANK_STRING,
                             optionValue = option.optionValue,
-                            optionList = optionList,
+                            optionList = optionList.sortedBy { it.optionValue },
                             onDecrementClick = {
                                 if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel?.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
