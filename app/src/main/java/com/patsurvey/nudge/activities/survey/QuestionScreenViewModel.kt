@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
+import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -22,6 +24,7 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.roundOffDecimal
@@ -271,7 +274,8 @@ class QuestionScreenViewModel @Inject constructor(
                         numericAnswer.didiId,
                         numericAnswer.optionId,
                         numericAnswer.questionId,
-                        numericAnswer.count
+                        numericAnswer.count,
+                        numericAnswer.optionValue
                     )
                 } else {
                     numericAnswerDao.insertNumericOption(numericAnswer)
@@ -336,13 +340,23 @@ class QuestionScreenViewModel @Inject constructor(
                 } else if(optionId == 0 && (questionList.value[quesIndex].type == QuestionType.Numeric_Field.name)){
                     nextCTAVisibility.value=(quesIndex < questionList.value.size - 1 && quesIndex< answerList.value.size)
                     val totalDBAmount= numericAnswerDao.fetchTotalAmount(questionList.value[quesIndex].questionId?:0,didiId)
-                    val totalAssetAmount= answerDao.getTotalAssetAmount(didiId,questionList.value[quesIndex].questionId?:0)
-//                    val totalEnteredAmount= answerDao.fetchEnteredAmount(didiId,questionList.value[quesIndex].questionId?:0)
-                    totalAmount.value =  totalDBAmount.toDouble()
+                   if( questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
+                       totalAmount.value =  totalDBAmount.toDouble()
+                   }else{
+                       val optionList = questionList.value[quesIndex].options
+                       optionList?.let {option->
+                           val option1Count = option.filter { it.optionValue==1 }[0].count?.toDouble() ?: 0.0
+                           val option2Count = option.filter { it.optionValue==2 }[0].count?.toDouble() ?: 0.0
+                           if(option1Count > 0 && option2Count > 0){
+                               totalAmount.value = roundOffDecimal(option2Count/option1Count)?:0.00
+                               Log.d("TAG", "findListTypeSelectedAnswer: ${option1Count} :: $option2Count :: ${totalAmount.value}")
 
+                           }else  totalAmount.value=0.00
+                       }
+                   }
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1
-                    enteredAmount.value="0.00" /*if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()*/
+                    enteredAmount.value="0" /*if(totalEnteredAmount.isNullOrEmpty()) BLANK_STRING else totalEnteredAmount.toString()*/
                 } else{
                     listTypeAnswerIndex.value = -1
                     _selIndValue.value = -1

@@ -50,6 +50,10 @@ data class AnswersItem(
 	@SerializedName("totalWeight")
 	val totalWeight: Int? = 0,
 
+	@SerializedName("ratio")
+	val ratio: String? = "0.0",
+
+
 	@SerializedName("section")
 	val section: String? = BLANK_STRING,
 

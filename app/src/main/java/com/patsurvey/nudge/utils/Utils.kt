@@ -706,3 +706,10 @@ fun longToString(value:Long):String{
         BLANK_STRING
     }
 }
+
+fun formatRatio(ratio:String):String{
+    return if(ratio.isNullOrEmpty() || ratio.equals("Nan",true))
+        "0.00"
+    else ratio
+
+}

@@ -1130,81 +1130,75 @@ class SyncHelper (
         }
     }
 
-fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener) {
-    callWorkFlowAPIForStep(3)
-    job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-        try {
-            withContext(Dispatchers.Main) {
-                delay(1000)
-                settingViewModel.stepThreeSyncStatus.value = 3
-                settingViewModel.stepFourSyncStatus.value = 1
-                settingViewModel.syncPercentage.value = 0.6f
-            }
-            val didiIDList = answerDao.fetchPATSurveyDidiList()
-            uploadDidiImagesToServer(MyApplication.applicationContext())
-            if (didiIDList.isNotEmpty()) {
-                var optionList: List<OptionsItem>
-                val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
-                var surveyId = 0
-                var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
-                val userType = if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
-                        BPC_USER_TYPE,
-                        true
-                    )
-                ) USER_BPC else USER_CRP
-                didiIDList.forEachIndexed { index, didi ->
-                    Log.d(
-                        "SyncHelper",
-                        "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}"
-                    )
-                    val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
-                    val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
-                    if (needToPostQuestionsList.isNotEmpty()) {
-                        needToPostQuestionsList.forEach {
-                            surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
-                            if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
-                                optionList = listOf(
-                                    OptionsItem(
-                                        optionId = it.optionId,
-                                        optionValue = it.optionValue,
-                                        count = 0,
-                                        summary = it.summary,
-                                        display = it.answerValue,
-                                        weight = 0,
-                                        isSelected = false
-                                    )
-                                )
-                            } else {
-                                val numOptionList =
-                                    numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
-                                val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
-                                if (numOptionList.isNotEmpty()) {
-                                    numOptionList.forEach { numOption ->
-                                        tList.add(
-                                            OptionsItem(
-                                                optionId = numOption.optionId,
-                                                optionValue = 0,
-                                                count = numOption.count,
-                                                summary = it.summary,
-                                                display = it.answerValue,
-                                                weight = numOption.weight,
-                                                isSelected = false
-                                            )
-                                        )
-                                    }
-                                    optionList = tList
-                                } else {
-                                    tList.add(
+    @SuppressLint("SuspiciousIndentation")
+    fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
+        callWorkFlowAPIForStep(3)
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                withContext(Dispatchers.Main) {
+                    delay(1000)
+                    settingViewModel.stepThreeSyncStatus.value = 3
+                    settingViewModel.stepFourSyncStatus.value = 1
+                    settingViewModel.syncPercentage.value = 0.6f
+                }
+                val didiIDList= answerDao.fetchPATSurveyDidiList()
+                uploadDidiImagesToServer(MyApplication.applicationContext())
+                if(didiIDList.isNotEmpty()){
+                    var optionList: List<OptionsItem>
+                    val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
+                    var surveyId =0
+                    var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
+                    val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
+                    didiIDList.forEachIndexed { index, didi ->
+                        Log.d("SyncHelper", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                        val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
+                        if (needToPostQuestionsList.isNotEmpty()) {
+                            needToPostQuestionsList.forEach {
+                                surveyId = questionDao.getQuestion(it.questionId).surveyId ?: 0
+                                if (!it.type.equals(QuestionType.Numeric_Field.name, true)) {
+                                    optionList = listOf(
                                         OptionsItem(
                                             optionId = it.optionId,
-                                            optionValue = 0,
+                                            optionValue = it.optionValue,
                                             count = 0,
                                             summary = it.summary,
                                             display = it.answerValue,
-                                            weight = it.weight,
+                                            weight = 0,
                                             isSelected = false
                                         )
                                     )
+                                } else {
+                                    val numOptionList =
+                                        numericAnswerDao.getSingleQueOptions(it.questionId, it.didiId)
+                                    val tList: java.util.ArrayList<OptionsItem> = arrayListOf()
+                                    if (numOptionList.isNotEmpty()) {
+                                        numOptionList.forEach { numOption ->
+                                            tList.add(
+                                                OptionsItem(
+                                                    optionId = numOption.optionId,
+                                                    optionValue = numOption.optionValue,
+                                                    count = numOption.count,
+                                                    summary = it.summary,
+                                                    display = it.answerValue,
+                                                    weight = numOption.weight,
+                                                    isSelected = false
+                                                )
+                                            )
+                                        }
+                                        optionList = tList
+                                    }else{
+                                        tList.add(
+                                            OptionsItem(
+                                                optionId = it.optionId,
+                                                optionValue = 0,
+                                                count = 0,
+                                                summary = it.summary,
+                                                display = it.answerValue,
+                                                weight = it.weight,
+                                                isSelected = false
+                                            )
+                                        )
 
                                     optionList = tList
                                 }
@@ -1579,10 +1573,38 @@ fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
             for (step in needToEdiStep) {
+                var stepCompletionDate = BLANK_STRING
+                if(step.isComplete == StepStatus.COMPLETED.ordinal){
+                    if(step.id == 40){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_TRANSECT_WALK_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 41){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_SOCIAL_MAPPING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 46){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+
+                    if(step.id == 43){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_PAT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+                    if(step.id == 44){
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_VO_ENDORSEMENT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                    }
+                }
+
                 requestForStepUpdation.add(
                     EditWorkFlowRequest(
                         step.workFlowId,
-                        StepStatus.getStepFromOrdinal(step.isComplete)
+                        StepStatus.getStepFromOrdinal(step.isComplete),
+                        stepCompletionDate
                     )
                 )
             }
