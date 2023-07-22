@@ -60,8 +60,6 @@ fun BpcProgressScreen(
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
-        delay(1000)
-        bpcProgreesScreenViewModel.showLoader.value = false
     }
 
     val scaffoldState =
@@ -95,9 +93,9 @@ fun BpcProgressScreen(
         mutableStateOf(Offset(0f, 0f))
     }
 
-    LaunchedEffect(key1 = true) {
+    /*LaunchedEffect(key1 = true) {
         bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
-    }
+    }*/
 
     BackHandler {
         (context as? Activity)?.finish()
@@ -142,6 +140,10 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
+                                bpcProgreesScreenViewModel.getStepsList(village.id)
+                                bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
+                                bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
+                                bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
                                 bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
@@ -315,6 +317,16 @@ fun BpcProgressScreen(
                                                         style = SpanStyle(
                                                             color = textColorDark,
                                                             fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
                                                             fontWeight = FontWeight.Normal,
                                                             fontFamily = NotoSans
                                                         )
@@ -340,6 +352,16 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(String.format("%03d", summaryData.value.mobilisedCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -375,6 +397,16 @@ fun BpcProgressScreen(
                                                         style = SpanStyle(
                                                             color = textColorDark,
                                                             fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
                                                             fontWeight = FontWeight.Normal,
                                                             fontFamily = NotoSans
                                                         )
@@ -405,6 +437,16 @@ fun BpcProgressScreen(
                                                         style = SpanStyle(
                                                             color = textColorDark,
                                                             fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
                                                             fontWeight = FontWeight.Normal,
                                                             fontFamily = NotoSans
                                                         )
@@ -430,6 +472,16 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(String.format("%03d", summaryData.value.voEndorsedCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(

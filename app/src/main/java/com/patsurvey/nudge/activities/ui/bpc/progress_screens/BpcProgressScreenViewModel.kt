@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -38,6 +39,7 @@ import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -78,9 +80,16 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun init() {
         showLoader.value = true
-        fetchVillageList()
-        fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
-        setBpcVerificationCompleteForVillages()
+        appScopeLaunch(Dispatchers.IO) {
+            fetchVillageList()
+            delay(100)
+            fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
+            setBpcVerificationCompleteForVillages()
+            delay(200)
+            withContext(Dispatchers.Main) {
+                showLoader.value = false
+            }
+        }
     }
 
     fun fetchBpcSummaryData(villageId: Int) {
@@ -91,12 +100,11 @@ class BpcProgressScreenViewModel @Inject constructor(
     }
 
     fun fetchVillageList(){
-        showLoader.value = true
         val villageId=prefRepo.getSelectedVillage().id
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
                 val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                val stepList = stepsListDao.getAllStepsForVillage(villageId = villageId)
+//                val stepList = stepsListDao.getAllStepsForVillage(villageId = villageId)
 //                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
 //                _tolaList.emit(tolaDBList)
@@ -107,11 +115,30 @@ class BpcProgressScreenViewModel @Inject constructor(
                             villageSelected.value=index
                         }
                     }
-                    _stepsList.value = stepList
                     selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
-//                    getStepsList(prefRepo.getSelectedVillage().id)
-                    showLoader.value = false
+                    getStepsList(prefRepo.getSelectedVillage().id)
                 }
+            }
+        }
+    }
+
+    fun getStepsList(villageId:Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(villageId)
+//            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
+//            if(dbInProgressStep!=null){
+//                if(stepList.size>dbInProgressStep.orderNumber) {
+//                    stepsListDao.markStepAsInProgress(
+//                        (dbInProgressStep.orderNumber + 1),
+//                        StepStatus.INPROGRESS.ordinal,
+//                        villageId
+//                    )
+//                }
+//            }else{
+//                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
+//            }
+            withContext(Dispatchers.IO) {
+                _stepsList.value = stepList
             }
         }
     }

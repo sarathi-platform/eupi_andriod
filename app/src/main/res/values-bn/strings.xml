@@ -326,6 +326,7 @@
 
     <string name="location_permission_dialog_prompt_message">অবস্থান অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="empty_tola_button_text">পারা যোগ ছাড়া চালিয়ে যান</string>
+    <string name="add_more_list_empty_string">কোন দিদি যোগ বা প্রতিস্থাপনের জন্য উপলব্ধ নেই</string>
 
 
 </resources>

@@ -318,6 +318,17 @@ fun ScoreComparisionScreen(
                                     }
                                     withStyle(
                                         style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(" ")
+                                    }
+
+                                    withStyle(
+                                        style = SpanStyle(
                                             color = greenOnline,
                                             fontSize = 14.sp,
                                             fontWeight = FontWeight.SemiBold,
@@ -325,6 +336,16 @@ fun ScoreComparisionScreen(
                                         )
                                     ) {
                                         append("${filterdDidiList.value.size}")
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = textColorDark,
+                                            fontSize = 14.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(" ")
                                     }
                                     withStyle(
                                         style = SpanStyle(

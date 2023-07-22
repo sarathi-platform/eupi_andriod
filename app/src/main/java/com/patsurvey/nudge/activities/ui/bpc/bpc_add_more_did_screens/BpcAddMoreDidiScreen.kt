@@ -225,7 +225,7 @@ fun BpcAddMoreDidiScreen(
                     if (newFilteredDidiList.isEmpty()) {
                         item {
                             Text(
-                                text = "No Didi's available to add or replace.",
+                                text = stringResource(R.string.add_more_list_empty_string),
                                 textAlign = TextAlign.Center,
                                 style = largeTextStyle,
                                 color = textColorDark,
@@ -722,24 +722,9 @@ private fun didiDetailConstraints(): ConstraintSet {
             start.linkTo(parent.start)
         }
 
-        constrain(houseNumberLabel) {
+        constrain(dadaNameLabel) {
             start.linkTo(parent.start, margin = 15.dp)
             top.linkTo(divider.bottom, margin = 15.dp)
-            end.linkTo(centerGuideline)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(houseNumber) {
-            start.linkTo(centerGuideline)
-            top.linkTo(houseNumberLabel.top)
-            bottom.linkTo(houseNumberLabel.bottom)
-            end.linkTo(parent.end, margin = 10.dp)
-            width = Dimension.fillToConstraints
-        }
-
-        constrain(dadaNameLabel) {
-            start.linkTo(houseNumberLabel.start)
-            top.linkTo(houseNumberLabel.bottom, margin = 20.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
         }
@@ -751,9 +736,24 @@ private fun didiDetailConstraints(): ConstraintSet {
             end.linkTo(parent.end, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
-        constrain(casteLabel) {
-            start.linkTo(houseNumberLabel.start)
+
+        constrain(houseNumberLabel) {
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(dadaNameLabel.bottom, margin = 20.dp)
+            end.linkTo(centerGuideline)
+            width = Dimension.fillToConstraints
+        }
+
+        constrain(houseNumber) {
+            start.linkTo(centerGuideline)
+            top.linkTo(houseNumberLabel.top)
+            bottom.linkTo(houseNumberLabel.bottom)
+            end.linkTo(parent.end, margin = 10.dp)
+            width = Dimension.fillToConstraints
+        }
+        constrain(casteLabel) {
+            start.linkTo(dadaNameLabel.start)
+            top.linkTo(houseNumberLabel.bottom, margin = 20.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
         }
@@ -766,7 +766,7 @@ private fun didiDetailConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(tolaLabel) {
-            start.linkTo(houseNumberLabel.start)
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(casteLabel.bottom, margin = 15.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints
@@ -781,7 +781,7 @@ private fun didiDetailConstraints(): ConstraintSet {
         }
 
         constrain(latestStatusLabel) {
-            start.linkTo(houseNumberLabel.start)
+            start.linkTo(dadaNameLabel.start)
             top.linkTo(tolaLabel.bottom, margin = 15.dp)
             end.linkTo(centerGuideline)
             width = Dimension.fillToConstraints

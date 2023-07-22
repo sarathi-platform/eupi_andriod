@@ -453,18 +453,19 @@ fun DidiItemCardForBpc(
                 }
             }
 
+            Divider(
+                color = borderGreyLight,
+                thickness = 1.dp,
+                modifier = Modifier
+                    .layoutId("divider")
+                    .padding(vertical = 4.dp)
+            )
+
             if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal ||
                 didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal ||
                 didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||
                 didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
             ) {
-                Divider(
-                    color = borderGreyLight,
-                    thickness = 1.dp,
-                    modifier = Modifier
-                        .layoutId("divider")
-                        .padding(vertical = 4.dp)
-                )
 
                 Row(
                     modifier = Modifier
@@ -697,7 +698,7 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top)
+            top.linkTo(village.top, margin = 3.dp)
             bottom.linkTo(village.bottom)
             start.linkTo(didiName.start)
         }

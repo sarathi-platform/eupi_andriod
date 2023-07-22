@@ -533,7 +533,7 @@ fun VillageAndVoBoxForBottomSheet(
                         tint = white
                     )
                     Text(
-                        text = if (isBpcUser) stringResource(R.string.bpc_verification_completed_village_banner_text) else stringResource(R.string.vo_endorsement_completed_village_banner_text),
+                        text = stringResource(R.string.vo_endorsement_completed_village_banner_text),
                         color = white,
                         style = smallerTextStyle,
                         modifier = Modifier.absolutePadding(bottom = 3.dp)

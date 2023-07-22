@@ -1147,7 +1147,7 @@ fun showBPCSyncDialog(
                                 )
                                 if (batteryLevel < 30)
                                     Text(
-                                        text = "(Min 30% required)",
+                                        text = stringResource(id = R.string.min_battery_text),
                                         color = redOffline,
                                         fontSize = 10.sp,
                                         fontWeight = FontWeight.SemiBold,

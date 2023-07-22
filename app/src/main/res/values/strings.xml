@@ -253,25 +253,25 @@
     <string name="crp_score_text">CRP Score:</string>
     <string name="bpc_score_text">BPC Score:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
-    <string name="summary_tolas_added_text_plural">" Tolas Added"</string>
-    <string name="summary_didis_mobilised_text_plural">" Didis Mobilised"</string>
-    <string name="summary_wealth_ranking_text_plural">" Didis Marked as poor in PWR"</string>
-    <string name="summary_vo_endoresement_text_plural">" Didis sent for VO Endorsement"</string>
+    <string name="summary_tolas_added_text_plural">Tolas Added</string>
+    <string name="summary_didis_mobilised_text_plural">Didis Mobilised</string>
+    <string name="summary_wealth_ranking_text_plural">Didis Marked as poor in PWR</string>
+    <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>
     <string name="unmatched_text">Unmatched</string>
     <string name="matched_text">Matched</string>
 
     <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
     <string name="review_and_submit_button_text">Review and Submit</string>
     <string name="bpc_add_more_didi_screen_title">List of additional didis available for verification</string>
-    <string name="showing_text">"Showing "</string>
-    <string name="result_text_singular">" result"</string>
-    <string name="result_text_plural">" results"</string>
-    <string name="didis_endorsed_by_vo_plural">" Didis Endorsed by VO"</string>
-    <string name="didi_endorsed_by_vo_singular">" Didi Endorsed by VO"</string>
-    <string name="summary_vo_endoresement_text_singular">" Didi sent for VO Endorsement"</string>
-    <string name="summary_wealth_ranking_text_singular">" Didi Marked as poor in PWR"</string>
-    <string name="summary_didis_mobilised_text_singular">" Didi Mobilised"</string>
-    <string name="summary_tolas_added_text_singular">" Tola Added"</string>
+    <string name="showing_text">Showing</string>
+    <string name="result_text_singular">result</string>
+    <string name="result_text_plural">results</string>
+    <string name="didis_endorsed_by_vo_plural">Didis Endorsed by VO</string>
+    <string name="didi_endorsed_by_vo_singular">Didi Endorsed by VO</string>
+    <string name="summary_vo_endoresement_text_singular">Didi sent for VO Endorsement</string>
+    <string name="summary_wealth_ranking_text_singular">Didi Marked as poor in PWR</string>
+    <string name="summary_didis_mobilised_text_singular">Didi Mobilised</string>
+    <string name="summary_tolas_added_text_singular">Tola Added</string>
     <string name="enter_amount">Enter Amount</string>
 
     <string name="bpc_result_text">BPC Result:</string>
@@ -343,5 +343,6 @@
 
     <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
     <string name="empty_tola_button_text">Continue without Tola addition</string>
+    <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
 
 </resources>
