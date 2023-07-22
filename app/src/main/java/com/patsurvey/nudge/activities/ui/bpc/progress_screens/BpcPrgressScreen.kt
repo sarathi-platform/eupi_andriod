@@ -698,7 +698,7 @@ fun BpcProgressScreen(
                                                 if (isStepCompleted != StepStatus.COMPLETED.ordinal) {
                                                     Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
-                                                        text = "VO Endorsement \nCompleted",
+                                                        text = stringResource(id = R.string.vo_endorsement_completed),
                                                         fontSize = 12.sp,
                                                         fontFamily = NotoSans,
                                                         fontWeight = FontWeight.Medium,

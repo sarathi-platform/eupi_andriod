@@ -321,6 +321,16 @@
     <string name="share_logs">लॉग साझा करें</string>
     <string name="earning_member_can_not_be_more_than_family_members">कमाऊ सदस्य परिवार के सदस्यों से अधिक नहीं हो सकते</string>
     <string name="match_percentage_should_be_more_than_70">मिलान % 70% से अधिक होना चाहिए</string>
+    <string name="delete_and_retake">हटाएँ &amp; फिर से लेना</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">यदि 5 से अधिक पृष्ठ हों तो कृपया अंतिम पृष्ठ अपलोड करें।</string>
+    <string name="vo_endorsement_completed">वीओ अनुमोदन \nपुरा होना।</string>
+    <string name="no_didis_available_to_add_or_replace">जोड़ने या बदलने के लिए कोई दीदी उपलब्ध नहीं है।</string>
+    <string name="online_sync_successful">ऑनलाइन सिंक सफल</string>
+    <string name="sync_failed">समन्वयन विफल</string>
+    <string name="digital_form_a_downloded">डिजिटल फॉर्म ए डाउनलोड किया गया</string>
+    <string name="digital_form_b_downloded">डिजिटल फॉर्म बी डाउनलोड किया गया</string>
+    <string name="digital_form_c_downloded">डिजिटल फॉर्म सी डाउनलोड किया गया</string>
+    <string name="something_went_wrong_unable_to_download_form">कुछ ग़लत हो गया, फ़ॉर्म डाउनलोड नहीं किया जा सका.</string>
 
 
     <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>

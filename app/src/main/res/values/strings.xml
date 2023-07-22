@@ -340,6 +340,16 @@
     <string name="share_logs">Share Logs</string>
     <string name="earning_member_can_not_be_more_than_family_members">Earning members cannot be more than family members</string>
     <string name="match_percentage_should_be_more_than_70">The Match % should be more than 70%</string>
+    <string name="delete_and_retake">Delete &amp; Retake</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">If more than 5 pages, please upload the last page.</string>
+    <string name="vo_endorsement_completed">VO Endorsement \nCompleted</string>
+    <string name="no_didis_available_to_add_or_replace">No Didis available to add or replace.</string>
+    <string name="online_sync_successful">Online Sync Successful</string>
+    <string name="sync_failed">Sync Failed</string>
+    <string name="digital_form_a_downloded">Digital Form A Downloaded</string>
+    <string name="digital_form_b_downloded">Digital Form B Downloaded</string>
+    <string name="digital_form_c_downloded">Digital Form C Downloaded</string>
+    <string name="something_went_wrong_unable_to_download_form">Something went wrong, unable to download form.</string>
 
     <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
     <string name="empty_tola_button_text">Continue without Tola addition</string>

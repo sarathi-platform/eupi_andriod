@@ -111,6 +111,8 @@ import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.SYNC_FAILED
+import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import java.text.SimpleDateFormat
@@ -492,7 +494,15 @@ fun SettingScreen(
         CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
     }
     if(networkError.isNotEmpty()){
-        showCustomToast(context,networkError)
+        var errorMessage = networkError
+        if(errorMessage.equals(SYNC_SUCCESSFULL,true)){
+            errorMessage = stringResource(id = R.string.online_sync_successful)
+        }
+        if(errorMessage.equals(SYNC_FAILED,true)){
+            errorMessage = stringResource(id = R.string.sync_failed)
+        }
+
+        showCustomToast(context,errorMessage)
     }
     if(viewModel.showAPILoader.value){
         CustomProgressBar(modifier = Modifier)

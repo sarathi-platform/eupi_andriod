@@ -323,6 +323,16 @@
     <string name="share_logs">লগ শেয়ার করুন</string>
     <string name="earning_member_can_not_be_more_than_family_members">উপার্জনকারী সদস্য পরিবারের সদস্যের বেশি হতে পারে না</string>
     <string name="match_percentage_should_be_more_than_70">মিল % 70% এর বেশি হওয়া উচিত</string>
+    <string name="delete_and_retake">মুছুন &amp; পুনরায় গ্রহণ করুন</string>
+    <string name="if_more_than_5_pages_please_uload_last_page">5 পৃষ্ঠার বেশি হলে, শেষ পৃষ্ঠাটি আপলোড করুন।</string>
+    <string name="vo_endorsement_completed">VO অনুমোদন \nসম্পন্ন</string>
+    <string name="no_didis_available_to_add_or_replace">যোগ বা প্রতিস্থাপন করার জন্য কোন Didi উপলব্ধ.</string>
+    <string name="online_sync_successful">অনলাইন সিঙ্ক সফল</string>
+    <string name="sync_failed">সিঙ্ক ব্যর্থ হয়েছে৷</string>
+    <string name="digital_form_a_downloded">ডিজিটাল ফর্ম A ডাউনলোড করা হয়েছে</string>
+    <string name="digital_form_b_downloded">ডিজিটাল ফর্ম B ডাউনলোড করা হয়েছে</string>
+    <string name="digital_form_c_downloded">ডিজিটাল ফর্ম C ডাউনলোড করা হয়েছে</string>
+    <string name="something_went_wrong_unable_to_download_form">কিছু ভুল হয়েছে, ফর্ম ডাউনলোড করতে অক্ষম৷</string>
 
     <string name="location_permission_dialog_prompt_message">অবস্থান অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="empty_tola_button_text">পারা যোগ ছাড়া চালিয়ে যান</string>
