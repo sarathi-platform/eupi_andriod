@@ -886,7 +886,7 @@ fun ExpandableFormPictureCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Delete & Retake",
+                        text = stringResource(id = R.string.delete_and_retake),
                         color = textColorDark,
                         style = buttonTextStyle,
                         overflow = TextOverflow.Ellipsis,
@@ -897,7 +897,7 @@ fun ExpandableFormPictureCard(
             }
             if (pageList.size >= 4) {
                 Text(
-                    text = "If more than 5 pages, please upload the last page.",
+                    text = stringResource(id = R.string.if_more_than_5_pages_please_uload_last_page),
                     style = smallTextStyle,
                     color = textColorDark80,
                     modifier = Modifier.padding(horizontal = 26.dp)
