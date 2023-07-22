@@ -11,6 +11,7 @@ import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -20,6 +21,7 @@ import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
@@ -40,7 +42,8 @@ class PatSectionSummaryViewModel @Inject constructor(
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao
+    val bpcSelectedDidiDao: BpcSelectedDidiDao,
+    val stepsListDao: StepsListDao
 ) : BaseViewModel() {
 
     private val _didiEntity = MutableStateFlow(
@@ -73,6 +76,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     private val _answerSummeryList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val answerSummeryList: StateFlow<List<SectionAnswerEntity>> get() = _answerSummeryList
     val isYesSelected = mutableStateOf(false)
+    val isPATStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
@@ -85,6 +89,8 @@ class PatSectionSummaryViewModel @Inject constructor(
             val inclusionQuestionList = questionListDao.getQuestionForType(TYPE_INCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
             val localSummeryList = answerDao.getAnswerForDidi(TYPE_INCLUSION, didiId = didiId)
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }
+            isPATStepComplete.value = stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
             if(sectionType.value.equals(TYPE_INCLUSION,true)){
                 calculateDidiScore(localDidiDetails.id)
             }

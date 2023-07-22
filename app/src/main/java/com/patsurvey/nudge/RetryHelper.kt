@@ -38,6 +38,7 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
+import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
@@ -58,6 +59,7 @@ import com.patsurvey.nudge.utils.PREF_VILLAGE_ID_TO_RETRY
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_500
 import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
@@ -79,6 +81,8 @@ import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
+import com.patsurvey.nudge.utils.formatRatio
+import com.patsurvey.nudge.utils.stringToDouble
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -511,30 +515,47 @@ object RetryHelper {
                                         )
                                         if (item?.answers?.isNotEmpty() == true) {
                                             item?.answers?.forEach { answersItem ->
+
+                                                val quesDetails =
+                                                    questionDao?.getQuestionForLanguage(
+                                                        answersItem?.questionId
+                                                            ?: 0,
+                                                        prefRepo?.getAppLanguageId()
+                                                            ?: 2
+                                                    )
                                                 if (answersItem?.questionType?.equals(QuestionType.Numeric_Field.name) == true) {
                                                     answerList.add(
                                                         SectionAnswerEntity(
                                                             id = 0,
                                                             optionId = 0,
-                                                            didiId = item.beneficiaryId ?: 0,
+                                                            didiId = item.beneficiaryId
+                                                                ?: 0,
                                                             questionId = answersItem?.questionId
                                                                 ?: 0,
-                                                            villageId = item.villageId ?: 0,
+                                                            villageId = item.villageId
+                                                                ?: 0,
                                                             actionType = answersItem?.section
                                                                 ?: TYPE_EXCLUSION,
                                                             weight = 0,
                                                             summary = answersItem?.summary,
-                                                            optionValue = answersItem?.options?.get(
+                                                            optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                 0
-                                                            )?.optionValue,
-                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                            )?.optionValue) else 0,
+                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
+                                                            ) ,
                                                             needsToPost = false,
-                                                            answerValue = answersItem?.options?.get(
-                                                                0
-                                                            )?.summary
-                                                                ?: BLANK_STRING,
+                                                            answerValue = (if(quesDetails?.questionFlag.equals(
+                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
+                                                            )).toString(),
                                                             type = answersItem?.questionType
-                                                                ?: QuestionType.RadioButton.name
+                                                                ?: QuestionType.RadioButton.name,
+                                                            assetAmount = answersItem?.assetAmount
+                                                                ?: "0",
+                                                            questionFlag = quesDetails?.questionFlag
+                                                                ?: BLANK_STRING
                                                         )
                                                     )
 
@@ -552,7 +573,8 @@ object RetryHelper {
                                                                         ?: 0,
                                                                     didiId = item.beneficiaryId
                                                                         ?: 0,
-                                                                    count = optionItem?.count ?: 0
+                                                                    count = optionItem?.count ?: 0,
+                                                                    optionValue = optionItem?.optionValue ?: 0
                                                                 )
                                                             )
                                                         }
@@ -562,25 +584,29 @@ object RetryHelper {
                                                     answerList.add(
                                                         SectionAnswerEntity(
                                                             id = 0,
-                                                            optionId = answersItem?.options?.get(0)?.optionId
+                                                            optionId = answersItem?.options?.get(
+                                                                0
+                                                            )?.optionId ?: 0,
+                                                            didiId = item.beneficiaryId
                                                                 ?: 0,
-                                                            didiId = item.beneficiaryId ?: 0,
                                                             questionId = answersItem?.questionId
                                                                 ?: 0,
-                                                            villageId = item.villageId ?: 0,
+                                                            villageId = item.villageId
+                                                                ?: 0,
                                                             actionType = answersItem?.section
                                                                 ?: TYPE_EXCLUSION,
                                                             weight = 0,
                                                             summary = answersItem?.summary,
-                                                            optionValue = answersItem?.options?.get(
+                                                            optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                 0
-                                                            )?.optionValue,
-                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                            )?.optionValue) else 0,
+                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO)),
                                                             needsToPost = false,
-                                                            answerValue = answersItem?.options?.get(
+                                                            answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                 0
                                                             )?.display
-                                                                ?: BLANK_STRING,
+                                                                ?: BLANK_STRING) else BLANK_STRING,
                                                             type = answersItem?.questionType
                                                                 ?: QuestionType.RadioButton.name
                                                         )

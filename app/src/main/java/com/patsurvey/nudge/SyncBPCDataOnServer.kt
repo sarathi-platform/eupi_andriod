@@ -436,7 +436,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             tList.add(
                                                 OptionsItem(
                                                     optionId = numOption.optionId,
-                                                    optionValue = 0,
+                                                    optionValue = numOption.optionValue,
                                                     count = numOption.count,
                                                     summary = it.summary,
                                                     display = it.answerValue,
