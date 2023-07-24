@@ -72,6 +72,8 @@ class AddDidiViewModel @Inject constructor(
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
 
+    private lateinit var castList : List<CasteEntity>
+
     var villageId: Int = -1
     var stepId: Int = -1
 
@@ -96,6 +98,7 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 val localDidList = didiDao.getAllDidisForVillage(villageId)
+                castList = casteListDao.getAllCasteForLanguage(prefRepo.getAppLanguageId()?:2)
                 val updatedList = mutableListOf<DidiEntity>()
                 localDidList.forEach {
                     if (it.cohortId != 0 && it.cohortName == BLANK_STRING) {
@@ -141,9 +144,18 @@ class AddDidiViewModel @Inject constructor(
         validateDidiDetails()
         getSocialMappingStepId()
         CheckDBStatus(this@AddDidiViewModel).isFirstStepNeedToBeSync(tolaDao){
-                isTolaSynced.value = it
-             }
+            isTolaSynced.value = it
+         }
 
+    }
+
+    fun getCastName(castId : Int) : String{
+        var castName = ""
+        for(cast in castList){
+            if(castId == cast.id)
+                castName = cast.casteName
+        }
+        return castName
     }
 
     private fun setVillage(villageId: Int) {

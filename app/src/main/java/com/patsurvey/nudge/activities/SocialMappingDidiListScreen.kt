@@ -1039,7 +1039,8 @@ fun DidiItemCard(
                         DidiDetailExpendableContent(
                             modifier = Modifier.layoutId("didiDetailLayout"),
                             didi,
-                            animateInt == 1
+                            animateInt == 1,
+                            didiViewModel
                         )
                     }
                 }
@@ -1156,110 +1157,7 @@ fun DidiItemCard(
 }
 
 @Composable
-fun DidiItemCard(
-    didi: DidiEntity,
-    expanded: Boolean,
-    modifier: Modifier,
-    onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onItemClick: (DidiEntity) -> Unit
-) {
-
-    val transition = updateTransition(expanded, label = "transition")
-
-    val animateColor by transition.animateColor({
-        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = "animate color") {
-        if (it) {
-            greenOnline
-        } else {
-            textColorDark
-        }
-    }
-
-    val animateInt by transition.animateInt({
-        tween(durationMillis = 10)
-    }, label = "animate float") {
-        if (it) 1 else 0
-    }
-
-    val arrowRotationDegree by transition.animateFloat({
-        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = "rotationDegreeTransition") {
-        if (it) 180f else 0f
-    }
-    Card(
-        elevation = 10.dp,
-        shape = RoundedCornerShape(6.dp),
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable {
-                onItemClick(didi)
-            }
-            .then(modifier)
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            BoxWithConstraints {
-                val constraintSet = decoupledConstraints()
-                ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
-                    CircularDidiImage(
-                        modifier = Modifier.layoutId("didiImage")
-                    )
-                    Text(
-                        text = didi.name,
-                        style = TextStyle(
-                            color = animateColor,
-                            fontSize = 18.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        ),
-                        modifier = Modifier.layoutId("didiName")
-                    )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
-                    Text(
-                        text = didi.cohortName,
-                        style = TextStyle(
-                            color = textColorBlueLight,
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        ),
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
-                    )
-                        CardArrow(
-                            modifier = Modifier.layoutId("expendArrowImage"),
-                            degrees = arrowRotationDegree,
-                            iconColor = animateColor,
-                            onClick = { onExpendClick(expanded, didi) }
-                        )
-
-                        DidiDetailExpendableContent(
-                            modifier = Modifier.layoutId("didiDetailLayout"),
-                            didi,
-                            animateInt == 1
-                        )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: Boolean) {
+fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: Boolean,didiViewModel: AddDidiViewModel) {
     val constraintSet = didiDetailConstraints()
 
     val context = LocalContext.current
@@ -1333,7 +1231,7 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
             )
 
             Text(
-                text = didi.castName?: BLANK_STRING,
+                text = didiViewModel.getCastName(didi.castId),
                 style = didiDetailItemStyle,
                 textAlign = TextAlign.Start,
                 modifier = Modifier.layoutId("caste")
