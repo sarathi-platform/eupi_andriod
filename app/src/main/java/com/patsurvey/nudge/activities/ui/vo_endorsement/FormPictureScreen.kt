@@ -102,7 +102,15 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
+import com.patsurvey.nudge.utils.openSettings
+import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -505,7 +513,7 @@ fun FormPictureScreen(
                                     localContext.getString(R.string.vo_endorsement_completed_message)
                                         .replace(
                                             "{VILLAGE_NAME}",
-                                            formPictureScreenViewModel.prefRepo.getSelectedVillage().name
+                                            formPictureScreenViewModel.villageEntity.value?.name ?: BLANK_STRING
                                         )
                                 }"
                             )
@@ -886,7 +894,7 @@ fun ExpandableFormPictureCard(
                     )
                     Spacer(modifier = Modifier.width(4.dp))
                     Text(
-                        text = "Delete & Retake",
+                        text = stringResource(id = R.string.delete_and_retake),
                         color = textColorDark,
                         style = buttonTextStyle,
                         overflow = TextOverflow.Ellipsis,
@@ -897,7 +905,7 @@ fun ExpandableFormPictureCard(
             }
             if (pageList.size >= 4) {
                 Text(
-                    text = "If more than 5 pages, please upload the last page.",
+                    text = stringResource(id = R.string.if_more_than_5_pages_please_uload_last_page),
                     style = smallTextStyle,
                     color = textColorDark80,
                     modifier = Modifier.padding(horizontal = 26.dp)

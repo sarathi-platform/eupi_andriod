@@ -60,8 +60,6 @@ fun BpcProgressScreen(
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
-        delay(1000)
-        bpcProgreesScreenViewModel.showLoader.value = false
     }
 
     val scaffoldState =
@@ -95,9 +93,9 @@ fun BpcProgressScreen(
         mutableStateOf(Offset(0f, 0f))
     }
 
-    LaunchedEffect(key1 = true) {
+    /*LaunchedEffect(key1 = true) {
         bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
-    }
+    }*/
 
     BackHandler {
         (context as? Activity)?.finish()
@@ -142,6 +140,10 @@ fun BpcProgressScreen(
                                 bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
+                                bpcProgreesScreenViewModel.getStepsList(village.id)
+                                bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
+                                bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
+                                bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
                                 bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
                                     scaffoldState.hide()
@@ -309,7 +311,17 @@ fun BpcProgressScreen(
                                                     ) {
 
 
-                                                        append(String.format("%03d", summaryData.value.cohortCount))
+                                                        append(String.format("%03d", summaryData.value.cohortCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -320,7 +332,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.cohortCount > 1)
+                                                            if ((summaryData.value.cohortCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_tolas_added_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_tolas_added_text_singular)
@@ -339,7 +351,17 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.mobilisedCount))
+                                                        append(String.format("%03d", summaryData.value.mobilisedCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -350,7 +372,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.mobilisedCount > 1)
+                                                            if ((summaryData.value.mobilisedCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_didis_mobilised_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_didis_mobilised_text_singular)
@@ -369,7 +391,17 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.poorDidiCount))
+                                                        append(String.format("%03d", summaryData.value.poorDidiCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -380,7 +412,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.poorDidiCount > 1)
+                                                            if ((summaryData.value.poorDidiCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_wealth_ranking_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_wealth_ranking_text_singular)
@@ -399,7 +431,17 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount))
+                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -410,7 +452,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.sentVoEndorsementCount > 1)
+                                                            if ((summaryData.value.sentVoEndorsementCount ?: 0) > 1)
                                                                 stringResource(R.string.summary_vo_endoresement_text_plural)
                                                             else
                                                                 stringResource(R.string.summary_vo_endoresement_text_singular)
@@ -429,7 +471,17 @@ fun BpcProgressScreen(
                                                             fontFamily = NotoSans
                                                         )
                                                     ) {
-                                                        append(String.format("%03d", summaryData.value.voEndorsedCount))
+                                                        append(String.format("%03d", summaryData.value.voEndorsedCount ?: 0))
+                                                    }
+                                                    withStyle(
+                                                        style = SpanStyle(
+                                                            color = textColorDark,
+                                                            fontSize = 15.sp,
+                                                            fontWeight = FontWeight.SemiBold,
+                                                            fontFamily = NotoSans
+                                                        )
+                                                    ) {
+                                                        append(" ")
                                                     }
                                                     withStyle(
                                                         style = SpanStyle(
@@ -440,7 +492,7 @@ fun BpcProgressScreen(
                                                         )
                                                     ) {
                                                         append(
-                                                            if (summaryData.value.voEndorsedCount > 1)
+                                                            if ((summaryData.value.voEndorsedCount ?: 0) > 1)
                                                                 stringResource(R.string.didis_endorsed_by_vo_plural)
                                                             else stringResource(
                                                                 R.string.didi_endorsed_by_vo_singular)
@@ -646,7 +698,7 @@ fun BpcProgressScreen(
                                                 if (isStepCompleted != StepStatus.COMPLETED.ordinal) {
                                                     Spacer(modifier = Modifier.height(10.dp))
                                                     Text(
-                                                        text = "VO Endorsement \nCompleted",
+                                                        text = stringResource(id = R.string.vo_endorsement_completed),
                                                         fontSize = 12.sp,
                                                         fontFamily = NotoSans,
                                                         fontWeight = FontWeight.Medium,

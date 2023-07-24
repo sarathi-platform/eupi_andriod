@@ -30,4 +30,7 @@ data class NumericAnswerEntity(
     @ColumnInfo(name = "count")
     val count : Int=0,
 
+    @ColumnInfo(name = "optionValue")
+    var optionValue: Int =0,
+
     )

@@ -178,6 +178,7 @@ fun QuestionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .weight(1f)
+                    .padding(horizontal = 5.dp)
             ) {
 
                 SurveyHeader(

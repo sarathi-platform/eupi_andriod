@@ -212,7 +212,6 @@ class ProgressScreenViewModel @Inject constructor(
                 stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
             }
         }
-
     }
 
      fun callWorkFlowAPI(villageId: Int,stepId: Int,programId:Int){

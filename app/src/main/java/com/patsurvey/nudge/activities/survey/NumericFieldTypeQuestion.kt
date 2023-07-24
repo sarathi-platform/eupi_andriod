@@ -145,7 +145,8 @@ val context = LocalContext.current
                                     count = it,
                                     didiId = didiId,
                                     id = 0,
-                                    questionFlag = questionFlag
+                                    questionFlag = questionFlag,
+                                    optionValue = option.optionValue ?:0
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
@@ -160,7 +161,8 @@ val context = LocalContext.current
                                     count = it,
                                     didiId = didiId,
                                     id = 0,
-                                    questionFlag = questionFlag
+                                    questionFlag = questionFlag,
+                                    optionValue = option.optionValue ?:0
                                 )
                                 option.count = it
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
@@ -175,7 +177,8 @@ val context = LocalContext.current
                                     count = if(it.isEmpty()) 0 else it.toInt(),
                                     didiId = didiId,
                                     id = 0,
-                                    questionFlag = questionFlag
+                                    questionFlag = questionFlag,
+                                    optionValue = option.optionValue ?:0
                                 )
                                 option.count = if(it.isEmpty()) 0 else it.toInt()
                                 viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)

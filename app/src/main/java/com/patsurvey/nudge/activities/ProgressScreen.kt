@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities
 
-import android.app.Activity
 import android.content.Context
-import android.graphics.drawable.RippleDrawable
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.*
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -19,9 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -101,7 +96,7 @@ fun ProgressScreen(
     }
 
     BackHandler {
-        (context as? Activity)?.finish()
+        (context as? MainActivity)?.finish()
     }
 
     Surface(

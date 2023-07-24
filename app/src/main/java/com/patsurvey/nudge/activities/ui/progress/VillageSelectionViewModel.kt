@@ -55,6 +55,7 @@ import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
+import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
@@ -79,6 +80,7 @@ import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
 import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
@@ -92,8 +94,10 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.findCompleteValue
+import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -585,10 +589,15 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
-                                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
+                                                                            ) ,
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.totalWeight?.toDouble()
-                                                                                .toString(),
+                                                                            answerValue = (if(quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
+                                                                            )).toString(),
                                                                             type = answersItem?.questionType
                                                                                 ?: QuestionType.RadioButton.name,
                                                                             assetAmount = answersItem?.assetAmount
@@ -613,7 +622,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                     didiId = item.beneficiaryId
                                                                                         ?: 0,
                                                                                     count = optionItem?.count
-                                                                                        ?: 0
+                                                                                        ?: 0,
+                                                                                    optionValue = optionItem?.optionValue ?: 0
                                                                                 )
                                                                             )
                                                                         }
@@ -640,7 +650,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                         optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                             0
                                                                         )?.optionValue) else 0,
-                                                                        totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                                        totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                                QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO)),
                                                                         needsToPost = false,
                                                                         answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                             0
@@ -1090,10 +1101,11 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
-                                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO)) ,
                                                                             needsToPost = false,
-                                                                            answerValue = answersItem?.totalWeight?.toDouble()
-                                                                                .toString(),
+                                                                            answerValue = (if(quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO))).toString(),
                                                                             type = answersItem?.questionType
                                                                                 ?: QuestionType.RadioButton.name,
                                                                             assetAmount = answersItem?.assetAmount
@@ -1118,7 +1130,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                     didiId = item.beneficiaryId
                                                                                         ?: 0,
                                                                                     count = optionItem?.count
-                                                                                        ?: 0
+                                                                                        ?: 0,
+                                                                                    optionValue = optionItem?.optionValue ?: 0
                                                                                 )
                                                                             )
                                                                         }
@@ -1144,7 +1157,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
-                                                                            totalAssetAmount = answersItem?.totalWeight?.toDouble(),
+                                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO)),
                                                                             needsToPost = false,
                                                                             answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0

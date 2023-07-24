@@ -75,12 +75,17 @@ fun VoEndorsementSummaryScreen(
     val selectedDidiForDialog= viewModel.selectedDidiEntity.collectAsState()
 
 
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(key1 = Unit) {
        viewModel?.setDidiDetailsFromDb(didiId)
         delay(200)
-        if (viewModel.selPageIndex.value < voDidiList.size) {
-            pagerState.animateScrollToPage(viewModel.selPageIndex.value)
+        try {
+            if (viewModel.selPageIndex.value < voDidiList.size && voDidiList.isNotEmpty()) {
+                pagerState.animateScrollToPage(viewModel.selPageIndex.value)
+            }
+        } catch (ex: Exception) {
+            NudgeLogger.e("VoEndorsementSummaryScreen", "LaunchedEffect -> exception", ex)
         }
+
     }
     var bottomPadding by remember {
         mutableStateOf(0.dp)
@@ -88,6 +93,18 @@ fun VoEndorsementSummaryScreen(
 
     BackHandler {
         navController.popBackStack()
+    }
+
+    LaunchedEffect(key1 = Unit, key2 = !voDidiList.isNullOrEmpty()) {
+        delay(100)
+        try {
+            if (viewModel.selPageIndex.value < voDidiList.size && voDidiList.isNotEmpty()) {
+                pagerState.animateScrollToPage(viewModel.selPageIndex.value)
+            }
+        } catch (ex: Exception) {
+            NudgeLogger.e("VoEndorsementSummaryScreen", "LaunchedEffect(key1 = Unit, key2 = !voDidiList.isNullOrEmpty()) -> exception", ex)
+        }
+
     }
 
     Box(modifier = Modifier
@@ -370,12 +387,12 @@ fun VoEndorsementSummaryScreen(
                         showDialog.value = true
                         dialogActionType.value = DidiEndorsementStatus.ENDORSED.ordinal
                         viewModel._selectedDidiEntity.value = voDidiList[pagerState.currentPage]
+                        didi?.value?.voEndorsementStatus = DidiEndorsementStatus.ENDORSED.ordinal
+                        viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.ENDORSED.ordinal)
                         coroutineScope.launch {
-                            viewModel.updateVoEndorsementStatus(
-                                voDidiList[pagerState.currentPage].id,
-                                DidiEndorsementStatus.ENDORSED.ordinal
-                            )
-                            val nextPageIndex = pagerState.currentPage + 1
+                            delay(1000)
+                            showDialog.value = false
+                            /*val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
                                 delay(500)
@@ -387,32 +404,31 @@ fun VoEndorsementSummaryScreen(
                                 showDialog.value = false
                                 delay(100)
                                 navController.popBackStack()
-                            }
+                            }*/
                         }
                     },
                     negativeButtonOnClick = {
                         showDialog.value = true
                         dialogActionType.value = DidiEndorsementStatus.REJECTED.ordinal
                         viewModel._selectedDidiEntity.value = voDidiList[pagerState.currentPage]
+                        didi?.value?.voEndorsementStatus = DidiEndorsementStatus.REJECTED.ordinal
+                        viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.REJECTED.ordinal)
                         coroutineScope.launch {
-                            viewModel.updateVoEndorsementStatus(
-                                voDidiList[pagerState.currentPage].id,
-                                DidiEndorsementStatus.REJECTED.ordinal
-                            )
-                            val nextPageIndex = pagerState.currentPage + 1
+                            delay(1000)
+                            showDialog.value = false
+                            /*val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
                                 delay(500)
                                 showDialog.value = false
                                 delay(100)
-
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
                                 showDialog.value = false
                                 delay(100)
                                 navController.popBackStack()
-                            }
+                            }*/
                         }
                     }
                 )
