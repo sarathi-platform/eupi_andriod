@@ -254,7 +254,8 @@ class SurveySummaryViewModel @Inject constructor(
                                         else
                                             COMPLETED_STRING
                                     }
-                                }
+                                },
+                                rankingEdit = false
                             )
                         )
                         answeredDidiList.add(
@@ -305,6 +306,7 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!saveAPIResponse.lastSyncTime.isNullOrEmpty()) {
                                 updateLastSyncTime(prefRepo, saveAPIResponse.lastSyncTime)
                             }
+                            didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
                             val updateScoreResponse = apiService.updateDidiScore(scoreDidiList)
                         }
                     }

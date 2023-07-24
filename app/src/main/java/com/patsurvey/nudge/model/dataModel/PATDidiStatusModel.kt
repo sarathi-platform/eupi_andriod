@@ -44,7 +44,10 @@ data class PATDidiStatusModel(
     var comment: String ?= TYPE_EXCLUSION,
 
     @ColumnInfo(name = "shgFlag")
-    var shgFlag: Int
+    var shgFlag: Int,
+
+    @ColumnInfo(name = "patEdit")
+    var patEdit: Boolean
 
 
 )

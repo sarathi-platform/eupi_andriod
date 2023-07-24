@@ -23,5 +23,6 @@ data class DidiDetailList(
     @SerializedName("crpScore") var crpScore: Double,
     @SerializedName("crpComment") var crpComment: String,
     @SerializedName("crpUploadedImage") var crpUploadedImage: String,
-    @SerializedName("rankingEdit") var rankingEdit: Boolean
+    @SerializedName("rankingEdit") var rankingEdit: Boolean,
+    @SerializedName("patEdit") var patEdit: Boolean
 )

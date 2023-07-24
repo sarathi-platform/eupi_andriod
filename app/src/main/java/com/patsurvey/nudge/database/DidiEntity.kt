@@ -143,7 +143,10 @@ data class DidiEntity(
     var needsToPostImage: Boolean = false,
 
     @ColumnInfo(name = "rankingEdit")
-    var rankingEdit: Boolean = true
+    var rankingEdit: Boolean = true,
+
+    @ColumnInfo(name = "patEdit")
+    var patEdit: Boolean = true
 
 ){
     companion object{

@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.*
@@ -28,6 +29,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -53,6 +55,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
@@ -62,6 +65,7 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
+import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -822,7 +826,6 @@ private fun didiDetailConstraints(): ConstraintSet {
         constrain(latestStatus) {
             start.linkTo(centerGuideline)
             top.linkTo(latestStatusLabel.top)
-            bottom.linkTo(latestStatusLabel.bottom)
             end.linkTo(parent.end, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
@@ -907,6 +910,7 @@ fun DidiItemCard(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Row(modifier = Modifier
@@ -1206,6 +1210,7 @@ fun DidiItemCard(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Text(
@@ -1377,30 +1382,46 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
 }
 
 fun getLatestStatusText(context: Context, didi: DidiEntity): String {
-    var status = context.getString(R.string.wealth_ranking_status_complete_text)
+    var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.wealth_ranking_status_not_started_text)
     } else {
-        when (didi.patSurveyStatus) {
-            PatSurveyStatus.NOT_STARTED.ordinal -> {
-                status = context.getString(R.string.wealth_ranking_status_complete_text)
-            }
-            PatSurveyStatus.INPROGRESS.ordinal -> {
-                status = context.getString(R.string.pat_in_progress_status_text)
-            }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal-> {
-                status = context.getString(R.string.not_avaliable)
-            }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
-                status = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
-                    context.getString(R.string.vo_endorsement_status_text)
+        if (!didi.rankingEdit) {
+            if (!didi.patEdit) {
+                status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
+                    when (didi.voEndorsementStatus) {
+                        DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
+                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_selected_status_text))
+                        }
+                        DidiEndorsementStatus.REJECTED.ordinal -> {
+                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_rejected_status_text))
+                        }
+                        else -> {
+                            context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_selected_status_text))
+                        }
+                    }
                 } else {
-                    context.getString(R.string.pat_completed_status_text)
+                    context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_rejected_status_text))
                 }
+            } else {
+                status = context.getString(R.string.wealth_ranking_status_complete_text)
+                    .replace("{RANK}", getRankInLanguage(context, didi.wealth_ranking))
             }
+        } else {
+            status = context.getString(R.string.wealth_ranking_status_not_started_text)
         }
     }
+
     return status
+}
+
+fun getRankInLanguage(context: Context, wealthRanking: String): String {
+    return when (wealthRanking) {
+        WealthRank.RICH.rank -> context.getString(R.string.ranking_text_rich)
+        WealthRank.MEDIUM.rank -> context.getString(R.string.ranking_text_medium)
+        WealthRank.POOR.rank -> context.getString(R.string.ranking_text_poor)
+        else -> BLANK_STRING
+    }
 }
 
 @Composable
@@ -1425,6 +1446,48 @@ fun TolaWithImage(toal: String, modifier: Modifier) {
             ),
             modifier = Modifier.padding(start = 5.dp)
         )
+
+    }
+}
+
+
+@Composable
+fun CircularDidiImage(didi: DidiEntity, modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .then(modifier)
+            .clip(CircleShape)
+            .width(44.dp)
+            .height(44.dp)
+            .background(color = yellowBg),
+    ) {
+        if (didi.localPath.isNotEmpty()) {
+            Image(
+                painter = rememberImagePainter(
+                    Uri.fromFile(
+                        File(
+                            didi.localPath.split("|")[0]
+                        )
+                    )
+                ),
+                contentDescription = "didi image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.didi_icon),
+                contentDescription = "didi image",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        }
 
     }
 }

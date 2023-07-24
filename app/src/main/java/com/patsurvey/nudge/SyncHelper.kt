@@ -1228,9 +1228,9 @@ class SyncHelper (
                     val passingMark = questionDao.getPassingScore()
                     var comment = BLANK_STRING
                     comment =
-                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                             BLANK_STRING
-                        else {
+                        } else {
                             if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
                                 TYPE_EXCLUSION
                             } else {
@@ -1250,7 +1250,8 @@ class SyncHelper (
                             result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
                             else {
                                 if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
-                            }
+                            },
+                            rankingEdit = didi.patEdit
                         )
                     )
                     val stateId = villegeListDao.getVillage(didi.villageId).stateId

@@ -1021,7 +1021,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                             comment = didi.comment,
                                                             crpUploadedImage = didi.crpUploadedImage,
                                                             needsToPostImage = false,
-                                                            rankingEdit = didi.rankingEdit
+                                                            rankingEdit = didi.rankingEdit,
+                                                            patEdit = didi.patEdit
                                                         )
                                                     )
 //                                                    }

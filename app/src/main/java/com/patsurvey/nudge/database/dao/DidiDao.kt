@@ -254,4 +254,7 @@ interface DidiDao {
 
     @Query("UPDATE $DIDI_TABLE SET rankingEdit = :rankingEdit where villageId = :villageId")
     fun updateRankEditFlag(villageId: Int, rankingEdit: Boolean)
+
+    @Query("UPDATE $DIDI_TABLE SET patEdit = :patEdit where villageId = :villageId")
+    fun updatePatEditFlag(villageId: Int, patEdit: Boolean)
 }

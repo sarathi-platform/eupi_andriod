@@ -212,9 +212,9 @@
     <string name="view">फ़ॉर्म को देखे</string>
     <string name="pat_inprogresee_status_text">प्रगति में</string>
     <string name="wealth_ranking_status_not_started_text">सम्पत्ति श्रेणी शुरू नही किया गया है</string>
-    <string name="wealth_ranking_status_complete_text">सहभागी धन रैंकिंग पूरी हुई - गरीब नहीं है |</string>
+    <string name="wealth_ranking_status_complete_text">सहभागी धन रैंकिंग पूरी हुई - {RANK} |</string>
     <string name="pat_in_progress_status_text">PAT सर्वे प्रगति में है</string>
-    <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ</string>
+    <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>
     <string name="no_didis_availble_for_vo_endorsement">VO अनुमोदन के लिए दीदी मौजूद नहीं है</string>
     <string name="step_1">चरण 1</string>
@@ -336,5 +336,10 @@
     <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>
     <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
     <string name="add_more_list_empty_string">जोड़ने या बदलने के लिए कोई दीदी उपलब्ध नहीं है।</string>
+
+    <string name="pat_selected_status_text">PAT चयनित</string>
+    <string name="pat_rejected_status_text">PAT अस्वीकृत</string>
+    <string name="vo_selected_status_text">VO ने समर्थन किया</string>
+    <string name="vo_rejected_status_text">VO अस्वीकृत</string>
 
 </resources>

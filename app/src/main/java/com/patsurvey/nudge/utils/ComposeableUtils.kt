@@ -144,6 +144,7 @@ fun DidiItemCardForPat(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Row(
@@ -261,6 +262,7 @@ fun DidiItemCardForVoForSummary(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Row(
