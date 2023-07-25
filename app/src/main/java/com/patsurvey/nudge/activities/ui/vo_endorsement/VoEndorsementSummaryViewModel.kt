@@ -127,6 +127,14 @@ class VoEndorsementSummaryViewModel @Inject constructor(
         }
     }
 
+    fun getQuestionSummary(questionId : Int) : String{
+        var summary = ""
+        for(question in _quesList.value){
+            if(question.questionId == questionId)
+                summary = question.questionSummary.toString()
+        }
+        return summary
+    }
 
     fun updateVoEndorsementStatus(didiId: Int,status:Int){
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
