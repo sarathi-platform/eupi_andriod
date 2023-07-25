@@ -320,8 +320,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsClicked.value < 1,
-                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 1) stringResource(
+                                    showIcon = formPictureScreenViewModel.formsCClicked.value < 1,
+                                    cardTitle = if (formPictureScreenViewModel.formsCClicked.value < 1) stringResource(
                                         R.string.form_c_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} C",
                                     contentColor = textColorDark,
@@ -381,11 +381,8 @@ fun FormPictureScreen(
                                     deleteButtonClicked = {
                                         formPictureScreenViewModel.formCPageList.value =
                                             mutableListOf()
-//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
-                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
-//                                        else
-//                                            formPictureScreenViewModel.formsClicked.value = 0
-
+                                        formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
+                                            formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
                                     }
                                 )
 
@@ -393,8 +390,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsClicked.value < 2,
-                                    cardTitle = if (formPictureScreenViewModel.formsClicked.value < 2) stringResource(
+                                    showIcon = formPictureScreenViewModel.formsDClicked.value < 2,
+                                    cardTitle = if (formPictureScreenViewModel.formsDClicked.value < 2) stringResource(
                                         R.string.form_d_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} D",
                                     contentColor = textColorDark,
@@ -434,9 +431,8 @@ fun FormPictureScreen(
                                         } else {
                                             showToast(
                                                 localContext,
-                                                "Max 5 Pages can be captured"
+                                                localContext.getString(R.string.max_5_pages_can_be_captured)
                                             )
-                                            //                                    navController.navigate("image_viewer/$FORM_C")
                                         }
                                     },
                                     retakeButtonClicked = { index ->
@@ -448,8 +444,8 @@ fun FormPictureScreen(
                                     },
                                     deleteButtonClicked = {
                                         formPictureScreenViewModel.formDPageList.value = mutableListOf()
-//                                        if (formPictureScreenViewModel.formsClicked.value > 1)
-                                            formPictureScreenViewModel.formsClicked.value = --formPictureScreenViewModel.formsClicked.value
+                                        formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
+                                        formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
                                     }
                                 )
                             }
@@ -561,8 +557,9 @@ private fun handleImageCapture(
             viewModal.formCImageList.value = viewModal.formCImageList.value.also {
                 it["Page_${viewModal.formCPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value <= 1) {
-                viewModal.formsClicked.value = viewModal.formsClicked.value + 1
+
+            if (viewModal.formsCClicked.value <= 1) {
+                viewModal.formsCClicked.value = viewModal.formsCClicked.value + 1
             }
         }
     } else {
@@ -585,8 +582,9 @@ private fun handleImageCapture(
             viewModal.formDImageList.value = viewModal.formDImageList.value.also {
                 it["Page_${viewModal.formDPageList.value.size}"] = photoPath
             }
-            if (viewModal.formsClicked.value <= 2) {
-                viewModal.formsClicked.value = viewModal.formsClicked.value + 1
+
+            if (viewModal.formsDClicked.value <= 1) {
+                viewModal.formsDClicked.value = viewModal.formsDClicked.value + 1
             }
         }
     }

@@ -11,7 +11,7 @@ enum class PatSurveyStatus {
             return when(status) {
                 NOT_AVAILABLE.name -> NOT_AVAILABLE.ordinal
                 INPROGRESS.name -> INPROGRESS.ordinal
-                COMPLETED.name -> COMPLETED.ordinal
+                COMPLETED.name,VERIFIED_STRING  -> COMPLETED.ordinal
                 NOT_AVAILABLE_WITH_CONTINUE.name -> NOT_AVAILABLE_WITH_CONTINUE.ordinal
                 else -> NOT_STARTED.ordinal
             }

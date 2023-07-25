@@ -60,6 +60,10 @@ fun BpcProgressScreen(
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
+
+        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
+        delay(1000)
+        bpcProgreesScreenViewModel.showLoader.value = false
     }
 
     val scaffoldState =
@@ -80,12 +84,6 @@ fun BpcProgressScreen(
     mainActivity?.isLoggedInLive?.postValue(bpcProgreesScreenViewModel.isLoggedIn())
 
     setKeyboardToPan(mainActivity!!)
-
-    LaunchedEffect(key1 = Unit) {
-//        bpcProgreesScreenViewModel.updateSelectedDidiPatStatus()
-//        delay(100)
-        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
-    }
     val context = LocalContext.current
 
     val localDensity = LocalDensity.current
