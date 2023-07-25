@@ -196,8 +196,18 @@ fun PatSurveyCompleteSummary(
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
                         SectionOneSummeryItem(index = index,
-                            quesSummery = answer?.summary?: BLANK_STRING,
-                            answerValue = answer?.answerValue?: BLANK_STRING,
+                            quesSummery = answer?.questionId?.let {
+                                patSectionSummaryViewModel.getQuestionSummary(
+                                    it
+                                )
+                            } ?: BLANK_STRING,
+                            answerValue = answer?.questionId?.let {
+                                answer.optionId?.let { it1 ->
+                                    patSectionSummaryViewModel.getOptionForLanguage(
+                                        it, it1
+                                    )
+                                }
+                            } ?: BLANK_STRING,
                             optionValue =  answer?.optionValue?:0,
                             questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
                             if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
@@ -230,8 +240,18 @@ fun PatSurveyCompleteSummary(
                             val question = inclusionQuestionList.find { it.questionId == answer.questionId }
                             SectionTwoSummeryItem(
                                 index = index,
-                                quesSummery = answer.summary.toString(),
-                                answerValue = answer.answerValue?: BLANK_STRING,
+                                quesSummery = answer.questionId.let {
+                                    patSectionSummaryViewModel.getQuestionSummary(
+                                        it
+                                    )
+                                },
+                                answerValue = answer.questionId.let {
+                                    answer.optionId?.let { it1 ->
+                                        patSectionSummaryViewModel.getOptionForLanguage(
+                                            it, it1
+                                        )
+                                    }
+                                } ?: BLANK_STRING,
                                 questionType = answer.type,
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
