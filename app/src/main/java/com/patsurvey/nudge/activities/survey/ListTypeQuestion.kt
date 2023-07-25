@@ -22,6 +22,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.ireward.htmlcompose.HtmlText
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -40,7 +41,7 @@ fun ListTypeQuestion(
 ) {
 //    var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
-        Text(
+        HtmlText(
             modifier = Modifier
                 .border(
                     BorderStroke(1.dp, lightGray2),
@@ -48,25 +49,29 @@ fun ListTypeQuestion(
                 )
                 .padding(14.dp)
                 .fillMaxWidth(),
-            text = buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = NotoSans
-                    )
-                ) {
-                    append("$questionNumber.")
-                }
-                append(" $question")
-            },
+            text =
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = textColorDark,
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = NotoSans
+                        )
+                    ) {
+                        append("$questionNumber.")
+                    }
+                    append(" $question")
+
+            }.toString(),
+
             style = TextStyle(
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp
+                fontSize = 14.sp,
+                color = textColorDark
             ),
-            color = textColorDark
+
         )
 
         Row(

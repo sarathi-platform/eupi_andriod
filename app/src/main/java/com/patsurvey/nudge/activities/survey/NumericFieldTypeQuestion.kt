@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
+import com.ireward.htmlcompose.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -82,7 +83,7 @@ val context = LocalContext.current
             .fillMaxSize()
             .align(Alignment.TopCenter)) {
             val (questionBox, optionBox, submitBox) = createRefs()
-            Text(
+            HtmlText(
                 modifier = Modifier
                     .border(
                         BorderStroke(1.dp, lightGray2),
@@ -106,13 +107,14 @@ val context = LocalContext.current
                         append("$questionNumber.")
                     }
                     append(" $question")
-                },
+                }.toString(),
                 style = TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    color = textColorDark
                 ),
-                color = textColorDark
+                //color = textColorDark
             )
 
             Column(
