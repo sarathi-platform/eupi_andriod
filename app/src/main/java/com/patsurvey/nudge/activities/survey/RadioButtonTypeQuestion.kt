@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -28,7 +29,12 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.core.text.HtmlCompat
+import androidx.core.widget.TextViewCompat
+import androidx.databinding.adapters.TextViewBindingAdapter.setText
+import com.ireward.htmlcompose.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
@@ -65,8 +71,36 @@ fun RadioButtonTypeQuestion(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
              }) {
+                /*val que = "<p>My favorite color is <del>blue</del> <ins>red</ins>.</p>"
+                AndroidView(
+                    factory = { context ->
+                   TextView(context).apply {
+                        text = HtmlCompat.fromHtml(buildAnnotatedString {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = textColorDark,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Normal,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append("$questionNumber.")
+                            }
+                            append(" $que")
+                        }.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
+                        setTextAppearance(R.style.TextAppearance_AppCompat_Body2)
+                    }
 
-                Text(
+                },
+                    modifier = Modifier
+                        .border(
+                            BorderStroke(1.dp, lightGray2),
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(14.dp)
+                        .fillMaxWidth()
+                )*/
+                HtmlText(
                     modifier = Modifier
                         .border(
                             BorderStroke(1.dp, lightGray2),
@@ -86,13 +120,14 @@ fun RadioButtonTypeQuestion(
                             append("$questionNumber.")
                         }
                         append(" $question")
-                    },
+                    }.toString(),
                     style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
+                        fontSize = 14.sp,
+                        color = textColorDark
                     ),
-                    color = textColorDark
+                    //color = textColorDark
                 )
 
                 Row(

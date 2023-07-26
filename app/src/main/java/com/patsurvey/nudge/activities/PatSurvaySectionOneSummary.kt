@@ -46,6 +46,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.ireward.htmlcompose.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -403,30 +404,32 @@ fun SectionOneSummeryItem(
                         .height(30.dp)
                 )
         }
-            Text(
+            HtmlText(
                 text = "${index+1}. ${quesSummery}.",
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
+                    fontFamily = NotoSans,
+                    textAlign = TextAlign.Start
                 ),
-                textAlign = TextAlign.Start,
+                //textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .weight(1f)
             )
-            Text(
+            HtmlText(
                 text = "${answerValue}",
                 style = TextStyle(
                     color = if (optionValue == 1) greenOnline else redNoAnswer,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
+                    fontFamily = NotoSans,
+                    textAlign = TextAlign.Start
                 ),
-                textAlign = TextAlign.Start,
+               // textAlign = TextAlign.Start,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(start=2.dp)
