@@ -367,5 +367,6 @@
     <string name="expiry_login_verify_otp">%s ओ.टी.पी. दुबारा भेजे</string>
     <string name="complete_wealth_ranking_btn_text">धन-सम्पत्ति श्रेणी का कार्य पूर्ण</string>
     <string name="max_5_pages_can_be_captured">अधिकतम 5 पेज कैप्चर किये जा सकते हैं</string>
+    <string name="click_to_refresh">ताज़ा करने के लिए क्लिक करें</string>
 
 </resources>

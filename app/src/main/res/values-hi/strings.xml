@@ -337,5 +337,6 @@
     <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
     <string name="add_more_list_empty_string">जोड़ने या बदलने के लिए कोई दीदी उपलब्ध नहीं है।</string>
     <string name="max_5_pages_can_be_captured">अधिकतम 5 पेज कैप्चर किये जा सकते हैं</string>
+    <string name="click_to_refresh">ताज़ा करने के लिए क्लिक करें</string>
 
 </resources>

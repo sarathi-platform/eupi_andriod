@@ -355,5 +355,5 @@
     <string name="empty_tola_button_text">Continue without Tola addition</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
-
+    <string name="click_to_refresh">Click to Refresh</string>
 </resources>
