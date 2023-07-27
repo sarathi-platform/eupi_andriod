@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
@@ -418,4 +419,21 @@ private fun decoupledConstraints(): ConstraintSet {
             start.linkTo(parent.start)
         }
     }
+}
+
+
+@Composable
+fun RowScope.TableCell(
+    text: String,
+    style: TextStyle,
+    alignment: TextAlign,
+    weight: Float,
+    modifier: Modifier
+) {
+    Text(
+        text = text,
+        style = style,
+        textAlign = alignment,
+        modifier = Modifier.weight(weight).then(modifier)
+    )
 }

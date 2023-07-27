@@ -10,6 +10,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.BatteryManager
 import android.os.Build
+import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
 import android.util.Log
@@ -354,5 +355,129 @@ object LocationUtil {
     }
 
     var showPermissionDialog = false
+
+    var location: LocationCoordinates = LocationCoordinates(0.0, 0.0)
+
+    fun setLocation(context: Activity) {
+        if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            var locationByGps: Location? = null
+            var locationByNetwork: Location? = null
+            val gpsConsumer = Consumer<Location> { gpsLocation ->
+                NudgeLogger.d("LocationUtil", "setLocation -> gpsConsumer: called")
+                if (gpsLocation != null) {
+                    NudgeLogger.d(
+                        "LocationUtils",
+                        "setLocation -> gpsConsumer: gpsLocation != null => gpsLocation: $gpsLocation"
+                    )
+                    locationByGps = gpsLocation
+                    location = LocationCoordinates(
+                        locationByGps?.latitude ?: 0.0,
+                        locationByGps?.longitude ?: 0.0
+                    )
+                } else {
+                    NudgeLogger.d("LocationUtils", "setLocation -> gpsConsumer: gpsLocation == null")
+                }
+            }
+            val networkConsumer = Consumer<Location> { networkLocation ->
+                NudgeLogger.d("LocationUtils", "setLocation -> networkLocation: called")
+                if (networkLocation != null) {
+                    NudgeLogger.d(
+                        "LocationUtils",
+                        "setLocation -> gpsConsumer: gpsLocation != null => gpsLocation: $networkLocation"
+                    )
+
+                    locationByNetwork = networkLocation
+                    location = LocationCoordinates(
+                        locationByNetwork?.latitude ?: 0.0,
+                        locationByNetwork?.longitude ?: 0.0
+                    )
+                } else {
+                    NudgeLogger.d("LocationUtils", "setLocation -> gpsConsumer: gpsLocation == null")
+                }
+
+            }
+            getLocation(context, gpsConsumer, networkConsumer)
+        } else
+        {
+            var locationByGps: Location? = null
+            var locationByNetwork: Location? = null
+            NudgeLogger.d("LocationUtils", "setLocation -> gpsLocationListener called")
+            val gpsLocationListener: LocationListener = object : LocationListener {
+                override fun onLocationChanged(gpsLocation: Location) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> gpsLocationListener onLocationChanged: location => $location"
+                    )
+                    locationByGps = gpsLocation
+                    location = LocationCoordinates(
+                        locationByGps?.latitude ?: 0.0,
+                        locationByGps?.longitude ?: 0.0
+                    )
+                }
+
+                override fun onStatusChanged(
+                    provider: String,
+                    status: Int,
+                    extras: Bundle
+                ) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> gpsLocationListener onStatusChanged: provider => $provider status: $status"
+                    )
+                }
+
+                override fun onProviderEnabled(provider: String) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> gpsLocationListener onProviderEnabled: provider => $provider"
+                    )
+                }
+
+                override fun onProviderDisabled(provider: String) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> gpsLocationListener onProviderDisabled: provider => $provider"
+                    )
+                }
+            }
+            NudgeLogger.d("LocationUtils", "setLocation -> networkLocationListener called")
+            val networkLocationListener: LocationListener = object :
+                LocationListener {
+                override fun onLocationChanged(networkLocation: Location) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> networkLocationListener onLocationChanged: location => $location"
+                    )
+                    locationByNetwork = networkLocation
+                    location = LocationCoordinates(
+                        locationByNetwork?.latitude ?: 0.0,
+                        locationByNetwork?.longitude ?: 0.0
+                    )
+                }
+
+                override fun onStatusChanged(
+                    provider: String,
+                    status: Int,
+                    extras: Bundle
+                ) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> networkLocationListener onStatusChanged: provider => $provider status: $status"
+                    )
+                }
+
+                override fun onProviderEnabled(provider: String) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> networkLocationListener onProviderEnabled: provider => $provider"
+                    )
+                }
+
+                override fun onProviderDisabled(provider: String) {
+                    NudgeLogger.d(
+                        "LocationUtils", "setLocation -> networkLocationListener onProviderEnabled: provider => $provider"
+                    )
+                }
+            }
+            getLocation(
+                context,
+                gpsLocationListener,
+                networkLocationListener
+            )
+        }
+    }
 
 }

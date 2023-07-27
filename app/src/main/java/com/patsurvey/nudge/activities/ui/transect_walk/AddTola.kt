@@ -1,10 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
 import android.app.Activity
-import android.location.Location
-import android.location.LocationListener
-import android.os.Build.VERSION.SDK_INT
-import android.os.Bundle
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,9 +67,11 @@ import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.locationIconActiveColor
+import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.red
 import com.patsurvey.nudge.activities.ui.theme.redDark
+import com.patsurvey.nudge.activities.ui.theme.redMessageColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
@@ -85,12 +83,10 @@ import com.patsurvey.nudge.utils.IGNORED_REGEX
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
-import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
-import java.util.function.Consumer
 
 @Composable
 fun AddTolaBox(
@@ -122,11 +118,25 @@ fun AddTolaBox(
         mutableStateOf(false)
     }
 
+    val showInlineLocationError = remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(key1 = showLoader.value) {
-        delay(5000)
-        showLoader.value = false
-        if ((location!!.lat != null && location!!.long != null))
-            showCustomToast(context, context.getString(R.string.location_unavailable))
+        if (showLoader.value) {
+            delay(2000)
+            location = LocationUtil.location
+            if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
+                locationAdded = true
+            } else {
+                if (showPermissionDialog) {
+                    shouldRequestPermission.value = true
+                } else {
+                    showInlineLocationError.value = true
+                }
+            }
+            showLoader.value = false
+        }
     }
 
     Box(
@@ -238,8 +248,7 @@ fun AddTolaBox(
 
                     ) {
                         showLoader.value = true
-//                        val decimalFormat = DecimalFormat("#.#######")
-                        if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
+                        /*if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                             var locationByGps: Location? = null
                             var locationByNetwork: Location? = null
                             val gpsConsumer = Consumer<Location> { gpsLocation ->
@@ -285,7 +294,8 @@ fun AddTolaBox(
 
                             }
                             LocationUtil.getLocation(activity, gpsConsumer, networkConsumer)
-                        } else {
+                        } else
+                        {
                             var locationByGps: Location? = null
                             var locationByNetwork: Location? = null
                             NudgeLogger.d("AddTola", "gpsLocationListener called")
@@ -376,14 +386,7 @@ fun AddTolaBox(
                                 gpsLocationListener,
                                 networkLocationListener
                             )
-                        }
-                        if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
-                            locationAdded = true
-                        } else {
-                            if (showPermissionDialog) {
-                                shouldRequestPermission.value = true
-                            }
-                        }
+                        }*/
                         focusManager.clearFocus()
                     }
                     .height(45.dp)
@@ -423,6 +426,20 @@ fun AddTolaBox(
                         modifier = Modifier.absolutePadding(bottom = 2.dp)
                     )
                 }
+            }
+            if (showInlineLocationError.value) {
+                Text(
+                    text = stringResource(id = R.string.location_unavailable),
+                    style = mediumTextStyle,
+                    textAlign = TextAlign.Start,
+                    fontSize = 12.sp,
+                    fontFamily = NotoSans,
+                    overflow = TextOverflow.Ellipsis,
+                    fontWeight = FontWeight.Normal,
+                    color = redMessageColor,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
             }
             Row(
                 modifier = Modifier
@@ -498,11 +515,25 @@ fun TolaBox(
         mutableStateOf(false)
     }
 
+    val showInlineLocationError = remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(key1 = showLoader.value) {
-        delay(5000)
-        showLoader.value = false
-        if ((location!!.lat != null && location!!.long != null))
-            showCustomToast(context, context.getString(R.string.location_unavailable))
+        if (showLoader.value) {
+            delay(2000)
+            location = LocationUtil.location
+            if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
+                locationAdded = true
+            } else {
+                if (showPermissionDialog) {
+                    shouldRequestPermission.value = true
+                } else {
+                    showInlineLocationError.value = true
+                }
+            }
+            showLoader.value = false
+        }
     }
 
     Box(
@@ -688,164 +719,6 @@ fun TolaBox(
 
                                 ) {
                                     showLoader.value = true
-//                                    val decimalFormat = DecimalFormat("#.#######")
-                                    if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                                        var locationByGps: Location? = null
-                                        var locationByNetwork: Location? = null
-                                        NudgeLogger.d("TolaBox", "gpsConsumer: called")
-                                        val gpsConsumer = Consumer<Location> { gpsLocation ->
-                                            if (gpsLocation != null) {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "gpsConsumer: gpsLocation != null => gpsLocation: $gpsLocation"
-                                                )
-                                                locationByGps = gpsLocation
-                                                location = LocationCoordinates(
-                                                    locationByGps?.latitude ?: 0.0,
-                                                    locationByGps?.longitude ?: 0.0
-                                                )
-                                            } else {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "gpsConsumer: gpsLocation == null"
-                                                )
-
-                                            }
-                                            showCustomToast(context, "Location Updated")
-                                            locationAdded = true
-                                            showLoader.value = false
-                                        }
-                                        val networkConsumer =
-                                            Consumer<Location> { networkLocation ->
-                                                NudgeLogger.d("TolaBox", "networkLocation: called")
-                                                if (networkLocation != null) {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsConsumer: gpsLocation != null => gpsLocation: $networkLocation"
-                                                    )
-                                                    locationByNetwork = networkLocation
-                                                    location = LocationCoordinates(
-                                                        locationByNetwork?.latitude ?: 0.0,
-                                                        locationByNetwork?.longitude ?: 0.0
-                                                    )
-                                                } else {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsConsumer: gpsLocation == null"
-                                                    )
-                                                }
-                                                showCustomToast(context, "Location Updated")
-                                                locationAdded = true
-                                                showLoader.value = false
-                                            }
-                                        LocationUtil.getLocation(
-                                            activity,
-                                            gpsConsumer,
-                                            networkConsumer
-                                        )
-                                    } else {
-                                        var locationByGps: Location? = null
-                                        var locationByNetwork: Location? = null
-                                        NudgeLogger.d("TolaBox", "gpsLocationListener called")
-                                        val gpsLocationListener: LocationListener =
-                                            object : LocationListener {
-                                                override fun onLocationChanged(gpsLocation: Location) {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsLocationListener onLocationChanged: location => $location"
-                                                    )
-                                                    locationByGps = gpsLocation
-                                                    location = LocationCoordinates(
-                                                        locationByGps?.latitude ?: 0.0,
-                                                        locationByGps?.longitude ?: 0.0
-                                                    )
-                                                    showCustomToast(context, "Location Updated")
-                                                    locationAdded = true
-                                                    showLoader.value = false
-                                                }
-
-                                                override fun onStatusChanged(
-                                                    provider: String,
-                                                    status: Int,
-                                                    extras: Bundle
-                                                ) {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsLocationListener onStatusChanged: provider => $provider status: $status"
-                                                    )
-                                                }
-
-                                                override fun onProviderEnabled(provider: String) {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsLocationListener onProviderEnabled: provider => $provider"
-                                                    )
-                                                }
-
-                                                override fun onProviderDisabled(provider: String) {
-                                                    NudgeLogger.d(
-                                                        "TolaBox",
-                                                        "gpsLocationListener onProviderDisabled: provider => $provider"
-                                                    )
-                                                }
-                                            }
-
-                                        NudgeLogger.d("TolaBox", "networkLocationListener called")
-                                        val networkLocationListener: LocationListener = object :
-                                            LocationListener {
-                                            override fun onLocationChanged(networkLocation: Location) {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "networkLocationListener onLocationChanged: location => $location"
-                                                )
-                                                locationByNetwork = networkLocation
-                                                location = LocationCoordinates(
-                                                    locationByNetwork?.latitude ?: 0.0,
-                                                    locationByNetwork?.longitude ?: 0.0
-                                                )
-                                                showCustomToast(context, "Location Updated")
-                                                locationAdded = true
-                                                showLoader.value = false
-                                            }
-
-                                            override fun onStatusChanged(
-                                                provider: String,
-                                                status: Int,
-                                                extras: Bundle
-                                            ) {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "networkLocationListener onStatusChanged: provider => $provider status: $status"
-                                                )
-                                            }
-
-                                            override fun onProviderEnabled(provider: String) {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "networkLocationListener onProviderEnabled: provider => $provider"
-                                                )
-                                            }
-
-                                            override fun onProviderDisabled(provider: String) {
-                                                NudgeLogger.d(
-                                                    "TolaBox",
-                                                    "networkLocationListener onProviderEnabled: provider => $provider"
-                                                )
-                                            }
-                                        }
-                                        LocationUtil.getLocation(
-                                            activity,
-                                            gpsLocationListener,
-                                            networkLocationListener
-                                        )
-                                    }
-                                    if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
-                                        locationAdded = true
-                                    } else {
-                                        if (showPermissionDialog) {
-                                            shouldRequestPermission.value = true
-                                        }
-                                    }
                                     focusManager.clearFocus()
                                 }
                                 .height(45.dp)
@@ -885,6 +758,20 @@ fun TolaBox(
                                     modifier = Modifier.absolutePadding(bottom = 2.dp)
                                 )
                             }
+                        }
+                        if (showInlineLocationError.value) {
+                            Text(
+                                text =  stringResource(id = R.string.location_unavailable),
+                                style = mediumTextStyle,
+                                textAlign = TextAlign.Start,
+                                fontSize = 12.sp,
+                                fontFamily = NotoSans,
+                                overflow = TextOverflow.Ellipsis,
+                                fontWeight = FontWeight.Normal,
+                                color = redMessageColor,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                            )
                         }
 
                         Row(
