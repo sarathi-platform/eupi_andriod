@@ -311,7 +311,8 @@ class SettingViewModel @Inject constructor(
             2 -> {
                 showLoader.value = false
                 syncPercentage.value = 1f
-                showSyncDialog.value = false
+//                showSyncDialog.value = false
+                syncErrorMessage.value = SYNC_FAILED
                 showAPILoader.value = false
                 networkErrorMessage.value = errorModel?.message.toString()
             }
