@@ -336,6 +336,8 @@
     <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>
     <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
     <string name="add_more_list_empty_string">जोड़ने या बदलने के लिए कोई दीदी उपलब्ध नहीं है।</string>
+    <string name="max_5_pages_can_be_captured">अधिकतम 5 पेज कैप्चर किये जा सकते हैं</string>
+    <string name="click_to_refresh">ताज़ा करने के लिए क्लिक करें</string>
 
     <string name="pat_selected_status_text">PAT चयनित</string>
     <string name="pat_rejected_status_text">PAT अस्वीकृत</string>

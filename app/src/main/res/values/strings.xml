@@ -355,7 +355,6 @@
     <string name="empty_tola_button_text">Continue without Tola addition</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
 
-
     <string name="pat_selected_status_text">PAT Selected</string>
     <string name="pat_rejected_status_text">PAT Rejected</string>
     <string name="vo_selected_status_text">VO Endorsed</string>
@@ -363,4 +362,6 @@
     <string name="pat_not_available_status_text">PAT Completed - Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
 
+    <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
+    <string name="click_to_refresh">Click to Refresh</string>
 </resources>

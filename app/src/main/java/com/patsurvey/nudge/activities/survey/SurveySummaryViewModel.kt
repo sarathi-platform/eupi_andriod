@@ -76,7 +76,7 @@ class SurveySummaryViewModel @Inject constructor(
         setVillage(prefRepo.getSelectedVillage().id)
     }
 
-    private fun fetchDidisForBpcFromDB() {
+     fun fetchDidisForBpcFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedVillage = prefRepo.getSelectedVillage()
             val didiList = mutableListOf<DidiEntity>()
@@ -112,7 +112,6 @@ class SurveySummaryViewModel @Inject constructor(
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
-                Log.d("TAG", "fetchDidisFromDB: Called")
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
                     isTolaSynced.value =it

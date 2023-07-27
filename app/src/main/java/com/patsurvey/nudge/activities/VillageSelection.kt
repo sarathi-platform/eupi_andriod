@@ -154,8 +154,11 @@ fun VillageSelectionScreen(
             )
         }
     ) {
-        Box(Modifier.fillMaxSize().padding(it)) {
-            if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
+        Box(
+            Modifier
+                .fillMaxSize()
+                .padding(it)) {
+            if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API) || villages.isEmpty()) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,7 +195,7 @@ fun VillageSelectionScreen(
                         }
                         BlueButtonWithIconWithFixedWidthWithoutIcon(
                             modifier = Modifier,
-                            buttonText = "Click to Refresh",
+                            buttonText = stringResource(id = R.string.click_to_refresh),
                             onClick = {
                                 viewModel.showLoader.value = true
                                 showRetryLoader.value = true
