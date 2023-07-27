@@ -375,5 +375,7 @@
     <string name="vo_rejected_status_text">VO अस्वीकृत</string>
     <string name="pat_not_available_status_text">PAT पूर्ण - उपलब्ध नहीं</string>
     <string name="cannot_delete_tola_message_text">इस टोले को हटाया नहीं जा सकता क्योंकि इसमें दीदियों को नियुक्त किया गया है</string>
+    <string name="heading_value_of_other_productive_assests">अन्य उत्पादक संपत्तियों का मूल्य</string>
+    <string name="heading_earning_ration">कमाई का अनुपात</string>
 
 </resources>

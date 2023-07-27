@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -36,6 +37,7 @@ import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -81,8 +83,15 @@ class ProgressScreenViewModel @Inject constructor(
 
     fun init() {
         showLoader.value = true
-        fetchVillageList()
-        setVoEndorsementCompleteForVillages()
+        MyApplication.appScopeLaunch(Dispatchers.IO) {
+            fetchVillageList()
+            delay(100)
+            setVoEndorsementCompleteForVillages()
+            delay(200)
+            withContext(Dispatchers.Main) {
+                showLoader.value = false
+            }
+        }
     }
 
     fun setVoEndorsementCompleteForVillages() {
@@ -147,7 +156,6 @@ class ProgressScreenViewModel @Inject constructor(
 
 
     fun fetchVillageList(){
-        showLoader.value = true
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
                 var villageList = emptyList<VillageEntity>()
@@ -175,7 +183,7 @@ class ProgressScreenViewModel @Inject constructor(
 //                    selectedText.value = villageList[villageSelected.value].name
                         getStepsList(prefRepo.getSelectedVillage().id)
                     }
-                    showLoader.value = false
+//                    showLoader.value = false
                 }
             }
         }
