@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.ui.bpc.score_comparision
 
-import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
@@ -9,7 +8,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -52,7 +50,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -72,11 +69,10 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.brownDark
 import com.patsurvey.nudge.activities.ui.theme.comparisonCardDividerColor
 import com.patsurvey.nudge.activities.ui.theme.greenBgLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
@@ -96,7 +92,6 @@ import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import java.io.File
 
 @Composable
 fun ScoreComparisionScreen(
@@ -441,27 +436,7 @@ fun ScoreComparisonDidiCard(
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    painter = if (didiEntity.localPath.isNotEmpty()) rememberImagePainter(
-                        Uri.fromFile(
-                            File(
-                                didiEntity.localPath.split("|")[0]
-                            )
-                        )
-                    ) else painterResource(id = R.drawable.didi_icon),
-                    contentDescription = null,
-                    contentScale = ContentScale.FillBounds,
-                    modifier = Modifier
-                        .height(40.dp)
-                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                        .border(
-                            width = 2.dp,
-                            color = brownDark,
-                            shape = CircleShape
-                        )
-                        .clip(CircleShape)
-                        .background(languageItemActiveBg)
-                )
+                CircularDidiImage(modifier = Modifier, didi = didiEntity)
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(
                     verticalArrangement = Arrangement.Center,

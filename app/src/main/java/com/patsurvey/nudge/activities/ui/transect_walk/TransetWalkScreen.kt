@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,6 +68,7 @@ import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
@@ -107,6 +109,13 @@ fun TransectWalkScreen(
 
     var bottomPadding by remember {
         mutableStateOf(0.dp)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        LocationUtil.setLocation((context as MainActivity))
+        onDispose {
+            LocationUtil.location = LocationCoordinates(0.0, 0.0)
+        }
     }
 
     BackHandler() {

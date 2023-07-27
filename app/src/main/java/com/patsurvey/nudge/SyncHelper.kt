@@ -786,9 +786,18 @@ class SyncHelper (
             val jsonTola = JsonArray()
             if (tolaList.isNotEmpty()) {
                 for (tola in tolaList) {
-                    jsonTola.add(DeleteTolaRequest(tola.serverId, localModifiedDate = System.currentTimeMillis()).toJson())
+                    val localDidiListForTola = didiDao.getDidisForTola(if (tola.serverId == 0) tola.id else tola.serverId)
+                    if (localDidiListForTola.isEmpty()) {
+                        jsonTola.add(
+                            DeleteTolaRequest(
+                                tola.serverId,
+                                localModifiedDate = System.currentTimeMillis()
+                            ).toJson()
+                        )
+                    }
                 }
-                Log.e("tola need to post","$tolaList.size")
+                NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> tola need to post :${tolaList.size}")
+                NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> jsonTola :${jsonTola}")
                 val response = apiService.deleteCohort(jsonTola)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {

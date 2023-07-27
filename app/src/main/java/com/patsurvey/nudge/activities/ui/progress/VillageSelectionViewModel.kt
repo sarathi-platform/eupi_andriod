@@ -183,6 +183,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     private fun fetchQuestions(){
+        showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
             localLanguageList?.let {
@@ -236,6 +237,11 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
                             }
                             onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
+                        } finally {
+                            withContext(Dispatchers.Main) {
+                                delay(250)
+                                showLoader.value = false
+                            }
                         }
                     }
                 }
@@ -783,6 +789,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 } else {
                     withContext(Dispatchers.Main) {
+                        delay(250)
                         showLoader.value = false
                     }
                 }

@@ -30,12 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -297,7 +295,175 @@ fun BpcProgressScreen(
 
                                         Column(modifier = Modifier.padding(horizontal = 16.dp)) {
 
-                                            Text(
+                                            val numberColumnWeight = 0.15f
+                                            val labelColumnWeight = 0.9f
+
+                                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                TableCell(
+                                                    text = (summaryData.value.cohortCount ?: 0).toString(),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = if ((summaryData.value.cohortCount ?: 0) > 1)
+                                                        stringResource(R.string.summary_tolas_added_text_plural)
+                                                    else
+                                                        stringResource(R.string.summary_tolas_added_text_singular),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                            }
+
+                                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                TableCell(
+                                                    text = (summaryData.value.mobilisedCount ?: 0).toString(),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = if ((summaryData.value.mobilisedCount ?: 0) > 1)
+                                                        stringResource(R.string.summary_didis_mobilised_text_plural)
+                                                    else
+                                                        stringResource(R.string.summary_didis_mobilised_text_singular),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                            }
+
+                                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                TableCell(
+                                                    text = (summaryData.value.poorDidiCount ?: 0).toString(),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = if ((summaryData.value.poorDidiCount ?: 0) > 1)
+                                                        stringResource(R.string.summary_wealth_ranking_text_plural)
+                                                    else
+                                                        stringResource(R.string.summary_wealth_ranking_text_singular),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                            }
+
+                                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                TableCell(
+                                                    text = (summaryData.value.sentVoEndorsementCount ?: 0).toString(),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = if ((summaryData.value.sentVoEndorsementCount ?: 0) > 1)
+                                                        stringResource(R.string.summary_vo_endoresement_text_plural)
+                                                    else
+                                                        stringResource(R.string.summary_vo_endoresement_text_singular),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                            }
+
+                                            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                                                TableCell(
+                                                    text = (summaryData.value.voEndorsedCount ?: 0).toString(),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 18.sp,
+                                                        fontWeight = FontWeight.SemiBold,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.End,
+                                                    weight = numberColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                TableCell(
+                                                    text = if ((summaryData.value.voEndorsedCount ?: 0) > 1)
+                                                        stringResource(R.string.didis_endorsed_by_vo_plural)
+                                                    else stringResource(
+                                                        R.string.didi_endorsed_by_vo_singular),
+                                                    style = TextStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 15.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    ),
+                                                    alignment = TextAlign.Start,
+                                                    weight = labelColumnWeight,
+                                                    modifier = Modifier
+                                                        .padding(vertical = 8.dp)
+                                                )
+                                            }
+
+                                            /*Text(
                                                 text = buildAnnotatedString {
                                                     withStyle(
                                                         style = SpanStyle(
@@ -337,7 +503,7 @@ fun BpcProgressScreen(
                                                         )
                                                     }
                                                 },
-                                                modifier = Modifier.padding(vertical = 4.dp)
+                                                modifier = Modifier.padding(vertical = 4.dp),
                                             )
                                             Text(
                                                 text = buildAnnotatedString {
@@ -498,7 +664,7 @@ fun BpcProgressScreen(
                                                     }
                                                 },
                                                 modifier = Modifier.padding(vertical = 4.dp)
-                                            )
+                                            )*/
 
                                             Text(
                                                 text = stringResource(R.string.current_status_text),
