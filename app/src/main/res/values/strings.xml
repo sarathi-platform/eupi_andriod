@@ -360,5 +360,7 @@
     <string name="pat_rejected_status_text">PAT Rejected</string>
     <string name="vo_selected_status_text">VO Endorsed</string>
     <string name="vo_rejected_status_text">VO Rejected</string>
+    <string name="pat_not_available_status_text">PAT Completed - Not Available</string>
+    <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
 
 </resources>

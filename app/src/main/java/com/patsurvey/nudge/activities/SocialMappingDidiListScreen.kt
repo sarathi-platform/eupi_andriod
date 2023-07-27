@@ -144,7 +144,7 @@ fun SocialMappingDidiListScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                val count = didiList.value.filter { it.needsToPost }.size
+                val count = didiList.value.filter { it.needsToPost && it.rankingEdit }.size
                 if (showLoader.value) {
                     Box(
                         modifier = Modifier
@@ -161,12 +161,11 @@ fun SocialMappingDidiListScreen(
                     }
                 }
                 else {
-
                     ModuleAddedSuccessView(
                         completeAdditionClicked = completeTolaAdditionClicked,
                         message = stringResource(
                             if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
-                            didiList.value.filter { it.needsToPost }.size
+                            didiList.value.filter { it.needsToPost && it.rankingEdit }.size
                         ),
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
@@ -1297,6 +1296,8 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
                             context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_selected_status_text))
                         }
                     }
+                } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                    context.getString(R.string.pat_not_available_status_text)
                 } else {
                     context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_rejected_status_text))
                 }

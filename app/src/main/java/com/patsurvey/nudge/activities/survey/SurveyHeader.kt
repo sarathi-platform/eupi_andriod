@@ -2,7 +2,10 @@ package com.patsurvey.nudge.activities.survey
 
 
 
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,7 +21,10 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
+import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
+import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.CircularProgressBar
 
 @Composable
@@ -26,6 +32,7 @@ fun SurveyHeader(
     modifier: Modifier,
     didiName: String,
     questionCount: Int,
+    currentQuestion: Int,
     answeredCount: Int,
     partNumber : Int,
     viewModel: QuestionScreenViewModel?=null
@@ -60,6 +67,7 @@ fun SurveyHeader(
                     .layoutId("surveyProgress"),
                 circleRadius = LocalDensity.current.run { 27.dp.toPx() },
                 initialPosition = answeredCount.coerceAtMost(viewModel?.maxQuesCount?.value?:0),
+                currentPosition = currentQuestion,
                 maxProgress = viewModel?.maxQuesCount?.value?:0,
                 borderThickness = 25.dp,
                 centerTextSize = 15.sp
@@ -125,6 +133,7 @@ fun Preview() {
         didiName = "Urmila Devi",
         questionCount = 6,
         answeredCount = 2,
+        currentQuestion = 3,
         partNumber = 1
 
     )

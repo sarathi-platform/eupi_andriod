@@ -65,6 +65,7 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.VERIFIED_STRING
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getFileNameFromURL
@@ -1227,31 +1228,41 @@ class SyncHelper (
                     }
                     val passingMark = questionDao.getPassingScore()
                     var comment = BLANK_STRING
-                    comment =
-                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                            BLANK_STRING
-                        } else {
-                            if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
-                                TYPE_EXCLUSION
+                        comment =
+                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                PatSurveyStatus.NOT_AVAILABLE.name
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                BLANK_STRING
                             } else {
-                                if (didi.score < passingMark)
-                                    LOW_SCORE
-                                else {
-                                    BLANK_STRING
+                                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
+                                    TYPE_EXCLUSION
+                                } else {
+                                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
+                                        LOW_SCORE
+                                    } else {
+                                        BLANK_STRING
+                                    }
                                 }
                             }
-                        }
                     scoreDidiList.add(
                         EditDidiWealthRankingRequest(
                             id = if (didi.serverId == 0) didi.id else didi.serverId,
                             score = didi.score,
                             comment = comment,
                             type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                            result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) DIDI_NOT_AVAILABLE
-                            else {
-                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                            result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                DIDI_NOT_AVAILABLE
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                PatSurveyStatus.INPROGRESS.name
+                            } else {
+                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                    if (prefRepo.isUserBPC())
+                                        VERIFIED_STRING
+                                    else
+                                        COMPLETED_STRING
+                                }
                             },
-                            rankingEdit = didi.patEdit
+                            rankingEdit = false
                         )
                     )
                     val stateId = villegeListDao.getVillage(didi.villageId).stateId

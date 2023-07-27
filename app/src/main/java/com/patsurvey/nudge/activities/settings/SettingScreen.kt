@@ -531,8 +531,10 @@ private fun logout(
     navController: NavController
 ){
     NudgeLogger.e("SettingScreen","logout called")
-    if (!logout.value)
+    if (!logout.value) {
         viewModel.clearLocalDB(context, logout)
+        viewModel.onLogoutError.value = false
+    }
 }
 
 @Composable

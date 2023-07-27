@@ -341,5 +341,7 @@
     <string name="pat_rejected_status_text">PAT अस्वीकृत</string>
     <string name="vo_selected_status_text">VO ने समर्थन किया</string>
     <string name="vo_rejected_status_text">VO अस्वीकृत</string>
+    <string name="pat_not_available_status_text">PAT पूर्ण - उपलब्ध नहीं</string>
+    <string name="cannot_delete_tola_message_text">इस टोले को हटाया नहीं जा सकता क्योंकि इसमें दीदियों को नियुक्त किया गया है</string>
 
 </resources>

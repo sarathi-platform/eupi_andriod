@@ -228,13 +228,15 @@ class SurveySummaryViewModel @Inject constructor(
                         comment =
                             if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                 PatSurveyStatus.NOT_AVAILABLE.name
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                BLANK_STRING
                             } else {
                                 if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
                                     TYPE_EXCLUSION
                                 } else {
-                                    if (didi.score < passingMark)
+                                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
                                         LOW_SCORE
-                                    else {
+                                    } else {
                                         BLANK_STRING
                                     }
                                 }
@@ -247,6 +249,8 @@ class SurveySummaryViewModel @Inject constructor(
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                 result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                     DIDI_NOT_AVAILABLE
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                    PatSurveyStatus.INPROGRESS.name
                                 } else {
                                     if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
                                         if (prefRepo.isUserBPC())

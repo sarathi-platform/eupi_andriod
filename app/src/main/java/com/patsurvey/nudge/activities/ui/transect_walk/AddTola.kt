@@ -90,7 +90,6 @@ import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
-import java.text.DecimalFormat
 import java.util.function.Consumer
 
 @Composable
@@ -689,7 +688,7 @@ fun TolaBox(
 
                                 ) {
                                     showLoader.value = true
-                                    val decimalFormat = DecimalFormat("#.#######")
+//                                    val decimalFormat = DecimalFormat("#.#######")
                                     if (SDK_INT >= android.os.Build.VERSION_CODES.R) {
                                         var locationByGps: Location? = null
                                         var locationByNetwork: Location? = null
@@ -702,13 +701,8 @@ fun TolaBox(
                                                 )
                                                 locationByGps = gpsLocation
                                                 location = LocationCoordinates(
-                                                    decimalFormat
-                                                        .format(locationByGps?.latitude ?: 0.0)
-                                                        .toDouble(),
-                                                    decimalFormat
-                                                        .format(locationByGps?.longitude ?: 0.0)
-                                                        .toDouble()
-
+                                                    locationByGps?.latitude ?: 0.0,
+                                                    locationByGps?.longitude ?: 0.0
                                                 )
                                             } else {
                                                 NudgeLogger.d(
@@ -731,17 +725,8 @@ fun TolaBox(
                                                     )
                                                     locationByNetwork = networkLocation
                                                     location = LocationCoordinates(
-                                                        decimalFormat
-                                                            .format(
-                                                                locationByNetwork?.latitude ?: 0.0
-                                                            )
-                                                            .toDouble(),
-                                                        decimalFormat
-                                                            .format(
-                                                                locationByNetwork?.longitude ?: 0.0
-                                                            )
-                                                            .toDouble()
-
+                                                        locationByNetwork?.latitude ?: 0.0,
+                                                        locationByNetwork?.longitude ?: 0.0
                                                     )
                                                 } else {
                                                     NudgeLogger.d(
@@ -771,13 +756,8 @@ fun TolaBox(
                                                     )
                                                     locationByGps = gpsLocation
                                                     location = LocationCoordinates(
-                                                        decimalFormat
-                                                            .format(locationByGps?.latitude ?: 0.0)
-                                                            .toDouble(),
-                                                        decimalFormat
-                                                            .format(locationByGps?.longitude ?: 0.0)
-                                                            .toDouble()
-
+                                                        locationByGps?.latitude ?: 0.0,
+                                                        locationByGps?.longitude ?: 0.0
                                                     )
                                                     showCustomToast(context, "Location Updated")
                                                     locationAdded = true
@@ -820,13 +800,8 @@ fun TolaBox(
                                                 )
                                                 locationByNetwork = networkLocation
                                                 location = LocationCoordinates(
-                                                    decimalFormat
-                                                        .format(locationByNetwork?.latitude ?: 0.0)
-                                                        .toDouble(),
-                                                    decimalFormat
-                                                        .format(locationByNetwork?.longitude ?: 0.0)
-                                                        .toDouble()
-
+                                                    locationByNetwork?.latitude ?: 0.0,
+                                                    locationByNetwork?.longitude ?: 0.0
                                                 )
                                                 showCustomToast(context, "Location Updated")
                                                 locationAdded = true

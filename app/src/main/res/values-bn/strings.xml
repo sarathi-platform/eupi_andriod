@@ -342,4 +342,6 @@
     <string name="pat_rejected_status_text">PAT প্রত্যাখ্যান</string>
     <string name="vo_selected_status_text">VO অনুমোদিত</string>
     <string name="vo_rejected_status_text">VO প্রত্যাখ্যাত</string>
+    <string name="pat_not_available_status_text">PAT সম্পূর্ণ হয়েছে - উপলব্ধ নয়</string>
+    <string name="cannot_delete_tola_message_text">এই তোলা ডিলিট করা যাবে না কারণ দিদিদের এটাকে বরাদ্দ করা হয়েছে</string>
 </resources>

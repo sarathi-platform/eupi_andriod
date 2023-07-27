@@ -385,17 +385,17 @@ fun TransectWalkScreen(
                                         isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
                                         isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
-                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
-                                            viewModel.removeTola(tola.id, isOnline = (context as MainActivity).isOnline.value ?: false,  object : NetworkCallbackListener{
+                                            viewModel.removeTola(tola.id, context = context, isOnline = (context as MainActivity).isOnline.value ?: false,  object : NetworkCallbackListener{
                                                 override fun onSuccess() {
+                                                    showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
+                                                    showAddTolaBox = false
                                                 }
 
                                                 override fun onFailed() {
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
                                             }, villageId = villageId, stepId = stepId)
-                                            showAddTolaBox = false
-                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
+//                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false
