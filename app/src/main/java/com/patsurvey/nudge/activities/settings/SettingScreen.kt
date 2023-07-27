@@ -318,6 +318,7 @@ fun SettingScreen(
                         ) {
                             when (index) {
                                 0 -> {
+                                    viewModel.syncErrorMessage.value = ""
                                     if(viewModel.prefRepo.settingOpenFrom()== PageFrom.HOME_PAGE.ordinal) {
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true
