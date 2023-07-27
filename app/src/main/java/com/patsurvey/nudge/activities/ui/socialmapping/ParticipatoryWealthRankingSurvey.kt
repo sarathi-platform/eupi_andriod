@@ -167,7 +167,7 @@ fun ParticipatoryWealthRankingSurvey(
             ShowDialog(title = stringResource(id = R.string.are_you_sure),
                 message = context.getString(
                     R.string.you_are_submitting_wealth_ranking_for_count_didis,
-                    didids.value.size.toString()
+                    didids.value.filter { it.rankingEdit }.size.toString()
                 ),
                 setShowDialog = {
                     showDialog.value = it
@@ -715,6 +715,7 @@ fun DidiItemCardForWealthRanking(
                 val constraintSet = decoupledConstraintsForWealthCard()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Text(
@@ -886,29 +887,36 @@ fun DidiDetailExpendableContentForWealthRanking(modifier: Modifier, didi: DidiEn
 }
 
 fun getLatestStatusTextForWealthRankingCard(context: Context, didi: DidiEntity): String {
-    var status = context.getString(R.string.wealth_ranking_status_complete_text)
+    var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
         status = context.getString(R.string.wealth_ranking_status_not_started_text)
     } else {
-        when (didi.patSurveyStatus) {
-            PatSurveyStatus.NOT_STARTED.ordinal -> {
-                status = context.getString(R.string.wealth_ranking_status_complete_text)
-            }
-            PatSurveyStatus.INPROGRESS.ordinal -> {
-                status = context.getString(R.string.pat_in_progress_status_text)
-            }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal,PatSurveyStatus.NOT_AVAILABLE.ordinal -> {
-                status = context.getString(R.string.not_avaliable)
-            }
-            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
-                status = if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
-                    context.getString(R.string.vo_endorsement_status_text)
+        if (!didi.rankingEdit) {
+            if (!didi.patEdit) {
+                status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
+                    when (didi.voEndorsementStatus) {
+                        DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
+                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_selected_status_text))
+                        }
+                        DidiEndorsementStatus.REJECTED.ordinal -> {
+                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_rejected_status_text))
+                        }
+                        else -> {
+                            context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_selected_status_text))
+                        }
+                    }
                 } else {
-                    context.getString(R.string.pat_completed_status_text)
+                    context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_rejected_status_text))
                 }
+            } else {
+                status = context.getString(R.string.wealth_ranking_status_complete_text)
+                    .replace("{RANK}", getRankInLanguage(context, didi.wealth_ranking))
             }
+        } else {
+            status = context.getString(R.string.wealth_ranking_status_not_started_text)
         }
     }
+
     return status
 }
 
@@ -1077,7 +1085,6 @@ private fun didiDetailConstraintsForWealthCard(): ConstraintSet {
         constrain(latestStatus) {
             start.linkTo(centerGuideline)
             top.linkTo(latestStatusLabel.top)
-            bottom.linkTo(latestStatusLabel.bottom)
             end.linkTo(parent.end, margin = 10.dp)
             width = Dimension.fillToConstraints
         }

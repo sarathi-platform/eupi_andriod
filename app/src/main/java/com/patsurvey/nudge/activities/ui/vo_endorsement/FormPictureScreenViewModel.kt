@@ -83,6 +83,8 @@ class FormPictureScreenViewModel @Inject constructor(
 
 
     val formsClicked = mutableStateOf(0)
+    val formsCClicked = mutableStateOf(0)
+    val formsDClicked = mutableStateOf(0)
 
     val retakeImageIndex =
         mutableStateOf(-1)

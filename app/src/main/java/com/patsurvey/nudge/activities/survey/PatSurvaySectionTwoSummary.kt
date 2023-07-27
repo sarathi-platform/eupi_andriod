@@ -47,6 +47,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.ireward.htmlcompose.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -392,7 +393,7 @@ fun SectionTwoSummeryItem(
                     LocalContext.current.getString(R.string.total_productive_asset_value,answerValue)
                 }else answerValue
             }
-            Text(
+            HtmlText(
                 text = buildAnnotatedString {
                     withStyle(
                         SpanStyle(
@@ -414,14 +415,15 @@ fun SectionTwoSummeryItem(
                     ) {
                         append("$summaryText")
                     }
-                },
+                }.toString(),
                 style = TextStyle(
                     color = textColorDark,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold,
-                    fontFamily = NotoSans
+                    fontFamily = NotoSans,
+                    textAlign = TextAlign.Start
                 ),
-                textAlign = TextAlign.Start,
+               // textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier

@@ -213,9 +213,9 @@
     <string name="view">ফর্ম দেখুন</string>
     <string name="pat_inprogresee_status_text">অগ্রগতি অধীনে</string>
     <string name="wealth_ranking_status_not_started_text">সম্পদ র‌্যাঙ্কিং শুরু হয়নি</string>
-    <string name="wealth_ranking_status_complete_text">সম্পদ র্যাঙ্কিং সম্পন্ন - দরিদ্র নাহি</string>
+    <string name="wealth_ranking_status_complete_text">সম্পদ র্যাঙ্কিং সম্পন্ন - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT সমীক্ষা চলছে</string>
-    <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে</string>
+    <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পন্ন</string>
     <string name="no_didis_availble_for_vo_endorsement">গ্রামীণ সংগঠনের অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না</string>
     <string name="step_1">ধাপ 1</string>
@@ -337,6 +337,13 @@
     <string name="location_permission_dialog_prompt_message">অবস্থান অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="empty_tola_button_text">পারা যোগ ছাড়া চালিয়ে যান</string>
     <string name="add_more_list_empty_string">কোন দিদি যোগ বা প্রতিস্থাপনের জন্য উপলব্ধ নেই</string>
+    <string name="max_5_pages_can_be_captured">সর্বোচ্চ 5 পৃষ্ঠা ক্যাপচার করা যাবে</string>
+    <string name="click_to_refresh">রিফ্রেশ করতে ক্লিক করুন</string>
 
-
+    <string name="pat_selected_status_text">PAT নির্বাচিত</string>
+    <string name="pat_rejected_status_text">PAT প্রত্যাখ্যান</string>
+    <string name="vo_selected_status_text">VO অনুমোদিত</string>
+    <string name="vo_rejected_status_text">VO প্রত্যাখ্যাত</string>
+    <string name="pat_not_available_status_text">PAT সম্পূর্ণ হয়েছে - উপলব্ধ নয়</string>
+    <string name="cannot_delete_tola_message_text">এই তোলা ডিলিট করা যাবে না কারণ দিদিদের এটাকে বরাদ্দ করা হয়েছে</string>
 </resources>

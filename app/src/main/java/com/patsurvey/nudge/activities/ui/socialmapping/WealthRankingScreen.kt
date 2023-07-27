@@ -39,6 +39,7 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
@@ -351,12 +352,7 @@ fun ExpandableCard(
                             backgroundColor = colorResource(id = R.color.placeholder_color),
                             shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_50)),
                         ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.didi_icon),
-                                contentDescription = "Female PlaceHolder Icon",
-                                modifier = Modifier
-                                    .padding(dimensionResource(id = R.dimen.dp_7)),
-                            )
+                            CircularDidiImage(didi = didiEntity, modifier = Modifier)
                         }
 
                         Spacer(modifier = Modifier.width(dimensionResource(id = R.dimen.dp_10)))

@@ -185,6 +185,7 @@ fun QuestionScreen(
                     modifier = Modifier,
                     didiName = viewModel.didiName.value,
                     questionCount = viewModel.maxQuesCount.value,
+                    currentQuestion = pagerState.currentPage + 1,
                     answeredCount = answerList.size,
                     partNumber = if(sectionType.equals(TYPE_EXCLUSION,true)) 1 else 2,
                     viewModel = viewModel

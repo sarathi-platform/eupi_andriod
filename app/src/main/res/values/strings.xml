@@ -225,10 +225,10 @@
     <string name="view">View Form</string>
     <string name="pat_inprogresee_status_text">In Progress</string>
     <string name="wealth_ranking_status_not_started_text">Wealth Ranking Not started</string>
-    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed - Not Poor</string>
+    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
-    <string name="pat_completed_status_text">PAT Survey Completed</string>
-    <string name="vo_endorsement_status_text">VO Endorsement Completed</string>
+    <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
+    <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
     <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
 
     <string name="step_1">Step 1</string>
@@ -355,4 +355,13 @@
     <string name="empty_tola_button_text">Continue without Tola addition</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
 
+    <string name="pat_selected_status_text">PAT Selected</string>
+    <string name="pat_rejected_status_text">PAT Rejected</string>
+    <string name="vo_selected_status_text">VO Endorsed</string>
+    <string name="vo_rejected_status_text">VO Rejected</string>
+    <string name="pat_not_available_status_text">PAT Completed - Not Available</string>
+    <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
+
+    <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
+    <string name="click_to_refresh">Click to Refresh</string>
 </resources>

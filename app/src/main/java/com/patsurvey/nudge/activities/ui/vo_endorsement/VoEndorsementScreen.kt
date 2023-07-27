@@ -76,6 +76,7 @@ import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
@@ -232,9 +233,6 @@ fun VoEndorsementScreen(
                             itemsIndexed(
                                 newFilteredTolaDidiList.keys.toList().reversed()
                             ) { index, didiKey ->
-//                                if (newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus == VoEndorsementStatus.NOT_STARTED.ordinal) {
-//                                    viewModel.pendingDidiCount.value++
-//                                }
                                 ShowDidisFromTolaForVo(
                                     navController = navController,
                                     viewModel = viewModel,
@@ -250,6 +248,7 @@ fun VoEndorsementScreen(
                                                 )?.id
                                             }/${newFilteredTolaDidiList[didiKey]?.get(index)?.voEndorsementStatus}"
                                         )
+                                        viewModel.performQuery(BLANK_STRING, filterSelected)
                                     }
                                 )
                                 if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -265,15 +264,13 @@ fun VoEndorsementScreen(
                             }
                         } else {
                             itemsIndexed(newFilteredDidiList.value) { index, didi ->
-//                                if (didi.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal) {
-//                                    viewModel.pendingDidiCount.value++
-//                                }
                                 DidiItemCardForVo(
                                     navController = navController,
                                     didi = didi,
                                     modifier = modifier,
                                     onItemClick = {
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                        viewModel.performQuery(BLANK_STRING, filterSelected)
                                     }
                                 )
                                 Spacer(modifier = Modifier.height(10.dp))
@@ -340,6 +337,7 @@ fun DidiItemCardForVo(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Row(

@@ -101,6 +101,13 @@ fun SurveySummary(
     LaunchedEffect(key1 = true){
             showDidiListForStatus =
                   Pair((context as MainActivity).isBackFromSummary.value, surveySummaryViewModel.baseSummarySecond.value)
+        if(!(context as MainActivity).isBackFromSummary.value && fromScreen != ARG_FROM_PAT_SURVEY){
+            if (surveySummaryViewModel.prefRepo.isUserBPC()) {
+                surveySummaryViewModel.fetchDidisForBpcFromDB()
+            } else {
+                surveySummaryViewModel.fetchDidisFromDB()
+            }
+        }
 
 
     }

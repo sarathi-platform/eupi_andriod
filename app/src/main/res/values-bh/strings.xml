@@ -242,9 +242,9 @@
 
     <string name="pat_inprogresee_status_text">चालू</string>
     <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नहीं हुई</string>
-    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - गरीब नहीं</string>
+    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT सर्वेक्षण चालू है</string>
-    <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ</string>
+    <string name="pat_completed_status_text">PAT सर्वेक्षण पूरा हुआ - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">वीओ एंडोर्समेंट पूरा हुआ</string>
     <string name="no_didis_availble_for_vo_endorsement">वीओ एंडोर्समेंट के लिए कोई दीदी उपलब्ध नहीं है।</string>
     <string name="add_more">अधिक जोड़ें</string>
@@ -363,5 +363,17 @@
     <string name="location_permission_dialog_prompt_message">स्थान निर्देशांक अनुमति आवश्यक है, कृपया अनुमति दें</string>
     <string name="empty_tola_button_text">तोला जोड़े बिना जारी रखें</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
+    <string name="otp_text">ओ.टी.पी.</string>
+    <string name="expiry_login_verify_otp">%s ओ.टी.पी. दुबारा भेजे</string>
+    <string name="complete_wealth_ranking_btn_text">धन-सम्पत्ति श्रेणी का कार्य पूर्ण</string>
+    <string name="max_5_pages_can_be_captured">अधिकतम 5 पेज कैप्चर किये जा सकते हैं</string>
+    <string name="click_to_refresh">ताज़ा करने के लिए क्लिक करें</string>
+
+    <string name="pat_selected_status_text">PAT चयनित</string>
+    <string name="pat_rejected_status_text">PAT अस्वीकृत</string>
+    <string name="vo_selected_status_text">VO ने समर्थन किया</string>
+    <string name="vo_rejected_status_text">VO अस्वीकृत</string>
+    <string name="pat_not_available_status_text">PAT पूर्ण - उपलब्ध नहीं</string>
+    <string name="cannot_delete_tola_message_text">इस टोले को हटाया नहीं जा सकता क्योंकि इसमें दीदियों को नियुक्त किया गया है</string>
 
 </resources>

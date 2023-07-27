@@ -18,6 +18,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -141,6 +143,21 @@ fun SearchWithFilterView(
                             contentDescription = "seach icon",
                             modifier = Modifier.absolutePadding(top = 3.dp)
                         )
+                    },
+                    trailingIcon = {
+                        if (searchString.isNotEmpty()) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = null,
+                                tint = textColorDark,
+                                modifier = Modifier
+                                    .absolutePadding(top = 2.dp)
+                                    .clickable {
+                                        searchString = ""
+                                        onSearchValueChange(searchString)
+                                    }
+                            )
+                        }
                     }
                 )
                 if (showFilter) {

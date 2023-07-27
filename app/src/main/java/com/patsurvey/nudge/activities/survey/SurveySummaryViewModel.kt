@@ -76,7 +76,7 @@ class SurveySummaryViewModel @Inject constructor(
         setVillage(prefRepo.getSelectedVillage().id)
     }
 
-    private fun fetchDidisForBpcFromDB() {
+     fun fetchDidisForBpcFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val selectedVillage = prefRepo.getSelectedVillage()
             val didiList = mutableListOf<DidiEntity>()
@@ -112,7 +112,6 @@ class SurveySummaryViewModel @Inject constructor(
     fun fetchDidisFromDB(){
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
-                Log.d("TAG", "fetchDidisFromDB: Called")
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
                     isTolaSynced.value =it
@@ -228,13 +227,15 @@ class SurveySummaryViewModel @Inject constructor(
                         comment =
                             if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                 PatSurveyStatus.NOT_AVAILABLE.name
+                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                BLANK_STRING
                             } else {
                                 if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
                                     TYPE_EXCLUSION
                                 } else {
-                                    if (didi.score < passingMark)
+                                    if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
                                         LOW_SCORE
-                                    else {
+                                    } else {
                                         BLANK_STRING
                                     }
                                 }
@@ -247,6 +248,8 @@ class SurveySummaryViewModel @Inject constructor(
                                 type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
                                 result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                                     DIDI_NOT_AVAILABLE
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                    PatSurveyStatus.INPROGRESS.name
                                 } else {
                                     if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
                                         if (prefRepo.isUserBPC())
@@ -254,7 +257,8 @@ class SurveySummaryViewModel @Inject constructor(
                                         else
                                             COMPLETED_STRING
                                     }
-                                }
+                                },
+                                rankingEdit = false
                             )
                         )
                         answeredDidiList.add(
@@ -305,6 +309,7 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!saveAPIResponse.lastSyncTime.isNullOrEmpty()) {
                                 updateLastSyncTime(prefRepo, saveAPIResponse.lastSyncTime)
                             }
+                            didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
                             val updateScoreResponse = apiService.updateDidiScore(scoreDidiList)
                         }
                     }

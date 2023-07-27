@@ -21,6 +21,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -67,6 +68,7 @@ import com.patsurvey.nudge.utils.ButtonOutline
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.Tola
 import com.patsurvey.nudge.utils.TolaStatus
@@ -107,6 +109,13 @@ fun TransectWalkScreen(
 
     var bottomPadding by remember {
         mutableStateOf(0.dp)
+    }
+
+    DisposableEffect(key1 = Unit) {
+        LocationUtil.setLocation((context as MainActivity))
+        onDispose {
+            LocationUtil.location = LocationCoordinates(0.0, 0.0)
+        }
     }
 
     BackHandler() {
@@ -385,17 +394,17 @@ fun TransectWalkScreen(
                                         isLocationAvailable = (tola.latitude != 0.0 && tola.longitude != 0.0),
                                         isTransectWalkCompleted = (viewModel.isTransectWalkComplete.value && !tola.needsToPost),
                                         deleteButtonClicked = {
-                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
-                                            viewModel.removeTola(tola.id, isOnline = (context as MainActivity).isOnline.value ?: false,  object : NetworkCallbackListener{
+                                            viewModel.removeTola(tola.id, context = context, isOnline = (context as MainActivity).isOnline.value ?: false,  object : NetworkCallbackListener{
                                                 override fun onSuccess() {
+                                                    showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
+                                                    showAddTolaBox = false
                                                 }
 
                                                 override fun onFailed() {
 //                                                    showCustomToast(context, SYNC_FAILED)
                                                 }
                                             }, villageId = villageId, stepId = stepId)
-                                            showAddTolaBox = false
-                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
+//                                            showCustomToast(context,context.getString(R.string.tola_deleted).replace("{TOLA_NAME}", tola.name))
                                         },
                                         saveButtonClicked = { newName, newLocation ->
                                            showAddTolaBox = if (newName == tola.name && (newLocation?.lat == tola.latitude && newLocation.long == tola.longitude)) false

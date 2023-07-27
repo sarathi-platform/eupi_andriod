@@ -1,9 +1,12 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -496,55 +499,67 @@ class TransectWalkViewModel @Inject constructor(
     }
 
 
-    fun removeTola(tolaId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
+    fun removeTola(tolaId: Int, context: Context, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener, villageId: Int, stepId: Int) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
-                tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
-                val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
-                withContext(Dispatchers.Main) {
-                    _tolaList.value = updatedTolaList
-                }
-                deleteDidisForTola(tolaId,isOnline)
-                val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-                if (updatedTolaList.isEmpty()){
-                    stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach { newStep ->
-                        if (newStep.orderNumber == stepDetails.orderNumber) {
-                            stepsListDao.markStepAsInProgress((stepDetails.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
-                            stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
-                        }
-                        if (newStep.orderNumber > stepDetails.orderNumber) {
-                            stepsListDao.markStepAsInProgress(
-                                (newStep.orderNumber),
-                                StepStatus.NOT_STARTED.ordinal,
-                                villageId
-                            )
-                            stepsListDao.updateNeedToPost(newStep.id, villageId, true)
+                val localTola = tolaDao.getTola(tolaId)
+                val didiListForTola = didiDao.getDidisForTola(if (localTola.serverId == 0) localTola.id else localTola.serverId)
+                if (didiListForTola.isEmpty()) {
+                    tolaDao.deleteTolaOffline(tolaId, TolaStatus.TOLA_DELETED.ordinal)
+                    val updatedTolaList = tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
+                    withContext(Dispatchers.Main) {
+                        _tolaList.value = updatedTolaList
+                    }
+                    deleteDidisForTola(if (localTola.serverId == 0) localTola.id else localTola.serverId, isOnline)
+                    val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
+                    if (updatedTolaList.isEmpty()){
+                        stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }.forEach { newStep ->
+                            if (newStep.orderNumber == stepDetails.orderNumber) {
+                                stepsListDao.markStepAsInProgress((stepDetails.orderNumber), StepStatus.INPROGRESS.ordinal, villageId)
+                                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
+                            }
+                            if (newStep.orderNumber > stepDetails.orderNumber) {
+                                stepsListDao.markStepAsInProgress(
+                                    (newStep.orderNumber),
+                                    StepStatus.NOT_STARTED.ordinal,
+                                    villageId
+                                )
+                                stepsListDao.updateNeedToPost(newStep.id, villageId, true)
+                            }
                         }
                     }
-                }
-                if (isOnline) {
-                    val tolaToBeDeleted = tolaDao.fetchSingleTola(tolaId)
-                    if (tolaToBeDeleted?.serverId != 0) {
-                        val jsonArray = JsonArray()
-                        jsonArray.add(
-                            DeleteTolaRequest(
-                                tolaId,
-                                localModifiedDate = System.currentTimeMillis()
-                            ).toJson()
-                        )
-                        val response = apiInterface.deleteCohort(jsonArray)
-                        if (response.status.equals(SUCCESS)) {
-                            tolaDao.removeTola(tolaId)
-                        } else {
-                            tolaDao.setNeedToPost(listOf(tolaId), true)
-                            networkCallbackListener.onFailed()
+                    if (isOnline) {
+                        val tolaToBeDeleted = tolaDao.fetchSingleTola(tolaId)
+                        if (tolaToBeDeleted?.serverId != 0) {
+                            val jsonArray = JsonArray()
+                            jsonArray.add(
+                                DeleteTolaRequest(
+                                    tolaId,
+                                    localModifiedDate = System.currentTimeMillis()
+                                ).toJson()
+                            )
+                            val response = apiInterface.deleteCohort(jsonArray)
+                            if (response.status.equals(SUCCESS)) {
+                                tolaDao.removeTola(tolaId)
+                            } else {
+                                tolaDao.setNeedToPost(listOf(tolaId), true)
+                                networkCallbackListener.onFailed()
+                            }
+
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            }
+
+
                         }
-
-                        if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
-                        }
-
-
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.cannot_delete_tola_message_text),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
             } catch (ex: Exception) {

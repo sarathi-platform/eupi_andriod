@@ -400,7 +400,8 @@ fun VoEndorsementSummaryScreen(
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.ENDORSED.ordinal)
                         coroutineScope.launch {
                             delay(1000)
-                            showDialog.value = false
+                            navController.popBackStack()
+//                            showDialog.value = false
                             /*val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
@@ -424,7 +425,8 @@ fun VoEndorsementSummaryScreen(
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.REJECTED.ordinal)
                         coroutineScope.launch {
                             delay(1000)
-                            showDialog.value = false
+                            navController.popBackStack()
+//                            showDialog.value = false
                             /*val nextPageIndex = pagerState.currentPage + 1
                             if (nextPageIndex < voDidiList.size) {
                                 viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
