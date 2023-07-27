@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -15,12 +16,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -57,11 +62,14 @@ import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.VALUE_OF_PRODUCTIVE_ASSETS
 import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
+import kotlinx.coroutines.launch
 
 
+@SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun NumericFieldTypeQuestion(
     modifier: Modifier,
@@ -77,7 +85,8 @@ fun NumericFieldTypeQuestion(
     onSubmitClick: () -> Unit
 ) {
 val context = LocalContext.current
-
+    val lazyColumnListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     Box {
         ConstraintLayout(modifier = modifier
             .fillMaxSize()
@@ -128,8 +137,11 @@ val context = LocalContext.current
                         height = Dimension.fillToConstraints
                     }
             ) {
-                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
                     itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
+                        coroutineScope.launch {
+                                lazyColumnListState.scrollToItem(0)
+                        }
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
@@ -191,7 +203,7 @@ val context = LocalContext.current
 
                     item {
                         Text(
-                            text = totalValueTitle?: BLANK_STRING,
+                            text = stringResource(id = if(totalValueTitle.equals(VALUE_OF_PRODUCTIVE_ASSETS,true)) R.string.heading_value_of_other_productive_assests else R.string.heading_earning_ration) ,
                             color = Color.Black,
                             modifier = Modifier.padding(bottom = 5.dp, start = 5.dp),
                             style = TextStyle(

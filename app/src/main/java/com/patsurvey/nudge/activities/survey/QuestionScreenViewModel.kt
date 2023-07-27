@@ -61,7 +61,7 @@ class QuestionScreenViewModel @Inject constructor(
 
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
-
+    val nextButtonVisible= mutableStateOf(false)
     val listTypeAnswerIndex = mutableStateOf(-1)
     val maxQuesCount = mutableStateOf(0)
     val answeredCount = mutableStateOf(0)
@@ -349,8 +349,6 @@ class QuestionScreenViewModel @Inject constructor(
                            val option2Count = option.filter { it.optionValue==2 }[0].count?.toDouble() ?: 0.0
                            if(option1Count > 0 && option2Count > 0){
                                totalAmount.value = roundOffDecimal(option2Count/option1Count)?:0.00
-                               Log.d("TAG", "findListTypeSelectedAnswer: ${option1Count} :: $option2Count :: ${totalAmount.value}")
-
                            }else  totalAmount.value=0.00
                        }
                    }

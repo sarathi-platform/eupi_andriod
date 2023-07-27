@@ -219,4 +219,6 @@ const val DOUBLE_ZERO = "0.00"
 val IGNORED_REGEX = Regex("[$&+,:;=\\\\?@#|/'<>.^*(){}[\\\\]%!-]")
 val NUMBER_REGEX = Regex("[0-9]")
 
+const val VALUE_OF_PRODUCTIVE_ASSETS = "Value of other productive assets"
+const val EARNING_RATIO = "Earning ratio"
 

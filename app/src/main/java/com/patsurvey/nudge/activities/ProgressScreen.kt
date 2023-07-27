@@ -54,6 +54,7 @@ fun ProgressScreen(
 ) {
     LaunchedEffect(key1 = Unit) {
         viewModel.init()
+        viewModel.setVoEndorsementCompleteForVillages()
         delay(1000)
         viewModel.showLoader.value = false
     }
@@ -74,10 +75,6 @@ fun ProgressScreen(
     mainActivity?.isLoggedInLive?.postValue(viewModel.isLoggedIn())
 
     setKeyboardToPan(mainActivity!!)
-
-    LaunchedEffect(key1 = true) {
-        viewModel.setVoEndorsementCompleteForVillages()
-    }
 
    val tolaCount = remember {
        viewModel.tolaCount

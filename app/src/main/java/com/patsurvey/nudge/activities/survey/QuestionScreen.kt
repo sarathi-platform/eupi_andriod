@@ -155,11 +155,6 @@ fun QuestionScreen(
             pagerState.currentPage > 0
         }
     }
-    val nextButtonVisible = remember {
-        derivedStateOf {
-            (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-        }
-    }
 
     Box(modifier = Modifier
         .fillMaxSize()
@@ -192,7 +187,7 @@ fun QuestionScreen(
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                HorizontalPager(
+               HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
                     userScrollEnabled = false
@@ -290,6 +285,9 @@ fun QuestionScreen(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
+                                                    delay(250)
+                                                    viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+
                                             }
 
                                         } else {
@@ -357,7 +355,7 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
-                                showNextButton = !nextButtonVisible.value,
+                                showNextButton = !viewModel.nextButtonVisible.value,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){
@@ -398,10 +396,16 @@ fun QuestionScreen(
                                         }
                                     }, 250)
                                 }
+                                coroutineScope.launch {
+                                    delay(250)
+                                    viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+
+                                }
                             }
                         }
                     }
                 }
+
             }
 
 
@@ -426,6 +430,12 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
+
+                    coroutineScope.launch {
+                        delay(250)
+                        viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+
+                    }
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
                         /*&& questionList[pagerState.currentPage].questionFlag.equals(
                             QUESTION_FLAG_WEIGHT,true)*/){
@@ -474,20 +484,25 @@ fun QuestionScreen(
 
 
         //Next Ques Button
-        AnimatedVisibility(visible = nextButtonVisible.value, modifier = Modifier
+        AnimatedVisibility(visible =  viewModel.nextButtonVisible.value, modifier = Modifier
             .padding(all = 16.dp)
-            .visible(nextButtonVisible.value)
+            .visible( viewModel.nextButtonVisible.value)
             .padding(bottom = 25.dp)
             .align(alignment = Alignment.BottomEnd)) {
-            viewModel.nextCTAVisibility.value=nextButtonVisible.value
+            viewModel.nextCTAVisibility.value=viewModel.nextButtonVisible.value
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
-                    .visible(nextButtonVisible.value)
+                    .visible(viewModel.nextButtonVisible.value)
                     .align(alignment = Alignment.BottomEnd),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    coroutineScope.launch {
+                        delay(250)
+                        viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+
+                    }
                     viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
@@ -516,7 +531,7 @@ fun QuestionScreen(
                     }
                 },
                 text = {
-                    Text(text = "Q${pagerState.currentPage + 2}",
+                    Text(text = "Q${if((pagerState.currentPage + 2)<= questionList.size)(pagerState.currentPage + 2) else (pagerState.currentPage + 1)}",
                         color = blueDark,
                         style = TextStyle(
                             fontFamily = NotoSans,

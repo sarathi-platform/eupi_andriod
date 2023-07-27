@@ -364,4 +364,6 @@
 
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
     <string name="click_to_refresh">Click to Refresh</string>
+    <string name="heading_value_of_other_productive_assests">Value of other productive assets</string>
+    <string name="heading_earning_ration">Earning ratio</string>
 </resources>

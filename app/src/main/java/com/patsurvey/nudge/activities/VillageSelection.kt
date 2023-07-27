@@ -158,7 +158,7 @@ fun VillageSelectionScreen(
             Modifier
                 .fillMaxSize()
                 .padding(it)) {
-            if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API) || villages.isEmpty()) {
+            if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
                 Column(
                     verticalArrangement = Arrangement.spacedBy(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally,
