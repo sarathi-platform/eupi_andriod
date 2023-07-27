@@ -177,8 +177,18 @@ fun PatSurvaySectionSummaryScreen(
                     itemsIndexed(questionList.sortedBy { it.order }) { index, question ->
                         val answer = answerList.find { it.questionId == question.questionId }
                        SectionOneSummeryItem(index = index,
-                           quesSummery = answer?.summary?: BLANK_STRING,
-                           answerValue = answer?.answerValue?: BLANK_STRING,
+                           quesSummery = answer?.questionId?.let {
+                               patSectionSummaryViewModel.getQuestionSummary(
+                                   it
+                               )
+                           } ?: BLANK_STRING,
+                           answerValue = answer?.questionId?.let {
+                               answer.optionId?.let { it1 ->
+                                   patSectionSummaryViewModel.getOptionForLanguage(
+                                       it, it1
+                                   )
+                               }
+                           } ?: BLANK_STRING,
                            optionValue =  answer?.optionValue?:0,
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)

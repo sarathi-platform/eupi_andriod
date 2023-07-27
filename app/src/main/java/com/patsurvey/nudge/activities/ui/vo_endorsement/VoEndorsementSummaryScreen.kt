@@ -225,7 +225,12 @@ fun VoEndorsementSummaryScreen(
                                     SectionOneSummeryItem(
                                         index = index,
                                         answerValue = answer.answerValue,
-                                        quesSummery = answer?.summary?: BLANK_STRING,
+                                        quesSummery = answer?.questionId?.let {
+                                            viewModel.getQuestionSummary(
+                                                it
+                                            )
+                                        }
+                                            ?: BLANK_STRING,
                                         optionValue = answer.optionValue ?: 0,
                                         questionImageUrl = answer.questionImageUrl?: BLANK_STRING
                                     ){
@@ -256,8 +261,12 @@ fun VoEndorsementSummaryScreen(
                                         val question = quesList.find { it.questionId == answer.questionId }
                                         SectionTwoSummeryItem(
                                             index = index,
-                                            quesSummery = answer.summary ?: BLANK_STRING,
-                                            answerValue = answer.answerValue ?: BLANK_STRING,
+                                            quesSummery = answer.questionId.let {
+                                                viewModel.getQuestionSummary(
+                                                    it
+                                                )
+                                            },
+                                            answerValue = answer.answerValue,
                                             questionType = answer.type,
                                             questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT

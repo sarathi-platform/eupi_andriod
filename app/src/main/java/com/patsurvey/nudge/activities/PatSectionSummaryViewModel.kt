@@ -66,6 +66,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
 
     private val _questionList = MutableStateFlow(listOf<QuestionEntity>())
+    private var languageQuestionList = listOf<QuestionEntity>()
     val questionList: StateFlow<List<QuestionEntity>> get() = _questionList
     private val _inclusionQuestionList = MutableStateFlow(listOf<QuestionEntity>())
     val inclusionQuestionList: StateFlow<List<QuestionEntity>> get() = _inclusionQuestionList
@@ -85,6 +86,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
            val localDidiDetails=didiDao.getDidi(didiId)
+            languageQuestionList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
             val questionList = questionListDao.getQuestionForType(TYPE_EXCLUSION,prefRepo.getAppLanguageId()?:2)
             val inclusionQuestionList = questionListDao.getQuestionForType(TYPE_INCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
@@ -102,6 +104,30 @@ class PatSectionSummaryViewModel @Inject constructor(
                 _answerSummeryList.emit(localSummeryList)
             }
         }
+    }
+
+    fun getQuestionSummary(questionId : Int) : String{
+        var summary = ""
+        for(question in languageQuestionList){
+            if(question.questionId == questionId)
+                summary = question.questionSummary.toString()
+        }
+        return summary
+    }
+
+    fun getOptionForLanguage(questionId : Int,optionId : Int) : String{
+        var optionText = ""
+        for(question in languageQuestionList){
+            if(question.questionId == questionId) {
+                for (option in question.options){
+                    if(option.optionId == optionId) {
+                        optionText = option.summary.toString()
+                        break
+                    }
+                }
+            }
+        }
+        return optionText
     }
 
     fun setPATSurveyComplete(didiId: Int,status:Int){
