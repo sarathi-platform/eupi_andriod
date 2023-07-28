@@ -270,7 +270,7 @@ fun PatDidiSummaryScreen(
                             )
 
                             Text(
-                                text = didi.value.castName ?: BLANK_STRING,
+                                text = patDidiSummaryViewModel.getCastName(didi.value.castId),
                                 style = didiDetailItemStyle,
                                 textAlign = TextAlign.Start,
                                 modifier = Modifier
