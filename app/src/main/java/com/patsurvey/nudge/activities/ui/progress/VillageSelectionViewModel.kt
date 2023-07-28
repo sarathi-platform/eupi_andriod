@@ -464,6 +464,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                     crpUploadedImage = didi.crpUploadedImage
                                                 )
                                             )
+                                            if(!didi.crpUploadedImage.isNullOrEmpty()){
+                                                downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                            }
                                         }
                                         it.not_selected.forEach { didi ->
                                             var tolaName = BLANK_STRING
@@ -529,6 +532,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                     crpScore = didi.crpScore
                                                 )
                                             )
+                                            if(!didi.crpUploadedImage.isNullOrEmpty()){
+                                                downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                            }
                                         }
                                     }
                                 }
@@ -1479,13 +1485,13 @@ class VillageSelectionViewModel @Inject constructor(
                         onDownloadComplete = {
                             didiDao.updateImageLocalPath(id,imageFile.absolutePath)
                         }, onDownloadFailed = {
-
+                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
                         })
                     }
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
-                Log.e("VideoListViewModel", "downloadItem exception", ex)
+                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
             }
         }
     }

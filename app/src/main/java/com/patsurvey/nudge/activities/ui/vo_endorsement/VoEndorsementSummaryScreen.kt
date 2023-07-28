@@ -328,8 +328,8 @@ fun VoEndorsementSummaryScreen(
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-                                showDialog.value = false
-                                delay(100)
+//                                showDialog.value = false
+//                                delay(100)
                                 navController.popBackStack()
                             }
                         }
@@ -349,12 +349,11 @@ fun VoEndorsementSummaryScreen(
                                 delay(500)
                                 showDialog.value = false
                                 delay(100)
-
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-                                showDialog.value = false
-                                delay(100)
+//                                showDialog.value = false
+//                                delay(100)
                                 navController.popBackStack()
                             }
                         }
