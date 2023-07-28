@@ -50,7 +50,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
+
 @HiltViewModel
 class SettingViewModel @Inject constructor(
     val prefRepo: PrefRepo,
@@ -387,6 +390,19 @@ class SettingViewModel @Inject constructor(
             NudgeLogger.e("SettingViewModel","syncDataOnServer -> isInternetAvailable = false")
         }
         NudgeLogger.e("SettingViewModel","syncDataOnServer -> end")
+    }
+
+    fun showLoaderForTime(time : Long){
+        showAPILoader.value = true
+        Timer().schedule(object : TimerTask(){
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    withContext(Dispatchers.Main) {
+                        showAPILoader.value = false
+                    }
+                }
+            }
+        },time)
     }
 
     fun syncBPCDataOnServer(cxt: Context,syncDialog : MutableState<Boolean>,syncBPCStatus : MutableState<Int>) {
