@@ -9,8 +9,10 @@ import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -45,12 +47,13 @@ class PatDidiSummaryViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val didiDao: DidiDao,
     val answerDao: AnswerDao,
-    val apiService: ApiService
+    val apiService: ApiService,
+    val casteListDao: CasteListDao
 ) :
     BaseViewModel() {
 
     lateinit var outputDirectory: File
-    lateinit var cameraExecutor: ExecutorService
+    var cameraExecutor: ExecutorService
 
     val shouldShowCamera = mutableStateOf(false)
 
@@ -60,7 +63,7 @@ class PatDidiSummaryViewModel @Inject constructor(
     var shouldShowPhoto = mutableStateOf(false)
     var didiImageLocation = mutableStateOf("{0.0,0.0}")
     var updatedLocalPath = mutableStateOf(BLANK_STRING)
-
+    private lateinit var castList : List<CasteEntity>
     var imagePath = ""
 
     private val _didiEntity = MutableStateFlow(
@@ -84,6 +87,9 @@ class PatDidiSummaryViewModel @Inject constructor(
 
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            castList = casteListDao.getAllCasteForLanguage(prefRepo.getAppLanguageId() ?: 2)
+        }
     }
 
     fun setCameraExecutor() {
@@ -187,6 +193,15 @@ class PatDidiSummaryViewModel @Inject constructor(
                 callBack(false)
             }
         }
+    }
+
+    fun getCastName(castId : Int) : String{
+        var castName = ""
+        for(cast in castList){
+            if(castId == cast.id)
+                castName = cast.casteName
+        }
+        return castName
     }
 
     fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {

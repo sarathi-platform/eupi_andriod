@@ -1514,8 +1514,10 @@ fun ExpandedSettingsList(
                                 .clickable {
                                     when (index) {
                                         0 -> {
-                                            if (viewModel.formAAvailabe.value)
+                                            viewModel.showLoaderForTime(500)
+                                            if (viewModel.formAAvailabe.value) {
                                                 navController.navigate(SettingScreens.FORM_A_SCREEN.route)
+                                            }
                                             else
                                                 showToast(
                                                     context,
@@ -1524,6 +1526,7 @@ fun ExpandedSettingsList(
                                         }
 
                                         1 -> {
+                                            viewModel.showLoaderForTime(500)
                                             if (viewModel.formBAvailabe.value)
                                                 navController.navigate(SettingScreens.FORM_B_SCREEN.route)
                                             else
@@ -1534,6 +1537,7 @@ fun ExpandedSettingsList(
                                         }
 
                                         2 -> {
+                                            viewModel.showLoaderForTime(500)
                                             if (viewModel.formCAvailabe.value)
                                                 navController.navigate(SettingScreens.FORM_C_SCREEN.route)
                                             else
