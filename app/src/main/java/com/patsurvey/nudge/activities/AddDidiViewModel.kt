@@ -46,12 +46,16 @@ class AddDidiViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
+    val questionListDao: QuestionListDao,
+    val answerDao: AnswerDao,
     val apiService: ApiService
 ) : BaseViewModel() {
     val houseNumber = mutableStateOf(BLANK_STRING)
     val didiName = mutableStateOf(BLANK_STRING)
     val dadaName = mutableStateOf(BLANK_STRING)
     val isDidiValid = mutableStateOf(true)
+    val exclusiveQuesCount = mutableStateOf(0)
+    val inclusiveQuesCount = mutableStateOf(0)
     val selectedCast = mutableStateOf(Pair(-1, ""))
     val selectedTola = mutableStateOf(Pair(-1, ""))
     private val _casteList = MutableStateFlow(listOf<CasteEntity>())
@@ -1354,6 +1358,43 @@ class AddDidiViewModel @Inject constructor(
                 NudgeLogger.d("AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> onFailed")
                 onError(tag = "AddDidiViewModel", "updateDidiToNetwork(didi: DidiEntity, networkCallbackListener: NetworkCallbackListener) -> Error : ${ex.localizedMessage}")
                 onCatchError(ex, ApiType.DIDI_EDIT_API)
+            }
+        }
+    }
+
+    fun validateDidiToNavigate(didiId: Int,onNavigateToSummary:(Int)->Unit){
+        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
+            val questionExclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
+            val questionInclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
+            val quesList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
+            exclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_EXCLUSION }.size
+            inclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_INCLUSION }.size
+            if(questionInclusionAnswered.isNotEmpty()){
+                if(inclusiveQuesCount.value == questionInclusionAnswered.size){
+                   withContext(Dispatchers.Main){
+                       onNavigateToSummary(2)
+                   }
+                }else{
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(3)
+                    }
+                }
+            }else{
+                if(questionExclusionAnswered.isNotEmpty()){
+                    if(exclusiveQuesCount.value == questionExclusionAnswered.size){
+                        withContext(Dispatchers.Main){
+                            onNavigateToSummary(1)
+                        }
+                    }else{
+                        withContext(Dispatchers.Main){
+                            onNavigateToSummary(3)
+                        }
+                    }
+                }else {
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(3)
+                    }
+                }
             }
         }
     }

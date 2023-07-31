@@ -204,7 +204,7 @@ fun PatSurveyCompleteSummary(
                             answerValue = answer?.questionId?.let {
                                 answer.optionId?.let { it1 ->
                                     patSectionSummaryViewModel.getOptionForLanguage(
-                                        it, it1
+                                        it, it1, BLANK_STRING
                                     )
                                 }
                             } ?: BLANK_STRING,
@@ -248,7 +248,7 @@ fun PatSurveyCompleteSummary(
                                 answerValue = answer.questionId.let {
                                     answer.optionId?.let { it1 ->
                                         patSectionSummaryViewModel.getOptionForLanguage(
-                                            it, it1
+                                            it, it1,answer.answerValue?:"0"
                                         )
                                     }
                                 } ?: BLANK_STRING,

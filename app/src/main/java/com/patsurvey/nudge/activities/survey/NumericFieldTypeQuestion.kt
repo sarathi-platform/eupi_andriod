@@ -140,7 +140,9 @@ val context = LocalContext.current
                 LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
                     itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
                         coroutineScope.launch {
+                            if(!lazyColumnListState.isScrollInProgress) {
                                 lazyColumnListState.scrollToItem(0)
+                            }
                         }
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
