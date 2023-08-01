@@ -225,7 +225,7 @@
     <string name="view">View Form</string>
     <string name="pat_inprogresee_status_text">In Progress</string>
     <string name="wealth_ranking_status_not_started_text">Wealth Ranking Not started</string>
-    <string name="wealth_ranking_status_complete_text">Wealth Ranking Completed - {RANK}</string>
+    <string name="wealth_ranking_status_complete_text">Wealth Ranking Done - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT Survey in Progress</string>
     <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
@@ -359,11 +359,22 @@
     <string name="pat_rejected_status_text">PAT Rejected</string>
     <string name="vo_selected_status_text">VO Endorsed</string>
     <string name="vo_rejected_status_text">VO Rejected</string>
-    <string name="pat_not_available_status_text">PAT Completed - Not Available</string>
+    <string name="pat_not_available_status_text">Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
 
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
     <string name="click_to_refresh">Click to Refresh</string>
     <string name="heading_value_of_other_productive_assests">Value of other productive assets</string>
     <string name="heading_earning_ration">Earning ratio</string>
+    <string name="session_expired_dialog_title">Session Expired!</string>
+    <string name="session_epire_otp_message">Please enter OTP to re-login.</string>
+    <string name="session_restored_message">Session Restored</string>
+    <string name="location_permission_not_granted_message">Location Permission Not Granted</string>
+    <string name="common_error_message_text">No network available</string>
+    <string name="wealth_ranking_summary_empty_text">No didi marked as {CATEGORY}</string>
+    <string name="pat_summary_not_available_empty_text">No didi marked as not available</string>
+    <string name="pat_summary_completed_empty_text">No didi whose PAT was completed</string>
+    <string name="vo_summary_rejected_empty_text">No didi rejected by VO</string>
+    <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>
+    <string name="social_mapping_complete_status_text">Social Mapping Done</string>
 </resources>

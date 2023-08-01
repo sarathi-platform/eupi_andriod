@@ -27,12 +27,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
@@ -90,6 +94,8 @@ fun SurveySummary(
 
 
     val context = LocalContext.current
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
@@ -419,45 +425,115 @@ fun SurveySummary(
                                     }
                                 } else {
                                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                        itemsIndexed(if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                                        val didiList = if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
                                             didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank && (it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) }
                                         else
-                                            didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }) { index, didi ->
-                                            DidiItemCardForPat(
-                                                didi = didi,
-                                                modifier = modifier,
-                                                onItemClick = {
-                                                    if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
-                                                        navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                                                    }
-                                                }
-                                            )
-                                        }
-                                    } else {
-                                        if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
-                                            itemsIndexed(didids.value.filter {
-                                                it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
-                                                        && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal
-                                            }) { index, didi ->
-                                                DidiItemCardForVoForSummary(
-                                                    navController = navController,
+                                            didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }
+                                        if (didiList.isNotEmpty()) {
+                                            itemsIndexed(didiList) { index, didi ->
+                                                DidiItemCardForPat(
                                                     didi = didi,
                                                     modifier = modifier,
                                                     onItemClick = {
-                                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
+                                                            navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                                        }
                                                     }
                                                 )
                                             }
                                         } else {
-                                            itemsIndexed(didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }) { index, didi ->
-                                                DidiItemCardForVoForSummary(
-                                                    navController = navController,
-                                                    didi = didi,
-                                                    modifier = modifier,
-                                                    onItemClick = {
-                                                        navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
-                                                    }
-                                                )
+                                            item {
+                                                Box(
+                                                    Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = (screenHeight / 4).dp)
+                                                ) {
+                                                    Text(
+                                                        text = buildAnnotatedString {
+                                                            withStyle(
+                                                                style = SpanStyle(
+                                                                    color = textColorDark,
+                                                                    fontSize = 16.sp,
+                                                                    fontWeight = FontWeight.Normal,
+                                                                    fontFamily = NotoSans
+                                                                )
+                                                            ) {
+                                                                val emptyMessage = when (showDidiListForStatus.second) {
+                                                                    PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal -> stringResource(R.string.pat_summary_not_available_empty_text)
+                                                                    PatSurveyStatus.COMPLETED.ordinal -> stringResource(R.string.pat_summary_completed_empty_text)
+                                                                    else -> {""}
+                                                                }
+                                                                append(emptyMessage)
+                                                            }
+                                                        },
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    } else {
+                                        val didiList = if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                            didids.value.filter {
+                                                it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                                                        && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal
+                                            }
+                                        } else {
+                                                didids.value.filter { it.voEndorsementStatus == showDidiListForStatus.second }
+                                            }
+                                        if (didiList.isNotEmpty()) {
+                                            if (showDidiListForStatus.second == DidiEndorsementStatus.ENDORSED.ordinal) {
+                                                itemsIndexed(didiList) { index, didi ->
+                                                    DidiItemCardForVoForSummary(
+                                                        navController = navController,
+                                                        didi = didi,
+                                                        modifier = modifier,
+                                                        onItemClick = {
+                                                            navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        }
+                                                    )
+                                                }
+                                            } else {
+                                                itemsIndexed(didiList) { index, didi ->
+                                                    DidiItemCardForVoForSummary(
+                                                        navController = navController,
+                                                        didi = didi,
+                                                        modifier = modifier,
+                                                        onItemClick = {
+                                                            navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        }
+                                                    )
+                                                }
+                                            }
+                                        } else {
+                                            item {
+                                                Box(
+                                                    Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(vertical = (screenHeight / 4).dp)
+                                                ) {
+                                                    Text(
+                                                        text = buildAnnotatedString {
+                                                            withStyle(
+                                                                style = SpanStyle(
+                                                                    color = textColorDark,
+                                                                    fontSize = 16.sp,
+                                                                    fontWeight = FontWeight.Normal,
+                                                                    fontFamily = NotoSans
+                                                                )
+                                                            ) {
+                                                                val emptyMessage = when (showDidiListForStatus.second) {
+                                                                    DidiEndorsementStatus.REJECTED.ordinal -> stringResource(R.string.vo_summary_rejected_empty_text)
+                                                                    DidiEndorsementStatus.ENDORSED.ordinal -> stringResource(R.string.vo_summary_endorsed_empty_text)
+                                                                    else -> {""}
+                                                                }
+                                                                append(emptyMessage)
+                                                            }
+                                                        },
+                                                        textAlign = TextAlign.Center,
+                                                        modifier = Modifier.fillMaxWidth()
+                                                    )
+                                                }
                                             }
                                         }
                                     }

@@ -24,6 +24,8 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.FORM_C
+import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_C_PAGE_COUNT
 import com.patsurvey.nudge.utils.PREF_FORM_D_PAGE_COUNT
@@ -108,6 +110,26 @@ class FormPictureScreenViewModel @Inject constructor(
 
     init {
         setVillage(prefRepo.getSelectedVillage().id)
+        for (i in 1..5) {
+            formCPageList.value = formCPageList.value.also {
+                Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_C, i))}")
+                val imagePath =
+                    prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                if (imagePath != "") {
+                    it.add(it.size + 1)
+                }
+                Log.d("FormPictureScreenViewModel", "init: FORM_C -> ${it}")
+            }
+            formDPageList.value = formDPageList.value.also {
+                Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_D, i))}")
+                val imagePath =
+                    prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
+                if (imagePath != "") {
+                    it.add(it.size + 1)
+                }
+                Log.d("FormPictureScreenViewModel", "init: FORM_D -> ${it}")
+            }
+        }
     }
 
     fun setVillage(villageId: Int) {

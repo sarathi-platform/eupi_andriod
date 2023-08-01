@@ -1296,33 +1296,33 @@ fun DidiDetailExpendableContent(modifier: Modifier, didi: DidiEntity, expended: 
 fun getLatestStatusText(context: Context, didi: DidiEntity): String {
     var status = BLANK_STRING
     if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
-        status = context.getString(R.string.wealth_ranking_status_not_started_text)
+        status = context.getString(R.string.social_mapping_complete_status_text)
     } else {
         if (!didi.rankingEdit) {
             if (!didi.patEdit) {
                 status = if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.forVoEndorsement == 1) {
                     when (didi.voEndorsementStatus) {
                         DidiEndorsementStatus.ENDORSED.ordinal, DidiEndorsementStatus.ACCEPTED.ordinal -> {
-                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_selected_status_text))
+                            context.getString(R.string.vo_selected_status_text)
                         }
                         DidiEndorsementStatus.REJECTED.ordinal -> {
-                            context.getString(R.string.vo_endorsement_status_text).replace("{VO_STATUS}", context.getString(R.string.vo_rejected_status_text))
+                           context.getString(R.string.vo_rejected_status_text)
                         }
                         else -> {
-                            context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_selected_status_text))
+                            context.getString(R.string.pat_selected_status_text)
                         }
                     }
                 } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                     context.getString(R.string.pat_not_available_status_text)
                 } else {
-                    context.getString(R.string.pat_completed_status_text).replace("{PAT_STATUS}", context.getString(R.string.pat_rejected_status_text))
+                    context.getString(R.string.pat_rejected_status_text)
                 }
             } else {
                 status = context.getString(R.string.wealth_ranking_status_complete_text)
                     .replace("{RANK}", getRankInLanguage(context, didi.wealth_ranking))
             }
         } else {
-            status = context.getString(R.string.wealth_ranking_status_not_started_text)
+            status = context.getString(R.string.social_mapping_complete_status_text)
         }
     }
 

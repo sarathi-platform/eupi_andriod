@@ -16,7 +16,6 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -86,7 +85,7 @@ fun ShowOptDialogForVillageScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
-                        text = "Session Expired!",
+                        text = stringResource(R.string.session_expired_dialog_title),
                         textAlign = TextAlign.Start,
                         style = buttonTextStyle,
                         maxLines = 1,
@@ -95,7 +94,7 @@ fun ShowOptDialogForVillageScreen(
                         modifier = Modifier.fillMaxWidth()
                     )
                     Text(
-                        text = "Please enter OTP to relogin",
+                        text = stringResource(R.string.session_epire_otp_message),
                         textAlign = TextAlign.Start,
                         style = smallTextStyleMediumWeight,
                         maxLines = 2,

@@ -180,7 +180,8 @@ data class DidiEntity(
                 bpcComment = selectedDidiEntity.bpcComment,
                 bpcScore = selectedDidiEntity.bpcScore,
                 crpScore = selectedDidiEntity.crpScore,
-                crpComment = selectedDidiEntity.crpComment
+                crpComment = selectedDidiEntity.crpComment,
+                crpUploadedImage = selectedDidiEntity.crpUploadedImage
             )
         }
         fun getDidiEntityFromNonSelectedDidiEntityForBpc(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): DidiEntity {
@@ -212,7 +213,8 @@ data class DidiEntity(
                 bpcComment = nonSelectedDidiEntity.bpcComment,
                 bpcScore = nonSelectedDidiEntity.bpcScore,
                 crpScore = nonSelectedDidiEntity.crpScore,
-                crpComment = nonSelectedDidiEntity.crpComment
+                crpComment = nonSelectedDidiEntity.crpComment,
+                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage
             )
         }
         fun getDidiEntityFromSelectedDidiEntityForCrp(selectedDidiEntity: BpcSelectedDidiEntity): DidiEntity {
@@ -242,7 +244,8 @@ data class DidiEntity(
                 bpcComment = selectedDidiEntity.bpcComment,
                 bpcScore = selectedDidiEntity.bpcScore,
                 crpScore = selectedDidiEntity.crpScore,
-                crpComment = selectedDidiEntity.crpComment
+                crpComment = selectedDidiEntity.crpComment,
+                crpUploadedImage = selectedDidiEntity.crpUploadedImage
             )
         }
     }

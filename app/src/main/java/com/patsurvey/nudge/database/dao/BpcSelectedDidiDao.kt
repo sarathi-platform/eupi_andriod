@@ -55,4 +55,7 @@ interface BpcSelectedDidiDao {
 
     @Query("SELECT COUNT(*) from $BPC_SELECTED_DIDI_TABLE where id = :didiId")
     fun isDidiAvailableInSelectedTable(didiId: Int): Int
+
+    @Query("UPDATE $BPC_SELECTED_DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
+    fun updateImageLocalPath(didiId: Int, localPath: String)
 }

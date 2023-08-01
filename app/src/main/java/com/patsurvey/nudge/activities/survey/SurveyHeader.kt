@@ -67,7 +67,6 @@ fun SurveyHeader(
                     .layoutId("surveyProgress"),
                 circleRadius = LocalDensity.current.run { 27.dp.toPx() },
                 initialPosition = answeredCount.coerceAtMost(viewModel?.maxQuesCount?.value?:0),
-                currentPosition = currentQuestion,
                 maxProgress = viewModel?.maxQuesCount?.value?:0,
                 borderThickness = 25.dp,
                 centerTextSize = 15.sp

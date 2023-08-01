@@ -247,50 +247,68 @@ object RetryHelper {
                     ApiType.STEP_LIST_API -> {
                         stepListApiVillageId.forEach { id ->
                             try {
-                                val response = apiService?.getStepsList(id)
-                                if (response?.status.equals(SUCCESS, true)) {
-                                    response?.data?.let {
+                                val localStepList = stepsListDao?.getAllStepsForVillage(id)
+                                if (localStepList?.isNullOrEmpty() == true) {
+                                    val response = apiService?.getStepsList(id)
+                                    if (response?.status.equals(SUCCESS, true)) {
+                                        response?.data?.let {
 
-                                        it.stepList.forEach { steps ->
-                                            steps.villageId = id
-                                            steps.isComplete =
-                                                findCompleteValue(steps.status).ordinal
+                                            it.stepList.forEach { steps ->
+                                                steps.villageId = id
+                                                steps.isComplete =
+                                                    findCompleteValue(steps.status).ordinal
 
-                                            if(steps.id == 40){
-                                                prefRepo?.savePref(
-                                                    PREF_TRANSECT_WALK_COMPLETION_DATE_ +id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                if (steps.id == 40) {
+                                                    prefRepo?.savePref(
+                                                        PREF_TRANSECT_WALK_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+
+                                                if (steps.id == 41) {
+                                                    prefRepo?.savePref(
+                                                        PREF_SOCIAL_MAPPING_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+
+                                                if (steps.id == 46) {
+                                                    prefRepo?.savePref(
+                                                        PREF_WEALTH_RANKING_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+
+                                                if (steps.id == 43) {
+                                                    prefRepo?.savePref(
+                                                        PREF_PAT_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+                                                if (steps.id == 44) {
+                                                    prefRepo?.savePref(
+                                                        PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+
                                             }
-
-                                            if(steps.id == 41){
-                                                prefRepo?.savePref(
-                                                    PREF_SOCIAL_MAPPING_COMPLETION_DATE_ +id, steps.localModifiedDate?: System.currentTimeMillis())
-                                            }
-
-                                            if(steps.id == 46){
-                                                prefRepo?.savePref(
-                                                    PREF_WEALTH_RANKING_COMPLETION_DATE_+id, steps.localModifiedDate?: System.currentTimeMillis())
-                                            }
-
-                                            if(steps.id == 43){
-                                                prefRepo?.savePref(
-                                                    PREF_PAT_COMPLETION_DATE_+id, steps.localModifiedDate?: System.currentTimeMillis())
-                                            }
-                                            if(steps.id == 44){
-                                                prefRepo?.savePref(
-                                                    PREF_VO_ENDORSEMENT_COMPLETION_DATE_+id, steps.localModifiedDate?: System.currentTimeMillis())
-                                            }
-
+                                            stepsListDao?.insertAll(it.stepList)
+                                            prefRepo?.savePref(
+                                                PREF_PROGRAM_NAME,
+                                                it.programName
+                                            )
                                         }
-                                        stepsListDao?.insertAll(it.stepList)
-                                        prefRepo?.savePref(
-                                            PREF_PROGRAM_NAME,
-                                            it.programName
-                                        )
+                                        retryApiList.remove(ApiType.STEP_LIST_API)
+                                    } else {
+                                        val ex = ApiResponseFailException(response?.message!!)
+                                        onCatchError(ex, ApiType.STEP_LIST_API)
                                     }
-                                    retryApiList.remove(ApiType.STEP_LIST_API)
-                                } else {
-                                    val ex = ApiResponseFailException(response?.message!!)
-                                    onCatchError(ex, ApiType.STEP_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.STEP_LIST_API)
@@ -301,16 +319,19 @@ object RetryHelper {
                     ApiType.TOLA_LIST_API -> {
                         stepListApiVillageId.forEach { id ->
                             try {
-                                val cohortResponse =
-                                    apiService?.getCohortFromNetwork(villageId = id)
-                                if (cohortResponse?.status.equals(SUCCESS, true)) {
-                                    cohortResponse?.data?.let {
-                                        tolaDao?.insertAll(it)
+                                val localCohortList = tolaDao?.getAllTolasForVillage(id) ?: listOf()
+                                if (localCohortList.isEmpty()) {
+                                    val cohortResponse =
+                                        apiService?.getCohortFromNetwork(villageId = id)
+                                    if (cohortResponse?.status.equals(SUCCESS, true)) {
+                                        cohortResponse?.data?.let {
+                                            tolaDao?.insertAll(it)
+                                        }
+                                        retryApiList.remove(ApiType.TOLA_LIST_API)
+                                    } else {
+                                        val ex = ApiResponseFailException(cohortResponse?.message!!)
+                                        onCatchError(ex, ApiType.TOLA_LIST_API)
                                     }
-                                    retryApiList.remove(ApiType.TOLA_LIST_API)
-                                } else {
-                                    val ex = ApiResponseFailException(cohortResponse?.message!!)
-                                    onCatchError(ex, ApiType.TOLA_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
@@ -321,77 +342,82 @@ object RetryHelper {
                     ApiType.DIDI_LIST_API -> {
                         stepListApiVillageId.forEach { id ->
                             try {
-                                val didiResponse =
-                                    apiService?.getDidisFromNetwork(villageId = id)
-                                if (didiResponse?.status.equals(SUCCESS, true)) {
-                                    didiResponse?.data?.let {
-                                        it.didiList.forEach { didi ->
-                                            var tolaName = BLANK_STRING
-                                            var casteName = BLANK_STRING
-                                            val singleTola =
-                                                tolaDao?.fetchSingleTola(didi.cohortId)
-                                            val singleCaste = castListDao?.getCaste(didi.castId,
-                                                prefRepo?.getAppLanguageId()?:2)
-                                            singleTola?.let {
-                                                tolaName = it.name
-                                            }
-                                            singleCaste?.let {
-                                                casteName = it.casteName
-                                            }
-                                            if (singleTola != null) {
-                                                val wealthRanking =
-                                                    if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.WEALTH_RANKING.name))
-                                                        didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                    else
-                                                        WealthRank.NOT_RANKED.rank
-                                                val patSurveyStatus =
-                                                    if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.PAT_SURVEY.name))
-                                                        PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                    else
-                                                        PatSurveyStatus.NOT_STARTED.ordinal
-                                                val voEndorsementStatus =
-                                                    if (didi.beneficiaryProcessStatus.map { it.name }
-                                                            .contains(StepType.VO_ENDROSEMENT.name))
-                                                        DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                            .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                    else
-                                                        DidiEndorsementStatus.NOT_STARTED.ordinal
-                                                didiDao?.insertDidi(
-                                                    DidiEntity(
-                                                        id = didi.id,
-                                                        serverId = didi.id,
-                                                        name = didi.name,
-                                                        address = didi.address,
-                                                        guardianName = didi.guardianName,
-                                                        relationship = didi.relationship,
-                                                        castId = didi.castId,
-                                                        castName = casteName,
-                                                        cohortId = didi.cohortId,
-                                                        villageId = id,
-                                                        cohortName = tolaName,
-                                                        needsToPost = false,
-                                                        wealth_ranking = wealthRanking,
-                                                        patSurveyStatus = patSurveyStatus,
-                                                        voEndorsementStatus = voEndorsementStatus,
-                                                        needsToPostRanking = false,
-                                                        createdDate = didi.createdDate,
-                                                        modifiedDate = didi.modifiedDate,
-                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.NOT_MARKED.value,
-                                                        transactionId = ""
-                                                    )
+                                val localDidiList = didiDao?.getAllDidisForVillage(id) ?: listOf()
+                                if (localDidiList.isEmpty()) {
+                                    val didiResponse =
+                                        apiService?.getDidisFromNetwork(villageId = id)
+                                    if (didiResponse?.status.equals(SUCCESS, true)) {
+                                        didiResponse?.data?.let {
+                                            it.didiList.forEach { didi ->
+                                                var tolaName = BLANK_STRING
+                                                var casteName = BLANK_STRING
+                                                val singleTola =
+                                                    tolaDao?.fetchSingleTola(didi.cohortId)
+                                                val singleCaste = castListDao?.getCaste(
+                                                    didi.castId,
+                                                    prefRepo?.getAppLanguageId() ?: 2
                                                 )
+                                                singleTola?.let {
+                                                    tolaName = it.name
+                                                }
+                                                singleCaste?.let {
+                                                    casteName = it.casteName
+                                                }
+                                                if (singleTola != null) {
+                                                    val wealthRanking =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.WEALTH_RANKING.name))
+                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                        else
+                                                            WealthRank.NOT_RANKED.rank
+                                                    val patSurveyStatus =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.PAT_SURVEY.name))
+                                                            PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                        else
+                                                            PatSurveyStatus.NOT_STARTED.ordinal
+                                                    val voEndorsementStatus =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.VO_ENDROSEMENT.name))
+                                                            DidiEndorsementStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.PAT_SURVEY.name)].status)
+                                                        else
+                                                            DidiEndorsementStatus.NOT_STARTED.ordinal
+                                                    didiDao?.insertDidi(
+                                                        DidiEntity(
+                                                            id = didi.id,
+                                                            serverId = didi.id,
+                                                            name = didi.name,
+                                                            address = didi.address,
+                                                            guardianName = didi.guardianName,
+                                                            relationship = didi.relationship,
+                                                            castId = didi.castId,
+                                                            castName = casteName,
+                                                            cohortId = didi.cohortId,
+                                                            villageId = id,
+                                                            cohortName = tolaName,
+                                                            needsToPost = false,
+                                                            wealth_ranking = wealthRanking,
+                                                            patSurveyStatus = patSurveyStatus,
+                                                            voEndorsementStatus = voEndorsementStatus,
+                                                            needsToPostRanking = false,
+                                                            createdDate = didi.createdDate,
+                                                            modifiedDate = didi.modifiedDate,
+                                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                            shgFlag = SHGFlag.NOT_MARKED.value,
+                                                            transactionId = ""
+                                                        )
+                                                    )
+                                                }
                                             }
-                                        }
 
+                                        }
+                                    } else {
+                                        val ex = ApiResponseFailException(didiResponse?.message!!)
+                                        onCatchError(ex, ApiType.DIDI_LIST_API)
                                     }
-                                } else {
-                                    val ex = ApiResponseFailException(didiResponse?.message!!)
-                                    onCatchError(ex, ApiType.DIDI_LIST_API)
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.DIDI_LIST_API)
@@ -453,35 +479,39 @@ object RetryHelper {
                     ApiType.PAT_CRP_QUESTION_API -> {
                         crpPatQuestionApiLanguageId.forEach { id ->
                             try {
-                                val quesListResponse = apiService?.fetchQuestionListFromServer(
-                                    GetQuestionListRequest(
-                                        id,
-                                        stateId,
-                                        PAT_SURVEY_CONSTANT
+                                val localQuestionList = questionDao?.getAllQuestionsForLanguage(id) ?: listOf()
+                                if (localQuestionList.isEmpty()) {
+                                    val quesListResponse = apiService?.fetchQuestionListFromServer(
+                                        GetQuestionListRequest(
+                                            id,
+                                            stateId,
+                                            PAT_SURVEY_CONSTANT
+                                        )
                                     )
-                                )
-                                if (quesListResponse?.status.equals(SUCCESS, true)) {
-                                    quesListResponse?.data?.let { questionList ->
-                                        questionList.listOfQuestionSectionList?.forEach { list ->
-                                            list?.questionList?.forEach { question ->
-                                                question?.sectionOrderNumber = list.orderNumber
-                                                question?.actionType = list.actionType
-                                                question?.languageId = id
-                                                question?.surveyId = questionList.surveyId
-                                                question?.thresholdScore =
-                                                    questionList.thresholdScore
-                                                question?.surveyPassingMark =
-                                                    questionList.surveyPassingMark
-                                            }
-                                            list?.questionList?.let {
-                                                questionDao?.insertAll(it as List<QuestionEntity>)
+                                    if (quesListResponse?.status.equals(SUCCESS, true)) {
+                                        quesListResponse?.data?.let { questionList ->
+                                            questionList.listOfQuestionSectionList?.forEach { list ->
+                                                list?.questionList?.forEach { question ->
+                                                    question?.sectionOrderNumber = list.orderNumber
+                                                    question?.actionType = list.actionType
+                                                    question?.languageId = id
+                                                    question?.surveyId = questionList.surveyId
+                                                    question?.thresholdScore =
+                                                        questionList.thresholdScore
+                                                    question?.surveyPassingMark =
+                                                        questionList.surveyPassingMark
+                                                }
+                                                list?.questionList?.let {
+                                                    questionDao?.insertAll(it as List<QuestionEntity>)
+                                                }
                                             }
                                         }
+                                        retryApiList.remove(ApiType.PAT_CRP_QUESTION_API)
+                                    } else {
+                                        val ex =
+                                            ApiResponseFailException(quesListResponse?.message!!)
+                                        onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
                                     }
-                                    retryApiList.remove(ApiType.PAT_CRP_QUESTION_API)
-                                } else {
-                                    val ex = ApiResponseFailException(quesListResponse?.message!!)
-                                    onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.PAT_CRP_QUESTION_API)
@@ -614,11 +644,28 @@ object RetryHelper {
                                         }
 
                                     }
+
                                     if (answerList.isNotEmpty()) {
-                                        answerDao?.insertAll(answerList)
+                                        answerList.forEach { sectionAnswerEntity ->
+                                            val localAnswersForDidi = answerDao?.isQuestionAnswered(sectionAnswerEntity.didiId, sectionAnswerEntity.questionId) ?: 0
+                                            if (localAnswersForDidi == 0) {
+                                                answerDao?.insertAnswer(sectionAnswerEntity)
+                                            }
+
+                                        }
+//                                        answerDao?.insertAll(answerList)
                                     }
                                     if (numAnswerList.isNotEmpty()) {
-                                        numericAnswerDao?.insertAll(numAnswerList)
+                                        numAnswerList.forEach { numericAnswerEntity ->
+                                            val localNumericAnswer = numericAnswerDao?.isNumericQuestionAnswered(numericAnswerEntity.questionId, numericAnswerEntity.optionId, numericAnswerEntity.didiId)
+                                            if (localNumericAnswer == 0) {
+                                                numericAnswerDao?.insertNumericOption(
+                                                    numericAnswerEntity
+                                                )
+                                            }
+
+                                        }
+//                                        numericAnswerDao?.insertAll(numAnswerList)
                                     }
                                 }
                             } else {

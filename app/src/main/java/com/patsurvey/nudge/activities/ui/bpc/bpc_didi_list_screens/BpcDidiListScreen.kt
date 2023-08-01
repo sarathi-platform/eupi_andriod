@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens
 
+import android.net.Uri
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -45,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -63,9 +65,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.google.gson.Gson
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -93,6 +95,7 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import kotlinx.coroutines.delay
+import java.io.File
 
 @Composable
 fun BpcDidiListScreen(
@@ -382,6 +385,7 @@ fun DidiItemCardForBpc(
                 val constraintSet = decoupledConstraints()
                 ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                     CircularDidiImage(
+                        didi = didi,
                         modifier = Modifier.layoutId("didiImage")
                     )
                     Box(
@@ -702,5 +706,46 @@ private fun decoupledConstraints(): ConstraintSet {
             bottom.linkTo(village.bottom)
             start.linkTo(didiName.start)
         }
+    }
+}
+
+@Composable
+fun CircularDidiImage(didi: BpcSelectedDidiEntity, modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .then(modifier)
+            .clip(CircleShape)
+            .width(44.dp)
+            .height(44.dp)
+            .background(color = yellowBg),
+    ) {
+        if (didi.localPath.isNotEmpty()) {
+            Image(
+                painter = rememberImagePainter(
+                    Uri.fromFile(
+                        File(
+                            didi.localPath.split("|")[0]
+                        )
+                    )
+                ),
+                contentDescription = "didi image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.didi_icon),
+                contentDescription = "didi image",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        }
+
     }
 }

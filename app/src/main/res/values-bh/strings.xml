@@ -377,5 +377,16 @@
     <string name="cannot_delete_tola_message_text">इस टोले को हटाया नहीं जा सकता क्योंकि इसमें दीदियों को नियुक्त किया गया है</string>
     <string name="heading_value_of_other_productive_assests">अन्य उत्पादक संपत्तियों का मूल्य</string>
     <string name="heading_earning_ration">कमाई का अनुपात</string>
+    <string name="session_expired_dialog_title">सत्र समाप्त हुआ!</string>
+    <string name="session_epire_otp_message">पुनः लॉगिन करने के लिए कृपया ओटीपी दर्ज करें।</string>
+    <string name="session_restored_message">सत्र बहाल</string>
+    <string name="location_permission_not_granted_message">स्थान की अनुमति नहीं दी गई</string>
+    <string name="common_error_message_text">कोई नेटवर्क उपलब्ध नहीं</string>
+    <string name="wealth_ranking_summary_empty_text">किसी भी दीदी को {CATEGORY} के रूप में चिह्नित नहीं किया गया</string>
+    <string name="pat_summary_not_available_empty_text">किसी भी दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया था</string>
+    <string name="pat_summary_completed_empty_text">किसी भी का दीदी जिसका PAT पूरा हो गया है</string>
+    <string name="vo_summary_rejected_empty_text">किसी भी दीदी को वीओ ने अस्वीकार नहीं किया है</string>
+    <string name="vo_summary_endorsed_empty_text">वीओ द्वारा किसी दीदी का समर्थन नहीं किया गया है</string>
+    <string name="social_mapping_complete_status_text">সামাজিক ম্যাপিং সম্পন্ন</string>
 
 </resources>

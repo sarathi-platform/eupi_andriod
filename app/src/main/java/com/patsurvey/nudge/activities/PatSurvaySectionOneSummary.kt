@@ -151,7 +151,7 @@ fun PatSurvaySectionSummaryScreen(
                         .fillMaxWidth()
                 )
 
-                PatSummeryScreenDidiDetailBox(
+                PatSummeryScreenDidiDetailBoxForSectionOne(
                     modifier = Modifier,
                     screenHeight = screenHeight,
                     didi = didi.value
@@ -258,7 +258,7 @@ fun PatSurvaySectionSummaryScreen(
 }
 
 @Composable
-fun PatSummeryScreenDidiDetailBox(
+fun PatSummeryScreenDidiDetailBoxForSectionOne(
     modifier: Modifier = Modifier,
     screenHeight: Int,
     didi: DidiEntity
@@ -348,7 +348,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
    val didi=DidiEntity(0,0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value)
-    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
+    PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi)
 }
 
 @OptIn(ExperimentalGlideComposeApi::class)
