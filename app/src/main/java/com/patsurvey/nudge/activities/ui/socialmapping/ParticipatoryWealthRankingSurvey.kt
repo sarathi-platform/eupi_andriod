@@ -249,7 +249,7 @@ fun ParticipatoryWealthRankingSurvey(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = 2.dp, horizontal = 4.dp)
                 ) {
                     Text(
                         text =
@@ -265,7 +265,7 @@ fun ParticipatoryWealthRankingSurvey(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = 2.dp, horizontal = 4.dp)
                 ) {
                     var count: Int = if (showDidiListForRank.first) {
                         when (showDidiListForRank.second) {
@@ -301,7 +301,7 @@ fun ParticipatoryWealthRankingSurvey(
                     )
                 }
 
-                AnimatedVisibility(visible = showDidiListForRank.first) {
+                AnimatedVisibility(visible = showDidiListForRank.first, modifier = Modifier.padding(horizontal = 4.dp)) {
 
                     Box(
                         modifier = Modifier
@@ -364,7 +364,8 @@ fun ParticipatoryWealthRankingSurvey(
                 }
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     WealthRankingBox(
                         count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,

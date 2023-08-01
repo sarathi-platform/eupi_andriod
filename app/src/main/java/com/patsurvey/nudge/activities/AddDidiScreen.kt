@@ -78,7 +78,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                 .fillMaxWidth()
                 .verticalScroll(rememberScrollState())
                 .weight(1f)
-                .padding(bottom = 20.dp),
+                .padding(bottom = 20.dp)
+                .padding(horizontal = 4.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             MainTitle(
