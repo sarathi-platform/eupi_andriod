@@ -115,7 +115,7 @@ class PatSectionSummaryViewModel @Inject constructor(
         return summary
     }
 
-    fun getOptionForLanguage(questionId : Int,optionId : Int) : String{
+    fun getOptionForLanguage(questionId : Int,optionId : Int, answerValue:String) : String{
         var optionText = ""
         for(question in languageQuestionList){
             if(question.questionId == questionId) {
@@ -123,6 +123,11 @@ class PatSectionSummaryViewModel @Inject constructor(
                     if(option.optionId == optionId) {
                         optionText = option.summary.toString()
                         break
+                    } else if(optionId == 0){
+                      if(question.type.equals(QuestionType.Numeric_Field.name,true)){
+                          optionText=answerValue
+                          break
+                        }
                     }
                 }
             }

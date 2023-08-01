@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -118,6 +119,10 @@ fun QuestionScreen(
         mutableStateOf(0)
     }
 
+    val eventToPageChange = remember {
+        mutableStateOf(false)
+    }
+
     LaunchedEffect(key1 = Unit, key2 = !questionList.isNullOrEmpty()) {
         try {
             delay(100)
@@ -156,6 +161,11 @@ fun QuestionScreen(
         }
     }
 
+    if(eventToPageChange.value){
+        if(pagerState.currentPage == questionList.size-1){
+            viewModel.nextButtonVisible.value=false
+        }else viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+    }
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(top = 14.dp)) {
@@ -187,6 +197,7 @@ fun QuestionScreen(
                 )
                 answeredQuestion.value = answerList.size
                 viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
+                eventToPageChange.value=false
                HorizontalPager(
                     pageCount = questionList.size,
                     state = pagerState,
@@ -226,17 +237,6 @@ fun QuestionScreen(
                                         ),
                                 )
                             }
-                            /*else {
-                                Image(
-                                    painter = painterResource(id = R.drawable.pat_sample_icon),
-                                    contentDescription = "home image",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .width(*//*dimensionResource(id = R.dimen.ques_image_width)*//*60.dp)
-                                        .height(*//*dimensionResource(id = R.dimen.ques_image_width)*//*60.dp),
-                                    colorFilter = ColorFilter.tint(textColorDark)
-                                )
-                            }*/
                         }
                     }
                         Spacer(modifier = Modifier.height(10.dp))
@@ -285,9 +285,8 @@ fun QuestionScreen(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
-                                                    delay(250)
-                                                    viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-
+                                            }.invokeOnCompletion {
+                                                eventToPageChange.value=true
                                             }
 
                                         } else {
@@ -298,6 +297,8 @@ fun QuestionScreen(
                                             )
                                         }
                                     }, 250)
+
+
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
@@ -335,6 +336,9 @@ fun QuestionScreen(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
+                                            }.invokeOnCompletion {
+                                                viewModel.isQuestionChange.value=true
+                                                eventToPageChange.value=true
                                             }
                                         } else {
                                             navigateToSummeryPage(
@@ -355,10 +359,10 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
-                                showNextButton = !viewModel.nextButtonVisible.value,
+                                showNextButton = !viewModel.nextButtonVisible.value ,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
-                            ){
+                            ){ value->
                                 val newAnswerOptionModel= OptionsItem( display = (if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
                                 else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
                                     BLANK_STRING)
@@ -375,31 +379,33 @@ fun QuestionScreen(
                                     enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) BLANK_STRING else viewModel.enteredAmount.value,
                                     questionFlag = questionList[it].questionFlag ?: QUESTION_FLAG_WEIGHT
                                 ) {
-                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size)) {
-                                            selQuesIndex.value=selQuesIndex.value+1
-                                            answeredQuestion.value = answeredQuestion.value + 1
-                                            val nextPageIndex = pagerState.currentPage + 1
-                                            viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                                            coroutineScope.launch {
-//                                                viewModel.calculateTotalAmount(pagerState.currentPage)
-                                                pagerState.animateScrollToPage(
-                                                    nextPageIndex
+                                    if(value == 1) {
+                                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                            if (answeredQuestion.value < (questionList.size)) {
+                                                selQuesIndex.value = selQuesIndex.value + 1
+                                                answeredQuestion.value = answeredQuestion.value + 1
+                                                val nextPageIndex = pagerState.currentPage + 1
+                                                viewModel.findListTypeSelectedAnswer(
+                                                    pagerState.currentPage,
+                                                    didiId
+                                                )
+                                                coroutineScope.launch {
+                                                    pagerState.animateScrollToPage(
+                                                        nextPageIndex
+                                                    )
+                                                }.invokeOnCompletion {
+                                                    viewModel.isQuestionChange.value=true
+                                                    eventToPageChange.value = true
+                                                }
+                                            } else {
+                                                navigateToSummeryPage(
+                                                    navController,
+                                                    didiId,
+                                                    viewModel
                                                 )
                                             }
-                                        } else {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
-                                        }
-                                    }, 250)
-                                }
-                                coroutineScope.launch {
-                                    delay(250)
-                                    viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-
+                                        }, 250)
+                                    }
                                 }
                             }
                         }
@@ -430,12 +436,6 @@ fun QuestionScreen(
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
-
-                    coroutineScope.launch {
-                        delay(250)
-                        viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
-
-                    }
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
                         /*&& questionList[pagerState.currentPage].questionFlag.equals(
                             QUESTION_FLAG_WEIGHT,true)*/){
@@ -455,9 +455,12 @@ fun QuestionScreen(
                             enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
                             questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
-                            coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(prevPageIndex)
+                            }.invokeOnCompletion {  eventToPageChange.value=true  }
                         }
-                    }else coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                    }else coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }.invokeOnCompletion {
+                        eventToPageChange.value=true   }
                 },
                 text = {
                     Image(
@@ -482,27 +485,19 @@ fun QuestionScreen(
             )
         }
 
-
         //Next Ques Button
-        AnimatedVisibility(visible =  viewModel.nextButtonVisible.value, modifier = Modifier
-            .padding(all = 16.dp)
-            .visible( viewModel.nextButtonVisible.value)
-            .padding(bottom = 25.dp)
-            .align(alignment = Alignment.BottomEnd)) {
-            viewModel.nextCTAVisibility.value=viewModel.nextButtonVisible.value
+        if(viewModel.nextButtonVisible.value){
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
                     .visible(viewModel.nextButtonVisible.value)
-                    .align(alignment = Alignment.BottomEnd),
+                    .align(alignment = Alignment.BottomEnd)
+                    .shadow(0.dp)
+                    .padding(bottom = 40.dp),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
-                    coroutineScope.launch {
-                        delay(250)
-                        viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
 
-                    }
                     viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
@@ -524,10 +519,15 @@ fun QuestionScreen(
                             enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
                             questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
-                            coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                            coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
+                                viewModel.isQuestionChange.value = true
+                                eventToPageChange.value=true
+                            }
                         }
                     } else {
-                        coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                        coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
+                            viewModel.isQuestionChange.value = true
+                            eventToPageChange.value=true }
                     }
                 },
                 text = {
@@ -551,6 +551,14 @@ fun QuestionScreen(
                 },
             )
         }
+        /*AnimatedVisibility(visible =  viewModel.nextButtonVisible.value, modifier = Modifier
+            .padding(all = 16.dp)
+            .visible(viewModel.nextButtonVisible.value)
+            .padding(bottom = 25.dp)
+            .align(alignment = Alignment.BottomEnd)) {
+            viewModel.nextCTAVisibility.value=viewModel.nextButtonVisible.value
+
+        }*/
     }
 }
 

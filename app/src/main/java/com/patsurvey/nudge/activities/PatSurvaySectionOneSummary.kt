@@ -91,6 +91,14 @@ fun PatSurvaySectionSummaryScreen(
         BackHandler {
             navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
         }
+    }else{
+        BackHandler {
+            if(patSectionSummaryViewModel.didiEntity.value.section1Status != PatSurveyStatus.COMPLETED.ordinal) {
+                if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                    navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
+                else navController.popBackStack()
+            }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }
     }
 
     ConstraintLayout(
@@ -185,7 +193,7 @@ fun PatSurvaySectionSummaryScreen(
                            answerValue = answer?.questionId?.let {
                                answer.optionId?.let { it1 ->
                                    patSectionSummaryViewModel.getOptionForLanguage(
-                                       it, it1
+                                       it, it1, BLANK_STRING
                                    )
                                }
                            } ?: BLANK_STRING,

@@ -57,6 +57,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.survey.QuestionScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
@@ -1110,21 +1111,36 @@ fun DidiItemCard(
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
 
-                            if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
-                                || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
-                                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
-                                    didiMarkedNotAvailable.value = false
-                                }
-                                navController.navigate("didi_pat_summary/${didi.id}")
+                            didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
+                                if(navigationValue == 1){
+                                       didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                                        navigateToSummeryPage(navController,1,didi.id,didiViewModel)
 
-                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
-                                val quesIndex=0
-                                didiViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
-                                if (didi.section1Status == 0 || didi.section1Status == 1)
-                                    navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
-                                else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.isExclusionYesSelected == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
-                                else if(didi.section1Status == 2 && didi.isExclusionYesSelected ==1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                }else if(navigationValue == 2){
+                                    didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                                       navigateToSummeryPage(navController,2,didi.id,didiViewModel)
+
+                                }else{
+                                    if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                                        || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                        if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                            didiMarkedNotAvailable.value = false
+                                        }
+                                        navController.navigate("didi_pat_summary/${didi.id}")
+
+                                    } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
+                                        val quesIndex=0
+                                        didiViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        if (didi.section1Status == 0 || didi.section1Status == 1)
+                                            navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.isExclusionYesSelected == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                        else if(didi.section1Status == 2 && didi.isExclusionYesSelected ==1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                    }
+                                }
+
                             }
+
                         }
                     }
                 }
@@ -1421,4 +1437,18 @@ fun SocialMappingDidiListPreview() {
         -1,
         -1
     )
+
+
+}
+fun navigateToSummeryPage(navController: NavHostController, section:Int,didiId: Int,didiViewModel: AddDidiViewModel) {
+    if(section == 1){
+        if(didiViewModel.prefRepo.isUserBPC())
+            navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
+        else navController.navigate("pat_section_one_summary_screen/$didiId")
+    }else{
+        if(didiViewModel.prefRepo.isUserBPC())
+            navController.navigate("bpc_pat_section_two_summary_screen/$didiId")
+        else  navController.navigate("pat_section_two_summary_screen/$didiId")
+
+    }
 }

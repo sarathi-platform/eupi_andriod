@@ -15,6 +15,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
@@ -88,6 +89,7 @@ class VoEndorsementSummaryViewModel @Inject constructor(
     val quesList: StateFlow<List<QuestionEntity>> get() = _quesList
 
     val voEndorsementStatus = mutableStateOf(StepStatus.INPROGRESS.ordinal)
+    private var languageQuestionList = listOf<QuestionEntity>()
 
     val selPageIndex = mutableStateOf(0)
     val quesImageUrl= mutableStateOf(BLANK_STRING)
@@ -101,7 +103,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             voEndorsementStatus.value = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
             withContext(Dispatchers.IO){
                  selPageIndex.value= localDidiList.map { it.id }.indexOf(didiId)
-                _quesList.emit((localQuesList))
+                languageQuestionList=localQuesList
+                _quesList.emit(localQuesList)
                 _didiEntity.emit(localDidiDetails)
                 _didiList.emit(localDidiList)
             }
@@ -177,5 +180,25 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         NudgeLogger.e("VoEndorsementSummaryViewModel", "onServerError -> errorMessage: ${errorModel?.message}, api: ${errorModel?.apiName}")
+    }
+
+    fun getOptionForLanguage(questionId : Int,optionId : Int, answerValue:String) : String{
+        var optionText = ""
+        for(question in languageQuestionList){
+            if(question.questionId == questionId) {
+                for (option in question.options){
+                    if(option.optionId == optionId) {
+                        optionText = option.summary.toString()
+                        break
+                    } else if(optionId == 0){
+                        if(question.type.equals(QuestionType.Numeric_Field.name,true)){
+                            optionText=answerValue
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        return optionText
     }
 }
