@@ -32,6 +32,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -336,6 +337,7 @@ fun QuestionScreen(
                                                 )
                                                 viewModel.isAnswerSelected.value=false
                                             }.invokeOnCompletion {
+                                                viewModel.isQuestionChange.value=true
                                                 eventToPageChange.value=true
                                             }
                                         } else {
@@ -357,11 +359,10 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
-                                showNextButton = if(questionList[it].questionFlag.equals(
-                                        QUESTION_FLAG_WEIGHT)) !viewModel.nextButtonVisible.value else false,
+                                showNextButton = !viewModel.nextButtonVisible.value ,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
-                            ){
+                            ){ value->
                                 val newAnswerOptionModel= OptionsItem( display = (if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
                                 else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
                                     BLANK_STRING)
@@ -378,28 +379,33 @@ fun QuestionScreen(
                                     enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) BLANK_STRING else viewModel.enteredAmount.value,
                                     questionFlag = questionList[it].questionFlag ?: QUESTION_FLAG_WEIGHT
                                 ) {
-                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
-                                        if (answeredQuestion.value < (questionList.size)) {
-                                            selQuesIndex.value=selQuesIndex.value+1
-                                            answeredQuestion.value = answeredQuestion.value + 1
-                                            val nextPageIndex = pagerState.currentPage + 1
-                                            viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                                            coroutineScope.launch {
-//                                                viewModel.calculateTotalAmount(pagerState.currentPage)
-                                                pagerState.animateScrollToPage(
-                                                    nextPageIndex
+                                    if(value == 1) {
+                                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                            if (answeredQuestion.value < (questionList.size)) {
+                                                selQuesIndex.value = selQuesIndex.value + 1
+                                                answeredQuestion.value = answeredQuestion.value + 1
+                                                val nextPageIndex = pagerState.currentPage + 1
+                                                viewModel.findListTypeSelectedAnswer(
+                                                    pagerState.currentPage,
+                                                    didiId
                                                 )
-                                            }.invokeOnCompletion {
-                                                eventToPageChange.value=true
+                                                coroutineScope.launch {
+                                                    pagerState.animateScrollToPage(
+                                                        nextPageIndex
+                                                    )
+                                                }.invokeOnCompletion {
+                                                    viewModel.isQuestionChange.value=true
+                                                    eventToPageChange.value = true
+                                                }
+                                            } else {
+                                                navigateToSummeryPage(
+                                                    navController,
+                                                    didiId,
+                                                    viewModel
+                                                )
                                             }
-                                        } else {
-                                            navigateToSummeryPage(
-                                                navController,
-                                                didiId,
-                                                viewModel
-                                            )
-                                        }
-                                    }, 250)
+                                        }, 250)
+                                    }
                                 }
                             }
                         }
@@ -479,19 +485,15 @@ fun QuestionScreen(
             )
         }
 
-
         //Next Ques Button
-        AnimatedVisibility(visible =  viewModel.nextButtonVisible.value, modifier = Modifier
-            .padding(all = 16.dp)
-            .visible(viewModel.nextButtonVisible.value)
-            .padding(bottom = 25.dp)
-            .align(alignment = Alignment.BottomEnd)) {
-            viewModel.nextCTAVisibility.value=viewModel.nextButtonVisible.value
+        if(viewModel.nextButtonVisible.value){
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
                     .visible(viewModel.nextButtonVisible.value)
-                    .align(alignment = Alignment.BottomEnd),
+                    .align(alignment = Alignment.BottomEnd)
+                    .shadow(0.dp)
+                    .padding(bottom = 40.dp),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
@@ -518,10 +520,13 @@ fun QuestionScreen(
                             questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
                             coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
-                                eventToPageChange.value=true }
+                                viewModel.isQuestionChange.value = true
+                                eventToPageChange.value=true
+                            }
                         }
                     } else {
                         coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
+                            viewModel.isQuestionChange.value = true
                             eventToPageChange.value=true }
                     }
                 },
@@ -546,6 +551,14 @@ fun QuestionScreen(
                 },
             )
         }
+        /*AnimatedVisibility(visible =  viewModel.nextButtonVisible.value, modifier = Modifier
+            .padding(all = 16.dp)
+            .visible(viewModel.nextButtonVisible.value)
+            .padding(bottom = 25.dp)
+            .align(alignment = Alignment.BottomEnd)) {
+            viewModel.nextCTAVisibility.value=viewModel.nextButtonVisible.value
+
+        }*/
     }
 }
 

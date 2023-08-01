@@ -62,6 +62,7 @@ class QuestionScreenViewModel @Inject constructor(
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
     val nextButtonVisible= mutableStateOf(false)
+    val isQuestionChange= mutableStateOf(false)
     val listTypeAnswerIndex = mutableStateOf(-1)
     val maxQuesCount = mutableStateOf(0)
     val answeredCount = mutableStateOf(0)
@@ -187,7 +188,9 @@ class QuestionScreenViewModel @Inject constructor(
     }
 
     fun setAnswerToQuestion(
-        didiId: Int, questionId: Int, answerOptionModel: OptionsItem,
+        didiId: Int,
+        questionId: Int,
+        answerOptionModel: OptionsItem,
         assetAmount: Double,
         enteredAssetAmount: String,
         quesType: String,
@@ -261,7 +264,8 @@ class QuestionScreenViewModel @Inject constructor(
     fun updateNumericAnswer(
         numericAnswer: NumericAnswerEntity,
         index: Int,
-        optionList: List<OptionsItem>
+        optionList: List<OptionsItem>,
+        onUpdateTotalAmount:()->Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -285,7 +289,11 @@ class QuestionScreenViewModel @Inject constructor(
                     val totalMemberCount=calculateCountWeight(optionList[0])
                     if(earningMemberCount>0 && totalMemberCount>0){
                         totalAmount.value = roundOffDecimal(earningMemberCount/totalMemberCount)?:0.00
-                    }else totalAmount.value=0.00
+                        onUpdateTotalAmount()
+                    }else {
+                        totalAmount.value=0.00
+                        onUpdateTotalAmount()
+                    }
                 }else{
                     val amountList = numericAnswerDao.getTotalAssetAmount(numericAnswer.questionId,numericAnswer.didiId)
                     if(amountList.isNotEmpty() && amountList.size>0){
@@ -294,7 +302,9 @@ class QuestionScreenViewModel @Inject constructor(
                             amt += it
                         }
                         totalAmount.value = amt.toDouble()
+                        onUpdateTotalAmount()
                     }
+                     Log.d("TAG", "updateNumericAnswer totalAmount: ${totalAmount.value}")
                 }
 
 

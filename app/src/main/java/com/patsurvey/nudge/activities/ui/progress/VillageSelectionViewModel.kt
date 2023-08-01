@@ -7,6 +7,7 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -102,10 +103,14 @@ import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -253,25 +258,26 @@ class VillageSelectionViewModel @Inject constructor(
 
     private fun fetchDataForBpc() {
         showLoader.value = true
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
-                val localStepsList = stepsListDao.getAllSteps()
-                val localLanguageList = languageListDao.getAllLanguages()
-                val villageIdList: ArrayList<Int> = arrayListOf()
+        job = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler){
+            val awaitDeff= CoroutineScope(Dispatchers.IO).async {
+                try {
+                    val villageList =
+                        villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
+                    val localStepsList = stepsListDao.getAllSteps()
+                    val localLanguageList = languageListDao.getAllLanguages()
+                    val villageIdList: ArrayList<Int> = arrayListOf()
 
-                val localAnswerList = answerDao.getAllAnswer()
-                if (localAnswerList.isNotEmpty()) {
-                    answerDao.deleteAnswerTable()
-                }
-                val localNumAnswerList = numericAnswerDao.getAllNumericAnswers()
-                if (localNumAnswerList.isNotEmpty()) {
-                    numericAnswerDao.deleteNumericTable()
-                }
-                villageList.forEach { village ->
-                    villageIdList.add(village.id)
+                    val localAnswerList = answerDao.getAllAnswer()
+                    if (localAnswerList.isNotEmpty()) {
+                        answerDao.deleteAnswerTable()
+                    }
+                    val localNumAnswerList = numericAnswerDao.getAllNumericAnswers()
+                    if (localNumAnswerList.isNotEmpty()) {
+                        numericAnswerDao.deleteNumericTable()
+                    }
+                    villageList.forEach { village ->
+                        villageIdList.add(village.id)
 
-                    launch {
                         stateId.value = village.stateId
                         RetryHelper.stateId = stateId.value
                         try {
@@ -289,9 +295,12 @@ class VillageSelectionViewModel @Inject constructor(
 //                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
 //                                            }
 
-                                            if(steps.id == 45){
+                                            if (steps.id == 45) {
                                                 prefRepo.savePref(
-                                                    PREF_BPC_PAT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                                    PREF_BPC_PAT_COMPLETION_DATE_ + village.id,
+                                                    steps.localModifiedDate
+                                                        ?: System.currentTimeMillis()
+                                                )
                                             }
 //                                            if(steps.id == 44){
 //                                                prefRepo.savePref(
@@ -595,14 +604,24 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
                                                                             )?.optionValue) else 0,
-                                                                            totalAssetAmount = if(quesDetails?.questionFlag.equals(
-                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
-                                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
-                                                                            ) ,
+                                                                            totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT
+                                                                                )
+                                                                            ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                                formatRatio(
+                                                                                    answersItem?.ratio
+                                                                                        ?: DOUBLE_ZERO
+                                                                                )
+                                                                            ),
                                                                             needsToPost = false,
-                                                                            answerValue = (if(quesDetails?.questionFlag.equals(
-                                                                                    QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(
-                                                                                formatRatio(answersItem?.ratio?: DOUBLE_ZERO)
+                                                                            answerValue = (if (quesDetails?.questionFlag.equals(
+                                                                                    QUESTION_FLAG_WEIGHT
+                                                                                )
+                                                                            ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                                formatRatio(
+                                                                                    answersItem?.ratio
+                                                                                        ?: DOUBLE_ZERO
+                                                                                )
                                                                             )).toString(),
                                                                             type = answersItem?.questionType
                                                                                 ?: QuestionType.RadioButton.name,
@@ -629,7 +648,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                         ?: 0,
                                                                                     count = optionItem?.count
                                                                                         ?: 0,
-                                                                                    optionValue = optionItem?.optionValue ?: 0
+                                                                                    optionValue = optionItem?.optionValue
+                                                                                        ?: 0
                                                                                 )
                                                                             )
                                                                         }
@@ -656,8 +676,15 @@ class VillageSelectionViewModel @Inject constructor(
                                                                         optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                             0
                                                                         )?.optionValue) else 0,
-                                                                        totalAssetAmount = if(quesDetails?.questionFlag.equals(
-                                                                                QUESTION_FLAG_WEIGHT)) answersItem?.totalWeight?.toDouble() else stringToDouble(formatRatio(answersItem?.ratio?:DOUBLE_ZERO)),
+                                                                        totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                                                                                QUESTION_FLAG_WEIGHT
+                                                                            )
+                                                                        ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                                            formatRatio(
+                                                                                answersItem?.ratio
+                                                                                    ?: DOUBLE_ZERO
+                                                                            )
+                                                                        ),
                                                                         needsToPost = false,
                                                                         answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                             0
@@ -722,27 +749,29 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
                         }
+
+                        prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
+                        prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, true)
                     }
-                    prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, true)
-                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, true)
-                }
 
-            } catch (ex: Exception) {
-                NudgeLogger.e("VillageSelectionViewModel", "fetchDataForBpc -> onCatchError", ex)
-                onCatchError(ex, ApiType.FETCH_ALL_DATA)
-            } finally {
-                prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
-                startRetryIfAny()
-                withContext(Dispatchers.Main) {
-                    delay(250)
-                    showLoader.value = false
+                } catch (ex: Exception) {
+                    NudgeLogger.e(
+                        "VillageSelectionViewModel",
+                        "fetchDataForBpc -> onCatchError",
+                        ex
+                    )
+                    onCatchError(ex, ApiType.FETCH_ALL_DATA)
+                } finally {
+                    prefRepo.savePref(LAST_UPDATE_TIME, System.currentTimeMillis())
+                    startRetryIfAny()
+                    withContext(Dispatchers.Main) {
+                        delay(250)
+                        showLoader.value = false
+                    }
                 }
-            }
+            }.await()
+
         }
-//        fetchCastList()
-    }
-    private fun downloadImageFiles(){
-
     }
     private fun fetchCastList() {
         showLoader.value = true
