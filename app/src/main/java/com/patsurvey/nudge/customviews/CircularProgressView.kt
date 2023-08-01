@@ -43,7 +43,6 @@ fun CircularProgressBar(
     progressBackgroundColor: Color = grayProgressBackground,
     progressColor: Color = blueDark,
     initialPosition: Int = 0,
-    currentPosition: Int = 0,
     minProgress: Int = 0,
     maxProgress: Int = 6,
     borderThickness: Dp = 7.dp,
@@ -110,7 +109,7 @@ fun CircularProgressBar(
             drawContext.canvas.nativeCanvas.apply {
                 drawIntoCanvas {
                     drawText(
-                        "$currentPosition/$maxProgress",
+                        "$initialPosition/$maxProgress",
                         center.x,
                         center.y + centerTextSize.toPx() / 3f,
                         Paint().apply {

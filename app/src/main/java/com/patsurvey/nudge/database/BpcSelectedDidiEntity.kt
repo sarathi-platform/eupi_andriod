@@ -148,7 +148,8 @@ data class BpcSelectedDidiEntity(
                 bpcScore = nonSelectedDidiEntity.bpcScore,
                 bpcComment = nonSelectedDidiEntity.bpcComment,
                 crpComment = nonSelectedDidiEntity.crpComment,
-                crpScore = nonSelectedDidiEntity.crpScore
+                crpScore = nonSelectedDidiEntity.crpScore,
+                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage
             )
         }
     }

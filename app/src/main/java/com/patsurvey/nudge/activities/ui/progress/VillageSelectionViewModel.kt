@@ -465,7 +465,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 )
                                             )
                                             if(!didi.crpUploadedImage.isNullOrEmpty()){
-                                                downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                                downloadAuthorizedImageItemForSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
                                             }
                                         }
                                         it.not_selected.forEach { didi ->
@@ -533,7 +533,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 )
                                             )
                                             if(!didi.crpUploadedImage.isNullOrEmpty()){
-                                                downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                                downloadAuthorizedImageItemForNonSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo)
                                             }
                                         }
                                     }
@@ -1465,7 +1465,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     }
 
-    fun downloadAuthorizedImageItem(id:Int,image: String,prefRepo: PrefRepo) {
+    private fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val imageFile = getAuthImagePath(downloader.mContext, image)
@@ -1488,10 +1488,76 @@ class VillageSelectionViewModel @Inject constructor(
                             NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
                         })
                     }
+                } else {
+                    didiDao.updateImageLocalPath(id,imageFile.absolutePath)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
+            }
+        }
+    }
+    private fun downloadAuthorizedImageItemForNonSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val imageFile = getAuthImagePath(downloader.mContext, image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                        onDownloadComplete = {
+                            bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                        }, onDownloadFailed = {
+                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> onDownloadFailed")
+                        })
+                    }
+                } else {
+                    bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> downloadItem exception", ex)
+            }
+        }
+    }
+    private fun downloadAuthorizedImageItemForSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val imageFile = getAuthImagePath(downloader.mContext, image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                        onDownloadComplete = {
+                            bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                        }, onDownloadFailed = {
+                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> onDownloadFailed")
+                        })
+                    }
+                } else {
+                    bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> downloadItem exception", ex)
             }
         }
     }
