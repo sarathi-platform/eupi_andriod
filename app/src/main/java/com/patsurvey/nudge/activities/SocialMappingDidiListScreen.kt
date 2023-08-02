@@ -78,6 +78,10 @@ fun SocialMappingDidiListScreen(
     val newFilteredDidiList = didiViewModel.filterDidiList
     val newFilteredTolaDidiList = didiViewModel.filterTolaMapList
     val localDensity = LocalDensity.current
+    val coroutineScope = rememberCoroutineScope()
+    var expendedDidiIndex by remember {
+        mutableStateOf(-1)
+    }
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -393,6 +397,7 @@ fun SocialMappingDidiListScreen(
                                         if (expandedIds.contains(didiDetailModel.id)) {
                                             expandedIds.remove(didiDetailModel.id)
                                         } else {
+                                            expendedDidiIndex = index
                                             expandedIds.add(didiDetailModel.id)
                                         }
                                     },
