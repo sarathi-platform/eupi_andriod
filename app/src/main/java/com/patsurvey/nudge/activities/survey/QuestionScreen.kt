@@ -83,7 +83,6 @@ fun QuestionScreen(
 ) {
     val pagerState = rememberPagerState()
     val coroutineScope = rememberCoroutineScope()
-
     LaunchedEffect(key1 = Unit) {
         try {
             viewModel.setDidiDetails(didiId)
@@ -94,6 +93,7 @@ fun QuestionScreen(
             val mAnsweredQuestion = mAnswerList.size
             if (mAnsweredQuestion > 0 && !mAnswerList.isNullOrEmpty()) {
                 viewModel.isAnswerSelected.value=false
+                viewModel.prefRepo.saveNeedQuestionToScroll(true)
                 pagerState.animateScrollToPage(mAnsweredQuestion)
             }
         } catch (ex: Exception) {
@@ -104,6 +104,7 @@ fun QuestionScreen(
             || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal
             || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal){
             pagerState.animateScrollToPage(questionIndex)
+            viewModel.prefRepo.saveNeedQuestionToScroll(true)
         }
     }
 
@@ -130,8 +131,10 @@ fun QuestionScreen(
             val mAnsweredQuestion = mAnswerList.size
             if (mAnsweredQuestion > 0 && !mAnswerList.isNullOrEmpty()) {
                 viewModel.isAnswerSelected.value=false
-                if (pagerState.currentPage != mAnsweredQuestion)
+                if (pagerState.currentPage != mAnsweredQuestion) {
+                    viewModel.prevButtonVisible.value=true
                     pagerState.animateScrollToPage(mAnsweredQuestion)
+                }
             }
         } catch (ex: Exception) {
             NudgeLogger.e("QuestionScreen", "LaunchedEffect(key1 = Unit, key2 = !questionList.isNullOrEmpty())  -> exception", ex)
@@ -155,16 +158,13 @@ fun QuestionScreen(
         }else navController.popBackStack()
     }
 
-    val prevButtonVisible = remember {
-        derivedStateOf {
-            pagerState.currentPage > 0
-        }
-    }
 
     if(eventToPageChange.value){
         if(pagerState.currentPage == questionList.size-1){
             viewModel.nextButtonVisible.value=false
         }else viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+
+       viewModel.prevButtonVisible.value= pagerState.currentPage > 0
     }
     Box(modifier = Modifier
         .fillMaxSize()
@@ -258,6 +258,8 @@ fun QuestionScreen(
                                 isLastIndex = (it == questionList.size-1),
                                 isAnswerSelected = viewModel.isAnswerSelected.value
                             ) { selectedIndex,nextButtonClick ->
+                                viewModel.prevButtonVisible.value=false
+                                viewModel.nextButtonVisible.value=false
                                 viewModel.isAnswerSelected.value =true
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
@@ -275,19 +277,17 @@ fun QuestionScreen(
                                                 viewModel.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                     }
 
-                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                    coroutineScope.launch {
+                                        delay(250)
                                         if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
-                                            coroutineScope.launch {
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
-                                            }.invokeOnCompletion {
-                                                eventToPageChange.value=true
-                                            }
+                                                eventToPageChange.value = true
 
                                         } else {
                                             navigateToSummeryPage(
@@ -296,7 +296,7 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 250)
+                                    }
 
 
                                 }
@@ -311,6 +311,9 @@ fun QuestionScreen(
                                 optionList = questionList[it].options,
                                 isAnswerSelected = viewModel.isAnswerSelected.value
                             ) { selectedIndex ->
+                                viewModel.prevButtonVisible.value=false
+                                viewModel.nextButtonVisible.value=false
+                                viewModel.prefRepo.saveNeedQuestionToScroll(true)
                                 viewModel.isAnswerSelected.value=true
                                 if(viewModel.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
@@ -325,21 +328,18 @@ fun QuestionScreen(
                                     enteredAssetAmount = "0",
                                     questionFlag = BLANK_STRING
                                 ) {
-                                    Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                    coroutineScope.launch {
+                                        delay(250)
                                         if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
-                                            coroutineScope.launch {
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
-                                            }.invokeOnCompletion {
-                                                viewModel.isQuestionChange.value=true
-                                                eventToPageChange.value=true
-                                            }
+                                            eventToPageChange.value = true
                                         } else {
                                             navigateToSummeryPage(
                                                 navController,
@@ -347,7 +347,7 @@ fun QuestionScreen(
                                                 viewModel
                                             )
                                         }
-                                    }, 250)
+                                    }
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.Numeric_Field.name) {
@@ -359,7 +359,7 @@ fun QuestionScreen(
                                 questionId = questionList[it].questionId ?: 0,
                                 optionList = questionList[it].options,
                                 viewModel = viewModel,
-                                showNextButton = !viewModel.nextButtonVisible.value ,
+                                showNextButton = (viewModel.prevButtonVisible.value && !viewModel.nextButtonVisible.value ) ,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
                                 totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
                             ){ value->
@@ -380,7 +380,11 @@ fun QuestionScreen(
                                     questionFlag = questionList[it].questionFlag ?: QUESTION_FLAG_WEIGHT
                                 ) {
                                     if(value == 1) {
-                                        Handler(Looper.getMainLooper()).postDelayed(Runnable {
+                                        viewModel.prevButtonVisible.value=false
+                                        viewModel.nextButtonVisible.value=false
+                                        viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                                        coroutineScope.launch {
+                                            delay(250)
                                             if (answeredQuestion.value < (questionList.size)) {
                                                 selQuesIndex.value = selQuesIndex.value + 1
                                                 answeredQuestion.value = answeredQuestion.value + 1
@@ -389,14 +393,12 @@ fun QuestionScreen(
                                                     pagerState.currentPage,
                                                     didiId
                                                 )
-                                                coroutineScope.launch {
                                                     pagerState.animateScrollToPage(
                                                         nextPageIndex
                                                     )
-                                                }.invokeOnCompletion {
-                                                    viewModel.isQuestionChange.value=true
-                                                    eventToPageChange.value = true
-                                                }
+                                                viewModel.isQuestionChange.value=true
+                                                eventToPageChange.value = true
+
                                             } else {
                                                 navigateToSummeryPage(
                                                     navController,
@@ -404,7 +406,7 @@ fun QuestionScreen(
                                                     viewModel
                                                 )
                                             }
-                                        }, 250)
+                                        }
                                     }
                                 }
                             }
@@ -419,26 +421,28 @@ fun QuestionScreen(
         }
 
         //Previous Ques Button
-        AnimatedVisibility(visible = prevButtonVisible.value, modifier = Modifier
-            .padding(all = 16.dp)
-            .visible(prevButtonVisible.value)
-            .padding(bottom = 25.dp)
-            .align(alignment = Alignment.BottomStart)) {
+
+        if(viewModel.prevButtonVisible.value){
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
-                    .visible(prevButtonVisible.value)
-                    .align(alignment = Alignment.BottomStart),
+                    .visible(viewModel.prevButtonVisible.value)
+                    .align(alignment = Alignment.BottomStart)
+                    .shadow(0.dp)
+                    .padding(bottom = 40.dp),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
+                    viewModel.prevButtonVisible.value=false
+                    viewModel.nextButtonVisible.value=false
+                    viewModel.prefRepo.saveNeedQuestionToScroll(true)
                     viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value-1
                     val prevPageIndex = pagerState.currentPage - 1
                     viewModel.findListTypeSelectedAnswer(pagerState.currentPage-1,didiId)
                     if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name
-                        /*&& questionList[pagerState.currentPage].questionFlag.equals(
-                            QUESTION_FLAG_WEIGHT,true)*/){
+                    /*&& questionList[pagerState.currentPage].questionFlag.equals(
+                        QUESTION_FLAG_WEIGHT,true)*/){
                         val newAnswerOptionModel= OptionsItem( display = (if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
                         else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
                             BLANK_STRING)
@@ -484,7 +488,6 @@ fun QuestionScreen(
                 },
             )
         }
-
         //Next Ques Button
         if(viewModel.nextButtonVisible.value){
             ExtendedFloatingActionButton(
@@ -497,7 +500,9 @@ fun QuestionScreen(
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
                 onClick = {
-
+                    viewModel.prevButtonVisible.value=false
+                    viewModel.nextButtonVisible.value=false
+                    viewModel.prefRepo.saveNeedQuestionToScroll(true)
                     viewModel.isAnswerSelected.value=false
                     selQuesIndex.value=selQuesIndex.value+1
                     val nextPageIndex = pagerState.currentPage + 1
