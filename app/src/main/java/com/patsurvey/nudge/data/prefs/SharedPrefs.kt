@@ -2,6 +2,7 @@ package com.patsurvey.nudge.data.prefs
 
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
 import com.google.gson.Gson
 import com.patsurvey.nudge.data.prefs.StrictModePermitter.permitDiskReads
 import com.patsurvey.nudge.database.VillageEntity
@@ -32,6 +33,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_SETTING_OPEN_FROM = "setting_open_from"
         const val PREF_KEY_QUESTIONS_OPEN_FROM = "questions_open_from"
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
+        const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
     }
 
     val prefs: SharedPreferences by lazy {
@@ -211,5 +213,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
 
     override fun summaryScreenOpenFrom(): Int {
         return prefs.getInt(PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM,0)
+    }
+
+    override fun saveNeedQuestionToScroll(needToScroll: Boolean) {
+        Log.d("TAG", "saveNeedQuestionToScroll: $needToScroll")
+        prefs.edit().putBoolean(PREF_KEY_NEED_TO_SCROLL,needToScroll).apply()
+    }
+
+    override fun isNeedQuestionToScroll(): Boolean {
+        return prefs.getBoolean(PREF_KEY_NEED_TO_SCROLL,false)
     }
 }

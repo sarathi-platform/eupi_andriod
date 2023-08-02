@@ -6,23 +6,32 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
+import android.net.NetworkInfo
 import android.net.NetworkRequest
 import android.os.Build
 import android.util.Log
 import androidx.lifecycle.LiveData
-
+import com.google.gson.Gson
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.InetSocketAddress
+import javax.net.SocketFactory
 
 
 class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
     val TAG = "ConnectionMonitor"
+
+    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-    private lateinit var networkCallback: ConnectivityManager.NetworkCallback
+    private val validNetworks: MutableSet<Network> = HashSet()
 
-    private var connectionStatus = false
-
-    private fun updateNetworkStatus() {
-        postValue(connectionStatus)
+    private fun checkValidNetworks() {
+        NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
+        postValue(validNetworks.size > 0)
     }
 
     override fun onActive() {
@@ -31,85 +40,83 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
             .addCapability(NET_CAPABILITY_INTERNET)
             .build()
         connectivityManager.registerNetworkCallback(networkRequest, networkCallback)
-
-    }
-
-    private fun createNetworkCallback()= object : ConnectivityManager.NetworkCallback() {
-
-        override fun onAvailable(network: Network) {
-            super.onAvailable(network)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                val capabilities = connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
-                if (capabilities != null) {
-                    when {
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                            connectionStatus = true
-                            updateNetworkStatus()
-                        }
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                            connectionStatus = true
-                            updateNetworkStatus()
-                        }
-                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                            connectionStatus = true
-                            updateNetworkStatus()
-                        }
-                    }
-                } else {
-                    connectionStatus = false
-                    updateNetworkStatus()
-                }
-            } else {
-                val activeNetworkInfo = connectivityManager.activeNetworkInfo
-                if (activeNetworkInfo != null && activeNetworkInfo.isConnected) {
-                    connectionStatus = true
-                    updateNetworkStatus()
-                } else {
-                    connectionStatus = false
-                    updateNetworkStatus()
-                }
-            }
-        }
-
-        override fun onLost(network: Network) {
-            Log.d(TAG, "onLost: Network Lost")
-            connectionStatus = false
-            updateNetworkStatus()
-        }
-
-        override fun onCapabilitiesChanged(
-            network: Network,
-            networkCapabilities: NetworkCapabilities
-        ) {
-            when {
-                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
-                    Log.d(TAG, "networkCapabilities: TRANSPORT_CELLULAR")
-                    connectionStatus = true
-                    updateNetworkStatus()
-                }
-                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
-                    Log.d(TAG, "networkCapabilities: TRANSPORT_WIFI")
-                    connectionStatus = true
-                    updateNetworkStatus()
-                }
-                networkCapabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
-                    Log.d(TAG, "networkCapabilities: TRANSPORT_ETHERNET")
-                    connectionStatus = true
-                    updateNetworkStatus()
-                }
-                else -> {
-                    Log.d(TAG, "networkCapabilities: Network Lost")
-                    connectionStatus = false
-                    updateNetworkStatus()
-                }
-            }
-        }
     }
 
     override fun onInactive() {
         connectivityManager.unregisterNetworkCallback(networkCallback)
     }
 
-    fun isOnline() = connectionStatus
+    private fun createNetworkCallback() = object : ConnectivityManager.NetworkCallback() {
 
+        override fun onAvailable(network: Network) {
+            NudgeLogger.d(TAG, "onAvailable: $network")
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
+            NudgeLogger.d(TAG, "onAvailable: ${network}, $hasInternetCapability")
+
+            if (hasInternetCapability == true) {
+                // Check if this network actually has internet
+                CoroutineScope(Dispatchers.IO).launch {
+                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
+                    if (hasInternet) {
+                        withContext(Dispatchers.Main) {
+                            NudgeLogger.d(TAG, "onAvailable: adding network. $network")
+                            validNetworks.add(network)
+                            checkValidNetworks()
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onCapabilitiesChanged(
+            network: Network,
+            networkCapabilities: NetworkCapabilities
+        ) {
+            super.onCapabilitiesChanged(network, networkCapabilities)
+            val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
+            val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
+            NudgeLogger.d(TAG, "onCapabilitiesChanged: ${network}, $hasInternetCapability")
+
+            if (hasInternetCapability == true) {
+                // Check if this network actually has internet
+                CoroutineScope(Dispatchers.IO).launch {
+                    val hasInternet = DoesNetworkHaveInternet.execute(network.socketFactory)
+                    if (hasInternet) {
+                        withContext(Dispatchers.Main) {
+                            NudgeLogger.d(TAG, "onAvailable: adding network. $network")
+                            validNetworks.add(network)
+                            checkValidNetworks()
+                        }
+                    }
+                }
+            }
+        }
+
+        override fun onLost(network: Network) {
+            NudgeLogger.d(TAG, "onLost: $network")
+            NudgeLogger.d(TAG, "onLost: ${validNetworks.toString()} ")
+            validNetworks.remove(network)
+            checkValidNetworks()
+        }
+    }
+
+    object DoesNetworkHaveInternet {
+     const val TAG="DoesNetworkHaveInternet"
+        fun execute(socketFactory: SocketFactory): Boolean {
+            // Make sure to execute this on a background thread.
+            return try {
+                NudgeLogger.d(TAG, "PINGING Google...")
+                val socket = socketFactory.createSocket() ?: throw IOException("Socket is null.")
+                socket.connect(InetSocketAddress("8.8.8.8", 53), 1500)
+                socket.close()
+                NudgeLogger.d(TAG, "PING success.")
+                true
+            } catch (e: IOException) {
+                NudgeLogger.e(TAG, "No Internet Connection. $e")
+                false
+            }
+        }
+    }
 }
+

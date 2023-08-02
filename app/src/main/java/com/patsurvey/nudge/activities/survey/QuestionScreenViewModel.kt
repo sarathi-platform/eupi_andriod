@@ -62,6 +62,7 @@ class QuestionScreenViewModel @Inject constructor(
     val didiName = mutableStateOf("DidiEntity()")
     val mDidiId = mutableStateOf(0)
     val nextButtonVisible= mutableStateOf(false)
+    val prevButtonVisible= mutableStateOf(false)
     val isQuestionChange= mutableStateOf(false)
     val listTypeAnswerIndex = mutableStateOf(-1)
     val maxQuesCount = mutableStateOf(0)
@@ -336,7 +337,7 @@ class QuestionScreenViewModel @Inject constructor(
     fun findListTypeSelectedAnswer(quesIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                 val optionId = answerDao.fetchOptionID(
+                val optionId = answerDao.fetchOptionID(
                     didiId,
                     questionList.value[quesIndex].questionId ?: 0,
                     sectionType.value
