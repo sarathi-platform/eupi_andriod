@@ -387,6 +387,7 @@
     <string name="pat_summary_completed_empty_text">किसी भी का दीदी जिसका PAT पूरा हो गया है</string>
     <string name="vo_summary_rejected_empty_text">किसी भी दीदी को वीओ ने अस्वीकार नहीं किया है</string>
     <string name="vo_summary_endorsed_empty_text">वीओ द्वारा किसी दीदी का समर्थन नहीं किया गया है</string>
-    <string name="social_mapping_complete_status_text">সামাজিক ম্যাপিং সম্পন্ন</string>
+    <string name="social_mapping_complete_status_text">सोशल मैपिंग हो गई है</string>
+    <string name="page_name_text">पृष्ठ</string>
 
 </resources>

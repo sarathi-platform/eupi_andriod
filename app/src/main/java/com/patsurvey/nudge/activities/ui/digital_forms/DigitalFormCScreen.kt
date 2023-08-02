@@ -68,7 +68,6 @@ import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openSettings
@@ -467,7 +466,7 @@ fun DigitalFormCScreen(
                             showLoader.value = true
                             viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_c_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_c_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

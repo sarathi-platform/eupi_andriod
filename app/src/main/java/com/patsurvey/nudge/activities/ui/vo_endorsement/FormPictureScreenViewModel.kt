@@ -66,7 +66,7 @@ class FormPictureScreenViewModel @Inject constructor(
 ): BaseViewModel() {
 
     lateinit var outputDirectory: File
-    lateinit var cameraExecutor: ExecutorService
+    var cameraExecutor: ExecutorService
 
     val shouldShowCamera = mutableStateOf(Pair<String, Boolean>("", false))
 
@@ -91,7 +91,7 @@ class FormPictureScreenViewModel @Inject constructor(
     val retakeImageIndex =
         mutableStateOf(-1)
 
-    lateinit var photoUri: Uri
+    var photoUri: Uri = Uri.EMPTY
     var shouldShowPhoto = mutableStateOf(false)
 
     val pageItemClicked = mutableStateOf("")
@@ -100,7 +100,11 @@ class FormPictureScreenViewModel @Inject constructor(
 
     val imagePath = mutableStateOf("")
 
-    val uri = mutableStateOf (Uri.EMPTY)
+    val uri = mutableStateOf(Uri.EMPTY)
+
+    var imagePathForCapture = ""
+    var tempUri: Uri = Uri.EMPTY
+
 //    init {
 //        cameraExecutor = Executors.newSingleThreadExecutor()
 //    }
@@ -109,6 +113,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
 
     init {
+        cameraExecutor = Executors.newSingleThreadExecutor()
         setVillage(prefRepo.getSelectedVillage().id)
         for (i in 1..5) {
             formCPageList.value = formCPageList.value.also {
@@ -155,7 +160,7 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     private fun getImagePath(context: Context): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
     }
 
     private fun getOutputDirectory(activity: MainActivity): File {
@@ -432,7 +437,7 @@ class FormPictureScreenViewModel @Inject constructor(
     fun getFormPathKey(subPath: String): String {
         //val subPath formPictureScreenViewModel.pageItemClicked.value
         //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
@@ -506,6 +511,11 @@ class FormPictureScreenViewModel @Inject constructor(
                 onCatchError(ex, ApiType.DOCUMENT_UPLOAD_API)
             }
         }
+    }
+
+    fun getImageFileName(context: Context, formName: String): File {
+        val directory = getImagePath(context)
+        return File(directory, "${formName}.png")
     }
 
 }
