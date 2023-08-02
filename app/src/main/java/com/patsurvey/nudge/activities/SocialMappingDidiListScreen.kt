@@ -78,6 +78,10 @@ fun SocialMappingDidiListScreen(
     val newFilteredDidiList = didiViewModel.filterDidiList
     val newFilteredTolaDidiList = didiViewModel.filterTolaMapList
     val localDensity = LocalDensity.current
+    val coroutineScope = rememberCoroutineScope()
+    var expendedDidiIndex by remember {
+        mutableStateOf(-1)
+    }
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -145,7 +149,7 @@ fun SocialMappingDidiListScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                val count = didiList.value.filter { it.needsToPost && it.rankingEdit }.size
+                val count = didiList.value.size
                 if (showLoader.value) {
                     Box(
                         modifier = Modifier
@@ -166,7 +170,7 @@ fun SocialMappingDidiListScreen(
                         completeAdditionClicked = completeTolaAdditionClicked,
                         message = stringResource(
                             if (count < 2) R.string.didi_conirmation_text_singular else R.string.didi_conirmation_text_plural,
-                            didiList.value.filter { it.needsToPost && it.rankingEdit }.size
+                            count
                         ),
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
@@ -393,6 +397,7 @@ fun SocialMappingDidiListScreen(
                                         if (expandedIds.contains(didiDetailModel.id)) {
                                             expandedIds.remove(didiDetailModel.id)
                                         } else {
+                                            expendedDidiIndex = index
                                             expandedIds.add(didiDetailModel.id)
                                         }
                                     },
