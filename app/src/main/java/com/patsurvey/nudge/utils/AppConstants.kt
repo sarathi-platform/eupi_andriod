@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.utils
 
 import androidx.compose.ui.unit.dp
+import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 
 const val BLANK_STRING=""
 const val DEFAULT_LANGUAGE_CODE="en"
@@ -176,7 +178,7 @@ val UNREACHABLE_ERROR_MSG =
 val GENERIC_ERROR_MSG =
     "Oops! An error has occurred on our server. Please check internet connection and try to playback again!"
 const val NETWORK_ERROR_MSG = "Make sure that Wi-Fi or mobile data is turned on, then try again."
-const val COMMON_ERROR_MSG = "No network available"
+val COMMON_ERROR_MSG = MyApplication.applicationContext().getString(R.string.common_error_message_text)
 const val COMMON_ERROR_TITLE = "Something Went Wrong"
 const val TIMEOUT_ERROR_MSG = "Your request timed out. Please try again in some time."
 val UNAUTHORISED_MESSAGE = "401 Unauthorized"

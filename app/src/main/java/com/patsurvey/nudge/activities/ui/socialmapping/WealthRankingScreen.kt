@@ -124,6 +124,7 @@ fun WealthRankingScreen(
 //                        .padding(bottom = bottomPadding)
                         .fillMaxWidth()
                         .background(color = white)
+                        .padding(horizontal = 4.dp)
                         .weight(1f),
                     contentPadding = PaddingValues(vertical = 10.dp),/*
                     verticalArrangement = Arrangement.spacedBy(10.dp)*/

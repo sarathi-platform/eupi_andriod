@@ -54,7 +54,7 @@
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s দিদির বাকি আছে</string>
     <string name="count_didis_pending_singular">%1s দিদি বাকি আছে</string>
-    <string name="expiry_login_verify_otp" translatable="false">%s OTP পুনরায় পাঠান</string>
+    <string name="expiry_login_verify_otp">%s OTP পুনরায় পাঠান</string>
     <string name="social_mapping">সামাজিক মানচিত্র</string>
     <string name="showing_added_tolas">%s পাদা সংযোজন দেখাচ্ছে</string>
     <string name="showing">প্রদর্শন</string>
@@ -348,4 +348,15 @@
     <string name="cannot_delete_tola_message_text">এই তোলা ডিলিট করা যাবে না কারণ দিদিদের এটাকে বরাদ্দ করা হয়েছে</string>
     <string name="heading_value_of_other_productive_assests">অন্যান্য উৎপাদনশীল সম্পদের মূল্য</string>
     <string name="heading_earning_ration">আয়ের অনুপাত</string>
+    <string name="session_expired_dialog_title">সময় মেয়াদ শেষ!</string>
+    <string name="session_epire_otp_message">অনুগ্রহ করে পুনরায় লগইন করতে OTP লিখুন।</string>
+    <string name="session_restored_message">সেশন পুনরুদ্ধার করা হয়েছে</string>
+    <string name="location_permission_not_granted_message">অবস্থানের অনুমতি দেওয়া হয়নি</string>
+    <string name="common_error_message_text">কোনো নেটওয়ার্ক উপলব্ধ নেই৷</string>
+    <string name="wealth_ranking_summary_empty_text">কোন দিদি {CATEGORY} হিসেবে চিহ্নিত নয়</string>
+    <string name="pat_summary_not_available_empty_text">কোন দিদি পাওয়া যাচ্ছে না বলে চিহ্নিত করা হয়েছে</string>
+    <string name="pat_summary_completed_empty_text">যার PAT সম্পূর্ণ হয়েছে তার দিদি</string>
+    <string name="vo_summary_rejected_empty_text">VO দ্বারা প্রত্যাখ্যান কোন দিদি</string>
+    <string name="vo_summary_endorsed_empty_text">VO দ্বারা কোন দিদি অনুমোদন করা হয়নি</string>
+    <string name="social_mapping_complete_status_text">सोशल मैपिंग हो गई है</string>
 </resources>

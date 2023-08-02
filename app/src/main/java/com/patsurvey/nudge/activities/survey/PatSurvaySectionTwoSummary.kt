@@ -4,6 +4,8 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -71,6 +73,13 @@ fun PatSurvaySectionTwoSummaryScreen(
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.sectionType.value= TYPE_INCLUSION
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
+    }
+    BackHandler {
+        if(patSectionSummaryViewModel.didiEntity.value.section2Status != PatSurveyStatus.COMPLETED.ordinal) {
+            if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/0")
+            else navController.popBackStack()
+        }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
     }
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -176,7 +185,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                           answerValue = answer.questionId?.let {
                               answer.optionId?.let { it1 ->
                                   patSectionSummaryViewModel.getOptionForLanguage(
-                                      it, it1
+                                      it, it1,answer.answerValue?:"0"
                                   )
                               }
                           } ?: BLANK_STRING,
@@ -277,7 +286,7 @@ fun PatSummeryScreenDidiDetailBox(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.pat_sample_icon),
+                    painter = painterResource(id = R.drawable.home_icn),
                     contentDescription = "home image",
                     tint = Color.Black,
                     modifier = Modifier.size(24.dp)
@@ -333,9 +342,12 @@ fun SectionTwoSummeryItem(
             .fillMaxWidth()
             .then(modifier)
     ) {
-        Row(Modifier.fillMaxWidth().clickable {
+        Row(
+            Modifier
+                .fillMaxWidth()
+                .clickable {
 //           onCardClick(index)
-        }, verticalAlignment = Alignment.CenterVertically) {
+                }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
                 val quesImage: File? =
                     questionImageUrl?.let { it1 ->
@@ -392,7 +404,9 @@ fun SectionTwoSummeryItem(
                 summaryText = if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
                     LocalContext.current.getString(R.string.total_productive_asset_value,answerValue)
                 }else answerValue
+                Log.d("TAG", "SectionTwoSummeryItem Num: ${summaryText} ")
             }
+            Log.d("TAG", "SectionTwoSummeryItem: ${summaryText} ")
             HtmlText(
                 text = buildAnnotatedString {
                     withStyle(

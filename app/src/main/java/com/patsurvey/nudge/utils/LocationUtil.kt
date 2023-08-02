@@ -17,6 +17,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
@@ -122,7 +123,7 @@ object LocationUtil {
             return null
         } else {
             context.runOnUiThread {
-                Toast.makeText(context, "Location Permission Not Granted", Toast.LENGTH_LONG).show()
+                Toast.makeText(context, context.getString(R.string.location_permission_not_granted_message), Toast.LENGTH_LONG).show()
             }
             AnalyticsHelper.logLocationEvents(
                 Events.LOCATION_PERMISSION_GRANTED,
@@ -180,7 +181,8 @@ object LocationUtil {
                 }
             } else {
                 NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasGps || hasNetwork: false")
-                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
+
+//                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
 //                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
         } else if (ActivityCompat.shouldShowRequestPermissionRationale(
@@ -259,7 +261,7 @@ object LocationUtil {
 
             } else {
                 NudgeLogger.d("LocationUtil", "getLocation: hasGps || hasNetwork: false")
-                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
 //                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))
             }
 

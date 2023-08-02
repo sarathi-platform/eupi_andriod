@@ -156,7 +156,7 @@ fun AddTolaBox(
         if (shouldRequestPermission.value){
             ShowDialogForTolaLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
-                message = stringResource(R.string.permission_dialog_prompt_message),
+                message = stringResource(R.string.location_permission_dialog_prompt_message),
                 setShowDialog = {
                     shouldRequestPermission.value = it
                 },

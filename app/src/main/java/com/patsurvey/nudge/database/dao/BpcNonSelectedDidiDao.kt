@@ -47,4 +47,8 @@ interface BpcNonSelectedDidiDao {
     @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status,needsToPostPAT=0,shgFlag=:shgFlag WHERE id =:didiId")
     fun updatePATProgressStatus(patSurveyStatus: Int,section1Status:Int,section2Status:Int,didiId:Int,shgFlag: Int)
 
+
+    @Query("UPDATE $BPC_NON_SELECTED_DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
+    fun updateImageLocalPath(didiId: Int, localPath: String)
+
 }

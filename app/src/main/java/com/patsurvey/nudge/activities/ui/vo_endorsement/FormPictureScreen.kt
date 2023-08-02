@@ -61,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -92,14 +93,16 @@ import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.black20
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
-import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
+import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -132,6 +135,7 @@ fun FormPictureScreen(
     }
 
     LaunchedEffect(key1 = localContext) {
+
         formPictureScreenViewModel.setUpOutputDirectory(localContext as MainActivity)
         requestCameraPermission(localContext as Activity, formPictureScreenViewModel) {
             shouldRequestPermission.value = true
@@ -304,7 +308,7 @@ fun FormPictureScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .verticalScroll(rememberScrollState())
-                                    .padding(vertical = 14.dp, horizontal = 16.dp),
+                                    .padding(vertical = 14.dp),
                                 verticalArrangement = Arrangement.spacedBy(8.dp),
                                 horizontalAlignment = Alignment.CenterHorizontally
                             )
@@ -320,8 +324,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsCClicked.value < 1,
-                                    cardTitle = if (formPictureScreenViewModel.formsCClicked.value < 1) stringResource(
+                                    showIcon = formPictureScreenViewModel.formCImageList.value.isEmpty(),
+                                    cardTitle = if (formPictureScreenViewModel.formCImageList.value.isEmpty()) stringResource(
                                         R.string.form_c_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} C",
                                     contentColor = textColorDark,
@@ -379,10 +383,12 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
                                     },
                                     deleteButtonClicked = {
-                                        formPictureScreenViewModel.formCPageList.value =
-                                            mutableListOf()
+                                        formPictureScreenViewModel.formCPageList.value = mutableListOf()
                                         formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
-                                            formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
+                                        formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
+                                        for (i in 1..5) {
+                                            formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
+                                        }
                                     }
                                 )
 
@@ -390,8 +396,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formsDClicked.value < 2,
-                                    cardTitle = if (formPictureScreenViewModel.formsDClicked.value < 2) stringResource(
+                                    showIcon = formPictureScreenViewModel.formDPageList.value.size < 2,
+                                    cardTitle = if (formPictureScreenViewModel.formDPageList.value.size < 2) stringResource(
                                         R.string.form_d_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} D",
                                     contentColor = textColorDark,
@@ -446,6 +452,9 @@ fun FormPictureScreen(
                                         formPictureScreenViewModel.formDPageList.value = mutableListOf()
                                         formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
                                         formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
+                                        for (i in 1..5) {
+                                            formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
+                                        }
                                     }
                                 )
                             }
@@ -453,7 +462,7 @@ fun FormPictureScreen(
                     }
                 }
 
-                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formCImageList.value.isNotEmpty() && formPictureScreenViewModel.formDImageList.value.isNotEmpty()) {
+                if (!formPictureScreenViewModel.shouldShowCamera.value.second && formPictureScreenViewModel.formCPageList.value.isNotEmpty() && formPictureScreenViewModel.formDPageList.value.isNotEmpty()) {
                     DoubleButtonBox(
                         modifier = Modifier
                             .shadow(10.dp)
@@ -732,7 +741,7 @@ fun FormPictureCard(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                if (showIcon) {
+                if (showIcon && !expanded) {
                     Icon(
                         imageVector = icon,
                         contentDescription = "Add Button",
@@ -839,6 +848,7 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
+            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -846,59 +856,102 @@ fun ExpandableFormPictureCard(
             ,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    Modifier
-                        .padding(vertical = 2.dp)
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .background(blueDark)
+                        .padding(vertical = 6.dp)
                         .weight(1f)
-                        .clickable {
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                color = Color.White
+                            )
+
+                        ) {
                             addPageClicked()
                         }
                         .then(modifier),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically) {
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        Modifier
+                            .fillMaxWidth()
+                            .background(blueDark)
+                            .align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
 
-                    Icon(
-                        painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
-                        contentDescription = null,
-                        tint = textColorDark,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(id = R.string.take_photo_text),
-                        color = textColorDark,
-                        style = buttonTextStyle,
-                        modifier = Modifier.absolutePadding(bottom = 3.dp)
-                    )
+                        Icon(
+                            painter = painterResource(id = R.drawable.sharp_add_circle_outline_24),
+                            contentDescription = null,
+                            tint = white,
+                            modifier = Modifier
+                                .size(26.dp)
+                                .background(Color.Transparent)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(id = R.string.take_photo_text),
+                            color = white,
+                            style = smallTextStyle,
+                            modifier = Modifier
+                                .absolutePadding(bottom = 3.dp)
+                                .background(Color.Transparent)
+                        )
 
+                    }
                 }
                 Spacer(modifier = Modifier.width(8.dp))
-                Row(
-                    Modifier
-                        .padding(vertical = 2.dp)
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(6.dp))
+                        .border(
+                            width = 1.dp,
+                            color = redDark,
+                            shape = RoundedCornerShape(6.dp)
+                        )
+                        .padding(vertical = 4.dp)
                         .weight(1f)
-                        .clickable {
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                color = Color.White
+                            )
+
+                        ) {
                             deleteButtonClicked()
                         }
                         .then(modifier),
-                    horizontalArrangement = Arrangement.End,
-                    verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.baseline_delete_icon),
-                        contentDescription = "delete form image",
-                        tint = redOffline,
-                        modifier = Modifier
-                            .size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = stringResource(id = R.string.delete_and_retake),
-                        color = textColorDark,
-                        style = buttonTextStyle,
-                        overflow = TextOverflow.Ellipsis,
-                        maxLines = 2,
-                        modifier = Modifier.absolutePadding(bottom = 3.dp)
-                    )
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        Modifier
+                            .padding(vertical = 2.dp)
+                            .background(Color.Transparent)
+                            .align(Alignment.Center),
+                        horizontalArrangement = Arrangement.End,
+                        verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.baseline_delete_icon),
+                            contentDescription = "delete form image",
+                            tint = redOffline,
+                            modifier = Modifier
+                                .size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(id = R.string.delete_and_retake),
+                            color = redDark,
+                            style = smallTextStyle,
+                            overflow = TextOverflow.Ellipsis,
+                            maxLines = 2,
+                            modifier = Modifier.absolutePadding(bottom = 3.dp)
+                        )
+                    }
                 }
             }
             if (pageList.size >= 4) {
@@ -909,6 +962,7 @@ fun ExpandableFormPictureCard(
                     modifier = Modifier.padding(horizontal = 26.dp)
                 )
             }
+            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
         }
     }
 }

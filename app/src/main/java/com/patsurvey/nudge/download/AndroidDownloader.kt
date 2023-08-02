@@ -15,7 +15,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.KEY_HEADER_AUTH
-import com.patsurvey.nudge.utils.NUDGE_IMAGE_FOLDER
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.getAuthImageFileNameFromURL
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,7 +24,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import okhttp3.HttpUrl.Companion.toHttpUrl
 import java.io.File
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -196,6 +195,7 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                     it[id] = status
                                 }
                                 onDownloadComplete()
+                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> onDownloadComplete = downloadId: $downloadId, id: $id, status: $status, ")
                             }
 
                             DownloadManager.STATUS_PAUSED, DownloadManager.STATUS_PENDING -> {
@@ -203,6 +203,7 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                 _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
                                     it[id] = status
                                 }
+                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> downloadId: $downloadId, id: $id, status: $status, ")
                             }
 
                             DownloadManager.STATUS_FAILED -> {
@@ -211,6 +212,7 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                 _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
                                     it[id] = status
                                 }
+                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> onDownloadFailed = downloadId: $downloadId, id: $id, status: $status, ")
                                 onDownloadFailed()
                             }
                         }

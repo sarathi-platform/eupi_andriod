@@ -58,14 +58,18 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -124,6 +128,8 @@ fun ParticipatoryWealthRankingSurvey(
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
 
     val context = LocalContext.current
+
+    val screenHeight = LocalConfiguration.current.screenHeightDp
 
     val localDensity = LocalDensity.current
     var bottomPadding by remember {
@@ -243,7 +249,7 @@ fun ParticipatoryWealthRankingSurvey(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = 2.dp, horizontal = 4.dp)
                 ) {
                     Text(
                         text =
@@ -259,7 +265,7 @@ fun ParticipatoryWealthRankingSurvey(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 2.dp)
+                        .padding(vertical = 2.dp, horizontal = 4.dp)
                 ) {
                     var count: Int = if (showDidiListForRank.first) {
                         when (showDidiListForRank.second) {
@@ -295,7 +301,7 @@ fun ParticipatoryWealthRankingSurvey(
                     )
                 }
 
-                AnimatedVisibility(visible = showDidiListForRank.first) {
+                AnimatedVisibility(visible = showDidiListForRank.first, modifier = Modifier.padding(horizontal = 4.dp)) {
 
                     Box(
                         modifier = Modifier
@@ -307,16 +313,50 @@ fun ParticipatoryWealthRankingSurvey(
                             contentPadding = PaddingValues(bottom = bottomPadding),
                             modifier = Modifier.padding(bottom = 10.dp)
                         ) {
+                            val didiListForCategory = didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }
                             item { Spacer(modifier = Modifier.height(4.dp)) }
-                            itemsIndexed(didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }) { index, didi ->
-                                DidiItemCardForWealthRanking(didi,
-                                    expandedCardIds.contains(didi.id),
-                                    Modifier.padding(horizontal = 0.dp),
-                                    onExpendClick = { expand, didiDetailModel ->
-                                        viewModel.onCardArrowClicked(didiDetailModel.id)
-                                    },
-                                    onItemClick = {}
-                                )
+                            if (didiListForCategory.isNotEmpty()) {
+                                itemsIndexed(didiListForCategory) { index, didi ->
+                                    DidiItemCardForWealthRanking(didi,
+                                        expandedCardIds.contains(didi.id),
+                                        Modifier.padding(horizontal = 0.dp),
+                                        onExpendClick = { expand, didiDetailModel ->
+                                            viewModel.onCardArrowClicked(didiDetailModel.id)
+                                        },
+                                        onItemClick = {}
+                                    )
+                                }
+                            } else {
+                                item {
+                                    Box(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = (screenHeight/4).dp)
+                                    ) {
+                                        Text(
+                                            text = buildAnnotatedString {
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        color = textColorDark,
+                                                        fontSize = 16.sp,
+                                                        fontWeight = FontWeight.Normal,
+                                                        fontFamily = NotoSans
+                                                    )
+                                                ) {
+                                                    val category = when (showDidiListForRank.second) {
+                                                        WealthRank.POOR -> stringResource(id = R.string.poor_text)
+                                                        WealthRank.MEDIUM -> stringResource(id = R.string.medium_text)
+                                                        WealthRank.RICH -> stringResource(id = R.string.rich_text)
+                                                        else -> {""}
+                                                    }
+                                                    append(stringResource(R.string.wealth_ranking_summary_empty_text) + " " + category)
+                                                }
+                                            },
+                                            textAlign = TextAlign.Center,
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
+                                }
                             }
                             item { Spacer(modifier = Modifier.height(6.dp)) }
                         }
@@ -324,7 +364,8 @@ fun ParticipatoryWealthRankingSurvey(
                 }
 
                 Column(
-                    verticalArrangement = Arrangement.spacedBy(14.dp)
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    modifier = Modifier.padding(horizontal = 4.dp)
                 ) {
                     WealthRankingBox(
                         count = didids.value.filter { it.wealth_ranking == WealthRank.POOR.rank }.size,

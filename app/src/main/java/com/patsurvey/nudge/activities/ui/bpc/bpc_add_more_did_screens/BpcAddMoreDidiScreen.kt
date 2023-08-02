@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.animateFloat
@@ -58,6 +59,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -77,8 +79,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.ConstraintSet
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
+import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
@@ -100,6 +102,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
+import java.io.File
 
 @Composable
 fun BpcAddMoreDidiScreen(
@@ -439,6 +442,7 @@ fun ExpandableDidiItemCardForBpc(
                     val constraintSet = decoupledConstraints()
                     ConstraintLayout(constraintSet, modifier = Modifier.fillMaxWidth()) {
                         CircularDidiImage(
+                            didi = didi,
                             modifier = Modifier.layoutId("didiImage")
                         )
                         Text(
@@ -917,5 +921,46 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
                 )
             }
         }
+    }
+}
+
+@Composable
+fun CircularDidiImage(didi: BpcNonSelectedDidiEntity, modifier: Modifier) {
+    Box(
+        modifier = modifier
+            .then(modifier)
+            .clip(CircleShape)
+            .width(44.dp)
+            .height(44.dp)
+            .background(color = yellowBg),
+    ) {
+        if (didi.localPath.isNotEmpty()) {
+            Image(
+                painter = rememberImagePainter(
+                    Uri.fromFile(
+                        File(
+                            didi.localPath.split("|")[0]
+                        )
+                    )
+                ),
+                contentDescription = "didi image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.didi_icon),
+                contentDescription = "didi image",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        }
+
     }
 }

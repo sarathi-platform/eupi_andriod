@@ -224,7 +224,13 @@ fun VoEndorsementSummaryScreen(
                                 itemsIndexed(answerSection1List) { index, answer ->
                                     SectionOneSummeryItem(
                                         index = index,
-                                        answerValue = answer.answerValue,
+                                        answerValue = answer?.questionId?.let {
+                                            answer.optionId?.let { it1 ->
+                                                viewModel.getOptionForLanguage(
+                                                    it, it1, BLANK_STRING
+                                                )
+                                            }
+                                        } ?: BLANK_STRING,
                                         quesSummery = answer?.questionId?.let {
                                             viewModel.getQuestionSummary(
                                                 it
@@ -266,7 +272,13 @@ fun VoEndorsementSummaryScreen(
                                                     it
                                                 )
                                             },
-                                            answerValue = answer.answerValue,
+                                            answerValue = answer.questionId.let {
+                                                answer.optionId?.let { it1 ->
+                                                    viewModel.getOptionForLanguage(
+                                                        it, it1,answer.answerValue?:"0"
+                                                    )
+                                                }
+                                            } ?: BLANK_STRING,
                                             questionType = answer.type,
                                             questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
@@ -328,8 +340,8 @@ fun VoEndorsementSummaryScreen(
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-                                showDialog.value = false
-                                delay(100)
+//                                showDialog.value = false
+//                                delay(100)
                                 navController.popBackStack()
                             }
                         }
@@ -349,12 +361,11 @@ fun VoEndorsementSummaryScreen(
                                 delay(500)
                                 showDialog.value = false
                                 delay(100)
-
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-                                showDialog.value = false
-                                delay(100)
+//                                showDialog.value = false
+//                                delay(100)
                                 navController.popBackStack()
                             }
                         }

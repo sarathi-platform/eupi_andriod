@@ -25,6 +25,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -62,6 +63,7 @@ import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
+import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.VALUE_OF_PRODUCTIVE_ASSETS
 import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
@@ -82,11 +84,18 @@ fun NumericFieldTypeQuestion(
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
     showNextButton: Boolean = true,
-    onSubmitClick: () -> Unit
+    onSubmitClick: (Int) -> Unit
 ) {
 val context = LocalContext.current
     val lazyColumnListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(key1 = true){
+        if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
+                           coroutineScope.launch {
+                                lazyColumnListState.scrollToItem(0)
+                        }
+        }
+    }
     Box {
         ConstraintLayout(modifier = modifier
             .fillMaxSize()
@@ -139,9 +148,6 @@ val context = LocalContext.current
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
                     itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
-                        coroutineScope.launch {
-                                lazyColumnListState.scrollToItem(0)
-                        }
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
@@ -163,7 +169,9 @@ val context = LocalContext.current
                                     optionValue = option.optionValue ?:0
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                    onSubmitClick(2)
+                                }
                             },
                             onIncrementClick = {
                                 if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
@@ -179,7 +187,9 @@ val context = LocalContext.current
                                     optionValue = option.optionValue ?:0
                                 )
                                 option.count = it
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                    onSubmitClick(2)
+                                }
                             },
                             onValueChange = {
                                 if(viewModel?.prefRepo?.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
@@ -195,7 +205,9 @@ val context = LocalContext.current
                                     optionValue = option.optionValue ?:0
                                 )
                                 option.count = if(it.isEmpty()) 0 else it.toInt()
-                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList)
+                                viewModel?.updateNumericAnswer(numericAnswerEntity,index,optionList){
+                                    onSubmitClick(2)
+                                }
                             }, onLimitFailed = {
                                 showToast(context, context.getString(R.string.earning_member_can_not_be_more_than_family_members))
                             })
@@ -285,7 +297,7 @@ val context = LocalContext.current
                         isActive = true,
                         modifier = Modifier.height(45.dp)
                     ) {
-                        onSubmitClick()
+                        onSubmitClick(1)
                     }
                 }
             }

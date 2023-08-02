@@ -448,11 +448,93 @@ fun PatDidiSummaryScreen(
                                         shape = RoundedCornerShape(6.dp)
                                     )
                                     .clickable {
-                                        val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                        patDidiSummaryViewModel.imagePath = imageFile.absolutePath
-                                        val uri = uriFromFile(localContext, imageFile)
-                                        patDidiSummaryViewModel.tempUri = uri
-                                        cameraLauncher.launch(uri)
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                                    val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val uri = uriFromFile(localContext, imageFile)
+                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
+                                        } else {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                                    val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val uri = uriFromFile(localContext, imageFile)
+                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
+                                        }
                                     }
                             ) {
                                 Column(
@@ -482,15 +564,99 @@ fun PatDidiSummaryScreen(
                                     .height(45.dp),
                                 buttonTitle = stringResource(id = R.string.retake_photo_text)
                             ) {
-                                val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                patDidiSummaryViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
-                                patDidiSummaryViewModel.tempUri = uri
-//                                patDidiSummaryViewModel.photoUri = uri
-                                cameraLauncher.launch(uri)
-                                patDidiSummaryViewModel.shouldShowPhoto.value = false
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
 
+                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
+                                            patDidiSummaryViewModel.tempUri = uri
+//                                patDidiSummaryViewModel.photoUri = uri
+                                            cameraLauncher.launch(uri)
+                                            patDidiSummaryViewModel.shouldShowPhoto.value = false
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                } else {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            NudgeLogger.d("PatDidiSummaryScreen", "Retake Photo button Clicked: $uri")
+                                            patDidiSummaryViewModel.tempUri = uri
+//                                patDidiSummaryViewModel.photoUri = uri
+                                            cameraLauncher.launch(uri)
+                                            patDidiSummaryViewModel.shouldShowPhoto.value = false
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                }
 //                                patDidiSummaryViewModel.setCameraExecutor()
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
@@ -503,11 +669,93 @@ fun PatDidiSummaryScreen(
                                     .fillMaxWidth()
                                     .height(45.dp)
                             ) {
-                                val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                patDidiSummaryViewModel.imagePath = imageFile.absolutePath
-                                val uri = uriFromFile(localContext, imageFile)
-                                patDidiSummaryViewModel.tempUri = uri
-                                cameraLauncher.launch(uri)
+                                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED
+                                                && ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            patDidiSummaryViewModel.tempUri = uri
+                                            cameraLauncher.launch(uri)
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                        ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                        ) -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                } else {
+                                    when {
+                                        ContextCompat.checkSelfPermission(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) == PackageManager.PERMISSION_GRANTED -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                            val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                            patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                            val uri = uriFromFile(localContext, imageFile)
+                                            patDidiSummaryViewModel.tempUri = uri
+                                            cameraLauncher.launch(uri)
+                                        }
+
+                                        ActivityCompat.shouldShowRequestPermissionRationale(
+                                            localContext as Activity,
+                                            Manifest.permission.CAMERA
+                                        ) -> {
+                                            NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                            ActivityCompat.requestPermissions(
+                                                localContext as Activity,
+                                                arrayOf(
+                                                    Manifest.permission.CAMERA,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ),
+                                                1
+                                            )
+                                        }
+
+                                        else -> {
+                                            NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                            shouldRequestPermission.value = true
+                                        }
+                                    }
+                                }
 //                                patDidiSummaryViewModel.shouldShowCamera.value = true
                             }
                         }
