@@ -83,18 +83,17 @@ fun NumericFieldTypeQuestion(
     optionList: List<OptionsItem>,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
-    showNextButton: Boolean = true,
+    showNextButton: Boolean = false,
     onSubmitClick: (Int) -> Unit
 ) {
 val context = LocalContext.current
     val lazyColumnListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    LaunchedEffect(key1 = true){
-        if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
-                           coroutineScope.launch {
-                                lazyColumnListState.scrollToItem(0)
-                        }
+    if(viewModel?.prefRepo?.isNeedQuestionToScroll() == true){
+        coroutineScope.launch {
+            lazyColumnListState.scrollToItem(0)
         }
+        viewModel?.prefRepo?.saveNeedQuestionToScroll(false)
     }
     Box {
         ConstraintLayout(modifier = modifier

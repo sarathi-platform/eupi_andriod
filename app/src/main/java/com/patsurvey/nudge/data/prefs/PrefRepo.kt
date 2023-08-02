@@ -78,4 +78,8 @@ interface PrefRepo {
 
    fun summaryScreenOpenFrom(): Int
 
+   fun saveNeedQuestionToScroll(needToScroll: Boolean)
+
+   fun isNeedQuestionToScroll(): Boolean
+
 }
