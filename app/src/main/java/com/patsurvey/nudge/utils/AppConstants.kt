@@ -30,6 +30,7 @@ const val PREF_MOBILE_NUMBER = "pref_mobile_number"
 const val SUCCESS = "SUCCESS"
 const val FAIL = "FAIL"
 const val SPLASH_SCREEN_DURATION = 2000L
+const val ONE_SECOND = 2000L
 const val STEP_COMPLETION_DELAY = 900L
 const val FINAL_STEP_COMPLETION_DELAY = 3000L
 const val NUDGE_DATABASE = "NudgeDatabase"

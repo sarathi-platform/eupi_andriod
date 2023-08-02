@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcScorePercentageEntity
@@ -36,6 +37,7 @@ class ConfigViewModel @Inject constructor(
     fun isLoggedIn(): Boolean {
         return prefRepo.getAccessToken()?.isNotEmpty() == true
     }
+    val showLoader = mutableStateOf(false)
 
     fun fetchLanguageDetails(context: Context, callBack: (imageList:List<String>) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {

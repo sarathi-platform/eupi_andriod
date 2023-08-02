@@ -32,7 +32,9 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ONE_SECOND
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
+import com.patsurvey.nudge.utils.ShowLoadingDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
@@ -49,22 +51,34 @@ fun SplashScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
+    if(viewModel.showLoader.value){
+        ShowLoadingDialog()
+    }
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
             if (isLoggedIn) {
+                delay(ONE_SECOND)
+                viewModel.showLoader.value=true
                 delay(SPLASH_SCREEN_DURATION)
+                viewModel.showLoader.value=false
                 navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
                     popUpTo(AuthScreen.START_SCREEN.route) {
                         inclusive = true
                     }
                 }
             } else {
+                delay(ONE_SECOND)
+                viewModel.showLoader.value=true
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
+                viewModel.showLoader.value=false
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
         } else {
+            delay(ONE_SECOND)
+            viewModel.showLoader.value=true
             viewModel.fetchLanguageDetails(context) {
+                viewModel.showLoader.value=false
                 if(it.isNotEmpty()){
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }

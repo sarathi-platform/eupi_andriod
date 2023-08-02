@@ -28,21 +28,31 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.Shape
@@ -51,13 +61,19 @@ import androidx.compose.ui.layout.Measurable
 import androidx.compose.ui.layout.MeasureResult
 import androidx.compose.ui.layout.MeasureScope
 import androidx.compose.ui.platform.debugInspectorInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import androidx.core.view.WindowCompat
@@ -69,11 +85,19 @@ import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementColor
+import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementColor
+import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -713,3 +737,49 @@ fun formatRatio(ratio:String):String{
     else ratio
 
 }
+
+@Composable
+fun ShowLoadingDialog(
+) {
+    Dialog(onDismissRequest = { /*setShowDialog(false)*/ },
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false,
+            dismissOnBackPress=false
+        ),
+    ) {
+        Surface(modifier = Modifier.width(80.dp).height(80.dp),
+            color = Color.White,
+        ) {
+            Box(modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .padding(14.dp)
+                        .align(Alignment.Center),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            color = blueDark,
+                            modifier = Modifier
+                                .size(28.dp)
+                                .align(Alignment.Center)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier
+                        .fillMaxWidth()
+                        .height(15.dp))
+
+                }
+            }
+        }
+//      }
+    }
+}
+
