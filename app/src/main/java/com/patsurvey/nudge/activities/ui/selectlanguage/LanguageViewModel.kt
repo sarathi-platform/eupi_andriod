@@ -29,7 +29,7 @@ class LanguageViewModel @Inject constructor(
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageEntity>()
-    val languagePosition= mutableStateOf(-1)
+    val languagePosition= mutableStateOf(0)
     init {
         fetchLanguageList()
     }
@@ -38,7 +38,19 @@ class LanguageViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val list=languageListDao.getAllLanguages()
             withContext(Dispatchers.IO){
-                _languageList.value=list
+                if (list.isNullOrEmpty()) {
+                    _languageList.value = listOf(
+                        LanguageEntity(
+                            id = 2,
+                            language = "English",
+                            langCode = "en",
+                            orderNumber = 1,
+                            localName = "English"
+                        )
+                    )
+                } else {
+                    _languageList.value = list
+                }
             }
         }
     }

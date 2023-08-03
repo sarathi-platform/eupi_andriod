@@ -377,7 +377,7 @@ fun DigitalFormBScreen(
                             showLoader.value = true
                             viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

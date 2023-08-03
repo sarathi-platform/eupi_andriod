@@ -62,7 +62,6 @@ import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
@@ -385,7 +384,7 @@ fun DigitalFormAScreen(
                             showLoader.value = true
                             viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_a_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_a_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

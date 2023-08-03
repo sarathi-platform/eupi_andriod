@@ -487,10 +487,10 @@ class SyncHelper (
         }
     }
 
-    fun getFormPathKey(subPath: String,villageName: String): String {
+    fun getFormPathKey(subPath: String,villageId: Int): String {
         //val subPath formPictureScreenViewModel.pageItemClicked.value
         //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${villageName}_${subPath}"
+        return "${PREF_FORM_PATH}_${villageId}_${subPath}"
     }
 
     fun uploadFormsCAndD(context: Context) {
@@ -516,17 +516,17 @@ class SyncHelper (
     fun uploadFormCAndD(villageId : Int,context: Context) {
         job = MyApplication.appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             val formList = arrayListOf<MultipartBody.Part>()
-            val villageName = villegeListDao.getVillage(villageId).name
+            val villageId = villegeListDao.getVillage(villageId).id
             try {
                 val formCImageList = (mutableMapOf<String, String>())
                 for (i in 0..4) {
                     formCImageList[getFormSubPath(FORM_C, i)] =
-                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i), villageName), "").toString()
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i), villageId), "").toString()
                 }
                 val formDImageList = (mutableMapOf<String, String>())
                 for (i in 0..4) {
                     formDImageList[getFormSubPath(FORM_D, i)] =
-                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i), villageName), "").toString()
+                        prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i), villageId), "").toString()
                 }
                 if (formCImageList.isNotEmpty()) {
                     formCImageList.onEachIndexed { index, it ->

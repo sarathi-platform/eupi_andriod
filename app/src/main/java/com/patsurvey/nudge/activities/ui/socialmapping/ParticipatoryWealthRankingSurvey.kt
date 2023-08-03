@@ -349,7 +349,7 @@ fun ParticipatoryWealthRankingSurvey(
                                                         WealthRank.RICH -> stringResource(id = R.string.rich_text)
                                                         else -> {""}
                                                     }
-                                                    append(stringResource(R.string.wealth_ranking_summary_empty_text) + " " + category)
+                                                    append(stringResource(R.string.wealth_ranking_summary_empty_text).replace("{CATEGORY}", category))
                                                 }
                                             },
                                             textAlign = TextAlign.Center,
