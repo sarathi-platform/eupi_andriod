@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import android.os.CountDownTimer
+import android.os.Environment
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.MyApplication
@@ -31,6 +32,9 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
+import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LogWriter
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -42,6 +46,7 @@ import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TolaStatus
+import com.patsurvey.nudge.utils.WealthRank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,9 +55,10 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.*
+import java.io.File
+import java.util.Timer
+import java.util.TimerTask
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @HiltViewModel
 class SettingViewModel @Inject constructor(
@@ -100,8 +106,30 @@ class SettingViewModel @Inject constructor(
         numericAnswerDao,
         questionDao)
     var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,bpcSelectedDidiDao,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao)
-    fun isFormAAvailableForVillage(villageId: Int) {
+    fun isFormAAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formCFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
+            if (formCFilePath.isFile && formCFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formAAvailabe.value = true
+                }
+            } else {
+                if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+                ) {
+                    withContext(Dispatchers.Main) {
+                        formAAvailabe.value = true
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        formAAvailabe.value = false
+                    }
+                }
+            }
+        }
+        /*val formAFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
+        formAAvailabe.value = formAFilePath.isFile && formAFilePath.exists()*/
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Participatory Wealth Ranking", true) }
             if (filteredStepList[0] != null) {
@@ -109,10 +137,33 @@ class SettingViewModel @Inject constructor(
             } else {
                 formAAvailabe.value = false
             }
-        }
+        }*/
     }
-    fun isFormBAvailableForVillage(villageId: Int) {
+    fun isFormBAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formCFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+            if (formCFilePath.isFile && formCFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formBAvailabe.value = true
+                }
+            } else {
+                if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                ) {
+                    withContext(Dispatchers.Main) {
+                        formBAvailabe.value = true
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        formBAvailabe.value = false
+                    }
+                }
+            }
+        }
+
+        /*val formBFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+        formBAvailabe.value = formBFilePath.isFile && formBFilePath.exists()*/
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
             if (filteredStepList[0] != null) {
@@ -120,11 +171,29 @@ class SettingViewModel @Inject constructor(
             } else {
                 formBAvailabe.value = false
             }
-        }
+        }*/
     }
 
-    fun isFormCAvailableForVillage(villageId: Int) {
+    fun isFormCAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formCFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_C_PDF_NAME}_${villageId}.pdf")
+            if (formCFilePath.isFile && formCFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formCAvailabe.value = true
+                }
+            } else {
+                val stepList = stepsListDao.getAllStepsForVillage(villageId)
+                val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
+                if (filteredStepList[0] != null) {
+                    formCAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
+                } else {
+                    formCAvailabe.value = false
+                }
+            }
+        }
+
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val stepList = stepsListDao.getAllStepsForVillage(villageId)
             val filteredStepList = stepList.filter { it.name.equals("VO Endorsement", true) }
             if (filteredStepList[0] != null) {
@@ -132,12 +201,12 @@ class SettingViewModel @Inject constructor(
             } else {
                 formCAvailabe.value = false
             }
-        }
+        }*/
     }
 
     fun createSettingMenu(list:ArrayList<SettingOptionModel>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
+            withContext(Dispatchers.Main){
                 _optionList.value = list
             }
         }
