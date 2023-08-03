@@ -1017,7 +1017,7 @@ fun ButtonOutlineWithTopIcon(
     onClick: () -> Unit
 ) {
     OutlinedButton(
-        onClick = {
+        onClick = singleClick {
             onClick()
         },
         border = BorderStroke(1.dp, buttonBorderColor),

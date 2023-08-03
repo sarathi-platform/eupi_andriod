@@ -1,10 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
-import android.os.Handler
-import android.os.Looper
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
@@ -25,7 +22,6 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,13 +60,16 @@ import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.singleClick
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
 
-@SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition")
+@SuppressLint("SuspiciousIndentation", "StateFlowValueCalledInComposition",
+    "CoroutineCreationDuringComposition"
+)
 @OptIn(ExperimentalFoundationApi::class, ExperimentalGlideComposeApi::class)
 @Composable
 fun QuestionScreen(
@@ -162,7 +161,7 @@ fun QuestionScreen(
     if(eventToPageChange.value){
         if(pagerState.currentPage == questionList.size-1){
             viewModel.nextButtonVisible.value=false
-        }else viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)// total pages are 5
+        }else viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)
 
        viewModel.prevButtonVisible.value= pagerState.currentPage > 0
     }
@@ -432,7 +431,7 @@ fun QuestionScreen(
                     .padding(bottom = 40.dp),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
-                onClick = {
+                onClick = singleClick {
                     viewModel.prevButtonVisible.value=false
                     viewModel.nextButtonVisible.value=false
                     viewModel.prefRepo.saveNeedQuestionToScroll(true)
@@ -499,40 +498,58 @@ fun QuestionScreen(
                     .padding(bottom = 40.dp),
                 shape = RoundedCornerShape(6.dp),
                 backgroundColor = languageItemActiveBg,
-                onClick = {
-                    viewModel.prevButtonVisible.value=false
-                    viewModel.nextButtonVisible.value=false
-                    viewModel.prefRepo.saveNeedQuestionToScroll(true)
-                    viewModel.isAnswerSelected.value=false
-                    selQuesIndex.value=selQuesIndex.value+1
-                    val nextPageIndex = pagerState.currentPage + 1
-                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage+1,didiId)
-                    if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name){
-                        val newAnswerOptionModel= OptionsItem( display = (if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
-                        else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
-                            BLANK_STRING)
-                        viewModel.setAnswerToQuestion(
-                            didiId =didiId,
-                            questionId = questionList[pagerState.currentPage].questionId ?: 0,
-                            answerOptionModel = newAnswerOptionModel,
-                            assetAmount = if(questionList[pagerState.currentPage].questionFlag.equals(
-                                    QUESTION_FLAG_RATIO,true))viewModel.totalAmount.value else  (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
-                            quesType = QuestionType.Numeric_Field.name,
-                            summary = questionList[pagerState.currentPage].questionSummary?: BLANK_STRING  /*(questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
+                onClick = singleClick{
+                    if(viewModel.isClickEnable.value) {
+                        viewModel.prevButtonVisible.value = false
+                        viewModel.nextButtonVisible.value = false
+                        viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                        viewModel.isAnswerSelected.value = false
+                        selQuesIndex.value = selQuesIndex.value + 1
+                        val nextPageIndex = pagerState.currentPage + 1
+                        viewModel.findListTypeSelectedAnswer(pagerState.currentPage + 1, didiId)
+                        if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name) {
+                            val newAnswerOptionModel = OptionsItem(
+                                display = (if (questionList[pagerState.currentPage].questionFlag?.equals(
+                                        QUESTION_FLAG_RATIO,
+                                        true
+                                    ) == true
+                                ) viewModel.totalAmount.value.toString()
+                                else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                                0,
+                                0,
+                                0,
+                                BLANK_STRING
+                            )
+                            viewModel.setAnswerToQuestion(
+                                didiId = didiId,
+                                questionId = questionList[pagerState.currentPage].questionId ?: 0,
+                                answerOptionModel = newAnswerOptionModel,
+                                assetAmount = if (questionList[pagerState.currentPage].questionFlag.equals(
+                                        QUESTION_FLAG_RATIO, true
+                                    )
+                                ) viewModel.totalAmount.value else (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
+                                quesType = QuestionType.Numeric_Field.name,
+                                summary = questionList[pagerState.currentPage].questionSummary
+                                    ?: BLANK_STRING  /*(questionList[pagerState.currentPage].questionSummary?: BLANK_STRING) + " " + if (questionList[pagerState.currentPage].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) context.getString(R.string.total_productive_asset_value_for_ratio,viewModel.totalAmount.value.toString())
                             else context.getString(R.string.total_productive_asset_value,(viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString())*/,
-                            selIndex = -1,
-                            enteredAssetAmount = if(viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
-                            questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
-                        ) {
-                            coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
-                                viewModel.isQuestionChange.value = true
-                                eventToPageChange.value=true
+                                selIndex = -1,
+                                enteredAssetAmount = if (viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                                questionFlag = questionList[pagerState.currentPage].questionFlag
+                                    ?: QUESTION_FLAG_WEIGHT
+                            ) {
+                                coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                                    .invokeOnCompletion {
+                                        viewModel.isQuestionChange.value = true
+                                        eventToPageChange.value = true
+                                    }
                             }
+                        } else {
+                            coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
+                                .invokeOnCompletion {
+                                    viewModel.isQuestionChange.value = true
+                                    eventToPageChange.value = true
+                                }
                         }
-                    } else {
-                        coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }.invokeOnCompletion {
-                            viewModel.isQuestionChange.value = true
-                            eventToPageChange.value=true }
                     }
                 },
                 text = {
