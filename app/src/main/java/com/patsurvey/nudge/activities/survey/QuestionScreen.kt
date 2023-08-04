@@ -49,10 +49,8 @@ import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.EXTENSION_WEBP
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
@@ -143,18 +141,18 @@ fun QuestionScreen(
 
     val context = LocalContext.current
     BackHandler() {
-        if(viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
-            if ((viewModel.prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
-                    BPC_USER_TYPE,
-                    true
-                )
-            )
+        if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
+            if (viewModel.prefRepo.isUserBPC()) {
                 navController.popBackStack(
                     BpcDidiListScreens.BPC_DIDI_LIST.route,
                     inclusive = false
                 )
-            else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
-        }else navController.popBackStack()
+            } else {
+                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+            }
+        } else {
+            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+        }
     }
 
 
