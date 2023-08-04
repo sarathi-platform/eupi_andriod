@@ -105,7 +105,7 @@ class SettingViewModel @Inject constructor(
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
         questionDao)
-    var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,bpcSelectedDidiDao,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao)
+    var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,bpcSelectedDidiDao,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao,villegeListDao)
     fun isFormAAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formCFilePath =
@@ -260,16 +260,25 @@ class SettingViewModel @Inject constructor(
                     isNeedToBeSync.value = 2
                 }
             } else {
-            NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 0")
-            isNeedToBeSync.value = 0
-        }
+                NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 0")
+                isNeedToBeSync.value = 0
+            }
         }
     }
 
-    fun isBPCScoreSaved() : Boolean{
-        val isBpcScoreSaved = prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id,false)
-        NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
-        return isBpcScoreSaved
+    private fun isBPCScoreSaved() : Boolean{
+        val villageList = villegeListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
+        for(village in villageList) {
+            val isBpcScoreSaved = prefRepo.getPref(
+                PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
+                false
+
+            )
+            if(isBpcScoreSaved)
+                return isBpcScoreSaved
+            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
+        }
+        return false
     }
 
     fun isThirdStepNeedToBeSync(isNeedToBeSync : MutableState<Int>){
@@ -560,8 +569,8 @@ class SettingViewModel @Inject constructor(
             if(prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)
                 && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
-                && didiDao.getAllNeedToPostBPCProcessDidi(true, prefRepo.getSelectedVillage().id).isEmpty()
-                && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,prefRepo.getSelectedVillage().id,"").isEmpty()
+                && didiDao.getAllNeedToPostBPCProcessDidi(true).isEmpty()
+                && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,"").isEmpty()
                 && isStepStatusSync(5)
                 && isBPCScoreSaved()){
                 NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced -> isBPCDataNeedToBeSynced.value = false")

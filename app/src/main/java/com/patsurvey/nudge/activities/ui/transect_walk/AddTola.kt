@@ -134,7 +134,7 @@ fun AddTolaBox(
                 } else {
                     showInlineLocationError.value = true
                 }
-                LocationUtil.cancellationSignal.cancel()
+//                LocationUtil.cancellationSignal.cancel()
             }
             showLoader.value = false
         }
@@ -532,7 +532,7 @@ fun TolaBox(
                 } else {
                     showInlineLocationError.value = true
                 }
-                LocationUtil.cancellationSignal.cancel()
+//                LocationUtil.cancellationSignal.cancel()
             }
             showLoader.value = false
         }

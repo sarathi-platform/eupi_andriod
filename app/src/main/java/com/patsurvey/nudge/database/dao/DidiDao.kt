@@ -70,11 +70,11 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostPAT = :needsToPostPAT AND villageId = :villageId")
     fun getAllNeedToPostPATDidi(needsToPostPAT: Boolean, villageId: Int): List<DidiEntity>
 
-    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus AND villageId = :villageId")
-    fun getAllNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean, villageId: Int): List<DidiEntity>
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus")
+    fun getAllNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean): List<DidiEntity>
 
-    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus AND villageId = :villageId AND transactionId != :transactionId")
-    fun getAllPendingNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean, villageId: Int,transactionId: String): List<DidiEntity>
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostBPCProcessStatus = :needsToPostBPCProcessStatus AND transactionId != :transactionId")
+    fun getAllPendingNeedToPostBPCProcessDidi(needsToPostBPCProcessStatus: Boolean, transactionId: String): List<DidiEntity>
 
     @Query("DELETE FROM $DIDI_TABLE where cohortId =:tolaId")
     fun deleteDidisForTola(tolaId: Int)
