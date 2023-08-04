@@ -284,7 +284,7 @@ fun QuestionScreen(
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             coroutineScope.launch {
-                                                delay(100)
+                                                delay(150)
                                                 eventToPageChange.value = true
                                             }
                                                 pagerState.animateScrollToPage(
@@ -464,11 +464,20 @@ fun QuestionScreen(
                             questionFlag = questionList[pagerState.currentPage].questionFlag ?: QUESTION_FLAG_WEIGHT
                         ) {
                             coroutineScope.launch {
+                                delay(300)
+                                eventToPageChange.value=true
+                            }
+                            coroutineScope.launch {
                                 pagerState.animateScrollToPage(prevPageIndex)
-                            }.invokeOnCompletion {  eventToPageChange.value=true  }
+                            }
                         }
-                    }else coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }.invokeOnCompletion {
-                        eventToPageChange.value=true   }
+                    }else{
+                        coroutineScope.launch {
+                            delay(300)
+                            eventToPageChange.value=true
+                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
+                    }
                 },
                 text = {
                     Image(
@@ -542,18 +551,18 @@ fun QuestionScreen(
                                 questionFlag = questionList[pagerState.currentPage].questionFlag
                                     ?: QUESTION_FLAG_WEIGHT
                             ) {
+                                coroutineScope.launch {
+                                    delay(300)
+                                    eventToPageChange.value=true
+                                }
                                 coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                                    .invokeOnCompletion {
-                                        viewModel.isQuestionChange.value = true
-                                        eventToPageChange.value = true
-                                    }
                             }
                         } else {
+                            coroutineScope.launch {
+                                delay(300)
+                                eventToPageChange.value=true
+                            }
                             coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex) }
-                                .invokeOnCompletion {
-                                    viewModel.isQuestionChange.value = true
-                                    eventToPageChange.value = true
-                                }
                         }
                     }
                 },
