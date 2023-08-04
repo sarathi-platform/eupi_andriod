@@ -50,6 +50,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
+import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
@@ -236,25 +237,25 @@ fun PatSurveyCompleteSummary(
 
                         item { Spacer(modifier = Modifier.height(4.dp)) }
 
-                        itemsIndexed(answerSummeryList) { index, answer ->
-                            val question = inclusionQuestionList.find { it.questionId == answer.questionId }
+                        itemsIndexed(inclusionQuestionList) { index, question ->
+                            val answer = answerSummeryList.find { it.questionId == question.questionId }
                             SectionTwoSummeryItem(
                                 index = index,
-                                quesSummery = answer.questionId.let {
+                                quesSummery = answer?.questionId.let {
                                     patSectionSummaryViewModel.getQuestionSummary(
-                                        it
+                                        it?:0
                                     )
                                 },
-                                answerValue = answer.questionId.let {
-                                    answer.optionId?.let { it1 ->
+                                answerValue = answer?.questionId.let {
+                                    answer?.optionId?.let { it1 ->
                                         patSectionSummaryViewModel.getOptionForLanguage(
-                                            it, it1,answer.answerValue?:"0"
+                                            it?:0, it1,answer.answerValue?:"0"
                                         )
                                     }
                                 } ?: BLANK_STRING,
-                                questionType = answer.type,
+                                questionType = answer?.type?: QuestionType.List.name,
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
-                                questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
+                                questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
                                 if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                                     patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(

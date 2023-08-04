@@ -161,7 +161,7 @@ fun QuestionScreen(
     if(eventToPageChange.value){
         if(pagerState.currentPage == questionList.size-1){
             viewModel.nextButtonVisible.value=false
-        }else viewModel.nextButtonVisible.value = (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)
+        }else viewModel.nextButtonVisible.value = viewModel.isClickEnable.value &&  (pagerState.currentPage < questionList.size - 1 && pagerState.currentPage < answerList.size)
 
        viewModel.prevButtonVisible.value= pagerState.currentPage > 0
     }
@@ -276,17 +276,22 @@ fun QuestionScreen(
                                                 viewModel.updateDidiQuesSection(didiId, PatSurveyStatus.INPROGRESS.ordinal)
                                     }
 
+
                                     coroutineScope.launch {
                                         delay(250)
                                         if (answeredQuestion.value < (questionList.size)) {
                                             selQuesIndex.value=selQuesIndex.value+1
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
+                                            coroutineScope.launch {
+                                                delay(100)
+                                                eventToPageChange.value = true
+                                            }
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
-                                                eventToPageChange.value = true
+
 
                                         } else {
                                             navigateToSummeryPage(

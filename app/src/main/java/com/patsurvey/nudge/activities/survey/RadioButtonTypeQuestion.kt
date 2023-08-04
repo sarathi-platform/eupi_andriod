@@ -71,35 +71,6 @@ fun RadioButtonTypeQuestion(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
              }) {
-                /*val que = "<p>My favorite color is <del>blue</del> <ins>red</ins>.</p>"
-                AndroidView(
-                    factory = { context ->
-                   TextView(context).apply {
-                        text = HtmlCompat.fromHtml(buildAnnotatedString {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = textColorDark,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("$questionNumber.")
-                            }
-                            append(" $que")
-                        }.toString(), HtmlCompat.FROM_HTML_MODE_LEGACY)
-                        setTextAppearance(R.style.TextAppearance_AppCompat_Body2)
-                    }
-
-                },
-                    modifier = Modifier
-                        .border(
-                            BorderStroke(1.dp, lightGray2),
-                            shape = RoundedCornerShape(6.dp)
-                        )
-                        .padding(14.dp)
-                        .fillMaxWidth()
-                )*/
                 HtmlText(
                     modifier = Modifier
                         .border(

@@ -67,7 +67,7 @@ class QuestionScreenViewModel @Inject constructor(
     val isClickEnable= mutableStateOf(false)
     val listTypeAnswerIndex = mutableStateOf(-1)
     val maxQuesCount = mutableStateOf(0)
-    val answeredCount = mutableStateOf(0)
+    val isNextQuestionAnswered= mutableStateOf(false)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private val _selIndValue = MutableStateFlow<Int>(-1)
@@ -226,6 +226,7 @@ class QuestionScreenViewModel @Inject constructor(
                             questionFlag = questionFlag
                         )
                         answerDao.updateNeedToPost(didiId, questionId, true)
+                        answerDao.updateAllAnswersNeedToPost(didiId, true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
@@ -248,6 +249,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionFlag = questionFlag
                             )
                         )
+                        answerDao.updateAllAnswersNeedToPost(didiId, true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
