@@ -57,7 +57,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberImagePainter
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.survey.QuestionScreenViewModel
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
@@ -149,7 +148,7 @@ fun SocialMappingDidiListScreen(
                     modifier = Modifier.fillMaxWidth(),
                 )
 
-                val count = didiList.value.size
+                val count = didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 if (showLoader.value) {
                     Box(
                         modifier = Modifier

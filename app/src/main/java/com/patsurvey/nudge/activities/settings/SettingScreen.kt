@@ -163,9 +163,9 @@ fun SettingScreen(
 //    }
     LaunchedEffect(key1 = true) {
         val villageId = viewModel.prefRepo.getSelectedVillage().id
-        viewModel.isFormAAvailableForVillage(villageId)
-        viewModel.isFormBAvailableForVillage(villageId)
-        viewModel.isFormCAvailableForVillage(villageId)
+        viewModel.isFormAAvailableForVillage(context = context, villageId = villageId)
+        viewModel.isFormBAvailableForVillage(context = context, villageId = villageId)
+        viewModel.isFormCAvailableForVillage(context = context, villageId = villageId)
     }
 
     val formList = mutableListOf<String>()

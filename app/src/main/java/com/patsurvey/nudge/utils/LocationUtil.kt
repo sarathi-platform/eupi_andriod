@@ -385,7 +385,7 @@ object LocationUtil {
                 if (networkLocation != null) {
                     NudgeLogger.d(
                         "LocationUtils",
-                        "setLocation -> gpsConsumer: gpsLocation != null => gpsLocation: $networkLocation"
+                        "setLocation -> networkConsumer: gpsLocation != null => gpsLocation: $networkLocation"
                     )
 
                     locationByNetwork = networkLocation

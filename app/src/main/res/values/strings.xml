@@ -378,4 +378,7 @@
     <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>
     <string name="social_mapping_complete_status_text">Social Mapping Done</string>
     <string name="page_name_text">Page</string>
+
+    <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
+
 </resources>

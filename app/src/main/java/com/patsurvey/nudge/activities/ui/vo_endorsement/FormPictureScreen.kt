@@ -688,7 +688,15 @@ fun FormPictureScreen(
                                                     ""
                                                 )?.let { if (it.isNotEmpty()) it else "" }
                                                     .toString()
-                                            formPictureScreenViewModel.setUri(localContext)
+                                            if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                formPictureScreenViewModel.setUri(localContext)
+                                            imageRequest = ImageRequest.Builder(localContext)
+                                                .data(File(formPictureScreenViewModel.imagePath.value))
+                                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                                .diskCachePolicy(CachePolicy.DISABLED)
+                                                .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                .build()
+                                            delay(250)
                                             if (!scaffoldState.isVisible)
                                                 scaffoldState.show()
                                             else

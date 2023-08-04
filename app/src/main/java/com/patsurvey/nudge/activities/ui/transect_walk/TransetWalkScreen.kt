@@ -159,7 +159,7 @@ fun TransectWalkScreen(
                     voName = viewModel.prefRepo.getSelectedVillage().federationName ?: BLANK_STRING,
                     modifier = Modifier
                 )
-                val tolaCount = tolaList.size
+                val tolaCount = tolaList.filter { it.name != EMPTY_TOLA_NAME && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
 //                val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
 //                val totalCountWithoutEmptyTola = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
