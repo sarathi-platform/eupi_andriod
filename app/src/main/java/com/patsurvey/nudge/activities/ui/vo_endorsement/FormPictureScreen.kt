@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateInt
@@ -16,7 +18,6 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -85,10 +86,11 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import coil.compose.rememberImagePainter
+import coil.compose.AsyncImage
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.CameraViewForForm
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -114,8 +116,10 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showToast
+import com.patsurvey.nudge.utils.uriFromFile
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalPermissionsApi::class)
 @Composable
@@ -159,6 +163,14 @@ fun FormPictureScreen(
         mutableStateOf(false)
     }
 
+    var requestId by remember { mutableStateOf(0) }
+
+    var imageRequest = ImageRequest.Builder(localContext)
+        .data(File(formPictureScreenViewModel.imagePath.value))
+        .memoryCachePolicy(CachePolicy.DISABLED)
+        .diskCachePolicy(CachePolicy.DISABLED)
+        .setParameter("requestId", requestId, memoryCacheKey = null)
+        .build()
 
     BackHandler() {
         navController.popBackStack()
@@ -175,7 +187,7 @@ fun FormPictureScreen(
         ModalBottomSheetLayout(
             sheetContent = {
                 Box {
-                    Image(
+                    AsyncImage(
                         modifier = Modifier
                             .background(Color.Black)
                             .fillMaxSize()
@@ -192,7 +204,8 @@ fun FormPictureScreen(
                             )
                             .then(modifier),
                         contentScale = ContentScale.FillWidth,
-                        painter = rememberImagePainter(formPictureScreenViewModel.uri.value),
+                        model = imageRequest
+                        ,
                         contentDescription = "image"
                     )
                     IconButton(
@@ -239,7 +252,7 @@ fun FormPictureScreen(
                     .padding(bottom = bottomPadding)
                 ) {
 
-                    AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
+                    /*AnimatedVisibility(formPictureScreenViewModel.shouldShowCamera.value.second) {
                         CameraViewForForm(
                             modifier = Modifier.fillMaxSize(),
                             outputDirectory = formPictureScreenViewModel.outputDirectory,
@@ -261,7 +274,7 @@ fun FormPictureScreen(
                                 }
                             }
 
-                            /*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*/,
+                            *//*"${formPictureScreenViewModel.shouldShowCamera.value.first}_page_${formPictureScreenViewModel.formCPageList.value.size + 1}"*//*,
                             executor = formPictureScreenViewModel.cameraExecutor,
                             onImageCaptured = { uri, photoPath ->
                                 handleImageCapture(
@@ -277,8 +290,26 @@ fun FormPictureScreen(
                             },
                             onError = { Log.e("FormPictureScreen", "View error:", it) }
                         )
-                    }
-                    AnimatedVisibility(visible = !formPictureScreenViewModel.shouldShowCamera.value.second) {
+                    }*/
+
+                    val cameraLauncher = rememberLauncherForActivityResult(
+                        contract = ActivityResultContracts.TakePicture(),
+                        onResult = { success ->
+                            if (success) {
+                                formPictureScreenViewModel.photoUri = formPictureScreenViewModel.tempUri
+                                handleImageCapture(formPictureScreenViewModel.photoUri, formPictureScreenViewModel.imagePathForCapture, context = (context as MainActivity), formName = formPictureScreenViewModel.getFormSubPath(
+                                    formPictureScreenViewModel.shouldShowCamera.value.first
+                                    , if (formPictureScreenViewModel.retakeImageIndex.value != -1)formPictureScreenViewModel.formCPageList.value.size + 1 else formPictureScreenViewModel.retakeImageIndex.value + 1), viewModal = formPictureScreenViewModel)
+                                formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
+                            } else {
+                                formPictureScreenViewModel.shouldShowCamera.value = Pair("", false)
+                                formPictureScreenViewModel.tempUri = Uri.EMPTY
+                                formPictureScreenViewModel.imagePathForCapture = ""
+                            }
+                        }
+                    )
+
+                    AnimatedVisibility(visible = !formPictureScreenViewModel.shouldShowCamera.value.second && !formPictureScreenViewModel.shouldShowPhoto.value) {
                         Column(
                             modifier = modifier
                                 .fillMaxSize()
@@ -349,6 +380,12 @@ fun FormPictureScreen(
                                                     .toString()
                                             if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
                                                 formPictureScreenViewModel.setUri(localContext)
+                                            imageRequest = ImageRequest.Builder(localContext)
+                                                .data(File(formPictureScreenViewModel.imagePath.value))
+                                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                                .diskCachePolicy(CachePolicy.DISABLED)
+                                                .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                .build()
                                             delay(250)
                                             if (!scaffoldState.isVisible)
                                                 scaffoldState.show()
@@ -361,22 +398,254 @@ fun FormPictureScreen(
 
                                     },
                                     addPageClicked = {
-                                        if (formPictureScreenViewModel.formCPageList.value.size < 5) {
-                                            formPictureScreenViewModel.setCameraExecutor()
-                                            formPictureScreenViewModel.shouldShowCamera.value =
-                                                Pair(FORM_C, true)
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Permission previously granted")
+
+                                                    if (formPictureScreenViewModel.formCPageList.value.size < 5) {
+                                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                                            Pair(FORM_C, true)
+                                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                                            formPictureScreenViewModel.shouldShowCamera.value.first
+                                                            , formPictureScreenViewModel.formCPageList.value.size + 1)
+                                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                                        val uri = uriFromFile(context = context, imageFile)
+                                                        formPictureScreenViewModel.tempUri = uri
+                                                        cameraLauncher.launch(uri)
+                                                    } else {
+                                                        showToast(
+                                                            localContext,
+                                                            "Max 5 Pages can be captured"
+                                                        )
+                                                    }
+
+
+
+                                                    /*val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val uri = uriFromFile(localContext, imageFile)
+                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)*/
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
                                         } else {
-                                            showToast(
-                                                localContext,
-                                                "Max 5 Pages can be captured"
-                                            )
-//                                    navController.navigate("image_viewer/$FORM_C")
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                                    if (formPictureScreenViewModel.formCPageList.value.size < 5) {
+                                                        formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_C, true)
+                                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                                            FORM_C, formPictureScreenViewModel.formCPageList.value.size + 1)
+                                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                                        val uri = uriFromFile(context = context, imageFile)
+                                                        formPictureScreenViewModel.tempUri = uri
+                                                        cameraLauncher.launch(uri)
+                                                    } else {
+                                                        showToast(
+                                                            localContext,
+                                                            "Max 5 Pages can be captured"
+                                                        )
+                                                    }
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
                                         }
                                     },
                                     retakeButtonClicked = { index ->
+
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d(
+                                                        "FormPictureScreen",
+                                                        "Permission previously granted"
+                                                    )
+                                                    formPictureScreenViewModel.retakeImageIndex.value = index
+                                                    formPictureScreenViewModel.shouldShowCamera.value =
+                                                        Pair(FORM_C, true)
+                                                    val formName =
+                                                        formPictureScreenViewModel.getFormSubPath(
+                                                            formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                            index + 1
+                                                        )
+                                                    val imageFile =
+                                                        formPictureScreenViewModel.getImageFileName(
+                                                            context,
+                                                            formName
+                                                        )
+                                                    formPictureScreenViewModel.imagePathForCapture =
+                                                        imageFile.absolutePath
+                                                    val uri =
+                                                        uriFromFile(context = context, imageFile)
+                                                    formPictureScreenViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)
+
+                                                    /*val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val uri = uriFromFile(localContext, imageFile)
+                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)*/
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
+                                        } else {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                                    formPictureScreenViewModel.retakeImageIndex.value =
+                                                        index
+                                                    formPictureScreenViewModel.shouldShowCamera.value =
+                                                        Pair(FORM_C, true)
+                                                    val formName =
+                                                        formPictureScreenViewModel.getFormSubPath(
+                                                            formPictureScreenViewModel.shouldShowCamera.value.first,
+                                                            index + 1
+                                                        )
+                                                    val imageFile =
+                                                        formPictureScreenViewModel.getImageFileName(
+                                                            context,
+                                                            formName
+                                                        )
+                                                    formPictureScreenViewModel.imagePathForCapture =
+                                                        imageFile.absolutePath
+                                                    val uri =
+                                                        uriFromFile(context = context, imageFile)
+                                                    formPictureScreenViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
+                                        }
+
                                         formPictureScreenViewModel.retakeImageIndex.value =
                                             index
-                                        formPictureScreenViewModel.setCameraExecutor()
+//                                        formPictureScreenViewModel.setCameraExecutor()
                                         formPictureScreenViewModel.shouldShowCamera.value =
                                             Pair(FORM_C, true)
                                         val imageToBeReplaced =
@@ -419,7 +688,15 @@ fun FormPictureScreen(
                                                     ""
                                                 )?.let { if (it.isNotEmpty()) it else "" }
                                                     .toString()
-                                            formPictureScreenViewModel.setUri(localContext)
+                                            if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                formPictureScreenViewModel.setUri(localContext)
+                                            imageRequest = ImageRequest.Builder(localContext)
+                                                .data(File(formPictureScreenViewModel.imagePath.value))
+                                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                                .diskCachePolicy(CachePolicy.DISABLED)
+                                                .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                .build()
+                                            delay(250)
                                             if (!scaffoldState.isVisible)
                                                 scaffoldState.show()
                                             else
@@ -430,23 +707,130 @@ fun FormPictureScreen(
                                         formDCardExpanded.value = !formDCardExpanded.value
                                     },
                                     addPageClicked = {
-                                        if (formPictureScreenViewModel.formDPageList.value.size < 5) {
-                                            formPictureScreenViewModel.setCameraExecutor()
-                                            formPictureScreenViewModel.shouldShowCamera.value =
-                                                Pair(FORM_D, true)
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Permission previously granted")
+
+                                                    if (formPictureScreenViewModel.formDPageList.value.size < 5) {
+                                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                                            Pair(FORM_D, true)
+                                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                                            formPictureScreenViewModel.shouldShowCamera.value.first
+                                                            , formPictureScreenViewModel.formDPageList.value.size + 1)
+                                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                                        val uri = uriFromFile(context = context, imageFile)
+                                                        formPictureScreenViewModel.tempUri = uri
+                                                        cameraLauncher.launch(uri)
+                                                    } else {
+                                                        showToast(
+                                                            localContext,
+                                                            "Max 5 Pages can be captured"
+                                                        )
+                                                    }
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) || ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("FormPictureScreen: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
                                         } else {
-                                            showToast(
-                                                localContext,
-                                                localContext.getString(R.string.max_5_pages_can_be_captured)
-                                            )
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+
+                                                    if (formPictureScreenViewModel.formDPageList.value.size < 5) {
+                                                        formPictureScreenViewModel.shouldShowCamera.value = Pair(FORM_D, true)
+                                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                                            FORM_D, formPictureScreenViewModel.formDPageList.value.size + 1)
+                                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                                        val uri = uriFromFile(context = context, imageFile)
+                                                        formPictureScreenViewModel.tempUri = uri
+                                                        cameraLauncher.launch(uri)
+                                                    } else {
+                                                        showToast(
+                                                            localContext,
+                                                            "Max 5 Pages can be captured"
+                                                        )
+                                                    }
+                                                }
+
+                                                ActivityCompat.shouldShowRequestPermissionRationale(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) -> {
+                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    ActivityCompat.requestPermissions(
+                                                        localContext as Activity,
+                                                        arrayOf(
+                                                            Manifest.permission.CAMERA,
+                                                            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                                                            Manifest.permission.READ_EXTERNAL_STORAGE
+                                                        ),
+                                                        1
+                                                    )
+                                                }
+
+                                                else -> {
+                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    shouldRequestPermission.value = true
+                                                }
+                                            }
                                         }
                                     },
                                     retakeButtonClicked = { index ->
+
                                         formPictureScreenViewModel.retakeImageIndex.value =
                                             index
-                                        formPictureScreenViewModel.setCameraExecutor()
                                         formPictureScreenViewModel.shouldShowCamera.value =
                                             Pair(FORM_D, true)
+                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                            formPictureScreenViewModel.shouldShowCamera.value.first
+                                            , formPictureScreenViewModel.formDPageList.value.size + 1)
+                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                        val uri = uriFromFile(context = context, imageFile)
+                                        formPictureScreenViewModel.tempUri = uri
+                                        cameraLauncher.launch(uri)
                                     },
                                     deleteButtonClicked = {
                                         formPictureScreenViewModel.formDPageList.value = mutableListOf()
@@ -542,7 +926,7 @@ private fun handleImageCapture(
 ) {
     viewModal.photoUri = uri
 
-    viewModal.cameraExecutor.shutdown()
+//    viewModal.cameraExecutor.shutdown()
 
     if (viewModal.shouldShowCamera.value.first == FORM_C) {
         if (viewModal.retakeImageIndex.value != -1) {
@@ -556,6 +940,9 @@ private fun handleImageCapture(
                 it["Page_${viewModal.retakeImageIndex.value}"] = photoPath
             }
             viewModal.retakeImageIndex.value = -1
+            viewModal.shouldShowCamera.value = Pair("", false)
+            viewModal.tempUri = Uri.EMPTY
+            viewModal.imagePathForCapture = ""
         } else {
             viewModal.saveFormPath(
                 photoPath,
@@ -570,6 +957,9 @@ private fun handleImageCapture(
             if (viewModal.formsCClicked.value <= 1) {
                 viewModal.formsCClicked.value = viewModal.formsCClicked.value + 1
             }
+            viewModal.shouldShowCamera.value = Pair("", false)
+            viewModal.tempUri = Uri.EMPTY
+            viewModal.imagePathForCapture = ""
         }
     } else {
         if (viewModal.retakeImageIndex.value != -1) {
@@ -848,7 +1238,9 @@ fun ExpandableFormPictureCard(
                     )
                 }
             }
-            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp))
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -962,7 +1354,9 @@ fun ExpandableFormPictureCard(
                     modifier = Modifier.padding(horizontal = 26.dp)
                 )
             }
-            Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
+            Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(10.dp))
         }
     }
 }
@@ -988,7 +1382,7 @@ fun PageItem(
             .then(modifier),
     ) {
         Text(
-            text = "Page $pageNumber",
+            text = stringResource(R.string.page_name_text) + " " + pageNumber,
             textAlign = TextAlign.Start,
             fontSize = 14.sp,
             fontFamily = NotoSans,

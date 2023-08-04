@@ -138,36 +138,40 @@ fun LanguageScreen(
 
         Button(
             onClick = {
-                val isLanguageVillageAvailable= mutableStateOf(true)
-                viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
-                    it.id?.let { languageId->
-                        viewModel.prefRepo.saveAppLanguageId(languageId)
-                        if(!pageFrom.equals(ARG_FROM_HOME,true)){
-                            viewModel.updateSelectedVillage(languageId){
-                                isLanguageVillageAvailable.value=false
-                                viewModel.prefRepo.saveAppLanguageId(2)
+                try {
+                    val isLanguageVillageAvailable= mutableStateOf(true)
+                    viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
+                        it.id?.let { languageId->
+                            viewModel.prefRepo.saveAppLanguageId(languageId)
+                            if(!pageFrom.equals(ARG_FROM_HOME,true)){
+                                viewModel.updateSelectedVillage(languageId){
+                                    isLanguageVillageAvailable.value=false
+                                    viewModel.prefRepo.saveAppLanguageId(2)
+                                }
+                            }
+                        }
+                        it.langCode?.let { code ->
+                            if(isLanguageVillageAvailable.value){
+                                viewModel.prefRepo.saveAppLanguage(code)
+                                (context as MainActivity).setLanguage(code)
+                            }else{
+                                viewModel.prefRepo.saveAppLanguage("en")
+                                (context as MainActivity).setLanguage("en")
                             }
                         }
                     }
-                    it.langCode?.let { code ->
-                        if(isLanguageVillageAvailable.value){
-                            viewModel.prefRepo.saveAppLanguage(code)
-                            (context as MainActivity).setLanguage(code)
-                        }else{
-                            viewModel.prefRepo.saveAppLanguage("en")
-                            (context as MainActivity).setLanguage("en")
+                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
+                        navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
+                    }else {
+                        if (pageFrom.equals(ARG_FROM_HOME, true))
+                            navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                        else {
+                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
+                            navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
                         }
                     }
-                }
-                if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
-                    navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
-                }else {
-                    if (pageFrom.equals(ARG_FROM_HOME, true))
-                        navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
-                    else {
-                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
-                        navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
-                    }
+                } catch (ex: Exception) {
+                    NudgeLogger.e("LanguageScreen", "Continue Button click", ex)
                 }
             },
             modifier = Modifier

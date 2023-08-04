@@ -55,6 +55,7 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -88,6 +89,10 @@ fun DigitalFormBScreen(
                 }
             }
         }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.generateFormBPdf(context) { formGenerated, formPath -> }
     }
 
     val formPathState = remember {
@@ -143,7 +148,7 @@ fun DigitalFormBScreen(
                 if (shouldRequestPermission.value) {
                     ShowDialog(
                         title = stringResource(R.string.permission_required_prompt_title),
-                        message = stringResource(R.string.permission_dialog_prompt_message),
+                        message = stringResource(R.string.storage_permission_dialog_prompt_message),
                         setShowDialog = {
                             shouldRequestPermission.value = it
                         }
@@ -277,7 +282,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.forVoEndorsement == 1  }.size.toString(),
+                                text = didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -319,7 +324,7 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items( didiList.filter { it.forVoEndorsement == 1  }) { card ->
+                        items( didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
                             DidiVillageItem(card)
                         }
                     }
@@ -342,7 +347,7 @@ fun DigitalFormBScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
                         )
                         viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
@@ -372,12 +377,12 @@ fun DigitalFormBScreen(
                         showLoader = showLoader.value,
                     ) {
                         if (formPathState.value.isFile) {
-                            navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                            navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
                         } else {
                             showLoader.value = true
                             viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

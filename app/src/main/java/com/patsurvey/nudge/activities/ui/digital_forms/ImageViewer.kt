@@ -21,10 +21,12 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberImagePainter
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.black20
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.utils.uriFromFile
@@ -116,7 +118,7 @@ fun FormImageViewerScreen(
             }
 
             Text(
-                text = "Page ${pagerState.currentPage + 1}",
+                text = "${stringResource(id = R.string.page_name_text)} ${pagerState.currentPage + 1}",
                 style = smallTextStyle,
                 color = Color.White,
                 textAlign = TextAlign.Center,

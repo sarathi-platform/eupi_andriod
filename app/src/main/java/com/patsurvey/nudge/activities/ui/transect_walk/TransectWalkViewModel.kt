@@ -925,7 +925,7 @@ class TransectWalkViewModel @Inject constructor(
     fun getFormPathKey(subPath: String): String {
         //val subPath formPictureScreenViewModel.pageItemClicked.value
         //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_${subPath}"
+        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {

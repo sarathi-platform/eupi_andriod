@@ -359,4 +359,7 @@
     <string name="vo_summary_rejected_empty_text">VO দ্বারা প্রত্যাখ্যান কোন দিদি</string>
     <string name="vo_summary_endorsed_empty_text">VO দ্বারা কোন দিদি অনুমোদন করা হয়নি</string>
     <string name="social_mapping_complete_status_text">सोशल मैपिंग हो गई है</string>
+    <string name="page_name_text">পাতা</string>
+
+    <string name="storage_permission_dialog_prompt_message">সঞ্চয়স্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
 </resources>

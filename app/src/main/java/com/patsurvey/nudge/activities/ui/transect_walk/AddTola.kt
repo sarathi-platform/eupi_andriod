@@ -124,7 +124,7 @@ fun AddTolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(2000)
+            delay(3000)
             location = LocationUtil.location
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
@@ -134,6 +134,7 @@ fun AddTolaBox(
                 } else {
                     showInlineLocationError.value = true
                 }
+                LocationUtil.cancellationSignal.cancel()
             }
             showLoader.value = false
         }
@@ -521,7 +522,7 @@ fun TolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(2000)
+            delay(3000)
             location = LocationUtil.location
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
@@ -531,6 +532,7 @@ fun TolaBox(
                 } else {
                     showInlineLocationError.value = true
                 }
+                LocationUtil.cancellationSignal.cancel()
             }
             showLoader.value = false
         }
@@ -663,6 +665,7 @@ fun TolaBox(
                                 .clickable {
                                     location = tolaLocation ?: LocationCoordinates()
                                     showEditView = false
+                                    showInlineLocationError.value = false
                                 })
                         }
                         OutlinedTextField(
@@ -759,7 +762,7 @@ fun TolaBox(
                                 )
                             }
                         }
-                        if (showInlineLocationError.value) {
+                        if (showInlineLocationError.value && !locationAdded) {
                             Text(
                                 text =  stringResource(id = R.string.location_unavailable),
                                 style = mediumTextStyle,
@@ -792,6 +795,7 @@ fun TolaBox(
                                 ) {
                                     deleteButtonClicked()
                                     showEditView = false
+                                    showInlineLocationError.value = false
                                 }
                                 Spacer(modifier = Modifier.width(6.dp))
                             }
@@ -807,6 +811,7 @@ fun TolaBox(
                                 if (mTolaName.isNotEmpty()) {
                                     saveButtonClicked(mTolaName, location)
                                     showEditView = false
+                                    showInlineLocationError.value = false
                                 } else {
                                     showCustomToast(context, context.getString(R.string.enter_tola_name_message))
                                 }

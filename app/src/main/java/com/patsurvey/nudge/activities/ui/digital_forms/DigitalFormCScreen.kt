@@ -64,11 +64,11 @@ import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import com.patsurvey.nudge.utils.openSettings
@@ -101,6 +101,11 @@ fun DigitalFormCScreen(
                 }
             }
         }
+    }
+
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.generateFormCPdf(context) { formGenerated, formPath -> }
     }
 
     val formPathState = remember {
@@ -290,7 +295,7 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }.size.toString(),
+                                text = didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -340,7 +345,7 @@ fun DigitalFormCScreen(
                                     height = Dimension.fillToConstraints
                                 }
                         ) {
-                            items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal }) { card ->
+                            items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
                                 DidiVillageItem(card)
                             }
                             item {
@@ -433,7 +438,7 @@ fun DigitalFormCScreen(
                                 context.getExternalFilesDir(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
-                            }", "${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            }", "${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
                         )
                         viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormBScreen", "Digital Form C Downloaded")
@@ -462,12 +467,12 @@ fun DigitalFormCScreen(
                         showLoader = showLoader.value,
                     ) {
                         if (formPathState.value.isFile) {
-                            navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                            navController.navigate("pdf_viewer/${FORM_C_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
                         } else {
                             showLoader.value = true
                             viewModel.generateFormCPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_c_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_c_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

@@ -427,7 +427,7 @@ object PdfUtils {
     ): SimplyPdfDocument {
         return SimplyPdf.with(
             context,
-            getPdfPath(context = context, formName = fileName, villageEntity.name)
+            getPdfPath(context = context, formName = fileName, villageEntity.id)
         )
             .colorMode(DocumentInfo.ColorMode.COLOR)
             .paperSize(PrintAttributes.MediaSize.ISO_A4)
@@ -458,8 +458,8 @@ object PdfUtils {
         }
     }
 
-    fun getPdfPath(context: Context, formName: String, villageName: String): File {
-        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageName}.pdf")
+    fun getPdfPath(context: Context, formName: String, villageId: Int): File {
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${formName}_${villageId}.pdf")
     }
 
     private fun getTextPropertiesForCell(): TextProperties {

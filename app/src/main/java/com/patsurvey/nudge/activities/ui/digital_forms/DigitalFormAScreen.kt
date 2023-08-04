@@ -60,9 +60,9 @@ import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.OutlineButtonCustom
-import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
@@ -96,6 +96,10 @@ fun DigitalFormAScreen(
                 }
             }
         }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        viewModel.generateFormAPdf(context) { formGenerated, formPath -> }
     }
 
     val formPathState = remember {
@@ -151,7 +155,7 @@ fun DigitalFormAScreen(
                 if (shouldRequestPermission.value) {
                     ShowDialog(
                         title = stringResource(R.string.permission_required_prompt_title),
-                        message = stringResource(R.string.permission_dialog_prompt_message),
+                        message = stringResource(R.string.storage_permission_dialog_prompt_message),
                         setShowDialog = {
                             shouldRequestPermission.value = it
                         }
@@ -285,7 +289,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size.toString(),
+                                text = didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -327,7 +331,7 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank }) { card ->
+                        items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
                             DidiVillageItem(card)
                         }
                     }
@@ -351,7 +355,7 @@ fun DigitalFormAScreen(
                                     Environment.DIRECTORY_DOCUMENTS
                                 )?.absolutePath
                             }",
-                            "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf"
+                            "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
                         )
                         viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                             Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
@@ -380,12 +384,12 @@ fun DigitalFormAScreen(
                         showLoader = showLoader.value,
                     ) {
                         if (formPathState.value.isFile) {
-                            navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().name}.pdf")
+                            navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
                         } else {
                             showLoader.value = true
                             viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                                 if (formGenerated) {
-                                    showToast(context, context.getString(R.string.digital_form_a_downloded))
+//                                    showToast(context, context.getString(R.string.digital_form_a_downloded))
                                     formPath?.let {
                                         formPathState.value = it
                                     }

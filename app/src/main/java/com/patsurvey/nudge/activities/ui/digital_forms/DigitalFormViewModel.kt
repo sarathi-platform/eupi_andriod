@@ -16,6 +16,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
@@ -23,6 +24,7 @@ import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PdfUtils
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -63,11 +65,11 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormAPdf(context = context, villageEntity = villageEntity,
-                didiDetailList = didiDetailList.value, changeMilliDateToDate(prefRepo.getPref(
+                didiDetailList = didiDetailList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }, changeMilliDateToDate(prefRepo.getPref(
                     PREF_WEALTH_RANKING_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.name) else null
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_A_PDF_NAME, villageEntity.id) else null
                 callBack(success, path)
             }
         }
@@ -77,11 +79,11 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(),
-                didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1  },
+                didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
                 changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.name) else null
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_B_PDF_NAME, villageEntity.id) else null
                 callBack(success, path)
             }
         }
@@ -91,11 +93,11 @@ class DigitalFormViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val villageEntity = prefRepo.getSelectedVillage()
             val success = PdfUtils.getFormCPdf(context, villageEntity = prefRepo.getSelectedVillage(),
-                didiDetailList = didiDetailList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal },
+                didiDetailList = didiDetailList.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                 changeMilliDateToDate(prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             withContext(Dispatchers.Main) {
                 delay(500)
-                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.name) else null
+                val path = if (success) PdfUtils.getPdfPath(context = context, formName = FORM_C_PDF_NAME, villageEntity.id) else null
                 callBack(success, path)
             }
         }

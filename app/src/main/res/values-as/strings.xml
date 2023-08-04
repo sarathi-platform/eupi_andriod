@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name" translatable="false">Sarathi</string>
     <string name="english" translatable="false">English</string>
@@ -286,7 +287,7 @@
     <string name="digital_form_a_title">Digital Form A</string>
     <string name="digital_form_b_title">Digital Form B</string>
     <string name="digital_form_c_title">Digital Form C</string>
-    <string name="settings_screen_title">Settings</string>
+    <string name="settings_screen_title">ছেটিংছ</string>
     <string name="logout_sync_error_message">Sync is required before logout,Please sync your data before logout.</string>
     <string name="logout_no_internet_error_message">No Internet Available, Please connect with internet</string>
     <string name="min_battery_text">(Min 30% required)</string>
@@ -377,8 +378,8 @@
     <string name="vo_summary_rejected_empty_text">No didi rejected by VO</string>
     <string name="vo_summary_endorsed_empty_text">No didi endorsed by VO</string>
     <string name="social_mapping_complete_status_text">Social Mapping Done</string>
-    <string name="page_name_text">Page</string>
+    <string name="page_name_text">পৃষ্ঠা</string>
 
-    <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
+    <string name="storage_permission_dialog_prompt_message">সংৰক্ষণ অনুমতিৰ প্ৰয়োজন, অনুগ্ৰহ কৰি অনুমতি দিয়ক।</string>
 
 </resources>

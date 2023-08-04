@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.NudgeLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -29,17 +30,43 @@ class LanguageViewModel @Inject constructor(
     private val _languageList= MutableStateFlow<List<LanguageEntity>?>(emptyList())
     val languageList=_languageList.asStateFlow()
    val list= mutableStateListOf<LanguageEntity>()
-    val languagePosition= mutableStateOf(-1)
+    val languagePosition= mutableStateOf(0)
     init {
         fetchLanguageList()
     }
 
     private fun fetchLanguageList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val list=languageListDao.getAllLanguages()
-            withContext(Dispatchers.IO){
-                _languageList.value=list
+            try {
+                val list=languageListDao.getAllLanguages()
+                withContext(Dispatchers.IO){
+                    if (list.isNullOrEmpty()) {
+                        _languageList.value = listOf(
+                            LanguageEntity(
+                                id = 2,
+                                language = "English",
+                                langCode = "en",
+                                orderNumber = 1,
+                                localName = "English"
+                            )
+                        )
+                    } else {
+                        _languageList.value = list
+                    }
+                }
+            } catch (ex: Exception) {
+                NudgeLogger.e("LanguageViewModel", "fetchLanguageList: ", ex)
+                _languageList.value = listOf(
+                    LanguageEntity(
+                        id = 2,
+                        language = "English",
+                        langCode = "en",
+                        orderNumber = 1,
+                        localName = "English"
+                    )
+                )
             }
+
         }
     }
     override fun onServerError(error: ErrorModel?) {
