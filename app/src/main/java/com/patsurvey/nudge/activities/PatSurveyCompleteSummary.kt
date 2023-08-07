@@ -237,7 +237,7 @@ fun PatSurveyCompleteSummary(
 
                         item { Spacer(modifier = Modifier.height(4.dp)) }
 
-                        itemsIndexed(inclusionQuestionList) { index, question ->
+                        itemsIndexed(inclusionQuestionList.sortedBy { it.order }) { index, question ->
                             val answer = answerSummeryList.find { it.questionId == question.questionId }
                             SectionTwoSummeryItem(
                                 index = index,
