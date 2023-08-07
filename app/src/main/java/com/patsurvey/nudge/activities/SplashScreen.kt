@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -51,9 +52,7 @@ fun SplashScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
-    if(viewModel.showLoader.value){
-        ShowLoadingDialog()
-    }
+
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
             if (isLoggedIn) {
@@ -104,7 +103,7 @@ fun SplashScreen(
             .then(modifier)
     ) {
 
-        val (bottomContent, appNameContent, nrlmContent) = createRefs()
+        val (bottomContent, appNameContent, nrlmContent,loader) = createRefs()
 
         Box(modifier = Modifier.constrainAs(nrlmContent) {
             top.linkTo(parent.top)
@@ -132,7 +131,25 @@ fun SplashScreen(
                 Text(text = "To End Ultra Poverty", style = smallTextStyleNormalWeight, color = blueDark)
             }
         }
-
+        if(viewModel.showLoader.value){
+            Box(
+                modifier = Modifier.constrainAs(loader) {
+                    top.linkTo(appNameContent.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                    .fillMaxWidth()
+                    .padding(top = 20.dp)
+                    .height(48.dp)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark,
+                    modifier = Modifier
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
         Box(modifier = Modifier.constrainAs(bottomContent) {
             bottom.linkTo(parent.bottom)
             start.linkTo(parent.start)

@@ -89,4 +89,7 @@ interface AnswerDao {
     @Query("DELETE from $ANSWER_TABLE")
     fun deleteAllAnswers()
 
+    @Query("UPDATE $ANSWER_TABLE set  needsToPost = :needsToPost where didiId=:didiId")
+    fun updateAllAnswersNeedToPost(didiId:Int,needsToPost: Boolean)
+
 }

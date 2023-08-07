@@ -64,9 +64,10 @@ class QuestionScreenViewModel @Inject constructor(
     val nextButtonVisible= mutableStateOf(false)
     val prevButtonVisible= mutableStateOf(false)
     val isQuestionChange= mutableStateOf(false)
+    val isClickEnable= mutableStateOf(false)
     val listTypeAnswerIndex = mutableStateOf(-1)
     val maxQuesCount = mutableStateOf(0)
-    val answeredCount = mutableStateOf(0)
+    val isNextQuestionAnswered= mutableStateOf(false)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private val _selIndValue = MutableStateFlow<Int>(-1)
@@ -225,6 +226,7 @@ class QuestionScreenViewModel @Inject constructor(
                             questionFlag = questionFlag
                         )
                         answerDao.updateNeedToPost(didiId, questionId, true)
+                        answerDao.updateAllAnswersNeedToPost(didiId, true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
@@ -247,6 +249,7 @@ class QuestionScreenViewModel @Inject constructor(
                                 questionFlag = questionFlag
                             )
                         )
+                        answerDao.updateAllAnswersNeedToPost(didiId, true)
                         withContext(Dispatchers.Main) {
                             onAnswerSave()
                         }
@@ -337,6 +340,9 @@ class QuestionScreenViewModel @Inject constructor(
     fun findListTypeSelectedAnswer(quesIndex: Int, didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
+
+                val answerCount= answerDao.isQuestionAnswered(didiId,questionList.value[quesIndex].questionId?:0)
+                isClickEnable.value = answerCount>0
                 val optionId = answerDao.fetchOptionID(
                     didiId,
                     questionList.value[quesIndex].questionId ?: 0,

@@ -103,14 +103,11 @@ import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import retrofit2.HttpException
@@ -605,7 +602,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: 0,
                                                                             actionType = answersItem?.section
                                                                                 ?: TYPE_EXCLUSION,
-                                                                            weight = 0,
+                                                                            weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                                0
+                                                                            )?.weight) else 0,
                                                                             summary = answersItem?.summary,
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
@@ -677,7 +676,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                                             ?: 0,
                                                                         actionType = answersItem?.section
                                                                             ?: TYPE_EXCLUSION,
-                                                                        weight = 0,
+                                                                        weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                            0
+                                                                        )?.weight) else 0,
                                                                         summary = answersItem?.summary,
                                                                         optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                             0
@@ -1139,7 +1140,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: 0,
                                                                             actionType = answersItem?.section
                                                                                 ?: TYPE_EXCLUSION,
-                                                                            weight = 0,
+                                                                            weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                                0
+                                                                            )?.weight) else 0,
                                                                             summary = answersItem?.summary,
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
@@ -1195,7 +1198,9 @@ class VillageSelectionViewModel @Inject constructor(
                                                                                 ?: 0,
                                                                             actionType = answersItem?.section
                                                                                 ?: TYPE_EXCLUSION,
-                                                                            weight = 0,
+                                                                            weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                                                0
+                                                                            )?.weight) else 0,
                                                                             summary = answersItem?.summary,
                                                                             optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
                                                                                 0
