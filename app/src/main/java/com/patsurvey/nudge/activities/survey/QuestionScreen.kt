@@ -337,11 +337,14 @@ fun QuestionScreen(
                                             answeredQuestion.value = answeredQuestion.value + 1
                                             val nextPageIndex = pagerState.currentPage + 1
                                             viewModel.findListTypeSelectedAnswer(pagerState.currentPage,didiId)
+                                            coroutineScope.launch {
+                                                delay(150)
+                                                eventToPageChange.value = true
+                                            }
                                                 pagerState.animateScrollToPage(
                                                     nextPageIndex
                                                 )
                                                 viewModel.isAnswerSelected.value=false
-                                            eventToPageChange.value = true
                                         } else {
                                             navigateToSummeryPage(
                                                 navController,
@@ -363,7 +366,8 @@ fun QuestionScreen(
                                 viewModel = viewModel,
                                 showNextButton = (viewModel.prevButtonVisible.value && !viewModel.nextButtonVisible.value ) ,
                                 questionFlag=questionList[it].questionFlag?:QUESTION_FLAG_WEIGHT,
-                                totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING
+                                totalValueTitle = questionList[it].headingProductAssetValue?: BLANK_STRING,
+                                pagerState = pagerState
                             ){ value->
                                 val newAnswerOptionModel= OptionsItem( display = (if (questionList[it].questionFlag?.equals(QUESTION_FLAG_RATIO, true) == true) viewModel.totalAmount.value.toString()
                                 else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),0,0,0,
@@ -424,7 +428,7 @@ fun QuestionScreen(
 
         //Previous Ques Button
 
-        if(viewModel.prevButtonVisible.value){
+        if(viewModel.prevButtonVisible.value && pagerState.currentPage != 0){
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)

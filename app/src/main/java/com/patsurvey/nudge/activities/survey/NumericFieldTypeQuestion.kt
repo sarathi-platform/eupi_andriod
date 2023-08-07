@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,16 +18,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,21 +57,18 @@ import com.patsurvey.nudge.activities.ui.theme.quesOptionTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.model.response.OptionsItem
-import com.patsurvey.nudge.utils.ASSET_VALUE_LENGTH
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
-import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.VALUE_OF_PRODUCTIVE_ASSETS
-import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.launch
 
 
+@OptIn(ExperimentalFoundationApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 fun NumericFieldTypeQuestion(
@@ -81,6 +79,7 @@ fun NumericFieldTypeQuestion(
     didiId: Int,
     questionFlag:String,
     optionList: List<OptionsItem>,
+    pagerState: PagerState,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
     showNextButton: Boolean = false,
@@ -89,11 +88,13 @@ fun NumericFieldTypeQuestion(
 val context = LocalContext.current
     val lazyColumnListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
-    if(viewModel?.prefRepo?.isNeedQuestionToScroll() == true){
-        coroutineScope.launch {
-            lazyColumnListState.scrollToItem(0)
+
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }.collect { page ->
+            coroutineScope.launch {
+                lazyColumnListState.scrollToItem(0)
+            }
         }
-        viewModel?.prefRepo?.saveNeedQuestionToScroll(false)
     }
     Box {
         ConstraintLayout(modifier = modifier
