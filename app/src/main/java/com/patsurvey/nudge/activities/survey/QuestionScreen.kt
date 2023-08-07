@@ -424,7 +424,7 @@ fun QuestionScreen(
 
         //Previous Ques Button
 
-        if(viewModel.prevButtonVisible.value){
+        if(viewModel.prevButtonVisible.value && pagerState.currentPage == 0){
             ExtendedFloatingActionButton(
                 modifier = Modifier
                     .padding(all = 16.dp)
