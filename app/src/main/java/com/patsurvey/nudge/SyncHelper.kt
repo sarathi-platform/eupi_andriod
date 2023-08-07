@@ -43,6 +43,8 @@ import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FLAG_RATIO
+import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.LOW_SCORE
@@ -66,10 +68,12 @@ import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.longToString
+import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -1167,7 +1171,10 @@ class SyncHelper (
                     var scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     val userType=if((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true)) USER_BPC else USER_CRP
                     didiIDList.forEachIndexed { index, didi ->
-                        Log.d("SyncHelper", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        NudgeLogger.d("SyncHelper", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
+                        calculateDidiScore(didiId = didi.id)
+                        delay(100)
+                        didi.score = didiDao.getDidiScoreFromDb(didi.id)
                         val qList: java.util.ArrayList<AnswerDetailDTOListItem> = arrayListOf()
                         val needToPostQuestionsList = answerDao.getAllNeedToPostQuesForDidi(didi.id)
                         if (needToPostQuestionsList.isNotEmpty()) {
@@ -1181,7 +1188,7 @@ class SyncHelper (
                                             count = 0,
                                             summary = it.summary,
                                             display = it.answerValue,
-                                            weight = 0,
+                                            weight = it.weight,
                                             isSelected = false
                                         )
                                     )
@@ -1696,5 +1703,98 @@ class SyncHelper (
             sizeToBeShown = "$sizeInMB Bytes"
         }
         return sizeToBeShown
+    }
+
+    private fun calculateDidiScore(didiId: Int) {
+        NudgeLogger.d("SyncHelper", "calculateDidiScore didiId: ${didiId}")
+        var passingMark = 0
+        var isDidiAccepted = false
+        var comment = LOW_SCORE
+//        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val _inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+            if (_inclusiveQueList.isNotEmpty()) {
+                var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+                NudgeLogger.d(
+                    "PatSectionSummaryViewModel",
+                    "calculateDidiScore: $totalWightWithoutNumQue"
+                )
+                val numQueList =
+                    _inclusiveQueList.filter { it.type == QuestionType.Numeric_Field.name }
+                if (numQueList.isNotEmpty()) {
+                    numQueList.forEach { answer ->
+                        val numQue = questionDao.getQuestion(answer.questionId)
+                        passingMark = numQue.surveyPassingMark ?: 0
+                        if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
+                            val weightList = toWeightageRatio(numQue.json.toString())
+                            if (weightList.isNotEmpty()) {
+                                val newScore = calculateScore(
+                                    weightList,
+                                    answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                    false
+                                )
+                                totalWightWithoutNumQue += newScore
+                                NudgeLogger.d(
+                                    "PatSectionSummaryViewModel",
+                                    "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
+                                )
+                            }
+                        } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
+                            val ratioList = toWeightageRatio(numQue.json.toString())
+                            val newScore = calculateScore(
+                                ratioList,
+                                answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                true
+                            )
+                            totalWightWithoutNumQue += newScore
+                            NudgeLogger.d(
+                                "PatSectionSummaryViewModel",
+                                "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
+                            )
+                        }
+                    }
+                }
+                // TotalScore
+
+
+                if (totalWightWithoutNumQue >= passingMark) {
+                    isDidiAccepted = true
+                    comment = BLANK_STRING
+                    didiDao.updateVOEndorsementDidiStatus(
+                        prefRepo.getSelectedVillage().id,
+                        didiId
+                    )
+                }
+                NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")
+                didiDao.updateDidiScore(
+                    score = totalWightWithoutNumQue,
+                    comment = comment,
+                    didiId = didiId,
+                    isDidiAccepted = isDidiAccepted
+                )
+                /*if (prefRepo.isUserBPC()) {
+                    bpcSelectedDidiDao.updateSelDidiScore(
+                        score = totalWightWithoutNumQue,
+                        comment = comment,
+                        didiId = didiId,
+                    )
+                }*/
+            } else {
+                NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: ${0.0}")
+                didiDao.updateDidiScore(
+                    score = 0.0,
+                    comment = TYPE_EXCLUSION,
+                    didiId = didiId,
+                    isDidiAccepted = false
+                )
+                /*if (prefRepo.isUserBPC()) {
+                    bpcSelectedDidiDao.updateSelDidiScore(
+                        score = 0.0,
+                        comment = TYPE_EXCLUSION,
+                        didiId = didiId,
+                    )
+                }*/
+            }
+//                didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
+//        }
     }
 }

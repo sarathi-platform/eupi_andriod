@@ -451,6 +451,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         didiIDList.forEach { didi->
                             NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")
                             val qList: ArrayList<AnswerDetailDTOListItem> = arrayListOf()
+                            calculateDidiScore(didiId = didi.id)
+                            delay(100)
+                            didi.score = didiDao.getDidiScoreFromDb(didi.id)
                             val needToPostQuestionsList=answerDao.getAllNeedToPostQuesForDidi(didi.id)
                             if(needToPostQuestionsList.isNotEmpty()){
                                 needToPostQuestionsList.forEach {
@@ -462,7 +465,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                                 count = 0,
                                                 summary = it.summary,
                                                 display = it.answerValue,
-                                                weight = 0,
+                                                weight = it.weight,
                                                 isSelected = false
                                             )
                                         )
@@ -610,6 +613,95 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 }
                 ex.printStackTrace()
                 settingViewModel.onCatchError(ex, ApiType.BPC_PAT_SAVE_ANSWER_SUMMARY)
+            }
+        }
+    }
+
+    private fun calculateDidiScore(didiId: Int) {
+        NudgeLogger.d("SyncHelper", "calculateDidiScore didiId: ${didiId}")
+        var passingMark = 0
+        var isDidiAccepted = false
+        var comment = LOW_SCORE
+        val _inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+        if (_inclusiveQueList.isNotEmpty()) {
+            var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+            NudgeLogger.d(
+                "PatSectionSummaryViewModel",
+                "calculateDidiScore: $totalWightWithoutNumQue"
+            )
+            val numQueList =
+                _inclusiveQueList.filter { it.type == QuestionType.Numeric_Field.name }
+            if (numQueList.isNotEmpty()) {
+                numQueList.forEach { answer ->
+                    val numQue = questionDao.getQuestion(answer.questionId)
+                    passingMark = numQue.surveyPassingMark ?: 0
+                    if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
+                        val weightList = toWeightageRatio(numQue.json.toString())
+                        if (weightList.isNotEmpty()) {
+                            val newScore = calculateScore(
+                                weightList,
+                                answer.totalAssetAmount?.toDouble() ?: 0.0,
+                                false
+                            )
+                            totalWightWithoutNumQue += newScore
+                            NudgeLogger.d(
+                                "PatSectionSummaryViewModel",
+                                "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
+                            )
+                        }
+                    } else if (numQue.questionFlag?.equals(FLAG_RATIO, true) == true) {
+                        val ratioList = toWeightageRatio(numQue.json.toString())
+                        val newScore = calculateScore(
+                            ratioList,
+                            answer.totalAssetAmount?.toDouble() ?: 0.0,
+                            true
+                        )
+                        totalWightWithoutNumQue += newScore
+                        NudgeLogger.d(
+                            "PatSectionSummaryViewModel",
+                            "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
+                        )
+                    }
+                }
+            }
+            // TotalScore
+
+
+            if (totalWightWithoutNumQue >= passingMark) {
+                isDidiAccepted = true
+                comment = BLANK_STRING
+                didiDao.updateVOEndorsementDidiStatus(
+                    prefRepo.getSelectedVillage().id,
+                    didiId
+                )
+            }
+            NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")
+            didiDao.updateDidiScore(
+                score = totalWightWithoutNumQue,
+                comment = comment,
+                didiId = didiId,
+                isDidiAccepted = isDidiAccepted
+            )
+            if (prefRepo.isUserBPC()) {
+                bpcSelectedDidiDao.updateSelDidiScore(
+                    score = totalWightWithoutNumQue,
+                    comment = comment,
+                    didiId = didiId,
+                )
+            }
+        } else {
+            didiDao.updateDidiScore(
+                score = 0.0,
+                comment = TYPE_EXCLUSION,
+                didiId = didiId,
+                isDidiAccepted = false
+            )
+            if (prefRepo.isUserBPC()) {
+                bpcSelectedDidiDao.updateSelDidiScore(
+                    score = 0.0,
+                    comment = TYPE_EXCLUSION,
+                    didiId = didiId,
+                )
             }
         }
     }

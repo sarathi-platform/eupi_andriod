@@ -419,7 +419,9 @@ fun SurveySummary(
                                             didi = didi,
                                             modifier = modifier,
                                             onItemClick = {
-                                                navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                                if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
+                                                    navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                                }
                                             }
                                         )
                                     }
