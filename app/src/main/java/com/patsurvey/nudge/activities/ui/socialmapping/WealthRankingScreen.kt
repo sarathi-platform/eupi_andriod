@@ -11,7 +11,9 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -47,6 +49,7 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.CoroutineScope
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -71,6 +74,8 @@ fun WealthRankingScreen(
 
     val localDensity = LocalDensity.current
 
+    val listState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
     LaunchedEffect(key1 = true) {
         viewModel.getWealthRankingStepStatus(stepId) {
             if (it)
@@ -78,7 +83,7 @@ fun WealthRankingScreen(
         }
 
         if(didis.isNotEmpty()) {
-            viewModel.onCardArrowClicked(didis[0].id)
+            viewModel.onCardArrowClicked(didis[0].id, coroutineScope, listState,0)
         }
     }
 
@@ -117,7 +122,6 @@ fun WealthRankingScreen(
                     voName = (viewModel.prefRepo.getSelectedVillage().federationName) ?: "",
                     modifier = Modifier
                 )
-
                 LazyColumn(
                     modifier =
                     Modifier
@@ -126,6 +130,7 @@ fun WealthRankingScreen(
                         .background(color = white)
                         .padding(horizontal = 4.dp)
                         .weight(1f),
+                    state = listState,
                     contentPadding = PaddingValues(vertical = 10.dp),/*
                     verticalArrangement = Arrangement.spacedBy(10.dp)*/
                 ) {
@@ -185,7 +190,9 @@ fun WealthRankingScreen(
                                 didiList = newFilteredTolaDidiList[item]?.reversed() ?: emptyList(),
                                 viewModel = viewModel,
                                 expandedIds = expandedCardIds,
-                                modifier = Modifier
+                                modifier = Modifier,
+                                 coroutineScope = coroutineScope,
+                                 listState = listState
                             )
                             if (index < newFilteredTolaDidiList.keys.size - 1) {
                                 Divider(
@@ -210,12 +217,12 @@ fun WealthRankingScreen(
                                     viewModel = viewModel,
                                     onCardArrowClick = {
                                         if (it)
-                                            viewModel.onCardArrowClicked(didi.id)
+                                            viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
                                         else {
-                                            viewModel.onCardArrowClicked(didi.id)
+                                            viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
                                             val nextIndex = index + 1
                                             if (nextIndex < didis.size) {
-                                                viewModel.onCardArrowClicked(didis[nextIndex].id)
+                                                viewModel.onCardArrowClicked(didis[nextIndex].id,coroutineScope, listState,nextIndex)
                                             } else if (nextIndex == didis.size){
                                                 viewModel.closeLastCard(didi.id)
 //                                                viewModel.onCardArrowClicked(didi.id)
@@ -698,6 +705,8 @@ fun ShowDidisFromTola(
     viewModel: WealthRankingViewModel,
     expandedIds: List<Int>,
     modifier: Modifier,
+    coroutineScope: CoroutineScope,
+    listState: LazyListState
 ) {
     Column(modifier = Modifier.then(modifier)) {
         Row(
@@ -785,12 +794,12 @@ fun ShowDidisFromTola(
                         viewModel = viewModel,
                         onCardArrowClick = {
                             if (it)
-                                viewModel.onCardArrowClicked(didi.id)
+                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
                             else {
-                                viewModel.onCardArrowClicked(didi.id)
+                                viewModel.onCardArrowClicked(didi.id,coroutineScope, listState,index)
                                 val nextIndex = index + 1
                                 if (nextIndex < didiList.size) {
-                                    viewModel.onCardArrowClicked(didiList[nextIndex].id)
+                                    viewModel.onCardArrowClicked(didiList[nextIndex].id,coroutineScope, listState,nextIndex)
                                 } else if (nextIndex == didiList.size){
                                     viewModel.closeLastCard(didi.id)
 //                                    viewModel.onCardArrowClicked(didi.id)

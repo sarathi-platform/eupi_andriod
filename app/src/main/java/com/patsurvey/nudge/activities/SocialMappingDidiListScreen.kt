@@ -177,7 +177,6 @@ fun SocialMappingDidiListScreen(
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
                     val listState = rememberLazyListState()
-                    val coroutineScope = rememberCoroutineScope()
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -406,7 +405,6 @@ fun SocialMappingDidiListScreen(
                                             expandedIds.add(didiDetailModel.id)
                                             coroutineScope.launch {
                                                 delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
-//                                                listState.scrollToItem(index+3)
                                                 listState.animateScrollToItem(index+3)
                                             }
                                         }
