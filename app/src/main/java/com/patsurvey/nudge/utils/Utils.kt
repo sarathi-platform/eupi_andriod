@@ -117,7 +117,8 @@ import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
-import java.util.Locale
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -139,6 +140,15 @@ fun dpToPx(iContext: Context, dp: Int): Int {
         iContext.resources.displayMetrics
     )
         .toInt()
+}
+
+fun getDeviceId(context: Context) : String{
+    return Settings.Secure.getString(context.contentResolver,
+        Settings.Secure.ANDROID_ID) ?: ""
+}
+
+fun getUniqueIdForDidi(context: Context) : String{
+    return getDeviceId(context) + "|" + System.currentTimeMillis()
 }
 
 fun findCompleteValue(status:String): StepStatus {
@@ -745,13 +755,17 @@ fun formatRatio(ratio:String):String{
 @Composable
 fun ShowLoadingDialog(
 ) {
-    Dialog(onDismissRequest = { /*setShowDialog(false)*/ },
+    Dialog(
+        onDismissRequest = { /*setShowDialog(false)*/ },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
-            dismissOnBackPress=false
+            dismissOnBackPress = false
         ),
     ) {
-        Surface(modifier = Modifier.width(80.dp).height(80.dp),
+        Surface(
+            modifier = Modifier
+                .width(80.dp)
+                .height(80.dp),
             color = Color.White,
         ) {
             Box(modifier = Modifier.fillMaxSize(),
