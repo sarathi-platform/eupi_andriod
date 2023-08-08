@@ -86,6 +86,7 @@ fun DigitalFormCScreen(
 ) {
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
+    val didiListForBpc = viewModel.didiDetailListForBpc.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -295,7 +296,11 @@ fun DigitalFormCScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString(),
+                                text = if (viewModel.prefRepo.isUserBPC()) {
+                                    didiListForBpc.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString()
+                                } else {
+                                    didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size.toString()
+                                },
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -345,9 +350,16 @@ fun DigitalFormCScreen(
                                     height = Dimension.fillToConstraints
                                 }
                         ) {
-                            items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
-                                DidiVillageItem(card)
+                            if (viewModel.prefRepo.isUserBPC()) {
+                                items(didiListForBpc.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
+                                    DidiVillageItem(card)
+                                }
+                            } else {
+                                items(didiList.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
+                                    DidiVillageItem(card)
+                                }
                             }
+
                             item {
                                 Spacer(modifier = Modifier.height(10.dp))
                             }

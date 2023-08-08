@@ -19,6 +19,7 @@ import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
@@ -77,6 +78,7 @@ class SettingViewModel @Inject constructor(
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val bpcSummaryDao: BpcSummaryDao,
+    val poorDidiListDao: PoorDidiListDao
 
 ):BaseViewModel() {
     val formAAvailabe = mutableStateOf(false)
@@ -115,14 +117,26 @@ class SettingViewModel @Inject constructor(
                     formAAvailabe.value = true
                 }
             } else {
-                if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
-                ) {
-                    withContext(Dispatchers.Main) {
-                        formAAvailabe.value = true
+                if (prefRepo.isUserBPC()) {
+                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = false
+                        }
                     }
                 } else {
-                    withContext(Dispatchers.Main) {
-                        formAAvailabe.value = false
+                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = false
+                        }
                     }
                 }
             }
@@ -148,14 +162,27 @@ class SettingViewModel @Inject constructor(
                     formBAvailabe.value = true
                 }
             } else {
-                if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
-                ) {
-                    withContext(Dispatchers.Main) {
-                        formBAvailabe.value = true
+                if (prefRepo.isUserBPC()) {
+                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailabe.value = false
+                        }
                     }
                 } else {
-                    withContext(Dispatchers.Main) {
-                        formBAvailabe.value = false
+                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formBAvailabe.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formBAvailabe.value = false
+                        }
                     }
                 }
             }
@@ -624,6 +651,7 @@ class SettingViewModel @Inject constructor(
             bpcSelectedDidiDao.deleteAllDidis()
             bpcNonSelectedDidiDao.deleteAllDidis()
             bpcSummaryDao.deleteAllSummary()
+            poorDidiListDao.deleteAllDidis()
             clearSharedPreference()
             //cleared cache in case of logout
 //            context.cacheDir.deleteRecursively()

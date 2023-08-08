@@ -359,7 +359,7 @@
     <string name="pat_rejected_status_text">PAT Rejected</string>
     <string name="vo_selected_status_text">VO Endorsed</string>
     <string name="vo_rejected_status_text">VO Rejected</string>
-    <string name="pat_not_available_status_text">Not Available</string>
+    <string name="pat_not_available_status_text">PAT Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
 
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
@@ -380,5 +380,6 @@
     <string name="page_name_text">Page</string>
 
     <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">You are submitting the wealth ranking for %1$s Didi.</string>
 
 </resources>

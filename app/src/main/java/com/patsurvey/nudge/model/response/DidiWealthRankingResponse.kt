@@ -25,9 +25,9 @@ data class Data(
 )
 
 data class BeneficiaryList(
-    @SerializedName("MEDIUM") val mediumDidi: List<MEDIUMDidi?>? = null,
-    @SerializedName("RICH") val richDidi: List<RICHDidi?>? = null,
-    @SerializedName("POOR") val poorDidi: List<POORDidi?>? = null
+    @SerializedName("MEDIUM") val mediumDidi: List<DidiDetailList?>? = null,
+    @SerializedName("RICH") val richDidi: List<DidiDetailList?>? = null,
+    @SerializedName("POOR") val poorDidi: List<DidiDetailList?>? = null
 )
 data class RICHDidi(
     @SerializedName("cohortId") val cohortId: Int? = null,

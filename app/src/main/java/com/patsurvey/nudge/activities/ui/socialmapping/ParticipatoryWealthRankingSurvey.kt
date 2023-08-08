@@ -170,10 +170,11 @@ fun ParticipatoryWealthRankingSurvey(
         val (bottomActionBox, mainBox) = createRefs()
 
         if (showDialog.value) {
+            val count = didids.value.filter { it.rankingEdit }.size
             ShowDialog(title = stringResource(id = R.string.are_you_sure),
                 message = context.getString(
-                    R.string.you_are_submitting_wealth_ranking_for_count_didis,
-                    didids.value.filter { it.rankingEdit }.size.toString()
+                    if (count > 1) R.string.you_are_submitting_wealth_ranking_for_count_didis else R.string.you_are_submitting_wealth_ranking_for_count_didis_singular,
+                    count.toString()
                 ),
                 setShowDialog = {
                     showDialog.value = it

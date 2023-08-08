@@ -1319,7 +1319,8 @@ fun getLatestStatusText(context: Context, didi: DidiEntity): String {
                 } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                     context.getString(R.string.pat_not_available_status_text)
                 } else {
-                    context.getString(R.string.pat_rejected_status_text)
+                    context.getString(R.string.wealth_ranking_status_complete_text)
+                        .replace("{RANK}", getRankInLanguage(context, didi.wealth_ranking))
                 }
             } else {
                 status = context.getString(R.string.wealth_ranking_status_complete_text)

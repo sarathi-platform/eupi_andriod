@@ -5,7 +5,6 @@ import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
@@ -15,7 +14,6 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                           val prefRepo: PrefRepo,
@@ -46,7 +44,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 syncPercentage.value = 0f
             }
             if(isBPCDidiNeedToBeReplaced()) {
-                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
+                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                 for(village in villageList) {
                     val villageId = village.id
                     val oldDidiList =
@@ -107,7 +105,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     }
 
     private fun isBPCDidiNeedToBeReplaced() : Boolean{
-        val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
+        val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
         for(village in villageList) {
             val villageId = village.id
             val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId)
@@ -225,7 +223,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     delay(1000)
                     syncPercentage.value = 0.4f
                 }
-                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
+                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 val editWorkFlowRequest = ArrayList<EditWorkFlowRequest>()
                 val stepListRequest = ArrayList<StepListEntity>()
                 for(village in villageList) {
@@ -435,7 +433,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
+                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
                 for(village in villageList) {
                     withContext(Dispatchers.IO) {
                         delay(1000)

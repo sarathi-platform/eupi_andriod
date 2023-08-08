@@ -373,7 +373,7 @@
     <string name="pat_rejected_status_text">PAT अस्वीकृत</string>
     <string name="vo_selected_status_text">VO ने समर्थन किया</string>
     <string name="vo_rejected_status_text">VO अस्वीकृत</string>
-    <string name="pat_not_available_status_text">PAT पूर्ण - उपलब्ध नहीं</string>
+    <string name="pat_not_available_status_text">PAT उपलब्ध नहीं</string>
     <string name="cannot_delete_tola_message_text">इस टोले को हटाया नहीं जा सकता क्योंकि इसमें दीदियों को नियुक्त किया गया है</string>
     <string name="heading_value_of_other_productive_assests">अन्य उत्पादक संपत्तियों का मूल्य</string>
     <string name="heading_earning_ration">कमाई का अनुपात</string>
@@ -391,4 +391,6 @@
     <string name="page_name_text">पृष्ठ</string>
 
     <string name="storage_permission_dialog_prompt_message">भण्डारण की अनुमति आवश्यक है, कृपया अनुमति प्रदान करें।</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+
 </resources>

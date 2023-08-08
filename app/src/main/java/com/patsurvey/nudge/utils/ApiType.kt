@@ -33,7 +33,8 @@ enum class ApiType {
     STATUS_CALL_BACK_API,
     FETCH_ALL_DATA, /*General Type for fetch all data on village screen*/
     DOCUMENT_UPLOAD_API,
-    DIDI_IMAGE_UPLOAD_API;
+    DIDI_IMAGE_UPLOAD_API,
+    BPC_POOR_DIDI_LIST_API;
 
 
     /*    fun fromString(apiName: String): ApiType {
