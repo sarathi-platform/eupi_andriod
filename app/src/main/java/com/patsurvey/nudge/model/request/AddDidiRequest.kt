@@ -15,6 +15,7 @@ data class AddDidiRequest(
     @SerializedName("cohortId") var cohortId : Int,
     @SerializedName("localCreatedDate") var localCreatedDate : Long,
     @SerializedName("localModifiedDate") var localModifiedDate : Long,
+    @SerializedName("deviceId") var deviceId : String,
 ) {
 
     companion object {
@@ -28,7 +29,8 @@ data class AddDidiRequest(
                 castId=didi.castId,
                 cohortId=didi.cohortId,
                 localModifiedDate = didi.localModifiedDate?:0,
-                localCreatedDate = didi.localCreatedDate ?:0
+                localCreatedDate = didi.localCreatedDate ?:0,
+                deviceId = didi.localUniqueId
             )
         }
     }
@@ -44,6 +46,7 @@ data class AddDidiRequest(
         jsonObject.addProperty("cohortId", cohortId)
         jsonObject.addProperty("localCreatedDate", localCreatedDate)
         jsonObject.addProperty("localModifiedDate", localModifiedDate)
+        jsonObject.addProperty("deviceId", deviceId)
         return jsonObject
     }
 

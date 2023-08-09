@@ -18,6 +18,9 @@ data class DidiEntity(
     @ColumnInfo(name = "id")
     var id: Int,
 
+    @ColumnInfo(name = "localUniqueId")
+    var localUniqueId : String = "",
+
     @ColumnInfo(name = "serverId")
     var serverId: Int = 0,
 
@@ -181,7 +184,8 @@ data class DidiEntity(
                 bpcScore = selectedDidiEntity.bpcScore,
                 crpScore = selectedDidiEntity.crpScore,
                 crpComment = selectedDidiEntity.crpComment,
-                crpUploadedImage = selectedDidiEntity.crpUploadedImage
+                crpUploadedImage = selectedDidiEntity.crpUploadedImage,
+                localUniqueId = ""
             )
         }
         fun getDidiEntityFromNonSelectedDidiEntityForBpc(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): DidiEntity {
@@ -214,7 +218,8 @@ data class DidiEntity(
                 bpcScore = nonSelectedDidiEntity.bpcScore,
                 crpScore = nonSelectedDidiEntity.crpScore,
                 crpComment = nonSelectedDidiEntity.crpComment,
-                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage
+                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage,
+                localUniqueId = ""
             )
         }
         fun getDidiEntityFromSelectedDidiEntityForCrp(selectedDidiEntity: BpcSelectedDidiEntity): DidiEntity {
@@ -245,7 +250,8 @@ data class DidiEntity(
                 bpcScore = selectedDidiEntity.bpcScore,
                 crpScore = selectedDidiEntity.crpScore,
                 crpComment = selectedDidiEntity.crpComment,
-                crpUploadedImage = selectedDidiEntity.crpUploadedImage
+                crpUploadedImage = selectedDidiEntity.crpUploadedImage,
+                localUniqueId = ""
             )
         }
     }
