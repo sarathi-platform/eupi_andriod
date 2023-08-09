@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
@@ -25,23 +26,7 @@ import com.patsurvey.nudge.model.request.DeleteTolaRequest
 import com.patsurvey.nudge.model.request.EditCohortRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.CohortType
-import com.patsurvey.nudge.utils.DidiStatus
-import com.patsurvey.nudge.utils.FORM_C
-import com.patsurvey.nudge.utils.FORM_D
-import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.PREF_FORM_PATH
-import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.TOLA_COUNT
-import com.patsurvey.nudge.utils.Tola
-import com.patsurvey.nudge.utils.TolaStatus
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
-import com.patsurvey.nudge.utils.longToString
-import com.patsurvey.nudge.utils.updateLastSyncTime
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -94,6 +79,7 @@ class TransectWalkViewModel @Inject constructor(
                     localModifiedDate = System.currentTimeMillis(),
                     transactionId = "",
                     needsToPost = true,
+                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                 )
                 tolaDao.insert(tolaItem)
                 val updatedTolaList =
@@ -621,7 +607,8 @@ class TransectWalkViewModel @Inject constructor(
                 transactionId = "",
                 serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate=tolaList.value[getIndexOfTola(id)].localCreatedDate,
-                localModifiedDate=System.currentTimeMillis()
+                localModifiedDate=System.currentTimeMillis(),
+                localUniqueId = ""
             )
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)

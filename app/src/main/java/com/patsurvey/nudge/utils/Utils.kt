@@ -134,7 +134,7 @@ fun getDeviceId(context: Context) : String{
         Settings.Secure.ANDROID_ID) ?: ""
 }
 
-fun getUniqueIdForDidi(context: Context) : String{
+fun getUniqueIdForEntity(context: Context) : String{
     return getDeviceId(context) + "|" + System.currentTimeMillis()
 }
 

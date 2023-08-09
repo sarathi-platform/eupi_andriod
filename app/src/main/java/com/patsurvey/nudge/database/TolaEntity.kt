@@ -10,11 +10,14 @@ import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.TOLA_TABLE
 
+
 @Entity(tableName = TOLA_TABLE)
 data class TolaEntity(
     @PrimaryKey(autoGenerate = true)
     @ColumnInfo(name = "id")
     var id: Int,
+    @ColumnInfo(name = "localUniqueId")
+    var localUniqueId : String? = "",
     @ColumnInfo(name = "serverId")
     var serverId: Int = 0,
     @ColumnInfo(name = "name")
@@ -59,7 +62,8 @@ data class TolaEntity(
                 status = 1,
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
-                transactionId = ""
+                transactionId = "",
+                localUniqueId = ""
             )
         }
 
