@@ -102,6 +102,8 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.Locale
+import java.util.regex.Pattern
 import kotlin.math.roundToInt
 
 
@@ -793,5 +795,10 @@ fun singleClick(onClick: () -> Unit): () -> Unit {
         }
     }
 }
+fun containsEmoji(str: String?) =
+    Pattern
+        .compile("\\p{So}+", Pattern.CASE_INSENSITIVE)
+        .matcher(str.toString()).find()
+
 
 

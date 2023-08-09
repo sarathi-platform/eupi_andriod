@@ -62,6 +62,7 @@ import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
+import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -83,6 +84,7 @@ import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
@@ -218,6 +220,16 @@ class VillageSelectionViewModel @Inject constructor(
                                                 questionList.thresholdScore
                                             question?.surveyPassingMark =
                                                 questionList.surveyPassingMark
+                                            Log.d("TAG", "fetchQuestionsList: ${question?.options.toString()}")
+                                            if(question?.questionFlag.equals(QUESTION_FLAG_WEIGHT) || question?.questionFlag.equals(
+                                                    QUESTION_FLAG_RATIO)) {
+                                                val heading = question?.options?.filter {
+                                                    it.optionType.equals(
+                                                        HEADING_QUESTION_TYPE, true
+                                                    )
+                                                }?.get(0)?.display
+                                                question?.headingProductAssetValue = heading
+                                            }
                                         }
                                         list?.questionList?.let {
                                             questionListDao.insertAll(it as List<QuestionEntity>)

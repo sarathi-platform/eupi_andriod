@@ -52,6 +52,7 @@ import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.yellowLight
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
+import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
@@ -64,6 +65,7 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
@@ -491,6 +493,9 @@ fun SurveySummary(
                                                         didi = didi,
                                                         modifier = modifier,
                                                         onItemClick = {
+                                                            surveySummaryViewModel.prefRepo.savePref(
+                                                                SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
+                                                                PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                                         }
                                                     )
@@ -502,6 +507,9 @@ fun SurveySummary(
                                                         didi = didi,
                                                         modifier = modifier,
                                                         onItemClick = {
+                                                            surveySummaryViewModel.prefRepo.savePref(
+                                                                SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
+                                                                PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                                         }
                                                     )

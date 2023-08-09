@@ -75,12 +75,14 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.data.prefs.SharedPrefs.Companion.PREF_KEY_VO_SUMMARY_OPEN_FROM
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositiveForVo
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.WealthRank
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -241,6 +243,7 @@ fun VoEndorsementScreen(
                                         ?: emptyList(),
                                     modifier = modifier,
                                     onNavigate = {
+                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate(
                                             "vo_endorsement_summary_screen/${
                                                 newFilteredTolaDidiList[didiKey]?.get(
@@ -269,6 +272,7 @@ fun VoEndorsementScreen(
                                     didi = didi,
                                     modifier = modifier,
                                     onItemClick = {
+                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                         viewModel.performQuery(BLANK_STRING, filterSelected)
                                     }

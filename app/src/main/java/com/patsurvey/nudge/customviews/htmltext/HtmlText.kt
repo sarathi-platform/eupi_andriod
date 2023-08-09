@@ -1,4 +1,4 @@
-package com.ireward.htmlcompose
+package com.patsurvey.nudge.customviews.htmltext
 
 import android.text.Spanned
 import android.text.style.*
@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.core.text.HtmlCompat
+import com.ireward.htmlcompose.spanStyle
 
 private const val URL_TAG = "url_tag"
 

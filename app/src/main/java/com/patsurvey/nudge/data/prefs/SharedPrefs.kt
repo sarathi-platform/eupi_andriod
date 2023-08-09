@@ -32,6 +32,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         const val PREF_KEY_LAST_SYNC_TIME = "last_sync_time"
         const val PREF_KEY_SETTING_OPEN_FROM = "setting_open_from"
         const val PREF_KEY_QUESTIONS_OPEN_FROM = "questions_open_from"
+        const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
         const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
         const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
     }

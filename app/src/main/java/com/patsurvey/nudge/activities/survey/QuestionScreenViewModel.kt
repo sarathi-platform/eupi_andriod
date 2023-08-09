@@ -211,7 +211,7 @@ class QuestionScreenViewModel @Inject constructor(
                     actionType = sectionType.value
                 )
                 try {
-                    if (alreadyAnsweredModel != null) {
+                    if (alreadyAnsweredModel > 0) {
                         answerDao.updateAnswer(
                             didiId = didiId, questionId = questionId,
                             actionType = sectionType.value,
