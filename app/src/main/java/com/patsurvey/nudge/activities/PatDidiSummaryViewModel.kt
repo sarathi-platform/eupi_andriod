@@ -22,6 +22,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
@@ -251,12 +252,18 @@ class PatDidiSummaryViewModel @Inject constructor(
                            requestUserType,
                            requestLocation
                        )
-                       NudgeLogger.d(
-                           "PatDidiSummaryViewModel",
-                           "uploadDidiImage imageUploadRequest: ${imageUploadRequest.data ?: ""}"
-                       )
+                    NudgeLogger.d(
+                               "PatDidiSummaryViewModel",
+                    "uploadDidiImage imageUploadRequest status: ${imageUploadRequest.status}  data: ${imageUploadRequest.data ?: ""}"
+                    )
+                    if (imageUploadRequest.status.equals(SUCCESS, true)) {
+                        didiDao.updateNeedsToPostImage(didiId, false)
+                    } else {
+                        didiDao.updateNeedsToPostImage(didiId, true)
+                    }
                 } catch (ex: Exception) {
                     ex.printStackTrace()
+                    didiDao.updateNeedsToPostImage(didiId, true)
                     onCatchError(ex, ApiType.DIDI_IMAGE_UPLOAD_API)
                 }
 
