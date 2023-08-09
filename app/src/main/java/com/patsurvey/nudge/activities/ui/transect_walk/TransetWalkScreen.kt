@@ -153,17 +153,16 @@ fun TransectWalkScreen(
                     voName = viewModel.prefRepo.getSelectedVillage().federationName ?: BLANK_STRING,
                     modifier = Modifier
                 )
-                val tolaCount = tolaList.filter { it.name != EMPTY_TOLA_NAME && it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
-//                val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
-//                val totalCountWithoutEmptyTola = tolaList.filter { it.needsToPost && it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
+                val tolaTolaCount = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal }.size
+                val totalCountWithoutEmptyTola = tolaList.filter { it.status == TolaStatus.TOLA_ACTIVE.ordinal && it.name != EMPTY_TOLA_NAME }.size
                 ModuleAddedSuccessView(completeAdditionClicked = completeTolaAdditionClicked,
-                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaCount == 1)
+                    message = if (tolaList.map { it.name }.contains(EMPTY_TOLA_NAME) && tolaTolaCount == 1)
                         stringResource(R.string.empty_tola_success_message)
                     else
                         stringResource(
-                            if (tolaCount < 2)
+                            if (totalCountWithoutEmptyTola < 2)
                                 R.string.tola_conirmation_text_singular else R.string.tola_conirmation_text_plural,
-                            tolaCount
+                            totalCountWithoutEmptyTola
                     ),
                     Modifier.padding(vertical = (screenHeight/4).dp)
                 )

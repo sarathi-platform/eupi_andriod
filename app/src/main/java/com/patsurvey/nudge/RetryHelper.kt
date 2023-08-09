@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
+import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.VillageEntity
@@ -23,6 +24,7 @@ import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
@@ -38,6 +40,8 @@ import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
+import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
@@ -117,6 +121,7 @@ object RetryHelper {
     private var bpcSummaryDao: BpcSummaryDao? = null
     private var bpcSelectedDidiDao: BpcSelectedDidiDao? = null
     private var bpcNonSelectedDidiDao: BpcNonSelectedDidiDao? = null
+    private var poorDidiListDao: PoorDidiListDao? = null
 
     val tokenExpired = mutableStateOf(false)
 
@@ -133,7 +138,8 @@ object RetryHelper {
         castListDao: CasteListDao,
         bpcSummaryDao: BpcSummaryDao,
         bpcSelectedDidiDao: BpcSelectedDidiDao,
-        bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+        bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+        poorDidiListDao: PoorDidiListDao
     ) {
         setPrefRepo(prefRepo)
         setApiServices(apiService)
@@ -148,6 +154,7 @@ object RetryHelper {
         setBpcSummaryDao(bpcSummaryDao)
         setBpcSelectedDidiDao(bpcSelectedDidiDao)
         setBpcNonSelectedDidiDao(bpcNonSelectedDidiDao)
+        setPoorDidiListDao(poorDidiListDao)
     }
 
     fun cleanUp() {
@@ -183,7 +190,7 @@ object RetryHelper {
         numericAnswerDao = null
         questionDao = null
         castListDao = null
-
+        poorDidiListDao = null
     }
 
     private fun setPrefRepo(mPrefRepo: PrefRepo) {
@@ -236,6 +243,10 @@ object RetryHelper {
 
     private fun setBpcNonSelectedDidiDao(mBpcNonSelectedDidiDao: BpcNonSelectedDidiDao) {
         bpcNonSelectedDidiDao = mBpcNonSelectedDidiDao
+    }
+
+    private fun setPoorDidiListDao(mPoorDidiListDao: PoorDidiListDao) {
+        poorDidiListDao = mPoorDidiListDao
     }
 
     fun retryApi(apiType: ApiType) {
@@ -902,6 +913,100 @@ object RetryHelper {
                                 }
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.CAST_LIST_API)
+                            }
+                        }
+                    }
+                    ApiType.BPC_POOR_DIDI_LIST_API -> {
+                        stepListApiVillageId.forEach { id ->
+                            try {
+                                val poorDidiList = apiService?.getDidisWithRankingFromNetwork(
+                                    villageId = id, "Category", StepResultTypeRequest(
+                                        StepType.WEALTH_RANKING.name, ResultType.POOR.name
+                                    )
+                                )
+                                if (poorDidiList?.status.equals(SUCCESS, true)) {
+                                    poorDidiList?.data?.let { didiRank ->
+                                        if (didiRank.beneficiaryList?.poorDidi?.isNotEmpty() == true) {
+                                            didiRank.beneficiaryList?.poorDidi?.forEach { poorDidis ->
+                                                poorDidis?.let { didi ->
+                                                    var tolaName = BLANK_STRING
+                                                    var casteName = BLANK_STRING
+                                                    val singleTola =
+                                                        tolaDao?.fetchSingleTola(didi.cohortId)
+                                                    val singleCaste =
+                                                        castListDao?.getCaste(didi.castId, prefRepo?.getAppLanguageId()?:2)
+                                                    singleTola?.let {
+                                                        tolaName = it.name
+                                                    }
+                                                    singleCaste?.let {
+                                                        casteName = it.casteName
+                                                    }
+//                                                    if (singleTola != null) {
+                                                    val wealthRanking =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.WEALTH_RANKING.name)].status
+                                                        else WealthRank.NOT_RANKED.rank
+                                                    val patSurveyAcceptedRejected =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.PAT_SURVEY.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                            .indexOf(StepType.PAT_SURVEY.name)].status
+                                                        else DIDI_REJECTED
+                                                    val voEndorsementStatus =
+                                                        if (didi.beneficiaryProcessStatus.map { it.name }
+                                                                .contains(StepType.VO_ENDROSEMENT.name)) DidiEndorsementStatus.toInt(
+                                                            didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
+                                                                .indexOf(StepType.VO_ENDROSEMENT.name)].status)
+                                                        else DidiEndorsementStatus.NOT_STARTED.ordinal
+
+                                                    poorDidiListDao?.insertPoorDidi(
+                                                        PoorDidiEntity(
+                                                            id = didi.id,
+                                                            serverId = didi.id,
+                                                            name = didi.name,
+                                                            address = didi.address,
+                                                            guardianName = didi.guardianName,
+                                                            relationship = didi.relationship,
+                                                            castId = didi.castId,
+                                                            castName = casteName,
+                                                            cohortId = didi.cohortId,
+                                                            villageId = id,
+                                                            cohortName = tolaName,
+                                                            needsToPost = false,
+                                                            wealth_ranking = wealthRanking,
+                                                            forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                                    COMPLETED_STRING, true
+                                                                )
+                                                            ) 1 else 0,
+                                                            voEndorsementStatus = voEndorsementStatus,
+                                                            needsToPostRanking = false,
+                                                            createdDate = didi.createdDate,
+                                                            modifiedDate = didi.modifiedDate,
+                                                            beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                            shgFlag = SHGFlag.NOT_MARKED.value,
+                                                            transactionId = "",
+                                                            localCreatedDate = didi.localCreatedDate,
+                                                            localModifiedDate = didi.localModifiedDate,
+                                                            score = didi.score,
+                                                            crpScore = didi.crpScore,
+                                                            crpComment = didi.crpComment,
+                                                            comment = didi.comment,
+                                                            crpUploadedImage = didi.crpUploadedImage,
+                                                            needsToPostImage = false,
+                                                            rankingEdit = didi.rankingEdit,
+                                                            patEdit = didi.patEdit
+                                                        )
+                                                    )
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    val ex = ApiResponseFailException(poorDidiList?.message ?: "Poor Didi Ranking list error")
+                                    onCatchError(ex, ApiType.BPC_POOR_DIDI_LIST_API)
+                                }
+                            } catch (ex: Exception) {
+                                onCatchError(ex, ApiType.BPC_POOR_DIDI_LIST_API)
                             }
                         }
                     }

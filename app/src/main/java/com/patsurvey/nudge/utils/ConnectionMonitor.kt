@@ -6,12 +6,8 @@ import android.net.ConnectivityManager
 import android.net.Network
 import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
-import android.net.NetworkInfo
 import android.net.NetworkRequest
-import android.os.Build
-import android.util.Log
 import androidx.lifecycle.LiveData
-import com.google.gson.Gson
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +27,9 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
 
     private fun checkValidNetworks() {
         NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
+        validNetworks.forEach { network ->
+            checkValidNetworkAvailability(network)
+        }
         postValue(validNetworks.size > 0)
     }
 
@@ -98,6 +97,31 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
             NudgeLogger.d(TAG, "onLost: ${validNetworks.toString()} ")
             validNetworks.remove(network)
             checkValidNetworks()
+        }
+    }
+
+    fun checkValidNetworkAvailability(validNetwork: Network) {
+        NudgeLogger.d(TAG, "checkValidNetworkAvailability: $validNetwork")
+        val networkCapabilities = connectivityManager.getNetworkCapabilities(validNetwork)
+        val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
+        NudgeLogger.d(TAG, "checkValidNetworkAvailability: ${validNetwork}, $hasInternetCapability")
+
+        if (hasInternetCapability == true) {
+            // Check if this network actually has internet
+            CoroutineScope(Dispatchers.IO).launch {
+                val hasInternet = DoesNetworkHaveInternet.execute(validNetwork.socketFactory)
+                if (hasInternet) {
+                    withContext(Dispatchers.Main) {
+                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: adding network. $validNetwork")
+                        validNetworks.add(validNetwork)
+                    }
+                } else {
+                    withContext(Dispatchers.Main) {
+                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: adding network. $validNetwork")
+                        validNetworks.remove(validNetwork)
+                    }
+                }
+            }
         }
     }
 

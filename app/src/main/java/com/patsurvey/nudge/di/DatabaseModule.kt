@@ -89,4 +89,8 @@ object DatabaseModule {
     @Singleton
     fun provideBpcScorePercentageDao(db: NudgeDatabase) = db.bpcScorePercentageDao()
 
+    @Provides
+    @Singleton
+    fun providePoorDidiListDao(db: NudgeDatabase) = db.poorDidiListDao()
+
 }

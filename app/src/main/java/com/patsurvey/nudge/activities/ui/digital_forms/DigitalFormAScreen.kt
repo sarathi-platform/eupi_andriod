@@ -56,6 +56,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
@@ -81,6 +82,7 @@ fun DigitalFormAScreen(
 ) {
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
+    val didiListForBpc = viewModel.didiDetailListForBpc.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -289,7 +291,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString(),
+                                text = if (viewModel.prefRepo.isUserBPC()) didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString() else didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -331,9 +333,16 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
-                            DidiVillageItem(card)
+                        if (viewModel.prefRepo.isUserBPC()) {
+                            items(didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
+                                DidiVillageItem(card)
+                            }
+                        } else {
+                            items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
+                                DidiVillageItem(card)
+                            }
                         }
+
                     }
                 }
 
@@ -456,6 +465,68 @@ fun DigitalFormAScreen(
 
 @Composable
 fun DidiVillageItem(didiDetailsModel: DidiEntity) {
+    Column(
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = dimensionResource(id = R.dimen.dp_20))
+            .padding(end = dimensionResource(id = R.dimen.dp_15))
+            .padding(vertical = dimensionResource(id = R.dimen.dp_5))
+    ) {
+
+        Column {
+            Row(
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = didiDetailsModel.name,
+                    color = colorResource(id = R.color.text_didi_name_color),
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier
+                )
+                Image(
+                    painter = painterResource(R.drawable.ic_completed_tick),
+                    contentDescription = "completed",
+                    modifier = Modifier
+                        .padding(top = dimensionResource(id = R.dimen.dp_5))
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.ic_baseline_home_24),
+                    contentDescription = "Get Location",
+                    modifier = Modifier,
+                    tint = blueDark,
+
+                    )
+                Spacer(modifier = Modifier.width(4.dp))
+                Text(
+                    text = didiDetailsModel.cohortName,
+                    textAlign = TextAlign.Center,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 12.sp,
+                    color = blueDark
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DidiVillageItem(didiDetailsModel: PoorDidiEntity) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,

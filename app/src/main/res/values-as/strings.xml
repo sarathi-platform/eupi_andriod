@@ -360,7 +360,7 @@
     <string name="pat_rejected_status_text">PAT Rejected</string>
     <string name="vo_selected_status_text">VO Endorsed</string>
     <string name="vo_rejected_status_text">VO Rejected</string>
-    <string name="pat_not_available_status_text">Not Available</string>
+    <string name="pat_not_available_status_text">PAT Not Available</string>
     <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
 
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
@@ -381,5 +381,7 @@
     <string name="page_name_text">পৃষ্ঠা</string>
 
     <string name="storage_permission_dialog_prompt_message">সংৰক্ষণ অনুমতিৰ প্ৰয়োজন, অনুগ্ৰহ কৰি অনুমতি দিয়ক।</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+
 
 </resources>

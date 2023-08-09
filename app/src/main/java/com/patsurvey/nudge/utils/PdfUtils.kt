@@ -7,7 +7,9 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.wwdablu.soumya.simplypdf.SimplyPdf
 import com.wwdablu.soumya.simplypdf.SimplyPdfDocument
@@ -43,6 +45,7 @@ object PdfUtils {
         context: Context,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
+        casteList: List<CasteEntity>,
         completionDate: String
     ): Boolean {
 
@@ -138,7 +141,7 @@ object PdfUtils {
                             )
                             add(
                                 TextCell(
-                                    "${didiEntity.castName}",
+                                    "${casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName}",
                                     cellDataTextProperties,
                                     mDataCellWidth
                                 )
@@ -211,11 +214,184 @@ object PdfUtils {
         return success
     }
 
+    suspend fun getFormAPdfForBpc(
+        context: Context,
+        villageEntity: VillageEntity,
+        didiDetailList: List<PoorDidiEntity>,
+        casteList: List<CasteEntity>,
+        completionDate: String
+    ): Boolean {
+
+        val mSerialNumberCellWidth = 50
+        val mDataCellWidth = 150
+
+        val simplyPdfDocument =
+            getSimplePdfDocument(context, villageEntity, FORM_A_PDF_NAME, "Digital Form A")
+
+
+        //  simplyPdfDocument.text.write("Digital Form A", titleTextProperties)
+        simplyPdfDocument.text.write(
+            "List of households categorized as Poor in Participatory Wealth Ranking",
+            subTitleTextProperties
+        )
+
+        simplyPdfDocument.text.write(
+            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            contentTextProperties
+        )
+        simplyPdfDocument.text.write(
+            "Date of CRP Drive: $completionDate",
+            contentTextProperties
+        )
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        val headerRow = LinkedList<Cell>().apply {
+            add(
+                TextCell(SR_NO_HEADING_TEXT, cellDataTextProperties, mSerialNumberCellWidth)
+            )
+            add(
+                TextCell(HOUSE_NO_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(DIDI_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(GUARDIAN_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(TOLA_NAME_HEADING_TEXT, cellDataTextProperties, mDataCellWidth)
+            )
+            add(
+                TextCell(
+                    "Social Category\n" +
+                            "(6)", cellDataTextProperties, mDataCellWidth
+                )
+            )
+        }
+
+        val rows = LinkedList<LinkedList<Cell>>().apply {
+            add(headerRow)
+
+            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }
+                .forEachIndexed { index, didiEntity ->
+                    add(
+                        LinkedList<Cell>().apply {
+                            add(
+                                TextCell(
+                                    "${index + 1}",
+                                    cellDataTextProperties,
+                                    mSerialNumberCellWidth
+                                )
+                            )
+                            add(
+                                TextCell(
+                                    "${didiEntity.address}",
+                                    cellDataTextProperties,
+                                    mDataCellWidth
+                                )
+                            )
+                            add(
+                                TextCell(
+                                    "${didiEntity.name}",
+                                    cellDataTextProperties,
+                                    mDataCellWidth
+                                )
+                            )
+                            add(
+                                TextCell(
+                                    "${didiEntity.guardianName}",
+                                    cellDataTextProperties,
+                                    mDataCellWidth
+                                )
+                            )
+                            add(
+                                TextCell(
+                                    "${didiEntity.cohortName}",
+                                    cellDataTextProperties,
+                                    mDataCellWidth
+                                )
+                            )
+                            add(
+                                TextCell(
+                                    "${casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName}",
+                                    cellDataTextProperties,
+                                    mDataCellWidth
+                                )
+                            )
+                        }
+                    )
+                }
+
+        }
+
+        simplyPdfDocument.table.draw(rows, TableProperties().apply {
+            borderColor = "#000000"
+            borderWidth = 1
+            drawBorder = true
+        })
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        simplyPdfDocument.text.write("Findings:", TextProperties().apply {
+            textSize = 10
+            textColor = "#000000"
+            typeface = Typeface.DEFAULT_BOLD
+            alignment = Layout.Alignment.ALIGN_NORMAL
+
+        })
+
+        simplyPdfDocument.text.write("Total no. of families in the village: ${didiDetailList.size}",
+            TextProperties().apply {
+                textSize = 10
+                textColor = "#000000"
+                typeface = Typeface.DEFAULT
+                bulletSymbol = "1"
+                alignment = Layout.Alignment.ALIGN_NORMAL
+
+            })
+
+        simplyPdfDocument.text.write("Total no. of families categorized as Poor: ${didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size}",
+            TextProperties().apply {
+                textSize = 10
+                textColor = "#000000"
+                typeface = Typeface.DEFAULT
+                bulletSymbol = "2"
+                alignment = Layout.Alignment.ALIGN_NORMAL
+
+            })
+
+        simplyPdfDocument.text.write("Total no. of families categorized as Medium: ${didiDetailList.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size}",
+            TextProperties().apply {
+                textSize = 10
+                textColor = "#000000"
+                typeface = Typeface.DEFAULT
+                bulletSymbol = "3"
+                alignment = Layout.Alignment.ALIGN_NORMAL
+
+            })
+
+        simplyPdfDocument.text.write("Total no. of families categorized as Rich: ${didiDetailList.filter { it.wealth_ranking == WealthRank.RICH.rank }.size}",
+            TextProperties().apply {
+                textSize = 10
+                textColor = "#000000"
+                typeface = Typeface.DEFAULT
+                bulletSymbol = "4"
+                alignment = Layout.Alignment.ALIGN_NORMAL
+
+            })
+
+        val success = simplyPdfDocument.finish()
+        val page = simplyPdfDocument.currentPageNumber
+        println("TAG PAGE  $page")
+        return success
+    }
 
     suspend fun getFormBPdf(
         context: Context,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
+        casteList: List<CasteEntity>,
         completionDate: String
     ): Boolean {
 
@@ -289,7 +465,111 @@ object PdfUtils {
                             TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
-                            TextCell(didiEntity.castName, cellDataTextProperties, dataCellWidth)
+                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(
+                                SHGFlag.fromInt(didiEntity.shgFlag).toString(),
+                                cellDataTextProperties,
+                                dataCellWidth
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
+        simplyPdfDocument.table.draw(rows, TableProperties().apply {
+            borderColor = "#000000"
+            borderWidth = 1
+            drawBorder = true
+        })
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        val success = simplyPdfDocument.finish()
+        return success
+    }
+
+    suspend fun getFormBPdfForBpc(
+        context: Context,
+        villageEntity: VillageEntity,
+        didiDetailList: List<PoorDidiEntity>,
+        casteList: List<CasteEntity>,
+        completionDate: String
+    ): Boolean {
+
+        val simplyPdfDocument =
+            getSimplePdfDocument(context, villageEntity, FORM_B_PDF_NAME, "Digital Form B")
+
+        // simplyPdfDocument.text.write("Digital Form B", titleTextProperties)
+
+        simplyPdfDocument.text.write(
+            "Families tentatively selected as Ultra-Poor after mobile-based PAT Survey",
+            subTitleTextProperties
+        )
+
+        simplyPdfDocument.text.write(
+            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            contentTextProperties
+        )
+
+        simplyPdfDocument.text.write("Date of CRP Drive: $completionDate", contentTextProperties)
+
+        simplyPdfDocument.text.write(
+            "Total no. of Ultra-Poor families selected by CRP: ${didiDetailList.size}",
+            contentTextProperties
+        )
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        val headerRow = LinkedList<Cell>().apply {
+            add(TextCell(SR_NO_HEADING_TEXT, cellDataTextProperties, serialNumberCellWidth))
+            add(TextCell(HOUSE_NO_HEADING_TEXT, cellDataTextProperties, dataCellWidth))
+            add(
+                TextCell(DIDI_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(GUARDIAN_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(TOLA_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(
+                    "Caste (ST/PVTG/SC/OBC/General)\n" +
+                            "(6)", cellDataTextProperties, dataCellWidth
+                )
+            )
+            add(
+                TextCell(
+                    "SHG member (Yes/ No)\n" +
+                            "(7)", cellDataTextProperties, dataCellWidth
+                )
+            )
+        }
+
+        val rows = LinkedList<LinkedList<Cell>>().apply {
+            add(headerRow)
+
+            didiDetailList.forEachIndexed { index, didiEntity ->
+                add(
+                    LinkedList<Cell>().apply {
+                        add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
+                        add(
+                            TextCell(didiEntity.address, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.name, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.guardianName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
                             TextCell(
@@ -319,6 +599,7 @@ object PdfUtils {
         context: Context,
         villageEntity: VillageEntity,
         didiDetailList: List<DidiEntity>,
+        casteList: List<CasteEntity>,
         completionDate: String
     ): Boolean {
 
@@ -392,7 +673,112 @@ object PdfUtils {
                             TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
-                            TextCell(didiEntity.castName, cellDataTextProperties, dataCellWidth)
+                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(
+                                SHGFlag.fromInt(didiEntity.shgFlag).toString(),
+                                cellDataTextProperties,
+                                dataCellWidth
+                            )
+                        )
+                    }
+                )
+            }
+        }
+
+        simplyPdfDocument.table.draw(rows, TableProperties().apply {
+            borderColor = "#000000"
+            borderWidth = 1
+            drawBorder = true
+        })
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        val success = simplyPdfDocument.finish()
+        return success
+
+    }
+
+    suspend fun getFormCPdfForBpc(
+        context: Context,
+        villageEntity: VillageEntity,
+        didiDetailList: List<PoorDidiEntity>,
+        casteList: List<CasteEntity>,
+        completionDate: String
+    ): Boolean {
+
+        val simplyPdfDocument =
+            getSimplePdfDocument(context, villageEntity, FORM_C_PDF_NAME, "Digital Form C")
+
+        // simplyPdfDocument.text.write("Digital Form C", titleTextProperties)
+
+        simplyPdfDocument.text.write(
+            "Final list of Ultra Poor families endorsed by VO (Village Organization)",
+            subTitleTextProperties
+        )
+
+        simplyPdfDocument.text.write(
+            "Village Name: ${villageEntity.name} \t VO Name: ${villageEntity.federationName}",
+            contentTextProperties
+        )
+
+        simplyPdfDocument.text.write("Date of CRP Drive: $completionDate", contentTextProperties)
+
+        simplyPdfDocument.text.write(
+            "Total no. Ultra-Poor families endorsed by VO: ${didiDetailList.size}",
+            contentTextProperties
+        )
+
+        simplyPdfDocument.insertEmptyLines(1)
+
+        val headerRow = LinkedList<Cell>().apply {
+            add(TextCell(SR_NO_HEADING_TEXT, cellDataTextProperties, serialNumberCellWidth))
+            add(TextCell(HOUSE_NO_HEADING_TEXT, cellDataTextProperties, dataCellWidth))
+            add(
+                TextCell(DIDI_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(GUARDIAN_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(TOLA_NAME_HEADING_TEXT, cellDataTextProperties, dataCellWidth)
+            )
+            add(
+                TextCell(
+                    "Caste (ST/PVTG/SC/OBC/General)\n" +
+                            "(6)", cellDataTextProperties, dataCellWidth
+                )
+            )
+            add(
+                TextCell(
+                    "SHG member (Yes/ No)\n" +
+                            "(7)", cellDataTextProperties, dataCellWidth
+                )
+            )
+        }
+
+        val rows = LinkedList<LinkedList<Cell>>().apply {
+            add(headerRow)
+
+            didiDetailList.forEachIndexed { index, didiEntity ->
+                add(
+                    LinkedList<Cell>().apply {
+                        add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
+                        add(
+                            TextCell(didiEntity.address, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.name, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.guardianName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
+                        )
+                        add(
+                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
                             TextCell(

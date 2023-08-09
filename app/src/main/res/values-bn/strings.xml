@@ -344,7 +344,7 @@
     <string name="pat_rejected_status_text">PAT প্রত্যাখ্যান</string>
     <string name="vo_selected_status_text">VO অনুমোদিত</string>
     <string name="vo_rejected_status_text">VO প্রত্যাখ্যাত</string>
-    <string name="pat_not_available_status_text">PAT সম্পূর্ণ হয়েছে - উপলব্ধ নয়</string>
+    <string name="pat_not_available_status_text">PAT উপলব্ধ নয়</string>
     <string name="cannot_delete_tola_message_text">এই তোলা ডিলিট করা যাবে না কারণ দিদিদের এটাকে বরাদ্দ করা হয়েছে</string>
     <string name="heading_value_of_other_productive_assests">অন্যান্য উৎপাদনশীল সম্পদের মূল্য</string>
     <string name="heading_earning_ration">আয়ের অনুপাত</string>
@@ -362,4 +362,6 @@
     <string name="page_name_text">পাতা</string>
 
     <string name="storage_permission_dialog_prompt_message">সঞ্চয়স্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
+    <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+
 </resources>

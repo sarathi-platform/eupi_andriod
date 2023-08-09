@@ -74,6 +74,7 @@ fun DigitalFormBScreen(
 ) {
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
+    val didiListForBpc = viewModel.didiDetailListForBpc.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -282,7 +283,11 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                text =
+                                if (viewModel.prefRepo.isUserBPC())
+                                    didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                else
+                                    didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -324,8 +329,14 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        items( didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
-                            DidiVillageItem(card)
+                        if (viewModel.prefRepo.isUserBPC()) {
+                            items(didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
+                                DidiVillageItem(didiDetailsModel = card)
+                            }
+                        } else {
+                            items( didiList.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
+                                DidiVillageItem(didiDetailsModel = card)
+                            }
                         }
                     }
                 }

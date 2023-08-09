@@ -174,7 +174,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             castListDao = mViewModel.casteListDao,
             bpcSummaryDao = mViewModel.bpcSummaryDao,
             bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
-            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao
+            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao,
+            poorDidiListDao = mViewModel.poorDidiListDao
         )
 
         AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)
