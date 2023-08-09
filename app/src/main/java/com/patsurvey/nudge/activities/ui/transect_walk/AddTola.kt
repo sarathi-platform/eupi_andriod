@@ -84,6 +84,7 @@ import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.LocationUtil
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
 import com.patsurvey.nudge.utils.TextButtonWithIcon
+import com.patsurvey.nudge.utils.containsEmoji
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
@@ -201,7 +202,7 @@ fun AddTolaBox(
             OutlinedTextField(
                 value = mTolaName,
                 onValueChange = {
-                    if(!it.contains(IGNORED_REGEX)){
+                    if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
                         mTolaName = it
                     }
                 },
@@ -669,7 +670,7 @@ fun TolaBox(
                         OutlinedTextField(
                             value = mTolaName,
                             onValueChange = {
-                                if(!it.contains(IGNORED_REGEX)){
+                                if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
                                     mTolaName = it
                                 }
                             },

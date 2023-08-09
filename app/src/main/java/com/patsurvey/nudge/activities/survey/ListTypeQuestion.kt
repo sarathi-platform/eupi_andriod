@@ -22,7 +22,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.ireward.htmlcompose.HtmlText
+import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -39,7 +39,6 @@ fun ListTypeQuestion(
     isAnswerSelected:Boolean =false,
     onAnswerSelection: (Int) -> Unit
 ) {
-//    var selectedIndex by remember { mutableStateOf(index) }
     Column(modifier = modifier) {
         HtmlText(
             modifier = Modifier
@@ -144,10 +143,14 @@ fun OptionCard(
                 Modifier.padding(10.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
+                HtmlText(
                     text = buttonTitle,
-                    color = if(selectedIndex == index) Color.White else Color.Black,
-                    style = quesOptionTextStyle
+                    style = TextStyle(
+                        color = if(selectedIndex == index) Color.White else Color.Black,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp
+                    )
                 )
             }
         }

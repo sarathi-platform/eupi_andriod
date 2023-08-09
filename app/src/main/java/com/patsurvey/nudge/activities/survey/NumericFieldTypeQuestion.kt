@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
-import com.ireward.htmlcompose.HtmlText
+import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -147,7 +147,7 @@ val context = LocalContext.current
                     }
             ) {
                 LazyColumn(modifier = Modifier.fillMaxWidth(), state = lazyColumnListState) {
-                    itemsIndexed(optionList.sortedBy { it.optionValue }) { index, option ->
+                    itemsIndexed(optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }) { index, option ->
                         IncrementDecrementView(modifier = Modifier,
                             option.display ?: BLANK_STRING,
                             option.count ?: 0,
@@ -215,7 +215,7 @@ val context = LocalContext.current
 
                     item {
                         Text(
-                            text = stringResource(id = if(totalValueTitle.equals(VALUE_OF_PRODUCTIVE_ASSETS,true)) R.string.heading_value_of_other_productive_assests else R.string.heading_earning_ration) ,
+                            text = totalValueTitle,
                             color = Color.Black,
                             modifier = Modifier.padding(bottom = 5.dp, start = 5.dp),
                             style = TextStyle(
