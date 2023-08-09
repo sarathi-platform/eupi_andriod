@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -17,9 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExtendedFloatingActionButton
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -30,27 +25,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.CustomFloatingButton
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
@@ -65,9 +45,7 @@ import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.getImagePath
-import com.patsurvey.nudge.utils.singleClick
 import com.patsurvey.nudge.utils.stringToDouble
-import com.patsurvey.nudge.utils.visible
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.File
@@ -471,77 +449,76 @@ fun QuestionScreen(
 
         if (viewModel.prevButtonVisible.value && pagerState.currentPage != 0) {
             Box(modifier = Modifier
-                .visible(viewModel.prevButtonVisible.value)
-                .align(alignment = Alignment.BottomStart)
+                .padding(bottom = 40.dp)
                 .padding(horizontal = 16.dp)
-                .padding(bottom = 40.dp)) {
-            CustomFloatingButton(
-                modifier = Modifier,
-                buttonTitle = "Q${pagerState.currentPage}",
-                isNext = false
-            ) {
-                viewModel.prevButtonVisible.value = false
-                viewModel.nextButtonVisible.value = false
-                viewModel.prefRepo.saveNeedQuestionToScroll(true)
-                viewModel.isAnswerSelected.value = false
-                selQuesIndex.value = selQuesIndex.value - 1
-                val prevPageIndex = pagerState.currentPage - 1
-                viewModel.findListTypeSelectedAnswer(pagerState.currentPage - 1, didiId)
-                if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name) {
-                    val newAnswerOptionModel = OptionsItem(
-                        display = (if (questionList[pagerState.currentPage].questionFlag?.equals(
-                                QUESTION_FLAG_RATIO,
-                                true
-                            ) == true
-                        ) viewModel.totalAmount.value.toString()
-                        else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
-                        0,
-                        0,
-                        0,
-                        BLANK_STRING
-                    )
-                    viewModel.setAnswerToQuestion(
-                        didiId = didiId,
-                        questionId = questionList[pagerState.currentPage].questionId ?: 0,
-                        answerOptionModel = newAnswerOptionModel,
-                        assetAmount = if (questionList[pagerState.currentPage].questionFlag.equals(
-                                QUESTION_FLAG_RATIO, true
-                            )
-                        ) viewModel.totalAmount.value else (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
-                        quesType = QuestionType.Numeric_Field.name,
-                        summary = questionList[pagerState.currentPage].questionSummary
-                            ?: BLANK_STRING,
-                        selIndex = -1,
-                        enteredAssetAmount = if (viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
-                        questionFlag = questionList[pagerState.currentPage].questionFlag
-                            ?: QUESTION_FLAG_WEIGHT
-                    ) {
+                .align(Alignment.BottomStart)) {
+                CustomFloatingButton(
+                    modifier = Modifier,
+                    buttonTitle = "Q${pagerState.currentPage}",
+                    isNext = false
+                ) {
+                    viewModel.prevButtonVisible.value = false
+                    viewModel.nextButtonVisible.value = false
+                    viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                    viewModel.isAnswerSelected.value = false
+                    selQuesIndex.value = selQuesIndex.value - 1
+                    val prevPageIndex = pagerState.currentPage - 1
+                    viewModel.findListTypeSelectedAnswer(pagerState.currentPage - 1, didiId)
+                    if (questionList[pagerState.currentPage].type == QuestionType.Numeric_Field.name) {
+                        val newAnswerOptionModel = OptionsItem(
+                            display = (if (questionList[pagerState.currentPage].questionFlag?.equals(
+                                    QUESTION_FLAG_RATIO,
+                                    true
+                                ) == true
+                            ) viewModel.totalAmount.value.toString()
+                            else (viewModel.totalAmount.value + stringToDouble(viewModel.enteredAmount.value)).toString()),
+                            0,
+                            0,
+                            0,
+                            BLANK_STRING
+                        )
+                        viewModel.setAnswerToQuestion(
+                            didiId = didiId,
+                            questionId = questionList[pagerState.currentPage].questionId ?: 0,
+                            answerOptionModel = newAnswerOptionModel,
+                            assetAmount = if (questionList[pagerState.currentPage].questionFlag.equals(
+                                    QUESTION_FLAG_RATIO, true
+                                )
+                            ) viewModel.totalAmount.value else (viewModel.totalAmount.value + viewModel.enteredAmount.value.toDouble()),
+                            quesType = QuestionType.Numeric_Field.name,
+                            summary = questionList[pagerState.currentPage].questionSummary
+                                ?: BLANK_STRING,
+                            selIndex = -1,
+                            enteredAssetAmount = if (viewModel.enteredAmount.value.isNullOrEmpty()) "0" else viewModel.enteredAmount.value,
+                            questionFlag = questionList[pagerState.currentPage].questionFlag
+                                ?: QUESTION_FLAG_WEIGHT
+                        ) {
+                            coroutineScope.launch {
+                                delay(300)
+                                eventToPageChange.value = true
+                            }
+                            coroutineScope.launch {
+                                pagerState.animateScrollToPage(prevPageIndex)
+                            }
+                        }
+                    } else {
                         coroutineScope.launch {
                             delay(300)
                             eventToPageChange.value = true
                         }
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(prevPageIndex)
-                        }
+                        coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
                     }
-                } else {
-                    coroutineScope.launch {
-                        delay(300)
-                        eventToPageChange.value = true
-                    }
-                    coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex) }
-                }
 
+                }
             }
-        }
+//            ExtendedFloatingActionButton(text = { /*TODO*/ }, onClick = { /*TODO*/ })
         }
 
         if(viewModel.nextButtonVisible.value) {
             Box(modifier = Modifier
-                .visible(viewModel.nextButtonVisible.value)
+                .padding(bottom = 40.dp)
                 .padding(horizontal = 16.dp)
-                .align(alignment = Alignment.BottomEnd)
-                .padding(bottom = 40.dp)) {
+                .align(Alignment.BottomEnd)) {
                 CustomFloatingButton(
                     modifier = Modifier,
                     buttonTitle = "Q${if ((pagerState.currentPage + 2) <= questionList.size) (pagerState.currentPage + 2) else (pagerState.currentPage + 1)}",
