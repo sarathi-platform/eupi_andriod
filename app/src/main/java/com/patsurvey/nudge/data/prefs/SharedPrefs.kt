@@ -9,6 +9,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.ACCESS_TOKEN
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.utils.ONLINE_STATUS
 import com.patsurvey.nudge.utils.PREF_MOBILE_NUMBER
@@ -68,7 +69,8 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getSelectedVillage(): VillageEntity {
-        return Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, "{}"), VillageEntity::class.java)
+        val defaultVillageEntity= VillageEntity(id = 0, languageId = 2, name = BLANK_STRING, federationName = BLANK_STRING, stateId = 0, steps_completed = listOf(), needsToPost = false, localVillageId = 0)
+        return Gson().fromJson(prefs.getString(PREF_KEY_SELECTED_VILLAGE, Gson().toJson(defaultVillageEntity)), VillageEntity::class.java)
     }
 
 
