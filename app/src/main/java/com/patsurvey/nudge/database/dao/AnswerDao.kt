@@ -24,8 +24,8 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND actionType = :actionType")
     fun getAnswerForDidi(actionType: String,didiId:Int): List<SectionAnswerEntity>
 
-    @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
-    fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): SectionAnswerEntity
+    @Query("Select COUNT(*) FROM $ANSWER_TABLE where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
+    fun isAlreadyAnswered(didiId: Int, questionId: Int,actionType:String): Int
 
     @Query("Update $ANSWER_TABLE set optionValue = :optionValue, answerValue = :answerValue,weight=:weight, optionId = :optionId,type=:type,totalAssetAmount =:totalAssetAmount,summary=:summary,assetAmount=:assetAmount, questionFlag=:questionFlag where didiId = :didiId AND questionId = :questionId AND actionType = :actionType")
     fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String,assetAmount:String,questionFlag:String)

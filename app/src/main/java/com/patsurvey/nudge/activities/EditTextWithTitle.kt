@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.IGNORED_REGEX
+import com.patsurvey.nudge.utils.containsEmoji
 
 @Composable
 fun EditTextWithTitle(
@@ -72,7 +73,7 @@ fun EditTextWithTitle(
         CustomOutlineTextField(
             value = currentString,
             onValueChange = {
-                if(!it.contains(IGNORED_REGEX)){
+                if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
                     onValueChange(it)
                 }
             },

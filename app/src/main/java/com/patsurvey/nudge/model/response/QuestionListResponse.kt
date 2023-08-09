@@ -57,4 +57,7 @@ data class OptionsItem(
 	@SerializedName("optionImage")
 	var optionImage: String? = BLANK_STRING,
 
+	@SerializedName("optionType")
+	var optionType: String? = BLANK_STRING,
+
 )

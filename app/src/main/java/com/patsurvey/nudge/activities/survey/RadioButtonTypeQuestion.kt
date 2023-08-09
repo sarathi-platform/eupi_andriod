@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities.survey
 
-import android.widget.TextView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -9,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,16 +27,11 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.core.text.HtmlCompat
-import androidx.core.widget.TextViewCompat
-import androidx.databinding.adapters.TextViewBindingAdapter.setText
-import com.ireward.htmlcompose.HtmlText
+import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.utils.ButtonOutlineWithTopIcon
-import com.patsurvey.nudge.model.dataModel.AnswerOptionModel
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonPositive

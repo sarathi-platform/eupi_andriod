@@ -49,7 +49,7 @@ import coil.compose.rememberAsyncImagePainter
 import coil.compose.rememberImagePainter
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
-import com.ireward.htmlcompose.HtmlText
+import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
@@ -175,23 +175,24 @@ fun PatSurvaySectionTwoSummaryScreen(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    itemsIndexed(answerSummeryList) { index, answer ->
-                        val question = inclusionQuesList.value.find { it.questionId == answer.questionId }
-                      SectionTwoSummeryItem(index = index, quesSummery = answer.questionId.let {
+                    itemsIndexed(inclusionQuesList.value.sortedBy { it.order }) { index, question ->
+                        val answer = answerSummeryList.find { it.questionId == question.questionId }
+                      SectionTwoSummeryItem(index = index,
+                          quesSummery = answer?.questionId.let {
                           patSectionSummaryViewModel.getQuestionSummary(
-                              it
+                              it?:0
                           )
                       } ,
-                          answerValue = answer.questionId?.let {
-                              answer.optionId?.let { it1 ->
+                          answerValue = answer?.questionId?.let {
+                              answer?.optionId?.let { it1 ->
                                   patSectionSummaryViewModel.getOptionForLanguage(
-                                      it, it1,answer.answerValue?:"0"
+                                      it?:0, it1,answer.answerValue?:"0"
                                   )
                               }
                           } ?: BLANK_STRING,
-                          questionType =  answer.type,
+                          questionType =  answer?.type?: QuestionType.List.name,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
-                          questionFlag = answer.questionFlag?: QUESTION_FLAG_WEIGHT)
+                          questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
                           navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
