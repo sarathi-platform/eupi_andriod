@@ -469,7 +469,7 @@ class AddDidiViewModel @Inject constructor(
                         shgFlag = SHGFlag.NOT_MARKED.value,
                         transactionId = "",
                         needsToPostRanking = false,
-                        localUniqueId = getUniqueIdForDidi(MyApplication.applicationContext())
+                        localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
                     )
                 )
 
