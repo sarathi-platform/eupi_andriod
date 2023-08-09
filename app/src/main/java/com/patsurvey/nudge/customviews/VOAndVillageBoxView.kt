@@ -19,6 +19,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.utils.BLANK_STRING
 
 @Composable
 fun VOAndVillageBoxView(
@@ -46,7 +47,7 @@ fun VOAndVillageBoxView(
                     tint =textColorDark,
                 )
                 Text(
-                    text = prefRepo.getSelectedVillage().name,
+                    text = prefRepo.getSelectedVillage().name?: BLANK_STRING,
                     modifier = Modifier
                         .fillMaxWidth(),
                     color = textColorDark,
