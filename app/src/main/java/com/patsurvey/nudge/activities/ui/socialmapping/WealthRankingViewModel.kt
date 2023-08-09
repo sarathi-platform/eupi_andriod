@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,17 +17,11 @@ import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
-import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -79,14 +74,22 @@ class WealthRankingViewModel @Inject constructor(
     }
 
 
-    fun onCardArrowClicked(cardId: Int) {
+    fun onCardArrowClicked(cardId: Int,coroutineScope: CoroutineScope,listState : LazyListState,index : Int) {
         _expandedCardIdsList.value = _expandedCardIdsList.value.toMutableList().also { list ->
             if (list.contains(cardId))
                 list.remove(cardId)
             else {
                 list.clear()
                 list.add(cardId)
+                scrollCardView(coroutineScope,listState,index)
             }
+        }
+    }
+
+    fun scrollCardView(coroutineScope: CoroutineScope,listState : LazyListState,index : Int){
+        coroutineScope.launch {
+            delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
+            listState.animateScrollToItem(index+3)
         }
     }
 

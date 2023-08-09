@@ -7,6 +7,7 @@ import androidx.compose.runtime.*
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.CheckDBStatus
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
@@ -467,7 +468,8 @@ class AddDidiViewModel @Inject constructor(
                         localModifiedDate = System.currentTimeMillis(),
                         shgFlag = SHGFlag.NOT_MARKED.value,
                         transactionId = "",
-                        needsToPostRanking = false
+                        needsToPostRanking = false,
+                        localUniqueId = getUniqueIdForDidi(MyApplication.applicationContext())
                     )
                 )
 
