@@ -192,18 +192,18 @@ class VillageSelectionViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val localLanguageList = languageListDao.getAllLanguages()
             localLanguageList?.let {
-                    localLanguageList.forEach { languageEntity ->
-                        try {
-                            // Fetch QuestionList from Server
-                            val localLanguageQuesList =
-                                questionListDao.getAllQuestionsForLanguage(languageEntity.id)
-                            if (localLanguageQuesList.isEmpty()) {
-                                Log.d("TAG", "fetchQuestions: QuestionList")
+                localLanguageList.forEach { languageEntity ->
+                    try {
+                        // Fetch QuestionList from Server
+                        val localLanguageQuesList =
+                            questionListDao.getAllQuestionsForLanguage(languageEntity.id)
+                        if (localLanguageQuesList.isEmpty()) {
+                            Log.d("TAG", "fetchQuestions: QuestionList")
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
                                     languageId = languageEntity.id,
                                     stateId = stateId.value,
-                                    surveyName = if(prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY_CONSTANT
+                                    surveyName = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY_CONSTANT
                                 )
                             )
                             if (quesListResponse.status.equals(SUCCESS, true)) {
@@ -226,34 +226,37 @@ class VillageSelectionViewModel @Inject constructor(
                                 }
                             } else {
                                 val ex = ApiResponseFailException(quesListResponse.message)
-                                if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
-                                    ApiType.PAT_BPC_QUESTION_API
+                                if (!retryApiList.contains(if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
+                                    if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
                                 )
-                                RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                                onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
+                                crpPatQuestionApiLanguageId.add(languageEntity.id)
+                                onCatchError(
+                                    ex,
+                                    if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
+                                )
                             }
 
                         }
-                        } catch (ex: Exception) {
-                            if (ex !is JsonSyntaxException) {
-                                if (!retryApiList.contains(ApiType.PAT_BPC_QUESTION_API)) retryApiList.add(
-                                    ApiType.PAT_BPC_QUESTION_API
-                                )
-                                RetryHelper.crpPatQuestionApiLanguageId.add(languageEntity.id)
-                            }
-                            onCatchError(ex, ApiType.PAT_BPC_QUESTION_API)
-                        } finally {
-                            withContext(Dispatchers.Main) {
-                                delay(250)
-                                showLoader.value = false
-                            }
+                    } catch (ex: Exception) {
+                        if (ex !is JsonSyntaxException) {
+                            if (!retryApiList.contains(if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API)) retryApiList.add(
+                                if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
+                            )
+                            crpPatQuestionApiLanguageId.add(languageEntity.id)
+                        }
+                        onCatchError(
+                            ex,
+                            if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
+                        )
+                    } finally {
+                        withContext(Dispatchers.Main) {
+                            delay(250)
+                            showLoader.value = false
                         }
                     }
                 }
-
+            }
         }
-
-
     }
 
     private fun fetchDataForBpc() {
