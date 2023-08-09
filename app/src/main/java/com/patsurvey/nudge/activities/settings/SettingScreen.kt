@@ -501,9 +501,9 @@ fun SettingScreen(
         }
         if(errorMessage.equals(SYNC_FAILED,true)){
             errorMessage = stringResource(id = R.string.sync_failed)
+            showCustomToast(context,errorMessage)
         }
 
-        showCustomToast(context,errorMessage)
     }
     if(viewModel.showAPILoader.value){
         CustomProgressBar(modifier = Modifier)

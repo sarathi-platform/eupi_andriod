@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
@@ -76,18 +77,15 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.utils.ButtonNegative
-import com.patsurvey.nudge.utils.ButtonOutline
-import com.patsurvey.nudge.utils.ButtonPositive
-import com.patsurvey.nudge.utils.IGNORED_REGEX
-import com.patsurvey.nudge.utils.LocationCoordinates
-import com.patsurvey.nudge.utils.LocationUtil
+import com.patsurvey.nudge.utils.*
 import com.patsurvey.nudge.utils.LocationUtil.showPermissionDialog
+import kotlinx.coroutines.CoroutineScope
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.containsEmoji
 import com.patsurvey.nudge.utils.openSettings
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddTolaBox(
@@ -487,6 +485,9 @@ fun TolaBox(
     isLocationAvailable: Boolean = false,
     isTransectWalkCompleted: Boolean = false,
     deleteButtonClicked: () -> Unit,
+    listState: LazyListState,
+    coroutineScope : CoroutineScope,
+    index : Int,
     saveButtonClicked: (newName: String, newLocation: LocationCoordinates?) -> Unit
 ) {
     var showEditView by remember { mutableStateOf(false) }
@@ -621,6 +622,12 @@ fun TolaBox(
                 {
                     mTolaName = tolaName
                     showEditView = true
+                    // edit tola
+                    coroutineScope.launch {
+                        delay(200)
+                        NudgeLogger.e("tola->",index.toString())
+                        listState.animateScrollToItem(index+2)
+                    }
                 }
             }
             Column(modifier = Modifier

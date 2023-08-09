@@ -15,6 +15,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -65,6 +66,8 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -173,6 +176,7 @@ fun SocialMappingDidiListScreen(
                         ),
                         modifier = Modifier.padding(vertical = (screenHeight / 4).dp)
                     )
+                    val listState = rememberLazyListState()
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -190,7 +194,8 @@ fun SocialMappingDidiListScreen(
                                 }
                             ),
                         contentPadding = PaddingValues(bottom = 10.dp, start = 20.dp, end = 20.dp),
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        state = listState
                     ) {
                         item {
                             Row(
@@ -398,6 +403,10 @@ fun SocialMappingDidiListScreen(
                                         } else {
                                             expendedDidiIndex = index
                                             expandedIds.add(didiDetailModel.id)
+                                            coroutineScope.launch {
+                                                delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
+                                                listState.animateScrollToItem(index+3)
+                                            }
                                         }
                                     },
                                     onItemClick = { didi ->
