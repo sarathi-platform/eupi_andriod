@@ -345,7 +345,7 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
 fun PatSummeryScreenDidiDetailBoxPreview(){
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-   val didi=DidiEntity(0,0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
+   val didi=DidiEntity(0,"",0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value)
     PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi)
