@@ -75,7 +75,7 @@ fun DigitalFormBScreen(
 ) {
     val context = LocalContext.current
     val didiList by viewModel.didiDetailList.collectAsState()
-    val didiListForBpc = viewModel.didiDetailListForBpc.collectAsState()
+    val didiListForBpc by viewModel.didiDetailListForBpc.collectAsState()
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
@@ -286,7 +286,7 @@ fun DigitalFormBScreen(
                             Text(
                                 text =
                                 if (viewModel.prefRepo.isUserBPC())
-                                    didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                    didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
                                 else
                                     didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
                                 color = Color.Black,
@@ -331,7 +331,7 @@ fun DigitalFormBScreen(
                             .fillMaxWidth()
                     ) {
                         if (viewModel.prefRepo.isUserBPC()) {
-                            items(didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
+                            items(didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
                                 DidiVillageItem(didiDetailsModel = card)
                             }
                         } else {

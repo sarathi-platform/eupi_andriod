@@ -155,9 +155,9 @@ class SettingViewModel @Inject constructor(
     }
     fun isFormBAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val formCFilePath =
+            val formBFilePath =
                 File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
-            if (formCFilePath.isFile && formCFilePath.exists()) {
+            if (formBFilePath.isFile && formBFilePath.exists()) {
                 withContext(Dispatchers.Main) {
                     formBAvailabe.value = true
                 }
