@@ -349,6 +349,16 @@ fun stringToDouble(string: String):Double{
     }
    return doubleAmount
 }
+
+fun stringToInt(string: String):Int{
+    var intValue=0
+    if(string!=null){
+        intValue = if(string.isEmpty())
+            0
+        else string.toInt()
+    }
+    return intValue
+}
 fun doubleToString(double: Double):String{
     var string= BLANK_STRING
     if(double>0.0){

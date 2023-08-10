@@ -202,18 +202,20 @@ fun QuestionScreen(
                                     )
                                 }
                             if (quesImage?.extension.equals(EXTENSION_WEBP, true)) {
-                                GlideImage(
-                                    model = quesImage,
-                                    contentDescription = "Question Image",
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                            60.dp
-                                        )
-                                        .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
-                                            60.dp
-                                        ),
-                                )
+                                if (quesImage?.exists() == true) {
+                                    GlideImage(
+                                        model = quesImage,
+                                        contentDescription = "Question Image",
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .width(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                60.dp
+                                            )
+                                            .height(/*dimensionResource(id = R.dimen.ques_image_width)*/
+                                                60.dp
+                                            ),
+                                    )
+                                }
                             } else {
                                 if (quesImage?.exists() == true) {
                                     GlideImage(
