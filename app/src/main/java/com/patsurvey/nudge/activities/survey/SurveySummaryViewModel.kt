@@ -143,6 +143,7 @@ class SurveySummaryViewModel @Inject constructor(
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
+                didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
                 var optionList: List<OptionsItem>
                 var answeredDidiList: ArrayList<PATSummarySaveRequest> = arrayListOf()
                 var scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
@@ -314,7 +315,6 @@ class SurveySummaryViewModel @Inject constructor(
                             if (!saveAPIResponse.lastSyncTime.isNullOrEmpty()) {
                                 updateLastSyncTime(prefRepo, saveAPIResponse.lastSyncTime)
                             }
-                            didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
                             val updateScoreResponse = apiService.updateDidiScore(scoreDidiList)
                         }
                     }

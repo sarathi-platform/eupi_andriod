@@ -102,11 +102,8 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.Locale
 import java.util.regex.Pattern
 import kotlin.math.roundToInt
-import java.util.*
-import kotlin.collections.ArrayList
 
 
 fun Modifier.visible(visible: Boolean) = if (visible) this else this.then(Invisible)
@@ -703,8 +700,11 @@ fun findImageLocationFromPath(uri:String):List<String>{
             if (path[0].contains("content:/"))
                 path[0].replace("content:/", "file:/")
             return path
-        } else if (uri.contains("content:/"))
+        } else if (uri.contains("content:/")) {
             uri.replace("content:/", "file:/")
+        } else {
+            return listOf(uri, "0.0, 0.0")
+        }
     }
     return ArrayList()
 }
