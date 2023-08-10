@@ -243,7 +243,6 @@
     <string name="summary_vo_endoresement_text_plural">VO অনুমোদনৰ বাবে পঠোৱা বাইদেউ সকল</string>
     <string name="unmatched_text">মিলা নাই</string>
     <string name="matched_text">মিল খাইছে</string>
-    <string name="total_productive_asset_value_for_ratio">= %1$s</string>
     <string name="review_and_submit_button_text">পৰ্যালোচনা কৰি প্ৰেৰণ কৰা হয়</string>
     <string name="bpc_add_more_didi_screen_title">প্ৰমাণীকৰণৰ বাবে অতিৰিক্ত বাইদেউসকলৰ তালিকা</string>
     <string name="showing_text">"দেখুৱাইছে"</string>

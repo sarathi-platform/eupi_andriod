@@ -243,7 +243,6 @@
     <string name="summary_vo_endoresement_text_plural">" দিদিদের গ্রামের সংগঠন (VO) অনুমোদনের জন্য পাঠিয়েছেন</string>
     <string name="unmatched_text">মিলা হয়নি</string>
     <string name="matched_text">মিলে গেছে</string>
-    <string name="total_productive_asset_value_for_ratio">= %1$s</string>
     <string name="review_and_submit_button_text">পর্যালোচনা করুন এবং জমা দিন</string>
     <string name="bpc_add_more_didi_screen_title">যাচাইয়ের জন্য উপলব্ধ অতিরিক্ত দিদিদের তালিকা</string>
     <string name="showing_text">দেখানো হচ্ছে</string>

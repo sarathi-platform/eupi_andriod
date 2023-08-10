@@ -243,7 +243,6 @@
     <string name="summary_vo_endoresement_text_plural">दीदीयां जो VO अनुमोदन के लिए भेजे गए</string>
     <string name="unmatched_text">मिलान नहीं हुआ</string>
     <string name="matched_text">मिलान पूर्ण</string>
-    <string name="total_productive_asset_value_for_ratio">= %1$s</string>
     <string name="review_and_submit_button_text">समीक्षा करें और जमा करे</string>
     <string name="bpc_add_more_didi_screen_title">अतिरिक्त दिदीयों की सूची जो सत्यापन के लिए उपलब्ध है</string>
     <string name="showing_text">दिखाया जा रहा है</string>
