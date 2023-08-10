@@ -40,6 +40,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
@@ -289,7 +290,7 @@ fun VillageSelectionScreen(
             if (villages.isNotEmpty()) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth()
+                        .fillMaxWidth().background(Color.White)
                         .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
                         .padding(bottom = 16.dp)
                         .align(Alignment.BottomCenter)

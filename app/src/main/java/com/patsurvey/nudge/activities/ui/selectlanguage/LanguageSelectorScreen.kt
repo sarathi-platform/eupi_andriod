@@ -119,7 +119,7 @@ fun LanguageScreen(
                 fontSize = 18.sp,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
-                modifier=Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_30))
+                modifier=Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_20))
                 )
             Column(modifier = Modifier) {
                 viewModel.languageList?.value?.let {
@@ -129,6 +129,9 @@ fun LanguageScreen(
                             LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
                                 viewModel.languagePosition.value = i
                             }
+                        }
+                        item { 
+                            Spacer(modifier = Modifier.height(100.dp))
                         }
                     }
                 }

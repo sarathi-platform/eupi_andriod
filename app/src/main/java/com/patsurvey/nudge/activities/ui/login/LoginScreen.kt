@@ -40,6 +40,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.setKeyboardToReadjust
+import com.patsurvey.nudge.utils.stringToInt
 
 @SuppressLint("StringFormatInvalid")
 @Composable
@@ -188,7 +189,7 @@ fun LoginScreen(
             Button(
                 onClick = {
                     focusManager.clearFocus()
-                    if (viewModel.mobileNumber.value.text[0].toString().toInt() < 6) {
+                    if (stringToInt(viewModel.mobileNumber.value.text[0].toString()) < 6) {
                         snackState.addMessage(
                             message = context.getString(R.string.invalid_mobile_number),
                             isSuccess = false,
