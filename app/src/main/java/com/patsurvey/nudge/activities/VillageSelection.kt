@@ -279,7 +279,7 @@ fun VillageSelectionScreen(
                                     viewModel.updateSelectedVillage()
                                 }
                             }
-                            item { Spacer(modifier = Modifier.height(32.dp)) }
+                            item { Spacer(modifier = Modifier.height(50.dp)) }
                         }
                     }
                     CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)

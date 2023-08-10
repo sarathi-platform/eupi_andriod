@@ -151,7 +151,7 @@
     <string name="training_videos">प्रशिक्षण विडियो</string>
     <string name="language_text">भाषा</string>
     <string name="productive_asset_owned_by_family">कमाने वाले पर खाने वाले की निर्भरता</string>
-    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">PAT सर्वे पूर्ण करें</string>
     <string name="complete">पूर्ण</string>
     <string name="complete_section_2">अनुभाग २ पूरा करें</string>

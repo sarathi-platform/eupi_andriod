@@ -151,7 +151,7 @@
     <string name="training_videos">প্রশিক্ষণ ভিডিঅ</string>
     <string name="language_text">ভাষা</string>
     <string name="productive_asset_owned_by_family">উপার্জনৰ অনুপাত</string>
-    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">PAT জৰীপ সম্পূৰ্ণ কৰক</string>
     <string name="complete">সম্পূর্ণ কৰক</string>
     <string name="complete_section_2">শাখা 2 সম্পূৰ্ণ কৰক</string>
