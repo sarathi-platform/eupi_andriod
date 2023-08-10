@@ -5,12 +5,10 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.DIDI_TABLE
-import com.patsurvey.nudge.utils.QUESTION_TABLE
 
 @Dao
 interface AnswerDao {
@@ -54,7 +52,7 @@ interface AnswerDao {
     @Query("Select * FROM $ANSWER_TABLE where villageId = :villageId AND needsToPost = 1")
     fun getAllNeedToPostQues(villageId: Int): List<SectionAnswerEntity>
 
-    @Query("Select * FROM $ANSWER_TABLE where didiId = :id AND needsToPost = 1")
+    @Query("Select * FROM $ANSWER_TABLE where didiId = :id")
     fun getAllNeedToPostQuesForDidi(id: Int): List<SectionAnswerEntity>
 
 

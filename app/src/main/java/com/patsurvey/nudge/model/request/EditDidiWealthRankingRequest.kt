@@ -12,7 +12,8 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("score") var score: Double?=0.0,
     @SerializedName("comment") var comment: String?= BLANK_STRING,
     @SerializedName("localModifiedDate") var localModifiedDate: Long?=0,
-    @SerializedName("rankingEdit") var rankingEdit: Boolean = true
+    @SerializedName("rankingEdit") var rankingEdit: Boolean = true,
+    @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()

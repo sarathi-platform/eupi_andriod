@@ -212,7 +212,7 @@
     <string name="view">फ़ॉर्म को देखे</string>
     <string name="pat_inprogresee_status_text">प्रगति में</string>
     <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नही किया गया है</string>
-    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}|</string>
+    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT सर्वे प्रगति में है</string>
     <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>

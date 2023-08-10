@@ -420,8 +420,6 @@ fun VoEndorsementSummaryScreen(
                         didi?.value?.voEndorsementStatus = DidiEndorsementStatus.ENDORSED.ordinal
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.ENDORSED.ordinal)
                         coroutineScope.launch {
-                            delay(1000)
-                            navController.popBackStack()
 //                            showDialog.value = false
                             if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
                                 val nextPageIndex = pagerState.currentPage + 1
@@ -437,6 +435,9 @@ fun VoEndorsementSummaryScreen(
                                     delay(100)
                                     navController.popBackStack()
                                 }
+                            } else {
+                                delay(1000)
+                                navController.popBackStack()
                             }
                         }
                     },
@@ -447,8 +448,6 @@ fun VoEndorsementSummaryScreen(
                         didi?.value?.voEndorsementStatus = DidiEndorsementStatus.REJECTED.ordinal
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.REJECTED.ordinal)
                         coroutineScope.launch {
-                            delay(1000)
-                            navController.popBackStack()
 //                            showDialog.value = false
                             if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
                                 val nextPageIndex = pagerState.currentPage + 1
@@ -464,6 +463,9 @@ fun VoEndorsementSummaryScreen(
                                     delay(100)
                                     navController.popBackStack()
                                 }
+                            } else {
+                                delay(1000)
+                                navController.popBackStack()
                             }
                         }
                     }
@@ -483,7 +485,7 @@ fun VoEndorsementSummaryScreen(
             }
         }
 
-        AnimatedVisibility(visible = (prevButtonVisible.value && didiStatus == DidiEndorsementStatus.NOT_STARTED.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = (prevButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(prevButtonVisible.value)
@@ -514,7 +516,7 @@ fun VoEndorsementSummaryScreen(
                 },
             )
         }
-        AnimatedVisibility(visible = ( nextButtonVisible.value && didiStatus == DidiEndorsementStatus.NOT_STARTED.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = ( nextButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(nextButtonVisible.value)

@@ -5,10 +5,12 @@ import android.util.Log
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.model.response.GetCohortResponseModel
 import com.patsurvey.nudge.utils.CohortType
 import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.TOLA_TABLE
+import com.patsurvey.nudge.utils.getUniqueIdForEntity
 
 
 @Entity(tableName = TOLA_TABLE)
@@ -63,7 +65,7 @@ data class TolaEntity(
                 localCreatedDate = System.currentTimeMillis(),
                 localModifiedDate = System.currentTimeMillis(),
                 transactionId = "",
-                localUniqueId = ""
+                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
         }
 
