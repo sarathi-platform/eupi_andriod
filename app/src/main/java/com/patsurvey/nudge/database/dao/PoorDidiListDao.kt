@@ -16,7 +16,7 @@ interface PoorDidiListDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAllPoorDidiList(poorDidiList: List<PoorDidiEntity>)
 
-    @Query("Select * from $POOR_DIDI_TABLE where villageId = :villageId")
+    @Query("Select * from $POOR_DIDI_TABLE where villageId = :villageId and activeStatus = 1  ORDER BY localCreatedDate DESC")
     fun getAllPoorDidisForVillage(villageId: Int): List<PoorDidiEntity>
 
     @Query("Delete from $POOR_DIDI_TABLE")

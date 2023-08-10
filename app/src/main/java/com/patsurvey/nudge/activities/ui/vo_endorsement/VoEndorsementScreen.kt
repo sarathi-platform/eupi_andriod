@@ -302,6 +302,7 @@ fun VoEndorsementScreen(
                 negativeButtonRequired = false,
                 positiveButtonOnClick = {
                     NudgeLogger.d("VoEndorsementScreen", "Next Button Clicked")
+                    viewModel.performQuery(BLANK_STRING, filterSelected)
                     val stepStatus = false
                     navController.navigate("vo_endorsement_survey_summary/$stepId/$stepStatus")
                 },

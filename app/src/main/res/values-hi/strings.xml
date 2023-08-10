@@ -155,7 +155,7 @@
     <string name="complete_pat_survey">PAT सर्वे पूर्ण करें</string>
     <string name="complete">पूर्ण</string>
     <string name="complete_section_2">अनुभाग २ पूरा करें</string>
-    <string name="show">अधिक जानकारी के लिए यहाँ क्लिक करे</string>
+    <string name="show">देखे</string>
     <string name="pat_survey_completion_text">PAT सर्वे - पूर्ण</string>
     <string name="next">अगला</string>
     <string name="didi_pat_comption_dialog">आप PAT {DIDI_NAME} के लिए जमा कर रहे है</string>

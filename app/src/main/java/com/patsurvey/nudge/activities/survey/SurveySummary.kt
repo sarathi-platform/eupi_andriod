@@ -154,8 +154,8 @@ fun SurveySummary(
             if(fromScreen == ARG_FROM_PAT_SURVEY){
                 surveySummaryViewModel.prepareDidiCountList(context)
             }
-            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
-                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            val count = if (fromScreen == ARG_FROM_PAT_SURVEY) didids.value.filter { (it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) && it.patEdit }.size
             else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),

@@ -27,6 +27,7 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SUCCESS
@@ -94,8 +95,16 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun fetchBpcSummaryData(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val summary = bpcSummaryDao.getBpcSummaryForVillage(villageId)
-            _summaryData.value = summary
+            try {
+                val summary = bpcSummaryDao.getBpcSummaryForVillage(villageId) ?: BpcSummaryEntity(
+                    0, 0, 0, 0, 0, 0, villageId = villageId)
+                _summaryData.value = summary
+            } catch (ex: Exception) {
+                NudgeLogger.e("BpcProgressScreenViewModel", "fetchBpcSummaryData -> catch", ex)
+                val summary = BpcSummaryEntity(0, 0, 0, 0, 0, 0, villageId = villageId)
+                _summaryData.value = summary
+            }
+
         }
     }
 
