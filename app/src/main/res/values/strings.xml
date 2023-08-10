@@ -260,7 +260,6 @@
     <string name="unmatched_text">Unmatched</string>
     <string name="matched_text">Matched</string>
 
-    <string name="total_productive_asset_value_for_ratio"> = %1$s</string>
     <string name="review_and_submit_button_text">Review and Submit</string>
     <string name="bpc_add_more_didi_screen_title">List of additional didis available for verification</string>
     <string name="showing_text">Showing</string>
