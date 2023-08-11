@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -290,7 +291,8 @@ fun VillageSelectionScreen(
             if (villages.isNotEmpty()) {
                 Box(
                     modifier = Modifier
-                        .fillMaxWidth().background(Color.White)
+                        .fillMaxWidth()
+                        .background(Color.White)
                         .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
                         .padding(bottom = 16.dp)
                         .align(Alignment.BottomCenter)
