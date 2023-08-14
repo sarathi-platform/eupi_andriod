@@ -123,8 +123,8 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE set voEndorsementStatus =:status WHERE id =:didiId AND villageId = :villageId")
     fun updateVOEndorsementStatus(villageId: Int,didiId:Int,status:Int)
 
-    @Query("UPDATE $DIDI_TABLE set forVoEndorsement = 1 WHERE id =:didiId AND villageId = :villageId")
-    fun updateVOEndorsementDidiStatus(villageId: Int,didiId:Int)
+    @Query("UPDATE $DIDI_TABLE set forVoEndorsement = :status WHERE id =:didiId AND villageId = :villageId")
+    fun updateVOEndorsementDidiStatus(villageId: Int,didiId:Int, status: Int)
 
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 AND activeStatus = 1 ORDER BY createdDate DESC")
     fun patCompletedDidis(villageId: Int): List<DidiEntity>

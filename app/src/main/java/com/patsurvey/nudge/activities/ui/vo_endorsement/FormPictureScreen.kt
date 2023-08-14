@@ -355,8 +355,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formCImageList.value.isEmpty(),
-                                    cardTitle = if (formPictureScreenViewModel.formCImageList.value.isEmpty()) stringResource(
+                                    showIcon = formPictureScreenViewModel.formCPageList.value.isEmpty(),
+                                    cardTitle = if (formPictureScreenViewModel.formCPageList.value.isEmpty()) stringResource(
                                         R.string.form_c_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} C",
                                     contentColor = textColorDark,
@@ -665,8 +665,8 @@ fun FormPictureScreen(
                                 FormPictureCard(
                                     modifier = Modifier,
                                     navController = navController,
-                                    showIcon = formPictureScreenViewModel.formDPageList.value.size < 2,
-                                    cardTitle = if (formPictureScreenViewModel.formDPageList.value.size < 2) stringResource(
+                                    showIcon = formPictureScreenViewModel.formDPageList.value.isEmpty(),
+                                    cardTitle = if (formPictureScreenViewModel.formDPageList.value.isEmpty()) stringResource(
                                         R.string.form_d_photo_button_text
                                     ) else "${stringResource(id = R.string.view)} D",
                                     contentColor = textColorDark,

@@ -311,7 +311,15 @@ class BpcProgressScreenViewModel @Inject constructor(
                         comment = BLANK_STRING
                         didiDao.updateVOEndorsementDidiStatus(
                             prefRepo.getSelectedVillage().id,
-                            didiId
+                            didiId,
+                            1
+                        )
+                    } else {
+                        isDidiAccepted = false
+                        didiDao.updateVOEndorsementDidiStatus(
+                            prefRepo.getSelectedVillage().id,
+                            didiId,
+                            0
                         )
                     }
                     didiDao.updateDidiScore(
