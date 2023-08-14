@@ -97,7 +97,7 @@ object LogWriter {
     private const val FILE_NAME_SUFFIX = ".log"
 
     // Reduced logging file size from 10 MB to 1 MB as per SC-194 (Point no. 2 in description)
-    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 1L) *1024*1024 // collect up to 1 MB of log files // 128MB for debug builds
+    private val SUPPORT_LOG_SIZE_MAX = (if (DEBUG) 20L else 10L) *1024*1024 // collect up to 10 MB of log files // 20MB for debug builds
     private const val SUPPORT_LOG_FILE_NAME_PREFIX = "nudge_log_"
     private const val SUPPORT_LOG_FILE_NAME_SUFFIX = ".txt"
 
