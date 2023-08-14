@@ -89,6 +89,7 @@ import com.patsurvey.nudge.activities.ui.theme.rejectColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import com.patsurvey.nudge.model.response.OptionsItem
 import java.io.File
 
@@ -1230,14 +1231,14 @@ fun IncrementDecrementView(modifier: Modifier,
                 }*/
             }
         }
-            Text(
+            HtmlText(
                 text = optionText,
-                color = Color.Black,
                 modifier = Modifier,
                 style = TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    color = Color.Black
                 )
             )
         }

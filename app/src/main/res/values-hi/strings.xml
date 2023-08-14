@@ -151,11 +151,11 @@
     <string name="training_videos">प्रशिक्षण विडियो</string>
     <string name="language_text">भाषा</string>
     <string name="productive_asset_owned_by_family">कमाने वाले पर खाने वाले की निर्भरता</string>
-    <string name="total_productive_asset_value">= ₹ %1$s/-</string>
+    <string name="total_productive_asset_value"> ₹ %1$s/-</string>
     <string name="complete_pat_survey">PAT सर्वे पूर्ण करें</string>
     <string name="complete">पूर्ण</string>
     <string name="complete_section_2">अनुभाग २ पूरा करें</string>
-    <string name="show">अधिक जानकारी के लिए यहाँ क्लिक करे</string>
+    <string name="show">देखे</string>
     <string name="pat_survey_completion_text">PAT सर्वे - पूर्ण</string>
     <string name="next">अगला</string>
     <string name="didi_pat_comption_dialog">आप PAT {DIDI_NAME} के लिए जमा कर रहे है</string>
@@ -212,7 +212,7 @@
     <string name="view">फ़ॉर्म को देखे</string>
     <string name="pat_inprogresee_status_text">प्रगति में</string>
     <string name="wealth_ranking_status_not_started_text">धन रैंकिंग शुरू नही किया गया है</string>
-    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}|</string>
+    <string name="wealth_ranking_status_complete_text">धन रैंकिंग पूरी हुई - {RANK}</string>
     <string name="pat_in_progress_status_text">PAT सर्वे प्रगति में है</string>
     <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>
@@ -243,7 +243,6 @@
     <string name="summary_vo_endoresement_text_plural">दीदीयां जो VO अनुमोदन के लिए भेजे गए</string>
     <string name="unmatched_text">मिलान नहीं हुआ</string>
     <string name="matched_text">मिलान पूर्ण</string>
-    <string name="total_productive_asset_value_for_ratio">= %1$s</string>
     <string name="review_and_submit_button_text">समीक्षा करें और जमा करे</string>
     <string name="bpc_add_more_didi_screen_title">अतिरिक्त दिदीयों की सूची जो सत्यापन के लिए उपलब्ध है</string>
     <string name="showing_text">दिखाया जा रहा है</string>

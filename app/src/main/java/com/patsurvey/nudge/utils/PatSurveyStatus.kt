@@ -25,10 +25,18 @@ enum class SHGFlag(val value: Int) {
     NOT_MARKED(-1);
 
     companion object {
-        fun fromInt(downloadState: Int) : SHGFlag {
-            return when(downloadState) {
+        fun fromInt(shgFlagValue: Int) : SHGFlag {
+            return when(shgFlagValue) {
                 YES.value -> YES
                 NO.value -> NO
+                else -> NO
+            }
+        }
+
+        fun fromSting(shgFlag: String): SHGFlag {
+            return when (shgFlag) {
+                "YES" -> YES
+                "NO" -> NO
                 else -> NO
             }
         }

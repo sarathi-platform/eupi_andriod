@@ -9,12 +9,12 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.22"
+def version = "0.1.23"
 android {
     compileSdk 33
 
     defaultConfig {
-        applicationId "com.thenudge"
+        applicationId "com.nrlm.sarathi"
         minSdk 23
         targetSdk 33
         versionCode 1
@@ -33,6 +33,15 @@ android {
             keyAlias "the_nudge"
             keyPassword "nudge1234"
         }
+    }
+    packagingOptions {
+        exclude 'META-INF/beans.xml'
+        exclude 'META-INF/DEPENDENCIES'
+        exclude 'META-INF/NOTICE'
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE.txt'
+        exclude 'META-INF/NOTICE.txt'
+        exclude 'META-INF/proguard/androidx-annotations.pro'
     }
 
     buildTypes {
@@ -58,18 +67,17 @@ android {
         uat{
             applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "Nudge UAT"
-            buildConfigField 'String', 'BASE_URL', '"https://www.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         staging{
-            applicationIdSuffix = ".uat"
+            applicationIdSuffix = ".stage"
             manifestPlaceholders.app_name= "Nudge STAGE"
 //            versionName '0.0.0'
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
         production{
-            applicationIdSuffix = ".uat"
             manifestPlaceholders.app_name= "The Nudge"
-//            versionName '0.0.0'
+            versionName '0.0.1'
             buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
         }
     }
@@ -99,7 +107,10 @@ android {
 kapt {
     correctErrorTypes = true
 }
-
+android.applicationVariants.all {
+    def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
+    it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+}
 
 dependencies {
 

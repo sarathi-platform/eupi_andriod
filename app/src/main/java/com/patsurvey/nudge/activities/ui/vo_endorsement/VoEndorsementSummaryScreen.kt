@@ -138,7 +138,13 @@ fun VoEndorsementSummaryScreen(
                 .constrainAs(mainBox) {
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
-                    bottom.linkTo(if(viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal )bottomActionBox.top else parent.bottom)
+                    bottom.linkTo(
+                        if (viewModel.prefRepo.getPref(
+                                PREF_KEY_VO_SUMMARY_OPEN_FROM,
+                                6
+                            ) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal
+                        ) bottomActionBox.top else parent.bottom
+                    )
                     height = Dimension.fillToConstraints
                 }
             ) {
@@ -297,7 +303,7 @@ fun VoEndorsementSummaryScreen(
             }
 
 //            if(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal) {
-            AnimatedVisibility(visible = (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) , enter = fadeIn(), exit = fadeOut(),
+            AnimatedVisibility(visible = didi?.value?.voEndorsementStatus == DidiEndorsementStatus.NOT_STARTED.ordinal, enter = fadeIn(), exit = fadeOut(),
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
                         bottom.linkTo(parent.bottom)
@@ -309,7 +315,7 @@ fun VoEndorsementSummaryScreen(
                         }
                     }
             ) {
-                AcceptRejectButtonBoxPreFilled(
+                AcceptRejectButtonBox(
                     modifier = Modifier
 //                        .visible(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal)
                         /*.constrainAs(bottomActionBox) {
@@ -324,9 +330,6 @@ fun VoEndorsementSummaryScreen(
 
                     positiveButtonText = stringResource(id = R.string.endorse),
                     negativeButtonText = stringResource(id = R.string.reject),
-                    preFilledValue = didi?.value?.voEndorsementStatus.let {
-                        if(it != 0) it else DidiEndorsementStatus.ENDORSED.ordinal
-                    } ?: 0,
                     negativeButtonRequired = true,
                     positiveButtonOnClick = {
                         showDialog.value = true
@@ -346,8 +349,8 @@ fun VoEndorsementSummaryScreen(
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-//                                showDialog.value = false
-//                                delay(100)
+                                showDialog.value = false
+                                delay(100)
                                 navController.popBackStack()
                             }
                         }
@@ -367,11 +370,101 @@ fun VoEndorsementSummaryScreen(
                                 delay(500)
                                 showDialog.value = false
                                 delay(100)
+
                                 pagerState.animateScrollToPage(nextPageIndex)
                             } else {
                                 delay(500)
-//                                showDialog.value = false
-//                                delay(100)
+                                showDialog.value = false
+                                delay(100)
+                                navController.popBackStack()
+                            }
+                        }
+                    }
+                )
+            }
+
+            AnimatedVisibility(visible = (didi?.value?.voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal || didiStatus != DidiEndorsementStatus.NOT_STARTED.ordinal)
+                    && viewModel.voEndorsementStatus.value != StepStatus.COMPLETED.ordinal, enter = fadeIn(), exit = fadeOut(),
+                modifier = Modifier
+                    .constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    }
+            ) {
+                AcceptRejectButtonBoxPreFilled(
+                    modifier = Modifier
+//                        .visible(didiStatus == DidiEndorsementStatus.NO_STARTED.ordinal)
+                    /*.constrainAs(bottomActionBox) {
+                        bottom.linkTo(parent.bottom)
+                        start.linkTo(parent.start)
+                    }
+                    .onGloballyPositioned { coordinates ->
+                        bottomPadding = with(localDensity) {
+                            coordinates.size.height.toDp()
+                        }
+                    }*/,
+
+                    positiveButtonText = stringResource(id = R.string.endorse),
+                    negativeButtonText = stringResource(id = R.string.reject),
+                    negativeButtonRequired = true,
+                    preFilledValue = didi?.value?.voEndorsementStatus ?: 0,
+                    positiveButtonOnClick = {
+                        showDialog.value = true
+                        dialogActionType.value = DidiEndorsementStatus.ENDORSED.ordinal
+                        viewModel._selectedDidiEntity.value = voDidiList[pagerState.currentPage]
+                        didi?.value?.voEndorsementStatus = DidiEndorsementStatus.ENDORSED.ordinal
+                        viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.ENDORSED.ordinal)
+                        coroutineScope.launch {
+//                            showDialog.value = false
+                            if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
+                                val nextPageIndex = pagerState.currentPage + 1
+                                if (nextPageIndex < voDidiList.size) {
+                                    viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
+                                    delay(500)
+                                    showDialog.value = false
+                                    delay(100)
+                                    pagerState.animateScrollToPage(nextPageIndex)
+                                } else {
+                                    delay(500)
+                                    showDialog.value = false
+                                    delay(100)
+                                    navController.popBackStack()
+                                }
+                            } else {
+                                delay(1000)
+                                navController.popBackStack()
+                            }
+                        }
+                    },
+                    negativeButtonOnClick = {
+                        showDialog.value = true
+                        dialogActionType.value = DidiEndorsementStatus.REJECTED.ordinal
+                        viewModel._selectedDidiEntity.value = voDidiList[pagerState.currentPage]
+                        didi?.value?.voEndorsementStatus = DidiEndorsementStatus.REJECTED.ordinal
+                        viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.REJECTED.ordinal)
+                        coroutineScope.launch {
+//                            showDialog.value = false
+                            if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
+                                val nextPageIndex = pagerState.currentPage + 1
+                                if (nextPageIndex < voDidiList.size) {
+                                    viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
+                                    delay(500)
+                                    showDialog.value = false
+                                    delay(100)
+                                    pagerState.animateScrollToPage(nextPageIndex)
+                                } else {
+                                    delay(500)
+                                    showDialog.value = false
+                                    delay(100)
+                                    navController.popBackStack()
+                                }
+                            } else {
+                                delay(1000)
                                 navController.popBackStack()
                             }
                         }
@@ -392,7 +485,7 @@ fun VoEndorsementSummaryScreen(
             }
         }
 
-        AnimatedVisibility(visible = (prevButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = (prevButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(prevButtonVisible.value)
@@ -406,13 +499,9 @@ fun VoEndorsementSummaryScreen(
                 backgroundColor = languageItemActiveBg,
                 onClick = {
                     val prevPageIndex = pagerState.currentPage - 1
-                    if(prevPageIndex>=0) {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(prevPageIndex)
-                            delay(100)
-                        }
-                        viewModel.updateDidiDetailsForBox(voDidiList[prevPageIndex].id)
-                    }
+                    coroutineScope.launch { pagerState.animateScrollToPage(prevPageIndex)
+                        delay(100)}
+                    viewModel.updateDidiDetailsForBox(voDidiList[prevPageIndex].id)
                 },
                 text = {
                     Image(
@@ -427,7 +516,7 @@ fun VoEndorsementSummaryScreen(
                 },
             )
         }
-        AnimatedVisibility(visible = ( nextButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = ( nextButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(nextButtonVisible.value)
@@ -442,13 +531,10 @@ fun VoEndorsementSummaryScreen(
                 onClick = {
 
                     val nextPageIndex = pagerState.currentPage + 1
-                    if(nextPageIndex < voDidiList.size) {
-                        coroutineScope.launch {
-                            pagerState.animateScrollToPage(nextPageIndex)
-                            delay(100)
-                        }
-                        viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
+                    coroutineScope.launch { pagerState.animateScrollToPage(nextPageIndex)
+                    delay(100)
                     }
+                    viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
 
                 },
                 text = {

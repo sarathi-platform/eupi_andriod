@@ -262,7 +262,8 @@ class SurveySummaryViewModel @Inject constructor(
                                             COMPLETED_STRING
                                     }
                                 },
-                                rankingEdit = false
+                                rankingEdit = false,
+                                shgFlag = SHGFlag.fromInt(didi.shgFlag).name
                             )
                         )
                         answeredDidiList.add(

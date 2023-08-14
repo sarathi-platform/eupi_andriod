@@ -97,11 +97,8 @@ import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
-import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.WealthRank
 import java.io.File
 
 @Composable
@@ -807,30 +804,7 @@ private fun didiDetailConstraints(): ConstraintSet {
 }
 
 fun getLatestStatusTextForBpc(context: Context, didi: BpcNonSelectedDidiEntity): String {
-    var status = context.getString(R.string.wealth_ranking_status_complete_text)
-    if (didi.wealth_ranking == WealthRank.NOT_RANKED.rank) {
-        status = context.getString(R.string.wealth_ranking_status_not_started_text)
-    } else {
-        when (didi.patSurveyStatus) {
-            PatSurveyStatus.NOT_STARTED.ordinal -> {
-                status = context.getString(R.string.wealth_ranking_status_complete_text)
-            }
-
-            PatSurveyStatus.INPROGRESS.ordinal -> {
-                status = context.getString(R.string.pat_in_progress_status_text)
-            }
-
-            PatSurveyStatus.NOT_AVAILABLE.ordinal, PatSurveyStatus.COMPLETED.ordinal -> {
-                status =
-                    if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || didi.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal) {
-                        context.getString(R.string.vo_endorsement_status_text)
-                    } else {
-                        context.getString(R.string.pat_completed_status_text)
-                    }
-            }
-        }
-    }
-    return status
+    return context.getString(R.string.vo_selected_status_text)
 }
 
 @Composable

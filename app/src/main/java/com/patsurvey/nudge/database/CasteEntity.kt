@@ -3,17 +3,30 @@ package com.patsurvey.nudge.database
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.utils.CASTE_TABLE
 
 @Entity(tableName = CASTE_TABLE)
 data class CasteEntity(
     @PrimaryKey(autoGenerate = true)
+    @SerializedName("casteId")
+    @Expose
     @ColumnInfo(name = "casteId")
     val casteId: Int?=1,
+
+    @SerializedName("id")
+    @Expose
     @ColumnInfo(name = "id")
     var id: Int,
+
+    @SerializedName("casteName")
+    @Expose
     @ColumnInfo(name = "casteName")
     var casteName : String,
+
+    @SerializedName("languageId")
+    @Expose
     @ColumnInfo(name = "languageId")
     var languageId : Int
 ) {

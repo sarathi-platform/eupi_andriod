@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -40,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
 import androidx.compose.ui.platform.LocalContext
@@ -279,7 +281,7 @@ fun VillageSelectionScreen(
                                     viewModel.updateSelectedVillage()
                                 }
                             }
-                            item { Spacer(modifier = Modifier.height(32.dp)) }
+                            item { Spacer(modifier = Modifier.height(50.dp)) }
                         }
                     }
                     CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
@@ -290,6 +292,7 @@ fun VillageSelectionScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(Color.White)
                         .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
                         .padding(bottom = 16.dp)
                         .align(Alignment.BottomCenter)

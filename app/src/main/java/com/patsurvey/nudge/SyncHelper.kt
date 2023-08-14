@@ -60,6 +60,7 @@ import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
@@ -1278,7 +1279,8 @@ class SyncHelper (
                                         COMPLETED_STRING
                                 }
                             },
-                            rankingEdit = false
+                            rankingEdit = false,
+                            shgFlag = SHGFlag.fromInt(didi.shgFlag).name
                         )
                     )
                     val stateId = villegeListDao.getVillage(didi.villageId).stateId

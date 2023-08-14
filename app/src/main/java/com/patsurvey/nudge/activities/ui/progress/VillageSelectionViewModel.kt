@@ -309,6 +309,29 @@ class VillageSelectionViewModel @Inject constructor(
 //                                                prefRepo.savePref(
 //                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
 //                                            }
+                                            if(steps.id == 40){
+                                                prefRepo.savePref(
+                                                    PREF_TRANSECT_WALK_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+
+                                            if(steps.id == 41){
+                                                prefRepo.savePref(
+                                                    PREF_SOCIAL_MAPPING_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+
+                                            if(steps.id == 46){
+                                                prefRepo.savePref(
+                                                    PREF_WEALTH_RANKING_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+
+                                            if(steps.id == 43){
+                                                prefRepo.savePref(
+                                                    PREF_PAT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
+                                            if(steps.id == 44){
+                                                prefRepo.savePref(
+                                                    PREF_VO_ENDORSEMENT_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
+                                            }
 
                                             if (steps.id == 45) {
                                                 prefRepo.savePref(
@@ -478,7 +501,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     createdDate = didi.createdDate,
                                                     modifiedDate = didi.modifiedDate,
                                                     beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                    shgFlag = SHGFlag.NOT_MARKED.value,
+                                                    shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
                                                     isAlsoSelected = BpcDidiSelectionStatus.SELECTED.ordinal,
                                                     transactionId = "",
                                                     bpcScore = didi.bpcScore,
@@ -548,7 +571,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                     createdDate = didi.createdDate,
                                                     modifiedDate = didi.modifiedDate,
                                                     beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                    shgFlag = SHGFlag.NOT_MARKED.value,
+                                                    shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
                                                     transactionId = "",
                                                     bpcScore = didi.bpcScore,
                                                     bpcComment = didi.bpcComment,
@@ -645,7 +668,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         createdDate = didi.createdDate,
                                                         modifiedDate = didi.modifiedDate,
                                                         beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                        shgFlag = SHGFlag.NOT_MARKED.value,
+                                                        shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
@@ -1173,11 +1196,11 @@ class VillageSelectionViewModel @Inject constructor(
                                                             createdDate = didi.createdDate,
                                                             modifiedDate = didi.modifiedDate,
                                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                            shgFlag = SHGFlag.NOT_MARKED.value,
+                                                            shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
                                                             transactionId = "",
                                                             localCreatedDate = didi.localCreatedDate,
                                                             localModifiedDate = didi.localModifiedDate,
-                                                            score = didi.score,
+                                                            score = didi.crpScore,
                                                             crpScore = didi.crpScore,
                                                             crpComment = didi.crpComment,
                                                             comment = didi.comment,

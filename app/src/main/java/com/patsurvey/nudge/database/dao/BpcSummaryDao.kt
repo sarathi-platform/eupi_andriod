@@ -17,10 +17,10 @@ interface BpcSummaryDao {
     fun insert(summary: BpcSummaryEntity)
 
     @Query("Select * from $BPC_SUMMARY_TABLE where villageId = :villageId")
-    fun getBpcSummaryForVillage(villageId: Int): BpcSummaryEntity
+    fun getBpcSummaryForVillage(villageId: Int): BpcSummaryEntity?
 
     @Query("Select * from $BPC_SUMMARY_TABLE")
-    fun getBpcSummaryForAllVillage(): List<BpcSummaryEntity>
+    fun getBpcSummaryForAllVillage(): List<BpcSummaryEntity?>?
     @Query("DELETE from $BPC_SUMMARY_TABLE")
     fun deleteAllSummary()
 

@@ -46,6 +46,7 @@ import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
+import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
@@ -303,6 +304,14 @@ object RetryHelper {
                                                 if (steps.id == 44) {
                                                     prefRepo?.savePref(
                                                         PREF_VO_ENDORSEMENT_COMPLETION_DATE_ + id,
+                                                        steps.localModifiedDate
+                                                            ?: System.currentTimeMillis()
+                                                    )
+                                                }
+
+                                                if (steps.id == 45) {
+                                                    prefRepo?.savePref(
+                                                        PREF_BPC_PAT_COMPLETION_DATE_ + id,
                                                         steps.localModifiedDate
                                                             ?: System.currentTimeMillis()
                                                     )

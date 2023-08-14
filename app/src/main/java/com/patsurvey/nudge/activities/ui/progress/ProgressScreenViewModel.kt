@@ -144,7 +144,8 @@ class ProgressScreenViewModel @Inject constructor(
                 tolaCount.value=_tolaList.value.filter { it.name != EMPTY_TOLA_NAME }.size
                 didiCount.value=didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal}.size
+                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                        && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
                 endorsedDidiCount.value = didiList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
                         && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
             }
