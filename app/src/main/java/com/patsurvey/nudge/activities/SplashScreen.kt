@@ -33,9 +33,9 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
-import com.patsurvey.nudge.utils.ShowLoadingDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
@@ -55,7 +55,9 @@ fun SplashScreen(
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value=true
                 delay(SPLASH_SCREEN_DURATION)
@@ -66,6 +68,7 @@ fun SplashScreen(
                     }
                 }
             } else {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value=true
                 viewModel.checkAndAddLanguage()
@@ -74,20 +77,25 @@ fun SplashScreen(
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
         } else {
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false")
             delay(ONE_SECOND)
             viewModel.showLoader.value=true
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails before")
             viewModel.fetchLanguageDetails(context) {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it")
                 viewModel.showLoader.value=false
                 if(it.isNotEmpty()){
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
+                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
                     navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
                         popUpTo(AuthScreen.START_SCREEN.route) {
                             inclusive = true
                         }
                     }
                 } else {
+                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                 }
             }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -76,6 +75,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomToast
@@ -207,6 +207,7 @@ fun VillageSelectionScreen(
                                         viewModel.saveVillageListAfterTokenRefresh(villageList)
                                     }
                                     showRetryLoader.value = false
+                                    NudgeLogger.d("VillageSelectionScreen", "click_to_refresh onClick -> viewModel.showLoader.value = false")
                                     viewModel.showLoader.value = false
                                 }
                             }
