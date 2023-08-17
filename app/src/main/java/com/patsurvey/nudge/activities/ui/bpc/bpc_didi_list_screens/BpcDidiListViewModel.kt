@@ -66,6 +66,8 @@ class BpcDidiListViewModel @Inject constructor(
     private var _markedNotAvailable = MutableStateFlow(mutableListOf<Int>())
     val isStepComplete = mutableStateOf(false)
 
+    val showLoader = mutableStateOf(false)
+
     init {
         villageId = prefRepo.getSelectedVillage().id
         fetchDidiFromDb()

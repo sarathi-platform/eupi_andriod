@@ -121,56 +121,108 @@ fun VillageSelectionScreen(
         mutableStateOf(false)
     }
 
-    Scaffold(
-        modifier = Modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.seletc_village_screen_text),
-                        fontFamily = NotoSans,
-                        textAlign = TextAlign.Center,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 24.sp, color = textColorDark,
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                },
-                actions = {
-                    IconButton(onClick = {
-                        viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-                        onNavigateToSetting()
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.more_icon),
-                            contentDescription = "more action button",
-                            tint = blueDark,
-                            modifier = Modifier
-                                .padding(10.dp)
+    if (viewModel.showLoader.value) {
+        Scaffold(
+            modifier = Modifier,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.seletc_village_screen_text),
+                            fontFamily = NotoSans,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 24.sp, color = textColorDark,
+                            modifier = Modifier.fillMaxWidth()
                         )
-                    }
-                },
-                backgroundColor = White,
-                elevation = 10.dp
-            )
-        }
-    ) {
-        Box(
-            Modifier
-                .fillMaxSize()
-                .padding(it)) {
-            if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
+
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                            onNavigateToSetting()
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
+                    },
+                    backgroundColor = White,
+                    elevation = 10.dp
+                )
+            }
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+                    .padding(top = 30.dp + it.calculateTopPadding())
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark,
                     modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .then(modifier)
-                ) {
-                    /*Text(
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
+            }
+        }
+    } else {
+        Scaffold(
+            modifier = Modifier,
+            topBar = {
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = stringResource(R.string.seletc_village_screen_text),
+                            fontFamily = NotoSans,
+                            textAlign = TextAlign.Center,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 24.sp, color = textColorDark,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
+                    },
+                    actions = {
+                        IconButton(onClick = {
+                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
+//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
+                            onNavigateToSetting()
+                        }) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.more_icon),
+                                contentDescription = "more action button",
+                                tint = blueDark,
+                                modifier = Modifier
+                                    .padding(10.dp)
+                            )
+                        }
+                    },
+                    backgroundColor = White,
+                    elevation = 10.dp
+                )
+            }
+        ) {
+            Box(
+                Modifier
+                    .fillMaxSize()
+                    .padding(it)
+            ) {
+                if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .then(modifier)
+                    ) {
+                        /*Text(
                         text = stringResource(R.string.seletc_village_screen_text),
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -178,54 +230,57 @@ fun VillageSelectionScreen(
                         modifier = Modifier
                     )*/
 
-                    Row() {
-                        if (showRetryLoader.value) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(48.dp)
-                                    .padding(top = 30.dp)
-                            ) {
-                                CircularProgressIndicator(
-                                    color = blueDark,
+                        Row() {
+                            if (showRetryLoader.value) {
+                                Box(
                                     modifier = Modifier
-                                        .size(28.dp)
-                                        .align(Alignment.Center)
-                                )
-                            }
-
-                        }
-                        BlueButtonWithIconWithFixedWidthWithoutIcon(
-                            modifier = Modifier,
-                            buttonText = stringResource(id = R.string.click_to_refresh),
-                            onClick = {
-                                viewModel.showLoader.value = true
-                                showRetryLoader.value = true
-
-                                RetryHelper.retryVillageListApi(viewModel.multiVillageRequest.value) { success, villageList ->
-                                    if (success && !villageList?.isNullOrEmpty()!!) {
-                                        viewModel.saveVillageListAfterTokenRefresh(villageList)
-                                    }
-                                    showRetryLoader.value = false
-                                    NudgeLogger.d("VillageSelectionScreen", "click_to_refresh onClick -> viewModel.showLoader.value = false")
-                                    viewModel.showLoader.value = false
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .padding(top = 30.dp)
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = blueDark,
+                                        modifier = Modifier
+                                            .size(28.dp)
+                                            .align(Alignment.Center)
+                                    )
                                 }
-                            }
-                        )
-                    }
-                }
-            } else {
-                Column(
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, top = 16.dp)
-                        .align(Alignment.TopCenter)
-                        .fillMaxWidth()
-                        .then(modifier)
-                ) {
 
-                    /*Row(modifier = Modifier
+                            }
+                            BlueButtonWithIconWithFixedWidthWithoutIcon(
+                                modifier = Modifier,
+                                buttonText = stringResource(id = R.string.click_to_refresh),
+                                onClick = {
+                                    viewModel.showLoader.value = true
+                                    showRetryLoader.value = true
+
+                                    RetryHelper.retryVillageListApi(viewModel.multiVillageRequest.value) { success, villageList ->
+                                        if (success && !villageList?.isNullOrEmpty()!!) {
+                                            viewModel.saveVillageListAfterTokenRefresh(villageList)
+                                        }
+                                        showRetryLoader.value = false
+                                        NudgeLogger.d(
+                                            "VillageSelectionScreen",
+                                            "click_to_refresh onClick -> viewModel.showLoader.value = false"
+                                        )
+                                        viewModel.showLoader.value = false
+                                    }
+                                }
+                            )
+                        }
+                    }
+                } else {
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        modifier = Modifier
+                            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth()
+                            .then(modifier)
+                    ) {
+
+                        /*Row(modifier = Modifier
                         .padding(start = 16.dp, top = 12.dp)
                         .fillMaxWidth()) {
                         Text(
@@ -251,22 +306,6 @@ fun VillageSelectionScreen(
                         }
                     }*/
 
-                    if (viewModel.showLoader.value) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(48.dp)
-                                .padding(top = 30.dp)
-                        ) {
-                            CircularProgressIndicator(
-                                color = blueDark,
-                                modifier = Modifier
-                                    .size(28.dp)
-                                    .align(Alignment.Center)
-                            )
-                        }
-
-                    } else {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
                             itemsIndexed(villages) { index, village ->
@@ -276,7 +315,8 @@ fun VillageSelectionScreen(
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
                                     isBpcUser = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
-                                    isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false
+                                    isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id]
+                                        ?: false
                                 ) {
                                     viewModel.villageSelected.value = it
                                     viewModel.updateSelectedVillage()
@@ -284,38 +324,42 @@ fun VillageSelectionScreen(
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
                         }
-                    }
-                    CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
-                }
-            }
-
-            if (villages.isNotEmpty()) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
-                        .padding(bottom = 16.dp)
-                        .align(Alignment.BottomCenter)
-                ) {
-                    ButtonPositive(
-                        buttonTitle = stringResource(id = R.string.continue_text),
-                        isArrowRequired = false,
-                        isActive = villages.isNotEmpty()
-                    ) {
-                        viewModel.updateSelectedVillage()
-                        navController.popBackStack()
-                        navController.navigate(
-                            "home_graph/${
-                                viewModel.prefRepo.getPref(
-                                    PREF_KEY_TYPE_NAME, ""
-                                ) ?: ""
-                            }"
+//                    }
+                        CustomSnackBarShow(
+                            state = snackState,
+                            position = CustomSnackBarViewPosition.Bottom
                         )
                     }
                 }
-            }
 
+                if (villages.isNotEmpty() && !viewModel.showLoader.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color.White)
+                            .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
+                            .padding(bottom = 16.dp)
+                            .align(Alignment.BottomCenter)
+                    ) {
+                        ButtonPositive(
+                            buttonTitle = stringResource(id = R.string.continue_text),
+                            isArrowRequired = false,
+                            isActive = villages.isNotEmpty()
+                        ) {
+                            viewModel.updateSelectedVillage()
+                            navController.popBackStack()
+                            navController.navigate(
+                                "home_graph/${
+                                    viewModel.prefRepo.getPref(
+                                        PREF_KEY_TYPE_NAME, ""
+                                    ) ?: ""
+                                }"
+                            )
+                        }
+                    }
+                }
+
+            }
         }
     }
 

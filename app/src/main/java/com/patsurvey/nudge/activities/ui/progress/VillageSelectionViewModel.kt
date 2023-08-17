@@ -957,12 +957,14 @@ class VillageSelectionViewModel @Inject constructor(
                     startRetryIfAny()
                     withContext(Dispatchers.Main) {
                         delay(250)
-                        NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc finally -> viewModel.showLoader.value = false")
-                        showLoader.value = false
+//                        NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc finally -> viewModel.showLoader.value = false")
+//                        showLoader.value = false
                     }
                 }
             }.await()
-//            showLoader.value = false
+            delay(250)
+            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc after await -> viewModel.showLoader.value = false")
+            showLoader.value = false
         }
     }
     private fun fetchCastList() {

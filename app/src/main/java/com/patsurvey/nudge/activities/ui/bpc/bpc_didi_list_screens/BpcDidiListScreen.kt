@@ -27,6 +27,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -106,12 +107,19 @@ fun BpcDidiListScreen(
     stepId: Int
 ) {
 
+
+
     LaunchedEffect(key1 = Unit) {
+        bpcDidiListViewModel.showLoader.value = true
         bpcDidiListViewModel.isStepComplete() { stepId, isComplete ->
-            if (isComplete)
+            if (isComplete) {
                 navController.navigate(BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route)
+
+            }
 //                navController.navigate("bpc_pat_survey_summary/$stepId/$isComplete")
         }
+        delay(250)
+        bpcDidiListViewModel.showLoader.value = false
     }
 
     val didis by bpcDidiListViewModel.selectedDidiList.collectAsState()
@@ -142,208 +150,226 @@ fun BpcDidiListScreen(
 //            listState.animateScrollToItem(ReplaceHelper.didiToBeReplaced.value.first)
     }
 
-    ConstraintLayout(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White)
-            .then(modifier)
-    ) {
-        val (bottomActionBox, mainBox) = createRefs()
+    if (bpcDidiListViewModel.showLoader.value) {
 
-        Box(modifier = Modifier
-            .constrainAs(mainBox) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(bottomActionBox.top)
-                height = Dimension.fillToConstraints
-            }
-            .padding(top = 14.dp)
-            .padding(horizontal = 16.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .padding(top = 30.dp)
         ) {
-            Column(
+            CircularProgressIndicator(
+                color = blueDark,
                 modifier = Modifier
-                    .align(Alignment.TopCenter)
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+
+    } else {
+        ConstraintLayout(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .then(modifier)
+        ) {
+            val (bottomActionBox, mainBox) = createRefs()
+
+            Box(modifier = Modifier
+                .constrainAs(mainBox) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(bottomActionBox.top)
+                    height = Dimension.fillToConstraints
+                }
+                .padding(top = 14.dp)
+                .padding(horizontal = 16.dp)
             ) {
-
-                Text(
-                    text = stringResource(id = R.string.bpc_didi_screen_title),
-                    color = Color.Black,
-                    fontSize = 20.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.Ellipsis,
+                Column(
                     modifier = Modifier
-                        .padding(
-                            vertical = dimensionResource(id = R.dimen.dp_6),
-                            horizontal = 32.dp
-                        )
-                        .fillMaxWidth()
-                )
-
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(color = white)
-                        .pointerInput(true) {
-                            detectTapGestures(onTap = {
-                                focusManager.clearFocus()
-                            })
-                        }
-                        .weight(1f),
-                    state = listState
+                        .align(Alignment.TopCenter)
                 ) {
 
-                    item {
-                        Spacer(modifier = Modifier
-                            .height(14.dp)
-                            .fillMaxWidth())
-                    }
-
-                    item {
-                        SearchWithFilterView(
-                            placeholderString = stringResource(id = R.string.search_didis),
-                            filterSelected = filterSelected,
-                            onFilterSelected = {
-                                if (didis.isNotEmpty()) {
-                                    filterSelected = !it
-                                    bpcDidiListViewModel.filterList()
-                                }
-                            },
-                            onSearchValueChange = {
-                                bpcDidiListViewModel.performQuery(it, filterSelected)
-                            }
-                        )
-                    }
-                    
-                    item { 
-                        Spacer(modifier = Modifier
-                            .height(14.dp)
-                            .fillMaxWidth())
-                    }
-
-                    item {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            val count = bpcDidiListViewModel.pendingDidiCount.value
-                            Text(
-                                text = stringResource(
-                                    id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
-                                    count
-                                ),
-                                color = Color.Black,
-                                fontSize = 12.sp,
-                                fontFamily = NotoSans,
-                                fontWeight = FontWeight.SemiBold,
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier
-                                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                                    .padding(start = 4.dp)
-                                    .weight(1f)
+                    Text(
+                        text = stringResource(id = R.string.bpc_didi_screen_title),
+                        color = Color.Black,
+                        fontSize = 20.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier
+                            .padding(
+                                vertical = dimensionResource(id = R.dimen.dp_6),
+                                horizontal = 32.dp
                             )
-                            Spacer(modifier = Modifier.padding(14.dp))
-//                            if (!bpcDidiListViewModel.isStepComplete.value) {
-                            ButtonOutline(
-                                modifier = Modifier
-                                    .weight(0.9f)
-                                    .height(45.dp),
-                                buttonTitle = stringResource(R.string.add_more)
-                            ) {
-                                ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
-                                val forReplace = false
-                                navController.navigate("bpc_add_more_didi_list/$forReplace")
+                            .fillMaxWidth()
+                    )
+
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(color = white)
+                            .pointerInput(true) {
+                                detectTapGestures(onTap = {
+                                    focusManager.clearFocus()
+                                })
                             }
+                            .weight(1f),
+                        state = listState
+                    ) {
+
+                        item {
+                            Spacer(modifier = Modifier
+                                .height(14.dp)
+                                .fillMaxWidth())
+                        }
+
+                        item {
+                            SearchWithFilterView(
+                                placeholderString = stringResource(id = R.string.search_didis),
+                                filterSelected = filterSelected,
+                                onFilterSelected = {
+                                    if (didis.isNotEmpty()) {
+                                        filterSelected = !it
+                                        bpcDidiListViewModel.filterList()
+                                    }
+                                },
+                                onSearchValueChange = {
+                                    bpcDidiListViewModel.performQuery(it, filterSelected)
+                                }
+                            )
+                        }
+
+                        item {
+                            Spacer(modifier = Modifier
+                                .height(14.dp)
+                                .fillMaxWidth())
+                        }
+
+                        item {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                val count = bpcDidiListViewModel.pendingDidiCount.value
+                                Text(
+                                    text = stringResource(
+                                        id = if (count > 1) R.string.count_didis_pending_plural else R.string.count_didis_pending_singular,
+                                        count
+                                    ),
+                                    color = Color.Black,
+                                    fontSize = 12.sp,
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier
+                                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+                                        .padding(start = 4.dp)
+                                        .weight(1f)
+                                )
+                                Spacer(modifier = Modifier.padding(14.dp))
+//                            if (!bpcDidiListViewModel.isStepComplete.value) {
+                                ButtonOutline(
+                                    modifier = Modifier
+                                        .weight(0.9f)
+                                        .height(45.dp),
+                                    buttonTitle = stringResource(R.string.add_more)
+                                ) {
+                                    ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
+                                    val forReplace = false
+                                    navController.navigate("bpc_add_more_didi_list/$forReplace")
+                                }
 //                            }
 
-                            /*BlueButtonWithIconWithFixedWidth(
-                                modifier = Modifier
-                                    .weight(0.5f),
-                                buttonText = stringResource(R.string.add_more),
-                                icon = Icons.Default.Add
-                            ) {
-                                ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
-                                val forReplace = false
-                                navController.navigate("bpc_add_more_didi_list/$forReplace")
-                            }*/
+                                /*BlueButtonWithIconWithFixedWidth(
+                                    modifier = Modifier
+                                        .weight(0.5f),
+                                    buttonText = stringResource(R.string.add_more),
+                                    icon = Icons.Default.Add
+                                ) {
+                                    ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
+                                    val forReplace = false
+                                    navController.navigate("bpc_add_more_didi_list/$forReplace")
+                                }*/
+                            }
                         }
-                    }
 
-                    item {
-                        Spacer(modifier = Modifier
-                            .height(14.dp)
-                            .fillMaxWidth())
-                    }
+                        item {
+                            Spacer(modifier = Modifier
+                                .height(14.dp)
+                                .fillMaxWidth())
+                        }
 
-                    if (filterSelected) {
-                        itemsIndexed(
-                            newFilteredTolaDidiList.keys.toList().reversed()
-                        ) { index, didiKey ->
-                            ShowDidisFromTolaForBpc(
-                                navController = navController,
-                                viewModel = bpcDidiListViewModel,
-                                didiTola = didiKey,
-                                didiList = newFilteredTolaDidiList[didiKey]
-                                    ?: emptyList(),
-                                modifier = modifier,
-                                onNavigate = {
+                        if (filterSelected) {
+                            itemsIndexed(
+                                newFilteredTolaDidiList.keys.toList().reversed()
+                            ) { index, didiKey ->
+                                ShowDidisFromTolaForBpc(
+                                    navController = navController,
+                                    viewModel = bpcDidiListViewModel,
+                                    didiTola = didiKey,
+                                    didiList = newFilteredTolaDidiList[didiKey]
+                                        ?: emptyList(),
+                                    modifier = modifier,
+                                    onNavigate = {
+
+                                    }
+                                )
+                                if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                    Divider(
+                                        color = borderGreyLight,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            top = 22.dp,
+                                            bottom = 1.dp
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            itemsIndexed(newFilteredDidiList) { index, didi ->
+                                DidiItemCardForBpc(
+                                    navController = navController,
+                                    didi = didi,
+                                    index = index,
+                                    modifier = Modifier,
+                                    viewModel = bpcDidiListViewModel
+                                ) {
 
                                 }
-                            )
-                            if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                Divider(
-                                    color = borderGreyLight,
-                                    thickness = 1.dp,
-                                    modifier = Modifier.padding(
-                                        start = 16.dp,
-                                        end = 16.dp,
-                                        top = 22.dp,
-                                        bottom = 1.dp
-                                    )
-                                )
+                                Spacer(modifier = Modifier.height(10.dp))
                             }
-                        }
-                    } else {
-                        itemsIndexed(newFilteredDidiList) { index, didi ->
-                            DidiItemCardForBpc(
-                                navController = navController,
-                                didi = didi,
-                                index = index,
-                                modifier = Modifier,
-                                viewModel = bpcDidiListViewModel
-                            ) {
-
-                            }
-                            Spacer(modifier = Modifier.height(10.dp))
                         }
                     }
                 }
             }
-        }
-        if (didis.isNotEmpty() && bpcDidiListViewModel.pendingDidiCount.value == 0) {
-            DoubleButtonBox(
-                modifier = Modifier
-                    .constrainAs(bottomActionBox) {
-                        bottom.linkTo(parent.bottom)
-                        start.linkTo(parent.start)
-                    }
-                    .onGloballyPositioned { coordinates ->
-                        bottomPadding = with(localDensity) {
-                            coordinates.size.height.toDp()
+            if (didis.isNotEmpty() && bpcDidiListViewModel.pendingDidiCount.value == 0) {
+                DoubleButtonBox(
+                    modifier = Modifier
+                        .constrainAs(bottomActionBox) {
+                            bottom.linkTo(parent.bottom)
+                            start.linkTo(parent.start)
+                        }
+                        .onGloballyPositioned { coordinates ->
+                            bottomPadding = with(localDensity) {
+                                coordinates.size.height.toDp()
+                            }
+                        },
+
+                    positiveButtonText = stringResource(id = R.string.review_and_submit_button_text),
+                    negativeButtonRequired = false,
+                    positiveButtonOnClick = {
+                        bpcDidiListViewModel.getPatStepStatus(stepId = stepId) {
+                            navController.navigate("bpc_pat_survey_summary/$stepId/$it")
                         }
                     },
-
-                positiveButtonText = stringResource(id = R.string.review_and_submit_button_text),
-                negativeButtonRequired = false,
-                positiveButtonOnClick = {
-                    bpcDidiListViewModel.getPatStepStatus(stepId = stepId) {
-                        navController.navigate("bpc_pat_survey_summary/$stepId/$it")
-                    }
-                },
-                negativeButtonOnClick = {/*Nothing to do here*/ }
-            )
+                    negativeButtonOnClick = {/*Nothing to do here*/ }
+                )
+            }
         }
     }
 }
