@@ -56,7 +56,6 @@ import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
-import java.text.DecimalFormat
 import java.util.function.Consumer
 
 
@@ -828,7 +827,7 @@ fun handleImageCapture(
 
     var location = LocationCoordinates(0.0,0.0)
 
-    val decimalFormat = DecimalFormat("#.#######")
+//    val decimalFormat = DecimalFormat("#.#######")
     if (Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
         var locationByGps: Location? = null
         var locationByNetwork: Location? = null
@@ -836,8 +835,8 @@ fun handleImageCapture(
             if (gpsLocation != null) {
                 locationByGps = gpsLocation
                 location = LocationCoordinates(
-                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+                    locationByGps?.latitude ?: 0.0,
+                    locationByGps?.longitude ?: 0.0
 
                 )
             }
@@ -846,8 +845,8 @@ fun handleImageCapture(
             if (networkLocation != null) {
                 locationByNetwork = networkLocation
                 location = LocationCoordinates(
-                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                    locationByNetwork?.latitude ?: 0.0,
+                    locationByNetwork?.longitude ?: 0.0
 
                 )
             }
@@ -865,8 +864,8 @@ fun handleImageCapture(
             override fun onLocationChanged(gpsLocation: Location) {
                 locationByGps = gpsLocation
                 location = LocationCoordinates(
-                    decimalFormat.format(locationByGps?.latitude ?: 0.0).toDouble(),
-                    decimalFormat.format(locationByGps?.longitude ?: 0.0).toDouble()
+                    locationByGps?.latitude ?: 0.0,
+                    locationByGps?.longitude ?: 0.0
 
                 )
             }
@@ -887,8 +886,8 @@ fun handleImageCapture(
             override fun onLocationChanged(networkLocation: Location) {
                 locationByNetwork = networkLocation
                 location = LocationCoordinates(
-                    decimalFormat.format(locationByNetwork?.latitude ?: 0.0).toDouble(),
-                    decimalFormat.format(locationByNetwork?.longitude ?: 0.0).toDouble()
+                    locationByNetwork?.latitude ?: 0.0,
+                    locationByNetwork?.longitude ?: 0.0
 
                 )
             }
