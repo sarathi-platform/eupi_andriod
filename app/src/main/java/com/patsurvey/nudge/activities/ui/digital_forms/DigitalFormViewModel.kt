@@ -120,7 +120,7 @@ class DigitalFormViewModel @Inject constructor(
             val villageEntity = prefRepo.getSelectedVillage()
             val success = if (prefRepo.isUserBPC()) {
                 PdfUtils.getFormBPdfForBpc(context, villageEntity = prefRepo.getSelectedVillage(),
-                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
+                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             } else {
@@ -142,7 +142,7 @@ class DigitalFormViewModel @Inject constructor(
             val villageEntity = prefRepo.getSelectedVillage()
             val success = if (prefRepo.isUserBPC()) {
                 PdfUtils.getFormCPdfForBpc(context, villageEntity = prefRepo.getSelectedVillage(),
-                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
+                    didiDetailList = didiDetailListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             } else {

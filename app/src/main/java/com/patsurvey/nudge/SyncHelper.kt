@@ -1763,7 +1763,15 @@ class SyncHelper (
                     comment = BLANK_STRING
                     didiDao.updateVOEndorsementDidiStatus(
                         prefRepo.getSelectedVillage().id,
-                        didiId
+                        didiId,
+                        1
+                    )
+                } else {
+                    isDidiAccepted = false
+                    didiDao.updateVOEndorsementDidiStatus(
+                        prefRepo.getSelectedVillage().id,
+                        didiId,
+                        0
                     )
                 }
                 NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")

@@ -1711,12 +1711,14 @@ class VillageSelectionViewModel @Inject constructor(
                             downloadManager,
                         onDownloadComplete = {
                             didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                            didiDao.updateNeedsToPostImage(id, false)
                         }, onDownloadFailed = {
                             NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
                         })
                     }
                 } else {
                     didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                    didiDao.updateNeedsToPostImage(id, false)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
