@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val mViewModel: MainActivityViewModel by viewModels()
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
-    val isOnline = mutableStateOf(false)
+    val isOnline = mutableStateOf(true)
     val isBackFromSummary = mutableStateOf(false)
 
     var downloader: AndroidDownloader? = null

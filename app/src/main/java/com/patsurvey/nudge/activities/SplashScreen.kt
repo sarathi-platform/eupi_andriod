@@ -17,6 +17,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,6 +53,7 @@ fun SplashScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
@@ -76,7 +78,8 @@ fun SplashScreen(
                 viewModel.showLoader.value=false
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
-        } else {
+        } else
+        {
             NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false")
             delay(ONE_SECOND)
             viewModel.showLoader.value=true
@@ -141,11 +144,12 @@ fun SplashScreen(
         }
         if(viewModel.showLoader.value){
             Box(
-                modifier = Modifier.constrainAs(loader) {
-                    top.linkTo(appNameContent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                modifier = Modifier
+                    .constrainAs(loader) {
+                        top.linkTo(appNameContent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     .fillMaxWidth()
                     .padding(top = 20.dp)
                     .height(48.dp)
