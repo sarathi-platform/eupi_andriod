@@ -608,7 +608,7 @@ class TransectWalkViewModel @Inject constructor(
                 serverId = tolaList.value[getIndexOfTola(id)].serverId,
                 localCreatedDate=tolaList.value[getIndexOfTola(id)].localCreatedDate,
                 localModifiedDate=System.currentTimeMillis(),
-                localUniqueId = ""
+                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
             tolaDao.insert(updatedTola)
             didiDao.updateTolaName(id, newName)

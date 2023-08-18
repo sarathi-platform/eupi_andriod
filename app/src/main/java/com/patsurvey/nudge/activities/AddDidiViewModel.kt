@@ -537,7 +537,8 @@ class AddDidiViewModel @Inject constructor(
                     .indexOf(didiId)).serverId,
                 needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
                     .indexOf(didiId)).needsToPostRanking,
-                needsToPost = true
+                needsToPost = true,
+                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
             )
             updatedDidi.guardianName
             didiDao.insertDidi(updatedDidi)
