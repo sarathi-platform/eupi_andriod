@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.settings
 import android.content.Context
 import android.os.CountDownTimer
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.MyApplication
@@ -262,7 +263,7 @@ class SettingViewModel @Inject constructor(
     }
 
     private fun isStepStatusSync(orderNumber : Int) : Boolean{
-        val stepList = stepsListDao.getAllStepsWithOrderNumber(orderNumber)
+        val stepList = stepsListDao.getAllStepsWithOrderNumber(orderNumber) ?: emptyList()
         var isSync = true
         for (step in stepList){
             if(step.needToPost)
@@ -590,11 +591,9 @@ class SettingViewModel @Inject constructor(
         isBPCDataNeedToBeSynced: MutableState<Boolean>
     ) {
         NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced called")
-//        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val didiIDList =
-            if(prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)
-                && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if(isBPCDidiSynced()/*prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)*/ //change this to check for all villages.
+                && answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,"").isEmpty()
@@ -611,6 +610,24 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun isBPCDidiSynced(): Boolean {
+        val villageList = villegeListDao?.getAllVillages(prefRepo.getAppLanguageId() ?: 2) ?: emptyList()
+        if (villageList.isNotEmpty()) {
+            villageList.forEach { village ->
+                NudgeLogger.d("SettingViewModel", "isBPCDidiSynced: villageId -> ${village.id}")
+                val isBpcDidiListSyncedForVillage = prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, false)
+                Log.d("SettingViewModel", "isBPCDidiSynced: villageId -> ${village.id} isBpcDidiListSyncedForVillage: $isBpcDidiListSyncedForVillage")
+                if (!isBpcDidiListSyncedForVillage) {
+                    NudgeLogger.d("SettingViewModel", "return false")
+                    return false
+                }
+            }
+            NudgeLogger.d("SettingViewModel", " return true after for loop")
+            return true
+        }
+        NudgeLogger.d("SettingViewModel", " return true after for isNotEmptyCheck")
+        return true
+    }
     fun performLogout(networkCallbackListener: NetworkCallbackListener){
         NudgeLogger.e("SettingViewModel","performLogout called")
         showAPILoader.value = true
