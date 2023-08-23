@@ -446,7 +446,7 @@ fun roundOffDecimal(number: Double): Double? {
         df.roundingMode = RoundingMode.CEILING
         df.format(number).toDouble()
     }catch (ex:Exception){
-        ex.printStackTrace()
+        NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
         0.00
     }
 
