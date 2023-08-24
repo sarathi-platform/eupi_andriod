@@ -102,6 +102,8 @@ object PdfUtils {
 
             didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
                 .forEachIndexed { index, didiEntity ->
+                    NudgeLogger.d("PdfUtil", "getFormAPdf -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
+
                     add(
                         LinkedList<Cell>().apply {
                             add(
@@ -275,6 +277,7 @@ object PdfUtils {
 
             didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
                 .forEachIndexed { index, didiEntity ->
+                    NudgeLogger.d("PdfUtil", "getFormAPdfForBpc -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
                     add(
                         LinkedList<Cell>().apply {
                             add(
@@ -555,6 +558,7 @@ object PdfUtils {
             add(headerRow)
 
             didiDetailList.forEachIndexed { index, didiEntity ->
+                NudgeLogger.d("PdfUtil", "getFormBPdfForBpc -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
                 add(
                     LinkedList<Cell>().apply {
                         add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
@@ -659,6 +663,7 @@ object PdfUtils {
             add(headerRow)
 
             didiDetailList.forEachIndexed { index, didiEntity ->
+                NudgeLogger.d("PdfUtil", "getFormCPdf -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
                 add(
                     LinkedList<Cell>().apply {
                         add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
@@ -764,6 +769,7 @@ object PdfUtils {
             add(headerRow)
 
             didiDetailList.forEachIndexed { index, didiEntity ->
+                NudgeLogger.d("PdfUtil", "getFormCPdfForBpc -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
                 add(
                     LinkedList<Cell>().apply {
                         add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))

@@ -8,15 +8,15 @@
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <plurals name="didis_added">
-        <item quantity="one">দিদি যোগ করেছে</item>
-        <item quantity="other">দিদির যোগ করা হয়েছে</item>
+        <item quantity="one">দিদি যোগ করা হয়েছে</item>
+        <item quantity="other">দিদিদের যোগ করা হয়েছে</item>
     </plurals>
     <plurals name="poor_didis_pending_text">
-        <item quantity="one">গরীব দিদি বাকি</item>
-        <item quantity="other">গরীব দিদির বাকি</item>
+        <item quantity="one">দরিদ্র দিদি বাকি</item>
+        <item quantity="other">দরিদ্র দিদিরা বাকি</item>
     </plurals>
 
-    <string name="mark_complete_text">পাড়া সংযোজন সমাপ্ত করুণ</string>
+    <string name="mark_complete_text">পাড়া সংযোজন সম্পূৰ্ণ করুন</string>
     <string name="go_back_text">পেছনে যান</string>
     <string name="progress_item_text">প্রগতি</string>
     <string name="didis_item_text_plural">দিদিরা</string>
@@ -59,7 +59,7 @@
     <string name="showing">দেখাচ্ছে</string>
     <string name="added_tolas">পাড়া যোগ করা হয়েছে</string>
     <string name="title_activity_social_mapping">সামাজিক মানচিত্র কার্যকলাপ</string>
-    <string name="not_added">যোগ করা হয়নি</string>
+    <string name="not_added">অবস্থান যোগ করা হয়নি</string>
     <string name="mark_as_completed">সম্পন্ন হিসাবে চিহ্নিত করুন</string>
     <string name="village_text">গ্রাম</string>
     <string name="vo_name">গ্রাম সংগঠন (VO) নাম</string>
@@ -79,7 +79,7 @@
     <string name="particaptory_wealth_ranking_survey_text">অংশগ্রহণমূলক সম্পদ র‌্যাঙ্কিং সারাংশ</string>
     <string name="particaptory_wealth_ranking_text">অংশগ্রহণমূলক সম্পদ র‌্যাঙ্কিং</string>
     <string name="complete_wealth_ranking_btn_text">সম্পদের র‌্যাঙ্কিং সমাপ্ত করুন</string>
-    <string name="add_tola">পাড়া যোগ করুণ</string>
+    <string name="add_tola">পাড়া যোগ করুন</string>
     <string name="enter_otp_text">OTP লিখুন</string>
     <string name="otp_send_to_mobile_number_message">%1$s মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
     <string name="otp_send_to_mobile_number_message_for_relogin">{MOBILE_NUMBER} মোবাইল নম্বরে OTP পাঠানো হয়েছে</string>
@@ -95,9 +95,9 @@
     <string name="complete_didi_addition">দিদিদেরকে যোগ করা সমাপ্ত করুন</string>
     <string name="user_id_text">আইডি (পরিচয় সংখ্যা):</string>
     <string name="empty_tola_string">পাড়া যোগ করা হয়নি</string>
-    <string name="tola_conirmation_text_plural">মোট %1$s নতুন প্যারা \n সফলভাবে যোগ করা হয়েছে</string>
-    <string name="tola_conirmation_text_singular">মোট %1$s নতুন প্যারা \n সফলভাবে যোগ করা হয়েছে</string>
-    <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সমাপ্ত করুণ</string>
+    <string name="tola_conirmation_text_plural">মোট %1$s নতুন পাড়া \n সফলভাবে যোগ করা হয়েছে</string>
+    <string name="tola_conirmation_text_singular">মোট %1$s নতুন পাড়া \n সফলভাবে যোগ করা হয়েছে</string>
+    <string name="complete_transect_walk_text">গ্রাম ভ্রমণ সম্পূৰ্ণ করুন</string>
     <string name="transect_walk_completed_message">{VILLAGE_NAME} \nএর জন্য গ্রামের ভ্রমণ শেষ হয়েছে</string>
     <string name="wealth_ranking_completed_message">{VILLAGE_NAME} গ্রাম এর অংশগ্রহণমূলক সম্পদ র‍্যাঙ্কিং \n সম্পূর্ণ হয়েছে</string>
     <string name="complete_social_walk_text">সামাজিক মানচিত্র সমাপ্ত করুন</string>
@@ -331,7 +331,7 @@
     <string name="digital_form_c_downloded">ডিজিটাল ফর্ম সি ডাউনলোড করা হয়েছে</string>
     <string name="something_went_wrong_unable_to_download_form">কিছু ভুল হয়েছে, ফর্ম ডাউনলোড করতে অক্ষম৷</string>
     <string name="location_permission_dialog_prompt_message">অবস্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
-    <string name="empty_tola_button_text">Tola যোগ ছাড়া চালিয়ে যান</string>
+    <string name="empty_tola_button_text">পাড়া যোগ ছাড়া চালিয়ে যান </string>
     <string name="add_more_list_empty_string">কোন দিদি যোগ বা প্রতিস্থাপনের জন্য উপলব্ধ নেই.</string>
     <string name="max_5_pages_can_be_captured">সর্বোচ্চ 5 পৃষ্ঠা ক্যাপচার করা যাবে</string>
     <string name="click_to_refresh">রিফ্রেশ করতে ক্লিক করুন</string>
@@ -340,7 +340,7 @@
     <string name="vo_selected_status_text">VO অনুমোদিত</string>
     <string name="vo_rejected_status_text">VO প্রত্যাখ্যাত</string>
     <string name="pat_not_available_status_text">PAT উপলব্ধ নয়</string>
-    <string name="cannot_delete_tola_message_text">এই তোলা ডিলিট করা যাবে না কারণ দিদিদের এটাকে বরাদ্দ করা হয়েছে</string>
+    <string name="cannot_delete_tola_message_text">এই পাড়া ডিলিট করা যাবে না কারণ এতে দিদি যোগ হয়েছে</string>
 
     <string name="heading_value_of_other_productive_assests">অন্যান্য উৎপাদনশীল সম্পদের মূল্য</string>
     <string name="heading_earning_ration">উপার্জন অনুপাত</string>

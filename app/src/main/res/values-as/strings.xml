@@ -8,12 +8,12 @@
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
     <plurals name="didis_added">
-        <item quantity="one">দিদি যোগ কৰা হৈছে</item>
-        <item quantity="other">ডিডিছ যোগ কৰা হৈছে</item>
+        <item quantity="one">বাইদেউ যোগ কৰা হল</item>
+        <item quantity="other">গৰাকী বাইদেউ যোগ কৰা হল</item>
     </plurals>
     <plurals name="poor_didis_pending_text">
-        <item quantity="one">দুখীয়া দিদি পেণ্ডিং</item>
-        <item quantity="other">দুখীয়া ডিডিছ বাকী আছে</item>
+        <item quantity="one">দুখীয়া বাইদেউ বাকি</item>
+        <item quantity="other">দুখীয়া বাইদেউসকল বাকি</item>
     </plurals>
 
     <string name="mark_complete_text">পাৰা সংযোজন সম্পূৰ্ণ কৰক</string>

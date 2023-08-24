@@ -63,6 +63,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.WealthRank
@@ -329,16 +330,21 @@ fun DigitalFormAScreen(
                         .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
+                    NudgeLogger.d("DigitalFormAScreen", "Before LazyColumn -> didiList with filter size: ${
+                        didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size
+                    }")
                     LazyColumn(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
                         if (viewModel.prefRepo.isUserBPC()) {
                             items(didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
+                                NudgeLogger.d("DigitalFormAScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
                                 DidiVillageItem(card)
                             }
                         } else {
                             items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
+                                NudgeLogger.d("DigitalFormAScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
                                 DidiVillageItem(card)
                             }
                         }

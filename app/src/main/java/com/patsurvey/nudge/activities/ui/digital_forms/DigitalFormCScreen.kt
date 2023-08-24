@@ -68,6 +68,7 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
@@ -339,6 +340,9 @@ fun DigitalFormCScreen(
                         .height((screenHeight / 2).dp)
                 ) {
                     // List of Didis with Details
+                    NudgeLogger.d("DigitalFormCScreen", "Before LazyColumn -> didiList with filter size: ${
+                        didiList.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                    }")
                     ConstraintLayout() {
                         val (listBox, bottomBox) = createRefs()
                         LazyColumn(
@@ -353,10 +357,12 @@ fun DigitalFormCScreen(
                         ) {
                             if (viewModel.prefRepo.isUserBPC()) {
                                 items(didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
+                                    NudgeLogger.d("DigitalFormCScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
                                     DidiVillageItem(card)
                                 }
                             } else {
                                 items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
+                                    NudgeLogger.d("DigitalFormCScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
                                     DidiVillageItem(card)
                                 }
                             }
