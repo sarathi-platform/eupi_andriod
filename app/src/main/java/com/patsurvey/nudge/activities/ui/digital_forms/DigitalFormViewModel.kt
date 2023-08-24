@@ -24,12 +24,12 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
-import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -66,6 +66,9 @@ class DigitalFormViewModel @Inject constructor(
                     _didiDetailListForBpc.value = didiList
                 } else {
                     val didiList = didiDao.getAllDidisForVillage(villageId)
+                    didiList.forEach {
+                        NudgeLogger.d("DigitalFormViewModel", "init -> didi.id = ${it.id}, didi.name = ${it.name}")
+                    }
                     _didiDetailList.value = didiList
                 }
             }
@@ -86,7 +89,7 @@ class DigitalFormViewModel @Inject constructor(
                 PdfUtils.getFormAPdfForBpc(
                     context = context,
                     villageEntity = villageEntity,
-                    didiDetailList = didiDetailListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit },
+                    didiDetailList = didiDetailListForBpc.value,
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
                         prefRepo.getPref(
@@ -98,7 +101,7 @@ class DigitalFormViewModel @Inject constructor(
                 PdfUtils.getFormAPdf(
                     context = context,
                     villageEntity = villageEntity,
-                    didiDetailList = didiDetailList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit },
+                    didiDetailList = didiDetailList.value,
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(
                         prefRepo.getPref(
@@ -124,6 +127,10 @@ class DigitalFormViewModel @Inject constructor(
                     casteList = casteList.value,
                     completionDate = changeMilliDateToDate(prefRepo.getPref(PREF_PAT_COMPLETION_DATE_+villageEntity.id,0L)) ?: BLANK_STRING)
             } else {
+                NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf -> villageEntity: ${villageEntity.id}")
+                didiDetailList.value.forEach {
+                    NudgeLogger.d("DigitalFormViewModel", "generateFormBPdf -> didi.id = ${it.id}, didi.name = ${it.name}")
+                }
                 PdfUtils.getFormBPdf(context, villageEntity = prefRepo.getSelectedVillage(),
                     didiDetailList = didiDetailList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit },
                     casteList = casteList.value,

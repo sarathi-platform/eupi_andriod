@@ -33,6 +33,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -49,6 +50,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -113,6 +115,8 @@ import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showToast
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun ParticipatoryWealthRankingSurvey(
@@ -128,6 +132,7 @@ fun ParticipatoryWealthRankingSurvey(
     val expandedCardIds by viewModel.expandedCardIdsList.collectAsState()
 
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     val screenHeight = LocalConfiguration.current.screenHeightDp
 
@@ -309,10 +314,12 @@ fun ParticipatoryWealthRankingSurvey(
                             .fillMaxSize()
                             .padding(vertical = 8.dp)
                     ) {
+                        val listState = rememberLazyListState()
                         LazyColumn(
                             verticalArrangement = Arrangement.spacedBy(4.dp),
                             contentPadding = PaddingValues(bottom = bottomPadding),
-                            modifier = Modifier.padding(bottom = 10.dp)
+                            modifier = Modifier.padding(bottom = 10.dp),
+                            state = listState
                         ) {
                             val didiListForCategory = didids.value.filter { it.wealth_ranking == showDidiListForRank.second.rank }
                             item { Spacer(modifier = Modifier.height(4.dp)) }
@@ -323,6 +330,10 @@ fun ParticipatoryWealthRankingSurvey(
                                         Modifier.padding(horizontal = 0.dp),
                                         onExpendClick = { expand, didiDetailModel ->
                                             viewModel.onCardArrowClicked(didiDetailModel.id)
+                                            coroutineScope.launch {
+                                                delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
+                                                listState.animateScrollToItem(index+3)
+                                            }
                                         },
                                         onItemClick = {}
                                     )

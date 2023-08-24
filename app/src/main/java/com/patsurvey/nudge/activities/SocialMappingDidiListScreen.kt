@@ -991,7 +991,7 @@ fun DidiItemCard(
                         modifier = Modifier.layoutId("village")
                     )
                     if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal) {
+                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal && didi.rankingEdit && didi.patEdit) {
                             IconButton(
                                 onClick = {
                                     showMenu.value = !showMenu.value

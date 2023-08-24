@@ -167,11 +167,11 @@ class SettingViewModel @Inject constructor(
                     if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
                     ) {
                         withContext(Dispatchers.Main) {
-                            formAAvailabe.value = true
+                            formBAvailabe.value = true
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            formAAvailabe.value = false
+                            formBAvailabe.value = false
                         }
                     }
                 } else {

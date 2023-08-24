@@ -636,17 +636,17 @@ class VillageSelectionViewModel @Inject constructor(
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
                                     "request -> villageId = village.id, \"Category\", StepResultTypeRequest(\n" +
                                     "                                    StepType.WEALTH_RANKING.name, ResultType.POOR.name")
-                            val poorDidiList = apiService.getDidisWithRankingFromNetwork(
+                            val poorDidiList = apiService.getDidisFromNetwork(village.id)/*apiService.getDidisWithRankingFromNetwork(
                                 villageId = village.id, "Category", StepResultTypeRequest(
                                     StepType.WEALTH_RANKING.name, ResultType.POOR.name
                                 )
-                            )
+                            )*/
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
                                     "poorDidiList status = ${poorDidiList.status}, message = ${poorDidiList.message}, data = ${poorDidiList.data.toString()}")
                             if (poorDidiList.status.equals(SUCCESS, true)) {
                                 poorDidiList.data?.let { didiRank ->
-                                    if (didiRank.beneficiaryList?.poorDidi?.isNotEmpty() == true) {
-                                        didiRank.beneficiaryList?.poorDidi?.forEach { poorDidis ->
+                                    if (didiRank.didiList.isNotEmpty()) {
+                                        didiRank.didiList.forEach { poorDidis ->
                                             poorDidis?.let { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING

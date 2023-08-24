@@ -100,7 +100,7 @@ object PdfUtils {
         val rows = LinkedList<LinkedList<Cell>>().apply {
             add(headerRow)
 
-            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }
+            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
                 .forEachIndexed { index, didiEntity ->
                     add(
                         LinkedList<Cell>().apply {
@@ -168,7 +168,7 @@ object PdfUtils {
 
         })
 
-        simplyPdfDocument.text.write("Total no. of families in the village: ${didiDetailList.size}",
+        simplyPdfDocument.text.write("Total no. of families in the village: ${didiDetailList.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -178,7 +178,7 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Poor: ${didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Poor: ${didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -188,7 +188,7 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Medium: ${didiDetailList.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Medium: ${didiDetailList.filter { it.wealth_ranking == WealthRank.MEDIUM.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -198,7 +198,7 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Rich: ${didiDetailList.filter { it.wealth_ranking == WealthRank.RICH.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Rich: ${didiDetailList.filter { it.wealth_ranking == WealthRank.RICH.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -273,7 +273,7 @@ object PdfUtils {
         val rows = LinkedList<LinkedList<Cell>>().apply {
             add(headerRow)
 
-            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }
+            didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
                 .forEachIndexed { index, didiEntity ->
                     add(
                         LinkedList<Cell>().apply {
@@ -341,7 +341,7 @@ object PdfUtils {
 
         })
 
-        simplyPdfDocument.text.write("Total no. of families in the village: ${didiDetailList.size}",
+        simplyPdfDocument.text.write("Total no. of families in the village: ${didiDetailList.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -351,7 +351,8 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Poor: ${didiDetailList.filter { it.wealth_ranking == WealthRank.POOR.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Poor: ${didiDetailList
+            .filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -361,7 +362,7 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Medium: ${didiDetailList.filter { it.wealth_ranking == WealthRank.MEDIUM.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Medium: ${didiDetailList.filter { it.wealth_ranking == WealthRank.MEDIUM.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -371,7 +372,7 @@ object PdfUtils {
 
             })
 
-        simplyPdfDocument.text.write("Total no. of families categorized as Rich: ${didiDetailList.filter { it.wealth_ranking == WealthRank.RICH.rank }.size}",
+        simplyPdfDocument.text.write("Total no. of families categorized as Rich: ${didiDetailList.filter { it.wealth_ranking == WealthRank.RICH.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size}",
             TextProperties().apply {
                 textSize = 10
                 textColor = "#000000"
@@ -449,6 +450,7 @@ object PdfUtils {
             add(headerRow)
 
             didiDetailList.forEachIndexed { index, didiEntity ->
+                NudgeLogger.d("PdfUtil", "getFormBPdf -> didi.id = ${didiEntity.id}, didi.name = ${didiEntity.name}")
                 add(
                     LinkedList<Cell>().apply {
                         add(TextCell("${index + 1}", cellDataTextProperties, serialNumberCellWidth))
