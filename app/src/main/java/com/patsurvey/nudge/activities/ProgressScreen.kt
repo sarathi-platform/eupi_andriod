@@ -119,7 +119,7 @@ fun ProgressScreen(
                         modifier = Modifier.padding(top = 12.dp)
                     )
                     LazyColumn(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-
+                        NudgeLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                         itemsIndexed(villages) { index, village ->
                             VillageAndVoBoxForBottomSheet(
                                 tolaName = village.name,

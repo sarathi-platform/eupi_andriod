@@ -76,6 +76,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BlueButtonWithIconWithFixedWidthWithoutIcon
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomToast
@@ -268,7 +269,8 @@ fun VillageSelectionScreen(
                     } else {
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
-                            itemsIndexed(villages) { index, village ->
+                            NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
+                            itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                                 VillageAndVoBoxForBottomSheet(
                                     tolaName = village.name,
                                     voName = village.federationName,

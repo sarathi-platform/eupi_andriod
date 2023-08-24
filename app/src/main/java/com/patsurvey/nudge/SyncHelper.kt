@@ -422,7 +422,8 @@ class SyncHelper (
 
     private fun uploadDidiImagesToServer(context : Context){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedsToPostImage(true)
+            val didiList = didiDao.fetchAllDidiNeedsToPostImageWithLimit(true)
+            NudgeLogger.d("Synchelper", "uploadDidiImage DidiList: ${didiList} :: Size: ${didiList.size}")
             if(didiList.isNotEmpty()){
                 val imageFilePart = ArrayList<MultipartBody.Part>()
                 val requestDidiId = ArrayList<RequestBody>()
@@ -481,9 +482,9 @@ class SyncHelper (
                                 break
                             didiDao.updateNeedsToPostImage(didiList[i].id, false)
                         }
-                        if(didiList.size>5) {
+//                        if(didiList.size>5) {
                             uploadDidiImagesToServer(context)
-                        }
+//                        }
                     }
                 } catch (ex: Exception) {
                     ex.printStackTrace()

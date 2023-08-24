@@ -44,10 +44,6 @@ class ConfigViewModel @Inject constructor(
             try {
 
                 val response = apiInterface.configDetails()
-                val localCasteList = casteListDao.getAllCaste()
-                /*if (localCasteList.isNotEmpty()) {
-                    casteListDao.deleteCasteTable()
-                }*/
                 withContext(Dispatchers.IO) {
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let { it ->
