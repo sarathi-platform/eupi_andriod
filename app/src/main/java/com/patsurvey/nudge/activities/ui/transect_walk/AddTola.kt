@@ -200,7 +200,11 @@ fun AddTolaBox(
             OutlinedTextField(
                 value = mTolaName,
                 onValueChange = {
-                    if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
+                    if(!it.contains(IGNORED_REGEX)
+                        && !it.contains(DOUBLE_QUOTE_REGEX)
+                        && !it.contains(LEFT_BRACKET_QUOTE_REGEX)
+                        && !it.contains(RIGHT_BRACKET_QUOTE_REGEX)
+                        && !containsEmoji(it)){
                         mTolaName = it
                     }
                 },
@@ -677,7 +681,11 @@ fun TolaBox(
                         OutlinedTextField(
                             value = mTolaName,
                             onValueChange = {
-                                if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
+                                if(!it.contains(IGNORED_REGEX)
+                                    && !it.contains(DOUBLE_QUOTE_REGEX)
+                                    && !it.contains(LEFT_BRACKET_QUOTE_REGEX)
+                                    && !it.contains(RIGHT_BRACKET_QUOTE_REGEX)
+                                    && !containsEmoji(it)){
                                     mTolaName = it
                                 }
                             },

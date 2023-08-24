@@ -45,10 +45,6 @@ class ConfigViewModel @Inject constructor(
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
                 val response = apiInterface.configDetails()
-                val localCasteList = casteListDao.getAllCaste()
-                /*if (localCasteList.isNotEmpty()) {
-                    casteListDao.deleteCasteTable()
-                }*/
                 withContext(Dispatchers.IO) {
                     NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {

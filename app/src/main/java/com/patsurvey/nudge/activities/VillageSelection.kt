@@ -308,7 +308,8 @@ fun VillageSelectionScreen(
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
-                            itemsIndexed(villages) { index, village ->
+                            NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
+                            itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                                 VillageAndVoBoxForBottomSheet(
                                     tolaName = village.name,
                                     voName = village.federationName,
