@@ -161,25 +161,17 @@ class VillageSelectionViewModel @Inject constructor(
                 fetchQuestions()
                 fetchCastList()
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
-                    if ((System.currentTimeMillis() - prefRepo.getPref(
-                            LAST_UPDATE_TIME, 0L
-                        )) > TimeUnit.DAYS.toMillis(30)
-                    ) if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
-                            CRP_USER_TYPE, true
-                        )
-                    ) {
-                        fetchVillageList()
+                    if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
+                        if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
+                            fetchVillageList()
+                        } else {
+                            fetchDataForBpc()
+                        }
                     } else {
-                        fetchDataForBpc()
+                        showLoader.value = false
                     }
-//                else
-//                    showLoader.value = false
                 } else {
-                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(
-                            CRP_USER_TYPE,
-                            true
-                        )
-                    ) {
+                    if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
                         fetchVillageList()
                     } else {
                         fetchDataForBpc()
@@ -200,7 +192,7 @@ class VillageSelectionViewModel @Inject constructor(
                         val localLanguageQuesList =
                             questionListDao.getAllQuestionsForLanguage(languageEntity.id)
                         if (localLanguageQuesList.isEmpty()) {
-                            Log.d("TAG", "fetchQuestions: QuestionList")
+                            NudgeLogger.d("TAG", "fetchQuestions: QuestionList")
                             val quesListResponse = apiService.fetchQuestionListFromServer(
                                 GetQuestionListRequest(
                                     languageId = languageEntity.id,
@@ -220,7 +212,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                 questionList.thresholdScore
                                             question?.surveyPassingMark =
                                                 questionList.surveyPassingMark
-                                            Log.d("TAG", "fetchQuestionsList: ${question?.options.toString()}")
+                                            NudgeLogger.d("TAG", "fetchQuestionsList: ${question?.options.toString()}")
                                             if(question?.questionFlag.equals(QUESTION_FLAG_WEIGHT) || question?.questionFlag.equals(
                                                     QUESTION_FLAG_RATIO)) {
                                                 val heading = question?.options?.filter {
@@ -261,10 +253,10 @@ class VillageSelectionViewModel @Inject constructor(
                             if (prefRepo.isUserBPC()) ApiType.PAT_BPC_QUESTION_API else ApiType.PAT_CRP_QUESTION_API
                         )
                     } finally {
-                        withContext(Dispatchers.Main) {
+                        /*withContext(Dispatchers.Main) {
                             delay(250)
                             showLoader.value = false
-                        }
+                        }*/
                     }
                 }
             }
@@ -296,7 +288,10 @@ class VillageSelectionViewModel @Inject constructor(
                         stateId.value = village.stateId
                         RetryHelper.stateId = stateId.value
                         try {
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList request -> village.id = ${village.id}")
                             val response = apiService.getStepsList(village.id)
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                    "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                             if (response.status.equals(SUCCESS, true)) {
                                 response.data?.let {
                                     if (it.stepList.isNotEmpty()) {
@@ -345,7 +340,11 @@ class VillageSelectionViewModel @Inject constructor(
 //                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
 //                                            }
                                         }
+                                        NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                                "stepsListDao.insertAll(it.stepList) before")
                                         stepsListDao.insertAll(it.stepList)
+                                        NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                                "stepsListDao.insertAll(it.stepList) after")
                                         val bpcStepId =
                                             it.stepList.sortedBy { stepEntity -> stepEntity.orderNumber }
                                                 .last().id
@@ -379,8 +378,12 @@ class VillageSelectionViewModel @Inject constructor(
                             onCatchError(ex, ApiType.STEP_LIST_API)
                         }
                         try {
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getBpcSummary " +
+                                    "village.id = ${village.id}")
                             val bpcSummaryResponse =
                                 apiService.getBpcSummary(villageId = village.id)
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                    "bpcSummaryResponse status = ${bpcSummaryResponse.status}, message = ${bpcSummaryResponse.message}, data = ${bpcSummaryResponse.data.toString()}")
                             if (bpcSummaryResponse.status.equals(SUCCESS, true)) {
                                 bpcSummaryResponse.data?.let {
                                     val bpcSummary = BpcSummaryEntity(
@@ -391,9 +394,15 @@ class VillageSelectionViewModel @Inject constructor(
                                         voEndorsedCount = it.voEndorsedCount,
                                         villageId = village.id
                                     )
+                                    NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                            "bpcSummaryDao.insert(bpcSummary) before")
                                     bpcSummaryDao.insert(bpcSummary)
+                                    NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                            "bpcSummaryDao.insert(bpcSummary) after")
                                 }
                             } else {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getStepsList " +
+                                        "bpcSummaryDao.insert(BpcSummaryEntity(0, 0, 0, 0, 0, 0, villageId = village.id))")
                                 bpcSummaryDao.insert(
                                     BpcSummaryEntity(
                                         0, 0, 0, 0, 0, 0, villageId = village.id
@@ -422,11 +431,19 @@ class VillageSelectionViewModel @Inject constructor(
                             onCatchError(ex, ApiType.BPC_SUMMARY_API)
                         }
                         try {
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
+                                    "request village.id = ${village.id}")
                             val cohortResponse =
                                 apiService.getCohortFromNetwork(villageId = village.id)
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
+                                    "cohortResponse status = ${cohortResponse.status}, message = ${cohortResponse.message}, data = ${cohortResponse.data.toString()}")
                             if (cohortResponse.status.equals(SUCCESS, true)) {
                                 cohortResponse.data?.let {
+                                    NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
+                                            "tolaDao.insertAll(it) before")
                                     tolaDao.insertAll(it)
+                                    NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
+                                            "tolaDao.insertAll(it) after")
                                 }
                             } else {
                                 val ex = ApiResponseFailException(cohortResponse.message)
@@ -446,8 +463,12 @@ class VillageSelectionViewModel @Inject constructor(
                             onCatchError(ex, ApiType.TOLA_LIST_API)
                         }
                         try {
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                    "request village.id = ${village.id}")
                             val didiResponse =
                                 apiService.getDidiForBpcFromNetwork(villageId = village.id)
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                    "didiResponse status = ${didiResponse.status}, message = ${didiResponse.message}, data = ${didiResponse.data.toString()}")
                             if (didiResponse.status.equals(SUCCESS, true)) {
                                 didiResponse.data?.let { beneficaryResponse ->
                                     beneficaryResponse.forEach {
@@ -479,6 +500,8 @@ class VillageSelectionViewModel @Inject constructor(
 
 //                                                }
                                             //TODO Create new table
+                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                                    "bpcSelectedDidiDao.insertDidi() didiId = ${didi.id} before")
                                             bpcSelectedDidiDao.insertDidi(
                                                 BpcSelectedDidiEntity(
                                                     id = didi.id,
@@ -511,6 +534,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                     crpUploadedImage = didi.crpUploadedImage
                                                 )
                                             )
+                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                                    "bpcSelectedDidiDao.insertDidi() didiId = ${didi.id} after")
                                             if(!didi.crpUploadedImage.isNullOrEmpty()){
                                                 downloadAuthorizedImageItemForSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
                                             }
@@ -549,6 +574,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         .indexOf(StepType.PAT_SURVEY.name)].status)
                                                 else DidiEndorsementStatus.NOT_STARTED.ordinal
 //                                                }
+                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                                    "bpcNonSelectedDidiDao.insertNonSelectedDidi() didiId = ${didi.id} before")
                                             bpcNonSelectedDidiDao.insertNonSelectedDidi(
                                                 BpcNonSelectedDidiEntity(
                                                     id = didi.id,
@@ -579,6 +606,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                     crpScore = didi.crpScore
                                                 )
                                             )
+                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
+                                                    "bpcNonSelectedDidiDao.insertNonSelectedDidi() didiId = ${didi.id} after")
                                             if(!didi.crpUploadedImage.isNullOrEmpty()){
                                                 downloadAuthorizedImageItemForNonSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo)
                                             }
@@ -604,15 +633,20 @@ class VillageSelectionViewModel @Inject constructor(
                         }
 
                         try {
-                            val poorDidiList = apiService.getDidisWithRankingFromNetwork(
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
+                                    "request -> villageId = village.id, \"Category\", StepResultTypeRequest(\n" +
+                                    "                                    StepType.WEALTH_RANKING.name, ResultType.POOR.name")
+                            val poorDidiList = apiService.getDidisFromNetwork(village.id)/*apiService.getDidisWithRankingFromNetwork(
                                 villageId = village.id, "Category", StepResultTypeRequest(
                                     StepType.WEALTH_RANKING.name, ResultType.POOR.name
                                 )
-                            )
+                            )*/
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
+                                    "poorDidiList status = ${poorDidiList.status}, message = ${poorDidiList.message}, data = ${poorDidiList.data.toString()}")
                             if (poorDidiList.status.equals(SUCCESS, true)) {
                                 poorDidiList.data?.let { didiRank ->
-                                    if (didiRank.beneficiaryList?.poorDidi?.isNotEmpty() == true) {
-                                        didiRank.beneficiaryList?.poorDidi?.forEach { poorDidis ->
+                                    if (didiRank.didiList.isNotEmpty()) {
+                                        didiRank.didiList.forEach { poorDidis ->
                                             poorDidis?.let { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
@@ -644,6 +678,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                             .indexOf(StepType.VO_ENDROSEMENT.name)].status)
                                                     else DidiEndorsementStatus.NOT_STARTED.ordinal
 
+                                                NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
+                                                        "poorDidiListDao.insertPoorDidi() didiId = ${didi.id} before")
                                                 poorDidiListDao.insertPoorDidi(
                                                     PoorDidiEntity(
                                                         id = didi.id,
@@ -682,6 +718,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         patEdit = didi.patEdit
                                                     )
                                                 )
+                                                NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidisWithRankingFromNetwork " +
+                                                        "poorDidiListDao.insertPoorDidi() didiId = ${didi.id} after")
                                             }
                                         }
                                     }
@@ -705,9 +743,13 @@ class VillageSelectionViewModel @Inject constructor(
                         }
 
                         try {
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc fetchPATSurveyToServer " +
+                                    "request -> ${listOf(village.id)}")
                             val answerApiResponse = apiService.fetchPATSurveyToServer(
                                 listOf(village.id)
                             )
+                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc fetchPATSurveyToServer " +
+                                    "response -> status: ${answerApiResponse.status}")
                             if (answerApiResponse.status.equals(SUCCESS, true)) {
                                 answerApiResponse.data?.let {
                                     val answerList: ArrayList<SectionAnswerEntity> =
@@ -915,11 +957,14 @@ class VillageSelectionViewModel @Inject constructor(
                     startRetryIfAny()
                     withContext(Dispatchers.Main) {
                         delay(250)
-                        showLoader.value = false
+//                        NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc finally -> viewModel.showLoader.value = false")
+//                        showLoader.value = false
                     }
                 }
             }.await()
-
+            delay(250)
+            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc after await -> viewModel.showLoader.value = false")
+            showLoader.value = false
         }
     }
     private fun fetchCastList() {
@@ -965,12 +1010,12 @@ class VillageSelectionViewModel @Inject constructor(
                             ApiType.CAST_LIST_API
                         )
                     }
-                } else {
+                } /*else {
                     withContext(Dispatchers.Main) {
                         delay(250)
                         showLoader.value = false
                     }
-                }
+                }*/
             }
         }
     }
@@ -1467,6 +1512,7 @@ class VillageSelectionViewModel @Inject constructor(
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
                     delay(250)
+                    NudgeLogger.d("VillageSelectionScreen", "fetchVillageList finally -> viewModel.showLoader.value = false")
                     showLoader.value = false
                 }
             }
@@ -1538,6 +1584,7 @@ class VillageSelectionViewModel @Inject constructor(
 
                         } else if (response.status.equals(FAIL, true)) {
                             withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails response.status.equals(FAIL, true) -> viewModel.showLoader.value = false")
                                 showLoader.value = false
                             }
                             apiSuccess(false)
@@ -1546,6 +1593,7 @@ class VillageSelectionViewModel @Inject constructor(
                             NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> Error: ${response.message}")
                             onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
                             withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails else 1 -> viewModel.showLoader.value = false")
                                 showLoader.value = false
                             }
                         }
@@ -1563,6 +1611,7 @@ class VillageSelectionViewModel @Inject constructor(
             } catch (ex: Exception) {
                 NudgeLogger.e("VillageSelectionViewModel", "fetchUserDetails -> catch called", ex)
                 withContext(Dispatchers.Main){
+                    NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails catch (ex: Exception) -> viewModel.showLoader.value = false")
                     showLoader.value = false
                 }
                 apiSuccess(false)
@@ -1601,6 +1650,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
+        NudgeLogger.d("VillageSelectionScreen", "onServerError 1 -> viewModel.showLoader.value = false")
         showLoader.value = false
 //        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 //            _villagList.value = villageListDao.getAllVillages()
@@ -1612,6 +1662,7 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
+        NudgeLogger.d("VillageSelectionScreen", "onServerError 2 -> viewModel.showLoader.value = false")
         showLoader.value = false
         job = CoroutineScope(Dispatchers.Main).launch {
             networkErrorMessage.value = errorModel?.message.toString()

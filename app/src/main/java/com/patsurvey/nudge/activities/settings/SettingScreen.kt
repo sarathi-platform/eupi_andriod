@@ -142,6 +142,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
+        if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
     }else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -343,7 +344,11 @@ fun SettingScreen(
                                 }
 
                                 3 -> {
-                                    navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                        navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                                    else
+                                        viewModel.buildAndShareLogs()
+
                                 }
 
                                 4 -> {

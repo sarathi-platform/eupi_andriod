@@ -444,7 +444,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                     var surveyId =0
 
-                    val didiIDList= answerDao.fetchPATSurveyDidiList(village.id)
+                    val didiIDList= answerDao.fetchPATSurveyDidiList()
                     if(didiIDList.isNotEmpty()){
                         didiIDList.forEach { didi->
                             NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer Save: ${didi.id} :: ${didi.patSurveyStatus}")

@@ -172,7 +172,7 @@ class ProgressScreenViewModel @Inject constructor(
                 _tolaList.emit(tolaDBList)
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 withContext(Dispatchers.Main) {
-                    NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList VillageList Size: ${villageList.size} ")
+                    NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList VillageList  $villageList Size: ${villageList.size} ")
                     if (villageList.isNotEmpty()) {
                         villageList.mapIndexed { index, villageEntity ->
                             if (prefRepo.getSelectedVillage().id == villageEntity.id) {

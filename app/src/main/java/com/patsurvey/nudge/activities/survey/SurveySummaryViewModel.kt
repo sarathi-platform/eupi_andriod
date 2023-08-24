@@ -1119,5 +1119,12 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
+   /* fun updatePatEditFlagForDidis() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val villageId = prefRepo.getSelectedVillage().id
+            didiDao.updatePatEditFlag(villageId, false)
+        }
+    }*/
+
 
 }

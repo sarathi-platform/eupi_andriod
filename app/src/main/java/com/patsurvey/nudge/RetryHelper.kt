@@ -928,15 +928,11 @@ object RetryHelper {
                     ApiType.BPC_POOR_DIDI_LIST_API -> {
                         stepListApiVillageId.forEach { id ->
                             try {
-                                val poorDidiList = apiService?.getDidisWithRankingFromNetwork(
-                                    villageId = id, "Category", StepResultTypeRequest(
-                                        StepType.WEALTH_RANKING.name, ResultType.POOR.name
-                                    )
-                                )
+                                val poorDidiList = apiService?.getDidisFromNetwork(id)
                                 if (poorDidiList?.status.equals(SUCCESS, true)) {
                                     poorDidiList?.data?.let { didiRank ->
-                                        if (didiRank.beneficiaryList?.poorDidi?.isNotEmpty() == true) {
-                                            didiRank.beneficiaryList?.poorDidi?.forEach { poorDidis ->
+                                        if (didiRank.didiList.isNotEmpty()) {
+                                            didiRank.didiList.forEach { poorDidis ->
                                                 poorDidis?.let { didi ->
                                                     var tolaName = BLANK_STRING
                                                     var casteName = BLANK_STRING

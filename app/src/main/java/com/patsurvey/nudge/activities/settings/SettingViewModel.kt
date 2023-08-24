@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.settings
 import android.content.Context
 import android.os.CountDownTimer
 import android.os.Environment
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.MyApplication
@@ -166,11 +167,11 @@ class SettingViewModel @Inject constructor(
                     if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
                     ) {
                         withContext(Dispatchers.Main) {
-                            formAAvailabe.value = true
+                            formBAvailabe.value = true
                         }
                     } else {
                         withContext(Dispatchers.Main) {
-                            formAAvailabe.value = false
+                            formBAvailabe.value = false
                         }
                     }
                 } else {
@@ -249,7 +250,7 @@ class SettingViewModel @Inject constructor(
                 && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
                 && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
                 && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()
-                && isStepStatusSync(0)) {
+                && isStepStatusSync(1)) {
                 NudgeLogger.d("SettingViewModel", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -262,7 +263,7 @@ class SettingViewModel @Inject constructor(
     }
 
     private fun isStepStatusSync(orderNumber : Int) : Boolean{
-        val stepList = stepsListDao.getAllStepsWithOrderNumber(orderNumber)
+        val stepList = stepsListDao.getAllStepsWithOrderNumber(orderNumber) ?: emptyList()
         var isSync = true
         for (step in stepList){
             if(step.needToPost)
@@ -281,7 +282,7 @@ class SettingViewModel @Inject constructor(
             && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
             && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
             && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()
-            && isStepStatusSync(1)) {
+            && isStepStatusSync(2)) {
             NudgeLogger.d("SettingViewModel", "isSecondStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
                     isNeedToBeSync.value = 2
@@ -313,7 +314,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
-                && isStepStatusSync(2)
+                && isStepStatusSync(3)
             ) {
                 NudgeLogger.d("SettingViewModel", "isThirdStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -332,7 +333,7 @@ class SettingViewModel @Inject constructor(
             if (answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true, "").isEmpty()
                 && didiDao.fetchAllDidiNeedsToPostImage(true).isEmpty()
-                && isStepStatusSync(3)
+                && isStepStatusSync(4)
             ) {
                 NudgeLogger.d("SettingViewModel", "isFourthStepNeedToBeSync -> isNeedToBeSync.value = 2")
                 withContext(Dispatchers.Main) {
@@ -352,7 +353,7 @@ class SettingViewModel @Inject constructor(
                     needsToPostVo  = true,
                     villageId = prefRepo.getSelectedVillage().id
                 ).isEmpty()
-                && isStepStatusSync(4)
+                && isStepStatusSync(5)
                 && !isFormNeedToBeUpload()
             ) {
                 NudgeLogger.d("SettingViewModel", "isFifthStepNeedToBeSync -> isNeedToBeSync.value = 2")
@@ -590,15 +591,13 @@ class SettingViewModel @Inject constructor(
         isBPCDataNeedToBeSynced: MutableState<Boolean>
     ) {
         NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced called")
-//        bpcSyncStatus = localBpcSyncStatus
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val didiIDList =
-            if(prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)
-                && answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id).isEmpty()
+            if(isBPCDidiSynced()/*prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + prefRepo.getSelectedVillage().id, false)*/ //change this to check for all villages.
+                && answerDao.fetchPATSurveyDidiList().isEmpty()
                 && didiDao.fetchPendingPatStatusDidi(true,"").isEmpty()
                 && didiDao.getAllNeedToPostBPCProcessDidi(true).isEmpty()
                 && didiDao.getAllPendingNeedToPostBPCProcessDidi(true,"").isEmpty()
-                && isStepStatusSync(5)
+                && isStepStatusSync(6)
                 && isBPCScoreSaved()){
                 NudgeLogger.e("SettingViewModel","isBPCDataNeedToBeSynced -> isBPCDataNeedToBeSynced.value = false")
                 withContext(Dispatchers.Main) {
@@ -611,6 +610,24 @@ class SettingViewModel @Inject constructor(
         }
     }
 
+    fun isBPCDidiSynced(): Boolean {
+        val villageList = villegeListDao?.getAllVillages(prefRepo.getAppLanguageId() ?: 2) ?: emptyList()
+        if (villageList.isNotEmpty()) {
+            villageList.forEach { village ->
+                NudgeLogger.d("SettingViewModel", "isBPCDidiSynced: villageId -> ${village.id}")
+                val isBpcDidiListSyncedForVillage = prefRepo.getPref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + village.id, false)
+                Log.d("SettingViewModel", "isBPCDidiSynced: villageId -> ${village.id} isBpcDidiListSyncedForVillage: $isBpcDidiListSyncedForVillage")
+                if (!isBpcDidiListSyncedForVillage) {
+                    NudgeLogger.d("SettingViewModel", "return false")
+                    return false
+                }
+            }
+            NudgeLogger.d("SettingViewModel", " return true after for loop")
+            return true
+        }
+        NudgeLogger.d("SettingViewModel", " return true after for isNotEmptyCheck")
+        return true
+    }
     fun performLogout(networkCallbackListener: NetworkCallbackListener){
         NudgeLogger.e("SettingViewModel","performLogout called")
         showAPILoader.value = true

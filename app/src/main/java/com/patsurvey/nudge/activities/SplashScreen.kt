@@ -17,6 +17,7 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,9 +34,9 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleNormalWeight
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.ONE_SECOND
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
-import com.patsurvey.nudge.utils.ShowLoadingDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 
@@ -52,10 +53,13 @@ fun SplashScreen(
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value=true
                 delay(SPLASH_SCREEN_DURATION)
@@ -66,6 +70,7 @@ fun SplashScreen(
                     }
                 }
             } else {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value=true
                 viewModel.checkAndAddLanguage()
@@ -73,21 +78,27 @@ fun SplashScreen(
                 viewModel.showLoader.value=false
                 navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
             }
-        } else {
+        } else
+        {
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false")
             delay(ONE_SECOND)
             viewModel.showLoader.value=true
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails before")
             viewModel.fetchLanguageDetails(context) {
+                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it")
                 viewModel.showLoader.value=false
                 if(it.isNotEmpty()){
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
+                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true")
                     navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
                         popUpTo(AuthScreen.START_SCREEN.route) {
                             inclusive = true
                         }
                     }
                 } else {
+                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                 }
             }
@@ -133,11 +144,12 @@ fun SplashScreen(
         }
         if(viewModel.showLoader.value){
             Box(
-                modifier = Modifier.constrainAs(loader) {
-                    top.linkTo(appNameContent.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
+                modifier = Modifier
+                    .constrainAs(loader) {
+                        top.linkTo(appNameContent.bottom)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
                     .fillMaxWidth()
                     .padding(top = 20.dp)
                     .height(48.dp)

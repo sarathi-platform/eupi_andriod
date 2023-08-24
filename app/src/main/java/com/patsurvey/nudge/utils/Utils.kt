@@ -100,6 +100,7 @@ import java.io.IOException
 import java.lang.reflect.Type
 import java.math.RoundingMode
 import java.text.DecimalFormat
+import java.text.DecimalFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.regex.Pattern
@@ -440,13 +441,20 @@ data class DottedShape(
 }
 
 fun roundOffDecimal(number: Double): Double? {
-    val df = DecimalFormat("#.##")
-    df.roundingMode = RoundingMode.CEILING
-    return df.format(number).toDouble()
+    return try {
+        val df = DecimalFormat("#.##", DecimalFormatSymbols(Locale.ENGLISH))
+        df.roundingMode = RoundingMode.CEILING
+        df.format(number).toDouble()
+    }catch (ex:Exception){
+        NudgeLogger.e("Utils", "roundOffDecimal -> exception", ex)
+        0.00
+    }
+
+
 }
 
 fun roundOffDecimalPoints(number: Double): String {
-    return String.format("%.2f", number)
+    return String.format(Locale.ENGLISH,"%.2f", number)
 }
 
 fun getImagePath(context: Context, imagePath:String): File {

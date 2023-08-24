@@ -42,20 +42,20 @@ class ConfigViewModel @Inject constructor(
     fun fetchLanguageDetails(context: Context, callBack: (imageList:List<String>) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-
+                NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
+                NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
                 val response = apiInterface.configDetails()
-                val localCasteList = casteListDao.getAllCaste()
-                /*if (localCasteList.isNotEmpty()) {
-                    casteListDao.deleteCasteTable()
-                }*/
                 withContext(Dispatchers.IO) {
+                    NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let { it ->
                             it.languageList.forEach { language ->
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
-
+                            NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before")
                             languageListDao.insertAll(it.languageList)
+                            NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after")
+
                             /*it.image_profile_link.forEach {
                                 //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
                                 downloadImageItem(context,it)
@@ -128,7 +128,9 @@ class ConfigViewModel @Inject constructor(
 
     fun checkAndAddLanguage() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> called")
             val localLanguages = languageListDao.getAllLanguages()
+            NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> localLanguages: $localLanguages")
             if (localLanguages.isEmpty())
                 languageListDao.insertLanguage(
                     LanguageEntity(

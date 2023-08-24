@@ -281,7 +281,7 @@ fun BpcProgressScreen(
                                 ) {
                                     Column(modifier = Modifier) {
                                         Text(
-                                            text = stringResource(R.string.crp_group_name_text),
+                                            text = bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().federationName/*stringResource(R.string.crp_group_name_text)*/,
                                             textAlign = TextAlign.Start,
                                             style = mediumTextStyle,
                                             color = textColorDark,

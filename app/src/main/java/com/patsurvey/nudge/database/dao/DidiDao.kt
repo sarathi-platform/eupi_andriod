@@ -260,4 +260,8 @@ interface DidiDao {
 
     @Query("Select score from $DIDI_TABLE where id = :didiId")
     fun getDidiScoreFromDb(didiId: Int): Double
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostImage = :needsToPostImage LIMIT 5")
+    fun fetchAllDidiNeedsToPostImageWithLimit(needsToPostImage: Boolean) : List<DidiEntity>
+
 }

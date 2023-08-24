@@ -27,7 +27,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.utils.DOUBLE_QUOTE_REGEX
 import com.patsurvey.nudge.utils.IGNORED_REGEX
+import com.patsurvey.nudge.utils.LEFT_BRACKET_QUOTE_REGEX
+import com.patsurvey.nudge.utils.RIGHT_BRACKET_QUOTE_REGEX
 import com.patsurvey.nudge.utils.containsEmoji
 
 @Composable
@@ -73,7 +76,11 @@ fun EditTextWithTitle(
         CustomOutlineTextField(
             value = currentString,
             onValueChange = {
-                if(!it.contains(IGNORED_REGEX) && !containsEmoji(it)){
+                if(!it.contains(IGNORED_REGEX)
+                    && !it.contains(DOUBLE_QUOTE_REGEX)
+                    && !it.contains(LEFT_BRACKET_QUOTE_REGEX)
+                    && !it.contains(RIGHT_BRACKET_QUOTE_REGEX)
+                    && !containsEmoji(it)){
                     onValueChange(it)
                 }
             },
