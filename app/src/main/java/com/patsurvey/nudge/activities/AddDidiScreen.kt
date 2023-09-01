@@ -216,7 +216,8 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                    })
                 }
                 else{
-                    didiViewModel?.updateDidiIntoDatabase(editDidiId, isOnline = (context as MainActivity).isOnline.value ?: false, object : NetworkCallbackListener{
+                    didiViewModel?.updateDidiIntoDatabase(editDidiId, isOnline = (context as MainActivity).isOnline.value ?: false,
+                        object : NetworkCallbackListener{
                         override fun onSuccess() {
                         }
 
@@ -225,8 +226,17 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
 //                            showCustomToast(context, SYNC_FAILED)
                         }
 
-                    })
-                    showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
+                    }, object : LocalDbListener{
+                            override fun onInsertionSuccess() {
+                                showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
+                            }
+
+                            override fun onInsertionFailed() {
+                                showCustomToast(context,context.getString(R.string.didi_already_exist))
+                            }
+
+                        })
+
                     onNavigation()
                 }
 

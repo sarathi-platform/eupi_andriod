@@ -498,59 +498,67 @@ class AddDidiViewModel @Inject constructor(
         }
     }
 
-    fun updateDidiIntoDatabase(didiId: Int, isOnline: Boolean, networkCallbackListener: NetworkCallbackListener) {
+    fun updateDidiIntoDatabase(didiId: Int, isOnline: Boolean,
+                               networkCallbackListener: NetworkCallbackListener,
+                               localDbListener: LocalDbListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             _didiList.value
             filterDidiList
-            val updatedDidi = DidiEntity(
-                id = didiId,
-                name = didiName.value,
-                guardianName = dadaName.value,
-                address = houseNumber.value,
-                castId = selectedCast.value.first,
-                castName = selectedCast.value.second,
-                cohortId = selectedTola.value.first,
-                cohortName = selectedTola.value.second,
-                relationship = HUSBAND_STRING,
-                wealth_ranking = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).wealth_ranking ?: WealthRank.NOT_RANKED.rank,
-                villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
-                createdDate = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).createdDate ?:0,
-                modifiedDate = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).modifiedDate ?:0,
-                localCreatedDate = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).localCreatedDate?:0,
-                localModifiedDate = System.currentTimeMillis(),
-                shgFlag = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).shgFlag,
-                beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).beneficiaryProcessStatus,
-                patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).patSurveyStatus,
-                section1Status = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).section1Status,
-                section2Status = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).section2Status,
-                transactionId = "",
-                serverId = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).serverId,
-                needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
-                    .indexOf(didiId)).needsToPostRanking,
-                needsToPost = true,
-                localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+
+            val ifDidiExist = didiDao.getDidiExist(
+                didiName.value, houseNumber.value,
+                dadaName.value, selectedTola.value.first, villageId
             )
-            updatedDidi.guardianName
-            didiDao.insertDidi(updatedDidi)
+            if (ifDidiExist == 0) {
+                val updatedDidi = DidiEntity(
+                    id = didiId,
+                    name = didiName.value,
+                    guardianName = dadaName.value,
+                    address = houseNumber.value,
+                    castId = selectedCast.value.first,
+                    castName = selectedCast.value.second,
+                    cohortId = selectedTola.value.first,
+                    cohortName = selectedTola.value.second,
+                    relationship = HUSBAND_STRING,
+                    wealth_ranking = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).wealth_ranking ?: WealthRank.NOT_RANKED.rank,
+                    villageId = tolaList.value[getSelectedTolaIndex(selectedTola.value.first)].villageId,
+                    createdDate = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).createdDate ?: 0,
+                    modifiedDate = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).modifiedDate ?: 0,
+                    localCreatedDate = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).localCreatedDate ?: 0,
+                    localModifiedDate = System.currentTimeMillis(),
+                    shgFlag = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).shgFlag,
+                    beneficiaryProcessStatus = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).beneficiaryProcessStatus,
+                    patSurveyStatus = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).patSurveyStatus,
+                    section1Status = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).section1Status,
+                    section2Status = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).section2Status,
+                    transactionId = "",
+                    serverId = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).serverId,
+                    needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).needsToPostRanking,
+                    needsToPost = true,
+                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                )
+                updatedDidi.guardianName
+                didiDao.insertDidi(updatedDidi)
 
-            _didiList.value = didiDao.getAllDidisForVillage(villageId)
-            filterDidiList = didiDao.getAllDidisForVillage(villageId)
+                _didiList.value = didiDao.getAllDidisForVillage(villageId)
+                filterDidiList = didiDao.getAllDidisForVillage(villageId)
 
-            if (isOnline) {
-                updateDidiToNetwork(updatedDidi, networkCallbackListener)
-            } else {
-                networkCallbackListener.onSuccess()
-            }
+                if (isOnline) {
+                    updateDidiToNetwork(updatedDidi, networkCallbackListener)
+                } else {
+                    networkCallbackListener.onSuccess()
+                }
 
 //            setSocialMappingINProgress(stepId, villageId, object : NetworkCallbackListener {
 //                override fun onSuccess() {
@@ -562,11 +570,17 @@ class AddDidiViewModel @Inject constructor(
 //                }
 //
 //            })
-            withContext(Dispatchers.Main) {
-                prefRepo.savePref(DIDI_COUNT, didiList.value.size)
+                withContext(Dispatchers.Main) {
+                    prefRepo.savePref(DIDI_COUNT, didiList.value.size)
 //                isSocialMappingComplete.value = false
-                isPATSurveyComplete.value = false
+                    isPATSurveyComplete.value = false
+                    localDbListener.onInsertionSuccess()
 
+                }
+            }else{
+                withContext(Dispatchers.Main){
+                    localDbListener.onInsertionFailed()
+                }
             }
 
         }
