@@ -26,6 +26,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
@@ -78,6 +79,16 @@ class ConfigViewModelTest {
         val isLoggedIn = viewModel.isLoggedIn()
 
         assert(isLoggedIn)
+    }
+
+    @Test
+    fun testIsLoggedInFailed() {
+        // Mock the behavior of prefRepo
+        Mockito.`when`(prefRepo.getAccessToken()).thenReturn("")
+
+        val isLoggedIn = viewModel.isLoggedIn()
+
+        assert(!isLoggedIn)
     }
 
     @Test
