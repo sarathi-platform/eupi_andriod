@@ -5,7 +5,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.MutableLiveData
 import androidx.test.core.app.launchActivity
-import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.test.filters.LargeTest
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -30,7 +30,8 @@ import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
 @OptIn(ExperimentalCoroutinesApi::class)
-@RunWith(AndroidJUnit4::class)
+@LargeTest
+@RunWith(androidx.test.runner.AndroidJUnit4::class)
 class ConfigViewModelTest {
 
     @get:Rule
