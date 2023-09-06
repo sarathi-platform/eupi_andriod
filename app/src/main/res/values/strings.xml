@@ -381,4 +381,8 @@
     <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">You are submitting the wealth ranking for %1$s Didi.</string>
 
+    <string name="bpc_pat_survey_complete">BPC PAT Survey</string>
+    <string name="pat_success_message_plural">PAT Verification for {TOTAL_COUNT} Didis has been submitted</string>
+    <string name="pat_success_message_singular">PAT Verification for {TOTAL_COUNT} Didi has been submitted</string>
+
 </resources>

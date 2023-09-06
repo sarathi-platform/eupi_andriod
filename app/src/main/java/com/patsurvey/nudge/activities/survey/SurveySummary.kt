@@ -61,7 +61,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
-import com.patsurvey.nudge.utils.DidiItemCardForPat
+import com.patsurvey.nudge.utils.DidiItemCardForPatSummary
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
@@ -106,7 +106,7 @@ fun SurveySummary(
 
     val showDialog = remember { mutableStateOf(false) }
 
-    LaunchedEffect(key1 = true){
+    LaunchedEffect(key1 = true) {
             showDidiListForStatus =
                   Pair((context as MainActivity).isBackFromSummary.value, surveySummaryViewModel.baseSummarySecond.value)
         if(!(context as MainActivity).isBackFromSummary.value && fromScreen != ARG_FROM_PAT_SURVEY){
@@ -159,14 +159,13 @@ fun SurveySummary(
             else didids.value.filter { it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal || it.voEndorsementStatus == DidiEndorsementStatus.REJECTED.ordinal }.size
             ShowDialog(
                 title = stringResource(id = R.string.are_you_sure),
-                isBulletShow = fromScreen == ARG_FROM_PAT_SURVEY,
                 list = if(fromScreen == ARG_FROM_PAT_SURVEY) surveySummaryViewModel.didiCountList.value else emptyList(),
                 message = if(surveySummaryViewModel.prefRepo.isUserBPC()){
                     stringResource(id = R.string.bpc_final_pat_submition_message)
                 }else{
                     if (fromScreen == ARG_FROM_PAT_SURVEY) {
                         if (count > 1){
-                            context.getString(R.string.pat_completed_for_didi_plural,surveySummaryViewModel.totalPatDidiCount.value,surveySummaryViewModel.notAvailableDidiCount.value,surveySummaryViewModel.voEndorseDidiCount.value)
+                            context.getString(R.string.pat_completed_for_didi_plural,surveySummaryViewModel.totalPatDidiCount.value)
 //                            stringResource(R.string.pat_completed_for_didi_plural).replace("{COUNT}", count.toString())
                         }else{
                             context.getString(R.string.pat_completed_for_didi_singular,surveySummaryViewModel.totalPatDidiCount.value,surveySummaryViewModel.notAvailableDidiCount.value,surveySummaryViewModel.voEndorseDidiCount.value)
@@ -248,6 +247,7 @@ fun SurveySummary(
                     surveySummaryViewModel.updateDidiPatStatus()
                     surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
                     surveySummaryViewModel.saveBpcPatCompletionDate()
+
                     navController.navigate(
                         "bpc_pat_step_completion_screen/${
                             context.getString(R.string.pat_survey_completed_message).replace("{VILLAGE_NAME}", surveySummaryViewModel.villageEntity.value?.name ?: BLANK_STRING)
@@ -294,16 +294,22 @@ fun SurveySummary(
                                 }
                             }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
-
+                                val totalCount = surveySummaryViewModel.didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+                                val message = if (totalCount > 1) context.getString(R.string.pat_success_message_plural).replace("{TOTAL_COUNT}", totalCount.toString()) else
+                                    context.getString(R.string.pat_success_message_singular).replace("{TOTAL_COUNT}", totalCount.toString())
                                 navController.navigate(
-                                    "pat_step_completion_screen/${
-                                        context.getString(R.string.pat_survey_completed_message)
-                                            .replace(
-                                                "{VILLAGE_NAME}",
-                                                surveySummaryViewModel.villageEntity.value?.name ?: BLANK_STRING
-                                            )
-                                    }"
+                                    "pat_success_screen/$message"
                                 )
+//                                navController.navigate(
+//                                    "pat_step_completion_screen/${
+//                                        context.getString(R.string.pat_survey_completed_message)
+//                                            .replace(
+//                                                "{VILLAGE_NAME}",
+//                                                surveySummaryViewModel.villageEntity.value?.name ?: BLANK_STRING
+//                                            )
+//                                    }"
+//                                )
                             } else {
                                 NudgeLogger.d("SurveySummary", "navigate to form_picture_screen")
                                 navController.navigate("form_picture_screen/$stepId")
@@ -417,7 +423,7 @@ fun SurveySummary(
                                         else
                                             didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
                                     ) { index, didi ->
-                                        DidiItemCardForPat(
+                                        DidiItemCardForPatSummary(
                                             didi = didi,
                                             modifier = modifier,
                                             onItemClick = {
@@ -435,7 +441,7 @@ fun SurveySummary(
                                             didids.value.filter { it.patSurveyStatus == showDidiListForStatus.second && it.wealth_ranking == WealthRank.POOR.rank }
                                         if (didiList.isNotEmpty()) {
                                             itemsIndexed(didiList) { index, didi ->
-                                                DidiItemCardForPat(
+                                                DidiItemCardForPatSummary(
                                                     didi = didi,
                                                     modifier = modifier,
                                                     onItemClick = {

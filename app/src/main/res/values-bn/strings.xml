@@ -360,4 +360,9 @@
     <string name="storage_permission_dialog_prompt_message">সঞ্চয়স্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
 
+    <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT}টি দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT}টি দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+
+
 </resources>

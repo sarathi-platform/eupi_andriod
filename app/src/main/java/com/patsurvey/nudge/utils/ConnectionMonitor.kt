@@ -27,8 +27,11 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
 
     private fun checkValidNetworks() {
         NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
-        validNetworks.forEach { network ->
-            checkValidNetworkAvailability(network)
+        if (validNetworks.isNotEmpty()) {
+            validNetworks.forEach { network ->
+                NudgeLogger.d(TAG, "checkValidNetworks : validNetworks.forEach -> $network")
+                checkValidNetworkAvailability(network)
+            }
         }
         postValue(validNetworks.size > 0)
     }
@@ -117,11 +120,14 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: adding network. $validNetwork")
+                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: removing network. $validNetwork")
                         validNetworks.remove(validNetwork)
                     }
                 }
             }
+        } else {
+            NudgeLogger.d(TAG, "checkValidNetworkAvailability: removing network. $validNetwork")
+            validNetworks.remove(validNetwork)
         }
     }
 

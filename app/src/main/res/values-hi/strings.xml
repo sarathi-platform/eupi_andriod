@@ -359,5 +359,9 @@
     <string name="storage_permission_dialog_prompt_message">भण्डारण की अनुमति आवश्यक है, कृपया अनुमति प्रदान करें।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">आप %1$s दीदी का सहभागी धन रैंकिंग जमा कर रहे है</string>
 
+    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} दीदी के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
+
 
 </resources>

@@ -60,6 +60,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(true)
     val isBackFromSummary = mutableStateOf(false)
+    val isFilterApplied = mutableStateOf(false)
 
     var downloader: AndroidDownloader? = null
     var quesImageList = mutableListOf<String>()
