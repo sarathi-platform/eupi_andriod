@@ -294,8 +294,7 @@ fun SurveySummary(
                                 }
                             }
                             if (fromScreen == ARG_FROM_PAT_SURVEY) {
-                                val totalCount = surveySummaryViewModel.didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
-                                        it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+                                val totalCount = surveySummaryViewModel.totalPatDidiCount.value
                                 val message = if (totalCount > 1) context.getString(R.string.pat_success_message_plural).replace("{TOTAL_COUNT}", totalCount.toString()) else
                                     context.getString(R.string.pat_success_message_singular).replace("{TOTAL_COUNT}", totalCount.toString())
                                 navController.navigate(

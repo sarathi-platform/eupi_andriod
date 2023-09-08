@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities.settings
 
 import android.content.Context
 import android.content.Context.BATTERY_SERVICE
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.BatteryManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -76,6 +78,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainTitle
@@ -107,6 +110,7 @@ import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
+import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -115,6 +119,8 @@ import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SYNC_SUCCESSFULL
 import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -127,6 +133,10 @@ fun SettingScreen(
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val rootNavController= rememberNavController()
+
+    val extraNetworkCheck = remember {
+        mutableStateOf(true)
+    }
 
     val snackState = rememberSnackBarState()
     val list = ArrayList<SettingOptionModel>()
@@ -167,6 +177,25 @@ fun SettingScreen(
         viewModel.isFormAAvailableForVillage(context = context, villageId = villageId)
         viewModel.isFormBAvailableForVillage(context = context, villageId = villageId)
         viewModel.isFormCAvailableForVillage(context = context, villageId = villageId)
+        launch(Dispatchers.IO) {
+            if (MyApplication.getValidNetworksList().isNotEmpty()) {
+                val localConnectionMonitor = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                MyApplication.getValidNetworksList().forEach {
+                    val hasInternet = localConnectionMonitor.getNetworkCapabilities(it)?.hasCapability(
+                        NetworkCapabilities.NET_CAPABILITY_INTERNET
+                    )
+                    if (hasInternet == true) {
+                        if (!ConnectionMonitor.DoesNetworkHaveInternet.execute(it.socketFactory)) {
+                            extraNetworkCheck.value = false
+                        }
+                    } else {
+                        extraNetworkCheck.value = false
+                    }
+                }
+            } else {
+                extraNetworkCheck.value = false
+            }
+        }
     }
 
     val formList = mutableListOf<String>()
@@ -463,7 +492,8 @@ fun SettingScreen(
                     viewModel.showSyncDialog.value = it
                 }, settingViewModel = viewModel,
                     showSyncDialogStatus = viewModel.showSyncDialog,
-                    isDataNeedToBeSynced = isDataNeedToBeSynced
+                    isDataNeedToBeSynced = isDataNeedToBeSynced,
+                    extraNetworkCheck = extraNetworkCheck.value
                 )
                 viewModel.isFirstStepNeedToBeSync(stepOneStatus)
                 viewModel.isSecondStepNeedToBeSync(stepTwoStatus)
@@ -493,7 +523,8 @@ fun SettingScreen(
                 }, settingViewModel = viewModel,
                     showBPCSyncDialog = viewModel.showBPCSyncDialog,
                     syncBPCStatus = syncBPCStatus,
-                    isBPCDataNeedToBeSynced = isBPCDataNeedToBeSynced
+                    isBPCDataNeedToBeSynced = isBPCDataNeedToBeSynced,
+                    extraNetworkCheck = extraNetworkCheck.value
                 )
             }
         }
@@ -548,12 +579,13 @@ fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
     settingViewModel: SettingViewModel,
     showSyncDialogStatus : MutableState<Boolean>,
-    isDataNeedToBeSynced : MutableState<Int>
+    isDataNeedToBeSynced : MutableState<Int>,
+    extraNetworkCheck: Boolean
 ) {
 
     val context = LocalContext.current
 
-    val isInternetConnected = (context as MainActivity).isOnline.value
+    val isInternetConnected = (context as MainActivity).isOnline.value && extraNetworkCheck
 
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
     val progressIndicatorColor = Color(0xFF2EE08E)
@@ -1099,12 +1131,13 @@ fun showBPCSyncDialog(
     settingViewModel: SettingViewModel,
     showBPCSyncDialog : MutableState<Boolean>,
     syncBPCStatus : MutableState<Int>,
-    isBPCDataNeedToBeSynced : MutableState<Boolean>
+    isBPCDataNeedToBeSynced : MutableState<Boolean>,
+    extraNetworkCheck: Boolean
 ) {
 
     val context = LocalContext.current
 
-    val isInternetConnected = (context as MainActivity).isOnline.value
+    val isInternetConnected = (context as MainActivity).isOnline.value && extraNetworkCheck
 
     val backgroundIndicatorColor = Color.LightGray.copy(alpha = 0.3f)
     val progressIndicatorColor = Color(0xFF2EE08E)
@@ -1522,8 +1555,7 @@ fun ExpandedSettingsList(
                                             viewModel.showLoaderForTime(500)
                                             if (viewModel.formAAvailabe.value) {
                                                 navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                                            }
-                                            else
+                                            } else
                                                 showToast(
                                                     context,
                                                     context.getString(R.string.no_data_form_a_not_generated_text)

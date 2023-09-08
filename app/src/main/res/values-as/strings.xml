@@ -292,8 +292,8 @@
     <string name="ranking_text_poor">দুখীয়া</string>
     <string name="crp_group_name_text">CRP গোটৰ নাম</string>
     <string name="current_status_text">বৰ্তমান স্থিতি:</string>
-    <string name="pat_completed_for_didi_singular">%1$s didi ৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
-    <string name="pat_completed_for_didi_plural">%1$s didis ৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
+    <string name="pat_completed_for_didi_singular">%1$s নতুন didi ৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
+    <string name="pat_completed_for_didi_plural">%1$s নতুন didis ৰ বাবে PAT সম্পূৰ্ণ কৰা হৈছে</string>
     <string name="pat_marked_not_available_singular">%1$s didi উপলব্ধ নহয় হিচাপে চিহ্নিত কৰা হৈছে</string>
     <string name="pat_marked_not_available_plural">%1$s didis উপলব্ধ নহয় হিচাপে চিহ্নিত কৰা হৈছে</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultra didipoors VO সমৰ্থনৰ বাবে প্ৰেৰণ কৰা হৈছে।</string>
@@ -358,8 +358,10 @@
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপুনি %1$s গৰাকী বাইদেউৰ সম্পদ ৰেংকিং জমা দিছে</string>
 
     <string name="bpc_pat_survey_complete">BPC PAT সমীক্ষা</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT} Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
+    <string name="total_pat_attempted_string">Total PAT Attempted</string>
+    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
 
 
 </resources>

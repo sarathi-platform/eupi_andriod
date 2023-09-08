@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
@@ -49,8 +48,8 @@ fun PatSuccessScreen(
         )
     }
 
-    val lineSpacing: Dp = 0.dp
-    Column(Modifier.fillMaxSize()) {
+    Column(Modifier.fillMaxSize().padding(horizontal = 16.dp).padding(top = 14.dp)) {
+
         VillageDetailView(
             villageName = viewModel.prefRepo.getSelectedVillage().name ?: "",
             voName = (viewModel.prefRepo.getSelectedVillage().federationName)

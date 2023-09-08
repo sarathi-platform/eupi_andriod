@@ -17,3 +17,9 @@ enum class DidiEndorsementStatus {
     }
 
 }
+
+enum class EndorsementValue {
+    NOT_SELECTED,
+    REJECTED,
+    ENDORSED;
+}
