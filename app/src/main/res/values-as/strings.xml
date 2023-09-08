@@ -356,6 +356,8 @@
     <string name="page_name_text">পৃষ্ঠা</string>
     <string name="storage_permission_dialog_prompt_message">সংৰক্ষণৰ অনুমতিৰ প্ৰয়োজন, অনুগ্ৰহ কৰি অনুমতি দিয়ক।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপুনি %1$s গৰাকী বাইদেউৰ সম্পদ ৰেংকিং জমা দিছে</string>
+    <string name="go_back_to_section_1_summary">PAT সাৰাংশলৈ উভতি যাওক</string>
+    <string name="exclusion_error_message">এই দিদিৰ বাবে PAT যাত্ৰা ইয়াতেই শেষ হয়।</string>
 
 
 </resources>

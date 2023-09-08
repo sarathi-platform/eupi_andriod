@@ -5,6 +5,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -1299,7 +1300,8 @@ class SyncHelper (
                             patSurveyStatus = didi.patSurveyStatus,
                             section2Status = didi.section2Status,
                             section1Status = didi.section1Status,
-                            shgFlag = didi.shgFlag
+                            shgFlag = didi.shgFlag,
+                            patExclusionStatus = didi.patExclusionStatus  ?: 0
                         )
                     )
                 }

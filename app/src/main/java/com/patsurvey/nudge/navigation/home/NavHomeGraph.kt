@@ -24,6 +24,7 @@ import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
+import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
@@ -439,6 +440,26 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 questionIndex = it.arguments?.getInt(ARG_QUESTION_INDEX) ?: 0
             )
         }
+
+        composable(route = PatScreens.SINGLE_QUESTION_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID){
+                type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
+            }, navArgument(ARG_QUESTION_INDEX){
+                type = NavType.IntType
+            })
+        ){
+          SingleQuestionScreen(
+              navController = navController,
+              modifier = Modifier.fillMaxSize(),
+              viewModel = hiltViewModel(),
+              didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+              sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION,
+              questionIndex = it.arguments?.getInt(ARG_QUESTION_INDEX) ?: 0
+          )
+        }
+
         composable(
             route = PatScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
             listOf(navArgument(ARG_DIDI_ID) {
@@ -534,6 +555,7 @@ sealed class PatScreens(val route: String) {
     object DIDI_PAT_SUMMARY_SCREEN : PatScreens(route = "didi_pat_summary/{$ARG_DIDI_ID}")
 
     object YES_NO_QUESTION_SCREEN : PatScreens(route = "yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
+    object SINGLE_QUESTION_SCREEN : PatScreens(route = "single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object STEP_COMPLETION_SCREEN :
         PatScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
@@ -867,6 +889,26 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
         }
 
         composable(
+            route = BpcDidiListScreens.SINGLE_QUESTION_SCREEN.route,
+            listOf(navArgument(ARG_DIDI_ID) {
+                type = NavType.IntType
+            }, navArgument(ARG_SECTION_TYPE){
+                type = NavType.StringType
+            }, navArgument(ARG_QUESTION_INDEX){
+                type = NavType.IntType
+            })
+        ) {
+            SingleQuestionScreen(
+                navController = navController,
+                modifier = Modifier.fillMaxSize(),
+                viewModel = hiltViewModel(),
+                didiId = it.arguments?.getInt(ARG_DIDI_ID) ?: 0,
+                sectionType = it.arguments?.getString(ARG_SECTION_TYPE) ?: TYPE_EXCLUSION,
+                questionIndex = it.arguments?.getInt(ARG_QUESTION_INDEX) ?: 0
+            )
+        }
+
+        composable(
             route = BpcDidiListScreens.PAT_SECTION_ONE_SUMMARY_SCREEN.route,
             listOf(navArgument(ARG_DIDI_ID) {
                 type = NavType.IntType
@@ -979,6 +1021,7 @@ sealed class BpcDidiListScreens(val route: String) {
     object DIDI_PAT_SUMMARY_SCREEN : BpcDidiListScreens(route = "bcp_didi_pat_summary/{$ARG_DIDI_ID}")
 
     object YES_NO_QUESTION_SCREEN : BpcDidiListScreens(route = "bpc_yes_no_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
+    object SINGLE_QUESTION_SCREEN : PatScreens(route = "bpc_single_question_screen/{$ARG_DIDI_ID}/{$ARG_SECTION_TYPE}/{$ARG_QUESTION_INDEX}")
     object STEP_COMPLETION_SCREEN :
         BpcDidiListScreens(route = "step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 

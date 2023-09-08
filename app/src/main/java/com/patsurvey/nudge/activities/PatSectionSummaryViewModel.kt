@@ -15,6 +15,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
@@ -154,6 +155,16 @@ class PatSectionSummaryViewModel @Inject constructor(
             }
         }
     }
+
+    fun updatePATExclusionStatus(didiId: Int){
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            withContext(Dispatchers.IO){
+                didiDao.updateExclusionStatus(didiId = didiId,
+                    patExclusionStatus = ExclusionType.NO_EXCLUSION.ordinal,
+                    crpComment = BLANK_STRING)
+            }
+           }
+        }
     fun setPATSection1Complete(didiId: Int,status:Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -220,10 +231,10 @@ class PatSectionSummaryViewModel @Inject constructor(
         TODO("Not yet implemented")
     }
 
-    fun updateExclusionStatus(didiId: Int){
+    fun updateExclusionStatus(didiId: Int, exclusionStatus:Int, crpComment:String){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
-                didiDao.updateExclusionStatus(didiId,1)
+                     didiDao.updateExclusionStatus(didiId,exclusionStatus, crpComment)
             }
         }
     }

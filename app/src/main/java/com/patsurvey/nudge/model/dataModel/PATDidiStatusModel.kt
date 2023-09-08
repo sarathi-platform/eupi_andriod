@@ -16,38 +16,52 @@ data class PATDidiStatusModel(
     @Expose
     val serverId:Int,
 
-    @ColumnInfo(name = "patSurveyStatus")
+    @SerializedName("patSurveyStatus")
+    @Expose
     var patSurveyStatus: Int=0,
 
-    @ColumnInfo(name = "villageId")
+    @SerializedName("villageId")
+    @Expose
     var villageId: Int=0,
 
-    @ColumnInfo(name = "section1Status")
+    @SerializedName("section1Status")
+    @Expose
     var section1Status: Int=0,
 
-    @ColumnInfo(name = "section2Status")
+    @SerializedName("section2Status")
+    @Expose
     var section2Status: Int=0,
 
-    @ColumnInfo(name = "name")
+    @SerializedName("name")
+    @Expose
     var name: String= BLANK_STRING,
 
-    @ColumnInfo(name = "type")
+    @SerializedName("type")
+    @Expose
     var type: String?= PAT_SURVEY,
 
-    @ColumnInfo(name = "forVoEndorsement")
+    @SerializedName("forVoEndorsement")
+    @Expose
     var forVoEndorsement: Int= 0,
 
-    @ColumnInfo(name = "score")
+    @SerializedName("score")
+    @Expose
     var score: Double= 0.0,
 
-    @ColumnInfo(name = "comment")
+    @SerializedName("comment")
+    @Expose
     var comment: String ?= TYPE_EXCLUSION,
 
-    @ColumnInfo(name = "shgFlag")
+    @SerializedName("shgFlag")
+    @Expose
     var shgFlag: Int,
 
-    @ColumnInfo(name = "patEdit")
-    var patEdit: Boolean
+    @SerializedName("patEdit")
+    @Expose
+    var patEdit: Boolean,
 
+    @SerializedName("patExclusionStatus")
+    @Expose
+    var patExclusionStatus: Int=0,
 
 )

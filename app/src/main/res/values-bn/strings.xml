@@ -359,5 +359,7 @@
 
     <string name="storage_permission_dialog_prompt_message">সঞ্চয়স্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+    <string name="go_back_to_section_1_summary">PAT সারাংশে ফিরে যান</string>
+    <string name="exclusion_error_message">এই দিদির জন্য PAT যাত্রা এখানেই শেষ।</string>
 
 </resources>

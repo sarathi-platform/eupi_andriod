@@ -79,7 +79,8 @@ fun NumericFieldTypeQuestion(
     didiId: Int,
     questionFlag:String,
     optionList: List<OptionsItem>,
-    pagerState: PagerState,
+    pagerState: PagerState?=null,
+    isEditPAT:Boolean=false,
     totalValueTitle:String,
     viewModel: QuestionScreenViewModel? = null,
     showNextButton: Boolean = false,
@@ -89,13 +90,16 @@ val context = LocalContext.current
     val lazyColumnListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
 
-    LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }.collect { page ->
-            coroutineScope.launch {
-                lazyColumnListState.scrollToItem(0)
+    pagerState?.let {
+        LaunchedEffect(pagerState) {
+            snapshotFlow { pagerState?.currentPage }.collect { page ->
+                coroutineScope.launch {
+                    lazyColumnListState.scrollToItem(0)
+                }
             }
         }
     }
+
     Box {
         ConstraintLayout(modifier = modifier
             .fillMaxSize()
@@ -292,7 +296,7 @@ val context = LocalContext.current
             ) {
                 if (showNextButton) {
                     ButtonPositive(
-                        buttonTitle = stringResource(id = R.string.next),
+                        buttonTitle = stringResource(id = if(isEditPAT) R.string.submit else R.string.next),
                         isArrowRequired = false,
                         isActive = true,
                         modifier = Modifier.height(45.dp)

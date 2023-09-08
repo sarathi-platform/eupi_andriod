@@ -218,10 +218,10 @@ data class DidiEntity(
     @ColumnInfo(name = "isDidiAccepted")
     var isDidiAccepted: Boolean = false,
 
-    @SerializedName("isExclusionYesSelected")
+    @SerializedName("patExclusionStatus")
     @Expose
-    @ColumnInfo(name = "isExclusionYesSelected")
-    var isExclusionYesSelected: Int = 0,
+    @ColumnInfo(name = "patExclusionStatus")
+    var patExclusionStatus: Int = 0,
 
     @SerializedName("crpUploadedImage")
     @Expose

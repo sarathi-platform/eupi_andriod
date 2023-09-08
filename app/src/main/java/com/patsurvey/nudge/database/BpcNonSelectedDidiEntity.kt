@@ -128,6 +128,11 @@ data class BpcNonSelectedDidiEntity(
     @ColumnInfo(name = "section2Status")
     var section2Status: Int = 0,
 
+    @SerializedName("patExclusionStatus")
+    @Expose
+    @ColumnInfo(name = "patExclusionStatus")
+    var patExclusionStatus: Int = 0,
+
     @SerializedName("bpcScore")
     @Expose
     @ColumnInfo(name = "bpcScore")

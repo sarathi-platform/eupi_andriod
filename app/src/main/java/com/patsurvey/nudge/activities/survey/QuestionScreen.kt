@@ -7,12 +7,14 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -26,16 +28,19 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.CustomFloatingButton
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
 import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.ButtonArrowNegative
 import com.patsurvey.nudge.utils.EXTENSION_WEBP
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
@@ -44,6 +49,7 @@ import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.stringToDouble
 import kotlinx.coroutines.delay
@@ -80,13 +86,6 @@ fun QuestionScreen(
             }
         } catch (ex: Exception) {
             NudgeLogger.e("QuestionScreen", "LaunchedEffect -> exception", ex)
-        }
-
-        if(viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_PAGE.ordinal
-            || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal
-            || viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal){
-            pagerState.animateScrollToPage(questionIndex)
-            viewModel.prefRepo.saveNeedQuestionToScroll(true)
         }
     }
 
@@ -160,6 +159,14 @@ fun QuestionScreen(
             modifier = modifier.padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            Row(modifier=Modifier.wrapContentWidth(Alignment.Start)) {
+                if(viewModel.sectionType.value.equals(TYPE_INCLUSION,true)) {
+                    ButtonArrowNegative(buttonTitle = stringResource(id = R.string.go_back_to_section_1_summary)) {
+                        navigateToSummeryOnePage(navController,didiId,viewModel)
+                    }
+                }
+            }
+
             VOAndVillageBoxView(
                 prefRepo = viewModel.prefRepo,
                 modifier = Modifier
@@ -172,7 +179,6 @@ fun QuestionScreen(
                     .weight(1f)
                     .padding(horizontal = 5.dp)
             ) {
-
                 SurveyHeader(
                     modifier = Modifier,
                     didiName = viewModel.didiName.value,
@@ -615,3 +621,10 @@ fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesView
     }
 }
 
+fun navigateToSummeryOnePage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
+    if(quesViewModel.sectionType.value.equals(TYPE_INCLUSION,true)){
+        if(quesViewModel.prefRepo.isUserBPC())
+            navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
+        else navController.navigate("pat_section_one_summary_screen/$didiId")
+    }
+}
