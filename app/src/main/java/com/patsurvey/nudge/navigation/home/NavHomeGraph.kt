@@ -22,6 +22,7 @@ import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
+import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
@@ -64,6 +65,7 @@ import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
 import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
 import com.patsurvey.nudge.utils.ARG_PAGE_FROM
+import com.patsurvey.nudge.utils.ARG_PAT_SUCCESS_MESSAGE
 import com.patsurvey.nudge.utils.ARG_QUESTION_INDEX
 import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
 import com.patsurvey.nudge.utils.ARG_STEP_ID
@@ -547,6 +549,22 @@ fun NavGraphBuilder.patNavGraph(navController: NavHostController) {
                 modifier = Modifier.fillMaxSize()
             )
         }
+
+        composable(
+            route = PatScreens.PAT_SUCCESS_SCREEN.route, arguments = listOf(navArgument(
+                ARG_PAT_SUCCESS_MESSAGE
+            ) {
+                type = NavType.StringType
+            })
+        ) {
+            PatSuccessScreen(
+                viewModel = hiltViewModel(),
+                navController = navController,
+                messages = it.arguments?.getString(
+                    ARG_PAT_SUCCESS_MESSAGE
+                ) ?: BLANK_STRING
+            )
+        }
     }
 }
 
@@ -570,6 +588,8 @@ sealed class PatScreens(val route: String) {
     object PAT_STEP_COMPLETION_SCREEN : PatScreens(route = "pat_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
 
     object PAT_DIGITAL_FORM_B_SCREEN : PatScreens(route = "pat_digital_form_b_screen")
+
+    object PAT_SUCCESS_SCREEN : PatScreens(route = "pat_success_screen/{$ARG_PAT_SUCCESS_MESSAGE}")
 
 }
 

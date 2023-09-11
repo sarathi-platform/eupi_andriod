@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:309685900415:android:f89bc5fde740b3d7c99b4a",
         "android_client_info": {
-          "package_name": "com.nrlm.sarathi.uat"
+          "package_name": "com.nrlm.sarathi.stage"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "309685900415-n11l19ho7vlivtep2cmnflqkh0roc5a0.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.nrlm.sarathi.uat",
+            "package_name": "com.nrlm.sarathi.stage",
             "certificate_hash": "cb21d5ddbe2acad5e7e3b7dcbc281ccef93188ec"
           }
         },

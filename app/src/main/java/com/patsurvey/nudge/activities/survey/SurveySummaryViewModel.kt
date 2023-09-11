@@ -998,13 +998,13 @@ class SurveySummaryViewModel @Inject constructor(
         val list:ArrayList<String> = arrayListOf()
         context?.let {
 
-            totalPatDidiCount.value=didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
-                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
+            totalPatDidiCount.value=didiList.value.filter { (it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) && it.patEdit }.size
             if(prefRepo.isUserBPC()){
-                totalPatDidiCount.value= didiList.value.filter {  it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal}.size
+                totalPatDidiCount.value= didiList.value.filter {  it.wealth_ranking == WealthRank.POOR.rank && it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && it.patEdit}.size
             }
-            notAvailableDidiCount.value= didiList.value.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
-            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 && it.section2Status == 2 }.size
+            notAvailableDidiCount.value= didiList.value.filter {(it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) && it.patEdit }.size
+            voEndorseDidiCount.value = didiList.value.filter { it.forVoEndorsement ==1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.patEdit }.size
             if(prefRepo.isUserBPC()){
                 voEndorseDidiCount.value = totalPatDidiCount.value
             }

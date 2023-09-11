@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
+import android.net.Network
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.patsurvey.nudge.utils.NudgeLogger
 import dagger.hilt.android.HiltAndroidApp
@@ -26,6 +27,18 @@ class MyApplication: Application() {
 
         lateinit var instance: MyApplication
 
+        private val validNetworksList: MutableSet<Network> = HashSet()
+
+        fun addValidNetworkToList(validNetwork: Network) {
+            validNetworksList.add(validNetwork)
+        }
+        fun removeValidNetworkToList(validNetwork: Network) {
+            validNetworksList.remove(validNetwork)
+        }
+
+        fun getValidNetworksList(): MutableSet<Network> {
+            return validNetworksList
+        }
         fun applicationContext(): Context {
             return instance.applicationContext
         }

@@ -88,6 +88,7 @@ import com.patsurvey.nudge.activities.ui.theme.checkBoxUncheckedColor
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -388,6 +389,8 @@ fun ExpandableDidiItemCardForBpc(
     onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
 ) {
 
+    val context = LocalContext.current
+
     val mIsChecked = remember { mutableStateOf(isChecked) }
 
 
@@ -474,6 +477,22 @@ fun ExpandableDidiItemCardForBpc(
                             textAlign = TextAlign.Start,
                             modifier = Modifier.layoutId("village")
                         )
+
+                        Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
+                            Text(
+                                text = getLatestStatusTextForBpc(context, didi),
+                                style = TextStyle(
+                                    color = blueDark,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                ),
+                                textAlign = TextAlign.Center,
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp, horizontal = 8.dp)
+                            )
+                        }
+
                         CardArrow(
                             modifier = Modifier.layoutId("expendArrowImage"),
                             degrees = arrowRotationDegree,
@@ -654,6 +673,8 @@ private fun decoupledConstraints(): ConstraintSet {
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
         val didiDetailLayout = createRefFor("didiDetailLayout")
+        val latestStatusLabelCollapsed = createRefFor("latestStatusLabelCollapsed")
+        val latestStatusCollapsed = createRefFor("latestStatusCollapsed")
 
 
 
@@ -692,9 +713,20 @@ private fun decoupledConstraints(): ConstraintSet {
         }
 
         constrain(didiDetailLayout) {
-            top.linkTo(village.bottom, margin = 15.dp, goneMargin = 20.dp)
+            top.linkTo(latestStatusLabelCollapsed.bottom, margin = 15.dp, goneMargin = 20.dp)
             end.linkTo(parent.end)
             start.linkTo(parent.start)
+        }
+
+        constrain(latestStatusLabelCollapsed) {
+            top.linkTo(homeImage.bottom, margin = 3.dp)
+            bottom.linkTo(latestStatusCollapsed.bottom)
+            start.linkTo(homeImage.start)
+        }
+        constrain(latestStatusCollapsed) {
+            top.linkTo(village.bottom, margin = 3.dp)
+            start.linkTo(homeImage.start)
+            width = Dimension.fillToConstraints
         }
     }
 }

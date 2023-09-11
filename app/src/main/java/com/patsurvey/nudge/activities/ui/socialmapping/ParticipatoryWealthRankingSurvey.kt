@@ -85,6 +85,7 @@ import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.blueLighter
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.brownLoght
@@ -92,6 +93,7 @@ import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
@@ -101,6 +103,7 @@ import com.patsurvey.nudge.activities.ui.theme.veryLargeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.activities.ui.theme.yellowLight
 import com.patsurvey.nudge.activities.ui.transect_walk.VillageDetailView
+import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.navigation.home.HomeScreens
@@ -332,7 +335,7 @@ fun ParticipatoryWealthRankingSurvey(
                                             viewModel.onCardArrowClicked(didiDetailModel.id)
                                             coroutineScope.launch {
                                                 delay(EXPANSTION_TRANSITION_DURATION.toLong()-100)
-                                                listState.animateScrollToItem(index+3)
+                                                listState.animateScrollToItem(index+1)
                                             }
                                         },
                                         onItemClick = {}
@@ -726,6 +729,8 @@ fun DidiItemCardForWealthRanking(
     onItemClick: (DidiEntity) -> Unit
 ) {
 
+    val context = LocalContext.current
+
     val transition = updateTransition(expanded, label = "transition")
 
     val animateColor by transition.animateColor({
@@ -803,7 +808,22 @@ fun DidiItemCardForWealthRanking(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("village")
                     )
-                    com.patsurvey.nudge.customviews.CardArrow(
+
+                    Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
+                        Text(
+                            text = getLatestStatusTextForWealthRankingCard(context, didi),
+                            style = TextStyle(
+                                color = blueDark,
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                fontFamily = NotoSans
+                            ),
+                            textAlign = TextAlign.Center,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp, horizontal = 8.dp)
+                        )
+                    }
+                    CardArrow(
                         modifier = Modifier.layoutId("expendArrowImage"),
                         degrees = arrowRotationDegree,
                         iconColor = animateColor,
@@ -1000,6 +1020,8 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
         val moreActionIcon = createRefFor("moreActionIcon")
         val moreDropDown = createRefFor("moreDropDown")
         val didiDetailLayout = createRefFor("didiDetailLayout")
+        val latestStatusLabelCollapsed = createRefFor("latestStatusLabelCollapsed")
+        val latestStatusCollapsed = createRefFor("latestStatusCollapsed")
 
 
 
@@ -1054,9 +1076,20 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
         }
 
         constrain(didiDetailLayout) {
-            top.linkTo(village.bottom, margin = 15.dp, goneMargin = 20.dp)
+            top.linkTo(latestStatusCollapsed.bottom, margin = 15.dp, goneMargin = 20.dp)
             end.linkTo(parent.end)
             start.linkTo(parent.start)
+        }
+
+        constrain(latestStatusLabelCollapsed) {
+            top.linkTo(homeImage.bottom, margin = 3.dp)
+            bottom.linkTo(latestStatusCollapsed.bottom)
+            start.linkTo(homeImage.start)
+        }
+        constrain(latestStatusCollapsed) {
+            top.linkTo(village.bottom, margin = 3.dp)
+            start.linkTo(homeImage.start)
+            width = Dimension.fillToConstraints
         }
     }
 }

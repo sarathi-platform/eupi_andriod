@@ -8,6 +8,7 @@ import android.net.NetworkCapabilities
 import android.net.NetworkCapabilities.NET_CAPABILITY_INTERNET
 import android.net.NetworkRequest
 import androidx.lifecycle.LiveData
+import com.patsurvey.nudge.MyApplication
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -27,8 +28,11 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
 
     private fun checkValidNetworks() {
         NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
-        validNetworks.forEach { network ->
-            checkValidNetworkAvailability(network)
+        if (validNetworks.isNotEmpty()) {
+            validNetworks.forEach { network ->
+                NudgeLogger.d(TAG, "checkValidNetworks : validNetworks.forEach -> $network")
+                checkValidNetworkAvailability(network)
+            }
         }
         postValue(validNetworks.size > 0)
     }
@@ -87,6 +91,8 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
                             validNetworks.add(network)
                             checkValidNetworks()
                         }
+                    } else {
+                        checkValidNetworks()
                     }
                 }
             }
@@ -114,14 +120,20 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
                     withContext(Dispatchers.Main) {
                         NudgeLogger.d(TAG, "checkValidNetworkAvailability: adding network. $validNetwork")
                         validNetworks.add(validNetwork)
+                        MyApplication.addValidNetworkToList(validNetwork)
                     }
                 } else {
                     withContext(Dispatchers.Main) {
-                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: adding network. $validNetwork")
+                        NudgeLogger.d(TAG, "checkValidNetworkAvailability: removing network. $validNetwork")
                         validNetworks.remove(validNetwork)
+                        MyApplication.removeValidNetworkToList(validNetwork)
                     }
                 }
             }
+        } else {
+            NudgeLogger.d(TAG, "checkValidNetworkAvailability: removing network. $validNetwork")
+            validNetworks.remove(validNetwork)
+            MyApplication.removeValidNetworkToList(validNetwork)
         }
     }
 

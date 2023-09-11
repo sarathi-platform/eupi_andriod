@@ -76,6 +76,7 @@ import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyShare
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.greenActiveIcon
+import com.patsurvey.nudge.activities.ui.theme.greenLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
@@ -1561,6 +1562,9 @@ fun AcceptRejectButtonBox(
     positiveButtonOnClick: () -> Unit,
     negativeButtonOnClick: () -> Unit,
 ) {
+    val endorsementValue = remember {
+        mutableStateOf(EndorsementValue.NOT_SELECTED)
+    }
     Surface(
         modifier = Modifier
             .padding(0.dp)
@@ -1581,7 +1585,7 @@ fun AcceptRejectButtonBox(
                         modifier = Modifier
                             .weight(1f)
                             .clip(RoundedCornerShape(6.dp))
-                            .background(rejectColor)
+                            .background(if (endorsementValue.value != EndorsementValue.REJECTED) rejectColor else blueDark)
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
                                 indication = rememberRipple(
@@ -1597,7 +1601,7 @@ fun AcceptRejectButtonBox(
                         Text(
                             modifier =Modifier.padding(all = 10.dp),
                             text = negativeButtonText,
-                            color = redDark,
+                            color = if (endorsementValue.value != EndorsementValue.REJECTED) redDark else white,
                             style = /*mediumTextStyle*/TextStyle(
                                 fontFamily = NotoSans,
                                 fontWeight = FontWeight.SemiBold,
@@ -1607,12 +1611,45 @@ fun AcceptRejectButtonBox(
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                 }
-                ButtonPositive(
-                    modifier = Modifier.weight(1.5f),
-                    buttonTitle = positiveButtonText,
-                    isArrowRequired = false
+
+                Box(
+                    modifier = Modifier
+                        .weight(1.5f)
+                        .clip(RoundedCornerShape(6.dp))
+                        .border(width = 0.5.dp, color = greenOnline, RoundedCornerShape(6.dp))
+                        .background(if (endorsementValue.value != EndorsementValue.ENDORSED) greenLight else blueDark)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = true,
+                                color = Color.White
+                            )
+
+                        ) {
+                            positiveButtonOnClick()
+                        }
+                        .then(modifier),
+                    contentAlignment = Alignment.Center,
                 ) {
-                    positiveButtonOnClick()
+                    Row(
+                        Modifier
+                            .padding(10.dp)
+                            .fillMaxWidth()
+                            .align(Alignment.Center),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = positiveButtonText,
+                            color = if (endorsementValue.value != EndorsementValue.ENDORSED) greenOnline else white,
+                            style = TextStyle(
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 14.sp
+                            ),
+                            textAlign = TextAlign.Center
+                        )
+                    }
                 }
             }
         }

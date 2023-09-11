@@ -2,24 +2,14 @@ package com.patsurvey.nudge.activities.survey
 
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.Lifecycle
+import androidx.test.core.app.launchActivity
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainActivityViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.PoorDidiListDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.TrainingVideoDao
-import com.patsurvey.nudge.database.dao.VillageListDao
+import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.network.interfaces.ApiService
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
@@ -116,6 +106,9 @@ class MainActivityTest {
             poorDidiListDao = poorDidiListDao,
             stepsListDao = stepsListDao
         )
+        launchActivity<MainActivity>().use { scenario ->
+            scenario.moveToState(Lifecycle.State.CREATED)
+        }
     }
 
     @Test
