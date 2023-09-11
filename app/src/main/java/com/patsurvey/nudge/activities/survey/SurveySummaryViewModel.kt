@@ -246,7 +246,8 @@ class SurveySummaryViewModel @Inject constructor(
                             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                 BLANK_STRING
                             } else {
-                                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
+                                if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
                                     TYPE_EXCLUSION
                                 } else {
                                     if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
@@ -267,7 +268,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                     PatSurveyStatus.INPROGRESS.name
                                 } else {
-                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                    if (didi.forVoEndorsement == 0 || didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
                                         if (prefRepo.isUserBPC())
                                             VERIFIED_STRING
                                         else
