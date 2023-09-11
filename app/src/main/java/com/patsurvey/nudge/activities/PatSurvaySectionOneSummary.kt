@@ -17,7 +17,11 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -198,9 +202,13 @@ fun PatSurvaySectionSummaryScreen(
                                }
                            } ?: BLANK_STRING,
                            optionValue =  answer?.optionValue?:0,
+                           isArrowVisible = didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal ),
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
+
                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                           navController.navigate("yes_no_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
+                           if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                               navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
+                           else navController.navigate("single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
                        }
                     }
                 }
@@ -232,9 +240,15 @@ fun PatSurvaySectionSummaryScreen(
                     PatSurveyStatus.COMPLETED.ordinal
                 )
                 if (patSectionSummaryViewModel.isYesSelected.value) {
-                    patSectionSummaryViewModel.updateExclusionStatus(didi.value.id)
+                    var exclusionType = ExclusionType.SIMPLE_EXCLUSION.ordinal
+
+                    if(didi.value.section2Status !=0){
+                        exclusionType = ExclusionType.EDIT_PAT_EXCLUSION.ordinal
+                    }
+                    patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
+                        TYPE_EXCLUSION)
                     if (showPatCompletion.value) {
-                        patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
+//                        patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
                             PatSurveyStatus.COMPLETED.ordinal
@@ -246,6 +260,8 @@ fun PatSurvaySectionSummaryScreen(
                         showPatCompletion.value = true
                     }
                 } else {
+                    patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
+                        TYPE_EXCLUSION)
 //                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
                     if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
@@ -360,6 +376,7 @@ fun SectionOneSummeryItem(
     quesSummery:String,
     answerValue: String,
     optionValue:Int,
+    isArrowVisible:Boolean = false,
     onCardClick:(Int)->Unit
 ) {
     Column(
@@ -371,7 +388,7 @@ fun SectionOneSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-//                    onCardClick(index)
+                    onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
             val quesImage: File? =
@@ -452,6 +469,17 @@ fun SectionOneSummeryItem(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.padding(start=2.dp)
             )
+
+            if(isArrowVisible) {
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Forward Arrow",
+                        tint = textColorDark,
+                        modifier = Modifier
+                    )
+                }
+            }
         }
         Divider(
             color = borderGrey,
@@ -463,4 +491,18 @@ fun SectionOneSummeryItem(
                 .fillMaxWidth()
         )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun SectionOneSummeryItemPreview(){
+    SectionOneSummeryItem(
+        index = 1,
+        questionImageUrl = BLANK_STRING,
+        quesSummery = "Question Summary",
+        answerValue = "1",
+        optionValue = 1,
+        isArrowVisible = true,
+        onCardClick = {}
+    )
 }

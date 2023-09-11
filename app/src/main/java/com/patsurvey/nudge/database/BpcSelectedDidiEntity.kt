@@ -128,6 +128,11 @@ data class BpcSelectedDidiEntity(
     @ColumnInfo(name = "section2Status")
     var section2Status: Int = 0,
 
+    @SerializedName("patExclusionStatus")
+    @Expose
+    @ColumnInfo(name = "patExclusionStatus")
+    var patExclusionStatus: Int = 0,
+
     @SerializedName("bpcScore")
     @Expose
     @ColumnInfo(name = "bpcScore")
@@ -217,7 +222,8 @@ data class BpcSelectedDidiEntity(
                 bpcComment = nonSelectedDidiEntity.bpcComment,
                 crpComment = nonSelectedDidiEntity.crpComment,
                 crpScore = nonSelectedDidiEntity.crpScore,
-                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage
+                crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage,
+                patExclusionStatus = nonSelectedDidiEntity.patExclusionStatus
             )
         }
     }

@@ -553,7 +553,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 patSurveyStatus = didi.patSurveyStatus,
                                 section2Status = didi.section2Status,
                                 section1Status = didi.section1Status,
-                                shgFlag = didi.shgFlag
+                                shgFlag = didi.shgFlag,
+                                patExclusionStatus = didi.patExclusionStatus ?: 0
                             )
                             NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest")
                             answeredDidiList.add(

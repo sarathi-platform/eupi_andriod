@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Button
@@ -34,6 +35,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
@@ -380,6 +382,61 @@ fun ButtonPositive(
     }
 }
 
+@Composable
+fun ButtonArrowNegative(
+    modifier: Modifier = Modifier,
+    buttonTitle: String,
+    isArrowRequired: Boolean = true,
+    isActive: Boolean = true,
+    textColor: Color = Color.White,
+    iconTintColor: Color = Color.White,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .clickable{
+                if (isActive) onClick()
+            }
+            .then(modifier),
+        contentAlignment = Alignment.Center,
+    ) {
+        Row(
+            Modifier
+                .padding(bottom = 10.dp, end = 10.dp)
+                .wrapContentWidth(Alignment.Start),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (isArrowRequired) {
+                Icon(
+                    Icons.Default.ArrowBack,
+                    contentDescription = "Negative Button",
+                    tint = if (isActive) Color.Black else greyBorder,
+                    modifier = Modifier
+                        .absolutePadding(top = 2.dp, right = 10.dp)
+                )
+            }
+            Text(
+                text = buttonTitle,
+                color = if (isActive) Color.Black else greyBorder,
+                style = /*buttonTextStyle*/TextStyle(
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 14.sp
+                ),
+                textAlign = TextAlign.Center
+            )
+
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ButtonArrowNegativePreview(){
+    Row {
+        ButtonArrowNegative(buttonTitle = "Back To Section 1", onClick = {})
+    }
+}
 @Composable
 fun ButtonPositiveForPAT(
     modifier: Modifier = Modifier,

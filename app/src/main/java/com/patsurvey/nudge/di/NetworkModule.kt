@@ -40,10 +40,10 @@ object NetworkModule {
   @Provides
   fun provideInterceptors():ArrayList<Interceptor>{
     val interceptors = arrayListOf<Interceptor>()
-//    if(BuildConfig.DEBUG){
+    if(BuildConfig.DEBUG){
       val loggingInterceptor=CurlLoggingInterceptor()
       interceptors.add(loggingInterceptor)
-//    }
+    }
     return interceptors
   }
 
@@ -164,11 +164,11 @@ object NetworkModule {
         .addInterceptor(ErrorInterceptor())
         .connectionPool(ConnectionPool(0, 1, TimeUnit.NANOSECONDS))
 
-//    if (BuildConfig.DEBUG) {
+    if (BuildConfig.DEBUG) {
       val logging = HttpLoggingInterceptor()
       logging.level = HttpLoggingInterceptor.Level.BODY
       httpClientBuilder.addInterceptor(logging)
-//    }
+    }
     return httpClientBuilder.build()
   }
 

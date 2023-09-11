@@ -246,6 +246,7 @@ fun VoEndorsementSummaryScreen(
                                             )
                                         }
                                             ?: BLANK_STRING,
+                                        isArrowVisible = false,
                                         optionValue = answer.optionValue ?: 0,
                                         questionImageUrl = answer.questionImageUrl?: BLANK_STRING
                                     ){
@@ -289,6 +290,8 @@ fun VoEndorsementSummaryScreen(
                                                 }
                                             } ?: BLANK_STRING,
                                             questionType = answer.type,
+                                            isArrowVisible = false,
+                                            isSummaryEnable = false,
                                             questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                                         ){

@@ -1234,8 +1234,9 @@ fun DidiItemCard(
                                         didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                                         if (didi.section1Status == 0 || didi.section1Status == 1)
                                             navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
-                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.isExclusionYesSelected == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
-                                        else if(didi.section1Status == 2 && didi.isExclusionYesSelected ==1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.SIMPLE_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.EDIT_PAT_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
                                     }
                                 }
 
@@ -1476,8 +1477,9 @@ fun DidiItemCardForPat(
                                         didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                                         if (didi.section1Status == 0 || didi.section1Status == 1)
                                             navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
-                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.isExclusionYesSelected == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
-                                        else if(didi.section1Status == 2 && didi.isExclusionYesSelected ==1) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                        else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.SIMPLE_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                        else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.EDIT_PAT_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
                                     }
                                 }
 

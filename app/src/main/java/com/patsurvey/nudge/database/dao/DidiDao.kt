@@ -129,8 +129,8 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where villageId = :villageId AND patSurveyStatus = 2 AND activeStatus = 1 ORDER BY createdDate DESC")
     fun patCompletedDidis(villageId: Int): List<DidiEntity>
 
-    @Query("UPDATE $DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status,needsToPostPAT=0,shgFlag=:shgFlag WHERE id =:didiId")
-    fun updatePATProgressStatus(patSurveyStatus: Int,section1Status:Int,section2Status:Int,didiId:Int,shgFlag:Int)
+    @Query("UPDATE $DIDI_TABLE set patSurveyStatus = :patSurveyStatus,section1Status=:section1Status,section2Status=:section2Status,needsToPostPAT=0,shgFlag=:shgFlag,patExclusionStatus=:patExclusionStatus WHERE id =:didiId")
+    fun updatePATProgressStatus(patSurveyStatus: Int,section1Status:Int,section2Status:Int,didiId:Int,shgFlag:Int,patExclusionStatus: Int)
 
     @Query("UPDATE $DIDI_TABLE set needsToPostPAT =:needsToPostPAT WHERE id=:didiId AND villageId=:villageId")
     fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int,villageId: Int)
@@ -240,8 +240,8 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostVo = :needsToPostVo AND villageId = :villageId")
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity>
 
-    @Query("UPDATE $DIDI_TABLE SET isExclusionYesSelected = :isExclusionYesSelected WHERE id = :didiId")
-    fun updateExclusionStatus(didiId: Int, isExclusionYesSelected: Int)
+    @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment,crpScore=0.0,score=0.0,bpcScore=0.0 WHERE id = :didiId")
+    fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment:String)
 
     @Query("UPDATE $DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
     fun updateImageLocalPath(didiId: Int, localPath: String)
@@ -263,5 +263,8 @@ interface DidiDao {
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostImage = :needsToPostImage LIMIT 5")
     fun fetchAllDidiNeedsToPostImageWithLimit(needsToPostImage: Boolean) : List<DidiEntity>
+
+    @Query("UPDATE $DIDI_TABLE SET patEdit = :patEdit WHERE id = :didiId")
+    fun updatePATEditStatus(didiId: Int, patEdit: Boolean)
 
 }

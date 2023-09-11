@@ -43,6 +43,7 @@ import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.FORM_C
@@ -1252,7 +1253,8 @@ class SyncHelper (
                             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                 BLANK_STRING
                             } else {
-                                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
+                                if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
                                     TYPE_EXCLUSION
                                 } else {
                                     if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
@@ -1273,14 +1275,14 @@ class SyncHelper (
                             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                 PatSurveyStatus.INPROGRESS.name
                             } else {
-                                if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                if (didi.forVoEndorsement == 0 || didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
                                     if (prefRepo.isUserBPC())
                                         VERIFIED_STRING
                                     else
                                         COMPLETED_STRING
                                 }
                             },
-                            rankingEdit = false,
+                            rankingEdit = didi.patEdit,
                             shgFlag = SHGFlag.fromInt(didi.shgFlag).name
                         )
                     )
@@ -1299,7 +1301,8 @@ class SyncHelper (
                             patSurveyStatus = didi.patSurveyStatus,
                             section2Status = didi.section2Status,
                             section1Status = didi.section1Status,
-                            shgFlag = didi.shgFlag
+                            shgFlag = didi.shgFlag,
+                            patExclusionStatus = didi.patExclusionStatus  ?: 0
                         )
                     )
                 }

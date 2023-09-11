@@ -17,10 +17,14 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
@@ -109,6 +113,8 @@ fun PatSurvaySectionTwoSummaryScreen(
 
                 patSectionSummaryViewModel.setPATSection2Complete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
+                patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
+                    BLANK_STRING)
                 if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
 
                     navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
@@ -192,10 +198,14 @@ fun PatSurvaySectionTwoSummaryScreen(
                           } ?: BLANK_STRING,
                           questionType =  answer?.type?: QuestionType.List.name,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
+                          isSummaryEnable = true,
+                          isArrowVisible = didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal),
                           questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                          navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
+                          if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                              navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_INCLUSION/$index")
+                          else navController.navigate("single_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                       }
                     }
                 }
@@ -321,7 +331,9 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
 @Composable
 fun SectionTwoSummeryItemPreview(){
     SectionTwoSummeryItem(modifier = Modifier,0,"New Summery","New Answer Value",QuestionType.Numeric_Field.name,
-        BLANK_STRING,QUESTION_FLAG_WEIGHT, onCardClick = {})
+        BLANK_STRING,QUESTION_FLAG_WEIGHT,
+        isArrowVisible = true,isSummaryEnable = true
+        ,onCardClick = {})
 }
 
 
@@ -336,10 +348,13 @@ fun SectionTwoSummeryItem(
     questionType: String,
     questionImageUrl: String,
     questionFlag:String,
+    isArrowVisible:Boolean,
+    isSummaryEnable:Boolean,
     onCardClick:(Int)->Unit
 ) {
     Column(
         modifier = Modifier
+            .alpha( if(isSummaryEnable) 1f else .5f)
             .fillMaxWidth()
             .then(modifier)
     ) {
@@ -347,9 +362,10 @@ fun SectionTwoSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-//           onCardClick(index)
+                    if(isSummaryEnable && isArrowVisible)
+                        onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
-            if (questionImageUrl.isNotEmpty()){
+            if (questionImageUrl.isNotEmpty()) {
                 val quesImage: File? =
                     questionImageUrl?.let { it1 ->
                         getImagePath(
@@ -389,8 +405,7 @@ fun SectionTwoSummeryItem(
                         )
                     }
                 }
-            }
-            else {
+            } else {
                 Image(
                     painter = painterResource(id = R.drawable.white_background),
                     contentDescription = "home image",
@@ -401,10 +416,13 @@ fun SectionTwoSummeryItem(
             }
 
             var summaryText = "$answerValue."
-            if(questionType.equals(QuestionType.Numeric_Field.name,true)){
-                summaryText = if(questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
-                    LocalContext.current.getString(R.string.total_productive_asset_value,answerValue)
-                }else answerValue
+            if (questionType.equals(QuestionType.Numeric_Field.name, true)) {
+                summaryText = if (questionFlag.equals(QUESTION_FLAG_WEIGHT, true)) {
+                    LocalContext.current.getString(
+                        R.string.total_productive_asset_value,
+                        answerValue
+                    )
+                } else answerValue
                 Log.d("TAG", "SectionTwoSummeryItem Num: ${summaryText} ")
             }
             Log.d("TAG", "SectionTwoSummeryItem: ${summaryText} ")
@@ -438,13 +456,24 @@ fun SectionTwoSummeryItem(
                     fontFamily = NotoSans,
                     textAlign = TextAlign.Start
                 ),
-               // textAlign = TextAlign.Start,
+                // textAlign = TextAlign.Start,
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(start = 5.dp)
                     .weight(1f)
             )
+
+            if (isArrowVisible){
+                IconButton(onClick = { }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "Forward Arrow",
+                        tint = textColorDark,
+                        modifier = Modifier
+                    )
+                }
+            }
         }
         Divider(
             color = borderGrey,

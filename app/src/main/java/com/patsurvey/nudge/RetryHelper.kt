@@ -558,7 +558,8 @@ object RetryHelper {
                                             section1Status = item.section1Status ?: 0,
                                             section2Status = item.section2Status ?: 0,
                                             didiId = item.beneficiaryId ?: 0,
-                                            shgFlag = item.shgFlag ?:-1
+                                            shgFlag = item.shgFlag ?:-1,
+                                            patExclusionStatus = item.patExclusionStatus ?: 0
                                         )
                                         if (item?.answers?.isNotEmpty() == true) {
                                             item?.answers?.forEach { answersItem ->

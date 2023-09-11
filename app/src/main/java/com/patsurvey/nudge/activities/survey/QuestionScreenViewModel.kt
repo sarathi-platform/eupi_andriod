@@ -160,6 +160,7 @@ class QuestionScreenViewModel @Inject constructor(
                 didiDao.updateQuesSectionStatus(didiId, status)
                 if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
                     didiDao.updatePatSection1Status(didiId, status)
+                    didiDao.updatePATEditStatus(didiId,true)
                 } else didiDao.updatePatSection2Status(didiId, status)
 
                 val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)

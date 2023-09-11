@@ -17,6 +17,7 @@ import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
 import com.patsurvey.nudge.model.request.BpcUpdateSelectedDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
@@ -143,13 +144,23 @@ class SurveySummaryViewModel @Inject constructor(
     fun savePATSummeryToServer(networkCallbackListener: NetworkCallbackListener){
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             try {
+                var didiIDList = emptyList<PATDidiStatusModel>()
+                didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+                Log.d("TAG", "savePATSummeryToServer before ListSize: ${didiIDList.size}")
                 didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
                 var optionList: List<OptionsItem>
                 var answeredDidiList: ArrayList<PATSummarySaveRequest> = arrayListOf()
                 var scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
                 var surveyId = 0
 
-                val didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+
+                try {
+                     didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
+
+                }catch (ex:Exception){
+                    ex.printStackTrace()
+                }
+                Log.d("TAG", "savePATSummeryToServer ListSize: ${didiIDList.size}")
                 if (didiIDList.isNotEmpty()) {
                     didiIDList.forEach { didi ->
                         NudgeLogger.d(
@@ -235,7 +246,8 @@ class SurveySummaryViewModel @Inject constructor(
                             } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                 BLANK_STRING
                             } else {
-                                if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal) {
+                                if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
                                     TYPE_EXCLUSION
                                 } else {
                                     if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
@@ -256,7 +268,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                     PatSurveyStatus.INPROGRESS.name
                                 } else {
-                                    if (didi.forVoEndorsement == 0) DIDI_REJECTED else {
+                                    if (didi.forVoEndorsement == 0 || didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
                                         if (prefRepo.isUserBPC())
                                             VERIFIED_STRING
                                         else
@@ -281,6 +293,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 patSurveyStatus = didi.patSurveyStatus,
                                 section2Status = didi.section2Status,
                                 section1Status = didi.section1Status,
+                                patExclusionStatus=didi.patExclusionStatus,
                                 shgFlag = didi.shgFlag
                             )
                         )
@@ -593,7 +606,7 @@ class SurveySummaryViewModel @Inject constructor(
                         )
                     )
                     didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
-                } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                } else if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                     val existingProcessStatus = didi.beneficiaryProcessStatus
                     var updatedStatus = mutableListOf<BeneficiaryProcessStatusModel>()
                     existingProcessStatus?.forEach {

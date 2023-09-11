@@ -4,13 +4,16 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,6 +30,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,6 +45,8 @@ import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
+import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.navigation.home.BpcDidiListScreens
@@ -48,6 +54,7 @@ import com.patsurvey.nudge.navigation.home.PatScreens
 import com.patsurvey.nudge.utils.ARG_FROM_PAT_SUMMARY_SCREEN
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
+import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
@@ -210,13 +217,44 @@ fun PatSurveyCompleteSummary(
                                 }
                             } ?: BLANK_STRING,
                             optionValue =  answer?.optionValue?:0,
+                            isArrowVisible = didi.value.patEdit,
                             questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
                             if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                                 patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
                                     PageFrom.SUMMARY_PAGE.ordinal
                                 )
-                                navController.navigate("yes_no_question_screen/${didiId}/$TYPE_EXCLUSION/$it")
+                                if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                                    navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
+                                else navController.navigate("single_question_screen/${didiId}/$TYPE_EXCLUSION/$it")
                             }
+                        }
+                    }
+
+                    if(didi.value.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) {
+                        item {
+                            Spacer(modifier = Modifier.height(4.dp))
+                            Row {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.baseline_error_outline_24),
+                                    contentDescription = "Negative Button",
+                                    tint = redDark,
+                                    modifier = Modifier
+                                        .absolutePadding(top = 2.dp, right = 10.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.exclusion_error_message),
+                                    style = TextStyle(
+                                        color = redDark,
+                                        fontSize = 12.sp,
+                                        fontWeight = FontWeight.SemiBold,
+                                        fontFamily = NotoSans
+                                    ),
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
                     }
 
@@ -236,24 +274,25 @@ fun PatSurveyCompleteSummary(
                         }
 
                         item { Spacer(modifier = Modifier.height(4.dp)) }
-
-                        itemsIndexed(inclusionQuestionList.sortedBy { it.order }) { index, question ->
-                            val answer = answerSummeryList.find { it.questionId == question.questionId }
+                        itemsIndexed(answerSummeryList) { index, answer ->
+                            val question = inclusionQuestionList.find { it.questionId == answer.questionId }
                             SectionTwoSummeryItem(
                                 index = index,
-                                quesSummery = answer?.questionId.let {
+                                quesSummery = answer.questionId.let {
                                     patSectionSummaryViewModel.getQuestionSummary(
-                                        it?:0
+                                        it
                                     )
                                 },
-                                answerValue = answer?.questionId.let {
-                                    answer?.optionId?.let { it1 ->
+                                answerValue = answer.questionId.let {
+                                    answer.optionId?.let { it1 ->
                                         patSectionSummaryViewModel.getOptionForLanguage(
-                                            it?:0, it1,answer.answerValue?:"0"
+                                            it, it1,answer.answerValue?:"0"
                                         )
                                     }
                                 } ?: BLANK_STRING,
                                 questionType = answer?.type?: QuestionType.List.name,
+                                isSummaryEnable = didi.value.patExclusionStatus != ExclusionType.EDIT_PAT_EXCLUSION.ordinal,
+                                isArrowVisible = didi.value.patEdit,
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
@@ -261,7 +300,9 @@ fun PatSurveyCompleteSummary(
                                     patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
                                         PageFrom.SUMMARY_PAGE.ordinal
                                     )
-                                    navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/$it")
+                                    if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                                        navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_INCLUSION/$index")
+                                    else navController.navigate("single_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                                 }
                             }
                         }

@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.model.request
 
-import androidx.room.ColumnInfo
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.model.response.OptionsItem
@@ -34,14 +33,17 @@ data class PATSummarySaveRequest(
     @SerializedName("beneficiaryName")
     val beneficiaryName: String? = BLANK_STRING,
 
-    @ColumnInfo(name = "patSurveyStatus")
+    @SerializedName("patSurveyStatus")
     var patSurveyStatus: Int=0,
 
-    @ColumnInfo(name = "section1Status")
+    @SerializedName("section1Status")
     var section1Status: Int=0,
 
-    @ColumnInfo(name = "section2Status")
+    @SerializedName("section2Status")
     var section2Status: Int=0,
+
+    @SerializedName("patExclusionStatus")
+    var patExclusionStatus: Int=0,
 
     @SerializedName("shgFlag")
     val shgFlag: Int? = -1
@@ -60,6 +62,7 @@ data class PATSummarySaveRequest(
         jsonObject.addProperty("patSurveyStatus", patSurveyStatus)
         jsonObject.addProperty("section1Status", section1Status)
         jsonObject.addProperty("section2Status", section2Status)
+        jsonObject.addProperty("patExclusionStatus", patExclusionStatus)
         jsonObject.addProperty("shgFlag", shgFlag)
         return jsonObject
     }
