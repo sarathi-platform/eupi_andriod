@@ -120,7 +120,7 @@ fun SummaryBox(
 }
 
 @Composable
-fun DidiItemCardForPat(
+fun DidiItemCardForPatSummary(
     didi: DidiEntity,
     modifier: Modifier,
     onItemClick: (DidiEntity) -> Unit

@@ -292,8 +292,8 @@
     <string name="ranking_text_poor">गरीब</string>
     <string name="crp_group_name_text">CRP के समूह का नाम</string>
     <string name="current_status_text">मौजूदा स्तिथि</string>
-    <string name="pat_completed_for_didi_singular">%1$s दीदी के लिए PAT पूरा हो गया</string>
-    <string name="pat_completed_for_didi_plural">%1$s दीदियों के लिए PAT पूरा हो गया</string>
+    <string name="pat_completed_for_didi_singular">%1$s नई दीदी के लिए PAT पूरा हो गया</string>
+    <string name="pat_completed_for_didi_plural">%1$s नई दीदियों के लिए PAT पूरा हो गया</string>
     <string name="pat_marked_not_available_singular">%1$s दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया</string>
     <string name="pat_marked_not_available_plural">%1$s दीदी को उपलब्ध नहीं के रूप में चिह्नित किया गया है</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s अल्ट्रापूर दीदी को वीओ समर्थन के लिए भेजा गया है।</string>
@@ -358,6 +358,12 @@
 
     <string name="storage_permission_dialog_prompt_message">भण्डारण की अनुमति आवश्यक है, कृपया अनुमति प्रदान करें।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">आप %1$s दीदी का सहभागी धन रैंकिंग जमा कर रहे है</string>
+
+    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
+    <string name="total_pat_attempted_string">Total PAT Attempted</string>
+    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
 
 
 </resources>

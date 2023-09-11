@@ -311,8 +311,8 @@
     <string name="ranking_text_poor">POOR</string>
     <string name="crp_group_name_text">CRP Group Name</string>
     <string name="current_status_text">Current Status:</string>
-    <string name="pat_completed_for_didi_singular">PAT completed for %1$s didi</string>
-    <string name="pat_completed_for_didi_plural">PAT completed for %1$s didis</string>
+    <string name="pat_completed_for_didi_singular">PAT completed for %1$s new didi</string>
+    <string name="pat_completed_for_didi_plural">PAT completed for %1$s new didis</string>
     <string name="pat_marked_not_available_singular">%1$s didi marked as Not Available</string>
     <string name="pat_marked_not_available_plural">%1$s didis marked as Not Available</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">%1$s Ultrapoor didis sent for VO Endorsement.</string>
@@ -380,5 +380,11 @@
 
     <string name="storage_permission_dialog_prompt_message">Storage permission required, please grant permission.</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">You are submitting the wealth ranking for %1$s Didi.</string>
+
+    <string name="bpc_pat_survey_complete">BPC PAT Survey</string>
+    <string name="pat_success_message_plural">PAT Verification for {TOTAL_COUNT} new Didis has been submitted</string>
+    <string name="pat_success_message_singular">PAT Verification for {TOTAL_COUNT} new Didi has been submitted</string>
+    <string name="total_pat_attempted_string">Total PAT Attempted</string>
+    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
 
 </resources>

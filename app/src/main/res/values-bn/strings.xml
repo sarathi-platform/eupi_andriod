@@ -292,8 +292,8 @@
     <string name="ranking_text_poor">দরিদ্র</string>
     <string name="crp_group_name_text">CRP দলের নাম</string>
     <string name="current_status_text">বর্তমান স্থিতি:</string>
-    <string name="pat_completed_for_didi_singular">%1$s দিদির জন্য PAT সম্পূর্ণ হয়েছে৷</string>
-    <string name="pat_completed_for_didi_plural">PAT %1$s দিদির জন্য সম্পন্ন হয়েছে</string>
+    <string name="pat_completed_for_didi_singular">%1$s নতুন দিদির জন্য PAT সম্পূর্ণ হয়েছে৷</string>
+    <string name="pat_completed_for_didi_plural">PAT %1$s নতুন দিদির জন্য PAT সম্পন্ন হয়েছে</string>
     <string name="pat_marked_not_available_singular">%1$s দিদি উপলভ্য নয় হিসাবে চিহ্নিত৷</string>
     <string name="pat_marked_not_available_plural">%1$sটি উপলভ্য নয় হিসাবে চিহ্নিত করা হয়েছে৷</string>
     <string name="pat_didi_sent_to_vo_endorsement_singular">VO অনুমোদনের জন্য %1$s আল্ট্রাপুর ডিডি পাঠানো হয়েছে৷</string>
@@ -359,5 +359,12 @@
 
     <string name="storage_permission_dialog_prompt_message">সঞ্চয়স্থানের অনুমতি প্রয়োজন, অনুগ্রহ করে অনুমতি দিন।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপনি %1$s দিদির জন্য সম্পদের র‌্যাঙ্কিং জমা দিচ্ছেন।</string>
+
+    <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+    <string name="total_pat_attempted_string">Total PAT Attempted</string>
+    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+
 
 </resources>

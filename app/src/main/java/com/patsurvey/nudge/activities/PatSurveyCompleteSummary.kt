@@ -143,7 +143,7 @@ fun PatSurveyCompleteSummary(
                     startPadding = 0.dp
                 )
                 Text(
-                    text = stringResource(id = R.string.pat_survey_complete),
+                    text = if (patSectionSummaryViewModel.prefRepo.isUserBPC()) stringResource(id = R.string.bpc_pat_survey_complete) else stringResource(id = R.string.pat_survey_complete),
                     modifier = Modifier
                         .layoutId("sectionText"),
                     color = textColorDark,

@@ -19,8 +19,14 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.IOException
+import java.security.SecureRandom
+import java.security.cert.CertificateException
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocketFactory
+import javax.net.ssl.TrustManager
+import javax.net.ssl.X509TrustManager
 
 /**
  * created by anil on 18/05/22
@@ -64,6 +70,7 @@ object NetworkModule {
     val timeout = 60.toLong()
     val clientBuilder =
       OkHttpClient.Builder()
+//    getOkHttpBuilder()
         /*.hostnameVerifier(HostnameVerifier { hostname, session -> true })*/
         .connectTimeout(timeout, TimeUnit.SECONDS)
         .readTimeout(timeout, TimeUnit.SECONDS)
@@ -93,6 +100,48 @@ object NetworkModule {
       .addConverterFactory(GsonConverterFactory.create(gson))
       .baseUrl(BuildConfig.BASE_URL)
       .build()
+  }
+
+  private fun getOkHttpBuilder(): OkHttpClient.Builder =
+    if (!BuildConfig.DEBUG) {
+      OkHttpClient().newBuilder()
+    } else {
+      // Workaround for the error "Caused by: javax.net.ssl.SSLHandshakeException: java.security.cert.CertPathValidatorException: Trust anchor for certification path not found.
+      getUnsafeOkHttpClient()
+    }
+
+  private fun getUnsafeOkHttpClient(): OkHttpClient.Builder {
+    try {
+      val trustAllCerts: Array<TrustManager> = arrayOf(
+        object : X509TrustManager {
+          @Throws(CertificateException::class)
+          override fun checkClientTrusted(
+            chain: Array<out java.security.cert.X509Certificate>?,
+            authType: String?
+          ) = Unit
+
+          @Throws(CertificateException::class)
+          override fun checkServerTrusted(
+            chain: Array<out java.security.cert.X509Certificate>?,
+            authType: String?
+          ) = Unit
+
+          override fun getAcceptedIssuers(): Array<out java.security.cert.X509Certificate>? = arrayOf()
+        }
+      )
+      val sslContext: SSLContext = SSLContext.getInstance("SSL")
+      sslContext.init(null, trustAllCerts, SecureRandom())
+      // Create an ssl socket factory with our all-trusting manager
+      val sslSocketFactory: SSLSocketFactory = sslContext.socketFactory
+      val builder = OkHttpClient.Builder()
+      builder.sslSocketFactory(sslSocketFactory,
+        trustAllCerts[0] as X509TrustManager
+      )
+      builder.hostnameVerifier { _, _ -> true }
+      return builder
+    } catch (ex: Exception) {
+      throw RuntimeException(ex)
+    }
   }
 
   @Singleton

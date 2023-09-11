@@ -275,6 +275,68 @@ fun DigitalFormBScreen(
                         }
                         Row(modifier = Modifier.fillMaxWidth()) {
                             Text(
+                                text = stringResource(R.string.total_pat_attempted_string) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_5))
+                            )
+                            Text(
+                                text =
+                                if (viewModel.prefRepo.isUserBPC())
+                                    didiListForBpc.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                            it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                else
+                                    didiList.filter {it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                            it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_5),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
+                                text = stringResource(R.string.didis_marked_as_not_available_string) + ":",
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .padding(top = dimensionResource(id = R.dimen.dp_5))
+                            )
+                            Text(
+                                text =
+                                if (viewModel.prefRepo.isUserBPC())
+                                    didiListForBpc.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                else
+                                    didiList.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                color = Color.Black,
+                                fontSize = 14.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.SemiBold,
+                                textAlign = TextAlign.Start,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        top = dimensionResource(id = R.dimen.dp_5),
+                                        start = dimensionResource(id = R.dimen.dp_5)
+                                    )
+                            )
+                        }
+                        Row(modifier = Modifier.fillMaxWidth()) {
+                            Text(
                                 text = stringResource(id = R.string.total_ultra_poor_didis) + ":",
                                 color = Color.Black,
                                 fontSize = 14.sp,
@@ -416,6 +478,8 @@ fun DigitalFormBScreen(
                         }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(20.dp).fillMaxWidth())
 
             }
         }
