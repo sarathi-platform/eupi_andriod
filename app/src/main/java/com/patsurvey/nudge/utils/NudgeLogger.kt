@@ -376,7 +376,7 @@ object LogWriter {
             val subject = "Sarathi debug log - Email: $email UserId: $sub"
             val message = "The following individual logs are contained within the attachment:\n\n"
             withContext(Dispatchers.Main) {
-                share(context = context, logFile, arrayOf("anupam.bhardwaj@tothenew.com", "anas.mansoori@tothenew.com", "suchit.kapoor@tothenew.com", "varun.mittal@tothenew.com"), subject, message)?.let {
+                share(context = context, logFile, arrayOf("anupam.bhardwaj@tothenew.com", "anas.mansoori@tothenew.com", "suchit.kapoor@tothenew.com", "varun.mittal@tothenew.com", "yukti.arora@tothenew.com"), subject, message)?.let {
                     NudgeCore.startExternalApp(it)
                 }
             }
