@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.utils
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,11 +50,13 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CircularDidiImage
+import com.patsurvey.nudge.activities.navigateToSummeryPage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
@@ -119,11 +123,14 @@ fun SummaryBox(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun DidiItemCardForPatSummary(
     didi: DidiEntity,
     modifier: Modifier,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onNotAvailableClick: (DidiEntity) ->Unit,
+    onStartPATClick: (DidiEntity) ->Unit,
 ) {
     Card(
         elevation = 10.dp,
@@ -227,6 +234,88 @@ fun DidiItemCardForPatSummary(
                             .absolutePadding(top = 4.dp, left = 2.dp)
                             .size(24.dp)
                     )
+                }
+            } else {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 16.dp)
+                ) {
+                    val didiMarkedNotAvailable = mutableStateOf(true)
+                    ButtonNegativeForPAT(
+                        buttonTitle = stringResource(id = R.string.not_avaliable),
+                        isArrowRequired = false,
+                        color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (didiMarkedNotAvailable.value) white else blueDark,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
+                            .background(
+                                if (didiMarkedNotAvailable.value
+                                ) blueDark else languageItemActiveBg
+                            )
+                    ){
+                        didiMarkedNotAvailable.value = true
+                        onNotAvailableClick(didi)
+//                        didiViewModel.setDidiAsUnavailable(didi.id)
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    ButtonPositiveForPAT(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
+                            .background(
+                                if (didiMarkedNotAvailable.value
+                                ) languageItemActiveBg else blueDark
+                            ),
+                        buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal)
+                            stringResource(id = R.string.start_pat)
+                        else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                            stringResource(id = R.string.continue_pat)
+                        else "",
+                        true,
+                        color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
+                        iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
+                    ) {
+                        onStartPATClick(didi)
+
+                        /*didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
+                            if(navigationValue == 1){
+                                didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                                navigateToSummeryPage(navController,1,didi.id,didiViewModel)
+
+                            }else if(navigationValue == 2){
+                                didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                                navigateToSummeryPage(navController,2,didi.id,didiViewModel)
+
+                            }else{
+                                if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
+                                    || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                    if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal) {
+                                        didiMarkedNotAvailable.value = false
+                                    }
+                                    navController.navigate("didi_pat_summary/${didi.id}")
+
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
+                                    val quesIndex=0
+                                    didiViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                    if (didi.section1Status == 0 || didi.section1Status == 1)
+                                        navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                    else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == ExclusionType.NO_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                    else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.SIMPLE_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
+                                    else if(didi.section1Status == 2 && didi.patExclusionStatus == ExclusionType.EDIT_PAT_EXCLUSION.ordinal) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")
+                                }
+                            }
+
+                        }*/
+
+                    }
                 }
             }
         }

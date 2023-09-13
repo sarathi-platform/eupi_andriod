@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -429,7 +430,9 @@ fun SurveySummary(
                                                 if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
                                                     navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                                                 }
-                                            }
+                                            },
+                                            onNotAvailableClick = {},
+                                            onStartPATClick = {}
                                         )
                                     }
                                 } else {
@@ -447,6 +450,13 @@ fun SurveySummary(
                                                         if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
                                                             navController.navigate("pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                                                         }
+                                                    },
+                                                    onNotAvailableClick = { didiEntity ->
+
+
+                                                    },
+                                                    onStartPATClick = { didiEntity ->
+
                                                     }
                                                 )
                                             }
