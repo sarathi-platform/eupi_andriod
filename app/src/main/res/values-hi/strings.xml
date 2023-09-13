@@ -358,8 +358,8 @@
 
     <string name="storage_permission_dialog_prompt_message">भण्डारण की अनुमति आवश्यक है, कृपया अनुमति प्रदान करें।</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">आप %1$s दीदी का सहभागी धन रैंकिंग जमा कर रहे है</string>
-    <string name="go_back_to_section_1_summary">PAT सारांश पर वापस जाएँ</string>
-    <string name="exclusion_error_message">इस दीदी के लिए PAT यात्रा यहीं समाप्त होती है।</string>
+    <string name="go_back_to_section_1_summary">धारा 1 सारांश</string>
+    <string name="exclusion_error_message">इस दीदी के लिए PAT यहीं समाप्त होती है।</string>
 
     <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>

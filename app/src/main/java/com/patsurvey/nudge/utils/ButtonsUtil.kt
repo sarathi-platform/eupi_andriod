@@ -61,6 +61,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -394,7 +395,7 @@ fun ButtonArrowNegative(
 ) {
     Box(
         modifier = Modifier
-            .clickable{
+            .clickable {
                 if (isActive) onClick()
             }
             .then(modifier),
@@ -410,18 +411,19 @@ fun ButtonArrowNegative(
                 Icon(
                     Icons.Default.ArrowBack,
                     contentDescription = "Negative Button",
-                    tint = if (isActive) Color.Black else greyBorder,
+                    tint = if (isActive) blueDark else greyBorder,
                     modifier = Modifier
                         .absolutePadding(top = 2.dp, right = 10.dp)
                 )
             }
             Text(
                 text = buttonTitle,
-                color = if (isActive) Color.Black else greyBorder,
+                color = if (isActive) blueDark else greyBorder,
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.Normal,
-                    fontSize = 14.sp
+                    fontSize = 14.sp,
+                    textDecoration = TextDecoration.Underline
                 ),
                 textAlign = TextAlign.Center
             )
@@ -434,7 +436,7 @@ fun ButtonArrowNegative(
 @Composable
 fun ButtonArrowNegativePreview(){
     Row {
-        ButtonArrowNegative(buttonTitle = "Back To Section 1", onClick = {})
+        ButtonArrowNegative(buttonTitle = stringResource(id = R.string.go_back_to_section_1_summary), onClick = {})
     }
 }
 @Composable
