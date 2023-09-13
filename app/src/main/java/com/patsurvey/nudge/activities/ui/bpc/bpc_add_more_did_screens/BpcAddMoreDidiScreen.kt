@@ -88,7 +88,6 @@ import com.patsurvey.nudge.activities.ui.theme.checkBoxUncheckedColor
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
-import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.largeTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
@@ -478,20 +477,7 @@ fun ExpandableDidiItemCardForBpc(
                             modifier = Modifier.layoutId("village")
                         )
 
-                        Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
-                            Text(
-                                text = getLatestStatusTextForBpc(context, didi),
-                                style = TextStyle(
-                                    color = blueDark,
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                ),
-                                textAlign = TextAlign.Center,
-                                overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp, horizontal = 8.dp)
-                            )
-                        }
+                        Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
 
                         CardArrow(
                             modifier = Modifier.layoutId("expendArrowImage"),

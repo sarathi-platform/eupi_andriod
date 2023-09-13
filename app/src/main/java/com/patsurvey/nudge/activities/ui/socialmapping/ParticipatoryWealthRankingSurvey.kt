@@ -85,7 +85,6 @@ import com.patsurvey.nudge.activities.CircularDidiImage
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.WealthRankingSurveyViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
-import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.blueLighter
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.brownLoght
@@ -93,7 +92,6 @@ import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailItemStyle
 import com.patsurvey.nudge.activities.ui.theme.didiDetailLabelStyle
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
-import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
@@ -809,20 +807,8 @@ fun DidiItemCardForWealthRanking(
                         modifier = Modifier.layoutId("village")
                     )
 
-                    Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
-                        Text(
-                            text = getLatestStatusTextForWealthRankingCard(context, didi),
-                            style = TextStyle(
-                                color = blueDark,
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            ),
-                            textAlign = TextAlign.Center,
-                            overflow = TextOverflow.Ellipsis,
-                            modifier = Modifier.align(Alignment.Center).padding(vertical = 8.dp, horizontal = 8.dp)
-                        )
-                    }
+                    Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
+
                     CardArrow(
                         modifier = Modifier.layoutId("expendArrowImage"),
                         degrees = arrowRotationDegree,
