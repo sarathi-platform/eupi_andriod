@@ -386,7 +386,7 @@ fun DigitalFormBScreen(
                             horizontal = dimensionResource(id = R.dimen.dp_16),
                         )
                         .padding(bottom = 14.dp)
-                        .height((screenHeight / 2).dp)
+                        .height((screenHeight * 0.45).dp)
                 ) {
                     // List of Didis with Details
                     NudgeLogger.d("DigitalFormBScreen", "Before LazyColumn -> didiList with filter size: ${
@@ -409,121 +409,131 @@ fun DigitalFormBScreen(
                         }
                     }
                 }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-//                    .padding(bottom = 70.dp)
-                ) {
-                    OutlineButtonCustom(
-                        buttonTitle = stringResource(id = R.string.share_button_text),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .weight(1f),
-                    ) {
-                        val pdfFile = File(
-                            "${
-                                context.getExternalFilesDir(
-                                    Environment.DIRECTORY_DOCUMENTS
-                                )?.absolutePath
-                            }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
-                        )
-                        viewModel.generateFormBPdf(context) { formGenerated, formPath ->
-                            Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
-                            val fileUri = uriFromFile(context, pdfFile)
-                            val shareIntent = Intent(Intent.ACTION_SEND)
-                            shareIntent.type = "application/pdf"
-                            shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
-                            ContextCompat.startActivity(
-                                context,
-                                Intent.createChooser(shareIntent, "Share Form B"),
-                                null
-                            )
-                        }
-
-                    }
-                    Spacer(modifier = Modifier.width(10.dp))
-                    OutlineButtonCustom(
-                        modifier = Modifier
-                            .background(white)
-                            .weight(1f),
-                        buttonTitle = if (formPathState.value.isFile) stringResource(id = R.string.view) else {
-                            if (showLoader.value)
-                                stringResource(id = R.string.downloading_button_text)
-                            else
-                                stringResource(R.string.download_button_text)
-                        },
-                        showLoader = showLoader.value,
-                    ) {
-                        if (formPathState.value.isFile) {
-                            navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
-                        } else {
-                            showLoader.value = true
-                            viewModel.generateFormBPdf(context) { formGenerated, formPath ->
-                                if (formGenerated) {
-//                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
-                                    formPath?.let {
-                                        formPathState.value = it
-                                    }
-                                    showLoader.value = false
-                                } else {
-                                    showToast(
-                                        context,
-                                        context.getString(R.string.something_went_wrong_unable_to_download_form)
-                                    )
-                                    showLoader.value = false
-                                }
-                            }
-                        }
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(20.dp).fillMaxWidth())
+                Spacer(modifier = Modifier
+                    .height(20.dp)
+                    .fillMaxWidth())
 
             }
         }
 
-        Row(modifier = Modifier
+        Column(modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 10.dp)
             .constrainAs(buttonCard) {
                 start.linkTo(parent.start)
                 bottom.linkTo(parent.bottom)
-            }
-        ) {
-            Button(
-                onClick = {
-                    if (fromScreen == ARG_FROM_SETTING)
-                        navController.popBackStack()
-                    else {
-                        navController.navigate(Graph.HOME) {
-                            popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
-                                inclusive = true
-                                saveState = false
+            }) {
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+//                    .padding(bottom = 70.dp)
+            ) {
+                OutlineButtonCustom(
+                    buttonTitle = stringResource(id = R.string.share_button_text),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                ) {
+                    val pdfFile = File(
+                        "${
+                            context.getExternalFilesDir(
+                                Environment.DIRECTORY_DOCUMENTS
+                            )?.absolutePath
+                        }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
+                    )
+                    viewModel.generateFormBPdf(context) { formGenerated, formPath ->
+                        Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
+                        val fileUri = uriFromFile(context, pdfFile)
+                        val shareIntent = Intent(Intent.ACTION_SEND)
+                        shareIntent.type = "application/pdf"
+                        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri)
+                        ContextCompat.startActivity(
+                            context,
+                            Intent.createChooser(shareIntent, "Share Form B"),
+                            null
+                        )
+                    }
+
+                }
+                Spacer(modifier = Modifier.width(10.dp))
+                OutlineButtonCustom(
+                    modifier = Modifier
+                        .background(white)
+                        .weight(1f),
+                    buttonTitle = if (formPathState.value.isFile) stringResource(id = R.string.view) else {
+                        if (showLoader.value)
+                            stringResource(id = R.string.downloading_button_text)
+                        else
+                            stringResource(R.string.download_button_text)
+                    },
+                    showLoader = showLoader.value,
+                ) {
+                    if (formPathState.value.isFile) {
+                        navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
+                    } else {
+                        showLoader.value = true
+                        viewModel.generateFormBPdf(context) { formGenerated, formPath ->
+                            if (formGenerated) {
+//                                    showToast(context, context.getString(R.string.digital_form_b_downloded))
+                                formPath?.let {
+                                    formPathState.value = it
+                                }
+                                showLoader.value = false
+                            } else {
+                                showToast(
+                                    context,
+                                    context.getString(R.string.something_went_wrong_unable_to_download_form)
+                                )
+                                showLoader.value = false
                             }
                         }
                     }
-                },
+                }
+            }
+
+            Spacer(modifier = Modifier
+                .height(10.dp)
+                .fillMaxWidth())
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.button_height))
-                    .background(Color.Transparent)
-                    .padding(horizontal = dimensionResource(id = R.dimen.dp_16)),
-                colors = ButtonDefaults.buttonColors(blueDark),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
             ) {
-                Text(
-                    text = stringResource(id = if (fromScreen == "") R.string.continue_text else R.string.done_text),
-                    color = Color.White,
-                    fontSize = 16.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
+                Button(
+                    onClick = {
+                        if (fromScreen == ARG_FROM_SETTING)
+                            navController.popBackStack()
+                        else {
+                            navController.navigate(Graph.HOME) {
+                                popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
+                                    inclusive = true
+                                    saveState = false
+                                }
+                            }
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = dimensionResource(id = R.dimen.dp_6), top = 3.5.dp)
-                )
+                        .height(dimensionResource(id = R.dimen.button_height))
+                        .background(Color.Transparent)
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_16)),
+                    colors = ButtonDefaults.buttonColors(blueDark),
+                    shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                ) {
+                    Text(
+                        text = stringResource(id = if (fromScreen == "") R.string.continue_text else R.string.done_text),
+                        color = Color.White,
+                        fontSize = 16.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = dimensionResource(id = R.dimen.dp_6), top = 3.5.dp)
+                    )
+                }
             }
         }
     }

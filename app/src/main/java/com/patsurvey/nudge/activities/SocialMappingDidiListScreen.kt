@@ -1060,7 +1060,7 @@ fun DidiItemCard(
                         modifier = Modifier.layoutId("village")
                     )
 
-                    if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                    if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
                         Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
                             Text(
                                 text = getLatestStatusText(context, didi),
@@ -1075,6 +1075,8 @@ fun DidiItemCard(
                                 modifier = Modifier.align(Center).padding(vertical = 8.dp, horizontal = 8.dp)
                             )
                         }
+                    } else {
+                        Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
                     }
 
                     if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {

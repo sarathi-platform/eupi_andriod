@@ -61,7 +61,7 @@ fun CustomFloatingButton(modifier: Modifier = Modifier,buttonTitle:String, isNex
         elevation = elevation,
         shape = RoundedCornerShape(6.dp),
         modifier = Modifier
-            .width(80.dp)
+            .width(85.dp)
             .height(50.dp)
             .background(color = languageItemActiveBg)
             .pointerInput(true) {
