@@ -13,6 +13,7 @@ import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.QuestionType
@@ -52,7 +53,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             villageId = 0,
             createdDate = System.currentTimeMillis(),
             modifiedDate = System.currentTimeMillis(),
-            shgFlag = SHGFlag.NOT_MARKED.value
+            shgFlag = SHGFlag.NOT_MARKED.value,
+            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
         )
     )
 
@@ -70,7 +72,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             villageId = 0,
             createdDate = System.currentTimeMillis(),
             modifiedDate = System.currentTimeMillis(),
-            shgFlag = SHGFlag.NOT_MARKED.value
+            shgFlag = SHGFlag.NOT_MARKED.value,
+            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
         )
     )
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity

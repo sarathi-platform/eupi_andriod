@@ -140,7 +140,7 @@
     <string name="pat_survey_section_2">PAT সমীক্ষা - শাখা 2</string>
     <string name="pat_survey_complete">PAT সমীক্ষা</string>
     <string name="result_summary">সাৰাংশৰ ফলাফল</string>
-    <string name="summary_text">সাৰাংশসাৰাংশ</string>
+    <string name="summary_text">সাৰাংশ</string>
     <string name="complete_section_1_text">শাখা 1 সম্পূৰ্ণ কৰক</string>
     <string name="logout">লগ আউট</string>
     <string name="this_section_is_in_progress">এই শাখাটো প্ৰগতিশীল অৱস্থাত আছে</string>
@@ -362,8 +362,9 @@
     <string name="bpc_pat_survey_complete">BPC PAT সমীক্ষা</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
-    <string name="total_pat_attempted_string">Total PAT Attempted</string>
-    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+    <string name="total_pat_attempted_string">মুঠ PAT চেষ্টা কৰা হৈছে</string>
+    <string name="didis_marked_as_not_available_string">ডিডিছক উপলব্ধ নহয় বুলি চিহ্নিত কৰা হৈছে</string>
+    <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম \nমহিলা আছে নেকি?</string>
 
 
 </resources>

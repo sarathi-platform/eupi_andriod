@@ -469,7 +469,8 @@ class AddDidiViewModel @Inject constructor(
                         shgFlag = SHGFlag.NOT_MARKED.value,
                         transactionId = "",
                         needsToPostRanking = false,
-                        localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                        localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                        ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                     )
                 )
 
@@ -546,7 +547,9 @@ class AddDidiViewModel @Inject constructor(
                     needsToPostRanking = _didiList.value.get(_didiList.value.map { it.id }
                         .indexOf(didiId)).needsToPostRanking,
                     needsToPost = true,
-                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext())
+                    localUniqueId = getUniqueIdForEntity(MyApplication.applicationContext()),
+                    ableBodiedFlag = didiList.value.get(_didiList.value.map { it.id }
+                        .indexOf(didiId)).ableBodiedFlag
                 )
                 updatedDidi.guardianName
                 didiDao.insertDidi(updatedDidi)
