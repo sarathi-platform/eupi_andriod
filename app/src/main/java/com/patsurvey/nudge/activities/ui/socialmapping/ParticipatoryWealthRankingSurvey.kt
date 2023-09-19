@@ -784,19 +784,8 @@ fun DidiItemCardForWealthRanking(
                         ),
                         modifier = Modifier.layoutId("didiName")
                     )
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -804,7 +793,7 @@ fun DidiItemCardForWealthRanking(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
                     )
 
                     Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
@@ -1033,10 +1022,15 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
             end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
+//        constrain(homeImage) {
+//            top.linkTo(village.top, margin = 3.dp)
+//            bottom.linkTo(village.bottom)
+//            start.linkTo(didiName.start, margin = 3.dp)
+//        }
         constrain(homeImage) {
             top.linkTo(village.top, margin = 3.dp)
             bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start, margin = 3.dp)
+            start.linkTo(didiName.start)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
