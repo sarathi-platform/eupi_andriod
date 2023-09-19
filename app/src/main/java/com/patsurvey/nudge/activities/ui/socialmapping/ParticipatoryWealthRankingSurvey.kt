@@ -1028,7 +1028,7 @@ private fun decoupledConstraintsForWealthCard(): ConstraintSet {
 //            start.linkTo(didiName.start, margin = 3.dp)
 //        }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 3.dp)
+            top.linkTo(village.top, margin = 6.dp)
             bottom.linkTo(village.bottom)
             start.linkTo(didiName.start)
         }

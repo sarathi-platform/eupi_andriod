@@ -393,7 +393,7 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 3.dp)
+            top.linkTo(village.top, margin = 6.dp)
             bottom.linkTo(village.bottom)
             start.linkTo(didiName.start)
         }
