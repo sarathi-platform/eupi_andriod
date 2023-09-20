@@ -114,7 +114,7 @@
     <string name="vo_endorsement_sub_text_plural">%1$s Ultra Poor Didis Endorsed</string>
 
     <string name="empty_didis_string">No Didis Added</string>
-    <string name="didi_has_been_successfully_added">Didi has been successfully added.</string>
+    <string name="didi_has_been_successfully_added">%1$s has been successfully added.</string>
     <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
     <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
     <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
