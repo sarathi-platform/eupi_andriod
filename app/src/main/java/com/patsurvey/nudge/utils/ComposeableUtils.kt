@@ -175,18 +175,8 @@ fun DidiItemCardForPatSummary(
                                 .layoutId("successImage")
                         )*/
                     }
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -194,7 +184,7 @@ fun DidiItemCardForPatSummary(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
                     )
                 }
             }
@@ -403,9 +393,9 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 3.dp)
+            top.linkTo(village.top, margin = 6.dp)
             bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start, margin = 3.dp)
+            start.linkTo(didiName.start)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
