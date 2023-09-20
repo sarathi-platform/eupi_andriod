@@ -247,6 +247,7 @@ fun SurveySummary(
                     surveySummaryViewModel.updateDidiPatStatus()
                     surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
                     surveySummaryViewModel.saveBpcPatCompletionDate()
+                    surveySummaryViewModel.updatePatEditFlag()
 
                     navController.navigate(
                         "bpc_pat_step_completion_screen/${
@@ -263,6 +264,7 @@ fun SurveySummary(
                                     stepId
                                 )
                                 surveySummaryViewModel.savePatCompletionDate()
+                                surveySummaryViewModel.updatePatEditFlag()
                             }
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 if (surveySummaryViewModel.isTolaSynced.value == 2
