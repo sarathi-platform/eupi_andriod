@@ -29,7 +29,7 @@ enum class SHGFlag(val value: Int) {
             return when(shgFlagValue) {
                 YES.value -> YES
                 NO.value -> NO
-                else -> NO
+                else -> NOT_MARKED
             }
         }
 
@@ -37,7 +37,39 @@ enum class SHGFlag(val value: Int) {
             return when (shgFlag) {
                 "YES" -> YES
                 "NO" -> NO
-                else -> NO
+                else -> NOT_MARKED
+            }
+        }
+    }
+
+    override fun toString(): String {
+        return when(this) {
+            YES -> "YES"
+            NO -> "NO"
+            NOT_MARKED -> "NOT MARKED"
+        }
+    }
+
+}
+
+enum class AbleBodiedFlag(val value: Int) {
+    YES(1),
+    NO(2),
+    NOT_MARKED(-1);
+    companion object {
+        fun fromInt(ableBodiedFlagValue: Int) : AbleBodiedFlag {
+            return when(ableBodiedFlagValue) {
+                YES.value -> YES
+                NO.value -> NO
+                else -> NOT_MARKED
+            }
+        }
+
+        fun fromSting(ableBodiedFlag: String): AbleBodiedFlag {
+            return when (ableBodiedFlag) {
+                "YES" -> YES
+                "NO" -> NO
+                else -> NOT_MARKED
             }
         }
     }

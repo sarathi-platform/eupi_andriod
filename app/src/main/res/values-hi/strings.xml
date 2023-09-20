@@ -362,8 +362,9 @@
     <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
-    <string name="total_pat_attempted_string">Total PAT Attempted</string>
-    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+    <string name="total_pat_attempted_string">कुल PAT प्रयास</string>
+    <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के \nरूप में चिह्नित किया गया है</string>
+    <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>
 
 
 </resources>

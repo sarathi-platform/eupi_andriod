@@ -49,6 +49,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
 import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -1254,7 +1255,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                             crpUploadedImage = didi.crpUploadedImage,
                                                             needsToPostImage = false,
                                                             rankingEdit = didi.rankingEdit,
-                                                            patEdit = didi.patEdit
+                                                            patEdit = didi.patEdit,
+                                                            ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                         )
                                                     )
 //                                                    }

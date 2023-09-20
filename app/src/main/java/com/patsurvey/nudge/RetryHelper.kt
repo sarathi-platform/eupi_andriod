@@ -36,6 +36,7 @@ import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.model.request.StepResultTypeRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -427,7 +428,8 @@ object RetryHelper {
                                                             modifiedDate = didi.modifiedDate,
                                                             beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
                                                             shgFlag = SHGFlag.NOT_MARKED.value,
-                                                            transactionId = ""
+                                                            transactionId = "",
+                                                            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                                                         )
                                                     )
                                                 }

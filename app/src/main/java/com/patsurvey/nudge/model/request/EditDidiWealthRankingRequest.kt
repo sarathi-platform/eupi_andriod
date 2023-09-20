@@ -13,7 +13,8 @@ data class EditDidiWealthRankingRequest(
     @SerializedName("comment") var comment: String?= BLANK_STRING,
     @SerializedName("localModifiedDate") var localModifiedDate: Long?=0,
     @SerializedName("rankingEdit") var rankingEdit: Boolean = true,
-    @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING
+    @SerializedName("shgFlag") var shgFlag: String? = BLANK_STRING,
+    @SerializedName("ableBodiedFlag") var ableBodiedFlag: String? = BLANK_STRING
 ) {
     fun toJson() : JsonObject {
         val jsonObject = JsonObject()

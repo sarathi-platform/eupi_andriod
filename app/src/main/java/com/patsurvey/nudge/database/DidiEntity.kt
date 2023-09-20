@@ -241,7 +241,12 @@ data class DidiEntity(
     @SerializedName("patEdit")
     @Expose
     @ColumnInfo(name = "patEdit")
-    var patEdit: Boolean = true
+    var patEdit: Boolean = true,
+
+    @SerializedName("ableBodiedFlag")
+    @Expose
+    @ColumnInfo(name = "ableBodiedFlag")
+    var ableBodiedFlag: Int
 
 ){
     companion object{
@@ -277,7 +282,8 @@ data class DidiEntity(
                 crpScore = selectedDidiEntity.crpScore,
                 crpComment = selectedDidiEntity.crpComment,
                 crpUploadedImage = selectedDidiEntity.crpUploadedImage,
-                localUniqueId = ""
+                localUniqueId = "",
+                ableBodiedFlag = -1
             )
         }
         fun getDidiEntityFromNonSelectedDidiEntityForBpc(nonSelectedDidiEntity: BpcNonSelectedDidiEntity): DidiEntity {
@@ -311,7 +317,8 @@ data class DidiEntity(
                 crpScore = nonSelectedDidiEntity.crpScore,
                 crpComment = nonSelectedDidiEntity.crpComment,
                 crpUploadedImage = nonSelectedDidiEntity.crpUploadedImage,
-                localUniqueId = ""
+                localUniqueId = "",
+                ableBodiedFlag = -1
             )
         }
         fun getDidiEntityFromSelectedDidiEntityForCrp(selectedDidiEntity: BpcSelectedDidiEntity): DidiEntity {
@@ -343,7 +350,8 @@ data class DidiEntity(
                 crpScore = selectedDidiEntity.crpScore,
                 crpComment = selectedDidiEntity.crpComment,
                 crpUploadedImage = selectedDidiEntity.crpUploadedImage,
-                localUniqueId = ""
+                localUniqueId = "",
+                ableBodiedFlag = -1
             )
         }
     }
