@@ -39,6 +39,7 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -73,6 +74,10 @@ fun PatDidiSummaryScreen(
 
 //    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
     val shgFlag = remember {
+        mutableStateOf(-1)
+    }
+
+    val ableBodiedFlag = remember {
         mutableStateOf(-1)
     }
 
@@ -388,6 +393,127 @@ fun PatDidiSummaryScreen(
                                 }
                             }
                         }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .onGloballyPositioned { coordinates ->
+                                    yesNoButtonViewHeight.value =
+                                        with(localDensity) { coordinates.size.height.toDp() }
+                                }
+                        ) {
+                            Text(
+                                text = buildAnnotatedString {
+                                    withStyle(
+                                        style = SpanStyle(
+                                            fontFamily = NotoSans,
+                                            fontWeight = FontWeight.Normal,
+                                            fontSize = 14.sp,
+                                            color = textColorDark80
+                                        )
+                                    ) {
+                                        append(stringResource(R.string.able_bodied_women_flag_text))
+                                    }
+                                    withStyle(
+                                        style = SpanStyle(
+                                            color = red,
+                                            fontSize = 16.sp,
+                                            fontWeight = FontWeight.SemiBold,
+                                            fontFamily = NotoSans
+                                        )
+                                    ) {
+                                        append(" *")
+                                    }
+                                },
+                                overflow = TextOverflow.Ellipsis,
+                                modifier = Modifier/*.width()*/
+                                )
+                            
+                            Spacer(modifier = Modifier.width(4.dp))
+
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .border(
+                                        1.dp,
+                                        color = lightGray2,
+                                        RoundedCornerShape(6.dp)
+                                    )
+                                    .background(white, shape = RoundedCornerShape(6.dp))
+                                    .padding(0.dp)
+                            ) {
+                                Row(
+                                    Modifier
+                                        .padding(0.dp)
+                                        .onGloballyPositioned { coordinates ->
+                                            yesNoButtonViewHeight.value =
+                                                with(localDensity) { coordinates.size.height.toDp() }
+                                        }
+                                ) {
+                                    TextButton(
+                                        onClick = {
+                                            ableBodiedFlag.value = AbleBodiedFlag.YES.value
+                                            //add method to update flag value in db
+                                            patDidiSummaryViewModel.updateDidiAbleBodiedFlag(
+                                                didiId,
+                                                AbleBodiedFlag.YES
+                                            )
+                                        }, modifier = Modifier
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topStart = 6.dp,
+                                                    bottomStart = 6.dp
+                                                )
+                                            )
+                                            .background(
+                                                if (ableBodiedFlag.value == AbleBodiedFlag.YES.value) blueDark else Color.Transparent,
+                                                RoundedCornerShape(
+                                                    topStart = 6.dp,
+                                                    bottomStart = 6.dp
+                                                )
+                                            )
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.option_yes),
+                                            color = if (ableBodiedFlag.value == AbleBodiedFlag.YES.value) white else textColorDark
+                                        )
+                                    }
+                                    Divider(
+                                        modifier = Modifier
+                                            .width(1.dp)
+                                            .height(yesNoButtonViewHeight.value)
+                                            .background(lightGray2)
+                                    )
+                                    TextButton(
+                                        onClick = {
+                                            ableBodiedFlag.value = AbleBodiedFlag.NO.value
+                                            //add method to update flag value in db
+                                            patDidiSummaryViewModel.updateDidiAbleBodiedFlag(
+                                                didiId,
+                                                AbleBodiedFlag.NO
+                                            )
+                                        }, modifier = Modifier
+                                            .clip(
+                                                RoundedCornerShape(
+                                                    topEnd = 6.dp,
+                                                    bottomEnd = 6.dp
+                                                )
+                                            )
+                                            .background(
+                                                if (ableBodiedFlag.value == AbleBodiedFlag.NO.value) blueDark else Color.Transparent,
+                                                RoundedCornerShape(topEnd = 6.dp, bottomEnd = 6.dp)
+                                            )
+                                    ) {
+                                        Text(
+                                            text = stringResource(id = R.string.option_no),
+                                            color = if (ableBodiedFlag.value == AbleBodiedFlag.NO.value) white else textColorDark
+                                        )
+                                    }
+                                }
+                            }
+                        }
                         Spacer(modifier = Modifier.height(10.dp))
 
                         var hasImage by remember {
@@ -414,7 +540,7 @@ fun PatDidiSummaryScreen(
                                 model = patDidiSummaryViewModel.photoUri,
                                 contentDescription = null,
                                 modifier = Modifier
-                                    .height((screenHeight/2).dp)
+                                    .height((screenHeight / 2).dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(
@@ -439,7 +565,7 @@ fun PatDidiSummaryScreen(
                         } else {
                             Box(
                                 modifier = Modifier
-                                    .height((screenHeight/2).dp)
+                                    .height((screenHeight / 2).dp)
                                     .fillMaxWidth()
                                     .clip(RoundedCornerShape(6.dp))
                                     .background(
@@ -461,10 +587,18 @@ fun PatDidiSummaryScreen(
                                                     localContext as Activity,
                                                     Manifest.permission.READ_EXTERNAL_STORAGE
                                                 ) == PackageManager.PERMISSION_GRANTED -> {
-                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                                    NudgeLogger.d(
+                                                        "PatImagePreviewScreen",
+                                                        "Permission previously granted"
+                                                    )
 
-                                                    val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val imageFile =
+                                                        patDidiSummaryViewModel.getFileName(
+                                                            localContext,
+                                                            didi.value
+                                                        )
+                                                    patDidiSummaryViewModel.imagePath =
+                                                        imageFile.absolutePath
                                                     val uri = uriFromFile(localContext, imageFile)
                                                     patDidiSummaryViewModel.tempUri = uri
                                                     cameraLauncher.launch(uri)
@@ -480,7 +614,10 @@ fun PatDidiSummaryScreen(
                                                     localContext as Activity,
                                                     Manifest.permission.READ_EXTERNAL_STORAGE
                                                 ) -> {
-                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    NudgeLogger.d(
+                                                        "PatImagePreviewScreen",
+                                                        "Show camera permissions dialog"
+                                                    )
                                                     ActivityCompat.requestPermissions(
                                                         localContext as Activity,
                                                         arrayOf(
@@ -493,7 +630,10 @@ fun PatDidiSummaryScreen(
                                                 }
 
                                                 else -> {
-                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    NudgeLogger.d(
+                                                        "requestCameraPermission: ",
+                                                        "permission not granted"
+                                                    )
                                                     shouldRequestPermission.value = true
                                                 }
                                             }
@@ -503,10 +643,18 @@ fun PatDidiSummaryScreen(
                                                     localContext as Activity,
                                                     Manifest.permission.CAMERA
                                                 ) == PackageManager.PERMISSION_GRANTED -> {
-                                                    NudgeLogger.d("PatImagePreviewScreen", "Permission previously granted")
+                                                    NudgeLogger.d(
+                                                        "PatImagePreviewScreen",
+                                                        "Permission previously granted"
+                                                    )
 
-                                                    val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val imageFile =
+                                                        patDidiSummaryViewModel.getFileName(
+                                                            localContext,
+                                                            didi.value
+                                                        )
+                                                    patDidiSummaryViewModel.imagePath =
+                                                        imageFile.absolutePath
                                                     val uri = uriFromFile(localContext, imageFile)
                                                     patDidiSummaryViewModel.tempUri = uri
                                                     cameraLauncher.launch(uri)
@@ -516,7 +664,10 @@ fun PatDidiSummaryScreen(
                                                     localContext as Activity,
                                                     Manifest.permission.CAMERA
                                                 ) -> {
-                                                    NudgeLogger.d("PatImagePreviewScreen", "Show camera permissions dialog")
+                                                    NudgeLogger.d(
+                                                        "PatImagePreviewScreen",
+                                                        "Show camera permissions dialog"
+                                                    )
                                                     ActivityCompat.requestPermissions(
                                                         localContext as Activity,
                                                         arrayOf(
@@ -529,7 +680,10 @@ fun PatDidiSummaryScreen(
                                                 }
 
                                                 else -> {
-                                                    NudgeLogger.d("requestCameraPermission: ", "permission not granted")
+                                                    NudgeLogger.d(
+                                                        "requestCameraPermission: ",
+                                                        "permission not granted"
+                                                    )
                                                     shouldRequestPermission.value = true
                                                 }
                                             }
@@ -767,7 +921,8 @@ fun PatDidiSummaryScreen(
 
         }
 
-        if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value && shgFlag.value != SHGFlag.NOT_MARKED.value) {
+        if (patDidiSummaryViewModel.shouldShowPhoto.value && !patDidiSummaryViewModel.shouldShowCamera.value
+            && shgFlag.value != SHGFlag.NOT_MARKED.value && ableBodiedFlag.value != AbleBodiedFlag.NOT_MARKED.value) {
             DoubleButtonBox(
                 modifier = Modifier
                     .shadow(10.dp)

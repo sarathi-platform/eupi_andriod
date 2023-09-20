@@ -180,7 +180,7 @@ object LocationUtil {
                     )
                 }
             } else {
-                NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasGps || hasNetwork: false")
+                NudgeLogger.d("LocationUtil", "getLocation(Build.VERSION_CODES.R): hasGps: false || hasNetwork: false")
 
 //                Toast.makeText(context, "Location not enabled.", Toast.LENGTH_SHORT).show()
 //                context.startActivity(Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS))

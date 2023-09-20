@@ -34,6 +34,7 @@ import com.patsurvey.nudge.model.request.PATSummarySaveRequest
 import com.patsurvey.nudge.model.response.OptionsItem
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ACCEPTED
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
@@ -1283,7 +1284,8 @@ class SyncHelper (
                                 }
                             },
                             rankingEdit = didi.patEdit,
-                            shgFlag = SHGFlag.fromInt(didi.shgFlag).name
+                            shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
+                            ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
                         )
                     )
                     val stateId = villegeListDao.getVillage(didi.villageId).stateId

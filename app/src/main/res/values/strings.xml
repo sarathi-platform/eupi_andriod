@@ -388,5 +388,6 @@
     <string name="pat_success_message_singular">PAT Verification for {TOTAL_COUNT} new Didi has been submitted</string>
     <string name="total_pat_attempted_string">Total PAT Attempted</string>
     <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+    <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>
 
 </resources>
