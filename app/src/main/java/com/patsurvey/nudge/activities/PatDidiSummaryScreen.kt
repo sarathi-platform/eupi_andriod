@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -71,8 +72,7 @@ fun PatDidiSummaryScreen(
     didiId: Int,
     onNavigation: () -> Unit
 ) {
-
-//    val didi = Gson().fromJson(didiDetails, DidiEntity::class.java)
+    val context= LocalContext.current
     val shgFlag = remember {
         mutableStateOf(-1)
     }
@@ -85,6 +85,13 @@ fun PatDidiSummaryScreen(
         patDidiSummaryViewModel.getDidiDetails(didiId)
         delay(100)
         shgFlag.value = patDidiSummaryViewModel.didiEntity.value.shgFlag
+    }
+
+    if(patDidiSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+        BackHandler {
+            (context as MainActivity).isBackFromSummary.value=true
+            navController.popBackStack()
+        }
     }
 
     val didi = patDidiSummaryViewModel.didiEntity
@@ -430,7 +437,7 @@ fun PatDidiSummaryScreen(
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier/*.width()*/
                                 )
-                            
+
                             Spacer(modifier = Modifier.width(4.dp))
 
                             Box(
@@ -938,6 +945,11 @@ fun PatDidiSummaryScreen(
                 negativeButtonRequired = false,
                 positiveButtonText = stringResource(id = R.string.next),
                 positiveButtonOnClick = {
+                    if(patDidiSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
+                        updateStepStatus(stepsListDao = patDidiSummaryViewModel.stepsListDao,
+                            prefRepo = patDidiSummaryViewModel.prefRepo,
+                            printTag = "PatDidiSummaryViewModel")
+                    }
                     if((localContext as MainActivity).isOnline.value) {
                         val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0
                         ) patDidiSummaryViewModel.didiEntity.value.id else patDidiSummaryViewModel.didiEntity.value.serverId

@@ -86,10 +86,16 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -822,3 +828,25 @@ fun containsEmoji(str: String?) =
 
 
 
+fun updateStepStatus(stepsListDao: StepsListDao, prefRepo: PrefRepo, printTag:String){
+       CoroutineScope(Dispatchers.IO).launch {
+        val step = stepsListDao.getStepByOrder(4,prefRepo.getSelectedVillage().id)
+        NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsList: $step \n\n")
+
+        NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
+                "stepId = ${step.id},\n" +
+                "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                "villageId = ${prefRepo.getSelectedVillage().id} \n")
+
+        stepsListDao.markStepAsCompleteOrInProgress(
+            stepId = step.id,
+            isComplete = StepStatus.INPROGRESS.ordinal,
+            villageId = prefRepo.getSelectedVillage().id
+        )
+        NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress after " +
+                "stepId = ${step.id},\n" +
+                "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
+                "villageId = ${prefRepo.getSelectedVillage().id} \n")
+        stepsListDao.updateNeedToPost(step.id, prefRepo.getSelectedVillage().id, true)
+    }
+}

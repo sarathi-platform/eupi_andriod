@@ -14,6 +14,7 @@ import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -28,6 +29,7 @@ import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.roundOffDecimal
+import com.patsurvey.nudge.utils.updateStepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -47,7 +49,8 @@ class QuestionScreenViewModel @Inject constructor(
     val apiService: ApiService,
     val numericAnswerDao: NumericAnswerDao,
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+    val stepsListDao: StepsListDao
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0.0)
     val enteredAmount = mutableStateOf("")
@@ -203,8 +206,12 @@ class QuestionScreenViewModel @Inject constructor(
         onAnswerSave: () -> Unit
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
             withContext(Dispatchers.IO) {
+                if(prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_PAGE.ordinal) {
+                    updateStepStatus(stepsListDao = stepsListDao,
+                        prefRepo = prefRepo,
+                        printTag = "QuestionScreenViewModel")
+                }
                 didiDao.updateNeedToPostPAT(true,didiId, villageId = prefRepo.getSelectedVillage().id)
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(
                     didiId = didiId,

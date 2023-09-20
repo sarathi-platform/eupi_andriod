@@ -1387,32 +1387,35 @@ class AddDidiViewModel @Inject constructor(
             val questionExclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
             val questionInclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
             val quesList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
+            val yesQuesCount = answerDao.fetchOptionYesCount(didiId = didiId,QuestionType.RadioButton.name,TYPE_EXCLUSION)
             exclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_EXCLUSION }.size
             inclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_INCLUSION }.size
             if(questionInclusionAnswered.isNotEmpty()){
                 if(inclusiveQuesCount.value == questionInclusionAnswered.size){
                    withContext(Dispatchers.Main){
-                       onNavigateToSummary(2)
+                       if(yesQuesCount>0){
+                           onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
+                       }else onNavigateToSummary(SummaryNavigation.SECTION_2_PAGE.ordinal)
                    }
                 }else{
                     withContext(Dispatchers.Main){
-                        onNavigateToSummary(3)
+                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                     }
                 }
             }else{
                 if(questionExclusionAnswered.isNotEmpty()){
                     if(exclusiveQuesCount.value == questionExclusionAnswered.size){
                         withContext(Dispatchers.Main){
-                            onNavigateToSummary(1)
+                            onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
                         }
                     }else{
                         withContext(Dispatchers.Main){
-                            onNavigateToSummary(3)
+                            onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                         }
                     }
                 }else {
                     withContext(Dispatchers.Main){
-                        onNavigateToSummary(3)
+                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                     }
                 }
             }
