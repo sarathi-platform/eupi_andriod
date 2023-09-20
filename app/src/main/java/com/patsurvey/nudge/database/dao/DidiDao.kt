@@ -267,4 +267,7 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET patEdit = :patEdit WHERE id = :didiId")
     fun updatePATEditStatus(didiId: Int, patEdit: Boolean)
 
+    @Query("update $DIDI_TABLE set ableBodiedFlag =:ableBodiedFlag where id = :didiId")
+    fun updateDidiAbleBodiedStatus(didiId: Int, ableBodiedFlag: Int)
+
 }

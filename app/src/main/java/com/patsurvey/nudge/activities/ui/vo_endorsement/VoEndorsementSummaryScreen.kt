@@ -582,7 +582,7 @@ fun ShowAcceptRejectDialogPreview(){
         patSurveyStatus = PatSurveyStatus.COMPLETED.ordinal,
         section1Status = PatSurveyStatus.COMPLETED.ordinal,
         section2Status = PatSurveyStatus.COMPLETED.ordinal,
-
+        ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
         )
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp

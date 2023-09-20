@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.model.dataModel
 
-import androidx.room.ColumnInfo
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -63,5 +62,9 @@ data class PATDidiStatusModel(
     @SerializedName("patExclusionStatus")
     @Expose
     var patExclusionStatus: Int=0,
+
+    @SerializedName("ableBodiedFlag")
+    @Expose
+    var ableBodiedFlag: Int,
 
 )

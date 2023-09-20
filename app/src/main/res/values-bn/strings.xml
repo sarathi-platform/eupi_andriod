@@ -140,7 +140,7 @@
     <string name="pat_survey_section_2">PAT সমীক্ষা - ভাগ 2</string>
     <string name="pat_survey_complete">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="result_summary">সারাংশের পরিনাম</string>
-    <string name="summary_text">সারাংশসারাংশ</string>
+    <string name="summary_text">সারাংশ</string>
     <string name="complete_section_1_text">ভাগ 1 সম্পূর্ণ করুন</string>
     <string name="logout">লগআউট করুন</string>
     <string name="this_section_is_in_progress">এই বিভাগটি প্রগতিশীল অবস্থায় রয়েছে</string>
@@ -365,8 +365,9 @@
     <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
-    <string name="total_pat_attempted_string">Total PAT Attempted</string>
-    <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
+    <string name="total_pat_attempted_string">মোট PAT প্রচেষ্টা</string>
+    <string name="didis_marked_as_not_available_string">দিদির উপলব্ধ নেই হিসাবে চিহ্নিত</string>
+    <string name="able_bodied_women_flag_text">পরিবারে কি সদর্থ নারী আছে?</string>
 
 
 </resources>

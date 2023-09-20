@@ -17,6 +17,7 @@ import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.LocationCoordinates
@@ -81,7 +82,8 @@ class PatDidiSummaryViewModel @Inject constructor(
             villageId = 0,
             createdDate = System.currentTimeMillis(),
             modifiedDate = System.currentTimeMillis(),
-            shgFlag = SHGFlag.NOT_MARKED.value
+            shgFlag = SHGFlag.NOT_MARKED.value,
+            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
         )
     )
     val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
@@ -209,6 +211,12 @@ class PatDidiSummaryViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             didiDao.updateDidiShgStatus(didiId = didiId, shgFlag = flagStatus.value)
 
+        }
+    }
+
+    fun updateDidiAbleBodiedFlag(didiId: Int, flagStatus: AbleBodiedFlag) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            didiDao.updateDidiAbleBodiedStatus(didiId = didiId, ableBodiedFlag = flagStatus.value)
         }
     }
 

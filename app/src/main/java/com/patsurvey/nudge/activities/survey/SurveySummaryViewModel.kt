@@ -147,7 +147,7 @@ class SurveySummaryViewModel @Inject constructor(
                 var didiIDList = emptyList<PATDidiStatusModel>()
                 didiIDList = answerDao.fetchPATSurveyDidiList(prefRepo.getSelectedVillage().id)
                 Log.d("TAG", "savePATSummeryToServer before ListSize: ${didiIDList.size}")
-                didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
+
                 var optionList: List<OptionsItem>
                 var answeredDidiList: ArrayList<PATSummarySaveRequest> = arrayListOf()
                 var scoreDidiList: ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
@@ -276,7 +276,8 @@ class SurveySummaryViewModel @Inject constructor(
                                     }
                                 },
                                 rankingEdit = false,
-                                shgFlag = SHGFlag.fromInt(didi.shgFlag).name
+                                shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
                             )
                         )
                         answeredDidiList.add(
@@ -1132,12 +1133,18 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-   /* fun updatePatEditFlagForDidis() {
+    fun updatePatEditFlag() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageId = prefRepo.getSelectedVillage().id
-            didiDao.updatePatEditFlag(villageId, false)
+            didiDao.updatePatEditFlag(prefRepo.getSelectedVillage().id, false)
         }
-    }*/
+    }
+
+    /* fun updatePatEditFlagForDidis() {
+         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+             val villageId = prefRepo.getSelectedVillage().id
+             didiDao.updatePatEditFlag(villageId, false)
+         }
+     }*/
 
 
 }
