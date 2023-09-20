@@ -199,7 +199,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                    didiViewModel?.saveDidiIntoDatabase((context as MainActivity).isOnline.value ?: false, object :LocalDbListener{
                        override fun onInsertionSuccess() {
                            onNavigation()
-                           showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added))
+                           showCustomToast(context,context.getString(R.string.didi_has_been_successfully_added,didiViewModel?.didiName?.value))
                        }
                        override fun onInsertionFailed() {
                            showCustomToast(context,context.getString(R.string.didi_already_exist))

@@ -112,8 +112,8 @@
     <string name="pat_sub_text_plural">%1$s अति गरीब दीदीयां  VO को भेजी गई</string>
     <string name="vo_endorsement_sub_text_singular">%1$s अति गरीब दीदी का अनुमोदन किया गया</string>
     <string name="vo_endorsement_sub_text_plural">%1$s अति गरीब दिदीयों का अनुमोदन किया गया</string>
-    <string name="empty_didis_string">कोई दीदी नहीं जोड़ी  गई</string>
-    <string name="didi_has_been_successfully_added">दीदी सफल तरीक़े से जोड़ी  गई</string>
+    <string name="empty_didis_string">कोई दीदी नहीं जोड़ी गई</string>
+    <string name="didi_has_been_successfully_added">%1$s सफल तरीक़े से जोड़ी गई</string>
     <string name="tola_successfully_added">{TOLA_NAME} जोड़ा गया</string>
     <string name="tola_updated">{TOLA_NAME} अप्डेट किया गया</string>
     <string name="tola_deleted">{TOLA_NAME} मिटाया गया</string>

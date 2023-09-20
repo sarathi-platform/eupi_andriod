@@ -113,7 +113,7 @@
     <string name="vo_endorsement_sub_text_singular">%1$s অতি দৰিদ্ৰ বাইদেউৰ অনুমোদন কৰা হল</string>
     <string name="vo_endorsement_sub_text_plural">%1$s অতি দৰিদ্ৰ বাইদেউসকলৰ অনুমোদন কৰা হল</string>
     <string name="empty_didis_string">কোনো বাইদেউক যোগ কৰা হোৱা নাই</string>
-    <string name="didi_has_been_successfully_added">বাইদেউক সফলতাৰে যোগ কৰা হল</string>
+    <string name="didi_has_been_successfully_added">%1$s সফলতাৰে যোগ কৰা হল</string>
     <string name="tola_successfully_added">{TOLA_NAME} যোগ কৰা হল</string>
     <string name="tola_updated">{TOLA_NAME} আপডেট কৰা হল</string>
     <string name="tola_deleted">{TOLA_NAME} ডিলিট কৰা হল</string>
