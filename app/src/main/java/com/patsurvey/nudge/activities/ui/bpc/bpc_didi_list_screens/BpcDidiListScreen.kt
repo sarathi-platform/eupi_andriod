@@ -69,6 +69,7 @@ import androidx.navigation.NavHostController
 import coil.compose.rememberImagePainter
 import com.google.gson.Gson
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.DidiItemCardForPat
 import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -146,8 +147,6 @@ fun BpcDidiListScreen(
     LaunchedEffect(key1 = Unit) {
         bpcDidiListViewModel.fetchDidiFromDb()
         delay(100)
-//        if (ReplaceHelper.didiToBeReplaced.value.first != -1)
-//            listState.animateScrollToItem(ReplaceHelper.didiToBeReplaced.value.first)
     }
 
     if (bpcDidiListViewModel.showLoader.value) {
@@ -271,7 +270,7 @@ fun BpcDidiListScreen(
                                 )
                                 Spacer(modifier = Modifier.padding(14.dp))
 //                            if (!bpcDidiListViewModel.isStepComplete.value) {
-                                ButtonOutline(
+                                /*ButtonOutline(
                                     modifier = Modifier
                                         .weight(0.9f)
                                         .height(45.dp),
@@ -280,19 +279,8 @@ fun BpcDidiListScreen(
                                     ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
                                     val forReplace = false
                                     navController.navigate("bpc_add_more_didi_list/$forReplace")
-                                }
-//                            }
-
-                                /*BlueButtonWithIconWithFixedWidth(
-                                    modifier = Modifier
-                                        .weight(0.5f),
-                                    buttonText = stringResource(R.string.add_more),
-                                    icon = Icons.Default.Add
-                                ) {
-                                    ReplaceHelper.didiToBeReplaced.value = Pair(-1, -1)
-                                    val forReplace = false
-                                    navController.navigate("bpc_add_more_didi_list/$forReplace")
                                 }*/
+//                            }
                             }
                         }
 
@@ -306,17 +294,8 @@ fun BpcDidiListScreen(
                             itemsIndexed(
                                 newFilteredTolaDidiList.keys.toList().reversed()
                             ) { index, didiKey ->
-                                ShowDidisFromTolaForBpc(
-                                    navController = navController,
-                                    viewModel = bpcDidiListViewModel,
-                                    didiTola = didiKey,
-                                    didiList = newFilteredTolaDidiList[didiKey]
-                                        ?: emptyList(),
-                                    modifier = modifier,
-                                    onNavigate = {
 
-                                    }
-                                )
+
                                 if (index < newFilteredTolaDidiList.keys.size - 1) {
                                     Divider(
                                         color = borderGreyLight,
@@ -332,7 +311,17 @@ fun BpcDidiListScreen(
                             }
                         } else {
                             itemsIndexed(newFilteredDidiList) { index, didi ->
-                                DidiItemCardForBpc(
+
+                                DidiItemCardForPat(
+                                    navController = navController,
+                                    didiViewModel = didiViewModel,
+                                    didi = didi,
+                                    expanded = false,
+                                    modifier = modifier,
+                                    onExpendClick = {_,_->},
+                                    onItemClick = {}
+                                )
+                                /*DidiItemCardForBpc(
                                     navController = navController,
                                     didi = didi,
                                     index = index,
@@ -340,7 +329,7 @@ fun BpcDidiListScreen(
                                     viewModel = bpcDidiListViewModel
                                 ) {
 
-                                }
+                                }*/
                                 Spacer(modifier = Modifier.height(10.dp))
                             }
                         }

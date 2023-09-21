@@ -76,8 +76,11 @@ import java.io.File
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun SocialMappingDidiListScreen(
-    navController: NavHostController, modifier: Modifier,
-    didiViewModel: AddDidiViewModel, villageId: Int, stepId: Int
+    navController: NavHostController,
+    modifier: Modifier,
+    didiViewModel: AddDidiViewModel,
+    villageId: Int,
+    stepId: Int
 ) {
     val didiList = didiViewModel.didiList
     val newFilteredDidiList = didiViewModel.filterDidiList
@@ -1275,11 +1278,12 @@ fun DidiItemCard(
 @Composable
 fun DidiItemCardForPat(
     navController:NavHostController,
-    didiViewModel: AddDidiViewModel,
+    prefRepo: PrefRepo,
     didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onNotAvailableClick: (DidiEntity) ->Unit,
     onItemClick: (DidiEntity) -> Unit,
 ) {
     val transition = updateTransition(expanded, label = "transition")
@@ -1296,7 +1300,7 @@ fun DidiItemCardForPat(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                if (didiViewModel.prefRepo
+                if (prefRepo
                         .getFromPage()
                         .equals(
                             ARG_FROM_PAT_SURVEY,
@@ -1337,7 +1341,7 @@ fun DidiItemCardForPat(
                             ),
                         )
 
-                        if(didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+                        if(prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
                             if (didi.patSurveyStatus.equals(PatSurveyStatus.COMPLETED.ordinal)) {
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_completed_tick),
@@ -1388,7 +1392,7 @@ fun DidiItemCardForPat(
                     )
                 }
             }
-            if (didiViewModel.prefRepo.getFromPage()
+            if (prefRepo.getFromPage()
                     .equals(ARG_FROM_PAT_SURVEY, true)
             ) {
                 Divider(
@@ -1425,7 +1429,8 @@ fun DidiItemCardForPat(
                                 )
                         ){
                             didiMarkedNotAvailable.value = true
-                            didiViewModel.setDidiAsUnavailable(didi.id)
+                            onNotAvailableClick(didi)
+//                            didiViewModel.setDidiAsUnavailable(didi.id)
                         }
                         Spacer(modifier = Modifier.width(6.dp))
                         ButtonPositiveForPAT(
@@ -1450,14 +1455,14 @@ fun DidiItemCardForPat(
                             iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
                         ) {
 
-                            didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
+                            validateDidiToNavigate(didiId = didi.id, prefRepo = prefRepo, answerDao = , questionListDao = ){ navigationValue->
                                 if(navigationValue == SummaryNavigation.SECTION_1_PAGE.ordinal){
-                                    didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                                    navigateSocialToSummeryPage(navController,1,didi.id,didiViewModel.prefRepo)
+                                    prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
+                                    navigateSocialToSummeryPage(navController,1,didi.id,prefRepo)
 
                                 }else if(navigationValue == SummaryNavigation.SECTION_2_PAGE.ordinal){
-                                    didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                                    navigateSocialToSummeryPage(navController,2,didi.id,didiViewModel.prefRepo)
+                                    prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                                    navigateSocialToSummeryPage(navController,2,didi.id,prefRepo)
 
                                 }else{
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
@@ -1469,8 +1474,8 @@ fun DidiItemCardForPat(
 
                                     } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal  ) {
                                         val quesIndex=0
-                                        didiViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
-                                        didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
+                                        prefRepo.saveSummaryScreenOpenFrom(PageFrom.DIDI_LIST_PAGE.ordinal)
                                         if (didi.section1Status == 0 || didi.section1Status == 1)
                                             navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_EXCLUSION/$quesIndex")
                                         else if ((didi.section2Status == 0 || didi.section2Status == 1) && didi.patExclusionStatus == 0) navController.navigate("yes_no_question_screen/${didi.id}/$TYPE_INCLUSION/$quesIndex")

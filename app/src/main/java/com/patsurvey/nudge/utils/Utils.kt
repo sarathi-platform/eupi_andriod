@@ -79,6 +79,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper.exceptionHandler
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
@@ -86,7 +87,9 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -97,6 +100,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -1002,5 +1006,45 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
                 "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
                 "villageId = ${prefRepo.getSelectedVillage().id} \n")
         stepsListDao.updateNeedToPost(step.id, prefRepo.getSelectedVillage().id, true)
+    }
+}
+
+fun validateDidiToNavigate(didiId: Int,answerDao:AnswerDao,prefRepo: PrefRepo,questionListDao: QuestionListDao,onNavigateToSummary:(Int)->Unit){
+    CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
+        val questionExclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
+        val questionInclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
+        val quesList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
+        val yesQuesCount = answerDao.fetchOptionYesCount(didiId = didiId,QuestionType.RadioButton.name,TYPE_EXCLUSION)
+        val exclusiveQuesCount = quesList.filter { it.actionType == TYPE_EXCLUSION }.size
+        val inclusiveQuesCount = quesList.filter { it.actionType == TYPE_INCLUSION }.size
+        if(questionInclusionAnswered.isNotEmpty()){
+            if(inclusiveQuesCount == questionInclusionAnswered.size){
+                withContext(Dispatchers.Main){
+                    if(yesQuesCount>0){
+                        onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
+                    }else onNavigateToSummary(SummaryNavigation.SECTION_2_PAGE.ordinal)
+                }
+            }else{
+                withContext(Dispatchers.Main){
+                    onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                }
+            }
+        }else{
+            if(questionExclusionAnswered.isNotEmpty()){
+                if(exclusiveQuesCount == questionExclusionAnswered.size){
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
+                    }
+                }else{
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                    }
+                }
+            }else {
+                withContext(Dispatchers.Main){
+                    onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                }
+            }
+        }
     }
 }
