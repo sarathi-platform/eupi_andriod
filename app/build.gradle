@@ -78,7 +78,7 @@ android {
         production{
             manifestPlaceholders.app_name= "The Nudge"
             versionName '0.0.1'
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
     compileOptions {
