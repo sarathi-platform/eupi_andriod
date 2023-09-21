@@ -14,6 +14,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
@@ -24,6 +25,7 @@ import com.patsurvey.nudge.utils.LocationCoordinates
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
@@ -50,7 +52,8 @@ class PatDidiSummaryViewModel @Inject constructor(
     val didiDao: DidiDao,
     val answerDao: AnswerDao,
     val apiService: ApiService,
-    val casteListDao: CasteListDao
+    val casteListDao: CasteListDao,
+    val stepsListDao: StepsListDao
 ) :
     BaseViewModel() {
 
@@ -290,4 +293,5 @@ class PatDidiSummaryViewModel @Inject constructor(
             didiDao.updateNeedsToPostImage(didiEntity.value.id, needToPostImage)
         }
     }
+
 }

@@ -65,6 +65,7 @@ import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.ModuleAddedSuccessView
 import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
@@ -343,7 +344,7 @@ fun SocialMappingDidiListScreen(
                                     else newFilteredTolaDidiList[didiKey] ?: emptyList(),
                                     modifier = modifier,
                                     expandedIds = expandedIds,
-                                    onExpendClick = { expand, didiDetailModel ->
+                                    onExpendClick = { _, didiDetailModel ->
                                         if (expandedIds.contains(didiDetailModel.id)) {
                                             expandedIds.remove(didiDetailModel.id)
                                         } else {
@@ -356,7 +357,7 @@ fun SocialMappingDidiListScreen(
                                                 true
                                             ) && !didiViewModel.isSocialMappingComplete.value
                                         ) {
-                                            navController.navigate("add_didiA_graph/${it.id}") {
+                                            navController.navigate("add_didi_graph/${it.id}") {
                                                 launchSingleTop = true
                                             }
                                         } else if (didiViewModel.prefRepo.getFromPage().equals(
@@ -415,12 +416,8 @@ fun SocialMappingDidiListScreen(
                                         didi = didi,
                                         expanded = expandedIds.contains(didi.id),
                                         modifier = modifier,
-                                        onExpendClick = { expand, didiDetailModel ->
-
-                                        },
-                                        onItemClick = { didi ->
-
-                                        }
+                                        onExpendClick = {_,_->},
+                                        onItemClick = {}
                                     )
                                 } else {
                                     DidiItemCard(navController,
@@ -428,7 +425,7 @@ fun SocialMappingDidiListScreen(
                                         didi,
                                         expandedIds.contains(didi.id),
                                         modifier,
-                                        onExpendClick = { expand, didiDetailModel ->
+                                        onExpendClick = { _, didiDetailModel ->
                                             if (expandedIds.contains(didiDetailModel.id)) {
                                                 expandedIds.remove(didiDetailModel.id)
                                             } else {
@@ -1050,7 +1047,10 @@ fun DidiItemCard(
                     )
 
                     if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
-                        Box(modifier = Modifier.background(languageItemActiveBg, RoundedCornerShape(6.dp)).clip(RoundedCornerShape(6.dp)).layoutId("latestStatusCollapsed")) {
+                        Box(modifier = Modifier
+                            .background(languageItemActiveBg, RoundedCornerShape(6.dp))
+                            .clip(RoundedCornerShape(6.dp))
+                            .layoutId("latestStatusCollapsed")) {
                             Text(
                                 text = getLatestStatusText(context, didi),
                                 style = TextStyle(
@@ -1061,15 +1061,20 @@ fun DidiItemCard(
                                 ),
                                 textAlign = TextAlign.Center,
                                 overflow = TextOverflow.Ellipsis,
-                                modifier = Modifier.align(Center).padding(vertical = 8.dp, horizontal = 8.dp)
+                                modifier = Modifier
+                                    .align(Center)
+                                    .padding(vertical = 8.dp, horizontal = 8.dp)
                             )
                         }
                     } else {
-                        Spacer(modifier = Modifier.fillMaxWidth().height(4.dp).layoutId("latestStatusCollapsed"))
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(4.dp)
+                            .layoutId("latestStatusCollapsed"))
                     }
 
                     if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal && didi.rankingEdit && didi.patEdit) {
+                        if (didi.patSurveyStatus != PatSurveyStatus.COMPLETED.ordinal && didi.patEdit) {
                             IconButton(
                                 onClick = {
                                     showMenu.value = !showMenu.value
@@ -1203,13 +1208,13 @@ fun DidiItemCard(
                         ) {
 
                             didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
-                                if(navigationValue == 1){
+                                if(navigationValue == SummaryNavigation.SECTION_1_PAGE.ordinal){
                                        didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                                        navigateToSummeryPage(navController,1,didi.id,didiViewModel)
+                                    navigateSocialToSummeryPage(navController,1,didi.id,didiViewModel.prefRepo)
 
-                                }else if(navigationValue == 2){
+                                }else if(navigationValue == SummaryNavigation.SECTION_2_PAGE.ordinal){
                                     didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                                       navigateToSummeryPage(navController,2,didi.id,didiViewModel)
+                                    navigateSocialToSummeryPage(navController,2,didi.id,didiViewModel.prefRepo)
 
                                 }else{
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
@@ -1446,13 +1451,13 @@ fun DidiItemCardForPat(
                         ) {
 
                             didiViewModel.validateDidiToNavigate(didiId = didi.id){ navigationValue->
-                                if(navigationValue == 1){
+                                if(navigationValue == SummaryNavigation.SECTION_1_PAGE.ordinal){
                                     didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                                    navigateToSummeryPage(navController,1,didi.id,didiViewModel)
+                                    navigateSocialToSummeryPage(navController,1,didi.id,didiViewModel.prefRepo)
 
-                                }else if(navigationValue == 2){
+                                }else if(navigationValue == SummaryNavigation.SECTION_2_PAGE.ordinal){
                                     didiViewModel.prefRepo.saveSummaryScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                                    navigateToSummeryPage(navController,2,didi.id,didiViewModel)
+                                    navigateSocialToSummeryPage(navController,2,didi.id,didiViewModel.prefRepo)
 
                                 }else{
                                     if (didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal
@@ -1845,13 +1850,13 @@ fun SocialMappingDidiListPreview() {
 
 
 }
-fun navigateToSummeryPage(navController: NavHostController, section:Int,didiId: Int,didiViewModel: AddDidiViewModel) {
+fun navigateSocialToSummeryPage(navController: NavHostController, section:Int,didiId: Int,prefRepo: PrefRepo) {
     if(section == 1){
-        if(didiViewModel.prefRepo.isUserBPC())
+        if(prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
         else navController.navigate("pat_section_one_summary_screen/$didiId")
     }else{
-        if(didiViewModel.prefRepo.isUserBPC())
+        if(prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_two_summary_screen/$didiId")
         else  navController.navigate("pat_section_two_summary_screen/$didiId")
 

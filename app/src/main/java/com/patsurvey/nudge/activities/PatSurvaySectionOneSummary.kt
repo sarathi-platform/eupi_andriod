@@ -70,6 +70,7 @@ fun PatSurvaySectionSummaryScreen(
 ) {
 
     LaunchedEffect(key1 = true) {
+        patSectionSummaryViewModel.updatePATEditAndStepStatus(didiId)
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
         patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
@@ -201,7 +202,7 @@ fun PatSurvaySectionSummaryScreen(
                                }
                            } ?: BLANK_STRING,
                            optionValue =  answer?.optionValue?:0,
-                           isArrowVisible = didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal ),
+                           isArrowVisible = if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)),
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
 
                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
@@ -387,7 +388,8 @@ fun SectionOneSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-                    onCardClick(index)
+                    if(isArrowVisible)
+                        onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){
             val quesImage: File? =

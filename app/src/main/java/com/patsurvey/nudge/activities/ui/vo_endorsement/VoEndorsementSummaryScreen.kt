@@ -291,7 +291,7 @@ fun VoEndorsementSummaryScreen(
                                             } ?: BLANK_STRING,
                                             questionType = answer.type,
                                             isArrowVisible = false,
-                                            isSummaryEnable = false,
+                                            isSummaryEnable = true,
                                             questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                             questionFlag = answer.questionFlag ?: QUESTION_FLAG_WEIGHT
                                         ){

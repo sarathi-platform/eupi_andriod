@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.utils
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -28,6 +29,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,6 +55,7 @@ import com.patsurvey.nudge.activities.ui.theme.acceptEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.bgGreyLight
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
+import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.rejectEndorsementTextColor
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
@@ -119,11 +122,15 @@ fun SummaryBox(
     }
 }
 
+@SuppressLint("UnrememberedMutableState")
 @Composable
 fun DidiItemCardForPatSummary(
     didi: DidiEntity,
     modifier: Modifier,
-    onItemClick: (DidiEntity) -> Unit
+    isVOEndorsementComplete:Boolean ?=true,
+    onItemClick: (DidiEntity) -> Unit,
+    onNotAvailableClick: (DidiEntity) ->Unit,
+    onStartPATClick: (DidiEntity) ->Unit,
 ) {
     Card(
         elevation = 10.dp,
@@ -217,6 +224,55 @@ fun DidiItemCardForPatSummary(
                             .absolutePadding(top = 4.dp, left = 2.dp)
                             .size(24.dp)
                     )
+                }
+            } else if(isVOEndorsementComplete == false) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 10.dp, horizontal = 16.dp)
+                ) {
+                    val didiMarkedNotAvailable = mutableStateOf(true)
+                    ButtonNegativeForPAT(
+                        buttonTitle = stringResource(id = R.string.not_avaliable),
+                        isArrowRequired = false,
+                        color = if (didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (didiMarkedNotAvailable.value) white else blueDark,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
+                            .background(
+                                if (didiMarkedNotAvailable.value
+                                ) blueDark else languageItemActiveBg
+                            )
+                    ){
+                        didiMarkedNotAvailable.value = true
+                        onNotAvailableClick(didi)
+                    }
+                    Spacer(modifier = Modifier.width(6.dp))
+                    ButtonPositiveForPAT(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(45.dp)
+                            .weight(1f)
+                            .background(
+                                if (didiMarkedNotAvailable.value
+                                ) languageItemActiveBg else blueDark
+                            ),
+                        buttonTitle = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal)
+                            stringResource(id = R.string.start_pat)
+                        else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal
+                            || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
+                            stringResource(id = R.string.continue_pat)
+                        else "",
+                        true,
+                        color = if (!didiMarkedNotAvailable.value) blueDark else languageItemActiveBg,
+                        textColor = if (!didiMarkedNotAvailable.value) white else blueDark,
+                        iconTintColor = if (!didiMarkedNotAvailable.value) white else blueDark
+                    ) {
+                        onStartPATClick(didi)
+                    }
                 }
             }
         }
