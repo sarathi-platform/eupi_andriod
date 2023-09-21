@@ -76,6 +76,7 @@ fun PatSurvaySectionTwoSummaryScreen(
 
     LaunchedEffect(key1 = true) {
         patSectionSummaryViewModel.sectionType.value= TYPE_INCLUSION
+        patSectionSummaryViewModel.updatePATEditAndStepStatus(didiId)
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
     }
     BackHandler {
@@ -199,7 +200,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                           questionType =  answer?.type?: QuestionType.List.name,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                           isSummaryEnable = true,
-                          isArrowVisible = didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal),
+                          isArrowVisible = if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)),
                           questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
@@ -354,7 +355,7 @@ fun SectionTwoSummeryItem(
 ) {
     Column(
         modifier = Modifier
-            .alpha( if(isSummaryEnable) 1f else .5f)
+            .alpha(if (isSummaryEnable) 1f else .5f)
             .fillMaxWidth()
             .then(modifier)
     ) {
@@ -362,7 +363,7 @@ fun SectionTwoSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-                    if(isSummaryEnable && isArrowVisible)
+                    if (isSummaryEnable && isArrowVisible)
                         onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()) {

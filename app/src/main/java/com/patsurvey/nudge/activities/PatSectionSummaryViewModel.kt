@@ -21,6 +21,7 @@ import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.StepStatus
@@ -28,9 +29,11 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
+import com.patsurvey.nudge.utils.updateStepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -86,6 +89,27 @@ class PatSectionSummaryViewModel @Inject constructor(
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val  inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
 
+    fun updatePATEditAndStepStatus(didiId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+                .sortedBy { it.orderNumber }
+            isPATStepComplete.value =
+                stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
+            if (prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal
+                && isPATStepComplete.value == StepStatus.COMPLETED.ordinal
+            ) {
+                updateStepStatus(
+                    stepsListDao = stepsListDao,
+                    didiDao = didiDao,
+                    didiId = didiId,
+                    prefRepo = prefRepo,
+                    printTag = "PatSectionSummaryViewModel ONE"
+                )
+                delay(100)
+            }
+        }
+    }
+
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
            val localDidiDetails=didiDao.getDidi(didiId)
@@ -94,8 +118,6 @@ class PatSectionSummaryViewModel @Inject constructor(
             val inclusionQuestionList = questionListDao.getQuestionForType(TYPE_INCLUSION,prefRepo.getAppLanguageId()?:2)
             val localAnswerList = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
             val localSummeryList = answerDao.getAnswerForDidi(TYPE_INCLUSION, didiId = didiId)
-            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }
-            isPATStepComplete.value = stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
             if(sectionType.value.equals(TYPE_INCLUSION,true)){
                 calculateDidiScore(localDidiDetails.id)
             }

@@ -210,7 +210,9 @@ class QuestionScreenViewModel @Inject constructor(
                 if(prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_PAGE.ordinal) {
                     updateStepStatus(stepsListDao = stepsListDao,
                         prefRepo = prefRepo,
-                        printTag = "QuestionScreenViewModel")
+                        printTag = "QuestionScreenViewModel",
+                        didiDao = didiDao,
+                        didiId = didiId)
                 }
                 didiDao.updateNeedToPostPAT(true,didiId, villageId = prefRepo.getSelectedVillage().id)
                 val alreadyAnsweredModel = answerDao.isAlreadyAnswered(

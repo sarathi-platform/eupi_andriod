@@ -460,6 +460,7 @@ fun SurveySummary(
                                                         surveySummaryViewModel.validateDidiToNavigate(didiEntity.id){ navigationTo ->
                                                             when(navigationTo){
                                                                 SummaryNavigation.SECTION_1_PAGE.ordinal -> {
+                                                                    surveySummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
                                                                     navigateSocialToSummeryPage(
                                                                         navController,
                                                                         1,
@@ -468,6 +469,7 @@ fun SurveySummary(
                                                                     )
                                                                 }
                                                                 SummaryNavigation.SECTION_2_PAGE.ordinal ->{
+                                                                    surveySummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
                                                                     navigateSocialToSummeryPage(
                                                                         navController,
                                                                         2,

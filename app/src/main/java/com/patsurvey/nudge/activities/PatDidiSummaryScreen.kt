@@ -948,7 +948,9 @@ fun PatDidiSummaryScreen(
                     if(patDidiSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_CAMERA_PAGE.ordinal) {
                         updateStepStatus(stepsListDao = patDidiSummaryViewModel.stepsListDao,
                             prefRepo = patDidiSummaryViewModel.prefRepo,
-                            printTag = "PatDidiSummaryViewModel")
+                            printTag = "PatDidiSummaryViewModel",
+                            didiId = patDidiSummaryViewModel.didiEntity.value.id,
+                            didiDao = patDidiSummaryViewModel.didiDao)
                     }
                     if((localContext as MainActivity).isOnline.value) {
                         val id = if (patDidiSummaryViewModel.didiEntity.value.serverId == 0

@@ -86,6 +86,7 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -828,11 +829,11 @@ fun containsEmoji(str: String?) =
 
 
 
-fun updateStepStatus(stepsListDao: StepsListDao, prefRepo: PrefRepo, printTag:String){
+fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,prefRepo: PrefRepo, printTag:String){
        CoroutineScope(Dispatchers.IO).launch {
         val step = stepsListDao.getStepByOrder(4,prefRepo.getSelectedVillage().id)
         NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsList: $step \n\n")
-
+           didiDao.updatePATEditStatus(didiId,true)
         NudgeLogger.d(printTag, "setPATSurveyINProgress -> stepsListDao.markStepAsCompleteOrInProgress before " +
                 "stepId = ${step.id},\n" +
                 "isComplete = StepStatus.INPROGRESS.ordinal,\n" +
