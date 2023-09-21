@@ -270,32 +270,185 @@ fun openSettings(context: Context) {
 var videoList = listOf(
     VideoItem(
         id = 1,
+        title = "Logging into Sarathi app",
+        description = "How to login to Sarathi app",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+    ),
+    VideoItem(
+        id = 2,
+        title = "App overview",
+        description = "Brief introduction to Sarathi app",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3AppOverview.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+    ),
+    VideoItem(
+        id = 3,
+        title = "Transect Walk",
+        description = "How to use Sarathi app during Transect Walk",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4TransectWalk.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+    ),
+    VideoItem(
+        id = 4,
+        title = "Social Mapping",
+        description = "How to enter didi details during Social Mapping",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5SocialMapping.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+    ),
+    VideoItem(
+        id = 5,
+        title = "Participatory Wealth Ranking",
+        description = "How to record Didi's wealth ranking",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+    ),VideoItem(
+        id = 6,
+        title = "PAT Survey - Overview",
+        description = "Introduction to PAT survey on Sarathi app",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+    ),VideoItem(
+        id = 7,
+        title = "Filling PAT Survey - Part 1",
+        description = "How to fill PAT survey - Part 1",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart1.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+    ),
+    VideoItem(
+        id = 8,
+        title = "Filling PAT Survey - Part 2",
+        description = "How to fill PAT Survey - Part 2",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart2.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+    ),
+    VideoItem(
+        id = 9,
+        title = "Digital Form B and Submit for VO endorsement",
+        description = "How to download Digital Form B and submit for VO endorsement",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9DigitalFormBAndSubmitForVOEndorsement.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+    ),
+    VideoItem(
+        id = 10,
+        title = "VO Endorsement",
+        description = "How to record VO endorsement",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10VOEndorsement.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+    ),
+    VideoItem(
+        id = 11,
+        title = "Syncing data",
+        description = "How to sync/ upload data from Sarathi app",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11SyncingData.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
+    ),
+
+
+    VideoItem(
+        id = 12,
+        title = "সারথি অ্যাপে লগ ইন করুন",
+        description = "সারথি অ্যাপে কিভাবে লগইন করবেন",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+    ),
+    VideoItem(
+        id = 13,
+        title = "অ্যাপের সংক্ষিপ্ত বিবরণ",
+        description = "সারথি অ্যাপের সংক্ষিপ্ত পরিচয়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+    ),
+    VideoItem(
+        id = 14,
+        title = "গ্রামের ভ্রমণ",
+        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+    ),
+    VideoItem(
+        id = 15,
+        title = "সামাজিক মানচিত্র",
+        description = "সামাজিক মানচিত্রয়ের সময় কীভাবে দিদির বিবরণ প্রবেশ করানো যায়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+    ),
+    VideoItem(
+        id = 16,
+        title = "অংশগ্রহণমূলক সম্পদ র\u200C্যাঙ্কিং",
+        description = "দিদির সম্পদের র্যাঙ্কিং কিভাবে রেকর্ড করবেন",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+    ),VideoItem(
+        id = 17,
+        title = "PAT সার্ভে - সংক্ষিপ্ত বিবরণ",
+        description = "সারথি অ্যাপে PAT সার্ভে সূচনা",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATBengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+    ),VideoItem(
+        id = 18,
+        title = "PAT সার্ভে পূরণ করা-অংশ 1",
+        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-প্রথম অংশ",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali1.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+    ),
+    VideoItem(
+        id = 19,
+        title = "PAT সার্ভে পূরণ করা-অংশ 2",
+        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-দ্বিতীয় অংশ",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali2.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+    ),
+    VideoItem(
+        id = 20,
+        title = "ডিজিটাল ফর্ম B এবং ভিও অনুমোদন",
+        description = "কিভাবে ডিজিটাল ফর্ম B ডাউনলোড করতে হবে এবং ভিও অনুমোদনের জন্য জমা দিতে হবে",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+    ),
+    VideoItem(
+        id = 21,
+        title = "ভিও অনুমোদন",
+        description = "কিভাবে ভিও অনুমোদন রেকর্ড করা যায়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10VOBengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+    ),
+    VideoItem(
+        id = 22,
+        title = "ডেটা সিঙ্ক করা",
+        description = "সারথি অ্যাপ থেকে কীভাবে ডেটা সিঙ্ক / আপলোড করা যায়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Bengali.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
+    ),
+
+    /*VideoItem(
+        id = 24,
         title = "Video 1",
         description = "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For \$35.  Find out more at google.com/chromecast.",
         url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
         thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
     ),
     VideoItem(
-        id = 2,
+        id = 25,
         title = "Video 2",
         description = "Supporting description",
         url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
         thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg"
     ),
     VideoItem(
-        id = 3,
+        id = 26,
         title = "Video 3",
         description = "Supporting description",
         url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
         thumbUrl =     "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg"
     ),
     VideoItem(
-        id = 4,
+        id = 27,
         title = "Video 4",
         description = "Supporting description",
         url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
         thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg"
-    )
+    ),*/
 
 )
 @OptIn(ExperimentalAnimationApi::class)

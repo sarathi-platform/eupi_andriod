@@ -87,15 +87,17 @@ fun VillageSelectionScreen(
     viewModel: VillageSelectionViewModel,
     onNavigateToSetting:()->Unit
 ) {
+    val context = LocalContext.current
+
     LaunchedEffect(key1 = Unit) {
-        viewModel.init()
+        viewModel.init(context)
     }
 
     val villages by viewModel.villageList.collectAsState()
 
     val snackState = rememberSnackBarState()
 
-    val context = LocalContext.current
+
     var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         if (BuildConfig.DEBUG)
