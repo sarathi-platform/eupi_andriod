@@ -10,6 +10,7 @@ plugins {
 
 }
 def version = "0.1.30"
+def prodVersion = "0.0.2"
 android {
     compileSdk 33
 
@@ -77,8 +78,8 @@ android {
         }
         production{
             manifestPlaceholders.app_name= "The Nudge"
-            versionName '0.0.1'
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            versionName prodVersion
+            buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
     compileOptions {

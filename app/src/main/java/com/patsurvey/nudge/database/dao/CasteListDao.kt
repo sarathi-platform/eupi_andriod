@@ -13,7 +13,7 @@ interface CasteListDao {
     @Query("SELECT * FROM $CASTE_TABLE")
     fun getAllCaste(): List<CasteEntity>
 
-    @Query("SELECT * FROM $CASTE_TABLE where languageId = :languageId")
+    @Query("SELECT * FROM $CASTE_TABLE where languageId = :languageId order by id")
     fun getAllCasteForLanguage(languageId:Int): List<CasteEntity>
 
     @Query("Select * FROM $CASTE_TABLE where id = :id AND languageId=:languageId")

@@ -155,7 +155,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
-    fun init() {
+    fun init(context: Context) {
         showLoader.value = true
         fetchUserDetails { success ->
             if (success) {
@@ -164,18 +164,18 @@ class VillageSelectionViewModel @Inject constructor(
                 if (prefRepo.getPref(LAST_UPDATE_TIME, 0L) != 0L) {
                     if ((System.currentTimeMillis() - prefRepo.getPref(LAST_UPDATE_TIME, 0L)) > TimeUnit.DAYS.toMillis(30)) {
                         if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                            fetchVillageList()
+                            fetchVillageList(context)
                         } else {
-                            fetchDataForBpc()
+                            fetchDataForBpc(context)
                         }
                     } else {
                         showLoader.value = false
                     }
                 } else {
                     if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(CRP_USER_TYPE, true)) {
-                        fetchVillageList()
+                        fetchVillageList(context)
                     } else {
-                        fetchDataForBpc()
+                        fetchDataForBpc(context)
                     }
                 }
             }
@@ -264,7 +264,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    private fun fetchDataForBpc() {
+    private fun fetchDataForBpc(context: Context) {
         showLoader.value = true
         job = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler){
             val awaitDeff= CoroutineScope(Dispatchers.IO).async {
@@ -1067,7 +1067,7 @@ class VillageSelectionViewModel @Inject constructor(
         return File("${context.getExternalFilesDir(if (fileType == FileType.VIDEO) Environment.DIRECTORY_MOVIES else if (fileType == FileType.IMAGE) Environment.DIRECTORY_DCIM else Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${videoItemId}.mp4")
     }
 
-    private fun fetchVillageList() {
+    private fun fetchVillageList(context: Context) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
@@ -1131,6 +1131,24 @@ class VillageSelectionViewModel @Inject constructor(
                                             stepsListDao.insertAll(it.stepList)
                                             setVoEndorsementCompleteForVillages()
                                         }
+                                        /*if (videoList.isNotEmpty()) {
+                                            videoList.forEach {
+                                                val trainingVideoEntity = TrainingVideoEntity(
+                                                    id = it.id,
+                                                    title = it.title,
+                                                    description = it.description,
+                                                    url = it.url,
+                                                    thumbUrl = it.thumbUrl,
+                                                    isDownload = if (getVideoPath(
+                                                            context, it.id, fileType = FileType.VIDEO
+                                                        ).exists()
+                                                    ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                                                )
+                                                trainingVideoDao.insert(trainingVideoEntity)
+                                            }
+                                        } else {
+                                            saveVideosToDb(context)
+                                        }*/
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
