@@ -187,6 +187,10 @@ fun SettingScreen(
                         if (!ConnectionMonitor.DoesNetworkHaveInternet.execute(it.socketFactory)) {
                             extraNetworkCheck.value = false
                             (context as MainActivity).isOnline.value = false
+                        } else {
+                            extraNetworkCheck.value = true
+                            (context as MainActivity).isOnline.value = true
+                            return@forEach
                         }
                     } else {
                         extraNetworkCheck.value = false
