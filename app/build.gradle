@@ -10,7 +10,7 @@ plugins {
 
 }
 def version = "0.1.30"
-def prodVersion = "0.0.1"
+def prodVersion = "0.0.2"
 android {
     compileSdk 33
 
