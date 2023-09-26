@@ -810,7 +810,7 @@ private fun decoupledConstraints(): ConstraintSet {
         }
         constrain(latestStatusCollapsed) {
             end.linkTo(parent.end, margin = 10.dp)
-            top.linkTo(homeImage.top)
+            top.linkTo(homeImage.top, margin = 4.dp)
             width = Dimension.fillToConstraints
         }
     }
