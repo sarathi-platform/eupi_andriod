@@ -749,7 +749,7 @@ object RetryHelper {
                                 if (didiResponse?.status.equals(SUCCESS, true)) {
                                     didiResponse?.data?.let { beneficiaryResponse ->
                                         beneficiaryResponse.forEach {
-                                            it.selected.forEach { didi ->
+                                           /* it.selected.forEach { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
@@ -798,9 +798,9 @@ object RetryHelper {
                                                         villageId = villageId,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        wealth_ranking = *//*wealthRanking*//*WealthRank.POOR.rank,
                                                         patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        voEndorsementStatus = *//*voEndorsementStatus*//*DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         createdDate = didi.createdDate,
@@ -863,9 +863,9 @@ object RetryHelper {
                                                         villageId = villageId,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        wealth_ranking = *//*wealthRanking*//*WealthRank.POOR.rank,
                                                         patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        voEndorsementStatus = *//*voEndorsementStatus*//*DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         createdDate = didi.createdDate,
@@ -879,7 +879,7 @@ object RetryHelper {
                                                         crpScore = didi.crpScore
                                                     )
                                                 )
-                                            }
+                                            }*/
                                         }
                                     }
                                 } else {

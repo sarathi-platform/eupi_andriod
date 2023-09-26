@@ -7,20 +7,18 @@ import androidx.compose.runtime.setValue
 import com.patsurvey.nudge.activities.ui.bpc.ReplaceHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TolaEntity
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
+import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
-import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.StepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -39,26 +37,26 @@ class BpcDidiListViewModel @Inject constructor(
     val didiDao: DidiDao,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao
+    val questionListDao: QuestionListDao,
+    val answerDao: AnswerDao
 ): BaseViewModel() {
 
     val pendingDidiCount = mutableStateOf(0)
-    private val _selectedDidiList = MutableStateFlow(listOf<BpcSelectedDidiEntity>())
-    val selectedDidiList: StateFlow<List<BpcSelectedDidiEntity>> get() = _selectedDidiList
+    private val _selectedDidiList = MutableStateFlow(listOf<DidiEntity>())
+    val selectedDidiList: StateFlow<List<DidiEntity>> get() = _selectedDidiList
 
     private val _tolaList = MutableStateFlow(listOf<TolaEntity>())
     val tolaList: StateFlow<List<TolaEntity>> get() = _tolaList
 
-    var filterDidiList by mutableStateOf(listOf<BpcSelectedDidiEntity>())
+    var filterDidiList by mutableStateOf(listOf<DidiEntity>())
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
     val inclusiveQueList: StateFlow<List<SectionAnswerEntity>> get() = _inclusiveQueList
 
-    var tolaMapList by mutableStateOf(mapOf<String, List<BpcSelectedDidiEntity>>())
+    var tolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
-    var filterTolaMapList by mutableStateOf(mapOf<String, List<BpcSelectedDidiEntity>>())
+    var filterTolaMapList by mutableStateOf(mapOf<String, List<DidiEntity>>())
         private set
 
     var villageId: Int = -1
@@ -71,7 +69,7 @@ class BpcDidiListViewModel @Inject constructor(
 
     init {
         villageId = prefRepo.getSelectedVillage().id
-        fetchDidiFromDb()
+        fetchDidiListForBPC()
         checkIfStepIsComplete()
     }
 
@@ -82,40 +80,18 @@ class BpcDidiListViewModel @Inject constructor(
         }
     }
 
-    fun fetchDidiFromDb() {
+    fun fetchDidiListForBPC(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localSeletctedDidiList =
-                bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-            val localUnselectedDidiList =
-                bpcNonSelectedDidiDao.fetchAllDidisForVillage(prefRepo.getSelectedVillage().id)
-            _selectedDidiList.value = localSeletctedDidiList
-            val filterdNonSelectedList = localUnselectedDidiList.filter { it.isAlsoSelected == BpcDidiSelectionStatus.SELECTED.ordinal }
-            if (filterdNonSelectedList.isNotEmpty()) {
-                _selectedDidiList.value =
-                    _selectedDidiList.value.toMutableList().also { selectedList ->
-                        val selectedDidisFromBackupList = mutableListOf<BpcSelectedDidiEntity>()
-                        filterdNonSelectedList.forEach {
-                            selectedDidisFromBackupList.add(
-                                BpcSelectedDidiEntity.getSelectedDidiEntityFromNonSelectedEntity(
-                                    it
-                                )
-                            )
-                        }
-                        if (ReplaceHelper.didiToBeReplaced.value.first != -1 && ReplaceHelper.didiToBeReplaced.value.second != -1)
-                            selectedList.add(ReplaceHelper.didiToBeReplaced.value.first, selectedDidisFromBackupList[0])
-                        else {
-                            selectedList.addAll(selectedDidisFromBackupList)
-                        }
-                    }
-            }
+            val localDidiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
+            _selectedDidiList.value = localDidiList
             _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
-            filterDidiList = selectedDidiList.value.filter { it.patSurveyStatus != PatSurveyStatus.NOT_AVAILABLE.ordinal }
+            filterDidiList = selectedDidiList.value
             pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
         }
     }
 
     fun filterList() {
-        val map = mutableMapOf<String, MutableList<BpcSelectedDidiEntity>>()
+        val map = mutableMapOf<String, MutableList<DidiEntity>>()
         selectedDidiList.value.forEachIndexed { _, didiDetailsModel ->
             if (map.containsKey(didiDetailsModel.cohortName)) {
                 map[didiDetailsModel.cohortName]?.add(didiDetailsModel)
@@ -132,7 +108,7 @@ class BpcDidiListViewModel @Inject constructor(
         try {
             if (!isTolaFilterSelected) {
                 filterDidiList = if (query.isNotEmpty()) {
-                    val filteredList = ArrayList<BpcSelectedDidiEntity>()
+                    val filteredList = ArrayList<DidiEntity>()
                     selectedDidiList.value.forEach { didi ->
                         if (didi.name.lowercase().contains(query.lowercase())) {
                             filteredList.add(didi)
@@ -144,9 +120,9 @@ class BpcDidiListViewModel @Inject constructor(
                 }
             } else {
                 if (query.isNotEmpty()) {
-                    val fList = mutableMapOf<String, MutableList<BpcSelectedDidiEntity>>()
+                    val fList = mutableMapOf<String, MutableList<DidiEntity>>()
                     tolaMapList.keys.forEach { key ->
-                        val newDidiList = ArrayList<BpcSelectedDidiEntity>()
+                        val newDidiList = ArrayList<DidiEntity>()
                         tolaMapList[key]?.forEach { didi ->
                             if (didi.name.lowercase().contains(query.lowercase())) {
                                 newDidiList.add(didi)

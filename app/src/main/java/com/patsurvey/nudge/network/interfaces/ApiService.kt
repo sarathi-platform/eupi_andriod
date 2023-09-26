@@ -132,7 +132,7 @@ interface ApiService {
     suspend fun getBpcSummary(@Query("villageId") villageId: Int): ApiResponseModel<BpcSummaryResponse>
     @GET("/write-api/bpc/beneficiary-list")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<BpcBeneficiaryApiResponse>>
+    suspend fun getDidiForBpcFromNetwork(@Query("villageId") villageId: Int): ApiResponseModel<List<DidiEntity>>
 
 
     @POST("/write-api/bpc/update-beneficiary-selection")
