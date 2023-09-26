@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
@@ -191,6 +190,12 @@ fun SurveySummary(
                     showDialog.value = it
                 }) {
                 if(surveySummaryViewModel.prefRepo.isUserBPC()){
+
+                    surveySummaryViewModel.updateDidiPatStatus()
+                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
+                    surveySummaryViewModel.saveBpcPatCompletionDate()
+                    surveySummaryViewModel.updatePatEditFlag()
+
                     if ((context as MainActivity).isOnline.value ?: false) {
                         surveySummaryViewModel.sendBpcUpdatedDidiList(object :
                             NetworkCallbackListener {
@@ -250,10 +255,6 @@ fun SurveySummary(
                     } else {
                         surveySummaryViewModel.prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + surveySummaryViewModel.prefRepo.getSelectedVillage().id, false)
                     }
-                    surveySummaryViewModel.updateDidiPatStatus()
-                    surveySummaryViewModel.markBpcVerificationComplete(surveySummaryViewModel.prefRepo.getSelectedVillage().id, stepId)
-                    surveySummaryViewModel.saveBpcPatCompletionDate()
-                    surveySummaryViewModel.updatePatEditFlag()
 
                     navController.navigate(
                         "bpc_pat_step_completion_screen/${
