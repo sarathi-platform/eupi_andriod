@@ -197,7 +197,7 @@ fun SurveySummary(
                     surveySummaryViewModel.updatePatEditFlag()
 
                     if ((context as MainActivity).isOnline.value ?: false) {
-                        surveySummaryViewModel.sendBpcUpdatedDidiList(object :
+                        /*surveySummaryViewModel.sendBpcUpdatedDidiList(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {
 
@@ -207,7 +207,7 @@ fun SurveySummary(
 
                             }
 
-                        })
+                        })*/
                         surveySummaryViewModel.savePATSummeryToServer(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {
@@ -418,7 +418,8 @@ fun SurveySummary(
                                 if (surveySummaryViewModel.prefRepo.isUserBPC()) {
                                     itemsIndexed(
                                         if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
+                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                                    || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }
                                         else
                                             didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
                                     ) { index, didi ->

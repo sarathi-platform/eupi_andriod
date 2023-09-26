@@ -53,9 +53,9 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
-import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -82,7 +82,6 @@ import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
@@ -536,10 +535,10 @@ class VillageSelectionViewModel @Inject constructor(
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
-                                                        score = didi.crpScore,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
-                                                        comment = didi.comment,
+                                                        bpcScore = didi.bpcScore ?: 0.0,
+                                                        bpcComment = didi.bpcComment ?: BLANK_STRING,
                                                         crpUploadedImage = didi.crpUploadedImage,
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
@@ -1509,7 +1508,13 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 villageListDao.insertAll(it.villageList ?: listOf())
                                 stateId.value= it.villageList?.get(0)?.stateId?:1
-                                _villagList.emit(villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2))
+                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                if (localVillageList.isNotEmpty()) {
+                                    _villagList.emit(localVillageList)
+                                }
+                                else{
+                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                }
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {

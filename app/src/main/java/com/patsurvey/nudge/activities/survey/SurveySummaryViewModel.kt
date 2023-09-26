@@ -971,7 +971,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
                     score = matchPercentage,
-                    villageId = villageId
+                    villageId = villageId,
+                    didiNotAvailableCountBPC = didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                            || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
                 )
                 val requestList = arrayListOf(saveMatchSummaryRequest)
                 val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)

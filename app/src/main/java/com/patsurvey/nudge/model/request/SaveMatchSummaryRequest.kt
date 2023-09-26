@@ -12,5 +12,8 @@ class SaveMatchSummaryRequest(
     val score: Int,
     @SerializedName("villageId")
     @Expose
-    val villageId: Int
+    val villageId: Int,
+    @SerializedName("didiNotAvailableCountBPC")
+    @Expose
+    val didiNotAvailableCountBPC: Int
 )

@@ -8,8 +8,6 @@ import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
-import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -42,6 +40,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -1044,7 +1043,13 @@ object RetryHelper {
                             if (it.villageList?.isNotEmpty() == true) {
                                 villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
-                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
+                                val localVillageList = villageListDao?.getAllVillages(prefRepo?.getAppLanguageId() ?:2)
+                                if (localVillageList.isNullOrEmpty()) {
+                                    saveVillageList(true, villageListDao?.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                } else{
+                                    saveVillageList(true, localVillageList)
+                                }
+//                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
                             } else {
                                 saveVillageList(false, listOf())
                             }
@@ -1060,6 +1065,9 @@ object RetryHelper {
             } catch (ex: Exception) {
                 Log.d("RetryHelper", "retryVillageListApi: ex -> ${ex.stackTrace}")
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)
+                withContext(Dispatchers.Main) {
+                    saveVillageList(false, listOf())
+                }
             }
         }
     }

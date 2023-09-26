@@ -229,6 +229,7 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                     }, object : LocalDbListener{
                             override fun onInsertionSuccess() {
                                 showCustomToast(context,context.getString(R.string.didi_has_been_successfully_updated))
+                                onNavigation()
                             }
 
                             override fun onInsertionFailed() {
@@ -236,8 +237,6 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
                             }
 
                         })
-
-                    onNavigation()
                 }
 
             }
