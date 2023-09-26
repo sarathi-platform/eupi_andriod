@@ -6,7 +6,7 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 
-    <string name="mark_complete_text">Complete Tola Addition</string>
+    <string name="mark_complete_text">Complete Para / Tola Addition</string>
     <string name="go_back_text">Go Back</string>
 
     <string name="progress_item_text">Progress</string>
@@ -47,9 +47,9 @@
     <string name="count_didis_pending_singular">%1s Didi Pending</string>
     <string name="expiry_login_verify_otp" translatable="false">Resend OTP in %s</string>
     <string name="social_mapping">Social Mapping</string>
-    <string name="showing_added_tolas">Showing %s added Tolas</string>
+    <string name="showing_added_tolas">Showing %s added Paras / Tolas</string>
     <string name="showing">Showing</string>
-    <string name="added_tolas">added Tolas</string>
+    <string name="added_tolas">added Paras / Tolas</string>
     <string name="title_activity_social_mapping">SocialMappingActivity</string>
     <string name="not_added">Not added</string>
     <string name="mark_as_completed">Mark as completed</string>
@@ -61,11 +61,11 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
-    <string name="dada_name">Dada Name</string>
-    <string name="dada">Dada</string>
+    <string name="dada_name">Husband / Father\'s Name</string>
+    <string name="dada">Husband / Father</string>
     <string name="enter">Enter</string>
     <string name="caste">Caste</string>
-    <string name="tola">Tola</string>
+    <string name="tola">Para / Tola</string>
     <string name="select">Select</string>
     <string name="pat_survey">PAT Survey</string>
 
@@ -73,16 +73,16 @@
     <string name="particaptory_wealth_ranking_text">Participatory Wealth Ranking</string>
     <string name="complete_wealth_ranking_btn_text" translatable="false">Complete Wealth Ranking</string>
 
-    <string name="add_tola">Add Tola</string>
+    <string name="add_tola">Add Para / Tola</string>
     <string name="enter_otp_text">Enter OTP</string>
     <string name="otp_send_to_mobile_number_message">OTP sent to %1$s mobile number</string>
     <string name="otp_send_to_mobile_number_message_for_relogin">OTP sent to {MOBILE_NUMBER} mobile number</string>
     <string name="otp_resend_to_mobile_number_message">OTP resent to %1$s mobile number</string>
     <string name="otp_resend_to_mobile_number_message_for_relogin">OTP resent to {MOBILE_NUMBER} mobile number</string>
-    <string name="delete_tola_text">Delete Tola</string>
+    <string name="delete_tola_text">Delete Para / Tola</string>
     <string name="save_tola_text">Save</string>
 
-    <string name="tola_name_text">Tola Name</string>
+    <string name="tola_name_text">Para / Tola Name</string>
     <string name="cancel_tola_text">Cancel</string>
     <string name="get_location_text">Get Location</string>
     <string name="location_unavailable">Location not available</string>
@@ -91,9 +91,9 @@
 
     <string name="complete_didi_addition">Complete Didi Addition</string>
     <string name="user_id_text">"ID: "</string>
-    <string name="empty_tola_string">No Tolas Added</string>
-    <string name="tola_conirmation_text_plural">Total %1$s new Tolas have \nbeen added successfully</string>
-    <string name="tola_conirmation_text_singular">Total %1$s new Tola has \nbeen added successfully</string>
+    <string name="empty_tola_string">No Paras / Tolas Added</string>
+    <string name="tola_conirmation_text_plural">Total %1$s new Paras / Tolas have \nbeen added successfully</string>
+    <string name="tola_conirmation_text_singular">Total %1$s new Para / Tola has \nbeen added successfully</string>
     <string name="complete_transect_walk_text">Complete Transect Walk</string>
     <string name="transect_walk_completed_message">Transect walk for {VILLAGE_NAME} \nis completed</string>
     <string name="wealth_ranking_completed_message">Participatory Wealth Ranking for {VILLAGE_NAME} \nis completed</string>
@@ -104,7 +104,7 @@
     <string name="didi_conirmation_text_plural">%1$s new Didis have \nbeen added successfully</string>
     <string name="didi_conirmation_text_singular">%1$s new Didi has \nbeen added successfully</string>
 
-    <string name="transect_walk_sub_text_plural">%1$s Tolas Done</string>
+    <string name="transect_walk_sub_text_plural">%1$s Paras / Tolas Done</string>
 
     <string name="social_mapping_sub_text_plural">%1$s Didis Identified</string>
     <string name="wealth_ranking_sub_text_plural">%1$s Poor Didis Identified</string>
@@ -115,10 +115,10 @@
 
     <string name="empty_didis_string">No Didis Added</string>
     <string name="didi_has_been_successfully_added">%1$s has been successfully added.</string>
-    <string name="tola_successfully_added">{TOLA_NAME} Tola Added</string>
-    <string name="tola_updated">{TOLA_NAME} Tola Updated</string>
-    <string name="tola_deleted">{TOLA_NAME} Tola Deleted</string>
-    <string name="tola_already_exist">Tola already exists.</string>
+    <string name="tola_successfully_added">{TOLA_NAME} Para / Tola Added</string>
+    <string name="tola_updated">{TOLA_NAME} Para / Tola Updated</string>
+    <string name="tola_deleted">{TOLA_NAME} Para / Tola Deleted</string>
+    <string name="tola_already_exist">Para / Tola already exists.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
     <string name="didi_already_exist">Didi already exists.</string>
     <string name="location_added_text">Location Added</string>
@@ -136,7 +136,7 @@
     <string name="option_no">No</string>
     <string name="no_photo_available_text">No Photo Available</string>
     <string name="enter_name_text">Enter Name</string>
-    <string name="enter_tola_name_message">Enter Tola Name</string>
+    <string name="enter_tola_name_message">Enter Para / Tola Name</string>
 
     <string name="pat_survey_section_1">PAT Survey - Section 1</string>
     <string name="pat_survey_section_2">PAT Survey - Section 2</string>
@@ -253,7 +253,7 @@
     <string name="crp_score_text">CRP Score:</string>
     <string name="bpc_score_text">BPC Score:</string>
     <string name="match_percentage_box_text">{PERCENTAGE}% Ultra poor match on PAT verification.</string>
-    <string name="summary_tolas_added_text_plural">Tolas Added</string>
+    <string name="summary_tolas_added_text_plural">Paras / Tolas Added</string>
     <string name="summary_didis_mobilised_text_plural">Didis Mobilised</string>
     <string name="summary_wealth_ranking_text_plural">Didis Marked as poor in PWR</string>
     <string name="summary_vo_endoresement_text_plural">Didis sent for VO Endorsement</string>
@@ -270,7 +270,7 @@
     <string name="summary_vo_endoresement_text_singular">Didi sent for VO Endorsement</string>
     <string name="summary_wealth_ranking_text_singular">Didi Marked as poor in PWR</string>
     <string name="summary_didis_mobilised_text_singular">Didi Mobilised</string>
-    <string name="summary_tolas_added_text_singular">Tola Added</string>
+    <string name="summary_tolas_added_text_singular">Para / Tola Added</string>
     <string name="enter_amount">Enter Amount</string>
 
     <string name="bpc_result_text">BPC Result:</string>
@@ -292,15 +292,15 @@
     <string name="do_not_close_app_message">Please don\'t close the app or switch off the phone.</string>
     <string name="vo_endorsement_completed_village_banner_text">VO Endorsement completed</string>
     <string name="bpc_verification_completed_village_banner_text">BPC Verification Completed</string>
-    <string name="empty_tola_success_message">This Village does not have any tola.</string>
+    <string name="empty_tola_success_message">This Village does not have any Para / Tola.</string>
 
     <string name="total_poor_didis">Total Poor Didis</string>
     <string name="total_ultra_poor_didis">Total Ultra Poor Didis</string>
     <string name="wealth_ranking_sub_text_singular">%1$s Poor Didi Identified</string>
     <string name="social_mapping_sub_text_singular">%1$s Didi Identified</string>
-    <string name="transect_walk_sub_text_singular">%1$s Tola Done</string>
-    <string name="added_tolas_text_plural"> added Tolas</string>
-    <string name="added_tolas_text_singular"> added Tola</string>
+    <string name="transect_walk_sub_text_singular">%1$s Para / Tola Done</string>
+    <string name="added_tolas_text_plural"> added Paras / Tolas</string>
+    <string name="added_tolas_text_singular"> added Para / Tola</string>
     <string name="take_photo_text">Take Photo</string>
     <string name="retake_photo_text">Retake Photo</string>
     <string name="previous_step_not_complete_messgae_text">Previous Step Not Complete.</string>
@@ -351,7 +351,7 @@
     <string name="something_went_wrong_unable_to_download_form">Something went wrong, unable to download form.</string>
 
     <string name="location_permission_dialog_prompt_message">Location Permission required, please grant permission.</string>
-    <string name="empty_tola_button_text">Continue without Tola addition</string>
+    <string name="empty_tola_button_text">Continue without Para / Tola addition</string>
     <string name="add_more_list_empty_string">No Didi\'s available to add or replace.</string>
 
     <string name="pat_selected_status_text">PAT Selected</string>
@@ -359,7 +359,7 @@
     <string name="vo_selected_status_text">VO Endorsed</string>
     <string name="vo_rejected_status_text">VO Rejected</string>
     <string name="pat_not_available_status_text">PAT Not Available</string>
-    <string name="cannot_delete_tola_message_text">Cannot delete this Tola as Didis are assigned to it</string>
+    <string name="cannot_delete_tola_message_text">Cannot delete this Para / Tola as Didis are assigned to it</string>
 
     <string name="max_5_pages_can_be_captured">Max 5 Pages can be captured</string>
     <string name="click_to_refresh">Click to Refresh</string>

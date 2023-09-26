@@ -77,7 +77,6 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -152,7 +151,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
-        if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        /*if (BuildConfig.DEBUG) */list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
     }else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -168,7 +167,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
-        if (BuildConfig.DEBUG) list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        /*if (BuildConfig.DEBUG) */list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
     }
     viewModel.createSettingMenu(list)
 //    }
@@ -188,6 +187,10 @@ fun SettingScreen(
                         if (!ConnectionMonitor.DoesNetworkHaveInternet.execute(it.socketFactory)) {
                             extraNetworkCheck.value = false
                             (context as MainActivity).isOnline.value = false
+                        } else {
+                            extraNetworkCheck.value = true
+                            (context as MainActivity).isOnline.value = true
+                            return@forEach
                         }
                     } else {
                         extraNetworkCheck.value = false

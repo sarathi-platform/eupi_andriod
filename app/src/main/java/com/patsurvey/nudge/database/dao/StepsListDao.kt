@@ -71,4 +71,9 @@ interface StepsListDao {
 
     @Query("SELECT * FROM $STEPS_LIST_TABLE Where orderNumber = :orderNumber and needToPost = :needToPost")
     fun getAllStepsByOrder(orderNumber: Int,needToPost: Boolean): List<StepListEntity>
+
+    @Query("SELECT * FROM $STEPS_LIST_TABLE Where orderNumber = :orderNumber and villageId = :villageId")
+    fun getStepByOrder(orderNumber: Int,villageId: Int): StepListEntity
+
+
 }

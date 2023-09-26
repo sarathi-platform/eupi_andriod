@@ -51,7 +51,8 @@ class SurveySummaryViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val apiService: ApiService,
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
+    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
+    val questionListDao: QuestionListDao
 ) : BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -66,7 +67,9 @@ class SurveySummaryViewModel @Inject constructor(
     val totalPatDidiCount = mutableStateOf(0)
     val notAvailableDidiCount = mutableStateOf(0)
     val voEndorseDidiCount = mutableStateOf(0)
-
+    val exclusiveQuesCount = mutableStateOf(0)
+    val inclusiveQuesCount = mutableStateOf(0)
+    val isVOEndorsementComplete = mutableStateOf(false)
     val villageEntity = mutableStateOf<VillageEntity?>(null)
 
     init {
@@ -85,7 +88,6 @@ class SurveySummaryViewModel @Inject constructor(
             val patCompletedDidiList = didiDao.getAllDidisForVillage(selectedVillage.id)
             val replacedDidiFromSelectedDao = bpcSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
             val replacedDidiFromNonSelectedDao = bpcNonSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
-
             didiList.addAll(patCompletedDidiList)
             val filteredReplacedDidiFromSelectedDao = replacedDidiFromSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
             val filteredReplacedDidiFromNonSelectedDao = replacedDidiFromNonSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
@@ -103,8 +105,12 @@ class SurveySummaryViewModel @Inject constructor(
     }
 
     fun setVillage(villageId: Int) {
-        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch{
             var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
+            val voEndorsementStep =stepsListDao.getStepByOrder(5,prefRepo.getSelectedVillage().id)
+            withContext(Dispatchers.IO){
+                isVOEndorsementComplete.value = voEndorsementStep.isComplete == StepStatus.COMPLETED.ordinal
+            }
             withContext(Dispatchers.Main) {
                 villageEntity.value = village
             }
@@ -247,7 +253,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 BLANK_STRING
                             } else {
                                 if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
-                                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
+                                    || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
                                     TYPE_EXCLUSION
                                 } else {
                                     if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
@@ -268,7 +274,7 @@ class SurveySummaryViewModel @Inject constructor(
                                 } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
                                     PatSurveyStatus.INPROGRESS.name
                                 } else {
-                                    if (didi.forVoEndorsement == 0 || didi.patSurveyStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
+                                    if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
                                         if (prefRepo.isUserBPC())
                                             VERIFIED_STRING
                                         else
@@ -1041,7 +1047,32 @@ class SurveySummaryViewModel @Inject constructor(
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
+        val yesQuesCount = answerDao.fetchOptionYesCount(
+            didiId = didiId,
+            QuestionType.RadioButton.name,
+            TYPE_EXCLUSION
+        )
         val _inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+        if (yesQuesCount > 0) {
+            didiDao.updateDidiScore(
+                score = 0.0,
+                comment = TYPE_EXCLUSION,
+                didiId = didiId,
+                isDidiAccepted = false
+            )
+            didiDao.updateVOEndorsementDidiStatus(
+                prefRepo.getSelectedVillage().id,
+                didiId,
+                0
+            )
+            if (prefRepo.isUserBPC()) {
+                bpcSelectedDidiDao.updateSelDidiScore(
+                    score = 0.0,
+                    comment = TYPE_EXCLUSION,
+                    didiId = didiId,
+                )
+            }
+        }else {
         if (_inclusiveQueList.isNotEmpty()) {
             var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
             NudgeLogger.d(
@@ -1102,7 +1133,10 @@ class SurveySummaryViewModel @Inject constructor(
                     0
                 )
             }
-            NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")
+            NudgeLogger.d(
+                "SyncHelper",
+                "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue"
+            )
             didiDao.updateDidiScore(
                 score = totalWightWithoutNumQue,
                 comment = comment,
@@ -1129,6 +1163,46 @@ class SurveySummaryViewModel @Inject constructor(
                     comment = TYPE_EXCLUSION,
                     didiId = didiId,
                 )
+            }
+        }
+      }
+    }
+    fun validateDidiToNavigate(didiId: Int,onNavigateToSummary:(Int)->Unit){
+        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
+            val questionExclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
+            val questionInclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
+            val quesList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
+            val yesQuesCount = answerDao.fetchOptionYesCount(didiId = didiId,QuestionType.RadioButton.name,TYPE_EXCLUSION)
+            exclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_EXCLUSION }.size
+            inclusiveQuesCount.value = quesList.filter { it.actionType == TYPE_INCLUSION }.size
+            if(questionInclusionAnswered.isNotEmpty()){
+                if(inclusiveQuesCount.value == questionInclusionAnswered.size){
+                    withContext(Dispatchers.Main){
+                        if(yesQuesCount>0){
+                            onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
+                        }else onNavigateToSummary(SummaryNavigation.SECTION_2_PAGE.ordinal)
+                    }
+                }else{
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                    }
+                }
+            }else{
+                if(questionExclusionAnswered.isNotEmpty()){
+                    if(exclusiveQuesCount.value == questionExclusionAnswered.size){
+                        withContext(Dispatchers.Main){
+                            onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
+                        }
+                    }else{
+                        withContext(Dispatchers.Main){
+                            onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                        }
+                    }
+                }else {
+                    withContext(Dispatchers.Main){
+                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
+                    }
+                }
             }
         }
     }
