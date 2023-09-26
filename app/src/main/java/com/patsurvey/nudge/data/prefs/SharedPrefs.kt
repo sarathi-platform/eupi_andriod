@@ -144,7 +144,7 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     }
 
     override fun getAppLanguageId(): Int? {
-        return prefs.getInt(PREF_KEY_LANGUAGE_ID, 1)
+        return prefs.getInt(PREF_KEY_LANGUAGE_ID, 2) ?: 2
     }
 
     override fun saveAppLanguageId(languageId: Int?) {

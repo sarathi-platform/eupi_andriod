@@ -149,7 +149,7 @@ fun LanguageScreen(
                             if(!pageFrom.equals(ARG_FROM_HOME,true)){
                                 viewModel.updateSelectedVillage(languageId){
                                     isLanguageVillageAvailable.value=false
-                                    viewModel.prefRepo.saveAppLanguageId(2)
+//                                    viewModel.prefRepo.saveAppLanguageId(2)
                                 }
                             }
                         }
