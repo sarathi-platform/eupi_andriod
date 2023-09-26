@@ -135,7 +135,13 @@ fun QuestionScreen(
                 navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             }
         } else {
-            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+            if (viewModel.prefRepo.isUserBPC())
+                navController.popBackStack(
+                    BpcDidiListScreens.BPC_DIDI_LIST.route,
+                    inclusive = false
+                )
+            else
+                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
         }
     }
 

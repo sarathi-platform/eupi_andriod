@@ -202,7 +202,7 @@ fun PatSurvaySectionSummaryScreen(
                                }
                            } ?: BLANK_STRING,
                            optionValue =  answer?.optionValue?:0,
-                           isArrowVisible = if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)),
+                           isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi) /*if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal))*/,
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
 
                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
@@ -248,7 +248,6 @@ fun PatSurvaySectionSummaryScreen(
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
                         TYPE_EXCLUSION)
                     if (showPatCompletion.value) {
-//                        patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
                             PatSurveyStatus.COMPLETED.ordinal
@@ -262,7 +261,6 @@ fun PatSurvaySectionSummaryScreen(
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
-//                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
                     if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
@@ -271,6 +269,14 @@ fun PatSurvaySectionSummaryScreen(
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
     }
+}
+
+fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>):Boolean{
+    return if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
+        true
+    else if(viewModel.prefRepo.isUserBPC() && viewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal){
+        true
+    }else didi.value.patEdit && (viewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)
 }
 
 @Composable
@@ -388,7 +394,7 @@ fun SectionOneSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-                    if(isArrowVisible)
+                    if (isArrowVisible)
                         onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){

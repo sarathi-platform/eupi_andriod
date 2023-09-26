@@ -84,6 +84,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     val answerSummeryList: StateFlow<List<SectionAnswerEntity>> get() = _answerSummeryList
     val isYesSelected = mutableStateOf(false)
     val isPATStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
+    val isBPCVerificationStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
@@ -95,6 +96,10 @@ class PatSectionSummaryViewModel @Inject constructor(
                 .sortedBy { it.orderNumber }
             isPATStepComplete.value =
                 stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
+            if(prefRepo.isUserBPC()){
+                isBPCVerificationStepComplete.value =
+                    stepList[stepList.map { it.orderNumber }.indexOf(6)].isComplete
+            }
             if (prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal
                 && isPATStepComplete.value == StepStatus.COMPLETED.ordinal
             ) {

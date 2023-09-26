@@ -914,6 +914,14 @@ fun longToString(value:Long):String{
     }
 }
 
+fun intToString(value:Int):String{
+    return try {
+        value.toString()
+    }catch (ex:Exception){
+        BLANK_STRING
+    }
+}
+
 fun formatRatio(ratio:String):String{
     return if(ratio.isNullOrEmpty() || ratio.equals("Nan",true))
         "0.00"
@@ -1009,42 +1017,3 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
     }
 }
 
-fun validateDidiToNavigate(didiId: Int,answerDao:AnswerDao,prefRepo: PrefRepo,questionListDao: QuestionListDao,onNavigateToSummary:(Int)->Unit){
-    CoroutineScope(Dispatchers.IO +exceptionHandler).launch{
-        val questionExclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
-        val questionInclusionAnswered = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
-        val quesList = questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
-        val yesQuesCount = answerDao.fetchOptionYesCount(didiId = didiId,QuestionType.RadioButton.name,TYPE_EXCLUSION)
-        val exclusiveQuesCount = quesList.filter { it.actionType == TYPE_EXCLUSION }.size
-        val inclusiveQuesCount = quesList.filter { it.actionType == TYPE_INCLUSION }.size
-        if(questionInclusionAnswered.isNotEmpty()){
-            if(inclusiveQuesCount == questionInclusionAnswered.size){
-                withContext(Dispatchers.Main){
-                    if(yesQuesCount>0){
-                        onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
-                    }else onNavigateToSummary(SummaryNavigation.SECTION_2_PAGE.ordinal)
-                }
-            }else{
-                withContext(Dispatchers.Main){
-                    onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
-                }
-            }
-        }else{
-            if(questionExclusionAnswered.isNotEmpty()){
-                if(exclusiveQuesCount == questionExclusionAnswered.size){
-                    withContext(Dispatchers.Main){
-                        onNavigateToSummary(SummaryNavigation.SECTION_1_PAGE.ordinal)
-                    }
-                }else{
-                    withContext(Dispatchers.Main){
-                        onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
-                    }
-                }
-            }else {
-                withContext(Dispatchers.Main){
-                    onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
-                }
-            }
-        }
-    }
-}
