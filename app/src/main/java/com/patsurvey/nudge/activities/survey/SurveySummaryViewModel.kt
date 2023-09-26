@@ -1139,6 +1139,7 @@ class SurveySummaryViewModel @Inject constructor(
                 "SyncHelper",
                 "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue"
             )
+            Log.d("TAG", "calculateDidiScore: totalWightWithoutNumQue $totalWightWithoutNumQue :: $isDidiAccepted")
             didiDao.updateDidiScore(
                 score = totalWightWithoutNumQue,
                 comment = comment,

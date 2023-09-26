@@ -365,7 +365,12 @@ fun ScoreComparisionScreen(
                         }
 
                         itemsIndexed(filterdDidiList.value) { index, didi ->
-                            ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, viewModel = viewModel, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
+                            ScoreComparisonDidiCard(
+                                modifier = Modifier,
+                                didiEntity = didi,
+                                viewModel = viewModel,
+                                passingScore = viewModel.questionPassingScore.collectAsState().value
+                            ) { didiEntity ->
                                 navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                             }
                             Spacer(modifier = Modifier.height(10.dp))

@@ -617,6 +617,7 @@ private fun decoupledConstraints(): ConstraintSet {
         val didiName = createRefFor("didiName")
         val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
+        val houseNumber_1 = createRefFor("houseNumber_1")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
         val expendArrowImageEnd = createRefFor("expendArrowImageEnd")
@@ -652,19 +653,23 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 6.dp)
-            bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
+
+        }
+        constrain(houseNumber_1) {
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(homeImage.bottom)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
-            bottom.linkTo(village.bottom)
+           // bottom.linkTo(village.bottom)
             end.linkTo(moreActionIcon.start)
         }
 
         constrain(expendArrowImageEnd) {
             top.linkTo(didiName.top)
-            bottom.linkTo(village.bottom)
+           // bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
         }
 
@@ -680,7 +685,7 @@ private fun decoupledConstraints(): ConstraintSet {
         }
 
         constrain(didiDetailLayout) {
-            top.linkTo(latestStatusCollapsed.bottom, margin = 15.dp, goneMargin = 20.dp)
+            top.linkTo(houseNumber_1.bottom, margin = 15.dp, goneMargin = 20.dp)
             end.linkTo(parent.end)
             start.linkTo(parent.start)
         }
@@ -691,8 +696,8 @@ private fun decoupledConstraints(): ConstraintSet {
             start.linkTo(homeImage.start)
         }
         constrain(latestStatusCollapsed) {
-            top.linkTo(village.bottom, margin = 3.dp)
-            start.linkTo(homeImage.start)
+            end.linkTo(parent.end, margin = 10.dp)
+            top.linkTo(homeImage.top, margin = 4.dp)
             width = Dimension.fillToConstraints
         }
     }
@@ -931,6 +936,18 @@ fun DidiItemCard(
                         ),
                         textAlign = TextAlign.Start,
                       modifier = Modifier.layoutId("homeImage")
+                    )
+
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                      modifier = Modifier.layoutId("houseNumber_1")
                     )
 
                     if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)) {
