@@ -9,7 +9,6 @@ import androidx.compose.animation.*
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -32,7 +31,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
@@ -67,8 +65,6 @@ import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
@@ -675,7 +671,7 @@ private fun decoupledConstraints(): ConstraintSet {
 
         constrain(moreActionIcon) {
             top.linkTo(didiName.top)
-            bottom.linkTo(village.bottom)
+//            bottom.linkTo(village.bottom)
             end.linkTo(parent.end, margin = 10.dp)
         }
 
@@ -697,7 +693,7 @@ private fun decoupledConstraints(): ConstraintSet {
         }
         constrain(latestStatusCollapsed) {
             end.linkTo(parent.end, margin = 10.dp)
-            top.linkTo(homeImage.top, margin = 4.dp)
+            top.linkTo(homeImage.top, margin = 8.dp)
             width = Dimension.fillToConstraints
         }
     }
