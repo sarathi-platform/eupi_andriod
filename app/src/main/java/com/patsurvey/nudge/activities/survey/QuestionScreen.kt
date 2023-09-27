@@ -124,7 +124,7 @@ fun QuestionScreen(
 
 
     val context = LocalContext.current
-    BackHandler() {
+    BackHandler {
         if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
             if (viewModel.prefRepo.isUserBPC()) {
                 navController.popBackStack(

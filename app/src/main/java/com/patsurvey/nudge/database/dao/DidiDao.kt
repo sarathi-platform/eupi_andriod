@@ -240,7 +240,7 @@ interface DidiDao {
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostVo = :needsToPostVo AND villageId = :villageId")
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity>
 
-    @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment,crpScore=0.0,score=0.0,bpcScore=0.0 WHERE id = :didiId")
+    @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment WHERE id = :didiId")
     fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment:String)
 
     @Query("UPDATE $DIDI_TABLE SET localPath = :localPath WHERE id = :didiId")
