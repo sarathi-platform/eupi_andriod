@@ -361,7 +361,7 @@
     <string name="go_back_to_section_1_summary">অধ্যায় 1 সারাংশ</string>
     <string name="exclusion_error_message">এই দিদির জন্য PAT এখানেই শেষ।</string>
 
-    <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
+    <string name="bpc_pat_survey_complete">BPC PAT যাচাইকরণ সমীক্ষা</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
     <string name="total_pat_attempted_string">মোট PAT প্রচেষ্টা</string>

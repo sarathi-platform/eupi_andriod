@@ -359,7 +359,7 @@
     <string name="go_back_to_section_1_summary">धारा 1 सारांश</string>
     <string name="exclusion_error_message">इस दीदी के लिए PAT यहीं समाप्त होती है।</string>
 
-    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
+    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सत्यापन सर्वेक्षण्वे</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
     <string name="total_pat_attempted_string">कुल PAT प्रयास</string>

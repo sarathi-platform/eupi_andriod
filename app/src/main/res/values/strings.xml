@@ -383,7 +383,7 @@
 
     <string name="go_back_to_section_1_summary">Section 1 summary</string>
     <string name="exclusion_error_message">The PAT for this didi ends here.</string>
-    <string name="bpc_pat_survey_complete">BPC PAT Survey</string>
+    <string name="bpc_pat_survey_complete">BPC PAT verification Survey</string>
     <string name="pat_success_message_plural">PAT Verification for {TOTAL_COUNT} new Didis has been submitted</string>
     <string name="pat_success_message_singular">PAT Verification for {TOTAL_COUNT} new Didi has been submitted</string>
     <string name="total_pat_attempted_string">Total PAT Attempted</string>
