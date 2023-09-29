@@ -1,0 +1,297 @@
+package com.patsurvey.nudge.activities
+
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import androidx.compose.runtime.mutableStateOf
+import androidx.core.net.toUri
+import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
+import com.patsurvey.nudge.R
+import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.CasteEntity
+import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.dao.AnswerDao
+import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.StepsListDao
+import com.patsurvey.nudge.model.dataModel.ErrorModel
+import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.utils.AbleBodiedFlag
+import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.LocationCoordinates
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.SHGFlag
+import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.TYPE_EXCLUSION
+import com.patsurvey.nudge.utils.USER_BPC
+import com.patsurvey.nudge.utils.USER_CRP
+import com.patsurvey.nudge.utils.compressImage
+import com.patsurvey.nudge.utils.getFileNameFromURL
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import java.io.File
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+import javax.inject.Inject
+
+@HiltViewModel
+class PatDidiSummaryViewModel @Inject constructor(
+    val prefRepo: PrefRepo,
+    val didiDao: DidiDao,
+    val answerDao: AnswerDao,
+    val apiService: ApiService,
+    val casteListDao: CasteListDao,
+    val stepsListDao: StepsListDao
+) :
+    BaseViewModel() {
+
+    lateinit var outputDirectory: File
+    var cameraExecutor: ExecutorService
+
+    val shouldShowCamera = mutableStateOf(false)
+
+    var photoUri: Uri = Uri.EMPTY
+
+    var tempUri: Uri = Uri.EMPTY
+    var shouldShowPhoto = mutableStateOf(false)
+    var didiImageLocation = mutableStateOf("{0.0,0.0}")
+    var updatedLocalPath = mutableStateOf(BLANK_STRING)
+    private lateinit var castList : List<CasteEntity>
+    var imagePath = ""
+
+    private val _didiEntity = MutableStateFlow(
+        DidiEntity(
+            id = 0,
+            name = "",
+            address = "",
+            guardianName = "",
+            relationship = "",
+            castId = 0,
+            castName = "",
+            cohortId = 0,
+            cohortName = "",
+            villageId = 0,
+            createdDate = System.currentTimeMillis(),
+            modifiedDate = System.currentTimeMillis(),
+            shgFlag = SHGFlag.NOT_MARKED.value,
+            ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
+        )
+    )
+    val didiEntity: StateFlow<DidiEntity> get() = _didiEntity
+
+    init {
+        cameraExecutor = Executors.newSingleThreadExecutor()
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            castList = casteListDao.getAllCasteForLanguage(prefRepo.getAppLanguageId() ?: 2)
+        }
+    }
+
+    fun setCameraExecutor() {
+        cameraExecutor = Executors.newSingleThreadExecutor()
+    }
+
+    fun setUpOutputDirectory(activity: MainActivity) {
+        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+    }
+
+//    private fun getImagePath(context: Context): File {
+//        return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}")
+//    }
+
+    /*fun setUpOutputDirectory(activity: MainActivity) {
+//        outputDirectory = /*getOutputDirectory(activity)*/ getImagePath(activity)
+        outputDirectory = getOutputDirectory(activity)
+    }*/
+
+    fun getImagePath(context: Context): File {
+        return File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}")
+    }
+
+    fun getOutputDirectory(activity: MainActivity): File {
+        val mediaDir = activity.externalCacheDir?.let { file ->
+            File(file, activity.getString(R.string.app_name)).apply { mkdirs() }
+        }
+        return if (mediaDir != null && mediaDir.exists())
+            mediaDir else activity.filesDir
+    }
+
+   /* private fun getOutputDirectory(activity: MainActivity): File {
+        val mediaDir = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            File(
+                "${
+                    Environment.getExternalStoragePublicDirectory(
+                        Environment.DIRECTORY_DCIM + "/" + activity.resources.getString(
+                            R.string.app_name
+                        )
+                    )
+                }"
+            )
+        } else {
+            activity.externalMediaDirs.firstOrNull()?.let {
+                File(it, activity.resources.getString(R.string.app_name)).apply { mkdirs() }
+            }
+        }
+        if (mediaDir != null) {
+            if(!mediaDir.exists())
+                mediaDir.mkdirs()
+        }
+        return if (mediaDir != null && mediaDir.exists()) mediaDir else activity.filesDir
+    }*/
+
+    fun saveFilePathInDb(
+        photoPath: String,
+        locationCoordinates: LocationCoordinates,
+        didiEntity: DidiEntity
+    ) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
+
+            didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
+            val finalPathWithCoordinates =
+                "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath before = didiId: ${didiEntity.id}, finalPathWithCoordinates: $finalPathWithCoordinates")
+            didiDao.saveLocalImagePath(path = finalPathWithCoordinates, didiId = didiEntity.id)
+
+            NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> didiDao.saveLocalImagePath after")
+        }
+    }
+
+    fun getDidiDetails(didiId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            _didiEntity.emit(didiDao.getDidi(didiId))
+            if(!_didiEntity.value.localPath.isNullOrEmpty()){
+                photoUri=if (didiEntity.value.localPath.contains("|"))
+                    didiEntity.value.localPath.split("|")[0].toUri()
+                else
+                    _didiEntity.value.localPath.toUri()
+                shouldShowPhoto.value=true
+            }
+        }
+    }
+
+    override fun onServerError(error: ErrorModel?) {
+        /*TODO("Not yet implemented")*/
+    }
+
+    override fun onServerError(errorModel: ErrorModelWithApi?) {
+        NudgeLogger.e("PatDidiSummaryViewModel", "onServerError -> errorModel: ${errorModel.toString()}")
+    }
+
+    fun isPatStarted(didiId: Int, callBack:(Boolean) -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val answers = answerDao.getAnswerForDidi(TYPE_EXCLUSION, didiId = didiId)
+            if (!answers.isNullOrEmpty()){
+                callBack(true)
+            } else {
+                callBack(false)
+            }
+        }
+    }
+
+    fun getCastName(castId : Int) : String{
+        var castName = ""
+        for(cast in castList){
+            if(castId == cast.id)
+                castName = cast.casteName
+        }
+        return castName
+    }
+
+    fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            didiDao.updateDidiShgStatus(didiId = didiId, shgFlag = flagStatus.value)
+
+        }
+    }
+
+    fun updateDidiAbleBodiedFlag(didiId: Int, flagStatus: AbleBodiedFlag) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            didiDao.updateDidiAbleBodiedStatus(didiId = didiId, ableBodiedFlag = flagStatus.value)
+        }
+    }
+
+    fun uploadDidiImage(context: Context, uri: String, didiId: Int, location: String) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            withContext(Dispatchers.IO) {
+                try {
+                       NudgeLogger.d("PatDidiSummaryViewModel", "uploadDidiImage: $didiId :: $location :: $uri")
+                       val compressedImageFile =
+                               compressImage(uri.toString(), context, getFileNameFromURL(uri))
+                       NudgeLogger.d(
+                           "PatDidiSummaryViewModel",
+                           "uploadDidiImage Prev: ${ File(compressedImageFile).totalSpace} "
+                       )
+                       val requestFile = RequestBody.create(
+                           "multipart/form-data".toMediaTypeOrNull(),
+                           File(compressedImageFile)
+                       )
+                       val imageFilePart = MultipartBody.Part.createFormData(
+                           "file",
+                           File(compressedImageFile).name,
+                           requestFile
+                       )
+                       val requestDidiId = RequestBody.create(
+                           "multipart/form-data".toMediaTypeOrNull(),
+                           didiId.toString()
+                       )
+                       val requestUserType = RequestBody.create(
+                           "multipart/form-data".toMediaTypeOrNull(),
+                           if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                       )
+                       val requestLocation =
+                           RequestBody.create("multipart/form-data".toMediaTypeOrNull(), location)
+                       NudgeLogger.d(
+                           "PatDidiSummaryViewModel",
+                           "uploadDidiImage Details: ${requestDidiId.contentType().toString()}"
+                       )
+                       val imageUploadRequest = apiService.uploadDidiImage(
+                           imageFilePart,
+                           requestDidiId,
+                           requestUserType,
+                           requestLocation
+                       )
+                    NudgeLogger.d(
+                               "PatDidiSummaryViewModel",
+                    "uploadDidiImage imageUploadRequest status: ${imageUploadRequest.status}  data: ${imageUploadRequest.data ?: ""}"
+                    )
+                    if (imageUploadRequest.status.equals(SUCCESS, true)) {
+                        didiDao.updateNeedsToPostImage(didiId, false)
+                    } else {
+                        didiDao.updateNeedsToPostImage(didiId, true)
+                    }
+                } catch (ex: Exception) {
+                    ex.printStackTrace()
+                    didiDao.updateNeedsToPostImage(didiId, true)
+                    onCatchError(ex, ApiType.DIDI_IMAGE_UPLOAD_API)
+                }
+
+            }
+        }
+    }
+
+    fun getFileName(context: Context, didi: DidiEntity): File {
+        val directory = getImagePath(context)
+        val filePath = File(directory, "${didi.id}-${didi.cohortId}-${didi.villageId}_${System.currentTimeMillis()}.png")
+        return filePath
+    }
+
+    fun setNeedToPostImage(needToPostImage: Boolean) {
+        job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
+            didiDao.updateNeedsToPostImage(didiEntity.value.id, needToPostImage)
+        }
+    }
+
+}
