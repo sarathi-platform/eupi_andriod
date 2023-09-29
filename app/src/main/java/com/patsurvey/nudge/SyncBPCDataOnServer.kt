@@ -5,6 +5,7 @@ import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.dao.*
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
@@ -33,7 +34,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     private val pendingTimerTime:Long = 10000
 
     fun syncBPCDataToServer(networkCallbackListener: NetworkCallbackListener){
-        sendBpcUpdatedDidiList(networkCallbackListener)
+//        sendBpcUpdatedDidiList(networkCallbackListener)
+        savePATSummeryToServer(networkCallbackListener)
     }
 
     // step 1
@@ -257,7 +259,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 stepsListDao.updateNeedToPost(step.id, step.villageId, false)
                             }
                         }
-//                        sendBpcMatchScore(networkCallbackListener)
+                        sendBpcMatchScore(networkCallbackListener)
                     }else{
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
@@ -278,7 +280,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         }
     }
 
-    /*// step 5
+    // step 5
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
@@ -297,7 +299,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                         programId = bpcStep.programId,
                         score = matchPercentage,
-                        villageId = villageId
+                        villageId = villageId,
+                        didiNotAvailableCountBPC = didiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
                     )
                     val requestList = arrayListOf(saveMatchSummaryRequest)
                     val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
@@ -328,16 +332,16 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 }
             }
         }
-    }*/
+    }
 
-    /*fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
+    fun calculateMatchPercentage(didiList: List<DidiEntity>, questionPassingScore: Int): Int {
         val matchedCount = didiList.filter {
             (it.score ?: 0.0) >= questionPassingScore.toDouble()
                     && (it.crpScore ?: 0.0) >= questionPassingScore.toDouble() }.size
 
         return if (didiList.isNotEmpty() && matchedCount != 0) ((matchedCount.toFloat()/didiList.size.toFloat()) * 100).toInt() else 0
 
-    }*/
+    }
 
     // step 3 transaction id
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
@@ -617,7 +621,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     }
 
     private fun calculateDidiScore(didiId: Int) {
-        NudgeLogger.d("SyncHelper", "calculateDidiScore didiId: ${didiId}")
+        NudgeLogger.d("SyncBPCDataOnServer", "calculateDidiScore didiId: ${didiId}")
         var passingMark = 0
         var isDidiAccepted = false
         var comment = LOW_SCORE
@@ -625,7 +629,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         if (_inclusiveQueList.isNotEmpty()) {
             var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
             NudgeLogger.d(
-                "PatSectionSummaryViewModel",
+                "SyncBPCDataOnServer",
                 "calculateDidiScore: $totalWightWithoutNumQue"
             )
             val numQueList =
@@ -644,7 +648,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             )
                             totalWightWithoutNumQue += newScore
                             NudgeLogger.d(
-                                "PatSectionSummaryViewModel",
+                                "SyncBPCDataOnServer",
                                 "calculateDidiScore: totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
                             )
                         }
@@ -657,7 +661,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         )
                         totalWightWithoutNumQue += newScore
                         NudgeLogger.d(
-                            "PatSectionSummaryViewModel",
+                            "SyncBPCDataOnServer",
                             "calculateDidiScore: for Flag FLAG_RATIO totalWightWithoutNumQue += newScore -> $totalWightWithoutNumQue"
                         )
                     }
@@ -666,7 +670,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
             // TotalScore
 
 
-            if (totalWightWithoutNumQue >= passingMark) {
+            /*if (totalWightWithoutNumQue >= passingMark) {
                 isDidiAccepted = true
                 comment = BLANK_STRING
                 didiDao.updateVOEndorsementDidiStatus(
@@ -681,8 +685,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     didiId,
                     0
                 )
-            }
-            NudgeLogger.d("SyncHelper", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")
+            }*/
+            NudgeLogger.d("SyncBPCDataOnServer", "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue")
             didiDao.updateDidiScore(
                 score = totalWightWithoutNumQue,
                 comment = comment,

@@ -365,6 +365,7 @@
     <string name="total_pat_attempted_string">कुल PAT प्रयास</string>
     <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के \nरूप में चिह्नित किया गया है</string>
     <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>
+    <string name="something_went_wrong">कुछ गलत हो गया</string>
 
 
 </resources>

@@ -62,6 +62,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_PAT_SURVEY
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BottomButtonBox
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DidiItemCardForPatSummary
 import com.patsurvey.nudge.utils.DidiItemCardForVoForSummary
 import com.patsurvey.nudge.utils.ExclusionType
@@ -197,7 +198,7 @@ fun SurveySummary(
                     surveySummaryViewModel.updatePatEditFlag()
 
                     if ((context as MainActivity).isOnline.value ?: false) {
-                        surveySummaryViewModel.sendBpcUpdatedDidiList(object :
+                        /*surveySummaryViewModel.sendBpcUpdatedDidiList(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {
 
@@ -207,7 +208,7 @@ fun SurveySummary(
 
                             }
 
-                        })
+                        })*/
                         surveySummaryViewModel.savePATSummeryToServer(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {
@@ -418,20 +419,23 @@ fun SurveySummary(
                                 if (surveySummaryViewModel.prefRepo.isUserBPC()) {
                                     itemsIndexed(
                                         if (showDidiListForStatus.second == PatSurveyStatus.NOT_AVAILABLE.ordinal)
-                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
+                                            didids.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                                    || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }
                                         else
                                             didids.value.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }
-                                    ) { index, didi ->
-                                        DidiItemCardForPatSummary(
+                                    ) { _, didi ->
+
+                                        DidiItemCardForPat(
+                                            navController = navController,
+                                            prefRepo = surveySummaryViewModel.prefRepo,
                                             didi = didi,
+                                            expanded = true,
                                             modifier = modifier,
-                                            onItemClick = {
-                                                if (showDidiListForStatus.second == PatSurveyStatus.COMPLETED.ordinal) {
-                                                    navController.navigate("bpc_pat_complete_didi_summary_screen/${didi.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                                                }
-                                            },
+                                            answerDao = surveySummaryViewModel.answerDao,
+                                            questionListDao = surveySummaryViewModel.questionListDao,
+                                            onExpendClick = {_,_->},
                                             onNotAvailableClick = {},
-                                            onStartPATClick = {}
+                                            onItemClick = {}
                                         )
                                     }
                                 } else {

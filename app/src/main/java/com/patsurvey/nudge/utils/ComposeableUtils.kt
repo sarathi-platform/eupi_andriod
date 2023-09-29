@@ -193,6 +193,17 @@ fun DidiItemCardForPatSummary(
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("homeImage")
                     )
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
+                    )
                 }
             }
             if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal) {
@@ -420,6 +431,7 @@ private fun decoupledConstraints(): ConstraintSet {
         val didiName = createRefFor("didiName")
         val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
+        val houseNumber_1 = createRefFor("houseNumber_1")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
         val didiDetailLayout = createRefFor("didiDetailLayout")
@@ -449,10 +461,15 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 6.dp)
-            bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
         }
+
+        constrain(houseNumber_1) {
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(homeImage.bottom)
+        }
+
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)

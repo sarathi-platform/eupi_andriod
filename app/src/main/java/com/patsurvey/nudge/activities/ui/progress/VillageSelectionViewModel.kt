@@ -17,8 +17,6 @@ import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
-import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LanguageEntity
@@ -55,9 +53,9 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
-import com.patsurvey.nudge.utils.BpcDidiSelectionStatus
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -84,7 +82,6 @@ import com.patsurvey.nudge.utils.PREF_SOCIAL_MAPPING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_TRANSECT_WALK_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_VO_ENDORSEMENT_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
-import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
@@ -103,6 +100,7 @@ import com.patsurvey.nudge.utils.findCompleteValue
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -471,147 +469,94 @@ class VillageSelectionViewModel @Inject constructor(
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
                                     "didiResponse status = ${didiResponse.status}, message = ${didiResponse.message}, data = ${didiResponse.data.toString()}")
                             if (didiResponse.status.equals(SUCCESS, true)) {
-                                didiResponse.data?.let { beneficaryResponse ->
-                                    beneficaryResponse.forEach {
-                                        it.selected.forEach { didi ->
-                                            var tolaName = BLANK_STRING
-                                            var casteName = BLANK_STRING
-                                            val singleTola =
-                                                tolaDao.fetchSingleTola(didi.cohortId)
-                                            val singleCaste = casteListDao.getCaste(
-                                                didi.castId,
-                                                prefRepo?.getAppLanguageId() ?: 2
-                                            )
-                                            singleTola?.let {
-                                                tolaName = it.name
-                                            }
-                                            singleCaste?.let {
-                                                casteName = it.casteName
-                                            }
-//                                                if (singleTola != null) {
+                                didiResponse.data?.let { didiList ->
+                                    if (didiList.isNotEmpty()) {
+                                        try {
+                                            didiList.forEach { didi ->
+                                                var tolaName = BLANK_STRING
+                                                var casteName = BLANK_STRING
+                                                val singleTola =
+                                                    tolaDao.fetchSingleTola(didi.cohortId)
+                                                val singleCaste =
+                                                    casteListDao.getCaste(didi.castId, prefRepo?.getAppLanguageId()?:2)
+                                                singleTola?.let {
+                                                    tolaName = it.name
+                                                }
+                                                singleCaste?.let {
+                                                    casteName = it.casteName
+                                                }
+//                                                    if (singleTola != null) {
+                                                val wealthRanking =
+                                                    if (didi.beneficiaryProcessStatus?.map { it.name }
+                                                            ?.contains(StepType.WEALTH_RANKING.name) == true) didi.beneficiaryProcessStatus?.get(
+                                                        didi.beneficiaryProcessStatus!!.map { process -> process.name }
+                                                        .indexOf(StepType.WEALTH_RANKING.name))?.status
+                                                    else WealthRank.NOT_RANKED.rank
+                                                val patSurveyAcceptedRejected =
+                                                    if (didi.beneficiaryProcessStatus?.map { it.name }
+                                                            ?.contains(StepType.PAT_SURVEY.name) == true) didi.beneficiaryProcessStatus?.get(
+                                                        didi.beneficiaryProcessStatus!!.map { process -> process.name }
+                                                        .indexOf(StepType.PAT_SURVEY.name))?.status
+                                                    else DIDI_REJECTED
+                                                val voEndorsementStatus =
+                                                    if (didi.beneficiaryProcessStatus?.map { it.name }
+                                                            ?.contains(StepType.VO_ENDROSEMENT.name) == true) didi.beneficiaryProcessStatus!![didi.beneficiaryProcessStatus!!.map { process -> process.name }
+                                                        .indexOf(StepType.VO_ENDROSEMENT.name)]?.let {
+                                                        DidiEndorsementStatus.toInt(
+                                                            it.status)
+                                                    }
+                                                    else DidiEndorsementStatus.NOT_STARTED.ordinal
 
-                                            val bpcStatus =
-                                                if (didi.beneficiaryProcessStatus.map { it.name }
-                                                        .contains(BPC_SURVEY_CONSTANT)) {
-                                                    PatSurveyStatus.toInt(didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                        .indexOf(BPC_SURVEY_CONSTANT)].status)
-                                                } else
-                                                    PatSurveyStatus.NOT_STARTED.ordinal
-
-
-//                                                }
-                                            //TODO Create new table
-                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
-                                                    "bpcSelectedDidiDao.insertDidi() didiId = ${didi.id} before")
-                                            bpcSelectedDidiDao.insertDidi(
-                                                BpcSelectedDidiEntity(
-                                                    id = didi.id,
-                                                    serverId = didi.id,
-                                                    name = didi.name,
-                                                    address = didi.address,
-                                                    guardianName = didi.guardianName,
-                                                    relationship = didi.relationship,
-                                                    castId = didi.castId,
-                                                    castName = casteName,
-                                                    cohortId = didi.cohortId,
-                                                    villageId = village.id,
-                                                    cohortName = tolaName,
-                                                    needsToPost = false,
-                                                    wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
-                                                    patSurveyStatus = /*PatSurveyStatus.NOT_STARTED.ordinal*/bpcStatus,
-                                                    voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
-                                                    section1Status = bpcStatus,
-                                                    section2Status = bpcStatus,
-                                                    createdDate = didi.createdDate,
-                                                    modifiedDate = didi.modifiedDate,
-                                                    beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                    shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
-                                                    isAlsoSelected = BpcDidiSelectionStatus.SELECTED.ordinal,
-                                                    transactionId = "",
-                                                    bpcScore = didi.bpcScore,
-                                                    bpcComment = didi.bpcComment,
-                                                    crpComment = didi.crpComment,
-                                                    crpScore = didi.crpScore,
-                                                    crpUploadedImage = didi.crpUploadedImage
+                                                didiDao.insertDidi(
+                                                    DidiEntity(
+                                                        id = didi.id,
+                                                        serverId = didi.id,
+                                                        name = didi.name,
+                                                        address = didi.address,
+                                                        guardianName = didi.guardianName,
+                                                        relationship = didi.relationship,
+                                                        castId = didi.castId,
+                                                        castName = casteName,
+                                                        cohortId = didi.cohortId,
+                                                        villageId = village.id,
+                                                        cohortName = tolaName,
+                                                        needsToPost = false,
+                                                        wealth_ranking = wealthRanking?: BLANK_STRING,
+                                                        forVoEndorsement = if (patSurveyAcceptedRejected.equals(
+                                                                COMPLETED_STRING, true
+                                                            )
+                                                        ) 1 else 0,
+                                                        voEndorsementStatus = voEndorsementStatus,
+                                                        needsToPostRanking = false,
+                                                        createdDate = didi.createdDate,
+                                                        modifiedDate = didi.modifiedDate,
+                                                        beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
+                                                        shgFlag = SHGFlag.fromSting(intToString(didi.shgFlag)?: SHGFlag.NOT_MARKED.name).value,
+                                                        transactionId = "",
+                                                        localCreatedDate = didi.localCreatedDate,
+                                                        localModifiedDate = didi.localModifiedDate,
+                                                        crpScore = didi.crpScore,
+                                                        crpComment = didi.crpComment,
+                                                        bpcScore = didi.bpcScore ?: 0.0,
+                                                        bpcComment = didi.bpcComment ?: BLANK_STRING,
+                                                        crpUploadedImage = didi.crpUploadedImage,
+                                                        needsToPostImage = false,
+                                                        rankingEdit = didi.rankingEdit,
+                                                        patEdit = didi.patEdit,
+                                                        ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
+                                                    )
                                                 )
+//                                                    }
+                                                if(!didi.crpUploadedImage.isNullOrEmpty()){
+                                                    downloadAuthorizedImageItem(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
+                                                }
+                                            }
+                                        } catch (ex: Exception) {
+                                            onError(
+                                                tag = "VillageSelectionViewModel",
+                                                "Error : ${didiResponse.message}"
                                             )
-                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
-                                                    "bpcSelectedDidiDao.insertDidi() didiId = ${didi.id} after")
-                                            if(!didi.crpUploadedImage.isNullOrEmpty()){
-                                                downloadAuthorizedImageItemForSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo )
-                                            }
-                                        }
-                                        it.not_selected.forEach { didi ->
-                                            var tolaName = BLANK_STRING
-                                            var casteName = BLANK_STRING
-                                            val singleTola =
-                                                tolaDao.fetchSingleTola(didi.cohortId)
-                                            val singleCaste = casteListDao.getCaste(
-                                                didi.castId,
-                                                prefRepo?.getAppLanguageId() ?: 2
-                                            )
-                                            singleTola?.let {
-                                                tolaName = it.name
-                                            }
-                                            singleCaste?.let {
-                                                casteName = it.casteName
-                                            }
-//                                                if (singleTola != null) {
-                                            val wealthRanking =
-                                                if (didi.beneficiaryProcessStatus.map { it.name }
-                                                        .contains(StepType.WEALTH_RANKING.name)) didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                    .indexOf(StepType.WEALTH_RANKING.name)].status
-                                                else WealthRank.NOT_RANKED.rank
-                                            val patSurveyStatus =
-                                                if (didi.beneficiaryProcessStatus.map { it.name }
-                                                        .contains(StepType.PAT_SURVEY.name)) PatSurveyStatus.toInt(
-                                                    didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                        .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                else PatSurveyStatus.NOT_STARTED.ordinal
-                                            val voEndorsementStatus =
-                                                if (didi.beneficiaryProcessStatus.map { it.name }
-                                                        .contains(StepType.VO_ENDROSEMENT.name)) DidiEndorsementStatus.toInt(
-                                                    didi.beneficiaryProcessStatus[didi.beneficiaryProcessStatus.map { process -> process.name }
-                                                        .indexOf(StepType.PAT_SURVEY.name)].status)
-                                                else DidiEndorsementStatus.NOT_STARTED.ordinal
-//                                                }
-                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
-                                                    "bpcNonSelectedDidiDao.insertNonSelectedDidi() didiId = ${didi.id} before")
-                                            bpcNonSelectedDidiDao.insertNonSelectedDidi(
-                                                BpcNonSelectedDidiEntity(
-                                                    id = didi.id,
-                                                    serverId = didi.id,
-                                                    name = didi.name,
-                                                    address = didi.address,
-                                                    guardianName = didi.guardianName,
-                                                    relationship = didi.relationship,
-                                                    castId = didi.castId,
-                                                    castName = casteName,
-                                                    cohortId = didi.cohortId,
-                                                    villageId = village.id,
-                                                    cohortName = tolaName,
-                                                    needsToPost = false,
-                                                    wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
-                                                    patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                    voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
-                                                    section1Status = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                    section2Status = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                    createdDate = didi.createdDate,
-                                                    modifiedDate = didi.modifiedDate,
-                                                    beneficiaryProcessStatus = didi.beneficiaryProcessStatus,
-                                                    shgFlag = SHGFlag.fromSting(didi.shgFlag ?: SHGFlag.NOT_MARKED.name).value,
-                                                    transactionId = "",
-                                                    bpcScore = didi.bpcScore,
-                                                    bpcComment = didi.bpcComment,
-                                                    crpComment = didi.crpComment,
-                                                    crpScore = didi.crpScore
-                                                )
-                                            )
-                                            NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
-                                                    "bpcNonSelectedDidiDao.insertNonSelectedDidi() didiId = ${didi.id} after")
-                                            if(!didi.crpUploadedImage.isNullOrEmpty()){
-                                                downloadAuthorizedImageItemForNonSelectedDidi(didi.id,didi.crpUploadedImage?: BLANK_STRING, prefRepo = prefRepo)
-                                            }
+
                                         }
                                     }
                                 }
@@ -759,19 +704,13 @@ class VillageSelectionViewModel @Inject constructor(
                                         arrayListOf()
                                     it.forEach { item ->
                                         if (item.userType.equals(USER_BPC, true)) {
-                                            bpcSelectedDidiDao.updatePATProgressStatus(
-                                                patSurveyStatus = item.patSurveyStatus ?: 0,
-                                                section1Status = item.section1Status ?: 0,
-                                                section2Status = item.section2Status ?: 0,
-                                                didiId = item.beneficiaryId ?: 0,
-                                                shgFlag = item.shgFlag ?: -1,
-                                                patExclusionStatus = item.patExclusionStatus ?:0
-                                            )
-
-                                            bpcNonSelectedDidiDao.updatePATProgressStatus(
-                                                patSurveyStatus = item.patSurveyStatus ?: 0,
-                                                section1Status = item.section1Status ?: 0,
-                                                section2Status = item.section2Status ?: 0,
+                                            didiDao.updatePATProgressStatus(
+                                                patSurveyStatus = item.patSurveyStatus
+                                                    ?: 0,
+                                                section1Status = item.section1Status
+                                                    ?: 0,
+                                                section2Status = item.section2Status
+                                                    ?: 0,
                                                 didiId = item.beneficiaryId ?: 0,
                                                 shgFlag = item.shgFlag ?: -1,
                                                 patExclusionStatus = item.patExclusionStatus ?: 0
@@ -1131,24 +1070,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             stepsListDao.insertAll(it.stepList)
                                             setVoEndorsementCompleteForVillages()
                                         }
-                                        /*if (videoList.isNotEmpty()) {
-                                            videoList.forEach {
-                                                val trainingVideoEntity = TrainingVideoEntity(
-                                                    id = it.id,
-                                                    title = it.title,
-                                                    description = it.description,
-                                                    url = it.url,
-                                                    thumbUrl = it.thumbUrl,
-                                                    isDownload = if (getVideoPath(
-                                                            context, it.id, fileType = FileType.VIDEO
-                                                        ).exists()
-                                                    ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
-                                                )
-                                                trainingVideoDao.insert(trainingVideoEntity)
-                                            }
-                                        } else {
-                                            saveVideosToDb(context)
-                                        }*/
+
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
@@ -1586,7 +1508,13 @@ class VillageSelectionViewModel @Inject constructor(
                                 prefRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
                                 villageListDao.insertAll(it.villageList ?: listOf())
                                 stateId.value= it.villageList?.get(0)?.stateId?:1
-                                _villagList.emit(villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2))
+                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                if (localVillageList.isNotEmpty()) {
+                                    _villagList.emit(localVillageList)
+                                }
+                                else{
+                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                }
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {

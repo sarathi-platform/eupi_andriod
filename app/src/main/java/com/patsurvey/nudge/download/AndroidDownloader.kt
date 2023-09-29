@@ -203,7 +203,7 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                 _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
                                     it[id] = status
                                 }
-                                NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> downloadId: $downloadId, id: $id, status: $status, ")
+                                /*NudgeLogger.d("AndroidDownloader", "checkDownloadStatus -> downloadId: $downloadId, id: $id, status: $status, ")*/
                             }
 
                             DownloadManager.STATUS_FAILED -> {

@@ -971,7 +971,9 @@ class SurveySummaryViewModel @Inject constructor(
                 val saveMatchSummaryRequest = SaveMatchSummaryRequest(
                     programId = bpcStep.programId,
                     score = matchPercentage,
-                    villageId = villageId
+                    villageId = villageId,
+                    didiNotAvailableCountBPC = didiList.value.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                            || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
                 )
                 val requestList = arrayListOf(saveMatchSummaryRequest)
                 val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
@@ -1053,6 +1055,7 @@ class SurveySummaryViewModel @Inject constructor(
             TYPE_EXCLUSION
         )
         val _inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+        Log.d("TAG", "calculateDidiScoreForDidi: $yesQuesCount :: $didiId")
         if (yesQuesCount > 0) {
             didiDao.updateDidiScore(
                 score = 0.0,
@@ -1065,13 +1068,6 @@ class SurveySummaryViewModel @Inject constructor(
                 didiId,
                 0
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = 0.0,
-                    comment = TYPE_EXCLUSION,
-                    didiId = didiId,
-                )
-            }
         }else {
         if (_inclusiveQueList.isNotEmpty()) {
             var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
@@ -1137,19 +1133,13 @@ class SurveySummaryViewModel @Inject constructor(
                 "SyncHelper",
                 "calculateDidiScore totalWightWithoutNumQue: $totalWightWithoutNumQue"
             )
+            Log.d("TAG", "calculateDidiScoreForDidi: $totalWightWithoutNumQue :: $isDidiAccepted :: $didiId" )
             didiDao.updateDidiScore(
                 score = totalWightWithoutNumQue,
                 comment = comment,
                 didiId = didiId,
                 isDidiAccepted = isDidiAccepted
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = totalWightWithoutNumQue,
-                    comment = comment,
-                    didiId = didiId,
-                )
-            }
         } else {
             didiDao.updateDidiScore(
                 score = 0.0,
@@ -1157,13 +1147,6 @@ class SurveySummaryViewModel @Inject constructor(
                 didiId = didiId,
                 isDidiAccepted = false
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = 0.0,
-                    comment = TYPE_EXCLUSION,
-                    didiId = didiId,
-                )
-            }
         }
       }
     }

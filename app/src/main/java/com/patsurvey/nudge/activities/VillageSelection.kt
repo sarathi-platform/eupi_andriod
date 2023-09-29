@@ -282,32 +282,6 @@ fun VillageSelectionScreen(
                             .then(modifier)
                     ) {
 
-                        /*Row(modifier = Modifier
-                        .padding(start = 16.dp, top = 12.dp)
-                        .fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
-                            fontFamily = NotoSans,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 24.sp, color = textColorDark,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(onClick = {
-                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-                            onNavigateToSetting()
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.more_icon),
-                                contentDescription = "more action button",
-                                tint = blueDark,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                            )
-                        }
-                    }*/
-
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
@@ -318,7 +292,7 @@ fun VillageSelectionScreen(
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
                                     isBpcUser = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
-                                    isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id]
+                                    isVoEndorsementComplete = (if(!viewModel.prefRepo.isUserBPC()) viewModel.isVoEndorsementComplete.value[village.id] else true)
                                         ?: false
                                 ) {
                                     viewModel.villageSelected.value = it

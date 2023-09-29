@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -84,6 +85,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     val answerSummeryList: StateFlow<List<SectionAnswerEntity>> get() = _answerSummeryList
     val isYesSelected = mutableStateOf(false)
     val isPATStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
+    val isBPCVerificationStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
@@ -95,6 +97,10 @@ class PatSectionSummaryViewModel @Inject constructor(
                 .sortedBy { it.orderNumber }
             isPATStepComplete.value =
                 stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
+            if(prefRepo.isUserBPC()){
+                isBPCVerificationStepComplete.value =
+                    stepList[stepList.map { it.orderNumber }.indexOf(6)].isComplete
+            }
             if (prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal
                 && isPATStepComplete.value == StepStatus.COMPLETED.ordinal
             ) {
@@ -179,16 +185,6 @@ class PatSectionSummaryViewModel @Inject constructor(
             }
         }
     }
-
-    fun updatePATExclusionStatus(didiId: Int){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
-                didiDao.updateExclusionStatus(didiId = didiId,
-                    patExclusionStatus = ExclusionType.NO_EXCLUSION.ordinal,
-                    crpComment = BLANK_STRING)
-            }
-           }
-        }
     fun setPATSection1Complete(didiId: Int,status:Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
@@ -303,8 +299,6 @@ class PatSectionSummaryViewModel @Inject constructor(
                         }
                     }
                     // TotalScore
-
-
                     if (totalWightWithoutNumQue >= passingMark) {
                         isDidiAccepted = true
                         comment = BLANK_STRING
@@ -321,34 +315,24 @@ class PatSectionSummaryViewModel @Inject constructor(
                             0
                         )
                     }
+                    Log.d("TAG", "calculateDidiScorePATSection:  $totalWightWithoutNumQue  :: $didiId :: $isDidiAccepted")
+
                     didiDao.updateDidiScore(
                         score = totalWightWithoutNumQue,
                         comment = comment,
                         didiId = didiId,
                         isDidiAccepted = isDidiAccepted
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = totalWightWithoutNumQue,
-                            comment = comment,
-                            didiId = didiId,
-                        )
-                    }
                 }
                 else {
+                    Log.d("TAG", "calculateDidiScorePATSection else :  0.0  :: $didiId :: $isDidiAccepted")
+
                     didiDao.updateDidiScore(
                         score = 0.0,
                         comment = TYPE_EXCLUSION,
                         didiId = didiId,
                         isDidiAccepted = false
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = 0.0,
-                            comment = TYPE_EXCLUSION,
-                            didiId = didiId,
-                        )
-                    }
                 }
                 didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
             }

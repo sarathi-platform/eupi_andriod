@@ -124,7 +124,7 @@ fun QuestionScreen(
 
 
     val context = LocalContext.current
-    BackHandler() {
+    BackHandler {
         if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
             if (viewModel.prefRepo.isUserBPC()) {
                 navController.popBackStack(
@@ -135,7 +135,13 @@ fun QuestionScreen(
                 navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             }
         } else {
-            navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
+            if (viewModel.prefRepo.isUserBPC())
+                navController.popBackStack(
+                    BpcDidiListScreens.BPC_DIDI_LIST.route,
+                    inclusive = false
+                )
+            else
+                navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
         }
     }
 

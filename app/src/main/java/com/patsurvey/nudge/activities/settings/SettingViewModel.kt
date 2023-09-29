@@ -294,7 +294,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun isBPCScoreSaved() : Boolean{
+    fun isBPCScoreSaved() : Boolean{
         val villageList = villegeListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
         for(village in villageList) {
             val isBpcScoreSaved = prefRepo.getPref(
