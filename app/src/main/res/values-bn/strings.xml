@@ -119,7 +119,7 @@
     <string name="tola_deleted">{TOLA_NAME} পাড়া ডিলিট করা হয়েছে</string>
     <string name="tola_already_exist">পাড়া ইতিমধ্যে উপলব্ধ</string>
     <string name="didi_has_been_successfully_updated">দিদির বিবরণ সফলভাবে আপডেট করা হয়েছে</string>
-    <string name="didi_already_exist">দিদি আগে থেকেই আছে</string>
+    <string name="didi_already_exist">একই নাম, স্বামীর নাম, টোলা এবং বাড়ির নম্বর সহ একটি দিদি ইতিমধ্যেই বিদ্যমান।</string>
     <string name="location_added_text">অবস্থান যোগ করা হয়েছে</string>
     <string name="pat_survey_title">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="didi">দিদি</string>

@@ -119,7 +119,7 @@
     <string name="tola_deleted">{TOLA_NAME} मिटाया गया</string>
     <string name="tola_already_exist">मोहल्ला पहले से ही उपलब्ध है</string>
     <string name="didi_has_been_successfully_updated">दीदी की जानकारी सफलतापूर्वक अपडेट कर दी गई</string>
-    <string name="didi_already_exist">दीदी पहले से मौजूद है</string>
+    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>
     <string name="location_added_text">लोकेशन जोड़ा गया</string>
     <string name="pat_survey_title">PAT सर्वे</string>
     <string name="didi">दीदी</string>
