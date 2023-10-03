@@ -361,6 +361,7 @@
     <string name="go_back_to_section_1_summary">১ নং খণ্ডৰ সাৰাংশ</string>
     <string name="exclusion_error_message">এই দিদিৰ বাবে PAT ইয়াতেই শেষ হয়।</string>
 
+    <!--    Updated 03-10-2023-->
     <string name="bpc_pat_survey_complete">BPC PAT ভেৰিফিকেচন জৰীপ</string>
     <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
     <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
