@@ -376,19 +376,8 @@ fun DidiItemCardForVo(
                         }
                     }
 
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -396,7 +385,19 @@ fun DidiItemCardForVo(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
+                    )
+
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
                     )
 
 
@@ -480,11 +481,12 @@ private fun decoupledConstraints(): ConstraintSet {
         val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
         val village = createRefFor("village")
+        val houseNumber_1 = createRefFor("houseNumber_1")
         val expendArrowImage = createRefFor("expendArrowImage")
         val didiDetailLayout = createRefFor("didiDetailLayout")
 
         constrain(divider) {
-            top.linkTo(village.bottom)
+            top.linkTo(houseNumber_1.bottom)
             end.linkTo(parent.end)
             start.linkTo(parent.start)
         }
@@ -511,10 +513,13 @@ private fun decoupledConstraints(): ConstraintSet {
             end.linkTo(expendArrowImage.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
+        constrain(houseNumber_1) {
+            start.linkTo(didiImage.end,10.dp)
+            top.linkTo(village.bottom)
+        }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 3.dp)
-            bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start, margin = 3.dp)
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
