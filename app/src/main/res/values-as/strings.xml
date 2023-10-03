@@ -119,7 +119,7 @@
     <string name="tola_deleted">{TOLA_NAME} ডিলিট কৰা হল</string>
     <string name="tola_already_exist">পাৰা ইতিমধ্যে আছে</string>
     <string name="didi_has_been_successfully_updated">বাইদেউৰ বিৱৰণসমূহ সফলতাৰে আপডেট কৰা হল</string>
-    <string name="didi_already_exist">একে নাম, স্বামীৰ নাম, তোলা আৰু ঘৰৰ নম্বৰ থকা এখন দিদি ইতিমধ্যে আছে।</string>
+    <string name="didi_already_exist">একে নাম, স্বামীৰ নাম, তোলা আৰু ঘৰৰ নম্বৰ থকা এখন দিদি ইতিমধ্যে আছে।</string> //Updated 03-10-2023
     <string name="location_added_text">লোকেচন যোগ কৰা হল</string>
     <string name="pat_survey_title">PAT সমীক্ষা</string>
     <string name="didi">বাইদেউ</string>
