@@ -27,8 +27,6 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -133,8 +131,6 @@ class VillageSelectionViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val poorDidiListDao: PoorDidiListDao,
     val downloader: AndroidDownloader
 
@@ -146,7 +142,6 @@ class VillageSelectionViewModel @Inject constructor(
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
 
-    val shouldRetry = mutableStateOf(false)
     val multiVillageRequest = mutableStateOf("2")
 
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
@@ -269,8 +264,6 @@ class VillageSelectionViewModel @Inject constructor(
                 try {
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
-                    val localStepsList = stepsListDao.getAllSteps()
-                    val localLanguageList = languageListDao.getAllLanguages()
                     val villageIdList: ArrayList<Int> = arrayListOf()
 
                     val localAnswerList = answerDao.getAllAnswer()
@@ -1674,70 +1667,6 @@ class VillageSelectionViewModel @Inject constructor(
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
-            }
-        }
-    }
-    private fun downloadAuthorizedImageItemForNonSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val imageFile = getAuthImagePath(downloader.mContext, image)
-                if (!imageFile.exists()) {
-                    val localDownloader = downloader
-                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
-                    localDownloader?.currentDownloadingId?.value = id
-                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-                        image,
-                        FileType.IMAGE,
-                        prefRepo
-                    )
-                    if (downloadId != null) {
-                        localDownloader.checkDownloadStatus(downloadId,
-                            id,
-                            downloadManager,
-                        onDownloadComplete = {
-                            bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                        }, onDownloadFailed = {
-                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> onDownloadFailed")
-                        })
-                    }
-                } else {
-                    bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> downloadItem exception", ex)
-            }
-        }
-    }
-    private fun downloadAuthorizedImageItemForSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val imageFile = getAuthImagePath(downloader.mContext, image)
-                if (!imageFile.exists()) {
-                    val localDownloader = downloader
-                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
-                    localDownloader?.currentDownloadingId?.value = id
-                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-                        image,
-                        FileType.IMAGE,
-                        prefRepo
-                    )
-                    if (downloadId != null) {
-                        localDownloader.checkDownloadStatus(downloadId,
-                            id,
-                            downloadManager,
-                        onDownloadComplete = {
-                            bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                        }, onDownloadFailed = {
-                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> onDownloadFailed")
-                        })
-                    }
-                } else {
-                    bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> downloadItem exception", ex)
             }
         }
     }

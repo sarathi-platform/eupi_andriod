@@ -58,8 +58,6 @@ fun BpcProgressScreen(
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
-
-        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
         delay(1000)
         bpcProgreesScreenViewModel.showLoader.value = false
     }
@@ -131,14 +129,11 @@ fun BpcProgressScreen(
                                 isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
-                                bpcProgreesScreenViewModel.villageSelected.value = it/*
-                                bpcProgreesScreenViewModel.getStepsList(village.id)
-                                bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
+                                bpcProgreesScreenViewModel.villageSelected.value = it
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.getStepsList(village.id)
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
-                                bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
                                 bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
                                 bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {

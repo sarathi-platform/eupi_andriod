@@ -81,11 +81,15 @@ fun DidiItemCardForPat(
     expanded: Boolean,
     modifier: Modifier,
     answerDao: AnswerDao,
+    isFromNotAvailableCard:Boolean?=false,
+    isVoEndorsementComplete: Boolean?=false,
     questionListDao: QuestionListDao,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onNotAvailableClick: (DidiEntity) -> Unit,
     onItemClick: (DidiEntity) -> Unit
 ) {
+    Log.d("TAG", "DidiItemCardForPatDetails: $isVoEndorsementComplete")
+
 
     val didiMarkedNotAvailable = remember {
         mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
@@ -204,8 +208,8 @@ fun DidiItemCardForPat(
                     )
                 }
             }
-            if (prefRepo.getFromPage()
-                    .equals(ARG_FROM_PAT_SURVEY, true)
+
+            if (prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
             ) {
                 Divider(
                     color = borderGreyLight,

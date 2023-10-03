@@ -2,15 +2,12 @@ package com.patsurvey.nudge.activities.survey
 
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -48,8 +45,6 @@ class QuestionScreenViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val apiService: ApiService,
     val numericAnswerDao: NumericAnswerDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val stepsListDao: StepsListDao
 ) : BaseViewModel() {
     val totalAmount = mutableStateOf(0.0)
@@ -166,24 +161,6 @@ class QuestionScreenViewModel @Inject constructor(
                     didiDao.updatePATEditStatus(didiId,true)
                 } else didiDao.updatePatSection2Status(didiId, status)
 
-                val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                selectedDidi?.let {
-                    bpcSelectedDidiDao.updateQuesSectionStatus(didiId, status)
-                    if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
-                        bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId,status)
-                    } else {
-                        bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId,status)
-                    }
-                }
-                val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                nonSelectedDidi?.let {
-                    bpcNonSelectedDidiDao.updateQuesSectionStatus(didiId, status)
-                    if (sectionType.value.equals(TYPE_EXCLUSION, true)) {
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection1Status(didiId,status)
-                    } else{
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection2Status(didiId, status)
-                    }
-                }
             } else {
                 didiDao.updateQuesSectionStatus(didiId, status)
                 if (sectionType.value.equals(TYPE_EXCLUSION, true)) {

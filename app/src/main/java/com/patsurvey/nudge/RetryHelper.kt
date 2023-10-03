@@ -16,8 +16,6 @@ import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -120,8 +118,6 @@ object RetryHelper {
     private var questionDao: QuestionListDao? = null
     private var castListDao: CasteListDao? = null
     private var bpcSummaryDao: BpcSummaryDao? = null
-    private var bpcSelectedDidiDao: BpcSelectedDidiDao? = null
-    private var bpcNonSelectedDidiDao: BpcNonSelectedDidiDao? = null
     private var poorDidiListDao: PoorDidiListDao? = null
 
     val tokenExpired = mutableStateOf(false)
@@ -138,8 +134,6 @@ object RetryHelper {
         questionDao: QuestionListDao,
         castListDao: CasteListDao,
         bpcSummaryDao: BpcSummaryDao,
-        bpcSelectedDidiDao: BpcSelectedDidiDao,
-        bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
         poorDidiListDao: PoorDidiListDao
     ) {
         setPrefRepo(prefRepo)
@@ -153,8 +147,6 @@ object RetryHelper {
         setQuestionDao(questionDao)
         setCastListDao(castListDao)
         setBpcSummaryDao(bpcSummaryDao)
-        setBpcSelectedDidiDao(bpcSelectedDidiDao)
-        setBpcNonSelectedDidiDao(bpcNonSelectedDidiDao)
         setPoorDidiListDao(poorDidiListDao)
     }
 
@@ -238,13 +230,7 @@ object RetryHelper {
         bpcSummaryDao = mBpcSummaryDao
     }
 
-    private fun setBpcSelectedDidiDao(mBpcSelectedDidiDao: BpcSelectedDidiDao) {
-        bpcSelectedDidiDao = mBpcSelectedDidiDao
-    }
 
-    private fun setBpcNonSelectedDidiDao(mBpcNonSelectedDidiDao: BpcNonSelectedDidiDao) {
-        bpcNonSelectedDidiDao = mBpcNonSelectedDidiDao
-    }
 
     private fun setPoorDidiListDao(mPoorDidiListDao: PoorDidiListDao) {
         poorDidiListDao = mPoorDidiListDao
@@ -815,7 +801,7 @@ object RetryHelper {
                                                 )
                                             }
                                             it.not_selected.forEach { didi ->
-                                                var tolaName = BLANK_STRING
+                                                var `tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
                                                 val singleCaste = castListDao?.getCaste(didi.castId,
