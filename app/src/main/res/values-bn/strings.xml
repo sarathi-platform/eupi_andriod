@@ -362,8 +362,8 @@
     <string name="exclusion_error_message">এই দিদির জন্য PAT এখানেই শেষ।</string>
 
     <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT জরিপ জমা দেওয়া হয়েছে৷</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT জরিপ জমা দেওয়া হয়েছে৷</string>
     <string name="total_pat_attempted_string">মোট PAT প্রচেষ্টা</string>
     <string name="didis_marked_as_not_available_string">দিদির উপলব্ধ নেই হিসাবে চিহ্নিত</string>
     <string name="able_bodied_women_flag_text">পরিবারে কি সদর্থ নারী আছে?</string>

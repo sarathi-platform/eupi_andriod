@@ -362,8 +362,8 @@
     <string name="exclusion_error_message">এই দিদিৰ বাবে PAT ইয়াতেই শেষ হয়।</string>
 
     <string name="bpc_pat_survey_complete">BPC PAT সমীক্ষা</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
     <string name="total_pat_attempted_string">মুঠ PAT চেষ্টা কৰা হৈছে</string>
     <string name="didis_marked_as_not_available_string">ডিডিছক উপলব্ধ নহয় বুলি চিহ্নিত কৰা হৈছে</string>
     <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম \nমহিলা আছে নেকি?</string>
