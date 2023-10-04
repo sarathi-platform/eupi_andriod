@@ -119,7 +119,9 @@
     <string name="tola_deleted">{TOLA_NAME} मिटाया गया</string>
     <string name="tola_already_exist">मोहल्ला पहले से ही उपलब्ध है</string>
     <string name="didi_has_been_successfully_updated">दीदी की जानकारी सफलतापूर्वक अपडेट कर दी गई</string>
-    <string name="didi_already_exist">दीदी पहले से मौजूद है</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>
     <string name="location_added_text">लोकेशन जोड़ा गया</string>
     <string name="pat_survey_title">PAT सर्वे</string>
     <string name="didi">दीदी</string>
@@ -359,10 +361,12 @@
     <string name="go_back_to_section_1_summary">धारा 1 सारांश</string>
     <string name="exclusion_error_message">इस दीदी के लिए PAT यहीं समाप्त होती है।</string>
 
-    <!--    Updated 03-10-2023-->
-    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सत्यापन सर्वेक्षण्वे</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सत्यापन सबमिट कर दिया गया है</string>
+    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
+
+    <!-- Updated 03-10-2023-->
+    <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सर्वे सबमिट कर दिया गया है</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सर्वे सबमिट कर दिया गया है</string>
+
     <string name="total_pat_attempted_string">कुल PAT प्रयास</string>
     <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के \nरूप में चिह्नित किया गया है</string>
     <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>

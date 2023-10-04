@@ -119,7 +119,9 @@
     <string name="tola_deleted">{TOLA_NAME} পাড়া ডিলিট করা হয়েছে</string>
     <string name="tola_already_exist">পাড়া ইতিমধ্যে উপলব্ধ</string>
     <string name="didi_has_been_successfully_updated">দিদির বিবরণ সফলভাবে আপডেট করা হয়েছে</string>
-    <string name="didi_already_exist">দিদি আগে থেকেই আছে</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">একই নাম, স্বামীর নাম, টোলা এবং বাড়ির নম্বর সহ একটি দিদি ইতিমধ্যেই বিদ্যমান।</string>
     <string name="location_added_text">অবস্থান যোগ করা হয়েছে</string>
     <string name="pat_survey_title">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="didi">দিদি</string>
@@ -361,10 +363,12 @@
     <string name="go_back_to_section_1_summary">অধ্যায় 1 সারাংশ</string>
     <string name="exclusion_error_message">এই দিদির জন্য PAT এখানেই শেষ।</string>
 
-    <!--    Updated 03-10-2023-->
-    <string name="bpc_pat_survey_complete">BPC PAT যাচাইকরণ সমীক্ষা</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT যাচাইকরণ জমা দেওয়া হয়েছে৷</string>
+    <string name="bpc_pat_survey_complete">BPC দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
+
+    <!-- Updated 03-10-2023-->
+    <string name="pat_success_message_plural">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT জরিপ জমা দেওয়া হয়েছে৷</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT}টি নতুন দিদির জন্য PAT জরিপ জমা দেওয়া হয়েছে৷</string>
+
     <string name="total_pat_attempted_string">মোট PAT প্রচেষ্টা</string>
     <string name="didis_marked_as_not_available_string">দিদির উপলব্ধ নেই হিসাবে চিহ্নিত</string>
     <string name="able_bodied_women_flag_text">পরিবারে কি সদর্থ নারী আছে?</string>

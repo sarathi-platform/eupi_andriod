@@ -120,7 +120,9 @@
     <string name="tola_deleted">{TOLA_NAME} Para / Tola Deleted</string>
     <string name="tola_already_exist">Para / Tola already exists.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
-    <string name="didi_already_exist">Didi already exists.</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">A didi with same name, husband name, tola and house number already exists.</string>
     <string name="location_added_text">Location Added</string>
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
@@ -383,11 +385,12 @@
 
     <string name="go_back_to_section_1_summary">Section 1 summary</string>
     <string name="exclusion_error_message">The PAT for this didi ends here.</string>
+    <string name="bpc_pat_survey_complete">BPC PAT Survey</string>
 
-    <!--    Updated 03-10-2023-->
-    <string name="bpc_pat_survey_complete">BPC PAT verification Survey</string>
-    <string name="pat_success_message_plural">PAT Verification for {TOTAL_COUNT} new Didis has been submitted</string>
-    <string name="pat_success_message_singular">PAT Verification for {TOTAL_COUNT} new Didi has been submitted</string>
+    <!-- Updated 03-10-2023-->
+    <string name="pat_success_message_plural">PAT Survey for {TOTAL_COUNT} new Didis has been submitted</string>
+    <string name="pat_success_message_singular">PAT Survey for {TOTAL_COUNT} new Didi has been submitted</string>
+
     <string name="total_pat_attempted_string">Total PAT Attempted</string>
     <string name="didis_marked_as_not_available_string">Didis marked as Not Available</string>
     <string name="able_bodied_women_flag_text">Are there able-bodied \nwomen in the family?</string>

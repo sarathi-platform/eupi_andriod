@@ -119,7 +119,9 @@
     <string name="tola_deleted">{TOLA_NAME} ডিলিট কৰা হল</string>
     <string name="tola_already_exist">পাৰা ইতিমধ্যে আছে</string>
     <string name="didi_has_been_successfully_updated">বাইদেউৰ বিৱৰণসমূহ সফলতাৰে আপডেট কৰা হল</string>
-    <string name="didi_already_exist">বাইদেউ ইতিমধ্যে আছে</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">একে নাম, স্বামীৰ নাম, তোলা আৰু ঘৰৰ নম্বৰ থকা এখন দিদি ইতিমধ্যে আছে।</string>
     <string name="location_added_text">লোকেচন যোগ কৰা হল</string>
     <string name="pat_survey_title">PAT সমীক্ষা</string>
     <string name="didi">বাইদেউ</string>
@@ -361,10 +363,12 @@
     <string name="go_back_to_section_1_summary">১ নং খণ্ডৰ সাৰাংশ</string>
     <string name="exclusion_error_message">এই দিদিৰ বাবে PAT ইয়াতেই শেষ হয়।</string>
 
-    <!--    Updated 03-10-2023-->
-    <string name="bpc_pat_survey_complete">BPC PAT ভেৰিফিকেচন জৰীপ</string>
-    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT সত্যাপন দাখিল কৰা হৈছে</string>
+    <string name="bpc_pat_survey_complete">BPC PAT সমীক্ষা</string>
+
+    <!-- Updated 03-10-2023-->
+    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
+
     <string name="total_pat_attempted_string">মুঠ PAT চেষ্টা কৰা হৈছে</string>
     <string name="didis_marked_as_not_available_string">ডিডিছক উপলব্ধ নহয় বুলি চিহ্নিত কৰা হৈছে</string>
     <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম \nমহিলা আছে নেকি?</string>
