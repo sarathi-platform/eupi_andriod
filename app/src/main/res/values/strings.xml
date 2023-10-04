@@ -120,7 +120,9 @@
     <string name="tola_deleted">{TOLA_NAME} Para / Tola Deleted</string>
     <string name="tola_already_exist">Para / Tola already exists.</string>
     <string name="didi_has_been_successfully_updated">Didi details have been successfully updated.</string>
-    <string name="didi_already_exist">Didi already exists.</string>
+
+    <!--   Updated 03-10-2023 -->
+    <string name="didi_already_exist">A didi with same name, husband name, tola and house number already exists.</string>
     <string name="location_added_text">Location Added</string>
     <string name="pat_survey_title">PAT Survey</string>
     <string name="didi">Didi</string>
