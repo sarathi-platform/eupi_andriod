@@ -1044,9 +1044,13 @@ class AddDidiViewModel @Inject constructor(
                 NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> completeStepList: $completeStepList \n\n")
                 completeStepList.let {
                     it.forEach { newStep ->
-                        if (newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber) {
-                            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: true" +
-                                    "newStep.orderNumber: ${newStep.orderNumber}")
+                        if (newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }
+                                .indexOf(2)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: true" +
+                                        "newStep.orderNumber: ${newStep.orderNumber}"
+                            )
                             if (filterDidiList.isEmpty()) {
                                 stepsListDao.markStepAsCompleteOrInProgress(
                                     newStep.stepId,
@@ -1078,7 +1082,7 @@ class AddDidiViewModel @Inject constructor(
                         completeStepList.let {
                             it.forEach { newStep ->
                                 if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
-                                        .indexOf(2)].orderNumber) {
+                                        .indexOf(2)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
                                     if (newStep.workFlowId > 0) {
                                         apiRequest.add(
                                             EditWorkFlowRequest(
