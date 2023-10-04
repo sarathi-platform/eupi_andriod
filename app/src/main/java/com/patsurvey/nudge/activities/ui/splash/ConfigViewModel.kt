@@ -18,6 +18,7 @@ import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
 import com.patsurvey.nudge.utils.SUCCESS
+import com.patsurvey.nudge.utils.addDefaultLanguage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,9 +29,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
+    val configRepository: ConfigRepository,
     val prefRepo: PrefRepo,
-    val apiInterface: ApiService,
-    private val languageListDao: LanguageListDao,
     val casteListDao: CasteListDao,
     val bpcScorePercentageDao: BpcScorePercentageDao
 ) : BaseViewModel() {
@@ -44,7 +44,7 @@ class ConfigViewModel @Inject constructor(
             try {
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
-                val response = apiInterface.configDetails()
+                val response = configRepository.fetchLanguageFromAPI()
                 withContext(Dispatchers.IO) {
                     NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
@@ -53,13 +53,9 @@ class ConfigViewModel @Inject constructor(
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
                             NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before")
-                            languageListDao.insertAll(it.languageList)
+                            configRepository.insertAllLanguages(it.languageList)
                             NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after")
 
-                            /*it.image_profile_link.forEach {
-                                //val imageUrl="https://cdn.pixabay.com/photo/2017/07/19/16/44/questions-2519654_960_720.png"
-                                downloadImageItem(context,it)
-                            }*/
                             it.bpcSurveyPercentage.forEach { bpcScorePercentage ->
                                 bpcScorePercentageDao.insert(
                                     BpcScorePercentageEntity(
@@ -75,13 +71,13 @@ class ConfigViewModel @Inject constructor(
                             }
                         }
                     } else if (response.status.equals(FAIL, true)) {
-                        addDefaultLanguage()
+                        addDefaultLanguage(configRepository.languageListDao)
                         withContext(Dispatchers.Main) {
                             callBack(listOf())
                         }
                     } else {
                         onError(tag = "ConfigViewModel", "Error : ${response.message} ")
-                        addDefaultLanguage()
+                        addDefaultLanguage(configRepository.languageListDao)
                         withContext(Dispatchers.Main) {
                             callBack(listOf())
                         }
@@ -97,29 +93,19 @@ class ConfigViewModel @Inject constructor(
         }
     }
 
-    fun addDefaultLanguage() {
-        languageListDao.insertLanguage(
-            LanguageEntity(
-                id = 2,
-                language = "English",
-                langCode = "en",
-                orderNumber = 1,
-                localName = "English"
-            )
-        )
-    }
+
 
     override fun onServerError(error: ErrorModel?) {
         networkErrorMessage.value= error?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDefaultLanguage()
+            addDefaultLanguage(configRepository.languageListDao)
         }
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         networkErrorMessage.value= errorModel?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDefaultLanguage()
+            addDefaultLanguage(configRepository.languageListDao)
         }
     }
 
@@ -129,18 +115,10 @@ class ConfigViewModel @Inject constructor(
     fun checkAndAddLanguage() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> called")
-            val localLanguages = languageListDao.getAllLanguages()
+            val localLanguages = configRepository.getAllLanguages()
             NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> localLanguages: $localLanguages")
             if (localLanguages.isEmpty())
-                languageListDao.insertLanguage(
-                    LanguageEntity(
-                        id = 2,
-                        language = "English",
-                        langCode = "en",
-                        orderNumber = 1,
-                        localName = "English"
-                    )
-                )
+                addDefaultLanguage(configRepository.languageListDao)
         }
     }
 }
