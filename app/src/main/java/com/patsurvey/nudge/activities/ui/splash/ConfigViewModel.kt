@@ -27,7 +27,6 @@ class ConfigViewModel @Inject constructor(
     val configRepository: ConfigRepository,
 ) : BaseViewModel() {
 
-    lateinit var response: ApiResponseModel<ConfigResponseModel>;
     fun isLoggedIn(): Boolean {
         return configRepository.getAccessToken()?.isNotEmpty() == true
     }
@@ -38,10 +37,8 @@ class ConfigViewModel @Inject constructor(
             try {
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
-                withContext(Dispatchers.IO + exceptionHandler) {
-                    response = configRepository.fetchLanguageFromAPI()
-                }
                 withContext(Dispatchers.IO) {
+                 val   response = configRepository.fetchLanguageFromAPI()
                     NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let { it ->
