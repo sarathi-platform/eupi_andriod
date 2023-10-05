@@ -4,15 +4,10 @@ package com.patsurvey.nudge.activities.ui.splash
 import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.BpcScorePercentageEntity
-import com.patsurvey.nudge.database.LanguageEntity
-import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.model.response.ApiResponseModel
+import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -30,12 +25,11 @@ import javax.inject.Inject
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
     val configRepository: ConfigRepository,
-    val prefRepo: PrefRepo,
-    val casteListDao: CasteListDao,
-    val bpcScorePercentageDao: BpcScorePercentageDao
 ) : BaseViewModel() {
+
+    lateinit var response: ApiResponseModel<ConfigResponseModel>;
     fun isLoggedIn(): Boolean {
-        return prefRepo.getAccessToken()?.isNotEmpty() == true
+        return configRepository.getAccessToken()?.isNotEmpty() == true
     }
     val showLoader = mutableStateOf(false)
 
@@ -44,7 +38,9 @@ class ConfigViewModel @Inject constructor(
             try {
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
-                val response = configRepository.fetchLanguageFromAPI()
+                withContext(Dispatchers.IO + exceptionHandler) {
+                    response = configRepository.fetchLanguageFromAPI()
+                }
                 withContext(Dispatchers.IO) {
                     NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
                     if (response.status.equals(SUCCESS, true)) {
@@ -53,18 +49,8 @@ class ConfigViewModel @Inject constructor(
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
                             NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before")
-                            configRepository.insertAllLanguages(it.languageList)
+                            configRepository.insertAllLanguages(it)
                             NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after")
-
-                            it.bpcSurveyPercentage.forEach { bpcScorePercentage ->
-                                bpcScorePercentageDao.insert(
-                                    BpcScorePercentageEntity(
-                                        percentage = bpcScorePercentage.percentage,
-                                        name = bpcScorePercentage.name,
-                                        stateId = bpcScorePercentage.id
-                                    )
-                                )
-                            }
                             delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
                                 callBack(it.image_profile_link)
@@ -98,14 +84,14 @@ class ConfigViewModel @Inject constructor(
     override fun onServerError(error: ErrorModel?) {
         networkErrorMessage.value= error?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDefaultLanguage(configRepository.languageListDao)
+            configRepository.onServerError(error)
         }
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         networkErrorMessage.value= errorModel?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDefaultLanguage(configRepository.languageListDao)
+            configRepository.onServerError(errorModel)
         }
     }
 

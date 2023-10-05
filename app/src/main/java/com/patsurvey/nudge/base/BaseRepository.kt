@@ -41,8 +41,12 @@ abstract class BaseRepository{
     @Inject
     lateinit var apiInterface: ApiService
 
-    abstract fun onServerError(error: ErrorModel?)
-    abstract fun onServerError(errorModel: ErrorModelWithApi?)
+     open fun onServerError(error: ErrorModel?){
+
+     }
+    open fun onServerError(errorModel: ErrorModelWithApi?){
+
+     }
     suspend fun <T> safeApiCall(apiCall:suspend ()->Response<T>):NetworkResult<T>{
         try {
             val response=apiCall()
