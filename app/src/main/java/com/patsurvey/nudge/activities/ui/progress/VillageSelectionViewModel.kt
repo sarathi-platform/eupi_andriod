@@ -42,6 +42,7 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -101,6 +102,7 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -136,7 +138,8 @@ class VillageSelectionViewModel @Inject constructor(
     val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val poorDidiListDao: PoorDidiListDao,
-    val downloader: AndroidDownloader
+    val downloader: AndroidDownloader,
+    val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -415,7 +418,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.BPC_SUMMARY_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             bpcSummaryDao.insert(
                                 BpcSummaryEntity(
                                     0, 0, 0, 0, 0, 0, villageId = village.id
@@ -429,6 +433,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.BPC_SUMMARY_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -452,7 +457,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             if (ex !is JsonSyntaxException) {
                                 if (!retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
                                     ApiType.TOLA_LIST_API
@@ -461,6 +467,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.TOLA_LIST_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -1740,6 +1747,23 @@ class VillageSelectionViewModel @Inject constructor(
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> downloadItem exception", ex)
             }
         }
+    }
+
+    fun refreshBpcData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                showLoader.value = false
+            }
+
+            override fun onFailed() {
+                showLoader.value = false
+            }
+        })
+    }
+
+    fun refreshCrpData() {
+
     }
 
 }

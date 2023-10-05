@@ -34,9 +34,9 @@ import javax.inject.Inject
 abstract class BaseRepository{
 
     // job
-    private var repoJob = Job()
+    var repoJob: Job? = null
 
-    private val uiScope = CoroutineScope(Dispatchers.Main + repoJob)
+//    private val uiScope = CoroutineScope(Dispatchers.Main + repoJob!!)
 
     @Inject
     lateinit var apiInterface: ApiService
@@ -61,6 +61,10 @@ abstract class BaseRepository{
     private fun <T> error(errorMessage: String): NetworkResult<T> =
         NetworkResult.Error("Api call failed $errorMessage")
 
+
+    open fun onError(tag: String = "BaseViewModel", message: String) {
+        NudgeLogger.e(tag, message)
+    }
 
     open fun onCatchError(e:Exception, api: ApiType) {
         NudgeLogger.d("BaseViewModel", "onCatchError: message: ${e.message}, api: ${api.name}")

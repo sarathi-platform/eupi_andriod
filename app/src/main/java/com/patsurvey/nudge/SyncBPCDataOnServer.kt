@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
@@ -522,26 +523,46 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     }
                                 }
                             }
-                            val passingMark=questionDao.getPassingScore()
+                            val passingMark = questionDao.getPassingScore()
+                            var comment = BLANK_STRING
+                            comment =
+                                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                    PatSurveyStatus.NOT_AVAILABLE.name
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                    BLANK_STRING
+                                } else {
+                                    if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                                        || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
+                                        TYPE_EXCLUSION
+                                    } else {
+                                        if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
+                                            LOW_SCORE
+                                        } else {
+                                            BLANK_STRING
+                                        }
+                                    }
+                                }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
                                     id = if (didi.serverId == 0) didi.id else didi.serverId,
                                     score = didi.score,
-                                    comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                        BLANK_STRING
-                                    else {
-                                        if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                            TYPE_EXCLUSION
-                                        } else {
-                                            if (didi.score < passingMark)
-                                                LOW_SCORE
-                                            else {
-                                                BLANK_STRING
-                                            }
+                                    comment = comment,
+                                    type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                    result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                        DIDI_NOT_AVAILABLE
+                                    } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                        PatSurveyStatus.INPROGRESS.name
+                                    } else {
+                                        if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
+                                            if (prefRepo.isUserBPC())
+                                                VERIFIED_STRING
+                                            else
+                                                COMPLETED_STRING
                                         }
                                     },
-                                    type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                    result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    rankingEdit = false,
+                                    shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(

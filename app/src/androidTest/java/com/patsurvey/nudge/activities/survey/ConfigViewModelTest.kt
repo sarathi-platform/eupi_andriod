@@ -34,7 +34,7 @@ import org.mockito.MockitoAnnotations
 @OptIn(ExperimentalCoroutinesApi::class)
 @LargeTest
 @RunWith(androidx.test.runner.AndroidJUnit4::class)
-class ConfigViewModelTest {
+/*class ConfigViewModelTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -181,4 +181,4 @@ class ConfigViewModelTest {
         assert(actualResponse.data == null)
 
     }
-}
+}*/

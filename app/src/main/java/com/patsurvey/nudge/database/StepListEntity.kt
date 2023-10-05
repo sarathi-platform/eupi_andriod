@@ -104,4 +104,8 @@ data class StepListEntity(
         }
     }
 
+    fun getUpdatedStep(newStep: StepListEntity): StepListEntity {
+        return StepListEntity(stepId = stepId, id = id, orderNumber = orderNumber, name = name, status = newStep.status, isComplete = isComplete, needToPost = needToPost, villageId = villageId, programId = programId, workFlowId = newStep.workFlowId, localModifiedDate = localModifiedDate)
+    }
+
 }

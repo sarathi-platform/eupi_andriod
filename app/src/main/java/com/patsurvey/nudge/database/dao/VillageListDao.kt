@@ -36,5 +36,8 @@ interface VillageListDao {
     @Query("SELECT COUNT(*) FROM $VILLAGE_TABLE_NAME where languageId=:languageId")
     fun getAllVillagesCount(languageId:Int): Long
 
+    @Query("SELECT stateId from $VILLAGE_TABLE_NAME LIMIT 1")
+    fun getStateId(): Int
+
 
 }

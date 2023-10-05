@@ -43,6 +43,8 @@ interface NumericAnswerDao {
 
     @Query("DELETE from $NUMERIC_TABLE_NAME")
     fun deleteAllNumericAnswers()
+    @Query("DELETE from $NUMERIC_TABLE_NAME where didiId in (:didiIdList)")
+    fun deleteAllNumericAnswersForDidis(didiIdList: List<Int>)
 
     @Query("SELECT COUNT(*) FROM $NUMERIC_TABLE_NAME where optionId = :optionId AND questionId =:questionId AND didiId =:didiId")
     fun isNumericQuestionAnswered(questionId: Int, optionId: Int, didiId: Int): Int
