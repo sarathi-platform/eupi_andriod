@@ -114,7 +114,7 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
-        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
+//        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
@@ -233,7 +233,7 @@ fun SocialMappingDidiListScreen(
                                     && !didiViewModel.prefRepo.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) {
-                                    if (!didiViewModel.isVoEndorsementComplete.value) {
+//                                    if (!didiViewModel.isVoEndorsementComplete.value) {
                                         ButtonOutline(
                                             modifier = Modifier
                                                 .weight(0.9f)
@@ -256,7 +256,7 @@ fun SocialMappingDidiListScreen(
                                                 launchSingleTop = true
                                             }
                                         }*/
-                                    }
+//                                    }
                                 }
                             }
                         }

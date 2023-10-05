@@ -223,9 +223,9 @@ const val PREF_NEED_TO_POST_FORM_C_AND_D_ = "NEED_TO_POST_FORM_C_AND_D_"
 const val DOUBLE_ZERO = "0.00"
 val IGNORED_REGEX = Regex("[$&+,:;-=\\\\?@#|/'<>.^*(){}[\\\\]%!_`~-]")
 val NUMBER_REGEX = Regex("[0-9]")
-val DOUBLE_QUOTE_REGEX=Regex("\"")
-val RIGHT_BRACKET_QUOTE_REGEX=Regex("]")
-val LEFT_BRACKET_QUOTE_REGEX=Regex("\\[")
+val DOUBLE_QUOTE_REGEX = Regex("\"")
+val RIGHT_BRACKET_QUOTE_REGEX = Regex("]")
+val LEFT_BRACKET_QUOTE_REGEX = Regex("\\[")
 
 
 const val VALUE_OF_PRODUCTIVE_ASSETS = "Value of productive assets"
@@ -233,4 +233,6 @@ const val EARNING_RATIO = "Earning ratio"
 const val HEADING_QUESTION_TYPE = "heading"
 
 const val DEFAULT_LANGUAGE_ID = 2
+const val BPC_VERIFICATION_STEP_ORDER = 6
+const val VO_ENDORSEMENT_STEP_ORDER = 5
 
