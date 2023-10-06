@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.activities.ProgressScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.navigation.home.HomeScreens
 import com.patsurvey.nudge.navigation.navgraph.Graph
 
 @Composable
@@ -26,6 +27,9 @@ fun HomeUserScreen(
             },
             onNavigateToSetting = {
                 navController.navigate(Graph.SETTING_GRAPH)
+            },
+            onBackClick = {
+                navController.navigate(HomeScreens.VILLAGE_SELECTION_SCREEN.route)
             }
         )
     } else {
