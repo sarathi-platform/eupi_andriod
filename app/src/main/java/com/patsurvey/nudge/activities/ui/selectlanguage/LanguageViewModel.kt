@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    private val languageRepository: LanguageRepository
+     val languageRepository: LanguageRepository
 ) :BaseViewModel(){
 
 

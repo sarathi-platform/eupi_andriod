@@ -1,13 +1,10 @@
 package com.patsurvey.nudge.activities.ui.splash
 
 
-import android.content.Context
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
-import com.patsurvey.nudge.model.response.ApiResponseModel
-import com.patsurvey.nudge.model.response.ConfigResponseModel
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -32,43 +29,48 @@ class ConfigViewModel @Inject constructor(
     }
     val showLoader = mutableStateOf(false)
 
-    fun fetchLanguageDetails(context: Context, callBack: (imageList:List<String>) -> Unit) {
+    fun fetchLanguageDetails(callBack: (imageList: List<String>) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> start")
-                NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> apiInterface.configDetails()")
-                withContext(Dispatchers.IO) {
-                 val   response = configRepository.fetchLanguageFromAPI()
-                    NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                NudgeLogger.d(
+                    "ConfigViewModel",
+                    "fetchLanguageDetails -> apiInterface.configDetails()"
+                )
+                    val response = configRepository.fetchLanguageFromAPI()
+                    NudgeLogger.d(
+                        "ConfigViewModel",
+                        "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let { it ->
                             it.languageList.forEach { language ->
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }
-                            NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before")
+                            NudgeLogger.d(
+                                "ConfigViewModel",
+                                "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before"
+                            )
                             configRepository.insertAllLanguages(it)
-                            NudgeLogger.d("ConfigViewModel", "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after")
+                            NudgeLogger.d(
+                                "ConfigViewModel",
+                                "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after"
+                            )
                             delay(SPLASH_SCREEN_DURATION)
                             withContext(Dispatchers.Main) {
                                 callBack(it.image_profile_link)
                             }
                         }
                     } else if (response.status.equals(FAIL, true)) {
-                        addDefaultLanguage(configRepository.languageListDao)
-                        withContext(Dispatchers.Main) {
-                            callBack(listOf())
-                        }
-                    } else {
-                        onError(tag = "ConfigViewModel", "Error : ${response.message} ")
-                        addDefaultLanguage(configRepository.languageListDao)
+                        configRepository.addDefaultLanguage()
                         withContext(Dispatchers.Main) {
                             callBack(listOf())
                         }
                     }
-                }
 
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.LANGUAGE_API)
+                configRepository.addDefaultLanguage()
                 withContext(Dispatchers.Main) {
                     callBack(listOf())
                 }
@@ -99,7 +101,10 @@ class ConfigViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> called")
             val localLanguages = configRepository.getAllLanguages()
-            NudgeLogger.d("ConfigViewModel", "checkAndAddLanguage -> localLanguages: $localLanguages")
+            NudgeLogger.d(
+                "ConfigViewModel",
+                "checkAndAddLanguage -> localLanguages: $localLanguages"
+            )
             if (localLanguages.isEmpty())
                 addDefaultLanguage(configRepository.languageListDao)
         }

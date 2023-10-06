@@ -49,5 +49,9 @@ class ConfigRepository @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         addDefaultLanguage(languageListDao)
     }
+    fun addDefaultLanguage(){
+        addDefaultLanguage(languageListDao)
+    }
+
 
 }
