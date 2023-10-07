@@ -131,9 +131,7 @@ fun BpcProgressScreen(
                                 isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
-                                bpcProgreesScreenViewModel.villageSelected.value = it/*
-                                bpcProgreesScreenViewModel.getStepsList(village.id)
-                                bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
+                                bpcProgreesScreenViewModel.villageSelected.value = it
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.getStepsList(village.id)
@@ -193,10 +191,6 @@ fun BpcProgressScreen(
                         },
                         backgroundColor = Color.White
                     )
-//                    ProgressScreenTopBar() {
-//                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (bpcProgreesScreenViewModel.showLoader.value) {

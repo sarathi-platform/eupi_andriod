@@ -104,5 +104,5 @@ val greenBgLight = Color(0xFFFCFFFD)
 
 val decrementCounterColor = Color(0xFFF0665B)
 val locationIconActiveColor = Color(0xFFDE0101)
-
+val greyBorderColor = Color(0xFFD5D5D5)
 val lightGrayTranslucent = Color(0xB2B1B1B1)

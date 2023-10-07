@@ -436,8 +436,9 @@ fun VillageAndVoBoxForBottomSheet(
     selectedIndex: Int,
     isBpcUser: Boolean = false,
     isVoEndorsementComplete: Boolean = false,
+    statusId:Int,
+    stepId:Int,
     onVillageSeleted: (Int) -> Unit,
-
 ) {
     Card(
         modifier = Modifier
@@ -461,7 +462,7 @@ fun VillageAndVoBoxForBottomSheet(
             .then(modifier),
         elevation = 10.dp
     ) {
-        Column() {
+        Column {
             Column(
                 modifier = Modifier
                     .background(if (index == selectedIndex) dropDownBg else White)
@@ -571,3 +572,5 @@ fun VillageAndVoBoxForBottomSheet(
         }
     }
 }
+
+fun fetchBorderColorForVillage(stepId: Int,statusId: Int,isBpcUser: Boolean){}
