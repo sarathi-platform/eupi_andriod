@@ -1030,3 +1030,12 @@ fun addDefaultLanguage(languageListDao: LanguageListDao) {
         )
     )
 }
+fun getFormSubPath(formName: String, pageNumber: Int): String {
+    return "${formName}_page_$pageNumber"
+}
+
+fun getFormPathKey(subPath: String,villageId: Int): String {
+    //val subPath formPictureScreenViewModel.pageItemClicked.value
+    //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+    return "${PREF_FORM_PATH}_${villageId}_${subPath}"
+}

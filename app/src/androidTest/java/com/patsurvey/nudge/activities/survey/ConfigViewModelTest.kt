@@ -31,10 +31,10 @@ import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
-@OptIn(ExperimentalCoroutinesApi::class)
+/*@OptIn(ExperimentalCoroutinesApi::class)
 @LargeTest
 @RunWith(androidx.test.runner.AndroidJUnit4::class)
-/*class ConfigViewModelTest {
+class ConfigViewModelTest {
 
     @get:Rule
     val instantTaskExecutorRule = InstantTaskExecutorRule()

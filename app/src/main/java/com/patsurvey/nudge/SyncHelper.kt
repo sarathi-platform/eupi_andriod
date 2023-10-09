@@ -1393,10 +1393,10 @@ class SyncHelper (
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis()))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis()))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
                                 }
                             }
                         }

@@ -284,7 +284,8 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EditDidiWealthRankingRequest(
                                         if (didi.serverId == 0) didi.id else didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
-                                        ACCEPTED
+                                        ACCEPTED,
+                                        rankingEdit = false
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -323,7 +324,8 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EditDidiWealthRankingRequest(
                                         if (didi.serverId == 0) didi.id else didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
-                                        DidiEndorsementStatus.REJECTED.name
+                                        DidiEndorsementStatus.REJECTED.name,
+                                        rankingEdit = false
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -574,6 +576,12 @@ class FormPictureScreenViewModel @Inject constructor(
     fun getImageFileName(context: Context, formName: String): File {
         val directory = getImagePath(context)
         return File(directory, "${formName}.png")
+    }
+
+    fun updateVoEndorsementEditFlag() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateVoEndorsementEditFlag(prefRepo.getSelectedVillage().id, false)
+        }
     }
 
 }

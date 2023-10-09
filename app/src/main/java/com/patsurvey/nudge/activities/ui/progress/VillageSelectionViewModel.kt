@@ -5,6 +5,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
@@ -102,7 +103,6 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
-import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -542,6 +542,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
+                                                        score = didi.bpcScore ?: 0.0,
+                                                        comment =  didi.bpcComment ?: BLANK_STRING,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
                                                         bpcScore = didi.bpcScore ?: 0.0,
@@ -550,6 +552,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
                                                         patEdit = didi.patEdit,
+                                                        voEndorsementEdit = didi.voEndorsementEdit,
                                                         ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                     )
                                                 )
@@ -1203,6 +1206,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             needsToPostImage = false,
                                                             rankingEdit = didi.rankingEdit,
                                                             patEdit = didi.patEdit,
+                                                            voEndorsementEdit = didi.voEndorsementEdit,
                                                             ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                         )
                                                     )
@@ -1758,12 +1762,23 @@ class VillageSelectionViewModel @Inject constructor(
 
             override fun onFailed() {
                 showLoader.value = false
+                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
             }
         })
     }
 
-    fun refreshCrpData() {
+    fun refreshCrpData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                showLoader.value = false
+            }
 
+            override fun onFailed() {
+                showLoader.value = false
+                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
 }

@@ -128,7 +128,9 @@ fun VillageSelectionScreen(
         mutableStateOf(false)
     }
 
-    val pullRefreshState = rememberPullRefreshState(viewModel.showLoader.value, { if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData() })
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.showLoader.value,
+        { if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context) })
 
     if (viewModel.showLoader.value) {
         Scaffold(
@@ -343,21 +345,15 @@ fun VillageSelectionScreen(
                         }
                     }
                 }
-                if (viewModel.prefRepo.isUserBPC()) {
-                    PullRefreshIndicator(
-                        refreshing = viewModel.showLoader.value,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter),
-                        contentColor = blueDark,
-                    )
-
-                }
-
+                PullRefreshIndicator(
+                    refreshing = viewModel.showLoader.value,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = blueDark,
+                )
             }
         }
     }
-
-
 }
 
 @Composable

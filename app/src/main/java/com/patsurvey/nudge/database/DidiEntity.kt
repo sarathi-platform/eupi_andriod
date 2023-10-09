@@ -243,6 +243,11 @@ data class DidiEntity(
     @ColumnInfo(name = "patEdit")
     var patEdit: Boolean = true,
 
+    @SerializedName("voEndorsementEdit")
+    @Expose
+    @ColumnInfo(name = "voEndorsementEdit")
+    var voEndorsementEdit: Boolean = true,
+
     @SerializedName("ableBodiedFlag")
     @Expose
     @ColumnInfo(name = "ableBodiedFlag")

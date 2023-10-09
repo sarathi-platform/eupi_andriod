@@ -244,34 +244,33 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         )
                     }
                 }
-                withContext(Dispatchers.IO){
-                    val response = apiService.editWorkFlow(editWorkFlowRequest)
-                    if (response.status.equals(SUCCESS, true)) {
-                        if(response.data?.get(0)?.transactionId?.isEmpty() == true) {
-                            for(i in editWorkFlowRequest.indices) {
-                                val request = editWorkFlowRequest[i]
-                                val step = stepListRequest[i]
-                                stepsListDao.updateWorkflowId(
-                                    step.id,
-                                    step.workFlowId,
-                                    step.villageId,
-                                    request.status
-                                )
-                                stepsListDao.updateNeedToPost(step.id, step.villageId, false)
-                            }
+                val response = apiService.editWorkFlow(editWorkFlowRequest)
+                if (response.status.equals(SUCCESS, true)) {
+                    if (response.data?.get(0)?.transactionId?.isEmpty() == true) {
+                        for (i in editWorkFlowRequest.indices) {
+                            val request = editWorkFlowRequest[i]
+                            val step = stepListRequest[i]
+                            stepsListDao.updateWorkflowId(
+                                step.id,
+                                step.workFlowId,
+                                step.villageId,
+                                request.status
+                            )
+                            stepsListDao.updateNeedToPost(step.id, step.villageId, false)
                         }
-                        sendBpcMatchScore(networkCallbackListener)
-                    }else{
-                        withContext(Dispatchers.Main) {
-                            networkCallbackListener.onFailed()
-                        }
+                    }
+                    sendBpcMatchScore(networkCallbackListener)
+                } else {
+                    withContext(Dispatchers.Main) {
+                        networkCallbackListener.onFailed()
+                    }
 //                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
-                    }
-
-                    if(!response.lastSyncTime.isNullOrEmpty()){
-                        updateLastSyncTime(prefRepo,response.lastSyncTime)
-                    }
                 }
+
+                if (!response.lastSyncTime.isNullOrEmpty()) {
+                    updateLastSyncTime(prefRepo, response.lastSyncTime)
+                }
+
             }catch (ex:Exception){
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()

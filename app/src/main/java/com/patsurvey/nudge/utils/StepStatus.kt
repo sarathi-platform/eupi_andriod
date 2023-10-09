@@ -14,6 +14,15 @@ enum class StepStatus {
                 else -> NOT_STARTED.name
             }
         }
+
+        fun getOrdinalFromStep (step: String): Int {
+            return when (step) {
+                NOT_STARTED.name -> NOT_STARTED.ordinal
+                INPROGRESS.name -> INPROGRESS.ordinal
+                COMPLETED.name -> COMPLETED.ordinal
+                else -> NOT_STARTED.ordinal
+            }
+        }
     }
 
 }

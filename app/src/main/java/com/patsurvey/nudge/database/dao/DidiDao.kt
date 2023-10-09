@@ -258,6 +258,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET patEdit = :patEdit where villageId = :villageId")
     fun updatePatEditFlag(villageId: Int, patEdit: Boolean)
 
+    @Query("UPDATE $DIDI_TABLE SET voEndorsementEdit = :voEndorsementEdit where villageId = :villageId")
+    fun updateVoEndorsementEditFlag(villageId: Int, voEndorsementEdit: Boolean)
+
     @Query("Select score from $DIDI_TABLE where id = :didiId")
     fun getDidiScoreFromDb(didiId: Int): Double
 
@@ -269,5 +272,7 @@ interface DidiDao {
 
     @Query("update $DIDI_TABLE set ableBodiedFlag =:ableBodiedFlag where id = :didiId")
     fun updateDidiAbleBodiedStatus(didiId: Int, ableBodiedFlag: Int)
+
+
 
 }
