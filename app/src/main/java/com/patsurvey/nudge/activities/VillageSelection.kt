@@ -102,8 +102,6 @@ fun VillageSelectionScreen(
 
     val snackState = rememberSnackBarState()
 
-
-    var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         if (BuildConfig.DEBUG)
             showCustomToast(context, viewModel.networkErrorMessage.value)
@@ -201,7 +199,6 @@ fun VillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -234,15 +231,8 @@ fun VillageSelectionScreen(
                             .fillMaxWidth()
                             .then(modifier)
                     ) {
-                        /*Text(
-                        text = stringResource(R.string.seletc_village_screen_text),
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 24.sp, color = textColorDark,
-                        modifier = Modifier
-                    )*/
 
-                        Row() {
+                        Row{
                             if (showRetryLoader.value) {
                                 Box(
                                     modifier = Modifier

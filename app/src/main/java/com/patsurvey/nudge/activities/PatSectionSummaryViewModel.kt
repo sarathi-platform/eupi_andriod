@@ -8,8 +8,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -17,7 +15,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
@@ -47,8 +44,6 @@ class PatSectionSummaryViewModel @Inject constructor(
     val didiDao: DidiDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val stepsListDao: StepsListDao
 ) : BaseViewModel() {
 
@@ -171,17 +166,6 @@ class PatSectionSummaryViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 didiDao.updateQuesSectionStatus(didiId,status)
                 didiDao.updateDidiNeedToPostPat(didiId, true)
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                    nonSelectedDidi?.let {
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSurveyStatus(didiId,status)
-
-                    }
-                }
             }
         }
     }
@@ -189,17 +173,6 @@ class PatSectionSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 didiDao.updatePatSection1Status(didiId,status)
-
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                    nonSelectedDidi?.let {
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection1Status(didiId,status)
-                    }
-                }
             }
         }
     }
@@ -207,18 +180,6 @@ class PatSectionSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 didiDao.updatePatSection2Status(didiId,status)
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                     nonSelectedDidi?.let {
-                         bpcNonSelectedDidiDao.updateNonSelDidiPatSection2Status(didiId,status)
-
-                    }
-                }
-
             }
         }
     }

@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.SmsRead
+package com.patsurvey.nudge.smsread
 
 import android.content.BroadcastReceiver
 import android.content.Context
@@ -8,7 +8,7 @@ import com.google.android.gms.common.api.CommonStatusCodes
 import com.google.android.gms.common.api.Status
 
 
-class SmsBroadcastReceiver(): BroadcastReceiver() {
+class SmsBroadcastReceiver: BroadcastReceiver() {
 
     var smsBroadcastReceiverListener: SmsBroadcastReceiverListener? = null
 

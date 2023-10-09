@@ -79,14 +79,6 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun providesBpcSelectedDidiDao(db: NudgeDatabase) = db.bpcSelectedDidiDao()
-
-    @Provides
-    @Singleton
-    fun providesBpcNonSelectedDidiDao(db: NudgeDatabase) = db.bpcNonSelectedDidiDao()
-
-    @Provides
-    @Singleton
     fun provideBpcScorePercentageDao(db: NudgeDatabase) = db.bpcScorePercentageDao()
 
     @Provides

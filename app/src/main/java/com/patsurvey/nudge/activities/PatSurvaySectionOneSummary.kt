@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -277,6 +278,7 @@ fun PatSurvaySectionSummaryScreen(
 }
 
 fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>):Boolean{
+    Log.d("TAG", "isArrowVisible: ${viewModel.prefRepo.questionScreenOpenFrom()}  ::${didi.value.id} ::${didi.value.name} :: ${viewModel.isPATStepComplete.value}")
     return if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
         true
     else if(viewModel.prefRepo.isUserBPC() && viewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal){

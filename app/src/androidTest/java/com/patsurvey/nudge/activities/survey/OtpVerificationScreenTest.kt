@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationRepository
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationViewModel
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -46,12 +47,14 @@ class OtpVerificationScreenTest {
     private lateinit var villageListDao: VillageListDao
 
     private lateinit var viewModel: OtpVerificationViewModel
+    @Mock
+    private lateinit var otpVerificationRepository: OtpVerificationRepository
 
     @Before
     fun setupLoginNavHost() {
         MockitoAnnotations.openMocks(this)
         composeTestRule.setContent {
-            viewModel = OtpVerificationViewModel(prefRepo, apiInterface, villageListDao)
+            viewModel = OtpVerificationViewModel(otpVerificationRepository)
             Nudge_Theme {
                 OtpVerificationScreen(navController = rememberNavController(), viewModel = viewModel, modifier = Modifier, mobileNumber = "")
             }

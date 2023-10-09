@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
 import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.activities.ui.login.LoginRepository
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.LoginViewModel
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
@@ -41,11 +42,14 @@ class LoginScreenTest {
 
     private lateinit var viewModel: LoginViewModel
 
+    @Mock
+    private lateinit var  loginRepository: LoginRepository
+
     @Before
     fun setupLoginNavHost() {
         MockitoAnnotations.openMocks(this)
         composeTestRule.setContent {
-            viewModel = LoginViewModel(prefRepo, apiInterface)
+            viewModel = LoginViewModel(loginRepository)
             Nudge_Theme {
                 LoginScreen(navController = rememberNavController(), viewModel = viewModel, modifier = Modifier)
             }
@@ -69,7 +73,6 @@ class LoginScreenTest {
 
         val expectedResponse: ApiResponseModel<String> = ApiResponseModel(
             SUCCESS,
-            "OTP sent to 99*****999 mobile number",
             "99*****999"
         )
 

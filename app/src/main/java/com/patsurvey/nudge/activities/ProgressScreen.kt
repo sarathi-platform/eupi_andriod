@@ -10,6 +10,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -252,7 +254,9 @@ fun ProgressScreen(
                                 identity = viewModel.prefRepo.getPref(
                                     PREF_KEY_IDENTITY_NUMBER,
                                     BLANK_STRING
-                                ) ?: ""
+                                ) ?: "",
+                                isUserBPC = false,
+                                onBackClick = {}
                             )
                         }
 
@@ -619,11 +623,18 @@ fun StepBoxPreview(){
     StepsBox(boxTitle = "TransectBox", subTitle = "10 Poor didis identified", stepNo = 1, index = 1, iconId = 1, onclick = {})
 }
 
+@Preview(showBackground = true)
+@Composable
+fun UserDataViewPreview(){
+    UserDataView(name = "Sarathi BPC", identity = "1212", isUserBPC = true, onBackClick = {})
+}
 @Composable
 fun UserDataView(
     modifier: Modifier = Modifier,
     name: String,
-    identity: String
+    identity: String,
+    isUserBPC:Boolean,
+    onBackClick:()->Unit
 ) {
     ConstraintLayout() {
         val (userDetail, moreMenu) = createRefs()
@@ -635,24 +646,40 @@ fun UserDataView(
                 }
                 .then(modifier)
         ) {
-            Text(
-                text = name,
-                color = textColorDark,
-                modifier = Modifier
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start,
-                style = largeTextStyle
-            )
+            Row {
+                if(isUserBPC) {
+                    Icon(
+                        Icons.Default.ArrowBack,
+                        contentDescription = "Negative Button",
+                        tint = blueDark,
+                        modifier = Modifier
+                            .padding(8.dp)
+                            .clickable {
+                                onBackClick()
+                            }
+                    )
+                }
+                Text(
+                    text = name,
+                    color = textColorDark,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                    style = largeTextStyle
+                )
+            }
 
-            Text(
-                text = stringResource(R.string.user_id_text) + identity,
-                color = textColorDark,
-                modifier = Modifier
-                    .padding(bottom = 8.dp)
-                    .fillMaxWidth(),
-                textAlign = TextAlign.Start,
-                style = smallTextStyle
-            )
+            if(!isUserBPC) {
+                Text(
+                    text = stringResource(R.string.user_id_text) + identity,
+                    color = textColorDark,
+                    modifier = Modifier
+                        .padding(bottom = 8.dp)
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Start,
+                    style = smallTextStyle
+                )
+            }
 
         }
     }

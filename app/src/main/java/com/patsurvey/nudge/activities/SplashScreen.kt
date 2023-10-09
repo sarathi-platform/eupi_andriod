@@ -84,7 +84,7 @@ fun SplashScreen(
             delay(ONE_SECOND)
             viewModel.showLoader.value=true
             NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails before")
-            viewModel.fetchLanguageDetails(context) {
+            viewModel.fetchLanguageDetails() {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it")
                 viewModel.showLoader.value=false
                 if(it.isNotEmpty()){
