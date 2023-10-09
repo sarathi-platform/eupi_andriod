@@ -497,7 +497,7 @@ fun ScoreComparisonDidiCard(
                     ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE, modifier = Modifier.weight(1f))
                 else
                     ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_result_text),
-                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1f))
+                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1.25f))
 
             }
 
@@ -640,15 +640,14 @@ fun ScoreItemExclusion(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
-            text = itemName,
+            text = itemName + " ",
             color = textColorDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = NotoSans
         )
-        Spacer(modifier = Modifier.width(2.dp))
         Text(
-            text = exclusionResponse,
+            text = stringResource(R.string.score_comparison_section_1_text),
             color = textColorDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
@@ -656,6 +655,8 @@ fun ScoreItemExclusion(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(painter = painterResource(id = R.drawable.not_sync_icon_complete), contentDescription = "Not Passed Icon", tint = Color(0xFFFF0000), modifier = Modifier.absolutePadding(top = 1.dp))
     }
 }
 
