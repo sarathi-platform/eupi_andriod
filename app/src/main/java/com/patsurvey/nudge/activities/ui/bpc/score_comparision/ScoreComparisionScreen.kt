@@ -616,7 +616,16 @@ fun ScoreItem(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (itemType.equals(CRP_USER_TYPE, true)) (didiEntity.crpScore ?: 0.0).toInt().toString() else (didiEntity.score ?: 0.0).toInt().toString(),
+                text =
+                if (itemType.equals(CRP_USER_TYPE, true)) {
+                    (didiEntity.crpScore ?: 0.0).toInt().toString()
+                } else {
+                    if (didiEntity.score != 0.0) {
+                        (didiEntity.score ?: 0.0).toInt().toString()
+                    } else {
+                        (didiEntity.bpcScore ?: 0.0).toInt().toString()
+                    }
+                },
                 color = textColorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),

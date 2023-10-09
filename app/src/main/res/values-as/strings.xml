@@ -373,6 +373,7 @@
     <string name="didis_marked_as_not_available_string">ডিডিছক উপলব্ধ নহয় বুলি চিহ্নিত কৰা হৈছে</string>
     <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম \nমহিলা আছে নেকি?</string>
     <string name="something_went_wrong">কিবা এটা ভুল হ’ল</string>
+    <string name="score_comparison_section_1_text">শাখা 1</string>
 
 
 </resources>
