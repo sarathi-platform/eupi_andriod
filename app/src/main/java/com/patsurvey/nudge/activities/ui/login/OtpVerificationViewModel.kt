@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
-    val otpVerificationRepository: OtpVerificationRepository
+    private val otpVerificationRepository: OtpVerificationRepository
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -31,55 +31,37 @@ class OtpVerificationViewModel @Inject constructor(
 
     fun validateOtp(onOtpResponse: (success: Boolean, message: String) -> Unit) {
         showLoader.value = true
-        val otpRequest =
-            OtpRequest(mobileNumber = otpVerificationRepository.getMobileNumber() ?: "", otp = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value ) //Text this code
+        val otpNum = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = otpVerificationRepository.validateOtp(otpRequest)
-            withContext(Dispatchers.IO) {
-                if (response.status.equals(SUCCESS, true)) {
-                    response.data?.let {
-                        otpVerificationRepository.saveAccessToken(it.token)
-                    }
+            val response = otpVerificationRepository.validateOtp(otpNum)
+            if (response.status.equals(SUCCESS, true)) {
+                response.data?.let {
+                    otpVerificationRepository.saveAccessToken(it.token)
+                }
+                showLoader.value = false
+                withContext(Dispatchers.Main) {
+                    onOtpResponse(true, response.message)
+                }
+            } else {
+                onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
+                withContext(Dispatchers.Main) {
                     showLoader.value = false
-                    withContext(Dispatchers.Main) {
-                        onOtpResponse(true, response.message)
-                    }
-                } else if (response.status.equals(FAIL, true)) {
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                        onOtpResponse(false, response.message)
-                    }
-                } else {
-                    onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                        onOtpResponse(false, response.message)
-                    }
+                    onOtpResponse(false, response.message)
                 }
             }
         }
     }
 
     fun resendOtp(onResendOtpResponse: (success: Boolean, message: String) -> Unit) {
-        val loginRequest = LoginRequest(mobileNumber = otpVerificationRepository.getMobileNumber() ?: "")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val response = otpVerificationRepository.generateOtp(loginRequest)
-            withContext(Dispatchers.IO) {
-                if (response.status.equals(SUCCESS, true)) {
-
-                    withContext(Dispatchers.Main) {
-                        onResendOtpResponse(true, response.message)
-                    }
-                } else if (response.status.equals(FAIL, true)) {
-                    withContext(Dispatchers.Main) {
-                        onResendOtpResponse(false, response.message)
-                    }
-                } else {
-                    onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
-                    withContext(Dispatchers.Main) {
-                        showLoader.value = false
-                        onResendOtpResponse(false, response.message)
-                    }
+            val response = otpVerificationRepository.generateOtp()
+            if (response.status.equals(SUCCESS, true)) {
+                withContext(Dispatchers.Main) {
+                    onResendOtpResponse(true, response.message)
+                }
+            } else if (response.status.equals(FAIL, true)) {
+                withContext(Dispatchers.Main) {
+                    onResendOtpResponse(false, response.message)
                 }
             }
         }
