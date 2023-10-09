@@ -21,7 +21,6 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                           val apiService: ApiService,
                           val exceptionHandler : CoroutineExceptionHandler,
                           var job: Job?,
-                          val bpcSelectedDidiDao : BpcSelectedDidiDao,
                           val didiDao: DidiDao,
                           val stepsListDao: StepsListDao,
                           val questionDao: QuestionListDao,
@@ -49,14 +48,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                 for(village in villageList) {
                     val villageId = village.id
-                    val oldDidiList =
-                        bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villageId)
                     val updatedList = didiDao.getAllDidisForVillage(villageId = villageId)
                     try {
                         val oldBeneficiaryIdSelected = mutableListOf<Int>()
-                        oldDidiList.forEach {
-                            oldBeneficiaryIdSelected.add(it.serverId)
-                        }
+
                         NudgeLogger.d(
                             "SyncBPCDataOnServer",
                             "sendBpcUpdatedDidiList: newBeneficiaryIdSelected -> $oldBeneficiaryIdSelected"
@@ -110,7 +105,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
         for(village in villageList) {
             val villageId = village.id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId)
+            val oldDidiList = didiDao.getAllDidisForVillage(villageId)
             val updatedList = didiDao.getAllDidisForVillage(villageId)
             val oldBeneficiaryIdSelected = mutableListOf<Int>()
             oldDidiList.forEach {
@@ -693,13 +688,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 didiId = didiId,
                 isDidiAccepted = isDidiAccepted
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = totalWightWithoutNumQue,
-                    comment = comment,
-                    didiId = didiId,
-                )
-            }
+
         } else {
             didiDao.updateDidiScore(
                 score = 0.0,
@@ -707,13 +696,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 didiId = didiId,
                 isDidiAccepted = false
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = 0.0,
-                    comment = TYPE_EXCLUSION,
-                    didiId = didiId,
-                )
-            }
+
         }
     }
 

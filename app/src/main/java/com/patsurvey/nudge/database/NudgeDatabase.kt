@@ -9,9 +9,7 @@ import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -32,7 +30,7 @@ const val NUDGE_DATABASE_VERSION = 1
 
 @Database(entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
     TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class,QuestionEntity::class,SectionAnswerEntity::class,NumericAnswerEntity::class, TrainingVideoEntity::class,
-    BpcSummaryEntity::class, BpcSelectedDidiEntity::class, BpcNonSelectedDidiEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class], version = NUDGE_DATABASE_VERSION, exportSchema = false)
+    BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class], version = NUDGE_DATABASE_VERSION, exportSchema = false)
 @TypeConverters(IntConverter::class, BeneficiaryStepConverter::class,QuestionsOptionsConverter::class)
 abstract class NudgeDatabase: RoomDatabase()  {
 
@@ -49,8 +47,6 @@ abstract class NudgeDatabase: RoomDatabase()  {
     abstract fun numericAnswerDao(): NumericAnswerDao
     abstract fun trainingVideoDao(): TrainingVideoDao
     abstract fun bpcSummaryDao(): BpcSummaryDao
-    abstract fun bpcSelectedDidiDao(): BpcSelectedDidiDao
-    abstract fun bpcNonSelectedDidiDao(): BpcNonSelectedDidiDao
     abstract fun bpcScorePercentageDao(): BpcScorePercentageDao
     abstract fun poorDidiListDao(): PoorDidiListDao
 

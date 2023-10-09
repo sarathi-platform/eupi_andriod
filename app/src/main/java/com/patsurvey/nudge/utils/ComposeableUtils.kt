@@ -177,7 +177,7 @@ fun DidiItemCardForPatSummary(
                             contentDescription = "home image",
                             modifier = Modifier
                                 .width(30.dp)
-                                .height(30.dp)
+                                .height(DidiItemCardForPatSummary30.dp)
                                 .padding(5.dp)
                                 .layoutId("successImage")
                         )*/
