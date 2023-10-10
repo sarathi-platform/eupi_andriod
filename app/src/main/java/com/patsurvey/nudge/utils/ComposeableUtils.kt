@@ -353,19 +353,8 @@ fun DidiItemCardForVoForSummary(
                         }
                     }
 
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -373,10 +362,19 @@ fun DidiItemCardForVoForSummary(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
                     )
-
-
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
+                    )
                 }
             }
             Divider(
