@@ -746,7 +746,7 @@ fun showSyncDialog(
                                 } else {
                                     NudgeLogger.d("NudgeLogger","sync dialog step one not sync icon")
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
@@ -808,7 +808,7 @@ fun showSyncDialog(
                                 } else {
                                     NudgeLogger.d("NudgeLogger","sync dialog step two not sync icon")
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
@@ -870,7 +870,7 @@ fun showSyncDialog(
                                 } else {
                                     NudgeLogger.d("NudgeLogger","sync dialog step three not sync icon")
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
@@ -932,7 +932,7 @@ fun showSyncDialog(
                                 } else {
                                     NudgeLogger.d("NudgeLogger","sync dialog step four not sync icon")
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
@@ -994,7 +994,7 @@ fun showSyncDialog(
                                 } else {
                                     NudgeLogger.d("NudgeLogger","sync dialog step fifth not sync icon")
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
@@ -1291,7 +1291,7 @@ fun showBPCSyncDialog(
                                     )
                                 } else {
                                     Icon(
-                                        painter = painterResource(id = R.drawable.not_sync_icon),
+                                        painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
                                         tint = redIconColor,
                                         modifier = Modifier
