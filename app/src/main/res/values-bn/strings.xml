@@ -162,8 +162,8 @@
     <string name="next">আগামী</string>
     <string name="didi_pat_comption_dialog">আপনি {DIDI_NAME} এর জন্য PAT জমা দিচ্ছেন</string>
     <string name="confirmation_dialog_titile">তুমি কি নিশ্চিত?</string>
-    <string name="section_1_text">ভাগ 1:</string>
-    <string name="section_2_text">ভাগ 2:</string>
+    <string name="section_1_text">ভাগ 1: </string>
+    <string name="section_2_text">ভাগ 2: </string>
     <string name="vo_endorsement_screen_title">গ্রাম সংগঠন (VO) অনুমোদনের জন্য দিদিদের তালিকা</string>
     <string name="start_endorsement">অনুমোদন শুরু করুন</string>
     <string name="pat_completed">PAT সম্পন্ন হয়েছে</string>

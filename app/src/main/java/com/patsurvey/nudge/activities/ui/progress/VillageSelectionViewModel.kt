@@ -5,6 +5,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
@@ -40,6 +41,7 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -132,7 +134,8 @@ class VillageSelectionViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
-    val downloader: AndroidDownloader
+    val downloader: AndroidDownloader,
+    val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -408,7 +411,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.BPC_SUMMARY_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             bpcSummaryDao.insert(
                                 BpcSummaryEntity(
                                     0, 0, 0, 0, 0, 0, villageId = village.id
@@ -422,6 +426,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.BPC_SUMMARY_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -445,7 +450,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             if (ex !is JsonSyntaxException) {
                                 if (!retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
                                     ApiType.TOLA_LIST_API
@@ -454,6 +460,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.TOLA_LIST_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -528,6 +535,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
+                                                        score = didi.bpcScore ?: 0.0,
+                                                        comment =  didi.bpcComment ?: BLANK_STRING,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
                                                         bpcScore = didi.bpcScore ?: 0.0,
@@ -536,6 +545,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
                                                         patEdit = didi.patEdit,
+                                                        voEndorsementEdit = didi.voEndorsementEdit,
                                                         ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                     )
                                                 )
@@ -1189,6 +1199,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             needsToPostImage = false,
                                                             rankingEdit = didi.rankingEdit,
                                                             patEdit = didi.patEdit,
+                                                            voEndorsementEdit = didi.voEndorsementEdit,
                                                             ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                         )
                                                     )
@@ -1669,6 +1680,34 @@ class VillageSelectionViewModel @Inject constructor(
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
             }
         }
+    }
+
+    fun refreshBpcData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                showLoader.value = false
+            }
+
+            override fun onFailed() {
+                showLoader.value = false
+                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
+            }
+        })
+    }
+
+    fun refreshCrpData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                showLoader.value = false
+            }
+
+            override fun onFailed() {
+                showLoader.value = false
+                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
 }

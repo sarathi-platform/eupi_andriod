@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.di
 
+import com.patsurvey.nudge.activities.ui.progress.VillageSelectionRepository
 import com.patsurvey.nudge.activities.ui.splash.ConfigRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao

@@ -23,11 +23,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -80,6 +84,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomToast
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VillageSelectionScreen(
     modifier: Modifier = Modifier,
@@ -120,6 +125,10 @@ fun VillageSelectionScreen(
     val showRetryLoader = remember {
         mutableStateOf(false)
     }
+
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.showLoader.value,
+        { if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context) })
 
     if (viewModel.showLoader.value) {
         Scaffold(
@@ -210,6 +219,7 @@ fun VillageSelectionScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(it)
+                    .pullRefresh(pullRefreshState)
             ) {
                 if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
                     Column(
@@ -325,12 +335,15 @@ fun VillageSelectionScreen(
                         }
                     }
                 }
-
+                PullRefreshIndicator(
+                    refreshing = viewModel.showLoader.value,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = blueDark,
+                )
             }
         }
     }
-
-
 }
 
 @Composable

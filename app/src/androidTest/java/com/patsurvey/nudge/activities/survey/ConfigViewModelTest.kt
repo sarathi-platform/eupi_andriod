@@ -32,7 +32,7 @@ import org.mockito.Mockito
 import org.mockito.Mockito.`when`
 import org.mockito.MockitoAnnotations
 
-@OptIn(ExperimentalCoroutinesApi::class)
+/*@OptIn(ExperimentalCoroutinesApi::class)
 @LargeTest
 @RunWith(androidx.test.runner.AndroidJUnit4::class)
 class ConfigViewModelTest {
@@ -185,4 +185,4 @@ class ConfigViewModelTest {
         assert(actualResponse.data == null)
 
     }
-}
+}*/

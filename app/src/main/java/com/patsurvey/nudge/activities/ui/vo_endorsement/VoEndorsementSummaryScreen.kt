@@ -387,7 +387,7 @@ fun VoEndorsementSummaryScreen(
             }
 
             AnimatedVisibility(visible = (didi?.value?.voEndorsementStatus != DidiEndorsementStatus.NOT_STARTED.ordinal || didiStatus != DidiEndorsementStatus.NOT_STARTED.ordinal)
-                    && viewModel.voEndorsementStatus.value != StepStatus.COMPLETED.ordinal, enter = fadeIn(), exit = fadeOut(),
+                    && viewModel.voEndorsementStatus.value != StepStatus.COMPLETED.ordinal && didi?.value?.voEndorsementEdit ?: true, enter = fadeIn(), exit = fadeOut(),
                 modifier = Modifier
                     .constrainAs(bottomActionBox) {
                         bottom.linkTo(parent.bottom)

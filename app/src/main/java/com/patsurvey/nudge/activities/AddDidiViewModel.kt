@@ -1064,7 +1064,7 @@ class AddDidiViewModel @Inject constructor(
                                     villageId
                                 )
                             }
-                            stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
+                            stepsListDao.updateNeedToPost(newStep.id, villageId, true)
                         } else {
                             NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: false, newStep.orderNumber: ${newStep.orderNumber}")
                         }
