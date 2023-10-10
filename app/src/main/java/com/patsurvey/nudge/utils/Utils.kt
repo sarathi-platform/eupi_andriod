@@ -87,8 +87,10 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
@@ -1017,3 +1019,23 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
     }
 }
 
+fun addDefaultLanguage(languageListDao: LanguageListDao) {
+    languageListDao.insertLanguage(
+        LanguageEntity(
+            id = 2,
+            language = "English",
+            langCode = "en",
+            orderNumber = 1,
+            localName = "English"
+        )
+    )
+}
+fun getFormSubPath(formName: String, pageNumber: Int): String {
+    return "${formName}_page_$pageNumber"
+}
+
+fun getFormPathKey(subPath: String,villageId: Int): String {
+    //val subPath formPictureScreenViewModel.pageItemClicked.value
+    //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+    return "${PREF_FORM_PATH}_${villageId}_${subPath}"
+}

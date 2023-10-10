@@ -162,8 +162,8 @@
     <string name="next">अगला</string>
     <string name="didi_pat_comption_dialog">आप PAT {DIDI_NAME} के लिए जमा कर रहे है</string>
     <string name="confirmation_dialog_titile">पक्का करे?</string>
-    <string name="section_1_text">अनुभाग 1:</string>
-    <string name="section_2_text">अनुभाग 2:</string>
+    <string name="section_1_text">अनुभाग 1: </string>
+    <string name="section_2_text">अनुभाग 2: </string>
     <string name="vo_endorsement_screen_title">VO अनुमोदन के लिए दिदीयों की सूची</string>
     <string name="start_endorsement">अनुमोदन शुरू करें</string>
     <string name="pat_completed">PAT पूर्ण  हुआ</string>
@@ -371,6 +371,7 @@
     <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के \nरूप में चिह्नित किया गया है</string>
     <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>
     <string name="something_went_wrong">कुछ गलत हो गया</string>
+    <string name="score_comparison_section_1_text">अनुभाग 1</string>
 
 
 </resources>

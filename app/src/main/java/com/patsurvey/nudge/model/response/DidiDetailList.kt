@@ -26,5 +26,6 @@ data class DidiDetailList(
     @SerializedName("rankingEdit") var rankingEdit: Boolean,
     @SerializedName("patEdit") var patEdit: Boolean,
     @SerializedName("shgFlag") var shgFlag: String?,
+    @SerializedName("voEndorsementEdit")var voEndorsementEdit: Boolean,
     @SerializedName("ableBodiedFlag") var ableBodiedFlag: String?
 )

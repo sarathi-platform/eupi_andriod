@@ -131,4 +131,8 @@ data class TolaEntity(
             return false
         }
     }
+
+    fun getUpdatedTola(tolaEntity: TolaEntity): TolaEntity {
+        return TolaEntity(id, localUniqueId, tolaEntity.id, tolaEntity.name, type, tolaEntity.latitude, tolaEntity.longitude, villageId, status, createdDate, modifiedDate, localCreatedDate, localModifiedDate, needsToPost, transactionId)
+    }
 }
