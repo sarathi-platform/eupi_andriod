@@ -21,8 +21,6 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -59,6 +57,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
@@ -143,8 +142,6 @@ class VillageSelectionRepository @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val poorDidiListDao: PoorDidiListDao,
     val androidDownloader: AndroidDownloader
 ): BaseRepository() {
@@ -2830,13 +2827,6 @@ class VillageSelectionRepository @Inject constructor(
                 didiId = didiId,
                 isDidiAccepted = isDidiAccepted
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = totalWightWithoutNumQue,
-                    comment = comment,
-                    didiId = didiId,
-                )
-            }
         } else {
             didiDao.updateDidiScore(
                 score = 0.0,
@@ -2844,13 +2834,6 @@ class VillageSelectionRepository @Inject constructor(
                 didiId = didiId,
                 isDidiAccepted = false
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = 0.0,
-                    comment = TYPE_EXCLUSION,
-                    didiId = didiId,
-                )
-            }
         }
     }
 
@@ -3183,6 +3166,10 @@ class VillageSelectionRepository @Inject constructor(
                     didiResponse.data?.let { didiList ->
                         if (didiList.isNotEmpty()) {
                             try {
+                                val localDidiList = didiDao.getAllDidisForVillage(villageId)
+                                if (localDidiList.size != didiList.size) {
+                                    stepsListDao.markStepAsInProgress(BPC_VERIFICATION_STEP_ORDER, StepStatus.INPROGRESS.ordinal, villageId)
+                                }
                                 didiDao.deleteDidiForVillage(villageId)
                                 delay(100)
                                 didiList.forEach { didi ->
