@@ -273,7 +273,7 @@ fun BpcDidiListScreen(
                                 }
                             }
                         } else {
-                            itemsIndexed(newFilteredDidiList) { _, didi ->
+                            itemsIndexed(newFilteredDidiList.sortedByDescending { it.id }) { _, didi ->
                                 DidiItemCardForPat(
                                     navController = navController,
                                     didi = didi,

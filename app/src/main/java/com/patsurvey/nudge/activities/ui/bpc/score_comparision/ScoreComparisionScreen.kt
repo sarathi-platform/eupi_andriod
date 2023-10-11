@@ -665,7 +665,12 @@ fun ScoreItemExclusion(
             overflow = TextOverflow.Ellipsis
         )
         Spacer(modifier = Modifier.width(2.dp))
-        Icon(painter = painterResource(id = R.drawable.not_sync_icon_complete), contentDescription = "Not Passed Icon", tint = Color(0xFFFF0000), modifier = Modifier.absolutePadding(top = 1.dp))
+        Icon(
+            painter = painterResource(id = R.drawable.not_sync_icon_complete),
+            contentDescription = "Not Passed Icon",
+            tint = Color(0xFFFF0000),
+            modifier = Modifier.absolutePadding(top = 3.dp)
+        )
     }
 }
 

@@ -273,6 +273,7 @@ interface DidiDao {
     @Query("update $DIDI_TABLE set ableBodiedFlag =:ableBodiedFlag where id = :didiId")
     fun updateDidiAbleBodiedStatus(didiId: Int, ableBodiedFlag: Int)
 
-
+    @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus = 0 and section1Status = 0 and section2Status = 0 and villageId = :villageId")
+    fun fetchPendingVerificationDidiCount(villageId: Int): Int
 
 }
