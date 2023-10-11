@@ -232,6 +232,7 @@
     <string name="pat_completed_status_text">PAT Survey Completed - {PAT_STATUS}</string>
     <string name="vo_endorsement_status_text">VO Endorsement Completed - {VO_STATUS}</string>
     <string name="no_didis_availble_for_vo_endorsement">No Didis available for VO Endorsement.</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 
     <string name="step_1">Step 1</string>
     <string name="sync_status">BPC Verification</string>

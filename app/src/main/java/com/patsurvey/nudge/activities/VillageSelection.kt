@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -70,8 +72,10 @@ import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
@@ -82,6 +86,8 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -291,9 +297,12 @@ fun VillageSelectionScreen(
                                     voName = village.federationName,
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
-                                    isBpcUser = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
+                                    isUserBPC = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
                                     isVoEndorsementComplete = (if(!viewModel.prefRepo.isUserBPC()) viewModel.isVoEndorsementComplete.value[village.id] else true)
-                                        ?: false
+                                        ?: false,
+                                    stepId = village.stepId,
+                                    statusId = village.statusId,
+                                    context = context
                                 ) {
                                     viewModel.villageSelected.value = it
                                     viewModel.updateSelectedVillage()
@@ -433,14 +442,16 @@ fun VillageAndVoBox(
 @Composable
 fun VillageAndVoBoxForBottomSheet(
     modifier: Modifier = Modifier,
+    context: Context,
     tolaName: String = "",
     voName: String = "",
     index: Int,
+    isUserBPC:Boolean,
+    isVoEndorsementComplete:Boolean =false,
     selectedIndex: Int,
-    isBpcUser: Boolean = false,
-    isVoEndorsementComplete: Boolean = false,
-    onVillageSeleted: (Int) -> Unit,
-
+    statusId:Int=0,
+    stepId:Int=0,
+    onVillageSeleted: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -458,16 +469,39 @@ fun VillageAndVoBoxForBottomSheet(
                     color = Black
                 )
             ) {
-                onVillageSeleted(index)
+                if (isUserBPC) {
+                    when (fetchBorderColorForVillage(stepId, statusId)) {
+                        0 -> showCustomToast(context, "Village is not VO Endorsed Right Now!")
+                        else -> onVillageSeleted(index)
+                    }
+                } else onVillageSeleted(index)
+
+
             }
             .background(if (index == selectedIndex) dropDownBg else White)
             .then(modifier),
         elevation = 10.dp
     ) {
-        Column() {
+        Column {
             Column(
                 modifier = Modifier
-                    .background(if (index == selectedIndex) dropDownBg else White)
+                    .background(
+                        if (isUserBPC) {
+                            when (fetchBorderColorForVillage(stepId, statusId)) {
+                                0, 2, 4 -> white
+                                1, 3 -> stepBoxActiveColor
+                                else -> white
+                            }
+                        } else if (index == selectedIndex) dropDownBg else White
+                    )
+                    .alpha(
+                        if (isUserBPC) {
+                            when (fetchBorderColorForVillage(stepId, statusId)) {
+                                0 -> .5f
+                                else -> 1f
+                            }
+                        } else 1f
+                    )
                     .padding(vertical = 4.dp)
                     .fillMaxWidth()
             ) {
@@ -546,7 +580,7 @@ fun VillageAndVoBoxForBottomSheet(
                     )
                 }
             }
-            if (isVoEndorsementComplete) {
+            if(!isUserBPC && isVoEndorsementComplete){
                 Row(
                     Modifier
                         .background(
@@ -570,7 +604,47 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
                 }
+            }else{
+                if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
+                    Row(
+                        Modifier
+                            .background(
+                                greenOnline,
+                                shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
+                            )
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
+                            contentDescription = null,
+                            tint = white
+                        )
+                        Text(
+                            text = stringResource( if(stepId == 44) R.string.vo_endorsement_completed_village_banner_text else { if(statusId==StepStatus.COMPLETED.ordinal)  R.string.bpc_verification_completed_village_banner_text else  R.string.vo_endorsement_completed_village_banner_text} ),
+                            color = white,
+                            style = smallerTextStyle,
+                            modifier = Modifier.absolutePadding(bottom = 3.dp)
+                        )
+                    }
+                }
             }
+
         }
     }
+}
+
+fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
+    return if (stepId == 44 && (statusId == StepStatus.INPROGRESS.ordinal
+                || statusId == StepStatus.COMPLETED.ordinal)) {
+        1
+    } else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
+        2
+    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
+        3
+    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
+        4
+    } else 0
 }

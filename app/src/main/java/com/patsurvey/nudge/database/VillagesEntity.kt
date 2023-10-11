@@ -49,5 +49,16 @@ data class VillageEntity(
     @SerializedName("needsToPost")
     @Expose
     @ColumnInfo(name = "needsToPost")
-    var needsToPost: Boolean = false
+    var needsToPost: Boolean = false,
+
+    @SerializedName("statusId")
+    @Expose
+    @ColumnInfo(name = "statusId")
+    val statusId: Int=0,
+
+    @SerializedName("stepId")
+    @Expose
+    @ColumnInfo(name = "stepId")
+    val stepId: Int=0,
+
 )
