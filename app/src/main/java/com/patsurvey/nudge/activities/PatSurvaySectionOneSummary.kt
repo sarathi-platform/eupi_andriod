@@ -344,18 +344,22 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+                Text(
+                    text = didi.guardianName,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
                 )
                 Text(
-                    text = didi.cohortName,
+                    text = didi.address,
                     style = TextStyle(
                         color = textColorDark,
                         fontSize = 14.sp,
@@ -374,7 +378,7 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
 fun PatSummeryScreenDidiDetailBoxPreview(){
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-   val didi=DidiEntity(0,"",0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
+   val didi=DidiEntity(0,"",0,"Didi1","Hno 123", "Dada1","Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value, ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value)
     PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi)
