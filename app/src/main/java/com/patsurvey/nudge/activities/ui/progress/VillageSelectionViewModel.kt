@@ -7,6 +7,7 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
@@ -1686,7 +1687,14 @@ class VillageSelectionViewModel @Inject constructor(
         showLoader.value = true
         villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
             override fun onSuccess() {
-                showLoader.value = false
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    withContext(Dispatchers.Main) {
+                        _villagList.value = updatedVillageList
+                        delay(100)
+                        showLoader.value = false
+                    }
+                }
             }
 
             override fun onFailed() {

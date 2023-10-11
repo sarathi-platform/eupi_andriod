@@ -100,6 +100,7 @@ import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
@@ -384,6 +385,8 @@ class VillageSelectionRepository @Inject constructor(
                 villageId,
                 true
             )
+            val voEndorsementStep = stepsListDao.getStepByOrder(VO_ENDORSEMENT_STEP_ORDER, villageId)
+            villageListDao.updateStepAndStatusId(villageId, voEndorsementStep.id, StepStatus.COMPLETED.ordinal)
         }
     }
 
