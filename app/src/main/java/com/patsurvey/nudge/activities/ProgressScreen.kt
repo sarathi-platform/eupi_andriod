@@ -128,7 +128,11 @@ fun ProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = viewModel.villageSelected.value,
-                                isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false
+                                stepId = village.stepId,
+                                statusId = village.statusId,
+                                isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false,
+                                context = context,
+                                isUserBPC = viewModel.prefRepo.isUserBPC()
                             ) {
                                 viewModel.showLoader.value = true
                                 viewModel.villageSelected.value = it

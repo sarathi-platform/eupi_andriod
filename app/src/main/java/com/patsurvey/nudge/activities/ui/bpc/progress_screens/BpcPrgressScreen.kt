@@ -119,8 +119,10 @@ fun BpcProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                isBpcUser = true,
-                                isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
+                                stepId = village.stepId,
+                                statusId = village.statusId,
+                                context = context,
+                                isUserBPC = bpcProgreesScreenViewModel.prefRepo.isUserBPC()
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
                                 bpcProgreesScreenViewModel.villageSelected.value = it
@@ -182,10 +184,6 @@ fun BpcProgressScreen(
                         },
                         backgroundColor = Color.White
                     )
-//                    ProgressScreenTopBar() {
-//                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (bpcProgreesScreenViewModel.showLoader.value) {

@@ -372,6 +372,7 @@
     <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>
     <string name="something_went_wrong">कुछ गलत हो गया</string>
     <string name="score_comparison_section_1_text">अनुभाग 1</string>
+    <string name="no_didis_availble_for_bpc_verification">बीपीसी सत्यापन के लिए कोई दीदी उपलब्ध नहीं है।</string>
 
 
 </resources>

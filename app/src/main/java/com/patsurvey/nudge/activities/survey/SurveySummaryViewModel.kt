@@ -539,6 +539,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
+            villageListDao.updateStepAndStatusId(villageId,bpcStepId,StepStatus.COMPLETED.ordinal)
         }
     }
 
