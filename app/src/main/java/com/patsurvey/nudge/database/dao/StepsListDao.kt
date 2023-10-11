@@ -82,5 +82,7 @@ interface StepsListDao {
     @Query("DELETE from $STEPS_LIST_TABLE where villageId = :villageId and id = :id")
     fun deleteStepForVillage(villageId: Int, id: Int)
 
+    @Query("UPDATE $STEPS_LIST_TABLE SET needToPost = :needsToPost WHERE orderNumber =:orderNumber and villageId = :villageId")
+    fun updateNeedToPostByOrderNumber(orderNumber: Int, villageId: Int, needsToPost: Boolean)
 
 }

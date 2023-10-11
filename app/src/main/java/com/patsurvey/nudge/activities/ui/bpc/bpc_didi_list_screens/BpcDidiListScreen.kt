@@ -313,35 +313,35 @@ fun BpcDidiListScreen(
                                         expandedIds = listOf(),
                                         onExpendClick = { _, _ ->
 
-                                        },
-                                        onNavigate = {
-                                        },
-                                        onDeleteClicked = {
-                                        }
-                                    )
-                                    if (index < newFilteredTolaDidiList.keys.size - 1) {
-                                        Divider(
-                                            color = borderGreyLight,
-                                            thickness = 1.dp,
-                                            modifier = Modifier.padding(
-                                                start = 16.dp,
-                                                end = 16.dp,
-                                                top = 22.dp,
-                                                bottom = 1.dp
-                                            )
-                                        )
+                                    },
+                                    onNavigate = {
+                                    },
+                                    onDeleteClicked = {
                                     }
+                                )
+                                if (index < newFilteredTolaDidiList.keys.size - 1) {
+                                    Divider(
+                                        color = borderGreyLight,
+                                        thickness = 1.dp,
+                                        modifier = Modifier.padding(
+                                            start = 16.dp,
+                                            end = 16.dp,
+                                            top = 22.dp,
+                                            bottom = 1.dp
+                                        )
+                                    )
                                 }
-                            } else {
-                                itemsIndexed(newFilteredDidiList) { _, didi ->
-                                    DidiItemCardForPat(
-                                        navController = navController,
-                                        didi = didi,
-                                        expanded = true,
-                                        modifier = modifier,
-                                        answerDao = bpcDidiListViewModel.answerDao,
-                                        questionListDao = bpcDidiListViewModel.questionListDao,
-                                        onExpendClick = { _, _ ->
+                            }
+                        } else {
+                            itemsIndexed(newFilteredDidiList.sortedByDescending { it.id }) { _, didi ->
+                                DidiItemCardForPat(
+                                    navController = navController,
+                                    didi = didi,
+                                    expanded = true,
+                                    modifier = modifier,
+                                    answerDao = bpcDidiListViewModel.answerDao,
+                                    questionListDao = bpcDidiListViewModel.questionListDao,
+                                    onExpendClick = { _, _ ->
 
                                         },
                                         prefRepo = bpcDidiListViewModel.prefRepo,

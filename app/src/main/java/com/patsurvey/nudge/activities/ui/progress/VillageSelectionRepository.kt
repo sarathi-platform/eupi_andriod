@@ -335,7 +335,6 @@ class VillageSelectionRepository @Inject constructor(
                             villageList.forEach { village ->
                                 fetchDidiForBpc(village.id, prefRepo)
                                 fetchPoorDidisForBpc(village.id, prefRepo)
-                                fetchPatSurveyFromServerForBpc(village.id, prefRepo)
                             }
                         }
 
@@ -368,6 +367,23 @@ class VillageSelectionRepository @Inject constructor(
             withContext(Dispatchers.Main) {
                 networkCallbackListener.onSuccess()
             }
+        }
+    }
+
+    //Check Pending Didi For verification and mark BPC Verification Step as In Progress.
+    private fun checkPendingDidiForVerification(villageId: Int) {
+        val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
+        if (pendingVerificationDidiCount > 0) {
+            stepsListDao.markStepAsInProgress(
+                BPC_VERIFICATION_STEP_ORDER,
+                StepStatus.INPROGRESS.ordinal,
+                villageId
+            )
+            stepsListDao.updateNeedToPostByOrderNumber(
+                orderNumber = BPC_VERIFICATION_STEP_ORDER,
+                villageId,
+                true
+            )
         }
     }
 
@@ -2300,207 +2316,7 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun fetchPatSurveyFromServerForBpc(villageId: Int, prefRepo: PrefRepo) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                NudgeLogger.d("VillageSelectionRepository", "fetchDataForBpc fetchPATSurveyToServer " +
-                        "request -> ${listOf(villageId)}")
-                val answerApiResponse = apiService.fetchPATSurveyToServer(
-                    listOf(villageId)
-                )
-                NudgeLogger.d("VillageSelectionRepository", "fetchDataForBpc fetchPATSurveyToServer " +
-                        "response -> status: ${answerApiResponse.status}")
-                if (answerApiResponse.status.equals(SUCCESS, true)) {
-                    answerApiResponse.data?.let {
-                        val answerList: ArrayList<SectionAnswerEntity> =
-                            arrayListOf()
-                        val numAnswerList: ArrayList<NumericAnswerEntity> =
-                            arrayListOf()
-                        val didiIdList = mutableListOf<Int>()
-                        it.forEach { item ->
-                            if (item.userType.equals(USER_BPC, true)) {
-                                item.beneficiaryId?.let { it1 -> didiIdList.add(it1) }
-                                didiDao.updatePATProgressStatus(
-                                    patSurveyStatus = item.patSurveyStatus
-                                        ?: 0,
-                                    section1Status = item.section1Status
-                                        ?: 0,
-                                    section2Status = item.section2Status
-                                        ?: 0,
-                                    didiId = item.beneficiaryId ?: 0,
-                                    shgFlag = item.shgFlag ?: -1,
-                                    patExclusionStatus = item.patExclusionStatus ?: 0
-                                )
-                                if (item?.answers?.isNotEmpty() == true) {
-                                    item?.answers?.forEach { answersItem ->
-                                        val quesDetails =
-                                            questionDao.getQuestionForLanguage(
-                                                answersItem?.questionId ?: 0,
-                                                prefRepo.getAppLanguageId() ?: 2
-                                            )
-                                        if (answersItem?.questionType?.equals(
-                                                QuestionType.Numeric_Field.name
-                                            ) == true
-                                        ) {
 
-                                            if ((prefRepo.getPref(
-                                                    PREF_KEY_TYPE_NAME, ""
-                                                ) ?: "").equals(
-                                                    BPC_USER_TYPE, true
-                                                )
-                                            ) {
-                                                answerList.add(
-                                                    SectionAnswerEntity(
-                                                        id = 0,
-                                                        optionId = 0,
-                                                        didiId = item.beneficiaryId
-                                                            ?: 0,
-                                                        questionId = answersItem?.questionId
-                                                            ?: 0,
-                                                        villageId = item.villageId
-                                                            ?: 0,
-                                                        actionType = answersItem?.section
-                                                            ?: TYPE_EXCLUSION,
-                                                        weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                            0
-                                                        )?.weight) else 0,
-                                                        summary = answersItem?.summary,
-                                                        optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                            0
-                                                        )?.optionValue) else 0,
-                                                        totalAssetAmount = if (quesDetails?.questionFlag.equals(
-                                                                QUESTION_FLAG_WEIGHT
-                                                            )
-                                                        ) answersItem?.totalWeight?.toDouble() else stringToDouble(
-                                                            formatRatio(
-                                                                answersItem?.ratio
-                                                                    ?: DOUBLE_ZERO
-                                                            )
-                                                        ),
-                                                        needsToPost = false,
-                                                        answerValue = (if (quesDetails?.questionFlag.equals(
-                                                                QUESTION_FLAG_WEIGHT
-                                                            )
-                                                        ) answersItem?.totalWeight?.toDouble() else stringToDouble(
-                                                            formatRatio(
-                                                                answersItem?.ratio
-                                                                    ?: DOUBLE_ZERO
-                                                            )
-                                                        )).toString(),
-                                                        type = answersItem?.questionType
-                                                            ?: QuestionType.RadioButton.name,
-                                                        assetAmount = answersItem?.assetAmount
-                                                            ?: "0",
-                                                        questionFlag = quesDetails?.questionFlag
-                                                            ?: BLANK_STRING
-                                                    )
-                                                )
-
-                                                if (answersItem?.options?.isNotEmpty() == true) {
-
-                                                    answersItem?.options?.forEach { optionItem ->
-                                                        numAnswerList.add(
-                                                            NumericAnswerEntity(
-                                                                id = 0,
-                                                                optionId = optionItem?.optionId
-                                                                    ?: 0,
-                                                                questionId = answersItem?.questionId
-                                                                    ?: 0,
-                                                                weight = optionItem?.weight
-                                                                    ?: 0,
-                                                                didiId = item.beneficiaryId
-                                                                    ?: 0,
-                                                                count = optionItem?.count
-                                                                    ?: 0,
-                                                                optionValue = optionItem?.optionValue
-                                                                    ?: 0
-                                                            )
-                                                        )
-                                                    }
-
-                                                }
-                                            }
-                                        } else {
-                                            answerList.add(
-                                                SectionAnswerEntity(
-                                                    id = 0,
-                                                    optionId = answersItem?.options?.get(
-                                                        0
-                                                    )?.optionId ?: 0,
-                                                    didiId = item.beneficiaryId
-                                                        ?: 0,
-                                                    questionId = answersItem?.questionId
-                                                        ?: 0,
-                                                    villageId = item.villageId
-                                                        ?: 0,
-                                                    actionType = answersItem?.section
-                                                        ?: TYPE_EXCLUSION,
-                                                    weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                        0
-                                                    )?.weight) else 0,
-                                                    summary = answersItem?.summary,
-                                                    optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                        0
-                                                    )?.optionValue) else 0,
-                                                    totalAssetAmount = if (quesDetails?.questionFlag.equals(
-                                                            QUESTION_FLAG_WEIGHT
-                                                        )
-                                                    ) answersItem?.totalWeight?.toDouble() else stringToDouble(
-                                                        formatRatio(
-                                                            answersItem?.ratio
-                                                                ?: DOUBLE_ZERO
-                                                        )
-                                                    ),
-                                                    needsToPost = false,
-                                                    answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
-                                                        0
-                                                    )?.display
-                                                        ?: BLANK_STRING) else BLANK_STRING,
-                                                    type = answersItem?.questionType
-                                                        ?: QuestionType.RadioButton.name
-                                                )
-                                            )
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                        if (answerList.isNotEmpty()) {
-                            answerDao.deleteAllAnswersForVillage(villageId)
-                            delay(100)
-                            answerDao.insertAll(answerList)
-                        }
-                        if (numAnswerList.isNotEmpty()) {
-                            numericAnswerDao.deleteAllNumericAnswersForDidis(didiIdList)
-                            delay(100)
-                            numericAnswerDao.insertAll(numAnswerList)
-                        }
-                    }
-                } else {
-                    val ex = ApiResponseFailException(answerApiResponse.message)
-                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) RetryHelper.retryApiList.add(
-                        ApiType.PAT_BPC_SURVEY_SUMMARY
-                    )
-
-                    if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
-                        villageId
-                    )
-                    onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
-                }
-
-                prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, true)
-                prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
-            } catch (ex: Exception) {
-                if (ex !is JsonSyntaxException) {
-                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) RetryHelper.retryApiList.add(
-                        ApiType.PAT_BPC_SURVEY_SUMMARY
-                    )
-
-                    if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
-                        villageId
-                    )
-                }
-                onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
-            }
         }
     }
 
@@ -3166,10 +2982,6 @@ class VillageSelectionRepository @Inject constructor(
                     didiResponse.data?.let { didiList ->
                         if (didiList.isNotEmpty()) {
                             try {
-                                val localDidiList = didiDao.getAllDidisForVillage(villageId)
-                                if (localDidiList.size != didiList.size) {
-                                    stepsListDao.markStepAsInProgress(BPC_VERIFICATION_STEP_ORDER, StepStatus.INPROGRESS.ordinal, villageId)
-                                }
                                 didiDao.deleteDidiForVillage(villageId)
                                 delay(100)
                                 didiList.forEach { didi ->
@@ -3280,6 +3092,209 @@ class VillageSelectionRepository @Inject constructor(
                 }
                 onCatchError(ex, ApiType.BPC_DIDI_LIST_API)
             }
+            try {
+                NudgeLogger.d("VillageSelectionRepository", "fetchDataForBpc fetchPATSurveyToServer " +
+                        "request -> ${listOf(villageId)}")
+                val answerApiResponse = apiService.fetchPATSurveyToServer(
+                    listOf(villageId)
+                )
+                NudgeLogger.d("VillageSelectionRepository", "fetchDataForBpc fetchPATSurveyToServer " +
+                        "response -> status: ${answerApiResponse.status}")
+                if (answerApiResponse.status.equals(SUCCESS, true)) {
+                    answerApiResponse.data?.let {
+                        val answerList: ArrayList<SectionAnswerEntity> =
+                            arrayListOf()
+                        val numAnswerList: ArrayList<NumericAnswerEntity> =
+                            arrayListOf()
+                        val didiIdList = mutableListOf<Int>()
+                        it.forEach { item ->
+                            if (item.userType.equals(USER_BPC, true)) {
+                                item.beneficiaryId?.let { it1 -> didiIdList.add(it1) }
+                                didiDao.updatePATProgressStatus(
+                                    patSurveyStatus = item.patSurveyStatus
+                                        ?: 0,
+                                    section1Status = item.section1Status
+                                        ?: 0,
+                                    section2Status = item.section2Status
+                                        ?: 0,
+                                    didiId = item.beneficiaryId ?: 0,
+                                    shgFlag = item.shgFlag ?: -1,
+                                    patExclusionStatus = item.patExclusionStatus ?: 0
+                                )
+                                if (item?.answers?.isNotEmpty() == true) {
+                                    item?.answers?.forEach { answersItem ->
+                                        val quesDetails =
+                                            questionDao.getQuestionForLanguage(
+                                                answersItem?.questionId ?: 0,
+                                                prefRepo.getAppLanguageId() ?: 2
+                                            )
+                                        if (answersItem?.questionType?.equals(
+                                                QuestionType.Numeric_Field.name
+                                            ) == true
+                                        ) {
+
+                                            if ((prefRepo.getPref(
+                                                    PREF_KEY_TYPE_NAME, ""
+                                                ) ?: "").equals(
+                                                    BPC_USER_TYPE, true
+                                                )
+                                            ) {
+                                                answerList.add(
+                                                    SectionAnswerEntity(
+                                                        id = 0,
+                                                        optionId = 0,
+                                                        didiId = item.beneficiaryId
+                                                            ?: 0,
+                                                        questionId = answersItem?.questionId
+                                                            ?: 0,
+                                                        villageId = item.villageId
+                                                            ?: 0,
+                                                        actionType = answersItem?.section
+                                                            ?: TYPE_EXCLUSION,
+                                                        weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                            0
+                                                        )?.weight) else 0,
+                                                        summary = answersItem?.summary,
+                                                        optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                            0
+                                                        )?.optionValue) else 0,
+                                                        totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                                                                QUESTION_FLAG_WEIGHT
+                                                            )
+                                                        ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                            formatRatio(
+                                                                answersItem?.ratio
+                                                                    ?: DOUBLE_ZERO
+                                                            )
+                                                        ),
+                                                        needsToPost = false,
+                                                        answerValue = (if (quesDetails?.questionFlag.equals(
+                                                                QUESTION_FLAG_WEIGHT
+                                                            )
+                                                        ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                            formatRatio(
+                                                                answersItem?.ratio
+                                                                    ?: DOUBLE_ZERO
+                                                            )
+                                                        )).toString(),
+                                                        type = answersItem?.questionType
+                                                            ?: QuestionType.RadioButton.name,
+                                                        assetAmount = answersItem?.assetAmount
+                                                            ?: "0",
+                                                        questionFlag = quesDetails?.questionFlag
+                                                            ?: BLANK_STRING
+                                                    )
+                                                )
+
+                                                if (answersItem?.options?.isNotEmpty() == true) {
+
+                                                    answersItem?.options?.forEach { optionItem ->
+                                                        numAnswerList.add(
+                                                            NumericAnswerEntity(
+                                                                id = 0,
+                                                                optionId = optionItem?.optionId
+                                                                    ?: 0,
+                                                                questionId = answersItem?.questionId
+                                                                    ?: 0,
+                                                                weight = optionItem?.weight
+                                                                    ?: 0,
+                                                                didiId = item.beneficiaryId
+                                                                    ?: 0,
+                                                                count = optionItem?.count
+                                                                    ?: 0,
+                                                                optionValue = optionItem?.optionValue
+                                                                    ?: 0
+                                                            )
+                                                        )
+                                                    }
+
+                                                }
+                                            }
+                                        } else {
+                                            answerList.add(
+                                                SectionAnswerEntity(
+                                                    id = 0,
+                                                    optionId = answersItem?.options?.get(
+                                                        0
+                                                    )?.optionId ?: 0,
+                                                    didiId = item.beneficiaryId
+                                                        ?: 0,
+                                                    questionId = answersItem?.questionId
+                                                        ?: 0,
+                                                    villageId = item.villageId
+                                                        ?: 0,
+                                                    actionType = answersItem?.section
+                                                        ?: TYPE_EXCLUSION,
+                                                    weight = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                        0
+                                                    )?.weight) else 0,
+                                                    summary = answersItem?.summary,
+                                                    optionValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                        0
+                                                    )?.optionValue) else 0,
+                                                    totalAssetAmount = if (quesDetails?.questionFlag.equals(
+                                                            QUESTION_FLAG_WEIGHT
+                                                        )
+                                                    ) answersItem?.totalWeight?.toDouble() else stringToDouble(
+                                                        formatRatio(
+                                                            answersItem?.ratio
+                                                                ?: DOUBLE_ZERO
+                                                        )
+                                                    ),
+                                                    needsToPost = false,
+                                                    answerValue = if (answersItem?.options?.isNotEmpty() == true) (answersItem?.options?.get(
+                                                        0
+                                                    )?.display
+                                                        ?: BLANK_STRING) else BLANK_STRING,
+                                                    type = answersItem?.questionType
+                                                        ?: QuestionType.RadioButton.name
+                                                )
+                                            )
+                                        }
+
+                                    }
+                                }
+                            }
+                        }
+                        if (answerList.isNotEmpty()) {
+                            answerDao.deleteAllAnswersForVillage(villageId)
+                            delay(100)
+                            answerDao.insertAll(answerList)
+                        }
+                        if (numAnswerList.isNotEmpty()) {
+                            numericAnswerDao.deleteAllNumericAnswersForDidis(didiIdList)
+                            delay(100)
+                            numericAnswerDao.insertAll(numAnswerList)
+                        }
+                    }
+                } else {
+                    val ex = ApiResponseFailException(answerApiResponse.message)
+                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) RetryHelper.retryApiList.add(
+                        ApiType.PAT_BPC_SURVEY_SUMMARY
+                    )
+
+                    if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
+                        villageId
+                    )
+                    onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
+                }
+
+                prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, true)
+                prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
+            } catch (ex: Exception) {
+                if (ex !is JsonSyntaxException) {
+                    if (!RetryHelper.retryApiList.contains(ApiType.PAT_BPC_SURVEY_SUMMARY)) RetryHelper.retryApiList.add(
+                        ApiType.PAT_BPC_SURVEY_SUMMARY
+                    )
+
+                    if (!RetryHelper.stepListApiVillageId.contains(villageId)) RetryHelper.stepListApiVillageId.add(
+                        villageId
+                    )
+                }
+                onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
+            }
+            delay(100)
+            checkPendingDidiForVerification(villageId)
         }
     }
 
