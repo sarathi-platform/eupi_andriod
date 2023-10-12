@@ -7,8 +7,10 @@ import android.os.Environment
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -101,6 +103,7 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -1686,12 +1689,19 @@ class VillageSelectionViewModel @Inject constructor(
         showLoader.value = true
         villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
             override fun onSuccess() {
-                showLoader.value = false
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    withContext(Dispatchers.Main) {
+                        _villagList.value = updatedVillageList
+                        delay(100)
+                        showLoader.value = false
+                    }
+                }
             }
 
             override fun onFailed() {
                 showLoader.value = false
-                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
             }
         })
     }
@@ -1705,7 +1715,7 @@ class VillageSelectionViewModel @Inject constructor(
 
             override fun onFailed() {
                 showLoader.value = false
-                Toast.makeText(context, "Refresh Failed, Please try again!", Toast.LENGTH_LONG).show()
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
             }
         })
     }

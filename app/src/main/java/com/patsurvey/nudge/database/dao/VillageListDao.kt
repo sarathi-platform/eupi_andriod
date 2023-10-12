@@ -39,7 +39,7 @@ interface VillageListDao {
     @Query("SELECT stateId from $VILLAGE_TABLE_NAME LIMIT 1")
     fun getStateId(): Int
 
-    @Query("UPDATE $VILLAGE_TABLE_NAME SET stateId=:stepId, statusId=:statusId where id = :villageId")
+    @Query("UPDATE $VILLAGE_TABLE_NAME SET stepId=:stepId, statusId=:statusId where id = :villageId")
     fun updateStepAndStatusId(villageId: Int, stepId: Int,statusId:Int)
 
 

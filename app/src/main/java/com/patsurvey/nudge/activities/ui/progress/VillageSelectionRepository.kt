@@ -100,6 +100,7 @@ import com.patsurvey.nudge.utils.TolaStatus
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
+import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
@@ -384,6 +385,8 @@ class VillageSelectionRepository @Inject constructor(
                 villageId,
                 true
             )
+            val voEndorsementStep = stepsListDao.getStepByOrder(VO_ENDORSEMENT_STEP_ORDER, villageId)
+            villageListDao.updateStepAndStatusId(villageId, voEndorsementStep.id, StepStatus.COMPLETED.ordinal)
         }
     }
 
@@ -2805,58 +2808,148 @@ class VillageSelectionRepository @Inject constructor(
         }
     }
 
-    private fun callWorkFlowAPIForBpc(networkCallbackListener: NetworkCallbackListener, prefRepo: PrefRepo) {
+    fun callWorkFlowAPIForBpc( networkCallbackListener: NetworkCallbackListener, prefRepo: PrefRepo) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                val editWorkFlowRequest = java.util.ArrayList<EditWorkFlowRequest>()
-                val stepListRequest = java.util.ArrayList<StepListEntity>()
+                val addWorkFlowRequest = mutableListOf<AddWorkFlowRequest>()
+                val editWorkFlowRequest = mutableListOf<EditWorkFlowRequest>()
+                val needToEditStep = mutableListOf<StepListEntity>()
+                val needToAddStep = mutableListOf<StepListEntity>()
                 for(village in villageList) {
                     val villageId = village.id
                     val stepList =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                     val bpcStep = stepList.last()
-                    if(bpcStep.workFlowId>0) {
-                        stepListRequest.add(bpcStep)
-                        editWorkFlowRequest.add(
-                            EditWorkFlowRequest(
-                                bpcStep.workFlowId,
-                                StepStatus.getStepFromOrdinal(bpcStep.isComplete)
-                            )
-                        )
+                    if (bpcStep.workFlowId > 0) {
+                        editWorkFlowRequest.add((EditWorkFlowRequest(
+                            bpcStep.workFlowId,
+                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                        )))
+                        needToEditStep.add(bpcStep)
+                    } else {
+                        needToAddStep.add(bpcStep)
+                        addWorkFlowRequest.add((AddWorkFlowRequest(
+                            StepStatus.INPROGRESS.name, bpcStep.villageId,
+                            bpcStep.programId, bpcStep.id
+                        )))
                     }
                 }
-                val response = apiService.editWorkFlow(editWorkFlowRequest)
-                if (response.status.equals(SUCCESS, true)) {
-                    if (response.data?.get(0)?.transactionId?.isEmpty() == true) {
-                        for (i in editWorkFlowRequest.indices) {
-                            val request = editWorkFlowRequest[i]
-                            val step = stepListRequest[i]
-                            stepsListDao.updateWorkflowId(
-                                step.id,
-                                step.workFlowId,
-                                step.villageId,
-                                request.status
-                            )
-                            stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                if (addWorkFlowRequest.size > 0) {
+
+                    NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
+
+                    val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
+
+                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
+
+                    if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
+                        addWorkFlowResponse.data?.let {
+                            if (addWorkFlowResponse.data[0].transactionId.isNullOrEmpty()) {
+                                for (i in addWorkFlowResponse.data.indices) {
+                                    val step = needToAddStep[i]
+                                    stepsListDao.updateOnlyWorkFlowId(
+                                        it[i].id,
+                                        step.villageId,
+                                        step.id
+                                    )
+                                    step.workFlowId = it[0].id
+                                    NudgeLogger.e(
+                                        "SyncHelper",
+                                        "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId before stepId: $step.stepId, it[0].id: ${it[0].id}, villageId: $step.villageId"
+                                    )
+                                }
+                                NudgeLogger.e(
+                                    "SyncHelper",
+                                    "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId after"
+                                )
+                                delay(100)
+                                needToAddStep.addAll(needToEditStep)
+                                updateBpcStepsToServer(needToAddStep, networkCallbackListener, prefRepo)
+                            }
                         }
-                    }
-                    sendBpcMatchScore(networkCallbackListener, prefRepo)
-                } else {
-                    withContext(Dispatchers.Main) {
+                    } else {
                         networkCallbackListener.onFailed()
                     }
-//                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
+
+                } else if(needToEditStep.size>0){
+                    updateBpcStepsToServer(needToEditStep, networkCallbackListener, prefRepo)
                 }
 
-                if (!response.lastSyncTime.isNullOrEmpty()) {
-                    updateLastSyncTime(prefRepo, response.lastSyncTime)
-                }
-            } catch (ex:Exception) {
+            }catch (ex:Exception){
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
                 onCatchError(ex, ApiType.WORK_FLOW_API)
+            }
+        }
+    }
+
+    private fun updateBpcStepsToServer(needToEditStep: MutableList<StepListEntity>, networkCallbackListener: NetworkCallbackListener, prefRepo: PrefRepo) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (needToEditStep.isNotEmpty()) {
+                val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
+                for (step in needToEditStep) {
+                    var stepCompletionDate = BLANK_STRING
+                    stepCompletionDate =longToString(prefRepo.getPref(
+                        PREF_BPC_PAT_COMPLETION_DATE_+step.villageId, System.currentTimeMillis()))
+                    requestForStepUpdation.add(
+                        EditWorkFlowRequest(
+                            step.workFlowId,
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            stepCompletionDate
+                        )
+                    )
+                }
+                val responseForStepUpdation =
+                    apiService.editWorkFlow(requestForStepUpdation)
+
+                NudgeLogger.e(
+                    "SyncHelper",
+                    "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
+                )
+
+
+                if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                    responseForStepUpdation.data?.let {
+
+                        for(i in responseForStepUpdation.data.indices) {
+                            val step = needToEditStep[i]
+                            stepsListDao.updateWorkflowId(
+                                step.stepId,
+                                step.workFlowId,
+                                step.villageId,
+                                step.status
+                            )
+
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateWorkflowId after "
+                            )
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $step.stepId"
+                            )
+                            stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $step.stepId"
+                            )
+
+                        }
+                    }
+                    sendBpcMatchScore(networkCallbackListener, prefRepo)
+                } else {
+                    networkCallbackListener.onFailed()
+                }
+                if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
+                    updateLastSyncTime(
+                        prefRepo,
+                        responseForStepUpdation.lastSyncTime
+                    )
+                }
+            } else {
+                sendBpcMatchScore(networkCallbackListener, prefRepo)
             }
         }
     }
