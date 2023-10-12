@@ -134,7 +134,14 @@ fun VillageSelectionScreen(
 
     val pullRefreshState = rememberPullRefreshState(
         viewModel.showLoader.value,
-        { if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context) })
+        {
+            if ((context as MainActivity).isOnline.value ?: false) {
+                if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context)
+            } else {
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+            }
+
+        })
 
     if (viewModel.showLoader.value) {
         Scaffold(
