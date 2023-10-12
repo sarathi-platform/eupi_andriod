@@ -280,7 +280,6 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
-
                         stateId.value = village.stateId
                         RetryHelper.stateId = stateId.value
                         try {
@@ -296,10 +295,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             steps.isComplete =
                                                 findCompleteValue(steps.status).ordinal
 
-//                                            if(steps.id == 46){
-//                                                prefRepo.savePref(
-//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
-//                                            }
+
                                             if(steps.id == 40){
                                                 prefRepo.savePref(
                                                     PREF_TRANSECT_WALK_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())

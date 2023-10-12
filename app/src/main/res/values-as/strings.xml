@@ -375,6 +375,7 @@
     <string name="something_went_wrong">কিবা এটা ভুল হ’ল</string>
     <string name="score_comparison_section_1_text">শাখা 1</string>
     <string name="no_didis_availble_for_bpc_verification">BPC Verificationৰ বাবে কোনো Didis উপলব্ধ নহয়।</string>
+    <string name="village_is_not_vo_endorsed_right_now">গাঁওখন এতিয়াই VO Endorsed নহয়!</string>
 
 
 </resources>

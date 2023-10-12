@@ -191,17 +191,6 @@ fun SurveySummary(
                     surveySummaryViewModel.updatePatEditFlag()
 
                     if ((context as MainActivity).isOnline.value ?: false) {
-                        /*surveySummaryViewModel.sendBpcUpdatedDidiList(object :
-                            NetworkCallbackListener {
-                            override fun onSuccess() {
-
-                            }
-
-                            override fun onFailed() {
-
-                            }
-
-                        })*/
                         surveySummaryViewModel.savePATSummeryToServer(object :
                             NetworkCallbackListener {
                             override fun onSuccess() {

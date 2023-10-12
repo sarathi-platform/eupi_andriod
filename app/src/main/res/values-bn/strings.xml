@@ -375,6 +375,7 @@
     <string name="something_went_wrong">কিছু ভুল হয়েছে</string>
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="no_didis_availble_for_bpc_verification">BPC যাচাইকরণের জন্য কোন Didis উপলব্ধ.</string>
+    <string name="village_is_not_vo_endorsed_right_now">গ্রাম এখন VO এনডোর্সড নয়!</string>
 
 
 </resources>

@@ -332,15 +332,35 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
-                            viewModel.updateSelectedVillage()
-                            navController.popBackStack()
-                            navController.navigate(
-                                "home_graph/${
-                                    viewModel.prefRepo.getPref(
-                                        PREF_KEY_TYPE_NAME, ""
-                                    ) ?: ""
-                                }"
-                            )
+                            if (viewModel.prefRepo.isUserBPC()) {
+                               val stepId= villages[viewModel.villageSelected.value].stepId
+                               val statusId= villages[viewModel.villageSelected.value].statusId
+                                when (fetchBorderColorForVillage(stepId, statusId)) {
+                                    0 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                    else -> {
+                                        viewModel.updateSelectedVillage()
+                                        navController.popBackStack()
+                                        navController.navigate(
+                                            "home_graph/${
+                                                viewModel.prefRepo.getPref(
+                                                    PREF_KEY_TYPE_NAME, ""
+                                                ) ?: ""
+                                            }"
+                                        )
+                                    }
+                                }
+                            } else {
+                                viewModel.updateSelectedVillage()
+                                navController.popBackStack()
+                                navController.navigate(
+                                    "home_graph/${
+                                        viewModel.prefRepo.getPref(
+                                            PREF_KEY_TYPE_NAME, ""
+                                        ) ?: ""
+                                    }"
+                                )
+                            }
+
                         }
                     }
                 }
@@ -349,90 +369,6 @@ fun VillageSelectionScreen(
                     state = pullRefreshState,
                     modifier = Modifier.align(Alignment.TopCenter),
                     contentColor = blueDark,
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun VillageAndVoBox(
-    tolaName: String = "",
-    voName: String = "",
-    index: Int,
-    selectedIndex: Int,
-    modifier: Modifier = Modifier,
-    onVillageSeleted: (Int) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = if (index == selectedIndex) blueDark else greyBorder,
-                shape = RoundedCornerShape(6.dp)
-            )
-            .shadow(
-                elevation = 16.dp,
-                ambientColor = White,
-                spotColor = Black,
-                shape = RoundedCornerShape(6.dp),
-            )
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Black
-                )
-            ) {
-                onVillageSeleted(index)
-            }
-            .background(if (index == selectedIndex) blueDark else White)
-            .then(modifier),
-        elevation = 10.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .background(if (index == selectedIndex) blueDark else White)
-        ) {
-            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = null,
-                    tint = if (index == selectedIndex) White else textColorDark,
-                )
-                Text(
-                    text = " $tolaName",
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .absolutePadding(left = 4.dp)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ) {
-                Text(
-                    text = "VO: ",
-                    modifier = Modifier,
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = voName,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
                 )
             }
         }
@@ -471,7 +407,7 @@ fun VillageAndVoBoxForBottomSheet(
             ) {
                 if (isUserBPC) {
                     when (fetchBorderColorForVillage(stepId, statusId)) {
-                        0 -> showCustomToast(context, "Village is not VO Endorsed Right Now!")
+                        0 -> showCustomToast(context, context.getString(R.string.village_is_not_vo_endorsed_right_now))
                         else -> onVillageSeleted(index)
                     }
                 } else onVillageSeleted(index)
