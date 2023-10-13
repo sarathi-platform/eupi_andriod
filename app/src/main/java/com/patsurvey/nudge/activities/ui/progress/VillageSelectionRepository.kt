@@ -1283,7 +1283,12 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun deleteDidisToNetworkForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val didiList = didiDao.getDidisToBeDeleted(
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = true,
+                transactionId = "",
+                serverId = 0
+            )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {

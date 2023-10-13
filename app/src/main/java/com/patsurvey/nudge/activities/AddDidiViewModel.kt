@@ -189,7 +189,13 @@ class AddDidiViewModel @Inject constructor(
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
-                val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+                val didiList = didiDao.getDidisToBeDeletedForVillage(
+                    villageId = villageId,
+                    activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                    needsToPostDeleteStatus = true,
+                    transactionId = "",
+                    serverId = 0
+                )
                 val jsonDidi = JsonArray()
                 if (didiList.isNotEmpty()) {
                     for (didi in didiList) {
@@ -1278,7 +1284,7 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val didisToBeDeleted =
-                    didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
+                    didiDao.getDidisToBeDeletedForVillage(villageId = villageId, activeStatus = DidiStatus.DIID_DELETED.ordinal, needsToPostDeleteStatus = true, transactionId = "", serverId = 0)
                 if (didisToBeDeleted.isNotEmpty()) {
                     val jsonArray = JsonArray()
                     didisToBeDeleted.forEach { didi ->

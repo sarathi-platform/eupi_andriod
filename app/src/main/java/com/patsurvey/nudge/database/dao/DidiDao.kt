@@ -177,8 +177,11 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE where activeStatus = :activeStatus and id = :id")
     fun deleteDidiFromDb(id: Int, activeStatus: Int)
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId")
-    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId and transactionId = :transactionId and serverId != :serverId")
+    fun getDidisToBeDeletedForVillage(villageId: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and transactionId = :transactionId and serverId != :serverId")
+    fun getDidisToBeDeleted(activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
