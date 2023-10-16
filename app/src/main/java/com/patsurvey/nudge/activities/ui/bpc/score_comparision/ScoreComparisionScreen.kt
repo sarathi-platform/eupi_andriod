@@ -91,6 +91,7 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 
 @Composable
@@ -371,6 +372,7 @@ fun ScoreComparisionScreen(
                                 viewModel = viewModel,
                                 passingScore = viewModel.questionPassingScore.collectAsState().value
                             ) { didiEntity ->
+                                viewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_SCORE_LIST_PAGE.ordinal)
                                 navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                             }
                             Spacer(modifier = Modifier.height(10.dp))

@@ -2,7 +2,7 @@
     <string name="app_name" translatable="false">Sarathi</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
-    <string name="bangla">হিন্দি</string>
+    <string name="bangla" translatable="false">হিন্দি</string>
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
 

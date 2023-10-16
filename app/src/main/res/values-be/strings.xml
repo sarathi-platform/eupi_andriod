@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <plurals name="didis_added">
+        <item quantity="one">Didi Added</item>
+        <item quantity="other">Didis Added</item>
+    </plurals>
+    <plurals name="poor_didis_pending_text">
+        <item quantity="one">Poor Didi Pending</item>
+        <item quantity="other">Poor Didis Pending</item>
+    </plurals>
+
     <string name="mark_complete_text">तला दाजाबदेरनायखौ फोजोब</string>
     <string name="go_back_text">थांफिन</string>
     <string name="progress_item_text">जौगानाय एबा दावगानाय</string>
@@ -340,5 +349,18 @@
     <string name="page_name_text">बिलाइ</string>
     <string name="storage_permission_dialog_prompt_message">संरैखा बिथोन नांगौ, अननानै बिथोन गनायथि हो</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">%1$s आब’नि थाखाय नोंथाङा सम्पद रेंकिं गथायदों</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
 
+    <string name="go_back_to_section_1_summary">खोन्दो 1 गुदिखिथा</string>
+    <string name="exclusion_error_message">बे आब’वा PAT आ बेवहाय जोबलाङो</string>
+    <string name="bpc_pat_survey_complete">BPC PAT सार्भे</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} गोदान आबमोननि थाखाय PAT सारभेखौ साबमिट खालामनाय जाबाय</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} गोदान आब’वा थाखाय PAT सारभेखौ साबमिट खालामनाय जाबाय</string>
+    <string name="total_pat_attempted_string">गासै PAT नाजाबाय</string>
+    <string name="didis_marked_as_not_available_string">आबमोननि मोन्नो हानाय नङा होनना सिन होनाय जादों</string>
+    <string name="able_bodied_women_flag_text">नख \'राव देहा गोनां \n आयजोफोर दं नामा?</string>
+    <string name="something_went_wrong">माबा गोरोन्थि जादों</string>
+    <string name="score_comparison_section_1_text">खोन्दो 1</string>
+    <string name="village_is_not_vo_endorsed_right_now">गामिया दा VO गनायथि होजायाखै!</string>
+    <string name="refresh_failed_please_try_again">रिफ्रेस खालामनाया फेलें जादों, अन्नानै फिन नाजा!</string>
 </resources>

@@ -358,23 +358,19 @@
     <string name="page_name_text">पेज</string>
     <string name="storage_permission_dialog_prompt_message">संग्रहण की अनुमति आवश्यक है, कृपया अनुमति प्रदान करें</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">आप %1$s के लिए धन रैंकिंग जमा कर रहे है</string>
-    <string name="go_back_to_section_1_summary">धारा 1 सारांश</string>
-    <string name="exclusion_error_message">इस दीदी के लिए PAT यहीं समाप्त होती है।</string>
 
-    <string name="bpc_pat_survey_complete">बी.पी.सी. PAT सर्वे</string>
-
-    <!-- Updated 03-10-2023-->
-    <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सर्वे सबमिट कर दिया गया है</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सर्वे सबमिट कर दिया गया है</string>
-
-    <string name="total_pat_attempted_string">कुल PAT प्रयास</string>
-    <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के \nरूप में चिह्नित किया गया है</string>
+    <string name="go_back_to_section_1_summary">अनुभाग -1 सारांश</string>
+    <string name="exclusion_error_message">इस दीदी के लिए PAT सर्वे यही समाप्त होता है।</string>
+    <string name="bpc_pat_survey_complete">बीपीसी पीएटी सर्वेक्षण</string>
+    <string name="pat_success_message_plural">{TOTAL_COUNT} नई दीदियों के लिए PAT सर्वेक्षण सबमिट कर दिया गया है</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} नई दीदी के लिए PAT सर्वेक्षण सबमिट कर दिया गया है</string>
+    <string name="total_pat_attempted_string">कुल PAT प्रयास किए गए</string>
+    <string name="didis_marked_as_not_available_string">दीदियों को उपलब्ध नहीं के रूप में चिह्नित किया गया है</string>
     <string name="able_bodied_women_flag_text">क्या परिवार में सक्षम महिलाएं हैं?</string>
-    <string name="something_went_wrong">कुछ गलत हो गया</string>
-    <string name="score_comparison_section_1_text">अनुभाग 1</string>
-    <string name="no_didis_availble_for_bpc_verification">बीपीसी सत्यापन के लिए कोई दीदी उपलब्ध नहीं है।</string>
-    <string name="village_is_not_vo_endorsed_right_now">गांव अभी वीओ द्वारा समर्थित नहीं है!</string>
-    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+    <string name="something_went_wrong">कुछ गलत हो गया।</string>
+    <string name="score_comparison_section_1_text">अनुभाग -1</string>
+    <string name="village_is_not_vo_endorsed_right_now">गांव अभी ग्राम संगठन द्वारा समर्थित नहीं है!</string>
+    <string name="refresh_failed_please_try_again">रिफ्रेश नहीं हुआ, कृपया पुनः प्रयास करें !</string>
 
 
 </resources>
