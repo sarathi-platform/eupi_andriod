@@ -50,6 +50,7 @@
     <string name="rich_text">अमीर</string>
     <string name="search_didis">दीदी को ढूंढे</string>
     <string name="search_video">वीडियो खोजें</string>
+    <string name="search_village">गांव खोजेंं</string>
     <string name="otp_text">ओ.टी.पी.</string>
     <string name="count_didis_pending_plural">%1s दीदीयां बाक़ी है</string>
     <string name="count_didis_pending_singular">%1s दीदी बाक़ी है</string>

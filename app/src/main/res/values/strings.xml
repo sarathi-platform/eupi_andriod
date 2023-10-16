@@ -42,6 +42,7 @@
     <string name="rich_text">Rich</string>
     <string name="search_didis">Search Didis</string>
     <string name="search_video">Search Video</string>
+    <string name="search_village">Search Village</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s Didis Pending</string>
     <string name="count_didis_pending_singular">%1s Didi Pending</string>
