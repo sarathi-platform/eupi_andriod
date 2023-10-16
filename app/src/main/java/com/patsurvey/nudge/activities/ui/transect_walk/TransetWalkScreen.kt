@@ -20,6 +20,8 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -87,7 +89,7 @@ fun TransectWalkScreen(
     LaunchedEffect(key1 = true) {
         viewModel.fetchTolaList(villageId)
         viewModel.isTransectWalkComplete(stepId,villageId)
-        viewModel.isVoEndorsementCompleteForVillage(villageId)
+//        viewModel.isVoEndorsementCompleteForVillage(villageId)
     }
     var showAddTolaBox by remember { mutableStateOf(false) }
     val tolaList by viewModel.tolaList.collectAsState()
@@ -199,7 +201,7 @@ fun TransectWalkScreen(
                                 }
                                 if (tolaList.isNotEmpty()) {
                                     Spacer(modifier = Modifier.padding(14.dp))
-                                    if (!viewModel.isVoEndorsementComplete.value) {
+//                                    if (!viewModel.isVoEndorsementComplete.value) {
                                         ButtonOutline(
                                             modifier = Modifier
                                                 .weight(0.9f),
@@ -207,7 +209,7 @@ fun TransectWalkScreen(
                                             if (!showAddTolaBox)
                                                 showAddTolaBox = true
                                         }
-                                    }
+//                                    }
 
                                 }
                             }

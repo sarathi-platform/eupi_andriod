@@ -95,7 +95,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CardArrow
 import com.patsurvey.nudge.customviews.SearchWithFilterView
-import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
@@ -365,7 +365,7 @@ fun BpcAddMoreDidiScreen(
                 positiveButtonText = stringResource(id = R.string.confirm_text),
                 positiveButtonOnClick = {
                     if (forReplace) {
-                        bpcAddMoreDidiViewModel.replaceDidi(isCheckedIds)
+//                        bpcAddMoreDidiViewModel.replaceDidi(isCheckedIds)
                     } else {
                         bpcAddMoreDidiViewModel.markCheckedDidisSelected(isCheckedIds)
                     }
@@ -379,13 +379,13 @@ fun BpcAddMoreDidiScreen(
 
 @Composable
 fun ExpandableDidiItemCardForBpc(
-    didi: BpcNonSelectedDidiEntity,
+    didi: DidiEntity,
     expanded: Boolean,
     modifier: Modifier,
     isChecked: Boolean,
     isForReplace: Boolean,
-    onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
-    onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
+    onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onItemClick: (Boolean, DidiEntity) -> Unit
 ) {
 
     val context = LocalContext.current
@@ -531,7 +531,7 @@ fun ExpandableDidiItemCardForBpc(
 @Composable
 fun DidiDetailExpendableContentForBpc(
     modifier: Modifier,
-    didi: BpcNonSelectedDidiEntity,
+    didi: DidiEntity,
     expended: Boolean
 ) {
     val constraintSet = didiDetailConstraints()
@@ -821,20 +821,20 @@ private fun didiDetailConstraints(): ConstraintSet {
     }
 }
 
-fun getLatestStatusTextForBpc(context: Context, didi: BpcNonSelectedDidiEntity): String {
+fun getLatestStatusTextForBpc(context: Context, didi: DidiEntity): String {
     return context.getString(R.string.vo_selected_status_text)
 }
 
 @Composable
 fun ShowDidisFromTolaForBpcAddMoreScreen(
     didiTola: String,
-    didiList: List<BpcNonSelectedDidiEntity>,
+    didiList: List<DidiEntity>,
     modifier: Modifier,
     isForReplace: Boolean,
     expandedIds: List<Int>,
     isCheckedIds: List<Int>,
-    onExpendClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit,
-    onItemClick: (Boolean, BpcNonSelectedDidiEntity) -> Unit
+    onExpendClick: (Boolean, DidiEntity) -> Unit,
+    onItemClick: (Boolean, DidiEntity) -> Unit
 ) {
     Column(modifier = Modifier) {
         Row(
@@ -917,7 +917,7 @@ fun ShowDidisFromTolaForBpcAddMoreScreen(
 }
 
 @Composable
-fun CircularDidiImage(didi: BpcNonSelectedDidiEntity, modifier: Modifier) {
+fun CircularDidiImage(didi: DidiEntity, modifier: Modifier) {
     Box(
         modifier = modifier
             .then(modifier)

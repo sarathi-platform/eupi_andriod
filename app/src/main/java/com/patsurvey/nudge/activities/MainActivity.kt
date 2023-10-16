@@ -30,7 +30,7 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.SmsRead.SmsBroadcastReceiver
+import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -174,8 +174,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
             questionDao = mViewModel.questionDao,
             castListDao = mViewModel.casteListDao,
             bpcSummaryDao = mViewModel.bpcSummaryDao,
-            bpcSelectedDidiDao = mViewModel.bpcSelectedDidiDao,
-            bpcNonSelectedDidiDao = mViewModel.bpcNonSelectedDidiDao,
             poorDidiListDao = mViewModel.poorDidiListDao
         )
 

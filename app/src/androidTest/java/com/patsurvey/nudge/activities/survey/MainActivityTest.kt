@@ -72,11 +72,6 @@ class MainActivityTest {
     @Mock
     private lateinit var bpcSummaryDao: BpcSummaryDao
 
-    @Mock
-    private lateinit var bpcSelectedDidiDao: BpcSelectedDidiDao
-
-    @Mock
-    private lateinit var bpcNonSelectedDidiDao: BpcNonSelectedDidiDao
 
     @Mock
     private lateinit var poorDidiListDao: PoorDidiListDao
@@ -101,8 +96,6 @@ class MainActivityTest {
             questionDao = questionListDao,
             trainingVideoDao = trainingVideoDao,
             bpcSummaryDao = bpcSummaryDao,
-            bpcSelectedDidiDao = bpcSelectedDidiDao,
-            bpcNonSelectedDidiDao = bpcNonSelectedDidiDao,
             poorDidiListDao = poorDidiListDao,
             stepsListDao = stepsListDao
         )

@@ -11,6 +11,7 @@ import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
@@ -50,8 +51,6 @@ class SurveySummaryViewModel @Inject constructor(
     val questionDao: QuestionListDao,
     val villageListDao: VillageListDao,
     val apiService: ApiService,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val questionListDao: QuestionListDao
 ) : BaseViewModel() {
 
@@ -86,33 +85,28 @@ class SurveySummaryViewModel @Inject constructor(
             val selectedVillage = prefRepo.getSelectedVillage()
             val didiList = mutableListOf<DidiEntity>()
             val patCompletedDidiList = didiDao.getAllDidisForVillage(selectedVillage.id)
-            val replacedDidiFromSelectedDao = bpcSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
-            val replacedDidiFromNonSelectedDao = bpcNonSelectedDidiDao.fetchAllDidisForVillage(selectedVillage.id)
             didiList.addAll(patCompletedDidiList)
-            val filteredReplacedDidiFromSelectedDao = replacedDidiFromSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
-            val filteredReplacedDidiFromNonSelectedDao = replacedDidiFromNonSelectedDao.filter { it.isAlsoSelected == BpcDidiSelectionStatus.REPLACED.ordinal && it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal }
-
-            filteredReplacedDidiFromSelectedDao.forEach {
-                didiList.add(DidiEntity.getDidiEntityFromSelectedDidiEntityForBpc(it))
-            }
-            filteredReplacedDidiFromNonSelectedDao.forEach {
-                didiList.add(DidiEntity.getDidiEntityFromNonSelectedDidiEntityForBpc(it))
-            }
-
             _didiList.value = didiList
 
         }
     }
 
-    fun setVillage(villageId: Int) {
+    private fun setVillage(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch{
-            var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
-            val voEndorsementStep =stepsListDao.getStepByOrder(5,prefRepo.getSelectedVillage().id)
-            withContext(Dispatchers.IO){
-                isVOEndorsementComplete.value = voEndorsementStep.isComplete == StepStatus.COMPLETED.ordinal
-            }
-            withContext(Dispatchers.Main) {
-                villageEntity.value = village
+            try {
+                var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
+                   var steps =stepsListDao.getStepByOrder(5,prefRepo.getSelectedVillage().id)
+                withContext(Dispatchers.Main) {
+                    villageEntity.value = village
+                    steps?.let {
+                        isVOEndorsementComplete.value = it.isComplete == StepStatus.COMPLETED.ordinal
+                    }
+
+                }
+
+            }catch (ex:Exception){
+                ex.printStackTrace()
+                NudgeLogger.d("SurveySummaryViewModel", "setVillage Error: ${ex.message} " )
             }
         }
     }
@@ -545,6 +539,7 @@ class SurveySummaryViewModel @Inject constructor(
                 isComplete = StepStatus.COMPLETED.ordinal,
                 villageId = villageId
             )
+            villageListDao.updateStepAndStatusId(villageId,bpcStepId,StepStatus.COMPLETED.ordinal)
         }
     }
 
@@ -886,45 +881,6 @@ class SurveySummaryViewModel @Inject constructor(
                             }
                         }
                 }
-            }
-        }
-    }
-
-    fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageId = prefRepo.getSelectedVillage().id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villageId)
-            val updatedList = didiDao.getAllDidisForVillage(villageId = villageId)
-            try {
-                val oldBeneficiaryIdSelected = mutableListOf<Int>()
-                oldDidiList.forEach {
-                    oldBeneficiaryIdSelected.add(it.serverId)
-                }
-                val newBeneficiaryIdSelected = mutableListOf<Int>()
-                updatedList.forEach {
-                    newBeneficiaryIdSelected.add(it.serverId)
-                }
-                val updateSelectedDidiResponse = apiService.sendSelectedDidiList(
-                    BpcUpdateSelectedDidiRequest(
-                        oldBeneficiaryIdSelected = oldBeneficiaryIdSelected,
-                        newBeneficiaryIdSelected = newBeneficiaryIdSelected,
-                        villageId = villageId
-                    )
-                )
-                if (updateSelectedDidiResponse.status.equals(SUCCESS, true)) {
-                    Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $SUCCESS")
-                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, true)
-
-                } else {
-                    Log.d("SurveySummaryViewModel", "sendBpcUpdatedDidiList: $FAIL")
-                    prefRepo.savePref(PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_ + villageId, false)
-                    networkCallbackListener.onFailed()
-                }
-                if(!updateSelectedDidiResponse.lastSyncTime.isNullOrEmpty()){
-                    updateLastSyncTime(prefRepo,updateSelectedDidiResponse.lastSyncTime)
-                }
-            } catch (ex: Exception) {
-                onCatchError(ex, ApiType.BPC_UPDATE_DIDI_LIST_API)
             }
         }
     }

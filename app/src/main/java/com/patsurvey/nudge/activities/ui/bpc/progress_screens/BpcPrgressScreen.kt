@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,8 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,13 +56,12 @@ fun BpcProgressScreen(
     bpcProgreesScreenViewModel: BpcProgressScreenViewModel,
     navController: NavHostController,
     onNavigateToStep:(Int, Int) ->Unit,
-    onNavigateToSetting:()->Unit
+    onNavigateToSetting:()->Unit,
+    onBackClick:()->Unit
 ) {
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
-
-        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
         delay(1000)
         bpcProgreesScreenViewModel.showLoader.value = false
     }
@@ -83,18 +85,8 @@ fun BpcProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
     val context = LocalContext.current
-
-    val localDensity = LocalDensity.current
-    val voTextHeight = remember {
-        mutableStateOf(Offset(0f, 0f))
-    }
-
-    /*LaunchedEffect(key1 = true) {
-        bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
-    }*/
-
     BackHandler {
-        (context as? Activity)?.finish()
+        onBackClick()
     }
 
     Surface(
@@ -127,18 +119,17 @@ fun BpcProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                isBpcUser = true,
-                                isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
+                                stepId = village.stepId,
+                                statusId = village.statusId,
+                                context = context,
+                                isUserBPC = bpcProgreesScreenViewModel.prefRepo.isUserBPC()
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
-                                bpcProgreesScreenViewModel.villageSelected.value = it/*
-                                bpcProgreesScreenViewModel.getStepsList(village.id)
-                                bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
+                                bpcProgreesScreenViewModel.villageSelected.value = it
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.getStepsList(village.id)
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
-                                bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
                                 bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
                                 bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
@@ -193,10 +184,6 @@ fun BpcProgressScreen(
                         },
                         backgroundColor = Color.White
                     )
-//                    ProgressScreenTopBar() {
-//                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (bpcProgreesScreenViewModel.showLoader.value) {
@@ -248,8 +235,11 @@ fun BpcProgressScreen(
                                     identity = bpcProgreesScreenViewModel.prefRepo.getPref(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
-                                    ) ?: ""
-                                )
+                                    ) ?: "",
+                                    isUserBPC = true
+                                ){
+                                    onBackClick()
+                                }
                             }
 
                             item {

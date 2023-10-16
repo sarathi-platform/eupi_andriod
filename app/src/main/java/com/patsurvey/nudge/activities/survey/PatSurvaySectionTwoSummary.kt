@@ -294,18 +294,22 @@ fun PatSummeryScreenDidiDetailBox(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+                Text(
+                    text = didi.guardianName,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
                 )
                 Text(
-                    text = didi.cohortName,
+                    text = didi.address,
                     style = TextStyle(
                         color = textColorDark,
                         fontSize = 14.sp,

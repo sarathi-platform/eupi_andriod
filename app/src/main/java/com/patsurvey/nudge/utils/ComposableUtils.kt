@@ -81,11 +81,15 @@ fun DidiItemCardForPat(
     expanded: Boolean,
     modifier: Modifier,
     answerDao: AnswerDao,
+    isFromNotAvailableCard:Boolean?=false,
+    isVoEndorsementComplete: Boolean?=false,
     questionListDao: QuestionListDao,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onNotAvailableClick: (DidiEntity) -> Unit,
     onItemClick: (DidiEntity) -> Unit
 ) {
+    Log.d("TAG", "DidiItemCardForPatDetails: $isVoEndorsementComplete")
+
 
     val didiMarkedNotAvailable = remember {
         mutableStateOf(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
@@ -180,19 +184,8 @@ fun DidiItemCardForPat(
                         }
                     }
 
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -200,12 +193,24 @@ fun DidiItemCardForPat(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
+                    )
+
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
                     )
                 }
             }
-            if (prefRepo.getFromPage()
-                    .equals(ARG_FROM_PAT_SURVEY, true)
+
+            if (prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
             ) {
                 Divider(
                     color = borderGreyLight,

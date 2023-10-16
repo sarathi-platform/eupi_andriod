@@ -5,9 +5,12 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
+import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
@@ -27,8 +30,6 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -42,6 +43,7 @@ import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
+import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.GetQuestionListRequest
@@ -101,6 +103,7 @@ import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
 import com.patsurvey.nudge.utils.getImagePath
 import com.patsurvey.nudge.utils.intToString
+import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
@@ -133,10 +136,9 @@ class VillageSelectionViewModel @Inject constructor(
     val numericAnswerDao: NumericAnswerDao,
     val answerDao: AnswerDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val poorDidiListDao: PoorDidiListDao,
-    val downloader: AndroidDownloader
+    val downloader: AndroidDownloader,
+    val villageSelectionRepository: VillageSelectionRepository
 
 ) : BaseViewModel() {
     private val _villagList = MutableStateFlow(listOf<VillageEntity>())
@@ -146,7 +148,6 @@ class VillageSelectionViewModel @Inject constructor(
     val stateId = mutableStateOf(1)
     val showLoader = mutableStateOf(false)
 
-    val shouldRetry = mutableStateOf(false)
     val multiVillageRequest = mutableStateOf("2")
 
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
@@ -269,8 +270,6 @@ class VillageSelectionViewModel @Inject constructor(
                 try {
                     val villageList =
                         villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
-                    val localStepsList = stepsListDao.getAllSteps()
-                    val localLanguageList = languageListDao.getAllLanguages()
                     val villageIdList: ArrayList<Int> = arrayListOf()
 
                     val localAnswerList = answerDao.getAllAnswer()
@@ -283,7 +282,6 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                     villageList.forEach { village ->
                         villageIdList.add(village.id)
-
                         stateId.value = village.stateId
                         RetryHelper.stateId = stateId.value
                         try {
@@ -299,10 +297,7 @@ class VillageSelectionViewModel @Inject constructor(
                                             steps.isComplete =
                                                 findCompleteValue(steps.status).ordinal
 
-//                                            if(steps.id == 46){
-//                                                prefRepo.savePref(
-//                                                    PREF_WEALTH_RANKING_COMPLETION_DATE, steps.localModifiedDate?: BLANK_STRING)
-//                                            }
+
                                             if(steps.id == 40){
                                                 prefRepo.savePref(
                                                     PREF_TRANSECT_WALK_COMPLETION_DATE_+village.id, steps.localModifiedDate?: System.currentTimeMillis())
@@ -415,7 +410,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.BPC_SUMMARY_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             bpcSummaryDao.insert(
                                 BpcSummaryEntity(
                                     0, 0, 0, 0, 0, 0, villageId = village.id
@@ -429,6 +425,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.BPC_SUMMARY_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getCohortFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -452,7 +449,8 @@ class VillageSelectionViewModel @Inject constructor(
                                 RetryHelper.stepListApiVillageId.add(village.id)
                                 onCatchError(ex, ApiType.TOLA_LIST_API)
                             }
-                        } catch (ex: Exception) {
+                        }
+                        catch (ex: Exception) {
                             if (ex !is JsonSyntaxException) {
                                 if (!retryApiList.contains(ApiType.TOLA_LIST_API)) retryApiList.add(
                                     ApiType.TOLA_LIST_API
@@ -461,6 +459,7 @@ class VillageSelectionViewModel @Inject constructor(
                             }
                             onCatchError(ex, ApiType.TOLA_LIST_API)
                         }
+
                         try {
                             NudgeLogger.d("VillageSelectionScreen", "fetchDataForBpc getDidiForBpcFromNetwork " +
                                     "request village.id = ${village.id}")
@@ -535,6 +534,8 @@ class VillageSelectionViewModel @Inject constructor(
                                                         transactionId = "",
                                                         localCreatedDate = didi.localCreatedDate,
                                                         localModifiedDate = didi.localModifiedDate,
+                                                        score = didi.bpcScore ?: 0.0,
+                                                        comment =  didi.bpcComment ?: BLANK_STRING,
                                                         crpScore = didi.crpScore,
                                                         crpComment = didi.crpComment,
                                                         bpcScore = didi.bpcScore ?: 0.0,
@@ -543,6 +544,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                         needsToPostImage = false,
                                                         rankingEdit = didi.rankingEdit,
                                                         patEdit = didi.patEdit,
+                                                        voEndorsementEdit = didi.voEndorsementEdit,
                                                         ableBodiedFlag = AbleBodiedFlag.fromSting(intToString(didi.ableBodiedFlag) ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                     )
                                                 )
@@ -1196,6 +1198,7 @@ class VillageSelectionViewModel @Inject constructor(
                                                             needsToPostImage = false,
                                                             rankingEdit = didi.rankingEdit,
                                                             patEdit = didi.patEdit,
+                                                            voEndorsementEdit = didi.voEndorsementEdit,
                                                             ableBodiedFlag = AbleBodiedFlag.fromSting(didi.ableBodiedFlag ?: AbleBodiedFlag.NOT_MARKED.name).value
                                                         )
                                                     )
@@ -1677,69 +1680,40 @@ class VillageSelectionViewModel @Inject constructor(
             }
         }
     }
-    private fun downloadAuthorizedImageItemForNonSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val imageFile = getAuthImagePath(downloader.mContext, image)
-                if (!imageFile.exists()) {
-                    val localDownloader = downloader
-                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
-                    localDownloader?.currentDownloadingId?.value = id
-                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-                        image,
-                        FileType.IMAGE,
-                        prefRepo
-                    )
-                    if (downloadId != null) {
-                        localDownloader.checkDownloadStatus(downloadId,
-                            id,
-                            downloadManager,
-                        onDownloadComplete = {
-                            bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                        }, onDownloadFailed = {
-                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> onDownloadFailed")
-                        })
+
+    fun refreshBpcData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshBpcData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                CoroutineScope(Dispatchers.IO).launch {
+                    val updatedVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                    withContext(Dispatchers.Main) {
+                        _villagList.value = updatedVillageList
+                        delay(100)
+                        showLoader.value = false
                     }
-                } else {
-                    bpcNonSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
                 }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForNonSelectedDidi -> downloadItem exception", ex)
             }
-        }
+
+            override fun onFailed() {
+                showLoader.value = false
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+            }
+        })
     }
-    private fun downloadAuthorizedImageItemForSelectedDidi(id:Int, image: String, prefRepo: PrefRepo) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            try {
-                val imageFile = getAuthImagePath(downloader.mContext, image)
-                if (!imageFile.exists()) {
-                    val localDownloader = downloader
-                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
-                    localDownloader?.currentDownloadingId?.value = id
-                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
-                        image,
-                        FileType.IMAGE,
-                        prefRepo
-                    )
-                    if (downloadId != null) {
-                        localDownloader.checkDownloadStatus(downloadId,
-                            id,
-                            downloadManager,
-                        onDownloadComplete = {
-                            bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                        }, onDownloadFailed = {
-                            NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> onDownloadFailed")
-                        })
-                    }
-                } else {
-                    bpcSelectedDidiDao.updateImageLocalPath(id,imageFile.absolutePath)
-                }
-            } catch (ex: Exception) {
-                ex.printStackTrace()
-                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItemForSelectedDidi -> downloadItem exception", ex)
+
+    fun refreshCrpData(context: Context) {
+        showLoader.value = true
+        villageSelectionRepository.refreshCrpData(prefRepo = prefRepo, object : NetworkCallbackListener{
+            override fun onSuccess() {
+                showLoader.value = false
             }
-        }
+
+            override fun onFailed() {
+                showLoader.value = false
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+            }
+        })
     }
 
 }

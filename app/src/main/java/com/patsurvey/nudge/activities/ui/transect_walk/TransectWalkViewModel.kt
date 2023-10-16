@@ -723,13 +723,17 @@ class TransectWalkViewModel @Inject constructor(
             val completeStepList = stepsListDao.getAllCompleteStepsForVillage(villageId)
             completeStepList.let {
                 it.forEach { newStep ->
-                    if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
+                    if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
+                            .indexOf(1)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
                         stepsListDao.markStepAsCompleteOrInProgress(
                             newStep.id,
                             StepStatus.INPROGRESS.ordinal,
                             villageId
                         )
-                        NudgeLogger.d("TransectWalkViewModel", "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress(${newStep.id}, StepStatus.INPROGRESS.ordinal, $villageId)")
+                        NudgeLogger.d(
+                            "TransectWalkViewModel",
+                            "markTransectWalkIncomplete -> stepsListDao.markStepAsCompleteOrInProgress(${newStep.id}, StepStatus.INPROGRESS.ordinal, $villageId)"
+                        )
                         stepsListDao.updateNeedToPost(newStep.id, villageId, true)
                     }
                 }
@@ -745,7 +749,8 @@ class TransectWalkViewModel @Inject constructor(
                     )
                     completeStepList.let { it ->
                         it.forEach { newStep ->
-                            if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }.indexOf(1)].orderNumber) {
+                            if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
+                                    .indexOf(1)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
                                 if (newStep.workFlowId > 0) {
                                     apiRequest.add(
                                         EditWorkFlowRequest(

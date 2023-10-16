@@ -177,8 +177,11 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE where activeStatus = :activeStatus and id = :id")
     fun deleteDidiFromDb(id: Int, activeStatus: Int)
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId")
-    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and villageId=:villageId and transactionId = :transactionId and serverId != :serverId")
+    fun getDidisToBeDeletedForVillage(villageId: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :activeStatus and needsToPostDeleteStatus = :needsToPostDeleteStatus and transactionId = :transactionId and serverId != :serverId")
+    fun getDidisToBeDeleted(activeStatus: Int, needsToPostDeleteStatus: Boolean, transactionId: String?, serverId: Int): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
@@ -258,6 +261,9 @@ interface DidiDao {
     @Query("UPDATE $DIDI_TABLE SET patEdit = :patEdit where villageId = :villageId")
     fun updatePatEditFlag(villageId: Int, patEdit: Boolean)
 
+    @Query("UPDATE $DIDI_TABLE SET voEndorsementEdit = :voEndorsementEdit where villageId = :villageId")
+    fun updateVoEndorsementEditFlag(villageId: Int, voEndorsementEdit: Boolean)
+
     @Query("Select score from $DIDI_TABLE where id = :didiId")
     fun getDidiScoreFromDb(didiId: Int): Double
 
@@ -269,5 +275,8 @@ interface DidiDao {
 
     @Query("update $DIDI_TABLE set ableBodiedFlag =:ableBodiedFlag where id = :didiId")
     fun updateDidiAbleBodiedStatus(didiId: Int, ableBodiedFlag: Int)
+
+    @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus = 0 and section1Status = 0 and section2Status = 0 and villageId = :villageId")
+    fun fetchPendingVerificationDidiCount(villageId: Int): Int
 
 }

@@ -114,7 +114,7 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
-        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
+//        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
@@ -233,7 +233,7 @@ fun SocialMappingDidiListScreen(
                                     && !didiViewModel.prefRepo.getFromPage()
                                         .equals(ARG_FROM_PAT_SURVEY, true)
                                 ) {
-                                    if (!didiViewModel.isVoEndorsementComplete.value) {
+//                                    if (!didiViewModel.isVoEndorsementComplete.value) {
                                         ButtonOutline(
                                             modifier = Modifier
                                                 .weight(0.9f)
@@ -256,7 +256,7 @@ fun SocialMappingDidiListScreen(
                                                 launchSingleTop = true
                                             }
                                         }*/
-                                    }
+//                                    }
                                 }
                             }
                         }
@@ -1178,6 +1178,7 @@ fun decoupledConstraintsForPatCard(): ConstraintSet {
         val didiName = createRefFor("didiName")
         val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
+        val houseNumber_1 = createRefFor("houseNumber_1")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
         val expendArrowImageEnd = createRefFor("expendArrowImageEnd")
@@ -1210,10 +1211,14 @@ fun decoupledConstraintsForPatCard(): ConstraintSet {
             end.linkTo(moreActionIcon.start, margin = 10.dp)
             width = Dimension.fillToConstraints
         }
+
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 3.dp)
-            bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
+        }
+        constrain(houseNumber_1) {
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(homeImage.bottom)
         }
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)

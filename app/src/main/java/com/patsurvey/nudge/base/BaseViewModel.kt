@@ -188,14 +188,6 @@ abstract class BaseViewModel : ViewModel(){
         }
     }
 
-   /* open fun removeDidiFromSelectedList(bpcSelectedDidiDao: BpcSelectedDidiDao, ){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiToBeReplaced.value.first != -1 && didiToBeReplaced.value.second != -1) {
-                bpcSelectedDidiDao.markDidiSelected(didiToBeReplaced.value.second, false)
-            }
-        }
-    }*/
-
 
 }
 

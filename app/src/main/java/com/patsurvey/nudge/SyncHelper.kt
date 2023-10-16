@@ -1033,7 +1033,12 @@ class SyncHelper (
                 delay(1000)
                 settingViewModel.syncPercentage.value = 0.27f
             }
-            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val didiList = didiDao.getDidisToBeDeleted(
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = true,
+                transactionId = "",
+                serverId = 0
+            )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {
@@ -1393,10 +1398,10 @@ class SyncHelper (
                             didi.voEndorsementStatus.let {
                                 if (it == DidiEndorsementStatus.ENDORSED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, ACCEPTED,
-                                        localModifiedDate = System.currentTimeMillis()))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
                                 } else if (it == DidiEndorsementStatus.REJECTED.ordinal) {
                                     didiRequestList.add(EditDidiWealthRankingRequest(didi.serverId,StepType.VO_ENDROSEMENT.name, DidiEndorsementStatus.REJECTED.name,
-                                        localModifiedDate = System.currentTimeMillis()))
+                                        localModifiedDate = System.currentTimeMillis(), rankingEdit = didi.voEndorsementEdit))
                                 }
                             }
                         }

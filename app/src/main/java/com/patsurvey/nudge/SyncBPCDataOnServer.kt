@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
@@ -15,13 +16,13 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                           val prefRepo: PrefRepo,
                           val apiService: ApiService,
                           val exceptionHandler : CoroutineExceptionHandler,
                           var job: Job?,
-                          val bpcSelectedDidiDao : BpcSelectedDidiDao,
                           val didiDao: DidiDao,
                           val stepsListDao: StepsListDao,
                           val questionDao: QuestionListDao,
@@ -49,14 +50,10 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                 for(village in villageList) {
                     val villageId = village.id
-                    val oldDidiList =
-                        bpcSelectedDidiDao.fetchAllDidisForVillage(villageId = villageId)
                     val updatedList = didiDao.getAllDidisForVillage(villageId = villageId)
                     try {
                         val oldBeneficiaryIdSelected = mutableListOf<Int>()
-                        oldDidiList.forEach {
-                            oldBeneficiaryIdSelected.add(it.serverId)
-                        }
+
                         NudgeLogger.d(
                             "SyncBPCDataOnServer",
                             "sendBpcUpdatedDidiList: newBeneficiaryIdSelected -> $oldBeneficiaryIdSelected"
@@ -110,7 +107,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
         val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
         for(village in villageList) {
             val villageId = village.id
-            val oldDidiList = bpcSelectedDidiDao.fetchAllDidisForVillage(villageId)
+            val oldDidiList = didiDao.getAllDidisForVillage(villageId)
             val updatedList = didiDao.getAllDidisForVillage(villageId)
             val oldBeneficiaryIdSelected = mutableListOf<Int>()
             oldDidiList.forEach {
@@ -226,56 +223,144 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     syncPercentage.value = 0.4f
                 }
                 val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                val editWorkFlowRequest = ArrayList<EditWorkFlowRequest>()
-                val stepListRequest = ArrayList<StepListEntity>()
+                val addWorkFlowRequest = mutableListOf<AddWorkFlowRequest>()
+                val editWorkFlowRequest = mutableListOf<EditWorkFlowRequest>()
+                val needToEditStep = mutableListOf<StepListEntity>()
+                val needToAddStep = mutableListOf<StepListEntity>()
                 for(village in villageList) {
                     val villageId = village.id
                     val stepList =
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                     val bpcStep = stepList.last()
-                    if(bpcStep.workFlowId>0) {
-                        stepListRequest.add(bpcStep)
-                        editWorkFlowRequest.add(
-                            EditWorkFlowRequest(
-                                bpcStep.workFlowId,
-                                StepStatus.getStepFromOrdinal(bpcStep.isComplete)
-                            )
-                        )
+                    if (bpcStep.workFlowId > 0) {
+                        editWorkFlowRequest.add((EditWorkFlowRequest(
+                            bpcStep.workFlowId,
+                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                        )))
+                        needToEditStep.add(bpcStep)
+                    } else {
+                        needToAddStep.add(bpcStep)
+                        addWorkFlowRequest.add((AddWorkFlowRequest(
+                            StepStatus.INPROGRESS.name, bpcStep.villageId,
+                            bpcStep.programId, bpcStep.id
+                        )))
                     }
                 }
-                withContext(Dispatchers.IO){
-                    val response = apiService.editWorkFlow(editWorkFlowRequest)
-                    if (response.status.equals(SUCCESS, true)) {
-                        if(response.data?.get(0)?.transactionId?.isEmpty() == true) {
-                            for(i in editWorkFlowRequest.indices) {
-                                val request = editWorkFlowRequest[i]
-                                val step = stepListRequest[i]
-                                stepsListDao.updateWorkflowId(
-                                    step.id,
-                                    step.workFlowId,
-                                    step.villageId,
-                                    request.status
+                if (addWorkFlowRequest.size > 0) {
+
+                    NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
+
+                    val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
+
+                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
+
+                    if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
+                        addWorkFlowResponse.data?.let {
+                            if (addWorkFlowResponse.data[0].transactionId.isNullOrEmpty()) {
+                                for (i in addWorkFlowResponse.data.indices) {
+                                    val step = needToAddStep[i]
+                                    stepsListDao.updateOnlyWorkFlowId(
+                                        it[i].id,
+                                        step.villageId,
+                                        step.id
+                                    )
+                                    step.workFlowId = it[0].id
+                                    NudgeLogger.e(
+                                        "SyncHelper",
+                                        "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId before stepId: $step.stepId, it[0].id: ${it[0].id}, villageId: $step.villageId"
+                                    )
+                                }
+                                NudgeLogger.e(
+                                    "SyncHelper",
+                                    "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId after"
                                 )
-                                stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                                delay(100)
+                                needToAddStep.addAll(needToEditStep)
+                                updateBpcStepsToServer(needToAddStep, networkCallbackListener)
                             }
                         }
-                        sendBpcMatchScore(networkCallbackListener)
-                    }else{
-                        withContext(Dispatchers.Main) {
-                            networkCallbackListener.onFailed()
-                        }
-//                            settingViewModel.onError("ex", ApiType.BPC_UPDATE_DIDI_LIST_API)
+                    } else {
+                        networkCallbackListener.onFailed()
                     }
 
-                    if(!response.lastSyncTime.isNullOrEmpty()){
-                        updateLastSyncTime(prefRepo,response.lastSyncTime)
-                    }
+                } else if(needToEditStep.size>0){
+                    updateBpcStepsToServer(needToEditStep, networkCallbackListener)
                 }
+
             }catch (ex:Exception){
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
                 settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
+            }
+        }
+    }
+
+    private fun updateBpcStepsToServer(needToEditStep: MutableList<StepListEntity>, networkCallbackListener: NetworkCallbackListener) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            if (needToEditStep.isNotEmpty()) {
+                val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
+                for (step in needToEditStep) {
+                    var stepCompletionDate = BLANK_STRING
+                    stepCompletionDate =longToString(prefRepo.getPref(
+                        PREF_BPC_PAT_COMPLETION_DATE_+step.villageId, System.currentTimeMillis()))
+                    requestForStepUpdation.add(
+                        EditWorkFlowRequest(
+                            step.workFlowId,
+                            StepStatus.getStepFromOrdinal(step.isComplete),
+                            stepCompletionDate
+                        )
+                    )
+                }
+                val responseForStepUpdation =
+                    apiService.editWorkFlow(requestForStepUpdation)
+
+                NudgeLogger.e(
+                    "SyncHelper",
+                    "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
+                )
+
+
+                if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                    responseForStepUpdation.data?.let {
+
+                        for(i in responseForStepUpdation.data.indices) {
+                            val step = needToEditStep[i]
+                            stepsListDao.updateWorkflowId(
+                                step.stepId,
+                                step.workFlowId,
+                                step.villageId,
+                                step.status
+                            )
+
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateWorkflowId after "
+                            )
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $step.stepId"
+                            )
+                            stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                            NudgeLogger.e(
+                                "SyncHelper",
+                                "callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $step.stepId"
+                            )
+
+                        }
+                    }
+                    sendBpcMatchScore(networkCallbackListener)
+                } else {
+                    networkCallbackListener.onFailed()
+                }
+                if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
+                    updateLastSyncTime(
+                        prefRepo,
+                        responseForStepUpdation.lastSyncTime
+                    )
+                }
+            } else {
+                sendBpcMatchScore(networkCallbackListener)
             }
         }
     }
@@ -522,26 +607,46 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     }
                                 }
                             }
-                            val passingMark=questionDao.getPassingScore()
+                            val passingMark = questionDao.getPassingScore()
+                            var comment = BLANK_STRING
+                            comment =
+                                if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                    PatSurveyStatus.NOT_AVAILABLE.name
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                    BLANK_STRING
+                                } else {
+                                    if ((didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.NOT_STARTED.ordinal)
+                                        || (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal)) {
+                                        TYPE_EXCLUSION
+                                    } else {
+                                        if (didi.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal && didi.section2Status == PatSurveyStatus.COMPLETED.ordinal && didi.score < passingMark) {
+                                            LOW_SCORE
+                                        } else {
+                                            BLANK_STRING
+                                        }
+                                    }
+                                }
                             scoreDidiList.add(
                                 EditDidiWealthRankingRequest(
                                     id = if (didi.serverId == 0) didi.id else didi.serverId,
                                     score = didi.score,
-                                    comment = if(didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal ||  didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal)
-                                        BLANK_STRING
-                                    else {
-                                        if(didi.patSurveyStatus==PatSurveyStatus.COMPLETED.ordinal && didi.section2Status==PatSurveyStatus.NOT_STARTED.ordinal){
-                                            TYPE_EXCLUSION
-                                        } else {
-                                            if (didi.score < passingMark)
-                                                LOW_SCORE
-                                            else {
-                                                BLANK_STRING
-                                            }
+                                    comment = comment,
+                                    type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                    result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                        DIDI_NOT_AVAILABLE
+                                    } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                        PatSurveyStatus.INPROGRESS.name
+                                    } else {
+                                        if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
+                                            if (prefRepo.isUserBPC())
+                                                VERIFIED_STRING
+                                            else
+                                                COMPLETED_STRING
                                         }
                                     },
-                                    type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                                    result = if (didi.forVoEndorsement == 0) DIDI_REJECTED else COMPLETED_STRING
+                                    rankingEdit = false,
+                                    shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
+                                    ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
@@ -693,13 +798,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 didiId = didiId,
                 isDidiAccepted = isDidiAccepted
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = totalWightWithoutNumQue,
-                    comment = comment,
-                    didiId = didiId,
-                )
-            }
+
         } else {
             didiDao.updateDidiScore(
                 score = 0.0,
@@ -707,13 +806,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 didiId = didiId,
                 isDidiAccepted = false
             )
-            if (prefRepo.isUserBPC()) {
-                bpcSelectedDidiDao.updateSelDidiScore(
-                    score = 0.0,
-                    comment = TYPE_EXCLUSION,
-                    didiId = didiId,
-                )
-            }
+
         }
     }
 

@@ -78,4 +78,7 @@ interface TolaDao {
 
     @Query("Select COUNT(*) FROM $TOLA_TABLE where name = :name AND villageId= :villageId and status = 1")
     fun getTolaExist(name:String,villageId:Int):Int
+
+    @Query("DELETE from $TOLA_TABLE where villageId= :villageId")
+    fun deleteTolaForVillage(villageId: Int)
 }
