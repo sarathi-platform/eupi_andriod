@@ -359,24 +359,18 @@
     <string name="storage_permission_dialog_prompt_message">সংৰক্ষণৰ অনুমতিৰ প্ৰয়োজন, অনুগ্ৰহ কৰি অনুমতি দিয়ক</string>
     <string name="you_are_submitting_wealth_ranking_for_count_didis_singular">আপুনি %1$s গৰাকী বাইদেউৰ সম্পদ ৰেংকিং জমা দিছে</string>
 
-
-    <string name="go_back_to_section_1_summary">১ নং খণ্ডৰ সাৰাংশ</string>
-    <string name="exclusion_error_message">এই দিদিৰ বাবে PAT ইয়াতেই শেষ হয়।</string>
-
+    <string name="go_back_to_section_1_summary">শাখা 1-ৰ সাৰাংশ</string>
+    <string name="exclusion_error_message">এই বাইদেউৰ বাবে PAT ইয়াতেই শেষ হয়</string>
     <string name="bpc_pat_survey_complete">BPC PAT সমীক্ষা</string>
-
-    <!-- Updated 03-10-2023-->
-    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন Didis ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
-    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন Didi ৰ বাবে PAT জৰীপ দাখিল কৰা হৈছে</string>
-
+    <string name="pat_success_message_plural">{TOTAL_COUNT} নতুন বাইদেউসকলৰ PAT সমীক্ষা দাখিল কৰা হৈছে</string>
+    <string name="pat_success_message_singular">{TOTAL_COUNT} নতুন বাইদেউৰ PAT সমীক্ষা দাখিল কৰা হৈছে</string>
     <string name="total_pat_attempted_string">মুঠ PAT চেষ্টা কৰা হৈছে</string>
-    <string name="didis_marked_as_not_available_string">ডিডিছক উপলব্ধ নহয় বুলি চিহ্নিত কৰা হৈছে</string>
-    <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম \nমহিলা আছে নেকি?</string>
-    <string name="something_went_wrong">কিবা এটা ভুল হ’ল</string>
-    <string name="score_comparison_section_1_text">শাখা 1</string>
-    <string name="no_didis_availble_for_bpc_verification">BPC Verificationৰ বাবে কোনো Didis উপলব্ধ নহয়।</string>
-    <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
-    <string name="village_is_not_vo_endorsed_right_now">গাঁওখন এতিয়াই VO Endorsed নহয়!</string>
+    <string name="didis_marked_as_not_available_string">উপলব্ধ নাই বুলি চিহ্নিত কৰা বাইদেউসকল</string>
+    <string name="able_bodied_women_flag_text">পৰিয়ালত সক্ষম শৰীৰৰ \n মহিলা আছে নেকি?</string>
+    <string name="something_went_wrong">কিবা ভুল হৈছে</string>
+    <string name="score_comparison_section_1_text">ভাগ 1</string>
+    <string name="village_is_not_vo_endorsed_right_now">এই মুহূৰ্তত গাওঁখনৰ VO অনুমোদন কৰা হোৱা নাই !</string>
+    <string name="refresh_failed_please_try_again">ৰিফ্ৰেছ কৰাত বিফল, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক !</string>
 
 
 </resources>
