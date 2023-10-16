@@ -300,6 +300,8 @@ class SettingViewModel @Inject constructor(
             )
             if(isBpcScoreSaved)
                 return isBpcScoreSaved
+            else
+                return false
             NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
         }
         return false
