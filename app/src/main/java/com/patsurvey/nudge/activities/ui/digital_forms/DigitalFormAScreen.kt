@@ -62,6 +62,7 @@ import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.EMPTY_TOLA_NAME
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.OutlineButtonCustom
@@ -340,12 +341,12 @@ fun DigitalFormAScreen(
                         if (viewModel.prefRepo.isUserBPC()) {
                             items(didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
                                 NudgeLogger.d("DigitalFormAScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
-                                DidiVillageItem(card)
+                                DidiVillageItem(card, viewModel)
                             }
                         } else {
                             items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
                                 NudgeLogger.d("DigitalFormAScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
-                                DidiVillageItem(card)
+                                DidiVillageItem(card, viewModel)
                             }
                         }
 
@@ -482,7 +483,7 @@ fun DigitalFormAScreen(
 }
 
 @Composable
-fun DidiVillageItem(didiDetailsModel: DidiEntity) {
+fun DidiVillageItem(didiDetailsModel: DidiEntity, viewModel: DigitalFormViewModel) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
@@ -531,7 +532,7 @@ fun DidiVillageItem(didiDetailsModel: DidiEntity) {
                     )
                 Spacer(modifier = Modifier.width(4.dp))
                 Text(
-                    text = didiDetailsModel.cohortName,
+                    text = if (didiDetailsModel.cohortName == EMPTY_TOLA_NAME) viewModel.prefRepo.getSelectedVillage().name else  didiDetailsModel.cohortName,
                     textAlign = TextAlign.Center,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
@@ -544,7 +545,7 @@ fun DidiVillageItem(didiDetailsModel: DidiEntity) {
 }
 
 @Composable
-fun DidiVillageItem(didiDetailsModel: PoorDidiEntity) {
+fun DidiVillageItem(didiDetailsModel: PoorDidiEntity, viewModel: DigitalFormViewModel) {
     Column(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.Start,
