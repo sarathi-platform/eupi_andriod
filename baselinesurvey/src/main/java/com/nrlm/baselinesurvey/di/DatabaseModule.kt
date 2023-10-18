@@ -1,0 +1,28 @@
+package com.nrlm.baselinesurvey.di
+
+import android.content.Context
+import androidx.room.Room
+import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import dagger.Module
+import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
+import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
+
+@Module
+@InstallIn(SingletonComponent::class)
+object DatabaseModule {
+
+    @Provides
+    @Singleton
+    fun provideDatabase(@ApplicationContext context: Context) =
+        Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
+            // Add Migrations for each migration object created.
+            /*.addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())*/
+            .fallbackToDestructiveMigration()
+            .build()
+
+
+}
