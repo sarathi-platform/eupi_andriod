@@ -93,6 +93,7 @@ import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
+import com.patsurvey.nudge.utils.showDidiImageDialog
 
 @Composable
 fun ScoreComparisionScreen(
@@ -104,6 +105,14 @@ fun ScoreComparisionScreen(
     LaunchedEffect(key1 = Unit) {
         viewModel.showLoader.value = true
         viewModel.init()
+    }
+
+    if(viewModel.showDidiImageDialog.value){
+        viewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                viewModel.showDidiImageDialog.value = false
+            }
+        }
     }
 
     val filterdDidiList = viewModel.filterDidiList.collectAsState()
@@ -365,16 +374,21 @@ fun ScoreComparisionScreen(
                             )
                         }
 
-                        itemsIndexed(filterdDidiList.value) { index, didi ->
+                        itemsIndexed(filterdDidiList.value) { _, didi ->
                             ScoreComparisonDidiCard(
                                 modifier = Modifier,
                                 didiEntity = didi,
                                 viewModel = viewModel,
-                                passingScore = viewModel.questionPassingScore.collectAsState().value
-                            ) { didiEntity ->
-                                viewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_SCORE_LIST_PAGE.ordinal)
-                                navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
-                            }
+                                passingScore = viewModel.questionPassingScore.collectAsState().value,
+                                onScoreCardClicked = { didiEntity ->
+                                    viewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_SCORE_LIST_PAGE.ordinal)
+                                    navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
+                                },
+                                onCircularImageClick = {
+                                  viewModel.showDidiImageDialog.value = true
+                                  viewModel.dialogDidiEntity.value = it
+                                }
+                            )
                             Spacer(modifier = Modifier.height(10.dp))
                         }
 
@@ -414,7 +428,8 @@ fun ScoreComparisonDidiCard(
     didiEntity: DidiEntity,
     passingScore: Int,
     viewModel: ScoreComparisonViewModel,
-    onScoreCardClicked: (didiEntity: DidiEntity) -> Unit
+    onScoreCardClicked: (didiEntity: DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
 
@@ -443,7 +458,9 @@ fun ScoreComparisonDidiCard(
                 modifier = Modifier.padding(16.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CircularDidiImage(modifier = Modifier, didi = didiEntity)
+                CircularDidiImage(modifier = Modifier, didi = didiEntity){
+                    onCircularImageClick(didiEntity)
+                }
                 Spacer(modifier = Modifier.width(10.dp))
                 Column(
                     verticalArrangement = Arrangement.Center,

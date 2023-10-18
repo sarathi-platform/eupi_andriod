@@ -193,10 +193,6 @@ fun ProgressScreen(
                         backgroundColor = Color.White,
                         elevation = 10.dp
                     )
-//                    ProgressScreenTopBar() {
-//                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (viewModel.showLoader.value) {

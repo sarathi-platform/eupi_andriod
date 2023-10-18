@@ -115,6 +115,7 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -161,6 +162,14 @@ fun ParticipatoryWealthRankingSurvey(
                 }
             } else {
                 navController.popBackStack()
+            }
+        }
+    }
+
+    if(viewModel.showDidiImageDialog.value){
+        viewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                viewModel.showDidiImageDialog.value = false
             }
         }
     }
@@ -336,7 +345,11 @@ fun ParticipatoryWealthRankingSurvey(
                                                 listState.animateScrollToItem(index+1)
                                             }
                                         },
-                                        onItemClick = {}
+                                        onItemClick = {},
+                                        onCircularImageClick = { didi->
+                                            viewModel.dialogDidiEntity.value = didi
+                                            viewModel.showDidiImageDialog.value = true
+                                        }
                                     )
                                 }
                             } else {
@@ -724,7 +737,8 @@ fun DidiItemCardForWealthRanking(
     expanded: Boolean,
     modifier: Modifier,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
 
     val context = LocalContext.current
@@ -773,7 +787,9 @@ fun DidiItemCardForWealthRanking(
                     CircularDidiImage(
                         didi = didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){
+                        onCircularImageClick(didi)
+                    }
                     Text(
                         text = didi.name,
                         style = TextStyle(
