@@ -803,6 +803,23 @@ fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
         )) {
             FormImageViewerScreen(navController = navController, fileName =  it.arguments?.getString(ARG_IMAGE_PATH) ?: "", viewModel = hiltViewModel())
         }
+
+        composable(route = VoEndorsmentScreeens.FORM_A_SCREEN.route) {
+            DigitalFormAScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
+        composable(route = VoEndorsmentScreeens.FORM_B_SCREEN.route) {
+            DigitalFormBScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                fromScreen = ARG_FROM_SETTING
+            )
+        }
     }
 }
 
@@ -818,6 +835,9 @@ sealed class VoEndorsmentScreeens(val route: String) {
     object VO_ENDORSEMENT_STEP_COMPLETION_SCREEN: VoEndorsmentScreeens(route = "vo_endorsement_step_completion_screen/{$ARG_COMPLETION_MESSAGE}")
     object VO_ENDORSEMENT_DIGITAL_FORM_C_SCREEN : VoEndorsmentScreeens(route = "vo_endorsement_digital_form_c_screen")
     object IMAGE_VIEWER : VoEndorsmentScreeens(route = "vo_image_viewer/{$ARG_IMAGE_PATH}")
+
+    object FORM_A_SCREEN : VoEndorsmentScreeens(route = "vo_form_a_screen")
+    object FORM_B_SCREEN : VoEndorsmentScreeens(route = "vo_form_b_screen")
 
 }
 

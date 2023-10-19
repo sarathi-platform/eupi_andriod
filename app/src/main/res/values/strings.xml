@@ -400,5 +400,8 @@
     <string name="score_comparison_section_1_text">Section 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Village is not VO Endorsed Right Now!</string>
     <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+    <string name="reference_of_forms">Reference of Forms :</string>
+    <string name="link_of_a">Link For Form A</string>
+    <string name="link_of_b">Link For Form B</string>
 
 </resources>
