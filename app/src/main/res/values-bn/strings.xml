@@ -50,6 +50,7 @@
     <string name="rich_text">ধনী</string>
     <string name="search_didis">দিদির খোঁজ করুন</string>
     <string name="search_video">ভিডিও খোঁজ করুন</string>
+    <string name="search_village">গ্রাম অনুসন্ধান করুন</string>
     <string name="otp_text">OTP</string>
     <string name="count_didis_pending_plural">%1s দিদিরা বাকি আছে</string>
     <string name="count_didis_pending_singular">%1s দিদি বাকি আছে</string>

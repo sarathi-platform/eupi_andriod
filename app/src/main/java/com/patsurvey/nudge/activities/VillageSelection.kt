@@ -78,6 +78,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
+import com.patsurvey.nudge.customviews.SearchWithFilterView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -104,7 +105,7 @@ fun VillageSelectionScreen(
         viewModel.init(context)
     }
 
-    val villages by viewModel.villageList.collectAsState()
+    val villages by viewModel.filterVillageList.collectAsState()
 
     val snackState = rememberSnackBarState()
 
@@ -297,6 +298,18 @@ fun VillageSelectionScreen(
 
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
+                            item {
+                                SearchWithFilterView(
+                                    placeholderString = stringResource(id = R.string.search_village),
+                                    filterSelected = false,
+                                    showFilter = false,
+                                    onFilterSelected = {
+                                    },
+                                    onSearchValueChange = {
+                                        viewModel.performQuery(it)
+                                    }
+                                )
+                            }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
                             itemsIndexed(villages.distinctBy { it.id }) { index, village ->
                                 VillageAndVoBoxForBottomSheet(

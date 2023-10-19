@@ -50,6 +50,7 @@
     <string name="rich_text">ধনী</string>
     <string name="search_didis">বাইদেউসকলক বিচাৰক</string>
     <string name="search_video">ভিডিঅ\' বিচাৰক</string>
+    <string name="search_village">চাৰ্চ ভিলেজ</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s গৰাকী বাইদেউৰ বাকী আছে</string>
     <string name="count_didis_pending_singular">%1s বাইদেউ বাকী আছে</string>
