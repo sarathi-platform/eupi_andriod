@@ -1491,13 +1491,29 @@ class AddDidiViewModel @Inject constructor(
                             onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                         }
                     }
-                }else {
-                    withContext(Dispatchers.Main){
+                } else {
+                    withContext(Dispatchers.Main) {
                         onNavigateToSummary(SummaryNavigation.DIDI_CAMERA_PAGE.ordinal)
                     }
                 }
             }
         }
+    }
+
+    fun saveStepId(stepId: Int) {
+        addDidiRepository.saveStepId(stepId)
+    }
+
+    fun getFromPage(): String {
+        return addDidiRepository.getFromPage()
+    }
+
+    fun saveSummaryScreenOpenFrom(openFrom: Int) {
+        addDidiRepository.saveSummaryScreenOpenFrom(openFrom)
+    }
+
+    fun saveQuestionScreenOpenFrom(openFrom: Int) {
+        addDidiRepository.saveQuestionScreenOpenFrom(openFrom)
     }
 
 }

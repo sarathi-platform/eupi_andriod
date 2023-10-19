@@ -133,10 +133,6 @@ class AddDidiRepository @Inject constructor(
         this.didiDao.insertDidi(didi)
     }
 
-    fun insertAll(didis: List<DidiEntity>) {
-        this.didiDao.insertAll(didis)
-    }
-
     fun updateDidi(didi: DidiEntity) {
         this.didiDao.updateDidi(didi)
     }
@@ -416,11 +412,6 @@ class AddDidiRepository @Inject constructor(
         return this.stepsListDao.getAllSteps()
     }
 
-    fun insertAll(villages: List<StepListEntity>) {
-        this.stepsListDao.insertAll(villages)
-
-    }
-
     fun insert(step: StepListEntity) {
         this.stepsListDao.insert(step)
     }
@@ -479,6 +470,22 @@ class AddDidiRepository @Inject constructor(
 
     fun insertSelectedTola(caste: LastTolaSelectedEntity) {
         this.lastSelectedTolaDao.insertSelectedTola(caste)
+    }
+
+    fun saveStepId(stepId: Int) {
+        this.prefRepo.saveStepId(stepId)
+    }
+
+    fun getFromPage(): String {
+        return this.prefRepo.getFromPage()
+    }
+
+    fun saveSummaryScreenOpenFrom(openFrom: Int) {
+        this.prefRepo.saveSummaryScreenOpenFrom(openFrom)
+    }
+
+    fun saveQuestionScreenOpenFrom(openFrom: Int) {
+        this.prefRepo.saveQuestionScreenOpenFrom(openFrom)
     }
 
 
