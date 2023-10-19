@@ -227,9 +227,6 @@ val DOUBLE_QUOTE_REGEX = Regex("\"")
 val RIGHT_BRACKET_QUOTE_REGEX = Regex("]")
 val LEFT_BRACKET_QUOTE_REGEX = Regex("\\[")
 
-
-const val VALUE_OF_PRODUCTIVE_ASSETS = "Value of productive assets"
-const val EARNING_RATIO = "Earning ratio"
 const val HEADING_QUESTION_TYPE = "heading"
 
 const val DEFAULT_LANGUAGE_ID = 2
