@@ -184,8 +184,13 @@ class AddDidiViewModel @Inject constructor(
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
-                val didiList =
-                    addDidiRepository.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+                val didiList = addDidiRepository.getDidisToBeDeletedForVillage(
+                    villageId = villageId,
+                    activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                    needsToPostDeleteStatus = true,
+                    transactionId = "",
+                    serverId = 0
+                )
                 val jsonDidi = JsonArray()
                 if (didiList.isNotEmpty()) {
                     for (didi in didiList) {
@@ -195,7 +200,10 @@ class AddDidiViewModel @Inject constructor(
                     }
                     NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> didiList: $didiList")
                     val response = addDidiRepository.deleteDidi(jsonDidi)
-                    NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}")
+                    NudgeLogger.d(
+                        "AddDidiViewModel",
+                        "deleteDidisToNetwork ->  response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                    )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
                             if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -1340,9 +1348,12 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val didisToBeDeleted =
-                    addDidiRepository.getDidisToBeDeleted(
+                    addDidiRepository.getDidisToBeDeletedForVillage(
                         villageId = villageId,
-                        needsToPostDeleteStatus = true
+                        activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                        needsToPostDeleteStatus = true,
+                        transactionId = "",
+                        serverId = 0
                     )
                 if (didisToBeDeleted.isNotEmpty()) {
                     val jsonArray = JsonArray()

@@ -354,10 +354,6 @@ class AddDidiRepository @Inject constructor(
         this.didiDao.deleteDidiOffline(id, activeStatus, needsToPostDeleteStatus)
     }
 
-    fun getDidisToBeDeleted(villageId: Int, needsToPostDeleteStatus: Boolean): List<DidiEntity> {
-        return this.didiDao.getDidisToBeDeleted(villageId, needsToPostDeleteStatus)
-    }
-
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean) {
         this.didiDao.updateDeletedDidiNeedToPostStatus(id, needsToPostDeleteStatus)
     }
@@ -488,5 +484,20 @@ class AddDidiRepository @Inject constructor(
         this.prefRepo.saveQuestionScreenOpenFrom(openFrom)
     }
 
-
+    fun getDidisToBeDeletedForVillage(
+        villageId: Int,
+        activeStatus: Int,
+        needsToPostDeleteStatus: Boolean,
+        transactionId: String?,
+        serverId: Int
+    ): List<DidiEntity> {
+        return this.didiDao.getDidisToBeDeletedForVillage(
+            villageId,
+            activeStatus,
+            needsToPostDeleteStatus,
+            transactionId,
+            serverId
+        )
+    }
 }
+
