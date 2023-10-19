@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -45,7 +46,6 @@ import com.patsurvey.nudge.activities.survey.PatSummeryScreenDidiDetailBox
 import com.patsurvey.nudge.activities.survey.SectionTwoSummeryItem
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
-import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -61,7 +61,9 @@ import com.patsurvey.nudge.utils.QuestionType
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
+import com.patsurvey.nudge.utils.showDidiImageDialog
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun PatSurveyCompleteSummary(
     navController: NavHostController,
@@ -70,12 +72,8 @@ fun PatSurveyCompleteSummary(
     didiId: Int,
     fromScreen: String
 ) {
-
     LaunchedEffect(key1 = true) {
-        patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
-    }
-
-    LaunchedEffect(key1 = true) {
+        patSectionSummaryViewModel.updatePATEditAndStepStatus(didiId)
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
         patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
@@ -117,6 +115,13 @@ fun PatSurveyCompleteSummary(
         }
     }
 
+    if(patSectionSummaryViewModel.showDidiImageDialog.value){
+        patSectionSummaryViewModel.didiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                patSectionSummaryViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
 
     ConstraintLayout(
         modifier = Modifier
@@ -176,7 +181,9 @@ fun PatSurveyCompleteSummary(
                     modifier = Modifier,
                     screenHeight = screenHeight,
                     didi = didi.value
-                )
+                ){
+                    patSectionSummaryViewModel.showDidiImageDialog.value=true
+                }
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -221,7 +228,8 @@ fun PatSurveyCompleteSummary(
                             optionValue =  answer?.optionValue?:0,
                             isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                             questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
-                            if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
+                            if ((patSectionSummaryViewModel.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                                || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                                 patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
                                     PageFrom.SUMMARY_PAGE.ordinal
                                 )

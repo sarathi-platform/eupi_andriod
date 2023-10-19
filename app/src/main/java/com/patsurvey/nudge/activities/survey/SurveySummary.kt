@@ -70,6 +70,7 @@ import com.patsurvey.nudge.utils.SYNC_FAILED
 import com.patsurvey.nudge.utils.SummaryBox
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import com.patsurvey.nudge.utils.showToast
 
 @SuppressLint("StringFormatMatches", "StateFlowValueCalledInComposition")
@@ -139,6 +140,13 @@ fun SurveySummary(
         }
     }
 
+    if(surveySummaryViewModel.showDidiImageDialog.value){
+        surveySummaryViewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                surveySummaryViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
 
 
     ConstraintLayout(
@@ -417,7 +425,11 @@ fun SurveySummary(
                                             questionListDao = surveySummaryViewModel.questionListDao,
                                             onExpendClick = {_,_->},
                                             onNotAvailableClick = {},
-                                            onItemClick = {}
+                                            onItemClick = {},
+                                            onCircularImageClick = { didi ->
+                                                surveySummaryViewModel.showDidiImageDialog.value=true
+                                                surveySummaryViewModel.dialogDidiEntity.value = didi
+                                            }
                                         )
                                     }
                                 } else {
@@ -439,7 +451,11 @@ fun SurveySummary(
                                                     questionListDao = surveySummaryViewModel.questionListDao,
                                                     onExpendClick = {_,_->},
                                                     onNotAvailableClick = {},
-                                                    onItemClick = {}
+                                                    onItemClick = {},
+                                                    onCircularImageClick = { didi->
+                                                        surveySummaryViewModel.showDidiImageDialog.value=true
+                                                        surveySummaryViewModel.dialogDidiEntity.value = didi
+                                                    }
                                                 )
 
                                             }
@@ -495,6 +511,10 @@ fun SurveySummary(
                                                                 SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
                                                                 PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        },
+                                                        onCircularImageClick = {
+                                                            surveySummaryViewModel.showDidiImageDialog.value=true
+                                                            surveySummaryViewModel.dialogDidiEntity.value = it
                                                         }
                                                     )
                                                 }
@@ -509,6 +529,10 @@ fun SurveySummary(
                                                                 SharedPrefs.PREF_KEY_VO_SUMMARY_OPEN_FROM,
                                                                 PageFrom.VO_ENDORSEMENT_SUMMARY_PAGE.ordinal)
                                                             navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
+                                                        },
+                                                        onCircularImageClick = {
+                                                            surveySummaryViewModel.showDidiImageDialog.value=true
+                                                            surveySummaryViewModel.dialogDidiEntity.value = it
                                                         }
                                                     )
                                                 }

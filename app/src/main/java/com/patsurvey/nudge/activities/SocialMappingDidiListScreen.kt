@@ -89,6 +89,7 @@ fun SocialMappingDidiListScreen(
     var expendedDidiIndex by remember {
         mutableStateOf(-1)
     }
+    val showDialog = remember { mutableStateOf(false) }
     var bottomPadding by remember {
         mutableStateOf(0.dp)
     }
@@ -114,7 +115,6 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
-//        didiViewModel.isVoEndorsementCompleteForVillage(villageId)
     }
 
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
@@ -133,6 +133,15 @@ fun SocialMappingDidiListScreen(
             navController.popBackStack()
         }
     }
+
+    if(didiViewModel.showDidiImageDialog.value){
+        didiViewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                didiViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -393,7 +402,12 @@ fun SocialMappingDidiListScreen(
                                                     TODO("Not yet implemented")
                                                 }
 
-                                            })
+                                            }
+                                            )
+                                    },
+                                    onCircularImageClick = { didiEntity ->
+                                        didiViewModel.dialogDidiEntity.value = didiEntity
+                                        didiViewModel.showDidiImageDialog.value = true
                                     }
                                 )
 
@@ -431,6 +445,10 @@ fun SocialMappingDidiListScreen(
                                             didiViewModel.setDidiAsUnavailable(didiEntity.id)
                                         },
                                         onItemClick = {}
+                                        ,onCircularImageClick = { didi->
+                                            didiViewModel.dialogDidiEntity.value =didi
+                                            didiViewModel.showDidiImageDialog.value =true
+                                        }
                                     )
                                 } else {
                                     DidiItemCard(navController,
@@ -486,6 +504,10 @@ fun SocialMappingDidiListScreen(
                                                     }
 
                                                 })
+                                        },
+                                        onCircularImageClick = { didi->
+                                            didiViewModel.dialogDidiEntity.value =didi
+                                            didiViewModel.showDidiImageDialog.value =true
                                         }
                                     )
                                 }
@@ -816,7 +838,8 @@ fun DidiItemCard(
     modifier: Modifier,
     onExpendClick: (Boolean, DidiEntity) -> Unit,
     onItemClick: (DidiEntity) -> Unit,
-    onDeleteClicked: (DidiEntity) -> Unit
+    onDeleteClicked: (DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) -> Unit
 ) {
 
     val transition = updateTransition(expanded, label = "transition")
@@ -884,7 +907,9 @@ fun DidiItemCard(
                     CircularDidiImage(
                         didi = didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){
+                        onCircularImageClick(didi)
+                    }
                     Row(modifier = Modifier
                         .layoutId("didiRow")
                         .fillMaxWidth(),
@@ -1464,15 +1489,19 @@ fun TolaWithImage(toal: String, modifier: Modifier) {
 }
 
 
+
 @Composable
-fun CircularDidiImage(didi: DidiEntity, modifier: Modifier) {
+fun CircularDidiImage(didi: DidiEntity, modifier: Modifier, onImageClick: (DidiEntity) -> Unit) {
     Box(
         modifier = modifier
             .then(modifier)
             .clip(CircleShape)
             .width(44.dp)
             .height(44.dp)
-            .background(color = yellowBg),
+            .background(color = yellowBg)
+            .clickable {
+                onImageClick(didi)
+            },
     ) {
         if (didi.localPath.isNotEmpty()) {
             Image(
@@ -1503,27 +1532,52 @@ fun CircularDidiImage(didi: DidiEntity, modifier: Modifier) {
         }
 
     }
+
 }
 
 @Composable
-fun CircularDidiImage(modifier: Modifier) {
+fun CircularDidiImageView(didi: DidiEntity, modifier: Modifier,onImageClick:(DidiEntity)->Unit) {
     Box(
         modifier = modifier
             .then(modifier)
             .clip(CircleShape)
             .width(44.dp)
             .height(44.dp)
-            .background(color = yellowBg),
+            .background(color = yellowBg)
+            .clickable {
+                onImageClick(didi)
+            },
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.didi_icon),
-            contentDescription = "didi image",
-            modifier = Modifier
-                .align(Alignment.Center)
-                .width(25.dp)
-                .height(28.dp)
-        )
+        if (didi.localPath.isNotEmpty()) {
+            Image(
+                painter = rememberImagePainter(
+                    Uri.fromFile(
+                        File(
+                            didi.localPath.split("|")[0]
+                        )
+                    )
+                ),
+                contentDescription = "didi image",
+                contentScale = ContentScale.FillBounds,
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = R.drawable.didi_icon),
+                contentDescription = "didi image",
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .width(25.dp)
+                    .height(28.dp)
+            )
+        }
+
     }
+
 }
 
 @Preview(showBackground = true)

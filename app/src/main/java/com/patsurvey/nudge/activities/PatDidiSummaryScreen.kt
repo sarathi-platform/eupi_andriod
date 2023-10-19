@@ -143,29 +143,6 @@ fun PatDidiSummaryScreen(
                 top.linkTo(parent.top)
             }
         ) {
-
-            AnimatedVisibility(patDidiSummaryViewModel.shouldShowCamera.value) {
-                /*CameraView(
-                    modifier = Modifier.fillMaxSize(),
-                    outputDirectory = patDidiSummaryViewModel.outputDirectory,
-                    viewModel = patDidiSummaryViewModel,
-                    didiEntity = didi.value,
-                    executor = patDidiSummaryViewModel.cameraExecutor,
-                    onImageCaptured = { uri, photoPath ->
-                        handleImageCapture(
-                            uri = uri,
-                            photoPath,
-                            context = localContext as Activity,
-                            didi.value,
-                            patDidiSummaryViewModel
-                        )
-                    },
-                    onCloseButtonClicked = {
-                        patDidiSummaryViewModel.shouldShowCamera.value = false
-                    },
-                    onError = { NudgeLogger.e("PatDidiSummaryScreen", "View error:", it) }
-                )*/
-            }
             AnimatedVisibility(visible = !patDidiSummaryViewModel.shouldShowCamera.value) {
                 Column(
                     modifier = modifier
@@ -556,19 +533,6 @@ fun PatDidiSummaryScreen(
                                     ),
                                 contentScale = ContentScale.FillBounds
                             )
-                            /*Image(
-                                painter = rememberImagePainter(patDidiSummaryViewModel.photoUri),
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .height(200.dp)
-                                    .fillMaxWidth()
-                                    .clip(RoundedCornerShape(6.dp))
-                                    .background(
-                                        languageItemActiveBg,
-                                        shape = RoundedCornerShape(6.dp)
-                                    ),
-                                contentScale = ContentScale.FillWidth
-                            )*/
                         } else {
                             Box(
                                 modifier = Modifier

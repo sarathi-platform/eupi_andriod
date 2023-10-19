@@ -1293,7 +1293,7 @@ class AddDidiViewModel @Inject constructor(
             addDidiRepository.deleteDidiOffline(
                 id = didi.id,
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
-                needsToPostDeleteStatus = true
+                needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
             _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
             filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)

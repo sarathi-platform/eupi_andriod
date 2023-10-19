@@ -100,6 +100,14 @@ fun PatSurvaySectionTwoSummaryScreen(
 
     val showDialog = remember { mutableStateOf(false) }
 
+    if(patSectionSummaryViewModel.showDidiImageDialog.value){
+        patSectionSummaryViewModel.didiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                patSectionSummaryViewModel.showDidiImageDialog.value = false
+            }
+        }
+    }
+
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
@@ -172,7 +180,9 @@ fun PatSurvaySectionTwoSummaryScreen(
                     modifier = Modifier,
                     screenHeight = screenHeight,
                     didi = didi.value
-                )
+                ){
+                    patSectionSummaryViewModel.showDidiImageDialog.value=true
+                }
                 Spacer(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -240,7 +250,8 @@ fun PatSurvaySectionTwoSummaryScreen(
 fun PatSummeryScreenDidiDetailBox(
     modifier: Modifier = Modifier,
     screenHeight: Int,
-    didi: DidiEntity
+    didi: DidiEntity,
+    onCircularImageClick:()->Unit
 ) {
     Box(
         modifier = Modifier
@@ -283,7 +294,9 @@ fun PatSummeryScreenDidiDetailBox(
 
                     )
                     .clip(CircleShape)
-                    .background(languageItemActiveBg)
+                    .background(languageItemActiveBg).clickable {
+                        onCircularImageClick()
+                    }
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -331,7 +344,7 @@ fun PatSummeryScreenDidiDetailBoxPreview(){
    val didi=DidiEntity(0,"",0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value, ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value)
-    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi)
+    PatSummeryScreenDidiDetailBox(modifier = Modifier,screenHeight,didi, onCircularImageClick = {})
 }
 @Preview(showBackground = true)
 @Composable

@@ -1033,7 +1033,12 @@ class SyncHelper (
                 delay(1000)
                 settingViewModel.syncPercentage.value = 0.27f
             }
-            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val didiList = didiDao.getDidisToBeDeleted(
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = true,
+                transactionId = "",
+                serverId = 0
+            )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {

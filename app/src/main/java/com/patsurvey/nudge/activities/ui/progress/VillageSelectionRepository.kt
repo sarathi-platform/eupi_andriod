@@ -372,7 +372,7 @@ class VillageSelectionRepository @Inject constructor(
     }
 
     //Check Pending Didi For verification and mark BPC Verification Step as In Progress.
-    private fun checkPendingDidiForVerification(villageId: Int) {
+    private fun checkPendingDidiForVerification(villageId: Int, prefRepo: PrefRepo) {
         val pendingVerificationDidiCount = didiDao.fetchPendingVerificationDidiCount(villageId)
         if (pendingVerificationDidiCount > 0) {
             stepsListDao.markStepAsInProgress(
@@ -387,6 +387,7 @@ class VillageSelectionRepository @Inject constructor(
             )
             val voEndorsementStep = stepsListDao.getStepByOrder(VO_ENDORSEMENT_STEP_ORDER, villageId)
             villageListDao.updateStepAndStatusId(villageId, voEndorsementStep.id, StepStatus.COMPLETED.ordinal)
+            prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + villageId, false)
         }
     }
 
@@ -1283,7 +1284,12 @@ class VillageSelectionRepository @Inject constructor(
 
     private fun deleteDidisToNetworkForCrp(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val didiList = didiDao.getDidisToBeDeleted(
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = true,
+                transactionId = "",
+                serverId = 0
+            )
             val jsonDidi = JsonArray()
             if (didiList.isNotEmpty()) {
                 for (didi in didiList) {
@@ -3387,7 +3393,7 @@ class VillageSelectionRepository @Inject constructor(
                 onCatchError(ex, ApiType.PAT_BPC_SURVEY_SUMMARY)
             }
             delay(100)
-            checkPendingDidiForVerification(villageId)
+            checkPendingDidiForVerification(villageId, prefRepo)
         }
     }
 

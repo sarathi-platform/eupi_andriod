@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.analytics.AnalyticsHelper
+import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.ApiResponseFailException
@@ -36,6 +37,8 @@ abstract class BaseViewModel : ViewModel(){
     val tokenExpired = RetryHelper.tokenExpired
     val baseOtpNumber = mutableStateOf("")
     val baseSummarySecond = mutableStateOf(0)
+    val showDidiImageDialog = mutableStateOf(false)
+    val dialogDidiEntity = mutableStateOf<DidiEntity?>(null)
 
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
