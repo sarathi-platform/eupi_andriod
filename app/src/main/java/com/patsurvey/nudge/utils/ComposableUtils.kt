@@ -24,8 +24,10 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -43,11 +45,16 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layoutId
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -65,9 +72,11 @@ import com.patsurvey.nudge.activities.MainTitle
 import com.patsurvey.nudge.activities.decoupledConstraintsForPatCard
 import com.patsurvey.nudge.activities.navigateSocialToSummeryPage
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.black100Percent
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.borderGreyLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyTransparentColor
 import com.patsurvey.nudge.activities.ui.theme.inprogressYellow
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
@@ -685,6 +694,96 @@ fun showDidiImageDialog(didi: DidiEntity,onCloseClick:()->Unit){
     }
 }
 
+@Composable
+fun showCustomDialog(
+    title:String,
+    message:String,
+    positiveButtonTitle : String ?=EMPTY_STRING,
+    negativeButtonTitle : String ?=EMPTY_STRING,
+    onPositiveButtonClick:()->Unit,
+    onNegativeButtonClick:()->Unit){
+    Dialog(onDismissRequest = {  }, properties = DialogProperties(
+        dismissOnClickOutside = false
+    )) {
+        Surface(
+            color = Color.Transparent,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Column(
+                    modifier = Modifier
+                        .background(color = white, shape = RoundedCornerShape(6.dp)),
+                ) {
+                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        if(!title.isNullOrEmpty()) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                modifier = Modifier
+                            ) {
+                                MainTitle(
+                                    title,
+                                    Modifier
+                                        .weight(1f)
+                                        .fillMaxWidth(),
+                                    align = TextAlign.Center
+                                )
+                            }
+                            Divider(thickness = 1.dp, color = greyBorder)
+                        }
+                        Text(
+                            text = message,
+                            style = TextStyle(
+                                color = black100Percent,
+                                fontSize = 16.sp,
+                                fontFamily = NotoSans,
+                                fontWeight = FontWeight.Normal,
+                            ),
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 5.dp)
+                                .wrapContentWidth()
+                        )
+                        Spacer(modifier = Modifier.height(4.dp))
+
+                            Row(modifier = Modifier.fillMaxWidth()) {
+
+                                    if(!negativeButtonTitle.isNullOrEmpty()) {
+                                        ButtonNegative(
+                                            buttonTitle = stringResource(id = R.string.cancel_tola_text),
+                                            isArrowRequired = false,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            onNegativeButtonClick()
+                                        }
+
+                                }else{
+                                    Spacer(modifier = Modifier.weight(2f))
+                                }
+
+                                Spacer(modifier = Modifier.width(8.dp))
+                                positiveButtonTitle?.let {
+                                    if(!it.isNullOrEmpty()) {
+                                        ButtonPositive(
+                                            buttonTitle = it,
+                                            isArrowRequired = false,
+                                            modifier = Modifier
+                                                .weight(1f)
+                                                .padding(vertical = 2.dp)
+                                        ) {
+                                            onPositiveButtonClick()
+                                        }
+                                    }
+                                }
+
+                            }
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun DidiImagePreview(){
@@ -707,6 +806,19 @@ fun DidiImagePreview(){
         )
     showDidiImageDialog(didi = didi, onCloseClick = {})
     
+}
+
+@Preview(showBackground = true)
+@Composable
+fun showCustomDialogPreview(){
+    showCustomDialog(
+        "Main Title",
+        message = "New Message You are submitting the wealth ranking forYou are submitting the wealth ranking for",
+        negativeButtonTitle = "Cancel",
+        positiveButtonTitle = "Exit",
+        onNegativeButtonClick = {},
+        onPositiveButtonClick = {}
+    )
 }
 
 

@@ -373,5 +373,9 @@
     <string name="village_is_not_vo_endorsed_right_now">এই মুহূৰ্তত গাওঁখনৰ VO অনুমোদন কৰা হোৱা নাই !</string>
     <string name="refresh_failed_please_try_again">ৰিফ্ৰেছ কৰাত বিফল, অনুগ্ৰহ কৰি পুনৰ চেষ্টা কৰক !</string>
 
+    <string name="do_you_want_to_exit_the_app">আপুনি এপটোৰ পৰা ওলাই আহিব বিচাৰেনে?</string>
+    <string name="exit">প্ৰস্থান</string>
+    <string name="cancel">বাতিল কৰক</string>
+
 
 </resources>
