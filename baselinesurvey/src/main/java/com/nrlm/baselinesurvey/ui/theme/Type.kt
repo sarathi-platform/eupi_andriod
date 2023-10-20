@@ -25,3 +25,88 @@ val NotoSans = FontFamily(
     Font(R.font.noto_sans_medium, FontWeight.Medium),
     Font(R.font.noto_sans_thin, FontWeight.Thin),
 )
+
+val veryLargeTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 32.sp
+)
+
+val largeTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 20.sp
+)
+
+val mediumTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 18.sp
+)
+
+val newMediumTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+
+val buttonTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 16.sp
+)
+val quesOptionTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 14.sp
+)
+
+val smallTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)
+
+val smallTextStyleMediumWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium,
+    fontSize = 15.sp
+)
+
+val smallTextStyleNormalWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 15.sp
+)
+
+val smallerTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 12.sp
+)
+
+val smallerTextStyleNormalWeight = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 12.sp
+)
+
+val smallestTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 10.sp
+)
+
+val didiDetailItemStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    color = textColorDark80,
+    fontSize = 16.sp
+)
+
+val didiDetailLabelStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    color = textColorBlueLight,
+    fontSize = 16.sp
+)

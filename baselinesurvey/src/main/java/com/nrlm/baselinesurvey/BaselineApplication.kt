@@ -6,6 +6,7 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.util.Log
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -18,8 +19,14 @@ import kotlin.coroutines.CoroutineContext
 @HiltAndroidApp
 class BaselineApplication: Application() {
 
-    init {
+    override fun onCreate() {
+        super.onCreate()
+        init()
+    }
+
+    fun init() {
         instance = this
+        BaselineCore.init()
     }
 
     companion object {

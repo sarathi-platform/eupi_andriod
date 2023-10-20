@@ -20,9 +20,16 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
-            /*.addMigrations(NudgeDatabase.MIGRATION_1_2).addCallback(NudgeDatabase.NudgeDatabaseCallback())*/
+            /*.addMigrations(NudgeBaselineDatabase.MIGRATION_1_2).addCallback(NudgeBaselineDatabase.NudgeBaselineDatabaseCallback())*/
             .fallbackToDestructiveMigration()
             .build()
 
+    @Provides
+    @Singleton
+    fun provideVillageDao(db: NudgeBaselineDatabase) = db.villageListDao()
+
+    @Provides
+    @Singleton
+    fun provideLanguageDao(db: NudgeBaselineDatabase) = db.languageListDao()
 
 }
