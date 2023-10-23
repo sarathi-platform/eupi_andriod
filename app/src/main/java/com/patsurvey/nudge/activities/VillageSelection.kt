@@ -565,7 +565,7 @@ fun VillageAndVoBoxForBottomSheet(
                     Row(
                         Modifier
                             .background(
-                                greenOnline,
+                                stepBoxActiveColor,
                                 shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                             )
                             .fillMaxWidth()
@@ -576,11 +576,11 @@ fun VillageAndVoBoxForBottomSheet(
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
-                            tint = white
+                            tint = blueDark
                         )
                         Text(
                             text = stringResource( if(stepId == 44) R.string.vo_endorsement_completed_village_banner_text else { if(statusId==StepStatus.COMPLETED.ordinal)  R.string.bpc_verification_completed_village_banner_text else  R.string.vo_endorsement_completed_village_banner_text} ),
-                            color = white,
+                            color = blueDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
                         )
