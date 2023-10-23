@@ -151,7 +151,13 @@ fun SettingScreen(
         list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
-        /*if (BuildConfig.DEBUG) */list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        /*if (BuildConfig.DEBUG) */list.add(
+            SettingOptionModel(
+                6,
+                stringResource(id = R.string.user_bug_report_text),
+                BLANK_STRING
+            )
+        )
     }else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
@@ -167,7 +173,13 @@ fun SettingScreen(
         list.add(SettingOptionModel(3, context.getString(R.string.forms), BLANK_STRING))
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
-        /*if (BuildConfig.DEBUG) */list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+        /*if (BuildConfig.DEBUG) */list.add(
+            SettingOptionModel(
+                6,
+                stringResource(id = R.string.user_bug_report_text),
+                BLANK_STRING
+            )
+        )
     }
     viewModel.createSettingMenu(list)
 //    }
@@ -379,10 +391,12 @@ fun SettingScreen(
                                 }
 
                                 3 -> {
-                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
                                         navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
                                     else
-                                        viewModel.buildAndShareLogs()
+                                        navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+
+                                    //  viewModel.buildAndShareLogs()
 
                                 }
 
@@ -390,7 +404,8 @@ fun SettingScreen(
                                     navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
                                 }
                                 5 -> {
-                                    viewModel.buildAndShareLogs()
+                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+                                    //viewModel.buildAndShareLogs()
                                 }
 
                                 else -> {

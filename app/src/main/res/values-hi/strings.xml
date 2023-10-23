@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name" translatable="false">Sarathi</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
@@ -372,6 +372,7 @@
     <string name="score_comparison_section_1_text">अनुभाग -1</string>
     <string name="village_is_not_vo_endorsed_right_now">गांव अभी ग्राम संगठन द्वारा समर्थित नहीं है!</string>
     <string name="refresh_failed_please_try_again">रिफ्रेश नहीं हुआ, कृपया पुनः प्रयास करें !</string>
+    <string name="user_bug_report_text">बग रिपोर्ट</string>
 
 
 </resources>

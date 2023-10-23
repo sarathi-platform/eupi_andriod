@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources xmlns:tools="http://schemas.android.com/tools">
+<resources>
     <string name="app_name" translatable="false">Sarathi</string>
     <string name="english" translatable="false">English</string>
     <string name="hindi" translatable="false">हिंदी</string>
@@ -372,6 +372,7 @@
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="village_is_not_vo_endorsed_right_now">এই গ্রাম এখনো VO অনুমোদিত হয়নি</string>
     <string name="refresh_failed_please_try_again">রিফ্রেশ ব্যর্থ হয়েছে, আবার চেষ্টা করুন!</string>
+    <string name="user_bug_report_text">বাগ রিপোর্ট</string>
 
 
 </resources>
