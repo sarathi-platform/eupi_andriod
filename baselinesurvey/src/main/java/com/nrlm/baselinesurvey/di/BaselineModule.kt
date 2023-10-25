@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.di
 
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.DidiDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -23,14 +24,26 @@ import com.nrlm.baselinesurvey.ui.auth.use_case.ResendOtpUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveAccessTokenUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.SaveMobileNumberUseCase
 import com.nrlm.baselinesurvey.ui.auth.use_case.ValidateOtpUseCase
-import com.nrlm.baselinesurvey.ui.language.repository.LanguageScreenRepository
-import com.nrlm.baselinesurvey.ui.language.repository.LanguageScreenRepositoryImpl
-import com.nrlm.baselinesurvey.ui.language.use_case.GetLanguageListFromDbUseCase
-import com.nrlm.baselinesurvey.ui.language.use_case.GetSelectedVillageUseCase
-import com.nrlm.baselinesurvey.ui.language.use_case.GetVillageDetailUseCase
-import com.nrlm.baselinesurvey.ui.language.use_case.LanguageScreenUseCase
-import com.nrlm.baselinesurvey.ui.language.use_case.SaveSelectedLanguageUseCase
-import com.nrlm.baselinesurvey.ui.language.use_case.SaveSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepository
+import com.nrlm.baselinesurvey.ui.language.domain.repository.LanguageScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetLanguageListFromDbUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.GetVillageDetailUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
+import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
+import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -119,6 +132,62 @@ object BaselineModule {
             resendOtpUseCase = ResendOtpUseCase(otpVerificationRepository),
             saveAccessTokenUseCase = SaveAccessTokenUseCase(otpVerificationRepository),
             getMobileNumberUseCase = GetMobileNumberUseCase(otpVerificationRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSurveyeeListScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService,
+        didiDao: DidiDao
+    ): SurveyeeListScreenRepository {
+        return SurveyeeListScreenRepositoryImpl(prefRepo, apiService, didiDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
+        return SurveyeeScreenUseCase(
+           getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSectionListScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): SectionListScreenRepository {
+        return SectionListScreenRepositoryImpl(prefRepo, apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSectionListScreenUseCase(
+        sectionListScreenRepository: SectionListScreenRepository
+    ): SectionListScreenUseCase {
+        return SectionListScreenUseCase(
+            GetSectionListUseCase(sectionListScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideQuestionScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): QuestionScreenRepository {
+        return QuestionScreenRepositoryImpl(prefRepo, apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun providesQuestionScreenUseCase(
+        questionScreenRepository: QuestionScreenRepository
+    ): QuestionScreenUseCase {
+        return QuestionScreenUseCase(
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository)
         )
     }
 

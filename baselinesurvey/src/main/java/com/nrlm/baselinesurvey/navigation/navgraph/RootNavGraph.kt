@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.navigation.navgraph
+package com.nrlm.baselinesurvey.navigation.navgraph
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
@@ -25,13 +25,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
         startDestination = Graph.AUTHENTICATION
     ){
         authNavGraph(navController)
-        composable(route = Graph.HOME, arguments = listOf(
-            navArgument(
-                    name = ARG_USER_TYPE
-                    ) {
-                type = NavType.StringType
-            }
-        )) {
+        composable(route = Graph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }
     }
@@ -40,7 +34,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
 object Graph {
     const val ROOT = "root_graph"
     const val AUTHENTICATION = "auth_graph"
-    const val HOME = "home_graph/{$ARG_USER_TYPE}"
+    const val HOME = "home_graph"
     const val DETAILS = "details_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}/{$ARG_STEP_INDEX}"
     const val ADD_DIDI = "add_didi_graph/{$ARG_DIDI_DETAILS_ID}"
     const val SOCIAL_MAPPING = "social_mapping_graph/{$ARG_VILLAGE_ID}/{$ARG_STEP_ID}"

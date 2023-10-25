@@ -9,6 +9,7 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
+import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
@@ -16,8 +17,12 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.Sections
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -108,3 +113,402 @@ fun setKeyboardToPan(context: MainActivity) {
 fun setKeyboardToReadjust(context: MainActivity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
+
+
+fun getAuthImagePath(context: Context, imagePath:String): File {
+    val imageName = getAuthImageFileNameFromURL(imagePath)
+    return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
+}
+
+val sampleSetcion1 = Sections(
+    sectionId = 1,
+    sectionName = "Financial Inclusion",
+    sectionOrder = 1,
+//    sectionIcon = "sample_step_icon_1",
+    sectionIcon = R.drawable.sample_step_icon_1,
+    sectionDetails = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
+    questionList = listOf(
+        QuestionEntity(
+            id = 1,
+            questionId = 1,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            order = 1,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ),
+        QuestionEntity(
+            id = 2,
+            questionId = 2,
+            questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
+            questionSummary = "Does the family have a working <b>2-wheeler</b>?",
+            order =
+            2,
+            type =
+            "RadioButton",
+            gotoQuestionId =
+            3,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    1,
+                    display =
+                    "YES",
+                    weight =
+                    1,
+                    summary =
+                    "YES",
+                    optionValue =
+                    1,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    2,
+                    display =
+                    "NO",
+                    weight =
+                    0,
+                    summary =
+                    "NO",
+                    optionValue =
+                    0,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
+        QuestionEntity(
+            id = 3,
+            questionId = 3,
+            questionDisplay = "Does the family have a working <b>Colour Television or Fridge</b>?",
+            questionSummary = "Does the family have a working <b>Colour Television or Fridge</b>?",
+            order = 3,
+            type = "RadioButton",
+            gotoQuestionId = 4,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_ColourTV.webp",
+
+            )
+    )
+)
+val sampleSection2 = Sections(
+    sectionId = 2,
+    sectionName = "Food Security",
+    sectionOrder = 2,
+    sectionDetails = "Please check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+//    sectionIcon = "sample_step_icon_3",
+    sectionIcon = R.drawable.sample_step_icon_3,
+    questionList = listOf(
+        QuestionEntity(
+            id = 1,
+            questionId = 18,
+            questionDisplay = "Is this a <b>woman headed</b> family?",
+            questionSummary = "Is this a <b>woman headed</b> family?",
+            order = 18,
+            type = "RadioButton",
+            gotoQuestionId = 19,
+            options = listOf(
+                OptionsItem(
+                    optionId = 6,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 5,
+                    display = "YES",
+                    weight = 2,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",
+        ),
+        QuestionEntity(
+            id = 2,
+            questionId = 21,
+            questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
+            questionSummary = "What is the <b>educational status </b> of adult members in the family?",
+            order = 21,
+            type =
+            "List",
+            gotoQuestionId =
+            22,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    30,
+                    display =
+                    "Atleast <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
+                    weight =
+                    0,
+                    summary =
+                    "Atleast 1 adult > Class 10",
+                    optionValue =
+                    1,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    31,
+                    display =
+                    "Atleast <b>1 adult</b> literate member who can read, write Bangla/ Kok Borok but has <b>not Passed Class 10</b>",
+                    weight =
+                    1,
+                    summary =
+                    "Atleast 1 literate adult < Class 10",
+                    optionValue =
+                    2,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    32,
+                    display =
+                    "\"<b>No adult</b> in the family is literate (cannot read or write Bangla / Kok-Borok)",
+                    weight =
+                    2,
+                    summary =
+                    "No literate adult",
+                    optionValue =
+                    3,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
+        QuestionEntity(
+            id = 3,
+            questionId = 12,
+            questionDisplay = "How much is your current savings? (Select all that apply)",
+            questionSummary = "How much is your current savings? (Select all that apply)",
+            order = 12,
+            type = "Grid",
+            gotoQuestionId = 13,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "Bank",
+                    weight = 1,
+                    summary = "Bank",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "Cash at home",
+                    weight = 2,
+                    summary = "Cash at home",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 3,
+                    display = "General",
+                    weight = 3,
+                    summary = "General",
+                    optionValue = 3,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 4,
+                    display = "Other",
+                    weight = 4,
+                    summary = "Other",
+                    optionValue = 4,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_ColourTV.webp",
+
+            )
+    )
+)
+val sampleSetcion3 = Sections(
+    sectionId = 3,
+    sectionOrder = 1,
+//    sectionIcon = "sample_step_icon_2",
+    sectionIcon = R.drawable.sample_step_icon_2,
+    questionList = listOf(
+        QuestionEntity(
+            id = 1,
+            questionId = 1,
+            questionDisplay = "Is anyone in the household engaged in <b>Government service</b>?",
+            questionSummary = "Is anyone in the household engaged in <b>Government service</b>?",
+            order = 1,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ),
+        QuestionEntity(
+            id = 2,
+            questionId = 2,
+            questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
+            questionSummary = "Does the family have a working <b>2-wheeler</b>?",
+            order =
+            2,
+            type =
+            "RadioButton",
+            gotoQuestionId =
+            3,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    1,
+                    display =
+                    "YES",
+                    weight =
+                    1,
+                    summary =
+                    "YES",
+                    optionValue =
+                    1,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    2,
+                    display =
+                    "NO",
+                    weight =
+                    0,
+                    summary =
+                    "NO",
+                    optionValue =
+                    0,
+                    optionImage =
+                    "",
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
+        QuestionEntity(
+            id = 3,
+            questionId = 3,
+            questionDisplay = "Does the family have a working <b>Colour Television or Fridge</b>?",
+            questionSummary = "Does the family have a working <b>Colour Television or Fridge</b>?",
+            order = 3,
+            type = "RadioButton",
+            gotoQuestionId = 4,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = "",
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = "",
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_ColourTV.webp",
+
+            )
+    )
+)
+val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
+val secondSampleList = listOf<Sections>(sampleSetcion3)
+
+

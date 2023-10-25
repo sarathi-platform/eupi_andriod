@@ -12,11 +12,11 @@ import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.ARG_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.splash.presentaion.SplashScreenComponent
-import com.nrlm.baselinesurvey.ui.VillageSelectionScreen
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenComponent
 import com.nrlm.baselinesurvey.ui.auth.presentation.OtpVerificationScreenComponent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageScreenComponent
-import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 
 fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
     navigation(
@@ -66,7 +66,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }*/
-            VillageSelectionScreen()
+//            VillageSelectionScreen()
+            SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
         }
 
         /*composable(route = AuthScreen.AUTH_SETTING_SCREEN.route) {

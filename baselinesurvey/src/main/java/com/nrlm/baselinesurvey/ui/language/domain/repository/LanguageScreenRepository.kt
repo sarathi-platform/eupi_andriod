@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.ui.language.repository
+package com.nrlm.baselinesurvey.ui.language.domain.repository
 
 import com.nrlm.baselinesurvey.MainActivity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity

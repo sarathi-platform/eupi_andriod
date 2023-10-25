@@ -11,8 +11,13 @@ import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
 import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.nrlm.baselinesurvey.BaselineApplication
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.DidiDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nrlm.baselinesurvey.download.utils.FileType
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 object BaselineCore {
 
@@ -22,8 +27,6 @@ object BaselineCore {
     private val validNetworksList: MutableSet<Network> = HashSet()
 
     private var downloader: AndroidDownloader? = null
-
-    val localizationApplicationDelegate = LocalizationApplicationDelegate()
 
     val autoReadOtp = mutableStateOf("")
 
@@ -80,6 +83,41 @@ object BaselineCore {
             } catch (ex: Exception) {
                 ex.printStackTrace()
                 Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
+    }
+
+    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, didiDao: DidiDao) {
+        BaselineApplication.appScopeLaunch {
+            try {
+                val imageFile = getAuthImagePath(getAppContext(), image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = getAppContext().getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                            onDownloadComplete = {
+                                didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                                didiDao.updateNeedsToPostImage(id, false)
+                            }, onDownloadFailed = {
+                                BaselineLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
+                            })
+                    }
+                } else {
+                    didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                    didiDao.updateNeedsToPostImage(id, false)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                BaselineLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
             }
         }
     }

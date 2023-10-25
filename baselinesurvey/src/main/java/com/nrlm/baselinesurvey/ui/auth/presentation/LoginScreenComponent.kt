@@ -52,8 +52,7 @@ import com.nrlm.baselinesurvey.ui.theme.buttonBgColor
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 import com.nrlm.baselinesurvey.utils.setKeyboardToReadjust
 import com.nrlm.baselinesurvey.utils.stringToInt
-import com.patsurvey.nudge.navigation.AuthScreen
-import com.patsurvey.nudge.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

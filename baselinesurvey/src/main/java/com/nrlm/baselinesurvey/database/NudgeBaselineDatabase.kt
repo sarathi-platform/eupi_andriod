@@ -5,10 +5,13 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.IntConverter
 import com.nrlm.baselinesurvey.database.converters.QuestionsOptionsConverter
+import com.nrlm.baselinesurvey.database.dao.DidiDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
+import com.nrlm.baselinesurvey.database.entity.DidiEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import java.sql.SQLException
@@ -16,12 +19,15 @@ import java.sql.SQLException
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_BASELINE_DATABASE_VERSION = 1
 
-@Database(entities = [VillageEntity::class, LanguageEntity::class], version = NUDGE_BASELINE_DATABASE_VERSION, exportSchema = false)
-@TypeConverters(IntConverter::class)
+@Database(entities = [VillageEntity::class, LanguageEntity::class, DidiEntity::class], version = NUDGE_BASELINE_DATABASE_VERSION, exportSchema = false)
+@TypeConverters(IntConverter::class, BeneficiaryStepConverter::class)
 abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao
+
     abstract fun languageListDao(): LanguageListDao
+
+    abstract fun didiDao(): DidiDao
 
 
     companion object {

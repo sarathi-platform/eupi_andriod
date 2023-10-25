@@ -254,3 +254,6 @@ const val PREF_KEY_VO_SUMMARY_OPEN_FROM = "questions_open_from"
 const val PREF_KEY_QUESTIONS_SUMMARY_OPEN_FROM = "questions_summary_open_from"
 const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
 
+const val NO_SECTION = "NO_SECTION"
+const val ARG_SECTION_ID = "section_id"
+

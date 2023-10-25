@@ -1,13 +1,12 @@
 package com.nrlm.baselinesurvey.ui.language.viewModel
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguageSelectionEvent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguagesState
-import com.nrlm.baselinesurvey.ui.language.use_case.LanguageScreenUseCase
+import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel

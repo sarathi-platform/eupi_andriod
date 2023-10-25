@@ -6,6 +6,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.response.ApiResponseModel
 import com.nrlm.baselinesurvey.ui.auth.presentation.LoginScreenEvent
 import com.nrlm.baselinesurvey.ui.auth.presentation.MobileNumberState
 import com.nrlm.baselinesurvey.ui.auth.use_case.LoginScreenUseCase
@@ -37,7 +38,7 @@ class LoginScreenViewModel @Inject constructor(
             }
             is LoginScreenEvent.GenerateOtpEvent -> {
                 job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    val loginResponse = loginScreenUseCase.generateOtpUseCase.invoke(event.mobileNumber.text)
+                    val loginResponse = /*loginScreenUseCase.generateOtpUseCase.invoke(event.mobileNumber.text)*/ ApiResponseModel<String>(status = SUCCESS, "Otp successfully Send", data = "Otp successfully Send")
                     if (loginResponse.status.equals(SUCCESS, true)) {
                         _mobileNumberState.value = _mobileNumberState.value.copy(
                             isMobileNumberValidatedFromServer = true,

@@ -1,7 +1,4 @@
-package com.nrlm.baselinesurvey.ui.language.use_case
-
-import com.nrlm.baselinesurvey.ui.language.repository.LanguageScreenRepository
-import javax.inject.Inject
+package com.nrlm.baselinesurvey.ui.language.domain.use_case
 
 data class LanguageScreenUseCase(
     val getLanguageListFromDbUseCase: GetLanguageListFromDbUseCase,

@@ -32,4 +32,8 @@ object DatabaseModule {
     @Singleton
     fun provideLanguageDao(db: NudgeBaselineDatabase) = db.languageListDao()
 
+    @Provides
+    @Singleton
+    fun provideDidiDao(db: NudgeBaselineDatabase) = db.didiDao()
+
 }

@@ -36,7 +36,7 @@ val greenActiveIcon = Color(0xFF02B5C6)
 
 val dropDownBg = Color(0xCCF7F7F7)
 
-val brownLight = Color(0xFFDDD4D1)
+//val brownLight = Color(0xFFDDD4D1)
 val red = Color(0xFFFF0808)
 val placeholderGrey = Color(0xFFACACAC)
 val borderGrey = Color(0xFFE2E2E2)
@@ -46,7 +46,7 @@ val bgGreyLight = Color(0xFFFAFAFA)
 
 val redDark =  Color(0xFFD12222)
 
-val brownLoght = Color(0xFFF4E9E2)
+val brownLight = Color(0xFFF4E9E2)
 val yellowLight = Color(0xFFFDEACB)
 val blueLighter = Color(0xFFF0F7FC)
 
@@ -107,3 +107,9 @@ val decrementCounterColor = Color(0xFFF0665B)
 val locationIconActiveColor = Color(0xFFDE0101)
 val greyBorderColor = Color(0xFFD5D5D5)
 val lightGrayTranslucent = Color(0xB2B1B1B1)
+
+val progressIndicatorColor = Color(0xFF222E50)
+val trackColor = Color(0xFFD1D5DE)
+val sectionIconInProgressBg = Color(0xFFFFFAF0)
+val sectionIconCompletedBg = Color(0xFFD3FFF5)
+val sectionIconNotStartedBg = Color(0xFFF7F7F7)
