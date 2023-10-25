@@ -62,7 +62,7 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
 
-        composable(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
+        composable(route = AuthScreen.SURVEYEE_LIST_SCREEN.route) {
             /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }*/
@@ -96,7 +96,7 @@ sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = "start_screen")
     object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
     object LOGIN : AuthScreen(route = "login_screen")
-    object VILLAGE_SELECTION_SCREEN : AuthScreen(route = "village_selection_screen")
+    object SURVEYEE_LIST_SCREEN : AuthScreen(route = "surveyee_list_screen")
     object OTP_VERIFICATION : AuthScreen(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
     object AUTH_SETTING_SCREEN : AuthScreen(route = "setting_screen")
     object PROFILE_SCREEN : AuthScreen(route = "profile_screen")

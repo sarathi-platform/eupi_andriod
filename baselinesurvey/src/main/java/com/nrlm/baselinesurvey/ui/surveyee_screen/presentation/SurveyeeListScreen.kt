@@ -23,6 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
@@ -100,9 +101,7 @@ fun SurveyeeListScreen(
                     SurveyeeCardComponent(surveyeeState = item) {buttonName ->
                         when (buttonName) {
                             is ButtonName.START_BUTTON -> {
-                                navController.navigate(
-                                    "home_graph"
-                                )
+                                navController.navigate(HomeScreens.SECTION_SCREEN.route)
                             }
                             is ButtonName.NEGATIVE_BUTTON -> {
 

@@ -279,7 +279,7 @@ fun OtpVerificationScreenComponent(
                  }*/
                 viewModel.validateApiSuccess.value
             }else{
-                navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route){
+                navController.navigate(route = Graph.HOME){
                     launchSingleTop=true
                     popUpTo(AuthScreen.START_SCREEN.route){
                         inclusive=true

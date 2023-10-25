@@ -47,6 +47,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
+import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -220,7 +221,10 @@ fun QuestionScreen(
                                     null,
                                     tint = textColorDark,
                                     modifier = Modifier.clickable {
-                                        navController.popBackStack()
+                                        if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                                            navController.popBackStack()
+                                        else
+                                            navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
                                     })
 
                             },

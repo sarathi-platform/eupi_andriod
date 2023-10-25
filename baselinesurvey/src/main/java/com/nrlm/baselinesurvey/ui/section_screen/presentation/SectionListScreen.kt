@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -84,6 +85,10 @@ fun SectionListScreen(
 
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
+
+    BackHandler {
+        navController.popBackStack()
+    }
 
     Surface(color = white) {
         

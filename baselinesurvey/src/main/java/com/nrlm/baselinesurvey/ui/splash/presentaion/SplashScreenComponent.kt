@@ -29,6 +29,7 @@ import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.SPLASH_SCREEN_DURATION
+import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.splash.viewModel.SplashScreenViewModel
@@ -62,9 +63,10 @@ fun SplashScreenComponent(
                 viewModel.onEvent<LoaderEvent>(LoaderEvent.UpdateLoaderState(true))
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.onEvent<LoaderEvent>(LoaderEvent.UpdateLoaderState(false))
-                navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                    popUpTo(AuthScreen.START_SCREEN.route) {
-                        inclusive = true
+                navController.navigate(route = Graph.HOME){
+                    launchSingleTop=true
+                    popUpTo(AuthScreen.START_SCREEN.route){
+                        inclusive=true
                     }
                 }
             } else {
@@ -81,9 +83,10 @@ fun SplashScreenComponent(
             viewModel.fetchLanguageConfigDetails() {
                 viewModel.onEvent<LoaderEvent>(LoaderEvent.UpdateLoaderState(false))
                 if (isLoggedIn) {
-                    navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                        popUpTo(AuthScreen.START_SCREEN.route) {
-                            inclusive = true
+                    navController.navigate(route = Graph.HOME){
+                        launchSingleTop=true
+                        popUpTo(AuthScreen.START_SCREEN.route){
+                            inclusive=true
                         }
                     }
                 } else {
