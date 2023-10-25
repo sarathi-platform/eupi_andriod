@@ -375,6 +375,9 @@
     <string name="do_you_want_to_exit_the_app">আপনি কি অ্যাপ থেকে প্রস্থান করতে চান?</string>
     <string name="exit">প্রস্থান করুন</string>
     <string name="cancel">বাতিল করুন</string>
+    <string name="reference_of_forms">ফর্মের রেফারেন্স :</string>
+    <string name="link_of_a">ফর্ম A এর জন্য লিঙ্ক</string>
+    <string name="link_of_b">বি ফর্মের লিঙ্ক</string>
 
 
 </resources>
