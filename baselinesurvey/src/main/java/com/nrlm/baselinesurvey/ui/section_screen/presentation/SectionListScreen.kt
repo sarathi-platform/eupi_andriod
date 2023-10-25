@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -44,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
 import com.nrlm.baselinesurvey.ui.section_screen.viewmode.SectionListScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
@@ -88,112 +90,128 @@ fun SectionListScreen(
         LoaderComponent(visible = loaderState.isLoaderVisible)
 
         if (!loaderState.isLoaderVisible) {
-            ModalBottomSheetLayout(
-                sheetContent = {
-                    Column(
-                        verticalArrangement = Arrangement.spacedBy(10.dp),
-                        horizontalAlignment = Alignment.Start,
-                        modifier = Modifier
-                        /*.height(((2 * screenHeight) / 3).dp)*/
-                    ) {
+            if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
+                navController.navigate("question_screen/${sectionsList[0].section.sectionId}")
+            } else {
+                ModalBottomSheetLayout(
+                    sheetContent = {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(10.dp),
+                            horizontalAlignment = Alignment.Start,
+                            modifier = Modifier
+                            /*.height(((2 * screenHeight) / 3).dp)*/
+                        ) {
 
-                        Column() {
+                            Column() {
 //                        BaselineLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_10_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.info_icon),
-                                    contentDescription = "info icon"
-                                )
-                            }
-                            Divider(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(1.dp), color = greyBorder
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    text = selectedSectionDescription.value,
-                                    color = textColorDark,
-                                    style = smallerTextStyleNormalWeight,
-                                    modifier = Modifier.padding(horizontal = dimen_10_dp)
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = dimen_16_dp, horizontal = dimen_24_dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Button(
-                                    onClick = {
-                                        scope.launch {
-                                            scaffoldState.hide()
-                                        }
-                                    }, shape = RoundedCornerShape(
-                                        roundedCornerRadiusDefault
-                                    ), colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = blueDark,
-                                        contentColor = white
-                                    )
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimen_10_dp),
+                                    contentAlignment = Alignment.Center
                                 ) {
-                                    Text(text = "Ok", color = white, style = smallerTextStyle)
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.info_icon),
+                                        contentDescription = "info icon"
+                                    )
                                 }
-                            }
-                            Spacer(modifier = Modifier.height(16.dp))
-                        }
-                    }
-                },
-                sheetState = scaffoldState,
-                sheetElevation = 20.dp,
-                sheetBackgroundColor = Color.White,
-                sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            ) {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                    modifier = Modifier.padding(horizontal = dimen_16_dp, vertical = dimen_16_dp)
-                ) {
-                    item {
-                        SearchWithFilterViewComponent(
-                            placeholderString = "Search Question",
-                            showFilter = false,
-                            onFilterSelected = {
+                                Divider(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(1.dp), color = greyBorder
+                                )
 
-                            },
-                            onSearchValueChange = {
-
-                            }
-                        )
-                    }
-                    itemsIndexed(items = sectionsList) { index, sectionStateItem ->
-                        SectionItemComponent(
-                            sectionStateItem = sectionStateItem,
-                            onclick = {
-                                navController.navigate("question_screen/${sectionStateItem.section.sectionId}")
-                            },
-                            onDetailIconClicked = {
-                                scope.launch {
-                                    selectedSectionDescription.value =
-                                        sectionStateItem.section.sectionDetails
-                                    delay(100)
-                                    if (!scaffoldState.isVisible) {
-                                        scaffoldState.show()
-                                    } else {
-                                        scaffoldState.hide()
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = selectedSectionDescription.value,
+                                        color = textColorDark,
+                                        style = smallerTextStyleNormalWeight,
+                                        modifier = Modifier.padding(horizontal = dimen_10_dp)
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(vertical = dimen_16_dp, horizontal = dimen_24_dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Button(
+                                        onClick = {
+                                            scope.launch {
+                                                scaffoldState.hide()
+                                            }
+                                        }, shape = RoundedCornerShape(
+                                            roundedCornerRadiusDefault
+                                        ), colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = blueDark,
+                                            contentColor = white
+                                        )
+                                    ) {
+                                        Text(text = "Ok", color = white, style = smallerTextStyle)
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(16.dp))
                             }
+                        }
+                    },
+                    sheetState = scaffoldState,
+                    sheetElevation = 20.dp,
+                    sheetBackgroundColor = Color.White,
+                    sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+                ) {
+                    LazyColumn(
+                        verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
+                        modifier = Modifier.padding(
+                            horizontal = dimen_16_dp,
+                            vertical = dimen_16_dp
                         )
+                    ) {
+                        item {
+                            SearchWithFilterViewComponent(
+                                placeholderString = "Search Question",
+                                showFilter = false,
+                                onFilterSelected = {
+
+                                },
+                                onSearchValueChange = {
+
+                                }
+                            )
+                        }
+
+                        item {
+                            Text(
+                                text = "Chose Section",
+                                style = smallerTextStyle,
+                                color = textColorDark
+                            )
+                        }
+
+                        itemsIndexed(items = sectionsList) { index, sectionStateItem ->
+                            SectionItemComponent(
+                                sectionStateItem = sectionStateItem,
+                                onclick = {
+                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}")
+                                },
+                                onDetailIconClicked = {
+                                    scope.launch {
+                                        selectedSectionDescription.value =
+                                            sectionStateItem.section.sectionDetails
+                                        delay(100)
+                                        if (!scaffoldState.isVisible) {
+                                            scaffoldState.show()
+                                        } else {
+                                            scaffoldState.hide()
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                 }
             }

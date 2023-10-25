@@ -26,8 +26,12 @@ data class OptionsItem(
     @SerializedName("count")
     var count: Int? = 0,
 
+    //TODO Uncomment when actual data is fetched
+    /*@SerializedName("optionImage")
+    var optionImage: String? = BLANK_STRING,*/
+
     @SerializedName("optionImage")
-    var optionImage: String? = BLANK_STRING,
+    var optionImage: Int? = 0,
 
     @SerializedName("optionType")
     var optionType: String? = BLANK_STRING,

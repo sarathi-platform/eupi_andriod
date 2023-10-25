@@ -1,5 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,8 +11,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -35,13 +39,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
+import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
-import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -49,6 +57,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
@@ -62,7 +71,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun QuestionScreen(
     modifier: Modifier = Modifier,
@@ -85,6 +94,8 @@ fun QuestionScreen(
     val scaffoldState =
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
 
     Surface(color = white) {
 
@@ -166,7 +177,9 @@ fun QuestionScreen(
 
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                    modifier = Modifier.padding(horizontal = dimen_16_dp, vertical = dimen_16_dp)
+                    modifier = Modifier.padding(horizontal = dimen_16_dp, vertical = dimen_16_dp),
+                    state = listState
+
                 ) {
                     item {
                         SearchWithFilterViewComponent(
@@ -188,39 +201,45 @@ fun QuestionScreen(
                                     modifier = Modifier.fillMaxWidth(),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
-//                                    if (sectionDetails.sectionIcon != null) {
-//                                        Icon(
-//                                            painter = painterResource(id = sectionDetails.sectionIcon),
-//                                            contentDescription = "section icon",
-//                                            tint = textColorDark
-//                                        )
-//                                    }
-                                    Text(text = sectionDetails.sectionName, color = textColorDark)
+                                    /*if (sectionDetails.sectionIcon != null) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.sample_step_icon_2),
+                                            contentDescription = "section icon",
+                                            tint = textColorDark
+                                        )
+                                        Spacer(modifier = Modifier.width(dimen_4_dp))
+                                    }*/
+                                    if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                                        Text(text = sectionDetails.sectionName, color = textColorDark)
                                 }
                             },
                             navigationIcon = {
-                                IconButton(onClick = {
-                                    navController.popBackStack()
-                                }) {
-                                    Icon(Icons.Filled.ArrowBack, null, tint = textColorDark)
-                                }
+
+                                Icon(
+                                    Icons.Filled.ArrowBack,
+                                    null,
+                                    tint = textColorDark,
+                                    modifier = Modifier.clickable {
+                                        navController.popBackStack()
+                                    })
+
                             },
                             actions = {
-                                IconButton(onClick = {
-                                    scope.launch {
-                                        if (!scaffoldState.isVisible) {
-                                            scaffoldState.show()
-                                        } else {
-                                            scaffoldState.hide()
+
+                                Icon(
+                                    painterResource(id = R.drawable.info_icon),
+                                    null,
+                                    tint = textColorDark,
+                                    modifier = Modifier.clickable {
+                                        scope.launch {
+                                            if (!scaffoldState.isVisible) {
+                                                scaffoldState.show()
+                                            } else {
+                                                scaffoldState.hide()
+                                            }
                                         }
                                     }
-                                }) {
-                                    Icon(
-                                        painterResource(id = R.drawable.info_icon),
-                                        null,
-                                        tint = textColorDark
-                                    )
-                                }
+                                )
                             },
                             backgroundColor = white,
                             elevation = 0.dp,
@@ -241,7 +260,7 @@ fun QuestionScreen(
                                 progress = 0.2f
                             )
                             Spacer(modifier = Modifier.width(dimen_8_dp))
-                            androidx.compose.material3.Text(
+                            Text(
                                 text = "2/4",
                                 color = textColorDark,
                                 style = smallTextStyle
@@ -253,13 +272,23 @@ fun QuestionScreen(
                     itemsIndexed(
                         items = sectionDetails.questionList ?: emptyList()
                     ) { index, question ->
+                        when (question?.type) {
+                            TYPE_RADIO_BUTTON -> {
+                                RadioQuestionBoxComponent(index = index, question = question) {
+                                    scope.launch {
+                                        listState.animateScrollToItem(it+3, -10)
+                                    }
+                                }
+                            }
 
+                            else -> {}
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.width(dimen_24_dp))
                     }
                 }
             }
         }
-
     }
-
-
 }

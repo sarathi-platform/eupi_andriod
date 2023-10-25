@@ -35,9 +35,15 @@ class SectionListScreenViewModel @Inject constructor(
         sectionsList.value.forEach { section ->
             _sectionItemStateList.add(SectionState(section, SectionStatus.INPROGRESS))
         }
+
         /*sectionsList.value.forEach { section ->
             _sectionItemStateList.add(SectionState(section, if (section.sectionId == 2) SectionStatus.NOT_STARTED else SectionStatus.INPROGRESS))
         }*/
+
+        /*sectionsList.value.forEach { section ->
+            _sectionItemStateList.add(SectionState(section, if (section.sectionId == 2) SectionStatus.INPROGRESS else SectionStatus.COMPLETED))
+        }*/
+
         onEvent(LoaderEvent.UpdateLoaderState(false))
     }
 

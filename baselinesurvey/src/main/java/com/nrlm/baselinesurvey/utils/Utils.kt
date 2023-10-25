@@ -132,7 +132,7 @@ val sampleSetcion1 = Sections(
             id = 1,
             questionId = 1,
             questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
-            questionSummary = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
             order = 1,
             type = "RadioButton",
             gotoQuestionId = 2,
@@ -143,7 +143,7 @@ val sampleSetcion1 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_check,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -152,7 +152,7 @@ val sampleSetcion1 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_close,
                     optionType = ""
                 )
             ),
@@ -162,7 +162,7 @@ val sampleSetcion1 = Sections(
             id = 2,
             questionId = 2,
             questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
-            questionSummary = "Does the family have a working <b>2-wheeler</b>?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
             order =
             2,
             type =
@@ -182,7 +182,7 @@ val sampleSetcion1 = Sections(
                     optionValue =
                     1,
                     optionImage =
-                    "",
+                    R.drawable.icon_check,
                     optionType =
                     ""
                 ),
@@ -198,7 +198,7 @@ val sampleSetcion1 = Sections(
                     optionValue =
                     0,
                     optionImage =
-                    "",
+                    R.drawable.icon_close,
                     optionType =
                     ""
                 )
@@ -221,7 +221,7 @@ val sampleSetcion1 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_check,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -230,12 +230,11 @@ val sampleSetcion1 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_close,
                     optionType = ""
                 )
             ),
             questionImageUrl = "Section1_ColourTV.webp",
-
             )
     )
 )
@@ -262,7 +261,7 @@ val sampleSection2 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_close,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -271,7 +270,7 @@ val sampleSection2 = Sections(
                     weight = 2,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_check,
                     optionType = ""
                 )
             ),
@@ -300,7 +299,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     1,
                     optionImage =
-                    "",
+                    0,
                     optionType =
                     ""
                 ),
@@ -316,7 +315,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     2,
                     optionImage =
-                    "",
+                    0,
                     optionType =
                     ""
                 ),
@@ -332,7 +331,7 @@ val sampleSection2 = Sections(
                     optionValue =
                     3,
                     optionImage =
-                    "",
+                    0,
                     optionType =
                     ""
                 )
@@ -355,7 +354,7 @@ val sampleSection2 = Sections(
                     weight = 1,
                     summary = "Bank",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = 0,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -364,7 +363,7 @@ val sampleSection2 = Sections(
                     weight = 2,
                     summary = "Cash at home",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = 0,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -373,7 +372,7 @@ val sampleSection2 = Sections(
                     weight = 3,
                     summary = "General",
                     optionValue = 3,
-                    optionImage = "",
+                    optionImage = 0,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -382,13 +381,12 @@ val sampleSection2 = Sections(
                     weight = 4,
                     summary = "Other",
                     optionValue = 4,
-                    optionImage = "",
+                    optionImage = 0,
                     optionType = ""
                 )
             ),
             questionImageUrl = "Section1_ColourTV.webp",
-
-            )
+        )
     )
 )
 val sampleSetcion3 = Sections(
@@ -412,7 +410,7 @@ val sampleSetcion3 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_check,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -421,7 +419,7 @@ val sampleSetcion3 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_close,
                     optionType = ""
                 )
             ),
@@ -440,36 +438,22 @@ val sampleSetcion3 = Sections(
             3,
             options = listOf(
                 OptionsItem(
-                    optionId =
-                    1,
-                    display =
-                    "YES",
-                    weight =
-                    1,
-                    summary =
-                    "YES",
-                    optionValue =
-                    1,
-                    optionImage =
-                    "",
-                    optionType =
-                    ""
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
                 ),
                 OptionsItem(
-                    optionId =
-                    2,
-                    display =
-                    "NO",
-                    weight =
-                    0,
-                    summary =
-                    "NO",
-                    optionValue =
-                    0,
-                    optionImage =
-                    "",
-                    optionType =
-                    ""
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
                 )
             ),
             questionImageUrl =
@@ -490,7 +474,7 @@ val sampleSetcion3 = Sections(
                     weight = 1,
                     summary = "YES",
                     optionValue = 1,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_check,
                     optionType = ""
                 ),
                 OptionsItem(
@@ -499,7 +483,7 @@ val sampleSetcion3 = Sections(
                     weight = 0,
                     summary = "NO",
                     optionValue = 0,
-                    optionImage = "",
+                    optionImage = R.drawable.icon_close,
                     optionType = ""
                 )
             ),

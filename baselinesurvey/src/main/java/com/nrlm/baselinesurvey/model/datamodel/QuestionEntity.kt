@@ -21,7 +21,7 @@ data class QuestionEntity(
     @SerializedName("options")
     @Expose
     @ColumnInfo(name = "options")
-    var options: List<OptionsItem> = emptyList(),
+    var options: List<OptionsItem>? = emptyList(),
 
     @SerializedName("questionImageUrl")
     @Expose
