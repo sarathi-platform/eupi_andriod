@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.unit.toSize
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavHostController
@@ -114,7 +115,12 @@ fun BugLogggingMechanismScreen(navController: NavHostController) {
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 DropDownView()
-                Text(text = "Add Description", color = textColorDark, style = mediumTextStyle)
+                Text(
+                    text = "Add Description",
+                    color = textColorDark,
+                    style = mediumTextStyle,
+                    fontSize = 14.sp,
+                )
 
                 OutlinedTextField(
                     modifier = Modifier
@@ -135,12 +141,17 @@ fun BugLogggingMechanismScreen(navController: NavHostController) {
                     onClick = { },
                     modifier = Modifier.background(bgGreyLight),
                     border = BorderStroke(
-                        1.dp,
+                        0.5.dp,
                         Color.Black
                     ),
                     shape = RectangleShape
                 ) {
-                    Text(text = "Attach Screenshot", style = mediumTextStyle, color = Color.Black)
+                    Text(
+                        text = "Attach Screenshot",
+                        style = mediumTextStyle,
+                        color = Color.Black,
+                        fontSize = 14.sp,
+                    )
                 }
             }
             Box(modifier = Modifier
