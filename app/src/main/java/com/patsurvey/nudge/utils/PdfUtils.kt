@@ -136,7 +136,7 @@ object PdfUtils {
                             )
                             add(
                                 TextCell(
-                                    "${didiEntity.cohortName}",
+                                    if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}",
                                     cellDataTextProperties,
                                     mDataCellWidth
                                 )
@@ -310,7 +310,7 @@ object PdfUtils {
                             )
                             add(
                                 TextCell(
-                                    "${didiEntity.cohortName}",
+                                    if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}",
                                     cellDataTextProperties,
                                     mDataCellWidth
                                 )
@@ -572,7 +572,7 @@ object PdfUtils {
                             TextCell(didiEntity.guardianName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
-                            TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
+                            TextCell(if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
                         )
                         add(
                             TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
@@ -677,7 +677,7 @@ object PdfUtils {
                             TextCell(didiEntity.guardianName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
-                            TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
+                            TextCell(if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
                         )
                         add(
                             TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
@@ -783,7 +783,7 @@ object PdfUtils {
                             TextCell(didiEntity.guardianName, cellDataTextProperties, dataCellWidth)
                         )
                         add(
-                            TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
+                            TextCell(if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
                         )
                         add(
                             TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
