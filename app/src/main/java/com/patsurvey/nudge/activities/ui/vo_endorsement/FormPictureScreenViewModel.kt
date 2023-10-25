@@ -13,6 +13,7 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
@@ -26,6 +27,9 @@ import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
+import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
+import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -40,6 +44,7 @@ import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
+import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.longToString
@@ -54,6 +59,8 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
+import java.util.Timer
+import java.util.TimerTask
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import javax.inject.Inject
@@ -64,6 +71,7 @@ class FormPictureScreenViewModel @Inject constructor(
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
     val didiDao: DidiDao,
+    val poorDidiListDao: PoorDidiListDao,
     val apiService: ApiService
 ): BaseViewModel() {
 
@@ -107,12 +115,10 @@ class FormPictureScreenViewModel @Inject constructor(
     var imagePathForCapture = ""
     var tempUri: Uri = Uri.EMPTY
 
-//    init {
-//        cameraExecutor = Executors.newSingleThreadExecutor()
-//    }
-
     val villageEntity = mutableStateOf<VillageEntity?>(null)
-
+    val formAAvailable = mutableStateOf(false)
+    val formBAvailable = mutableStateOf(false)
+    val showAPILoader = mutableStateOf(false)
 
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
@@ -583,5 +589,101 @@ class FormPictureScreenViewModel @Inject constructor(
             didiDao.updateVoEndorsementEditFlag(prefRepo.getSelectedVillage().id, false)
         }
     }
+
+    fun isFormAAvailableForVillage(context: Context, villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formCFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_A_PDF_NAME}_${villageId}.pdf")
+            if (formCFilePath.isFile && formCFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formAAvailable.value = true
+                }
+            } else {
+                if (prefRepo.isUserBPC()) {
+                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = false
+                        }
+                    }
+                } else {
+                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formAAvailable.value = false
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fun isFormBAvailableForVillage(context: Context, villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val formBFilePath =
+                File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+            if (formBFilePath.isFile && formBFilePath.exists()) {
+                withContext(Dispatchers.Main) {
+                    formBAvailable.value = true
+                }
+            } else {
+                if (prefRepo.isUserBPC()) {
+                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formBAvailable.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formBAvailable.value = false
+                        }
+                    }
+                } else {
+                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                    ) {
+                        withContext(Dispatchers.Main) {
+                            formBAvailable.value = true
+                        }
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            formBAvailable.value = false
+                        }
+                    }
+                }
+            }
+        }
+
+        /*val formBFilePath = File("${context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)?.absolutePath}/${FORM_B_PDF_NAME}_${villageId}.pdf")
+        formBAvailabe.value = formBFilePath.isFile && formBFilePath.exists()*/
+        /*job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val stepList = stepsListDao.getAllStepsForVillage(villageId)
+            val filteredStepList = stepList.filter { it.name.equals("Pat Survey", true) }
+            if (filteredStepList[0] != null) {
+                formBAvailabe.value = filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
+            } else {
+                formBAvailabe.value = false
+            }
+        }*/
+    }
+
+    fun showLoaderForTime(time : Long){
+        showAPILoader.value = true
+        Timer().schedule(object : TimerTask(){
+            override fun run() {
+                job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                    withContext(Dispatchers.Main) {
+                        showAPILoader.value = false
+                    }
+                }
+            }
+        },time)
+    }
+
 
 }

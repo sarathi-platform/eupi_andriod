@@ -89,6 +89,7 @@ import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -116,9 +117,19 @@ fun VillageSelectionScreen(
     }
 
     BackHandler {
-        (context as? MainActivity)?.finish()
+        viewModel.showAppExitDialog.value = true
     }
-
+    if(viewModel.showAppExitDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = R.string.exit),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+            onPositiveButtonClick = {
+                (context as? MainActivity)?.finish()
+            })
+    }
 
     LaunchedEffect(key1 = true) {
         val imagesList= (context as MainActivity).quesImageList

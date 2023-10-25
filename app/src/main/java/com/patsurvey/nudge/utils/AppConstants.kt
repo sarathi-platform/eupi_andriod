@@ -100,6 +100,8 @@ const val PREF_FORM_PATH = "pref_form_path"
 const val ARG_FORM_PATH = "form_path"
 const val ARG_IMAGE_PATH = "image_path"
 const val ARG_FOR_REPLACEMENT = "for_replacement"
+const val FORM_A = "form_A"
+const val FORM_B = "form_B"
 const val FORM_C = "form_C"
 const val FORM_D = "form_D"
 const val PREF_FORM_C_PAGE_COUNT = "pref_form_c_page_count"
@@ -232,4 +234,5 @@ const val HEADING_QUESTION_TYPE = "heading"
 const val DEFAULT_LANGUAGE_ID = 2
 const val BPC_VERIFICATION_STEP_ORDER = 6
 const val VO_ENDORSEMENT_STEP_ORDER = 5
+const val EMPTY_STRING="";
 
