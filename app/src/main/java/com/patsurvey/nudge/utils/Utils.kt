@@ -429,6 +429,83 @@ var videoList = listOf(
         thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
     ),
 
+
+    VideoItem(
+        id = 23,
+        title = "সাৰথি এপত লগ ইন কৰা",
+        description = "সাৰথি এপত কেনেকৈ লগইন কৰিব",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+    ),
+    VideoItem(
+        id = 24,
+        title = "এপৰ সংক্ষিপ্তত",
+        description = "সাৰথি এপৰ চমু পৰিচয়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+    ),
+    VideoItem(
+        id = 25,
+        title = "গ্রামের ভ্রমণ",
+        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+    ),
+    VideoItem(
+        id = 26,
+        title = "সামাজিক মানচিত্র",
+        description = "সামাজিক মানচিত্রৰ সময়ত বাইদেউৰ বিৱৰণ কেনেকৈ দিব",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+    ),
+    VideoItem(
+        id = 27,
+        title = "অংশগ্রহণমূলক সম্পদ ৰেংকিং",
+        description = "বাইদেউৰ সম্পদৰ ৰেংকিং কেনেকৈ ৰেকৰ্ড কৰিব",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+    ),VideoItem(
+        id = 28,
+        title = "PAT সমীক্ষা - সংক্ষিপ্তত",
+        description = "সাৰথি এপত PAT সমীক্ষাৰ পৰিচয়",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+    ),VideoItem(
+        id = 29,
+        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ১",
+        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ১",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart1.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+    ),
+    VideoItem(
+        id = 30,
+        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ২",
+        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ২",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart2.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+    ),
+    VideoItem(
+        id = 31,
+        title = "ডিজিটেল ফৰ্ম B আৰু VO অনুমোদনৰ বাবে জমা দিবলৈ",
+        description = "কডিজিটেল ফৰ্ম B কেনেকৈ ডাউনলোড কৰি VO অনুমোদনৰ বাবে জমা দিব",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+    ),
+    VideoItem(
+        id = 32,
+        title = "VO অনুমোদন",
+        description = "VO অনুমোদন কেনেকৈ ৰেকৰ্ড কৰিব লাগে",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+    ),
+    VideoItem(
+        id = 33,
+        title = "বিবৰণ ছিঙ্ক কৰা",
+        description = "সাৰথি এপৰ পৰা কেনেকৈ ডাটা ছিংক বা আপলোড কৰিব",
+        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Assamese.mp4",
+        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
+    ),
+
     /*VideoItem(
         id = 24,
         title = "Video 1",
