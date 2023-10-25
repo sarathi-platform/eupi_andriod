@@ -616,7 +616,7 @@ fun showSyncDialog(
 
     val animateNumber = animateFloatAsState(
         targetValue =  settingViewModel.syncPercentage.value,
-        animationSpec = tween()
+        animationSpec = tween(), label = ""
     )
 
 
