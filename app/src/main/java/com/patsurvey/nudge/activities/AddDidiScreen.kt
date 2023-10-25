@@ -71,7 +71,13 @@ fun AddDidiScreen(navController: NavHostController, modifier: Modifier,
         },
         horizontalAlignment = Alignment.CenterHorizontally) {
 
-        didiViewModel?.prefRepo?.let { VOAndVillageBoxView(prefRepo = it,modifier=Modifier.fillMaxWidth(), bottomPadding = 14.dp) }
+        didiViewModel?.addDidiRepository?.prefRepo?.let {
+            VOAndVillageBoxView(
+                prefRepo = it,
+                modifier = Modifier.fillMaxWidth(),
+                bottomPadding = 14.dp
+            )
+        }
 
         Column(
             modifier = Modifier

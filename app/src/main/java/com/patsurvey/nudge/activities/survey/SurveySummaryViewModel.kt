@@ -11,7 +11,6 @@ import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.*
@@ -20,7 +19,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.dataModel.PATDidiStatusModel
 import com.patsurvey.nudge.model.request.AnswerDetailDTOListItem
-import com.patsurvey.nudge.model.request.BpcUpdateSelectedDidiRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.request.PATSummarySaveRequest
@@ -115,11 +113,11 @@ class SurveySummaryViewModel @Inject constructor(
         job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
-                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync(tolaDao){
-                    isTolaSynced.value =it
+                CheckDBStatus(this@SurveySummaryViewModel).isFirstStepNeedToBeSync() {
+                    isTolaSynced.value = it
                 }
-                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao){
-                    isDidiSynced.value=it
+                CheckDBStatus(this@SurveySummaryViewModel).isSecondStepNeedToBeSync(didiDao) {
+                    isDidiSynced.value = it
                 }
                 CheckDBStatus(this@SurveySummaryViewModel).isThirdStepNeedToBeSync(didiDao){
                     isDidiRankingSynced.value=it
