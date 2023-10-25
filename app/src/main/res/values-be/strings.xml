@@ -366,4 +366,7 @@
     <string name="reference_of_forms">"प्रपत्रों का संदर्भ : "</string>
     <string name="link_of_a">फॉर्म ए के लिए लिंक</string>
     <string name="link_of_b">फॉर्म बी के लिए लिंक</string>
+    <string name="do_you_want_to_exit_the_app">क्या आप ऐप से बाहर निकलना चाहते हैं?</string>
+    <string name="exit">बाहर निकलना</string>
+    <string name="cancel">रद्द करना</string>
 </resources>

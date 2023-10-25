@@ -38,6 +38,7 @@ abstract class BaseViewModel : ViewModel(){
     val baseOtpNumber = mutableStateOf("")
     val baseSummarySecond = mutableStateOf(0)
     val showDidiImageDialog = mutableStateOf(false)
+    val showAppExitDialog = mutableStateOf(false)
     val dialogDidiEntity = mutableStateOf<DidiEntity?>(null)
 
     var job: Job? = null

@@ -376,5 +376,9 @@
     <string name="link_of_a">লিংক প্ৰপত্ৰ A ৰ বাবে</string>
     <string name="link_of_b">লিংক প্ৰপত্ৰ B ৰ বাবে</string>
 
+    <string name="do_you_want_to_exit_the_app">আপুনি এপটোৰ পৰা ওলাই আহিব বিচাৰেনে?</string>
+    <string name="exit">প্ৰস্থান</string>
+    <string name="cancel">বাতিল কৰক</string>
+
 
 </resources>

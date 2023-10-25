@@ -404,4 +404,9 @@
     <string name="link_of_a">Link For Form A</string>
     <string name="link_of_b">Link For Form B</string>
 
+
+    <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
+
 </resources>
