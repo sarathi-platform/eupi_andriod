@@ -378,6 +378,7 @@
     <string name="reference_of_forms">ফর্মের রেফারেন্স :</string>
     <string name="link_of_a">ফর্ম A এর জন্য লিঙ্ক</string>
     <string name="link_of_b">বি ফর্মের লিঙ্ক</string>
+    <string name="user_bug_report_text">বাগ রিপোর্ট</string>
 
 
 </resources>

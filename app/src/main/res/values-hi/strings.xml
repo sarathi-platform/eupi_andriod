@@ -378,6 +378,7 @@
     <string name="reference_of_forms">प्रपत्रों का संदर्भ :</string>
     <string name="link_of_a">फॉर्म ए के लिए लिंक</string>
     <string name="link_of_b">फॉर्म बी के लिए लिंक</string>
+    <string name="user_bug_report_text">बग रिपोर्ट</string>
 
 
 </resources>

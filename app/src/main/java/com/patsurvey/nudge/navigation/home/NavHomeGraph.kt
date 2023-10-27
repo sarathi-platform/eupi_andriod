@@ -692,6 +692,7 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
 sealed class SettingScreens(val route: String) {
     object SETTING_SCREEN : SettingScreens(route = "setting_screen")
     object LANGUAGE_SCREEN : SettingScreens(route = "language_screen")
+    object BUG_LOGGING_SCREEN : SettingScreens(route = "Bug_Logging")
     object VIDEO_LIST_SCREEN : SettingScreens(route = "video_list_screen")
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "video_player_screen/{$ARG_VIDEO_ID}")
     object PROFILE_SCREEN : SettingScreens(route = "profile_screen")
