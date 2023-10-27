@@ -66,6 +66,7 @@ import com.patsurvey.nudge.activities.ui.progress.VillageSelectionViewModel
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
+import com.patsurvey.nudge.activities.ui.theme.greenLight
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
@@ -84,6 +85,8 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -111,9 +114,19 @@ fun VillageSelectionScreen(
     }
 
     BackHandler {
-        (context as? MainActivity)?.finish()
+        viewModel.showAppExitDialog.value = true
     }
-
+    if(viewModel.showAppExitDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = R.string.exit),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+            onPositiveButtonClick = {
+                (context as? MainActivity)?.finish()
+            })
+    }
 
     LaunchedEffect(key1 = true) {
         val imagesList= (context as MainActivity).quesImageList
@@ -409,7 +422,9 @@ fun VillageAndVoBoxForBottomSheet(
             .fillMaxWidth()
             .border(
                 width = 1.dp,
-                color = if (index == selectedIndex) blueDark else greyRadioButton,
+                color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else {
+                    if (index == selectedIndex) blueDark else greyRadioButton
+                },
                 shape = RoundedCornerShape(6.dp)
             )
             .clip(RoundedCornerShape(6.dp))
@@ -443,8 +458,9 @@ fun VillageAndVoBoxForBottomSheet(
                     .background(
                         if (isUserBPC) {
                             when (fetchBorderColorForVillage(stepId, statusId)) {
-                                0, 2, 4 -> white
+                                0, 2 -> white
                                 1, 3 -> stepBoxActiveColor
+                                4 -> greenLight
                                 else -> white
                             }
                         } else if (index == selectedIndex) dropDownBg else White
@@ -469,7 +485,7 @@ fun VillageAndVoBoxForBottomSheet(
                     Icon(
                         painter = painterResource(id = R.drawable.home_icn),
                         contentDescription = null,
-                        tint = textColorDark,
+                        tint = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         modifier = Modifier.constrainAs(iconRef) {
                             top.linkTo(parent.top)
                             start.linkTo(parent.start)
@@ -477,7 +493,7 @@ fun VillageAndVoBoxForBottomSheet(
                     )
                     Text(
                         text = " $tolaName",
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -515,12 +531,12 @@ fun VillageAndVoBoxForBottomSheet(
                 Row(
                     modifier = Modifier
                         .absolutePadding(left = 4.dp)
-                        .padding(start = 16.dp, end = 16.dp, bottom = 10.dp)
+                        .padding(start = 16.dp, end = 16.dp)
                 ) {
                     Text(
                         text = "VO: ",
                         modifier = Modifier,
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -529,7 +545,7 @@ fun VillageAndVoBoxForBottomSheet(
                         text = voName,
                         modifier = Modifier
                             .fillMaxWidth(),
-                        color = textColorDark,
+                        color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Medium
@@ -544,7 +560,8 @@ fun VillageAndVoBoxForBottomSheet(
                             shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                         )
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 4.dp),
+                        .padding(horizontal = 16.dp)
+                        .padding(bottom = 4.dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
@@ -560,32 +577,39 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
                 }
-            }else{
-                if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
+            }
+            else if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
                     Row(
                         Modifier
                             .background(
-                                greenOnline,
+                                when (fetchBorderColorForVillage(stepId, statusId)) {
+                                    0, 2 -> white
+                                    1, 3 -> stepBoxActiveColor
+                                    4 -> greenLight
+                                    else -> white
+                                },
                                 shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
                             )
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 4.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Icon(
                             painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
                             contentDescription = null,
-                            tint = white
+                            tint = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else blueDark
                         )
                         Text(
                             text = stringResource( if(stepId == 44) R.string.vo_endorsement_completed_village_banner_text else { if(statusId==StepStatus.COMPLETED.ordinal)  R.string.bpc_verification_completed_village_banner_text else  R.string.vo_endorsement_completed_village_banner_text} ),
-                            color = white,
+                            color = if (fetchBorderColorForVillage(stepId, statusId) == 4) greenOnline else textColorDark,
                             style = smallerTextStyle,
                             modifier = Modifier.absolutePadding(bottom = 3.dp)
                         )
                     }
-                }
+            } else {
+                Spacer(modifier = Modifier.fillMaxWidth().height(10.dp))
             }
 
         }
