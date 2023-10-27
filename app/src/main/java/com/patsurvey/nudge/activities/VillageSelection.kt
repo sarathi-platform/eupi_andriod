@@ -40,12 +40,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.graphics.Color.Companion.White
@@ -69,13 +67,11 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.dropDownBg
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
-import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.SearchWithFilterView
@@ -88,7 +84,6 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
-import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.showCustomToast
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -427,7 +422,11 @@ fun VillageAndVoBoxForBottomSheet(
             ) {
                 if (isUserBPC) {
                     when (fetchBorderColorForVillage(stepId, statusId)) {
-                        0 -> showCustomToast(context, context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                        0 -> showCustomToast(
+                            context,
+                            context.getString(R.string.village_is_not_vo_endorsed_right_now)
+                        )
+
                         else -> onVillageSeleted(index)
                     }
                 } else onVillageSeleted(index)
@@ -487,6 +486,7 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.constrainAs(textRef) {
                             top.linkTo(parent.top)
                             start.linkTo(iconRef.end)
+                            end.linkTo(radioRef.start)
                             width = Dimension.fillToConstraints
                         }
                     )
