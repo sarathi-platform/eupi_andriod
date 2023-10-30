@@ -1,10 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
+    <color name="blue_200">#90CAF9</color>
+    <color name="blue_500">#2196F3</color>
+    <color name="blue_700">#1976D2</color>
+    <color name="teal_50">#E0F2F1</color>
     <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_500">#009688</color>
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="blue_grey_700">#455A64</color>
+    <color name="grey_50_20">#20FAFAFA</color>
+    <color name="shimmer_color">#24ffffff</color>
+    <color name="gray_1">#6B5E5E</color>
+    <color name="gray_2">#747070</color>
+    <color name="gray_3">#DDDCDC</color>
+    <color name="blue_1">#036BB9</color>
+    <color name="blue_2">#0386D0</color>
+    <color name="red_1">#ff0000</color>
+    <color name="grey_button">#F2F4F8</color>
+
+    <color name="grey_lighter">#F7F7F7</color>
+    <color name="placeholder_color">#FCF6F0</color>
+    <color name="placeholder_91_color">#ACACAC</color>
+    <color name="resend_otp_color">#439A86</color>
+    <color name="text_didi_name_color">#693D30</color>
 </resources>

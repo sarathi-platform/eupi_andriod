@@ -1,18 +1,37 @@
 package com.nrlm.baselinesurvey
 
+import android.content.Context
+import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
+import androidx.navigation.compose.rememberNavController
+import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
+import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
+import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
+import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.ConnectionMonitor
+import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
+import dagger.hilt.android.AndroidEntryPoint
+import java.util.Locale
+import javax.inject.Inject
 
-class MainActivity : ComponentActivity() {
+@AndroidEntryPoint
+class MainActivity : ComponentActivity(), OnLocaleChangedListener {
+    private val localizationDelegate = LocalizationActivityDelegate(this)
+
+    @Inject
+    lateinit var sharedPrefs: PrefRepo
+
+    private lateinit var connectionLiveData: ConnectionMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -22,25 +41,78 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    ConstraintLayout() {
+                        val (networkBanner, mainContent) = createRefs()
+                        /*if (mViewModel.isLoggedIn.value) {
+                            NetworkBanner(
+                                modifier = Modifier
+                                    .constrainAs(networkBanner) {
+                                        top.linkTo(parent.top)
+                                        start.linkTo(parent.start)
+                                        end.linkTo(parent.end)
+                                        width = Dimension.fillToConstraints
+                                    },
+                                isOnline = isOnline.value
+                            )
+                        }*/
+                        Box(modifier = Modifier.constrainAs(mainContent){
+                            top.linkTo(/*if (mViewModel.isLoggedIn.value) networkBanner.bottom else */parent.top)
+                            start.linkTo(parent.start)
+                            bottom.linkTo(parent.bottom)
+                            height = Dimension.fillToConstraints
+                        }) {
+                            RootNavigationGraph(navController = rememberNavController(), sharedPrefs)
+                        }
+                    }
                 }
             }
         }
-    }
-}
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+        localizationDelegate.addOnLocaleChangedListener(this)
+        localizationDelegate.onCreate()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    The_nudgeTheme {
-        Greeting("Android")
+        connectionLiveData = BaselineCore.getConnectionMonitorLive()
+        connectionLiveData.observe(this) { isNetworkAvailable ->
+            BaselineCore.isOnline.value = isNetworkAvailable
+        }
+
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        connectionLiveData.removeObservers(this)
+    }
+
+    override fun attachBaseContext(newBase: Context) {
+        applyOverrideConfiguration(localizationDelegate.updateConfigurationLocale(newBase))
+        super.attachBaseContext(newBase)
+    }
+
+    override fun getApplicationContext(): Context {
+        return localizationDelegate.getApplicationContext(super.getApplicationContext())
+    }
+
+    override fun getResources(): Resources {
+        return localizationDelegate.getResources(super.getResources())
+    }
+
+    fun setLanguage(language: String?) {
+        localizationDelegate.setLanguage(this, language!!)
+    }
+
+    fun setLanguage(locale: Locale?) {
+        localizationDelegate.setLanguage(this, locale!!)
+    }
+
+    val currentLanguage: Locale
+        get() = localizationDelegate.getLanguage(this)
+
+    override fun onAfterLocaleChanged() {
+
+    }
+
+    override fun onBeforeLocaleChanged() {
+
+    }
+
 }
