@@ -34,6 +34,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -77,9 +78,6 @@ fun RadioQuestionBoxComponent(
 ) {
 
     var selectedIndex by remember { mutableIntStateOf(selectedOptionIndex) }
-    val questionDetailVisibilityState = remember {
-        mutableStateOf(false)
-    }
 
     Card(
         elevation = CardDefaults.cardElevation(
@@ -96,7 +94,10 @@ fun RadioQuestionBoxComponent(
     ) {
         Column(modifier = Modifier.background(white)) {
 
-            Column(Modifier.padding(vertical = dimen_16_dp, horizontal = dimen_16_dp), verticalArrangement = Arrangement.spacedBy(dimen_18_dp)) {
+            Column(
+                Modifier.padding(vertical = dimen_16_dp, horizontal = dimen_16_dp),
+                verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
+            ) {
                 Row {
                     Text(
                         text = "${index + 1}. ", style = defaultTextStyle,
@@ -116,7 +117,8 @@ fun RadioQuestionBoxComponent(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        (question.options?.sortedBy { it.optionValue } ?: emptyList()).forEachIndexed { index, optionsItem ->
+                        (question.options?.sortedBy { it.optionValue }
+                            ?: emptyList()).forEachIndexed { index, optionsItem ->
                             RadioButtonOptionComponent(
                                 modifier = Modifier.weight(1f),
                                 index = index,
@@ -154,72 +156,7 @@ fun RadioQuestionBoxComponent(
                 }
             }
             Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
-
-            Box(
-                Modifier
-                    .fillMaxWidth()
-                    .background(
-                        if (questionDetailVisibilityState.value)
-                            descriptionBoxBackgroundLightBlue
-                        else
-                            white
-                    ), contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    IconButton(onClick = {
-                        questionDetailVisibilityState.value = true
-                        questionDetailExpanded(index)
-                    }) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.info_icon),
-                            contentDescription = "question info button",
-                            Modifier.size(dimen_18_dp),
-                            tint = blueDark
-                        )
-                    }
-                    AnimatedVisibility(visible = questionDetailVisibilityState.value) {
-
-                        Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
-
-                        Column(
-                            modifier = Modifier.padding(horizontal = dimen_16_dp),
-                            verticalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_10_dp))
-                            HtmlText(
-                                text = question.questionSummary ?: BLANK_STRING,
-                                style = smallerTextStyleNormalWeight,
-                                color = blueDark,
-                                modifier = Modifier.padding(dimen_16_dp)
-                            )
-                            Button(
-                                onClick = {
-                                    questionDetailVisibilityState.value = !questionDetailVisibilityState.value
-                                }, shape = RoundedCornerShape(
-                                    roundedCornerRadiusDefault
-                                ), colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = blueDark,
-                                    contentColor = white
-                                )
-                            ) {
-                                Text(
-                                    text = "Ok",
-                                    color = white,
-                                    style = smallerTextStyle
-                                )
-                            }
-
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_10_dp))
-
-                        }
-                    }
-                }
-            }
+            InfoComponent(questionDetailExpanded, index, question)
         }
     }
 
@@ -231,7 +168,7 @@ fun RadioQuestionBoxComponent(
 fun RadioQuestionBoxComponentPreview(
     modifier: Modifier = Modifier,
 
-) {
+    ) {
     val question = QuestionEntity(
         id = 1,
         questionId = 1,
@@ -263,7 +200,7 @@ fun RadioQuestionBoxComponentPreview(
         questionImageUrl = "Section1_GovtService.webp",
     )
     Surface {
-        Column (Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
+        Column(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
             RadioQuestionBoxComponent(index = 0, question = question) {
 
             }

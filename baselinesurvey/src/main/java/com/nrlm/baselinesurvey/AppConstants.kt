@@ -134,6 +134,8 @@ const val LOW_SCORE = "LOW SCORE"
 const val DIDI_REJECTED = "REJECTED"
 const val DIDI_NOT_AVAILABLE= "NOT_AVAILABLE"
 const val TYPE_RADIO_BUTTON = "RadioButton"
+const val TYPE_LIST = "List"
+const val TYPE_GRID = "Grid"
 
 const val ANSWER_TYPE_YES = "OPTION_A"
 const val ANSWER_TYPE_NO = "OPTION_B"

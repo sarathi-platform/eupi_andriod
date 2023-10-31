@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +20,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Surface
@@ -39,15 +37,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.TYPE_GRID
+import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
+import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -58,7 +58,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
@@ -69,10 +68,11 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun QuestionScreen(
     modifier: Modifier = Modifier,
@@ -113,7 +113,7 @@ fun QuestionScreen(
                         /*.height(((2 * screenHeight) / 3).dp)*/
                     ) {
 
-                        Column() {
+                        Column {
 //                        BaselineLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                             Box(
                                 modifier = Modifier
@@ -211,7 +211,10 @@ fun QuestionScreen(
                                         Spacer(modifier = Modifier.width(dimen_4_dp))
                                     }*/
                                     if (!sectionDetails.sectionName.equals(NO_SECTION, true))
-                                        Text(text = sectionDetails.sectionName, color = textColorDark)
+                                        Text(
+                                            text = sectionDetails.sectionName,
+                                            color = textColorDark
+                                        )
                                 }
                             },
                             navigationIcon = {
@@ -224,7 +227,10 @@ fun QuestionScreen(
                                         if (!sectionDetails.sectionName.equals(NO_SECTION, true))
                                             navController.popBackStack()
                                         else
-                                            navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
+                                            navController.popBackStack(
+                                                HomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                                false
+                                            )
                                     })
 
                             },
@@ -276,17 +282,8 @@ fun QuestionScreen(
                     itemsIndexed(
                         items = sectionDetails.questionList ?: emptyList()
                     ) { index, question ->
-                        when (question?.type) {
-                            TYPE_RADIO_BUTTON -> {
-                                RadioQuestionBoxComponent(index = index, question = question) {
-                                    scope.launch {
-                                        listState.animateScrollToItem(it+3, -10)
-                                    }
-                                }
-                            }
 
-                            else -> {}
-                        }
+                        CreateQuestions(question, index, scope, listState)
                     }
                     item {
                         Spacer(modifier = Modifier.width(dimen_24_dp))
@@ -294,5 +291,43 @@ fun QuestionScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun CreateQuestions(
+    question: QuestionEntity?,
+    index: Int,
+    scope: CoroutineScope,
+    listState: LazyListState
+) {
+    when (question?.type) {
+        TYPE_RADIO_BUTTON -> {
+            RadioQuestionBoxComponent(index = index, question = question) {
+                scope.launch {
+                    listState.animateScrollToItem(it + 3, -10)
+                }
+            }
+        }
+
+        TYPE_LIST -> {
+            ListTypeQuestion(
+                question = question,
+                onAnswerSelection = {},
+                questionDetailExpanded = {},
+                index = index
+            )
+        }
+
+        TYPE_GRID -> {
+            GridTypeComponent(
+                question = question,
+                index = index,
+                onAnswerSelection = {},
+                questionDetailExpanded = {}
+            )
+        }
+
+        else -> {}
     }
 }
