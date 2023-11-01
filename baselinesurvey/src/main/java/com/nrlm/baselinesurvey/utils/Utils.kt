@@ -235,7 +235,67 @@ val sampleSetcion1 = Sections(
                 )
             ),
             questionImageUrl = "Section1_ColourTV.webp",
-            )
+            ),
+        QuestionEntity(
+            id = 4,
+            questionId = 4,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+            order = 4,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ),
+        QuestionEntity(
+            id = 5,
+            questionId = 5,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+            order = 5,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        )
     )
 )
 val sampleSection2 = Sections(
@@ -386,7 +446,380 @@ val sampleSection2 = Sections(
                 )
             ),
             questionImageUrl = "Section1_ColourTV.webp",
-        )
+        ),
+        QuestionEntity(
+            id = 4,
+            questionId = 13,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+            order = 13,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ), QuestionEntity(
+            id = 5,
+            questionId = 14,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+            order = 14,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ), QuestionEntity(
+            id = 6,
+            questionId = 15,
+            questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
+            questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
+            order = 15,
+            type = "RadioButton",
+            gotoQuestionId = 2,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "YES",
+                    weight = 1,
+                    summary = "YES",
+                    optionValue = 1,
+                    optionImage = R.drawable.icon_check,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "NO",
+                    weight = 0,
+                    summary = "NO",
+                    optionValue = 0,
+                    optionImage = R.drawable.icon_close,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_GovtService.webp",
+        ),
+        QuestionEntity(
+            id = 7,
+            questionId = 16,
+            questionDisplay = "How much is your current savings? (Select all that apply)",
+            questionSummary = "How much is your current savings? (Select all that apply)",
+            order = 16,
+            type = "Grid",
+            gotoQuestionId = 13,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "Bank",
+                    weight = 1,
+                    summary = "Bank",
+                    optionValue = 0,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "Cash at home",
+                    weight = 2,
+                    summary = "Cash at home",
+                    optionValue = 1,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 3,
+                    display = "General",
+                    weight = 3,
+                    summary = "General",
+                    optionValue = 3,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 4,
+                    display = "Other",
+                    weight = 4,
+                    summary = "Other",
+                    optionValue = 4,
+                    optionImage = 0,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_ColourTV.webp",
+        ),
+        QuestionEntity(
+            id = 8,
+            questionId = 17,
+            questionDisplay = "How much is your current savings? (Select all that apply)",
+            questionSummary = "How much is your current savings? (Select all that apply)",
+            order = 17,
+            type = "Grid",
+            gotoQuestionId = 13,
+            options = listOf(
+                OptionsItem(
+                    optionId = 1,
+                    display = "Bank",
+                    weight = 1,
+                    summary = "Bank",
+                    optionValue = 0,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 2,
+                    display = "Cash at home",
+                    weight = 2,
+                    summary = "Cash at home",
+                    optionValue = 1,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 3,
+                    display = "General",
+                    weight = 3,
+                    summary = "General",
+                    optionValue = 3,
+                    optionImage = 0,
+                    optionType = ""
+                ),
+                OptionsItem(
+                    optionId = 4,
+                    display = "Other",
+                    weight = 4,
+                    summary = "Other",
+                    optionValue = 4,
+                    optionImage = 0,
+                    optionType = ""
+                )
+            ),
+            questionImageUrl = "Section1_ColourTV.webp",
+        ),
+        QuestionEntity(
+            id = 9,
+            questionId = 18,
+            questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
+            questionSummary = "What is the <b>educational status </b> of adult members in the family?",
+            order = 18,
+            type =
+            "List",
+            gotoQuestionId =
+            22,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    30,
+                    display =
+                    "Atleast <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
+                    weight =
+                    0,
+                    summary =
+                    "Atleast 1 adult > Class 10",
+                    optionValue =
+                    1,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    31,
+                    display =
+                    "Atleast <b>1 adult</b> literate member who can read, write Bangla/ Kok Borok but has <b>not Passed Class 10</b>",
+                    weight =
+                    1,
+                    summary =
+                    "Atleast 1 literate adult < Class 10",
+                    optionValue =
+                    2,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    32,
+                    display =
+                    "\"<b>No adult</b> in the family is literate (cannot read or write Bangla / Kok-Borok)",
+                    weight =
+                    2,
+                    summary =
+                    "No literate adult",
+                    optionValue =
+                    3,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
+        QuestionEntity(
+            id = 10,
+            questionId = 26,
+            questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
+            questionSummary = "What is the <b>educational status </b> of adult members in the family?",
+            order = 26,
+            type =
+            "List",
+            gotoQuestionId =
+            22,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    30,
+                    display =
+                    "Atleast <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
+                    weight =
+                    0,
+                    summary =
+                    "Atleast 1 adult > Class 10",
+                    optionValue =
+                    1,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    31,
+                    display =
+                    "Atleast <b>1 adult</b> literate member who can read, write Bangla/ Kok Borok but has <b>not Passed Class 10</b>",
+                    weight =
+                    1,
+                    summary =
+                    "Atleast 1 literate adult < Class 10",
+                    optionValue =
+                    2,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    32,
+                    display =
+                    "\"<b>No adult</b> in the family is literate (cannot read or write Bangla / Kok-Borok)",
+                    weight =
+                    2,
+                    summary =
+                    "No literate adult",
+                    optionValue =
+                    3,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
+        QuestionEntity(
+            id = 11,
+            questionId = 29,
+            questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
+            questionSummary = "What is the <b>educational status </b> of adult members in the family?",
+            order = 29,
+            type =
+            "List",
+            gotoQuestionId =
+            22,
+            options = listOf(
+                OptionsItem(
+                    optionId =
+                    30,
+                    display =
+                    "Atleast <b>1 adult </b> literate member who has <b> Passed Class 10</b>",
+                    weight =
+                    0,
+                    summary =
+                    "Atleast 1 adult > Class 10",
+                    optionValue =
+                    1,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    31,
+                    display =
+                    "Atleast <b>1 adult</b> literate member who can read, write Bangla/ Kok Borok but has <b>not Passed Class 10</b>",
+                    weight =
+                    1,
+                    summary =
+                    "Atleast 1 literate adult < Class 10",
+                    optionValue =
+                    2,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                ),
+                OptionsItem(
+                    optionId =
+                    32,
+                    display =
+                    "\"<b>No adult</b> in the family is literate (cannot read or write Bangla / Kok-Borok)",
+                    weight =
+                    2,
+                    summary =
+                    "No literate adult",
+                    optionValue =
+                    3,
+                    optionImage =
+                    0,
+                    optionType =
+                    ""
+                )
+            ),
+            questionImageUrl =
+            "Section1_2wheeler.webp",
+        ),
     )
 )
 val sampleSetcion3 = Sections(
@@ -493,6 +926,7 @@ val sampleSetcion3 = Sections(
     )
 )
 val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
-val secondSampleList = listOf<Sections>(sampleSetcion3)
+val secondSampleList = listOf<Sections>(sampleSetcion1)
+
 
 
