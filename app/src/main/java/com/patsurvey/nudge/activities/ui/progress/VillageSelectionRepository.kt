@@ -2380,8 +2380,8 @@ class VillageSelectionRepository @Inject constructor(
     private fun savePATSummeryToServerForBpc(networkCallbackListener: NetworkCallbackListener, prefRepo: PrefRepo){
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                for(village in villageList) {
+//                val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+//                for(village in villageList) {
 
                     var optionList: List<OptionsItem>
                     val answeredDidiList: java.util.ArrayList<PATSummarySaveRequest> = arrayListOf()
@@ -2505,7 +2505,7 @@ class VillageSelectionRepository @Inject constructor(
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
-                                villageId = village.id,
+                                villageId = didi.villageId,
                                 surveyId = surveyId,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
@@ -2535,7 +2535,7 @@ class VillageSelectionRepository @Inject constructor(
                                             didiDao.updateNeedToPostPAT(
                                                 false,
                                                 didiItem.id,
-                                                village.id
+                                                didiItem.villageId
                                             )
                                         }
                                         NudgeLogger.d("VillageSelectionRepository", "savePATSummeryToServer -> saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()")
@@ -2569,7 +2569,7 @@ class VillageSelectionRepository @Inject constructor(
                             }
                         }
                     }
-                }
+//                }
                 checkPendingPatStatusForBpc(prefRepo, networkCallbackListener)
             } catch (ex: Exception) {
                 ex.printStackTrace()
