@@ -49,6 +49,7 @@ import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementSummaryScre
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.navigation.AuthScreen
 import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.ADD_DIDI_BLANK_ID
 import com.patsurvey.nudge.utils.ARG_COMPLETION_MESSAGE
@@ -95,9 +96,19 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 },
                 onNavigateToSetting = {
                     navController.navigate(Graph.SETTING_GRAPH)
+                },
+                onBackClick = {
+
                 }
             )
         }
+
+        composable(route = HomeScreens.VILLAGE_SELECTION_SCREEN.route) {
+            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }
+        }
+
 
         composable(route = HomeScreens.DIDI_SCREEN.route) {
             DidiScreen(
@@ -133,6 +144,8 @@ sealed class HomeScreens(val route: String) {
     object BPC_PROGRESS_SCREEN : HomeScreens(route = "bpc_progress_screen")
 
     object DIDI_SCREEN : HomeScreens(route = "didi_screen/{$ARG_PAGE_FROM}")
+
+    object VILLAGE_SELECTION_SCREEN : HomeScreens(route = "home_village_selection_screen")
 }
 
 fun NavGraphBuilder.detailsNavGraph(navController: NavHostController) {
@@ -1016,12 +1029,6 @@ fun NavGraphBuilder.bpcDidiListNavGraph(navController: NavHostController) {
                 message = it.arguments?.getString(ARG_COMPLETION_MESSAGE) ?: ""
             ) {
                 navController.navigate(BpcDidiListScreens.BPC_SCORE_COMPARISION_SCREEN.route)
-//                navController.navigate(Graph.HOME) {
-//                    popUpTo(HomeScreens.BPC_PROGRESS_SCREEN.route) {
-//                        inclusive = true
-//                    }
-//                }
-
             }
         }
 

@@ -59,5 +59,21 @@ data class BpcSummaryEntity(
                 villageId = 0
             )
         }
+
+        fun getEmptySummaryForVillage(villageId: Int): BpcSummaryEntity {
+            return BpcSummaryEntity(
+                id = 0,
+                cohortCount = 0,
+                mobilisedCount = 0,
+                poorDidiCount = 0,
+                sentVoEndorsementCount = 0,
+                voEndorsedCount = 0,
+                villageId = villageId
+            )
+        }
     }
-}
+
+    fun isSummaryEmpty(): Boolean {
+        return cohortCount != 0 && mobilisedCount != 0 && poorDidiCount != 0 && sentVoEndorsementCount != 0 && voEndorsedCount != 0
+    }
+ }

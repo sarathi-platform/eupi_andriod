@@ -177,7 +177,7 @@ fun DidiItemCardForPatSummary(
                             contentDescription = "home image",
                             modifier = Modifier
                                 .width(30.dp)
-                                .height(30.dp)
+                                .height(DidiItemCardForPatSummary30.dp)
                                 .padding(5.dp)
                                 .layoutId("successImage")
                         )*/
@@ -192,6 +192,17 @@ fun DidiItemCardForPatSummary(
                         ),
                         textAlign = TextAlign.Start,
                         modifier = Modifier.layoutId("homeImage")
+                    )
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
                     )
                 }
             }
@@ -342,19 +353,8 @@ fun DidiItemCardForVoForSummary(
                         }
                     }
 
-
-                    Image(
-                        painter = painterResource(id = R.drawable.home_icn),
-                        contentDescription = "home image",
-                        modifier = Modifier
-                            .width(18.dp)
-                            .height(14.dp)
-                            .layoutId("homeImage"),
-                        colorFilter = ColorFilter.tint(textColorBlueLight)
-                    )
-
                     Text(
-                        text = didi.cohortName,
+                        text = didi.guardianName,
                         style = TextStyle(
                             color = textColorBlueLight,
                             fontSize = 12.sp,
@@ -362,10 +362,19 @@ fun DidiItemCardForVoForSummary(
                             fontFamily = NotoSans
                         ),
                         textAlign = TextAlign.Start,
-                        modifier = Modifier.layoutId("village")
+                        modifier = Modifier.layoutId("homeImage")
                     )
-
-
+                    Text(
+                        text = didi.address,
+                        style = TextStyle(
+                            color = textColorBlueLight,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = NotoSans
+                        ),
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.layoutId("houseNumber_1")
+                    )
                 }
             }
             Divider(
@@ -420,6 +429,7 @@ private fun decoupledConstraints(): ConstraintSet {
         val didiName = createRefFor("didiName")
         val didiRow = createRefFor("didiRow")
         val homeImage = createRefFor("homeImage")
+        val houseNumber_1 = createRefFor("houseNumber_1")
         val village = createRefFor("village")
         val expendArrowImage = createRefFor("expendArrowImage")
         val didiDetailLayout = createRefFor("didiDetailLayout")
@@ -449,10 +459,15 @@ private fun decoupledConstraints(): ConstraintSet {
             width = Dimension.fillToConstraints
         }
         constrain(homeImage) {
-            top.linkTo(village.top, margin = 6.dp)
-            bottom.linkTo(village.bottom)
-            start.linkTo(didiName.start)
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(didiName.bottom)
         }
+
+        constrain(houseNumber_1) {
+            start.linkTo(didiImage.end, margin = 10.dp)
+            top.linkTo(homeImage.bottom)
+        }
+
         constrain(expendArrowImage) {
             top.linkTo(didiName.top)
             bottom.linkTo(village.bottom)

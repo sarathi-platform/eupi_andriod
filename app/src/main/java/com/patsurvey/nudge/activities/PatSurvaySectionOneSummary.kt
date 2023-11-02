@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
@@ -98,8 +99,13 @@ fun PatSurvaySectionSummaryScreen(
     }else{
         BackHandler {
             if(patSectionSummaryViewModel.didiEntity.value.section1Status != PatSurveyStatus.COMPLETED.ordinal) {
-                if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal)
-                    navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
+                if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_ONE_PAGE.ordinal) {
+                    if (patSectionSummaryViewModel.prefRepo.isUserBPC()) {
+                        navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
+                    } else {
+                        navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_EXCLUSION/0")
+                    }
+                }
                 else navController.popBackStack()
             }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
         }
@@ -202,7 +208,7 @@ fun PatSurvaySectionSummaryScreen(
                                }
                            } ?: BLANK_STRING,
                            optionValue =  answer?.optionValue?:0,
-                           isArrowVisible = if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)),
+                           isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi) /*if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal))*/,
                            questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
 
                            patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
@@ -248,7 +254,6 @@ fun PatSurvaySectionSummaryScreen(
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
                         TYPE_EXCLUSION)
                     if (showPatCompletion.value) {
-//                        patSectionSummaryViewModel.calculateDidiScore(didi.value.id)
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
                             PatSurveyStatus.COMPLETED.ordinal
@@ -262,7 +267,6 @@ fun PatSurvaySectionSummaryScreen(
                 } else {
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                         TYPE_EXCLUSION)
-//                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_ONE_PAGE.ordinal)
                     if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
                         navController.navigate("bpc_yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
                     }else navController.navigate("yes_no_question_screen/${didi.value.id}/$TYPE_INCLUSION/0")
@@ -271,6 +275,15 @@ fun PatSurvaySectionSummaryScreen(
             negativeButtonOnClick = {/*Nothing to do here*/ }
         )
     }
+}
+
+fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>):Boolean{
+    Log.d("TAG", "isArrowVisible: ${viewModel.prefRepo.questionScreenOpenFrom()}  ::${didi.value.id} ::${didi.value.name} :: ${viewModel.isPATStepComplete.value}")
+    return if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal)
+        true
+    else if(viewModel.prefRepo.isUserBPC() && viewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal){
+        true
+    }else didi.value.patEdit && (viewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)
 }
 
 @Composable
@@ -331,18 +344,22 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+                Text(
+                    text = didi.guardianName,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
                 )
                 Text(
-                    text = didi.cohortName,
+                    text = didi.address,
                     style = TextStyle(
                         color = textColorDark,
                         fontSize = 14.sp,
@@ -361,7 +378,7 @@ fun PatSummeryScreenDidiDetailBoxForSectionOne(
 fun PatSummeryScreenDidiDetailBoxPreview(){
     val configuration = LocalConfiguration.current
     val screenHeight = configuration.screenHeightDp
-   val didi=DidiEntity(0,"",0,"Didi1","Hno 123", BLANK_STRING,"Husband", castId = 0,
+   val didi=DidiEntity(0,"",0,"Didi1","Hno 123", "Dada1","Husband", castId = 0,
        castName = "OBC", cohortId = 0, cohortName = "Tola1", createdDate = 457874, localPath = BLANK_STRING, villageId = 40,
        wealth_ranking = "POOR", needsToPost = false, modifiedDate = 654789, needsToPostRanking = false, patSurveyStatus = 0, shgFlag = SHGFlag.NOT_MARKED.value, ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value)
     PatSummeryScreenDidiDetailBoxForSectionOne(modifier = Modifier,screenHeight,didi)
@@ -388,7 +405,7 @@ fun SectionOneSummeryItem(
             Modifier
                 .fillMaxWidth()
                 .clickable {
-                    if(isArrowVisible)
+                    if (isArrowVisible)
                         onCardClick(index)
                 }, verticalAlignment = Alignment.CenterVertically) {
             if (questionImageUrl.isNotEmpty()){

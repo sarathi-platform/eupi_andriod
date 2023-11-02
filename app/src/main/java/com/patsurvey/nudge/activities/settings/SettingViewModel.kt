@@ -13,8 +13,6 @@ import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -76,8 +74,6 @@ class SettingViewModel @Inject constructor(
     val answerDao: AnswerDao,
     val numericAnswerDao: NumericAnswerDao,
     val questionDao: QuestionListDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao
 
@@ -108,7 +104,7 @@ class SettingViewModel @Inject constructor(
     var syncHelper = SyncHelper(this@SettingViewModel,prefRepo,apiInterface,tolaDao,stepsListDao,exceptionHandler, villegeListDao, didiDao,job,showLoader,syncPercentage,answerDao,
         numericAnswerDao,
         questionDao)
-    var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,bpcSelectedDidiDao,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao,villegeListDao)
+    var bpcSyncHelper = SyncBPCDataOnServer(this@SettingViewModel,prefRepo,apiInterface,exceptionHandler,job,didiDao,stepsListDao, questionDao,syncBPCPercentage, answerDao,numericAnswerDao,villegeListDao)
     fun isFormAAvailableForVillage(context: Context, villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val formCFilePath =
@@ -294,7 +290,7 @@ class SettingViewModel @Inject constructor(
         }
     }
 
-    private fun isBPCScoreSaved() : Boolean{
+    fun isBPCScoreSaved() : Boolean{
         val villageList = villegeListDao.getAllVillages(prefRepo.getAppLanguageId()?:0)
         for(village in villageList) {
             val isBpcScoreSaved = prefRepo.getPref(
@@ -304,6 +300,8 @@ class SettingViewModel @Inject constructor(
             )
             if(isBpcScoreSaved)
                 return isBpcScoreSaved
+            else
+                return false
             NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
         }
         return false
@@ -665,8 +663,6 @@ class SettingViewModel @Inject constructor(
             stepsListDao.deleteAllStepsFromDB()
             userDao.deleteAllUserDetail()
             villegeListDao.deleteAllVilleges()
-            bpcSelectedDidiDao.deleteAllDidis()
-            bpcNonSelectedDidiDao.deleteAllDidis()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
             clearSharedPreference()

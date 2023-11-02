@@ -91,6 +91,7 @@ import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.EXPANSTION_TRANSITION_DURATION
+import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 
 @Composable
@@ -365,7 +366,13 @@ fun ScoreComparisionScreen(
                         }
 
                         itemsIndexed(filterdDidiList.value) { index, didi ->
-                            ScoreComparisonDidiCard(modifier = Modifier, didiEntity = didi, viewModel = viewModel, passingScore = viewModel.questionPassingScore.collectAsState().value) { didiEntity ->
+                            ScoreComparisonDidiCard(
+                                modifier = Modifier,
+                                didiEntity = didi,
+                                viewModel = viewModel,
+                                passingScore = viewModel.questionPassingScore.collectAsState().value
+                            ) { didiEntity ->
+                                viewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.DIDI_SCORE_LIST_PAGE.ordinal)
                                 navController.navigate("bpc_pat_complete_didi_summary_screen/${didiEntity.id}/${ARG_FROM_PAT_SUMMARY_SCREEN}")
                             }
                             Spacer(modifier = Modifier.height(10.dp))
@@ -492,7 +499,7 @@ fun ScoreComparisonDidiCard(
                     ScoreItem(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_score_text), itemType = BPC_USER_TYPE, modifier = Modifier.weight(1f))
                 else
                     ScoreItemExclusion(didiEntity = didiEntity, itemName = stringResource(R.string.bpc_result_text),
-                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1f))
+                        exclusionResponse = viewModel.exclusionListResponse[didiEntity.id] ?: "", modifier = Modifier.weight(1.25f))
 
             }
 
@@ -611,7 +618,16 @@ fun ScoreItem(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = if (itemType.equals(CRP_USER_TYPE, true)) (didiEntity.crpScore ?: 0.0).toInt().toString() else (didiEntity.score ?: 0.0).toInt().toString(),
+                text =
+                if (itemType.equals(CRP_USER_TYPE, true)) {
+                    (didiEntity.crpScore ?: 0.0).toInt().toString()
+                } else {
+                    if (didiEntity.score != 0.0) {
+                        (didiEntity.score ?: 0.0).toInt().toString()
+                    } else {
+                        (didiEntity.bpcScore ?: 0.0).toInt().toString()
+                    }
+                },
                 color = textColorDark,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center),
@@ -635,21 +651,27 @@ fun ScoreItemExclusion(
 ) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier) {
         Text(
-            text = itemName,
+            text = itemName + " ",
             color = textColorDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = NotoSans
         )
-        Spacer(modifier = Modifier.width(2.dp))
         Text(
-            text = exclusionResponse,
+            text = stringResource(R.string.score_comparison_section_1_text),
             color = textColorDark,
             fontSize = 14.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = NotoSans,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
+        )
+        Spacer(modifier = Modifier.width(2.dp))
+        Icon(
+            painter = painterResource(id = R.drawable.not_sync_icon_complete),
+            contentDescription = "Not Passed Icon",
+            tint = Color(0xFFFF0000),
+            modifier = Modifier.absolutePadding(top = 3.dp)
         )
     }
 }

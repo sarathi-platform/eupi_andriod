@@ -55,6 +55,7 @@ import com.bumptech.glide.integration.compose.ExperimentalGlideComposeApi
 import com.bumptech.glide.integration.compose.GlideImage
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.PatSectionSummaryViewModel
+import com.patsurvey.nudge.activities.isArrowVisible
 import com.patsurvey.nudge.activities.ui.socialmapping.ShowDialog
 import com.patsurvey.nudge.activities.ui.theme.*
 import com.patsurvey.nudge.customviews.VOAndVillageBoxView
@@ -200,7 +201,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                           questionType =  answer?.type?: QuestionType.List.name,
                           questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                           isSummaryEnable = true,
-                          isArrowVisible = if (patSectionSummaryViewModel.prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal) true else (didi.value.patEdit && (patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)),
+                          isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                           questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
                           patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
@@ -293,18 +294,22 @@ fun PatSummeryScreenDidiDetailBox(
                 fontSize = 16.sp
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(4.dp),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = "home image",
-                    tint = Color.Black,
-                    modifier = Modifier.size(24.dp)
+                Text(
+                    text = didi.guardianName,
+                    style = TextStyle(
+                        color = textColorDark,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = NotoSans
+                    ),
+                    textAlign = TextAlign.Start,
                 )
                 Text(
-                    text = didi.cohortName,
+                    text = didi.address,
                     style = TextStyle(
                         color = textColorDark,
                         fontSize = 14.sp,

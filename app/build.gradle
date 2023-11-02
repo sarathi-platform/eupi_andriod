@@ -9,8 +9,8 @@ plugins {
     id 'com.google.firebase.crashlytics'
 
 }
-def version = "0.1.30"
-def prodVersion = "0.0.2"
+def version = "0.1.36"
+def prodVersion = "0.0.3"
 android {
     compileSdk 33
 
@@ -91,8 +91,6 @@ android {
     }
 
     buildFeatures {
-        dataBinding true
-        viewBinding true
         compose true
     }
     composeOptions {
@@ -156,6 +154,7 @@ dependencies {
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutines"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4"
 
     testImplementation "junit:junit:$junit"
     androidTestImplementation "androidx.test.ext:junit:1.1.5"
@@ -251,5 +250,8 @@ dependencies {
     implementation "androidx.test:core:1.4.1-alpha04"
     testImplementation "androidx.test:core:1.4.1-alpha04"
     androidTestImplementation "androidx.test:core:1.4.1-alpha04"
+    testImplementation "org.mockito:mockito-core:5.5.0"
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
 
 }

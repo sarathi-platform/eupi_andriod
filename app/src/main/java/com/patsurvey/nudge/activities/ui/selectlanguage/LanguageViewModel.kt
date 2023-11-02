@@ -21,9 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-  val prefRepo: PrefRepo,
-  val languageListDao: LanguageListDao,
-  val villageListDao: VillageListDao
+     val languageRepository: LanguageRepository
 ) :BaseViewModel(){
 
 
@@ -38,7 +36,7 @@ class LanguageViewModel @Inject constructor(
     private fun fetchLanguageList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val list=languageListDao.getAllLanguages()
+                val list=languageRepository.getAllLanguages()
                 withContext(Dispatchers.IO){
                     if (list.isNullOrEmpty()) {
                         _languageList.value = listOf(
@@ -78,13 +76,13 @@ class LanguageViewModel @Inject constructor(
     }
 
     fun updateSelectedVillage(languageId:Int,onVillageSelectionFailed:()->Unit) {
-        val villageId=prefRepo.getSelectedVillage().id
+        val villageId=languageRepository.getSelectedVillage().id
         job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
             withContext(Dispatchers.IO){
                 try {
-                    val villageEntity = villageListDao.fetchVillageDetailsForLanguage(villageId, languageId)
+                    val villageEntity = languageRepository.fetchVillageDetailsForLanguage(villageId, languageId)
                     if(villageEntity!=null){
-                        prefRepo.saveSelectedVillage(village = villageEntity)
+                        languageRepository.saveSelectedVillage(village = villageEntity)
                     }else onVillageSelectionFailed()
 
                 }catch (ex:Exception){

@@ -22,4 +22,8 @@ interface PoorDidiListDao {
     @Query("Delete from $POOR_DIDI_TABLE")
     fun deleteAllDidis()
 
+
+    @Query("DELETE from $POOR_DIDI_TABLE where villageId = :villageId")
+    fun deleteAllDidisForVillage(villageId: Int)
+
 }

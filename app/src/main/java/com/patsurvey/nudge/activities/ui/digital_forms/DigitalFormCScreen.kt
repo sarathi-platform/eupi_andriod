@@ -528,7 +528,6 @@ fun DigitalFormCScreen(
 
             Row( modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
             ) {
                 Button(
                     onClick = {

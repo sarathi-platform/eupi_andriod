@@ -5,6 +5,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.utils.STEPS_LIST_TABLE
 
@@ -75,5 +76,13 @@ interface StepsListDao {
     @Query("SELECT * FROM $STEPS_LIST_TABLE Where orderNumber = :orderNumber and villageId = :villageId")
     fun getStepByOrder(orderNumber: Int,villageId: Int): StepListEntity
 
+    @Query("DELETE from $STEPS_LIST_TABLE where villageId = :villageId")
+    fun deleteAllStepsForVillage(villageId: Int)
+
+    @Query("DELETE from $STEPS_LIST_TABLE where villageId = :villageId and id = :id")
+    fun deleteStepForVillage(villageId: Int, id: Int)
+
+    @Query("UPDATE $STEPS_LIST_TABLE SET needToPost = :needsToPost WHERE orderNumber =:orderNumber and villageId = :villageId")
+    fun updateNeedToPostByOrderNumber(orderNumber: Int, villageId: Int, needsToPost: Boolean)
 
 }

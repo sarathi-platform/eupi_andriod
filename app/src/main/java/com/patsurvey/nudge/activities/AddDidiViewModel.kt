@@ -189,7 +189,13 @@ class AddDidiViewModel @Inject constructor(
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("AddDidiViewModel", "deleteDidisToNetwork -> called")
             try {
-                val didiList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+                val didiList = didiDao.getDidisToBeDeletedForVillage(
+                    villageId = villageId,
+                    activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                    needsToPostDeleteStatus = true,
+                    transactionId = "",
+                    serverId = 0
+                )
                 val jsonDidi = JsonArray()
                 if (didiList.isNotEmpty()) {
                     for (didi in didiList) {
@@ -1044,9 +1050,13 @@ class AddDidiViewModel @Inject constructor(
                 NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> completeStepList: $completeStepList \n\n")
                 completeStepList.let {
                     it.forEach { newStep ->
-                        if (newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber) {
-                            NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: true" +
-                                    "newStep.orderNumber: ${newStep.orderNumber}")
+                        if (newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }
+                                .indexOf(2)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
+                            NudgeLogger.d(
+                                "AddDidiViewModel",
+                                "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: true" +
+                                        "newStep.orderNumber: ${newStep.orderNumber}"
+                            )
                             if (filterDidiList.isEmpty()) {
                                 stepsListDao.markStepAsCompleteOrInProgress(
                                     newStep.stepId,
@@ -1060,7 +1070,7 @@ class AddDidiViewModel @Inject constructor(
                                     villageId
                                 )
                             }
-                            stepsListDao.updateNeedToPost(newStep.stepId, villageId, true)
+                            stepsListDao.updateNeedToPost(newStep.id, villageId, true)
                         } else {
                             NudgeLogger.d("AddDidiViewModel", "setSocialMappingINProgress -> newStep.orderNumber > stepList[stepList.map { steps -> steps.orderNumber }.indexOf(2)].orderNumber: false, newStep.orderNumber: ${newStep.orderNumber}")
                         }
@@ -1078,7 +1088,7 @@ class AddDidiViewModel @Inject constructor(
                         completeStepList.let {
                             it.forEach { newStep ->
                                 if (newStep.orderNumber > stepList[stepList.map { it.orderNumber }
-                                        .indexOf(2)].orderNumber) {
+                                        .indexOf(2)].orderNumber && newStep.orderNumber < BPC_VERIFICATION_STEP_ORDER) {
                                     if (newStep.workFlowId > 0) {
                                         apiRequest.add(
                                             EditWorkFlowRequest(
@@ -1219,7 +1229,7 @@ class AddDidiViewModel @Inject constructor(
             didiDao.deleteDidiOffline(
                 id = didi.id,
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
-                needsToPostDeleteStatus = true
+                needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
             _didiList.value = didiDao.getAllDidisForVillage(villageId)
             filterDidiList = didiDao.getAllDidisForVillage(villageId)
@@ -1274,7 +1284,7 @@ class AddDidiViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 val didisToBeDeleted =
-                    didiDao.getDidisToBeDeleted(villageId = villageId, needsToPostDeleteStatus = true)
+                    didiDao.getDidisToBeDeletedForVillage(villageId = villageId, activeStatus = DidiStatus.DIID_DELETED.ordinal, needsToPostDeleteStatus = true, transactionId = "", serverId = 0)
                 if (didisToBeDeleted.isNotEmpty()) {
                     val jsonArray = JsonArray()
                     didisToBeDeleted.forEach { didi ->

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -23,11 +24,15 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
@@ -66,8 +72,10 @@ import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.greyRadioButton
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.activities.ui.theme.stepBoxActiveColor
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
+import com.patsurvey.nudge.activities.ui.theme.yellowBg
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
@@ -78,8 +86,11 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
 import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.StepStatus
+import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.showCustomToast
 
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun VillageSelectionScreen(
     modifier: Modifier = Modifier,
@@ -97,8 +108,6 @@ fun VillageSelectionScreen(
 
     val snackState = rememberSnackBarState()
 
-
-    var showToast by remember { mutableStateOf(false) }
     if (viewModel.networkErrorMessage.value.isNotEmpty()) {
         if (BuildConfig.DEBUG)
             showCustomToast(context, viewModel.networkErrorMessage.value)
@@ -122,6 +131,17 @@ fun VillageSelectionScreen(
     val showRetryLoader = remember {
         mutableStateOf(false)
     }
+
+    val pullRefreshState = rememberPullRefreshState(
+        viewModel.showLoader.value,
+        {
+            if ((context as MainActivity).isOnline.value ?: false) {
+                if (viewModel.prefRepo.isUserBPC()) viewModel.refreshBpcData(context) else viewModel.refreshCrpData(context)
+            } else {
+                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+            }
+
+        })
 
     if (viewModel.showLoader.value) {
         Scaffold(
@@ -192,7 +212,6 @@ fun VillageSelectionScreen(
                     actions = {
                         IconButton(onClick = {
                             viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
                             onNavigateToSetting()
                         }) {
                             Icon(
@@ -213,6 +232,7 @@ fun VillageSelectionScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(it)
+                    .pullRefresh(pullRefreshState)
             ) {
                 if (RetryHelper.retryApiList.contains(ApiType.VILLAGE_LIST_API)) {
                     Column(
@@ -224,15 +244,8 @@ fun VillageSelectionScreen(
                             .fillMaxWidth()
                             .then(modifier)
                     ) {
-                        /*Text(
-                        text = stringResource(R.string.seletc_village_screen_text),
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 24.sp, color = textColorDark,
-                        modifier = Modifier
-                    )*/
 
-                        Row() {
+                        Row{
                             if (showRetryLoader.value) {
                                 Box(
                                     modifier = Modifier
@@ -282,32 +295,6 @@ fun VillageSelectionScreen(
                             .then(modifier)
                     ) {
 
-                        /*Row(modifier = Modifier
-                        .padding(start = 16.dp, top = 12.dp)
-                        .fillMaxWidth()) {
-                        Text(
-                            text = stringResource(R.string.seletc_village_screen_text),
-                            fontFamily = NotoSans,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 24.sp, color = textColorDark,
-                            modifier = Modifier.weight(1f)
-                        )
-                        IconButton(onClick = {
-                            viewModel.prefRepo.saveSettingOpenFrom(PageFrom.VILLAGE_PAGE.ordinal)
-//                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-                            onNavigateToSetting()
-                        }) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.more_icon),
-                                contentDescription = "more action button",
-                                tint = blueDark,
-                                modifier = Modifier
-                                    .padding(10.dp)
-                            )
-                        }
-                    }*/
-
                         LazyColumn(verticalArrangement = Arrangement.spacedBy(16.dp)) {
 //                item { Spacer(modifier = Modifier.height(4.dp)) }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")
@@ -317,9 +304,12 @@ fun VillageSelectionScreen(
                                     voName = village.federationName,
                                     index = index,
                                     selectedIndex = viewModel.villageSelected.value,
-                                    isBpcUser = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
-                                    isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id]
-                                        ?: false
+                                    isUserBPC = if (villages.isNotEmpty()) viewModel.prefRepo.isUserBPC() else false,
+                                    isVoEndorsementComplete = (if(!viewModel.prefRepo.isUserBPC()) viewModel.isVoEndorsementComplete.value[village.id] else true)
+                                        ?: false,
+                                    stepId = village.stepId,
+                                    statusId = village.statusId,
+                                    context = context
                                 ) {
                                     viewModel.villageSelected.value = it
                                     viewModel.updateSelectedVillage()
@@ -349,104 +339,43 @@ fun VillageSelectionScreen(
                             isArrowRequired = false,
                             isActive = villages.isNotEmpty()
                         ) {
-                            viewModel.updateSelectedVillage()
-                            navController.popBackStack()
-                            navController.navigate(
-                                "home_graph/${
-                                    viewModel.prefRepo.getPref(
-                                        PREF_KEY_TYPE_NAME, ""
-                                    ) ?: ""
-                                }"
-                            )
+                            if (viewModel.prefRepo.isUserBPC()) {
+                               val stepId= villages[viewModel.villageSelected.value].stepId
+                               val statusId= villages[viewModel.villageSelected.value].statusId
+                                when (fetchBorderColorForVillage(stepId, statusId)) {
+                                    0 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                                    else -> {
+                                        viewModel.updateSelectedVillage()
+                                        navController.popBackStack()
+                                        navController.navigate(
+                                            "home_graph/${
+                                                viewModel.prefRepo.getPref(
+                                                    PREF_KEY_TYPE_NAME, ""
+                                                ) ?: ""
+                                            }"
+                                        )
+                                    }
+                                }
+                            } else {
+                                viewModel.updateSelectedVillage()
+                                navController.popBackStack()
+                                navController.navigate(
+                                    "home_graph/${
+                                        viewModel.prefRepo.getPref(
+                                            PREF_KEY_TYPE_NAME, ""
+                                        ) ?: ""
+                                    }"
+                                )
+                            }
+
                         }
                     }
                 }
-
-            }
-        }
-    }
-
-
-}
-
-@Composable
-fun VillageAndVoBox(
-    tolaName: String = "",
-    voName: String = "",
-    index: Int,
-    selectedIndex: Int,
-    modifier: Modifier = Modifier,
-    onVillageSeleted: (Int) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(
-                width = 1.dp,
-                color = if (index == selectedIndex) blueDark else greyBorder,
-                shape = RoundedCornerShape(6.dp)
-            )
-            .shadow(
-                elevation = 16.dp,
-                ambientColor = White,
-                spotColor = Black,
-                shape = RoundedCornerShape(6.dp),
-            )
-            .clip(RoundedCornerShape(6.dp))
-            .clickable(
-                interactionSource = remember { MutableInteractionSource() },
-                indication = rememberRipple(
-                    bounded = true,
-                    color = Black
-                )
-            ) {
-                onVillageSeleted(index)
-            }
-            .background(if (index == selectedIndex) blueDark else White)
-            .then(modifier),
-        elevation = 10.dp
-    ) {
-        Column(
-            modifier = Modifier
-                .background(if (index == selectedIndex) blueDark else White)
-        ) {
-            Row(modifier = Modifier.padding(start = 16.dp, end = 16.dp, top = 16.dp)) {
-                Icon(
-                    painter = painterResource(id = R.drawable.home_icn),
-                    contentDescription = null,
-                    tint = if (index == selectedIndex) White else textColorDark,
-                )
-                Text(
-                    text = " $tolaName",
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .absolutePadding(left = 4.dp)
-                    .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-            ) {
-                Text(
-                    text = "VO: ",
-                    modifier = Modifier,
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
-                )
-                Text(
-                    text = voName,
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    color = if (index == selectedIndex) White else textColorDark,
-                    fontSize = 14.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Medium
+                PullRefreshIndicator(
+                    refreshing = viewModel.showLoader.value,
+                    state = pullRefreshState,
+                    modifier = Modifier.align(Alignment.TopCenter),
+                    contentColor = blueDark,
                 )
             }
         }
@@ -456,14 +385,16 @@ fun VillageAndVoBox(
 @Composable
 fun VillageAndVoBoxForBottomSheet(
     modifier: Modifier = Modifier,
+    context: Context,
     tolaName: String = "",
     voName: String = "",
     index: Int,
+    isUserBPC:Boolean,
+    isVoEndorsementComplete:Boolean =false,
     selectedIndex: Int,
-    isBpcUser: Boolean = false,
-    isVoEndorsementComplete: Boolean = false,
-    onVillageSeleted: (Int) -> Unit,
-
+    statusId:Int=0,
+    stepId:Int=0,
+    onVillageSeleted: (Int) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -481,16 +412,39 @@ fun VillageAndVoBoxForBottomSheet(
                     color = Black
                 )
             ) {
-                onVillageSeleted(index)
+                if (isUserBPC) {
+                    when (fetchBorderColorForVillage(stepId, statusId)) {
+                        0 -> showCustomToast(context, context.getString(R.string.village_is_not_vo_endorsed_right_now))
+                        else -> onVillageSeleted(index)
+                    }
+                } else onVillageSeleted(index)
+
+
             }
             .background(if (index == selectedIndex) dropDownBg else White)
             .then(modifier),
         elevation = 10.dp
     ) {
-        Column() {
+        Column {
             Column(
                 modifier = Modifier
-                    .background(if (index == selectedIndex) dropDownBg else White)
+                    .background(
+                        if (isUserBPC) {
+                            when (fetchBorderColorForVillage(stepId, statusId)) {
+                                0, 2, 4 -> white
+                                1, 3 -> stepBoxActiveColor
+                                else -> white
+                            }
+                        } else if (index == selectedIndex) dropDownBg else White
+                    )
+                    .alpha(
+                        if (isUserBPC) {
+                            when (fetchBorderColorForVillage(stepId, statusId)) {
+                                0 -> .5f
+                                else -> 1f
+                            }
+                        } else 1f
+                    )
                     .padding(vertical = 4.dp)
                     .fillMaxWidth()
             ) {
@@ -569,7 +523,7 @@ fun VillageAndVoBoxForBottomSheet(
                     )
                 }
             }
-            if (isVoEndorsementComplete) {
+            if(!isUserBPC && isVoEndorsementComplete){
                 Row(
                     Modifier
                         .background(
@@ -593,7 +547,47 @@ fun VillageAndVoBoxForBottomSheet(
                         modifier = Modifier.absolutePadding(bottom = 3.dp)
                     )
                 }
+            }else{
+                if ((stepId == 44 && statusId == StepStatus.COMPLETED.ordinal) || stepId == 45) {
+                    Row(
+                        Modifier
+                            .background(
+                                greenOnline,
+                                shape = RoundedCornerShape(bottomStart = 6.dp, bottomEnd = 6.dp)
+                            )
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.icon_feather_check_circle_white),
+                            contentDescription = null,
+                            tint = white
+                        )
+                        Text(
+                            text = stringResource( if(stepId == 44) R.string.vo_endorsement_completed_village_banner_text else { if(statusId==StepStatus.COMPLETED.ordinal)  R.string.bpc_verification_completed_village_banner_text else  R.string.vo_endorsement_completed_village_banner_text} ),
+                            color = white,
+                            style = smallerTextStyle,
+                            modifier = Modifier.absolutePadding(bottom = 3.dp)
+                        )
+                    }
+                }
             }
+
         }
     }
+}
+
+fun fetchBorderColorForVillage(stepId: Int,statusId: Int) :Int{
+    return if (stepId == 44 && (statusId == StepStatus.INPROGRESS.ordinal
+                || statusId == StepStatus.COMPLETED.ordinal)) {
+        1
+    } else if (stepId == 45 && statusId == StepStatus.NOT_STARTED.ordinal) {
+        2
+    } else if (stepId == 45 && statusId == StepStatus.INPROGRESS.ordinal) {
+        3
+    } else if (stepId == 45 && statusId == StepStatus.COMPLETED.ordinal) {
+        4
+    } else 0
 }

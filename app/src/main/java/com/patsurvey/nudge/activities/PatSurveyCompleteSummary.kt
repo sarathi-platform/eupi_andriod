@@ -70,12 +70,8 @@ fun PatSurveyCompleteSummary(
     didiId: Int,
     fromScreen: String
 ) {
-
     LaunchedEffect(key1 = true) {
-        patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
-    }
-
-    LaunchedEffect(key1 = true) {
+        patSectionSummaryViewModel.updatePATEditAndStepStatus(didiId)
         patSectionSummaryViewModel.setDidiDetailsFromDb(didiId)
         patSectionSummaryViewModel.getQuestionAnswerListForSectionOne(didiId)
     }
@@ -150,7 +146,9 @@ fun PatSurveyCompleteSummary(
                     startPadding = 0.dp
                 )
                 Text(
-                    text = if (patSectionSummaryViewModel.prefRepo.isUserBPC()) stringResource(id = R.string.bpc_pat_survey_complete) else stringResource(id = R.string.pat_survey_complete),
+                    text = if (patSectionSummaryViewModel.prefRepo.isUserBPC()) stringResource(id = R.string.bpc_pat_survey_complete) else stringResource(
+                        id = R.string.pat_survey_complete
+                    ),
                     modifier = Modifier
                         .layoutId("sectionText"),
                     color = textColorDark,
@@ -217,9 +215,10 @@ fun PatSurveyCompleteSummary(
                                 }
                             } ?: BLANK_STRING,
                             optionValue =  answer?.optionValue?:0,
-                            isArrowVisible = didi.value.patEdit,
+                            isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                             questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
-                            if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
+                            if ((patSectionSummaryViewModel.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                                || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
                                 patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
                                     PageFrom.SUMMARY_PAGE.ordinal
                                 )
@@ -292,7 +291,7 @@ fun PatSurveyCompleteSummary(
                                 } ?: BLANK_STRING,
                                 questionType = answer?.type?: QuestionType.List.name,
                                 isSummaryEnable = didi.value.patExclusionStatus != ExclusionType.EDIT_PAT_EXCLUSION.ordinal,
-                                isArrowVisible = didi.value.patEdit,
+                                isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                                 questionImageUrl=question?.questionImageUrl?: BLANK_STRING,
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){

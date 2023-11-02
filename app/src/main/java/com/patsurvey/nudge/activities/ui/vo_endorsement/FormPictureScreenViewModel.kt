@@ -18,11 +18,13 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
+import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
@@ -282,7 +284,8 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EditDidiWealthRankingRequest(
                                         if (didi.serverId == 0) didi.id else didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
-                                        ACCEPTED
+                                        ACCEPTED,
+                                        rankingEdit = false
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -321,7 +324,8 @@ class FormPictureScreenViewModel @Inject constructor(
                                     EditDidiWealthRankingRequest(
                                         if (didi.serverId == 0) didi.id else didi.serverId,
                                         StepType.VO_ENDROSEMENT.name,
-                                        DidiEndorsementStatus.REJECTED.name
+                                        DidiEndorsementStatus.REJECTED.name,
+                                        rankingEdit = false
                                     )
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
@@ -402,16 +406,72 @@ class FormPictureScreenViewModel @Inject constructor(
                             response.data?.let {
                                 stepsListDao.updateWorkflowId(
                                     stepId = stepList[stepList.map { it.orderNumber }.indexOf(5)].id,
-                                    workflowId = stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
+                                    workflowId = stepList[stepList.map { it.orderNumber }
+                                        .indexOf(5)].workFlowId,
                                     villageId,
-                                    it[0].status)
+                                    it[0].status
+                                )
                             }
-                        NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: stepId = ${stepList[stepList.map { it.orderNumber }
-                            .indexOf(5)].id}, villageId = $villageId, needToPost = false \n")
+                        NudgeLogger.d(
+                            "FormPictureScreenViewModel",
+                            "callWorkFlowAPI -> stepsListDao.updateNeedToPost before: stepId = ${
+                                stepList[stepList.map { it.orderNumber }
+                                    .indexOf(5)].id
+                            }, villageId = $villageId, needToPost = false \n")
 
                         stepsListDao.updateNeedToPost(stepId, villageId, false)
 
-                        NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n")
+                        NudgeLogger.d(
+                            "FormPictureScreenViewModel",
+                            "callWorkFlowAPI -> stepsListDao.updateNeedToPost after \n"
+                        )
+                        val bpcStep = stepList[stepList.map { it.orderNumber }
+                            .indexOf(BPC_VERIFICATION_STEP_ORDER)]
+                        if (bpcStep.workFlowId != 0) {
+                            val bpcStepWorkFlowRequest = listOf(
+                                EditWorkFlowRequest(
+                                    bpcStep.workFlowId,
+                                    StepStatus.INPROGRESS.name,
+                                    System.currentTimeMillis().toString()
+                                )
+                            )
+                            val bpcStepWorkFlowResponse =
+                                apiService.editWorkFlow(bpcStepWorkFlowRequest)
+                            if (bpcStepWorkFlowResponse.status.equals(SUCCESS, true)) {
+                                bpcStepWorkFlowResponse.data?.let {
+                                    stepsListDao.updateWorkflowId(
+                                        stepId = stepList[stepList.map { it.orderNumber }.indexOf(
+                                            BPC_VERIFICATION_STEP_ORDER
+                                        )].id,
+                                        workflowId = stepList[stepList.map { it.orderNumber }
+                                            .indexOf(BPC_VERIFICATION_STEP_ORDER)].workFlowId,
+                                        villageId,
+                                        it[0].status
+                                    )
+                                }
+                            }
+                        } else {
+                            val bpcStepWorkFlowRequest = listOf(
+                                AddWorkFlowRequest(
+                                    programId = bpcStep.programId,
+                                    status = StepStatus.INPROGRESS.name,
+                                    villageId = bpcStep.villageId,
+                                    programsProcessId = bpcStep.stepId
+                                )
+                            )
+                            val bpcStepWorkFlowResponse =
+                                apiService.addWorkFlow(bpcStepWorkFlowRequest)
+                            if (bpcStepWorkFlowResponse.status.equals(SUCCESS, true)) {
+                                bpcStepWorkFlowResponse.data?.let {
+                                    stepsListDao.updateWorkflowId(
+                                        stepId,
+                                        it[0].id,
+                                        villageId,
+                                        it[0].status
+                                    )
+                                }
+                            }
+                        }
                         networkCallbackListener.onSuccess()
                     } else {
                         NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> onFailed")
@@ -516,6 +576,12 @@ class FormPictureScreenViewModel @Inject constructor(
     fun getImageFileName(context: Context, formName: String): File {
         val directory = getImagePath(context)
         return File(directory, "${formName}.png")
+    }
+
+    fun updateVoEndorsementEditFlag() {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            didiDao.updateVoEndorsementEditFlag(prefRepo.getSelectedVillage().id, false)
+        }
     }
 
 }

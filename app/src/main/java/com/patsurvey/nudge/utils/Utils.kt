@@ -79,6 +79,7 @@ import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.RetryHelper.exceptionHandler
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonTextStyle
@@ -86,7 +87,11 @@ import com.patsurvey.nudge.activities.ui.theme.smallTextStyleMediumWeight
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.data.prefs.PrefRepo
+import com.patsurvey.nudge.database.LanguageEntity
+import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
+import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.WeightageRatioModal
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -97,6 +102,7 @@ import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -910,6 +916,14 @@ fun longToString(value:Long):String{
     }
 }
 
+fun intToString(value:Int):String{
+    return try {
+        value.toString()
+    }catch (ex:Exception){
+        BLANK_STRING
+    }
+}
+
 fun formatRatio(ratio:String):String{
     return if(ratio.isNullOrEmpty() || ratio.equals("Nan",true))
         "0.00"
@@ -1003,4 +1017,25 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
                 "villageId = ${prefRepo.getSelectedVillage().id} \n")
         stepsListDao.updateNeedToPost(step.id, prefRepo.getSelectedVillage().id, true)
     }
+}
+
+fun addDefaultLanguage(languageListDao: LanguageListDao) {
+    languageListDao.insertLanguage(
+        LanguageEntity(
+            id = 2,
+            language = "English",
+            langCode = "en",
+            orderNumber = 1,
+            localName = "English"
+        )
+    )
+}
+fun getFormSubPath(formName: String, pageNumber: Int): String {
+    return "${formName}_page_$pageNumber"
+}
+
+fun getFormPathKey(subPath: String,villageId: Int): String {
+    //val subPath formPictureScreenViewModel.pageItemClicked.value
+    //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
+    return "${PREF_FORM_PATH}_${villageId}_${subPath}"
 }

@@ -863,6 +863,15 @@ fun FormPictureScreen(
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
                             NudgeLogger.d("FormPictureScreen", "submit button clicked")
+                            formPictureScreenViewModel.prefRepo.savePref(
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
+                            formPictureScreenViewModel.updateVoEndorsementEditFlag()
+                            formPictureScreenViewModel.updateDidiVoEndorsementStatus()
+                            formPictureScreenViewModel.markVoEndorsementComplete(
+                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                stepId
+                            )
+                            formPictureScreenViewModel.saveVoEndorsementDate()
                             if ((context as MainActivity).isOnline.value ?: false) {
                                 formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {
@@ -888,15 +897,6 @@ fun FormPictureScreen(
                                 formPictureScreenViewModel.uploadFormsCAndD(context)
 
                             }
-                            formPictureScreenViewModel.prefRepo.savePref(
-                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
-
-                            formPictureScreenViewModel.updateDidiVoEndorsementStatus()
-                            formPictureScreenViewModel.markVoEndorsementComplete(
-                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
-                                stepId
-                            )
-                            formPictureScreenViewModel.saveVoEndorsementDate()
                             navController.navigate(
                                 "vo_endorsement_step_completion_screen/${
                                     localContext.getString(R.string.vo_endorsement_completed_message)

@@ -11,7 +11,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -55,7 +54,6 @@ class BpcProgressScreenViewModel @Inject constructor(
     val stepsListDao: StepsListDao,
     val didiDao: DidiDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao
 ): BaseViewModel() {
@@ -206,19 +204,6 @@ class BpcProgressScreenViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
 
     }
-    fun addDidisToDidiDaoIfNeeded() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiEntityList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
-            val selectedDidiList = bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-            selectedDidiList.forEach { didiEntity->
-                if (!didiEntityList.map { it.id }.contains(didiEntity.id)) {
-                    didiDao.insertDidi(
-                        DidiEntity.getDidiEntityFromSelectedDidiEntityForBpc(didiEntity)
-                    )
-                }
-            }
-        }
-    }
 
     fun getBpcCompletedDidiCount() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
@@ -230,45 +215,6 @@ class BpcProgressScreenViewModel @Inject constructor(
             }
         }
     }
-
-    fun updateSelectedDidiPatStatus() {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val selectedDidiList = bpcSelectedDidiDao.fetchAllSelectedDidiForVillage(prefRepo.getSelectedVillage().id)
-            val questionList = questionListDao.getAllQuestions()
-            selectedDidiList.forEach { didi ->
-                val didiAnswers = answerDao.getAllAnswerForDidi(didi.id)
-                if (didiAnswers.filter { it.actionType == TYPE_INCLUSION }.size == questionList.filter { it.actionType == TYPE_INCLUSION }.size) {
-                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                    calculateDidiScore(didi.id)
-                } else if (didiAnswers.filter { it.actionType == TYPE_INCLUSION }.size < questionList.filter { it.actionType == TYPE_INCLUSION }.size) {
-                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                } else
-                    if (didiAnswers.filter { it.actionType == TYPE_EXCLUSION }.size < questionList.filter { it.actionType == TYPE_EXCLUSION }.size) {
-                    bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.NOT_STARTED.ordinal)
-                    bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                } else {
-                    if (didiAnswers.filter { it.actionType == TYPE_EXCLUSION }.size == questionList.filter { it.actionType == TYPE_EXCLUSION }.size) {
-                        val yesAnswerCount = answerDao.fetchOptionYesCount(didiId = didi.id, QuestionType.RadioButton.name,TYPE_EXCLUSION)
-                        if (yesAnswerCount > 0) {
-                            bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                            bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.NOT_STARTED.ordinal)
-                            bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                        } else {
-                            bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId = didi.id, PatSurveyStatus.COMPLETED.ordinal)
-                            bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                            bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId = didi.id, PatSurveyStatus.INPROGRESS.ordinal)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     fun calculateDidiScore(didiId: Int) {
         var passingMark = 0
         var isDidiAccepted = false
@@ -328,13 +274,6 @@ class BpcProgressScreenViewModel @Inject constructor(
                         didiId = didiId,
                         isDidiAccepted = isDidiAccepted
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = totalWightWithoutNumQue,
-                            comment = comment,
-                            didiId = didiId,
-                        )
-                    }
                 }
                 else {
                     didiDao.updateDidiScore(
@@ -343,13 +282,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                         didiId = didiId,
                         isDidiAccepted = false
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = 0.0,
-                            comment = TYPE_EXCLUSION,
-                            didiId = didiId,
-                        )
-                    }
+
                 }
                 didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
             }

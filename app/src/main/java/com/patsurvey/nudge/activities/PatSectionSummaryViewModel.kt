@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -7,8 +8,6 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
@@ -16,7 +15,6 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.ExclusionType
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.LOW_SCORE
@@ -46,8 +44,6 @@ class PatSectionSummaryViewModel @Inject constructor(
     val didiDao: DidiDao,
     val questionListDao: QuestionListDao,
     val answerDao: AnswerDao,
-    val bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
-    val bpcSelectedDidiDao: BpcSelectedDidiDao,
     val stepsListDao: StepsListDao
 ) : BaseViewModel() {
 
@@ -84,6 +80,7 @@ class PatSectionSummaryViewModel @Inject constructor(
     val answerSummeryList: StateFlow<List<SectionAnswerEntity>> get() = _answerSummeryList
     val isYesSelected = mutableStateOf(false)
     val isPATStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
+    val isBPCVerificationStepComplete =mutableStateOf(StepStatus.INPROGRESS.ordinal)
     val sectionType = mutableStateOf(TYPE_EXCLUSION)
 
     private var _inclusiveQueList = MutableStateFlow(listOf<SectionAnswerEntity>())
@@ -95,6 +92,10 @@ class PatSectionSummaryViewModel @Inject constructor(
                 .sortedBy { it.orderNumber }
             isPATStepComplete.value =
                 stepList[stepList.map { it.orderNumber }.indexOf(4)].isComplete
+            if(prefRepo.isUserBPC()){
+                isBPCVerificationStepComplete.value =
+                    stepList[stepList.map { it.orderNumber }.indexOf(6)].isComplete
+            }
             if (prefRepo.questionScreenOpenFrom() == PageFrom.NOT_AVAILABLE_STEP_COMPLETE_SUMMARY_PAGE.ordinal
                 && isPATStepComplete.value == StepStatus.COMPLETED.ordinal
             ) {
@@ -165,45 +166,13 @@ class PatSectionSummaryViewModel @Inject constructor(
             withContext(Dispatchers.IO) {
                 didiDao.updateQuesSectionStatus(didiId,status)
                 didiDao.updateDidiNeedToPostPat(didiId, true)
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSurveyStatus(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                    nonSelectedDidi?.let {
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSurveyStatus(didiId,status)
-
-                    }
-                }
             }
         }
     }
-
-    fun updatePATExclusionStatus(didiId: Int){
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.IO){
-                didiDao.updateExclusionStatus(didiId = didiId,
-                    patExclusionStatus = ExclusionType.NO_EXCLUSION.ordinal,
-                    crpComment = BLANK_STRING)
-            }
-           }
-        }
     fun setPATSection1Complete(didiId: Int,status:Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 didiDao.updatePatSection1Status(didiId,status)
-
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSection1Status(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                    nonSelectedDidi?.let {
-                        bpcNonSelectedDidiDao.updateNonSelDidiPatSection1Status(didiId,status)
-                    }
-                }
             }
         }
     }
@@ -211,18 +180,6 @@ class PatSectionSummaryViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
                 didiDao.updatePatSection2Status(didiId,status)
-                if(prefRepo.isUserBPC()){
-                    val selectedDidi = bpcSelectedDidiDao.fetchSelectedDidi(didiId)
-                    selectedDidi?.let {
-                        bpcSelectedDidiDao.updateSelDidiPatSection2Status(didiId,status)
-                    }
-                    val nonSelectedDidi = bpcNonSelectedDidiDao.getNonSelectedDidi(didiId)
-                     nonSelectedDidi?.let {
-                         bpcNonSelectedDidiDao.updateNonSelDidiPatSection2Status(didiId,status)
-
-                    }
-                }
-
             }
         }
     }
@@ -303,8 +260,6 @@ class PatSectionSummaryViewModel @Inject constructor(
                         }
                     }
                     // TotalScore
-
-
                     if (totalWightWithoutNumQue >= passingMark) {
                         isDidiAccepted = true
                         comment = BLANK_STRING
@@ -321,34 +276,24 @@ class PatSectionSummaryViewModel @Inject constructor(
                             0
                         )
                     }
+                    Log.d("TAG", "calculateDidiScorePATSection:  $totalWightWithoutNumQue  :: $didiId :: $isDidiAccepted")
+
                     didiDao.updateDidiScore(
                         score = totalWightWithoutNumQue,
                         comment = comment,
                         didiId = didiId,
                         isDidiAccepted = isDidiAccepted
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = totalWightWithoutNumQue,
-                            comment = comment,
-                            didiId = didiId,
-                        )
-                    }
                 }
                 else {
+                    Log.d("TAG", "calculateDidiScorePATSection else :  0.0  :: $didiId :: $isDidiAccepted")
+
                     didiDao.updateDidiScore(
                         score = 0.0,
                         comment = TYPE_EXCLUSION,
                         didiId = didiId,
                         isDidiAccepted = false
                     )
-                    if (prefRepo.isUserBPC()) {
-                        bpcSelectedDidiDao.updateSelDidiScore(
-                            score = 0.0,
-                            comment = TYPE_EXCLUSION,
-                            didiId = didiId,
-                        )
-                    }
                 }
                 didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
             }

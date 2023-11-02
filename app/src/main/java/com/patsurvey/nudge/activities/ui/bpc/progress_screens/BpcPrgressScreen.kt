@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,6 +43,8 @@ import androidx.navigation.NavHostController
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.*
 import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.navigation.AuthScreen
+import com.patsurvey.nudge.navigation.navgraph.Graph
 import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,13 +56,12 @@ fun BpcProgressScreen(
     bpcProgreesScreenViewModel: BpcProgressScreenViewModel,
     navController: NavHostController,
     onNavigateToStep:(Int, Int) ->Unit,
-    onNavigateToSetting:()->Unit
+    onNavigateToSetting:()->Unit,
+    onBackClick:()->Unit
 ) {
 
     LaunchedEffect(key1 = Unit) {
         bpcProgreesScreenViewModel.init()
-
-        bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
         delay(1000)
         bpcProgreesScreenViewModel.showLoader.value = false
     }
@@ -83,18 +85,8 @@ fun BpcProgressScreen(
 
     setKeyboardToPan(mainActivity!!)
     val context = LocalContext.current
-
-    val localDensity = LocalDensity.current
-    val voTextHeight = remember {
-        mutableStateOf(Offset(0f, 0f))
-    }
-
-    /*LaunchedEffect(key1 = true) {
-        bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
-    }*/
-
     BackHandler {
-        (context as? Activity)?.finish()
+        onBackClick()
     }
 
     Surface(
@@ -127,18 +119,17 @@ fun BpcProgressScreen(
                                 voName = village.federationName,
                                 index = index,
                                 selectedIndex = bpcProgreesScreenViewModel.villageSelected.value,
-                                isBpcUser = true,
-                                isVoEndorsementComplete = bpcProgreesScreenViewModel.isBpcVerificationComplete.value[village.id] ?: false
+                                stepId = village.stepId,
+                                statusId = village.statusId,
+                                context = context,
+                                isUserBPC = bpcProgreesScreenViewModel.prefRepo.isUserBPC()
                             ) {
                                 bpcProgreesScreenViewModel.showLoader.value = true
-                                bpcProgreesScreenViewModel.villageSelected.value = it/*
-                                bpcProgreesScreenViewModel.getStepsList(village.id)
-                                bpcProgreesScreenViewModel.findInProgressStep(villageId = village.id)*/
+                                bpcProgreesScreenViewModel.villageSelected.value = it
                                 bpcProgreesScreenViewModel.fetchBpcSummaryData(village.id)
                                 bpcProgreesScreenViewModel.updateSelectedVillage(village)
                                 bpcProgreesScreenViewModel.getStepsList(village.id)
                                 bpcProgreesScreenViewModel.getBpcCompletedDidiCount()
-                                bpcProgreesScreenViewModel.addDidisToDidiDaoIfNeeded()
                                 bpcProgreesScreenViewModel.setBpcVerificationCompleteForVillages()
                                 bpcProgreesScreenViewModel.selectedText.value = bpcProgreesScreenViewModel.villageList.value[it].name
                                 scope.launch {
@@ -193,10 +184,6 @@ fun BpcProgressScreen(
                         },
                         backgroundColor = Color.White
                     )
-//                    ProgressScreenTopBar() {
-//                        bpcProgreesScreenViewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (bpcProgreesScreenViewModel.showLoader.value) {
@@ -234,8 +221,7 @@ fun BpcProgressScreen(
                                 .padding(
                                     start = 16.dp,
                                     end = 16.dp,
-                                    top = it.calculateTopPadding(),
-                                    bottom = 50.dp
+                                    top = it.calculateTopPadding()
                                 ),
                         ) {
 
@@ -249,8 +235,11 @@ fun BpcProgressScreen(
                                     identity = bpcProgreesScreenViewModel.prefRepo.getPref(
                                         PREF_KEY_IDENTITY_NUMBER,
                                         BLANK_STRING
-                                    ) ?: ""
-                                )
+                                    ) ?: "",
+                                    isUserBPC = true
+                                ){
+                                    onBackClick()
+                                }
                             }
 
                             item {
@@ -462,209 +451,6 @@ fun BpcProgressScreen(
                                                         .padding(vertical = 8.dp)
                                                 )
                                             }
-
-                                            /*Text(
-                                                text = buildAnnotatedString {
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-
-
-                                                        append(String.format("%03d", summaryData.value.cohortCount ?: 0))
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(" ")
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(
-                                                            if ((summaryData.value.cohortCount ?: 0) > 1)
-                                                                stringResource(R.string.summary_tolas_added_text_plural)
-                                                            else
-                                                                stringResource(R.string.summary_tolas_added_text_singular)
-                                                        )
-                                                    }
-                                                },
-                                                modifier = Modifier.padding(vertical = 4.dp),
-                                            )
-                                            Text(
-                                                text = buildAnnotatedString {
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(String.format("%03d", summaryData.value.mobilisedCount ?: 0))
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(" ")
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(
-                                                            if ((summaryData.value.mobilisedCount ?: 0) > 1)
-                                                                stringResource(R.string.summary_didis_mobilised_text_plural)
-                                                            else
-                                                                stringResource(R.string.summary_didis_mobilised_text_singular)
-                                                        )
-                                                    }
-                                                },
-                                                modifier = Modifier.padding(vertical = 4.dp)
-                                            )
-                                            Text(
-                                                text = buildAnnotatedString {
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(String.format("%03d", summaryData.value.poorDidiCount ?: 0))
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(" ")
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(
-                                                            if ((summaryData.value.poorDidiCount ?: 0) > 1)
-                                                                stringResource(R.string.summary_wealth_ranking_text_plural)
-                                                            else
-                                                                stringResource(R.string.summary_wealth_ranking_text_singular)
-                                                        )
-                                                    }
-                                                },
-                                                modifier = Modifier.padding(vertical = 4.dp)
-                                            )
-                                            Text(
-                                                text = buildAnnotatedString {
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(String.format("%03d", summaryData.value.sentVoEndorsementCount ?: 0))
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(" ")
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(
-                                                            if ((summaryData.value.sentVoEndorsementCount ?: 0) > 1)
-                                                                stringResource(R.string.summary_vo_endoresement_text_plural)
-                                                            else
-                                                                stringResource(R.string.summary_vo_endoresement_text_singular)
-                                                        )
-                                                    }
-                                                },
-                                                modifier = Modifier.padding(vertical = 4.dp)
-                                            )
-                                            Text(
-                                                text = buildAnnotatedString {
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 18.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(String.format("%03d", summaryData.value.voEndorsedCount ?: 0))
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.SemiBold,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(" ")
-                                                    }
-                                                    withStyle(
-                                                        style = SpanStyle(
-                                                            color = textColorDark,
-                                                            fontSize = 15.sp,
-                                                            fontWeight = FontWeight.Normal,
-                                                            fontFamily = NotoSans
-                                                        )
-                                                    ) {
-                                                        append(
-                                                            if ((summaryData.value.voEndorsedCount ?: 0) > 1)
-                                                                stringResource(R.string.didis_endorsed_by_vo_plural)
-                                                            else stringResource(
-                                                                R.string.didi_endorsed_by_vo_singular)
-                                                        )
-                                                    }
-                                                },
-                                                modifier = Modifier.padding(vertical = 4.dp)
-                                            )*/
 
                                             Text(
                                                 text = stringResource(R.string.current_status_text),
@@ -906,71 +692,19 @@ fun BpcProgressScreen(
                                                     bpcProgreesScreenViewModel.prefRepo.getSelectedVillage().id,
                                                     stepId,
                                                 )
+                                                bpcProgreesScreenViewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
                                             } else {
-                                                showCustomToast(context, "Something went wrong!")
+                                                showCustomToast(context, context.getString(R.string.something_went_wrong))
                                             }
                                         }
                                     }
                                 )
                             }
 
-                            /*itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
-                                if ((bpcProgreesScreenViewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")
-                                        ?: "").equals("CRP Program", true) && index < 5
-                                ) {
-                                    val villageId=villages[bpcProgreesScreenViewModel.villageSelected.value].id
-                                    var isStepCompleted =
-                                        bpcProgreesScreenViewModel.isStepComplete(steps[index].id,villageId).observeAsState().value
-                                            ?: 0
-                                    if (index == 4){
-                                        bpcProgreesScreenViewModel.isVoEndorsementComplete.value[villageId] = isStepCompleted == StepStatus.COMPLETED.ordinal
-                                    }
-                                    if(steps[index].orderNumber==1 && isStepCompleted==0){
-                                        isStepCompleted= StepStatus.INPROGRESS.ordinal
-                                    }
-                                    if (isStepCompleted == StepStatus.COMPLETED.ordinal) {
-                                        bpcProgreesScreenViewModel.updateSelectedStep(steps[index].stepId)
-                                    }
-                                    StepsBox(
-                                        boxTitle = step.name,
-                                        stepNo = step.orderNumber,
-                                        index = index,
-                                        iconId = step.orderNumber,
-                                        bpcProgreesScreenViewModel = bpcProgreesScreenViewModel,
-                                        shouldBeActive = isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal,
-                                        isCompleted = isStepCompleted == StepStatus.COMPLETED.ordinal
-                                    ) { index ->
-                                        bpcProgreesScreenViewModel.stepSelected.value = index
-                                        val step=bpcProgreesScreenViewModel.stepList.value[index]
-                                        bpcProgreesScreenViewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
-                                        if (mainActivity?.isOnline?.value == true) {
-                                            bpcProgreesScreenViewModel.callWorkFlowAPI(villageId,step.id,step.programId)
-                                        }
-                                        when (index) {
-                                            0 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                            }
-                                            1 -> {
-//                                            onNavigateToTransWalk(villageId,stepId,index)
-                                            }
-                                            2 -> {}
-                                            3 -> {
-                                                bpcProgreesScreenViewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
-                                            }
-                                            4 -> {}
-                                            5 -> {}
-                                        }
-                                        onNavigateToStep(villageId,step.id,index)
-                                    }
-                                }
-                            }*/
-                            item { Spacer(modifier = Modifier.height(16.dp)) }
+
+                            item { Spacer(modifier = Modifier.height(200.dp)) }
                         }
-                        Spacer(
-                            modifier = Modifier
-                                .height(100.dp)
-                                .fillMaxWidth()
-                        )
+
                     }
                 }
             }

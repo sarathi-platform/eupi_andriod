@@ -8,8 +8,6 @@ import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.analytics.EventParams
 import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.BpcNonSelectedDidiEntity
-import com.patsurvey.nudge.database.BpcSelectedDidiEntity
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
@@ -18,8 +16,6 @@ import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.BpcNonSelectedDidiDao
-import com.patsurvey.nudge.database.dao.BpcSelectedDidiDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
@@ -42,6 +38,7 @@ import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
@@ -121,8 +118,6 @@ object RetryHelper {
     private var questionDao: QuestionListDao? = null
     private var castListDao: CasteListDao? = null
     private var bpcSummaryDao: BpcSummaryDao? = null
-    private var bpcSelectedDidiDao: BpcSelectedDidiDao? = null
-    private var bpcNonSelectedDidiDao: BpcNonSelectedDidiDao? = null
     private var poorDidiListDao: PoorDidiListDao? = null
 
     val tokenExpired = mutableStateOf(false)
@@ -139,8 +134,6 @@ object RetryHelper {
         questionDao: QuestionListDao,
         castListDao: CasteListDao,
         bpcSummaryDao: BpcSummaryDao,
-        bpcSelectedDidiDao: BpcSelectedDidiDao,
-        bpcNonSelectedDidiDao: BpcNonSelectedDidiDao,
         poorDidiListDao: PoorDidiListDao
     ) {
         setPrefRepo(prefRepo)
@@ -154,8 +147,6 @@ object RetryHelper {
         setQuestionDao(questionDao)
         setCastListDao(castListDao)
         setBpcSummaryDao(bpcSummaryDao)
-        setBpcSelectedDidiDao(bpcSelectedDidiDao)
-        setBpcNonSelectedDidiDao(bpcNonSelectedDidiDao)
         setPoorDidiListDao(poorDidiListDao)
     }
 
@@ -239,13 +230,7 @@ object RetryHelper {
         bpcSummaryDao = mBpcSummaryDao
     }
 
-    private fun setBpcSelectedDidiDao(mBpcSelectedDidiDao: BpcSelectedDidiDao) {
-        bpcSelectedDidiDao = mBpcSelectedDidiDao
-    }
 
-    private fun setBpcNonSelectedDidiDao(mBpcNonSelectedDidiDao: BpcNonSelectedDidiDao) {
-        bpcNonSelectedDidiDao = mBpcNonSelectedDidiDao
-    }
 
     private fun setPoorDidiListDao(mPoorDidiListDao: PoorDidiListDao) {
         poorDidiListDao = mPoorDidiListDao
@@ -749,7 +734,7 @@ object RetryHelper {
                                 if (didiResponse?.status.equals(SUCCESS, true)) {
                                     didiResponse?.data?.let { beneficiaryResponse ->
                                         beneficiaryResponse.forEach {
-                                            it.selected.forEach { didi ->
+                                           /* it.selected.forEach { didi ->
                                                 var tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
@@ -798,9 +783,9 @@ object RetryHelper {
                                                         villageId = villageId,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        wealth_ranking = *//*wealthRanking*//*WealthRank.POOR.rank,
                                                         patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        voEndorsementStatus = *//*voEndorsementStatus*//*DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         createdDate = didi.createdDate,
@@ -816,7 +801,7 @@ object RetryHelper {
                                                 )
                                             }
                                             it.not_selected.forEach { didi ->
-                                                var tolaName = BLANK_STRING
+                                                var `tolaName = BLANK_STRING
                                                 var casteName = BLANK_STRING
 //                                            val singleTola = tolaDao.fetchSingleTola(didi.cohortId)
                                                 val singleCaste = castListDao?.getCaste(didi.castId,
@@ -863,9 +848,9 @@ object RetryHelper {
                                                         villageId = villageId,
                                                         cohortName = tolaName,
                                                         needsToPost = false,
-                                                        wealth_ranking = /*wealthRanking*/WealthRank.POOR.rank,
+                                                        wealth_ranking = *//*wealthRanking*//*WealthRank.POOR.rank,
                                                         patSurveyStatus = PatSurveyStatus.NOT_STARTED.ordinal,
-                                                        voEndorsementStatus = /*voEndorsementStatus*/DidiEndorsementStatus.ENDORSED.ordinal,
+                                                        voEndorsementStatus = *//*voEndorsementStatus*//*DidiEndorsementStatus.ENDORSED.ordinal,
                                                         section1Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         section2Status = PatSurveyStatus.COMPLETED.ordinal,
                                                         createdDate = didi.createdDate,
@@ -879,7 +864,7 @@ object RetryHelper {
                                                         crpScore = didi.crpScore
                                                     )
                                                 )
-                                            }
+                                            }*/
                                         }
                                     }
                                 } else {
@@ -1044,7 +1029,13 @@ object RetryHelper {
                             if (it.villageList?.isNotEmpty() == true) {
                                 villageListDao?.insertAll(it.villageList ?: listOf())
                                 delay(500)
-                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
+                                val localVillageList = villageListDao?.getAllVillages(prefRepo?.getAppLanguageId() ?:2)
+                                if (localVillageList.isNullOrEmpty()) {
+                                    saveVillageList(true, villageListDao?.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                } else{
+                                    saveVillageList(true, localVillageList)
+                                }
+//                                saveVillageList(true, villageListDao?.getAllVillages(prefRepo?.getAppLanguageId()?:2))
                             } else {
                                 saveVillageList(false, listOf())
                             }
@@ -1060,6 +1051,9 @@ object RetryHelper {
             } catch (ex: Exception) {
                 Log.d("RetryHelper", "retryVillageListApi: ex -> ${ex.stackTrace}")
                 onCatchError(ex, ApiType.VILLAGE_LIST_API)
+                withContext(Dispatchers.Main) {
+                    saveVillageList(false, listOf())
+                }
             }
         }
     }

@@ -88,7 +88,7 @@ fun LanguageScreen(
 
     BackHandler {
         if (pageFrom == ARG_FROM_HOME){
-            if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal)
+            if(viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal)
                 navController.popBackStack()
             else
               (context as? Activity)?.finish()
@@ -145,7 +145,7 @@ fun LanguageScreen(
                     val isLanguageVillageAvailable= mutableStateOf(true)
                     viewModel.languageList.value?.get(viewModel.languagePosition.value)?.let {
                         it.id?.let { languageId->
-                            viewModel.prefRepo.saveAppLanguageId(languageId)
+                            viewModel.languageRepository.prefRepo.saveAppLanguageId(languageId)
                             if(!pageFrom.equals(ARG_FROM_HOME,true)){
                                 viewModel.updateSelectedVillage(languageId){
                                     isLanguageVillageAvailable.value=false
@@ -155,21 +155,21 @@ fun LanguageScreen(
                         }
                         it.langCode?.let { code ->
                             if(isLanguageVillageAvailable.value){
-                                viewModel.prefRepo.saveAppLanguage(code)
+                                viewModel.languageRepository.prefRepo.saveAppLanguage(code)
                                 (context as MainActivity).setLanguage(code)
                             }else{
-                                viewModel.prefRepo.saveAppLanguage("en")
+                                viewModel.languageRepository.prefRepo.saveAppLanguage("en")
                                 (context as MainActivity).setLanguage("en")
                             }
                         }
                     }
-                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
+                    if(viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal){
                         navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
                     }else {
                         if (pageFrom.equals(ARG_FROM_HOME, true))
                             navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
                         else {
-                            viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
+                            viewModel.languageRepository.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
                             navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
                         }
                     }
@@ -201,7 +201,7 @@ fun LanguageScreen(
 
     LaunchedEffect(key1 = Unit){
         viewModel.languageList.value?.mapIndexed{index, languageEntity ->
-            if(languageEntity.langCode.equals(viewModel.prefRepo.getAppLanguage(),true)){
+            if(languageEntity.langCode.equals(viewModel.languageRepository.prefRepo.getAppLanguage(),true)){
                 viewModel.languagePosition.value=index
             }
         }
