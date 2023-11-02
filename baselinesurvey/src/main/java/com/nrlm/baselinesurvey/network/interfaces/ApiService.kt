@@ -29,9 +29,9 @@ interface ApiService {
     @POST(SUBPATH_AUTH_VALIDATE_OTP)
     suspend fun validateOtp(@Body otpRequest: OtpRequest): ApiResponseModel<OtpVerificationModel>
 
-    @POST("/write-api/beneficiary/view")
+    @POST("/read-api/web/beneficiary/user/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-    suspend fun getDidisFromNetwork(@Query("villageId") villageId: Int = 57012): ApiResponseModel<BeneficiaryApiResponse>
+    suspend fun getDidisFromNetwork(@Query("userId") userId: Int): ApiResponseModel<BeneficiaryApiResponse>
 
     /*@GET("/read-api/user/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")

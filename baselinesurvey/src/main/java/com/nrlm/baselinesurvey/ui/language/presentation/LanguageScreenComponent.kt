@@ -3,10 +3,8 @@ package com.nrlm.baselinesurvey.ui.language.presentation
 import android.Manifest
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -43,7 +41,7 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nrlm.baselinesurvey.ARG_FROM_HOME
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
-import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.ONE_SECOND
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent

@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -39,7 +40,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.MOBILE_NUMBER_LENGTH
-import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.auth.viewmodel.LoginScreenViewModel
 import com.nrlm.baselinesurvey.ui.common_components.CustomSnackBarShow
@@ -53,6 +54,8 @@ import com.nrlm.baselinesurvey.utils.onlyNumberField
 import com.nrlm.baselinesurvey.utils.setKeyboardToReadjust
 import com.nrlm.baselinesurvey.utils.stringToInt
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -86,7 +89,8 @@ fun LoginScreenComponent(
 
     val mobileNumberState = viewModel.mobileNumberState.value
     
-    LaunchedEffect(key1 = mobileNumberState.isMobileNumberValidatedFromServer) {
+    LaunchedEffect(key1 = mobileNumberState) {
+        viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         if (mobileNumberState.isMobileNumberValidatedFromServer) {
             if(navController.graph.route?.equals(Graph.HOME,true) == true){
                 navController.navigate(route = "otp_verification_screen/" + mobileNumberState.mobileNumber.text)
@@ -99,6 +103,7 @@ fun LoginScreenComponent(
                     isSuccess = false,
                     isCustomIcon = false
                 )
+                viewModel.resetMobileNumberState()
             }
         }
     }
@@ -115,9 +120,12 @@ fun LoginScreenComponent(
             )
             .then(modifier)
     ) {
-        SarathiLogoTextViewComponent()
+        Column(verticalArrangement = Arrangement.spacedBy(dimen_8_dp), modifier = Modifier.align(Alignment.TopCenter)) {
 
-        LoaderComponent(visible = loaderState.isLoaderVisible)
+            SarathiLogoTextViewComponent()
+
+            LoaderComponent(visible = loaderState.isLoaderVisible)
+        }
 
         Column(
             modifier = Modifier

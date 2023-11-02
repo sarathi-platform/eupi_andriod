@@ -1,5 +1,9 @@
 package com.nrlm.baselinesurvey.di
 
+import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
+import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepositoryImpl
+import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
+import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
@@ -188,6 +192,25 @@ object BaselineModule {
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
             getSectionUseCase = GetSectionUseCase(questionScreenRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideMainActivityRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService
+    ): MainActivityRepository {
+        return MainActivityRepositoryImpl(prefRepo, apiService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideMainActivityUseCase(
+        repository: MainActivityRepository
+    ): MainActivityUseCase {
+        return MainActivityUseCase(
+            isLoggedInUseCase = IsLoggedInUseCase(repository)
         )
     }
 

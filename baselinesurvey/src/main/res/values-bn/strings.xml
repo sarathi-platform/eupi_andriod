@@ -370,6 +370,8 @@
     <string name="score_comparison_section_1_text">ভাগ 1</string>
     <string name="village_is_not_vo_endorsed_right_now">এই গ্রাম এখনো VO অনুমোদিত হয়নি</string>
     <string name="refresh_failed_please_try_again">রিফ্রেশ ব্যর্থ হয়েছে, আবার চেষ্টা করুন!</string>
+    <string name="this_week_tab_title">This Week</string>
+    <string name="all_tab_title">All</string>
 
 
 </resources>

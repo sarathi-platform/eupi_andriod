@@ -34,6 +34,7 @@ class QuestionScreenViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-        }    }
+        }
+    }
 
 }

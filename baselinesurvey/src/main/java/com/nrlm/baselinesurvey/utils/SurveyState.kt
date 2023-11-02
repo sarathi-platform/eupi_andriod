@@ -16,5 +16,15 @@ enum class SurveyState {
                 else -> NOT_STARTED.ordinal
             }
         }
-    }
+
+        fun getStatusFromOrdinal(surveyState: Int) : SurveyState {
+            return when(surveyState) {
+                NOT_AVAILABLE.ordinal -> NOT_AVAILABLE
+                INPROGRESS.ordinal -> INPROGRESS
+                COMPLETED.ordinal -> COMPLETED
+                NOT_AVAILABLE_WITH_CONTINUE.ordinal -> NOT_AVAILABLE_WITH_CONTINUE
+                else -> NOT_STARTED
+            }
+        }
+     }
 }

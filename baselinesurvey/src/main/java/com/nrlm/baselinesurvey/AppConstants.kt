@@ -43,7 +43,7 @@ const val STEPS_LIST_TABLE = "step_list_table"
 const val CASTE_TABLE = "caste_table"
 const val ANSWER_TABLE = "ques_answer_table"
 const val LAST_SELECTED_TOLA_TABLE = "last_selected_tola_table"
-const val DIDI_TABLE = "didi_table"
+const val SURVEYEE_TABLE = "surveyee_table"
 const val TOLA_TABLE = "tola_table"
 const val TOLA_COUNT = "tola_count"
 const val DIDI_COUNT = "didi_count"
@@ -258,4 +258,7 @@ const val PREF_KEY_NEED_TO_SCROLL = "questions_need_to_scroll"
 
 const val NO_SECTION = "NO_SECTION"
 const val ARG_SECTION_ID = "section_id"
+
+const val THIS_WEEK_TAB = "This Week"
+const val ALL_TAB = "All"
 

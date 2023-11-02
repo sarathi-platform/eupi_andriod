@@ -9,16 +9,14 @@ import android.view.WindowManager
 import android.widget.Toast
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
-import com.google.gson.Gson
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.BuildConfig
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_CODE
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_ID
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
-import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity

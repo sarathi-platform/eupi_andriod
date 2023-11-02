@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.HUSBAND_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.DidiEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.CircularImageViewComponent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
@@ -88,7 +88,7 @@ fun SurveyeeCardComponent(
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.Start
                 ) {
-                    Text(text = surveyeeState.didiDetails.name, style = mediumTextStyle, color = brownDark)
+                    Text(text = surveyeeState.surveyeeDetails.didiName, style = mediumTextStyle, color = brownDark)
                     if (surveyeeState.subtitle != BLANK_STRING) {
                         Text(
                             text = surveyeeState.subtitle,
@@ -148,40 +148,35 @@ fun SurveyeeCardComponent(
 
         }
     }
-
 }
 
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SurveyeeCardPreview() {
-    val didi = DidiEntity(
+    val didi = SurveyeeEntity(
         id = 0,
-        name = "Shanti Devi",
-        guardianName = "Manoj Parhaiya",
-        address = "A2",
-        castId = 1,
-        castName = "SC",
+        didiId = 1,
+        didiName = "Shanti Devi",
+        dadaName = "Manoj Parhaiya",
+        houseNo = "A2",
+        casteId = 1,
         cohortId = 1,
         cohortName = "Sundar Pahar",
         relationship = HUSBAND_STRING,
         villageId = 1,
-        createdDate = 0,
-        modifiedDate = System.currentTimeMillis(),
-        shgFlag = 0,
-        patSurveyStatus = 2,
-        section1Status = 2,
-        section2Status = 2,
-        ableBodiedFlag = 1
+        villageName = "Sundar Pahar",
+        ableBodied = "No",
+        userId = 525
     )
     Box(modifier = Modifier
         .fillMaxSize()
         .padding(horizontal = 16.dp, vertical = 10.dp)) {
         SurveyeeCardComponent(
             surveyeeState = SurveyeeCardState(
-                didiDetails = didi,
-                subtitle = didi.guardianName,
-                address = didi.address + ", " + didi.cohortName,
+                surveyeeDetails = didi,
+                subtitle = didi.didiName,
+                address = didi.houseNo + ", " + didi.cohortName,
                 surveyState = SurveyState.NOT_STARTED
             )
         ) {

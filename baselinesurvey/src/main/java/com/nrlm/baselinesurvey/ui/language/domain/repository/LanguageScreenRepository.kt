@@ -1,9 +1,8 @@
 package com.nrlm.baselinesurvey.ui.language.domain.repository
 
-import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
-import kotlinx.coroutines.flow.Flow
 
 interface LanguageScreenRepository {
 
