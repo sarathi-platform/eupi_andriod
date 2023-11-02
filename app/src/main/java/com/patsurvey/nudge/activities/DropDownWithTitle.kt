@@ -197,6 +197,10 @@ fun <T : Any> DropDownWithTitle(
                             else
                                 item.name
                         }
+
+                        else -> {
+                            title = item.toString()
+                        }
                     }
                     DropdownMenuItem(onClick = {
                         onItemSelected(item)

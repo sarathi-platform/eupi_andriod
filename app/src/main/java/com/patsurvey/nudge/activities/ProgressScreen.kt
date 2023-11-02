@@ -95,7 +95,19 @@ fun ProgressScreen(
     }
 
     BackHandler {
-        (context as? MainActivity)?.finish()
+        viewModel.showAppExitDialog.value = true
+    }
+
+    if(viewModel.showAppExitDialog.value){
+        showCustomDialog(
+            title = stringResource(id = R.string.are_you_sure),
+            message =stringResource(id = R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = stringResource(id = R.string.exit),
+            negativeButtonTitle = stringResource(id = R.string.cancel),
+            onNegativeButtonClick = {viewModel.showAppExitDialog.value =false},
+            onPositiveButtonClick = {
+                (context as? MainActivity)?.finish()
+            })
     }
 
     Surface(
@@ -193,10 +205,6 @@ fun ProgressScreen(
                         backgroundColor = Color.White,
                         elevation = 10.dp
                     )
-//                    ProgressScreenTopBar() {
-//                        viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-//                        onNavigateToSetting()
-//                    }
                 }
             ) { it ->
                 if (viewModel.showLoader.value) {

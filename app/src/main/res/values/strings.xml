@@ -42,6 +42,7 @@
     <string name="rich_text">Rich</string>
     <string name="search_didis">Search Didis</string>
     <string name="search_video">Search Video</string>
+    <string name="search_village">Search Village</string>
     <string name="otp_text" translatable="false">OTP</string>
     <string name="count_didis_pending_plural">%1s Didis Pending</string>
     <string name="count_didis_pending_singular">%1s Didi Pending</string>
@@ -336,6 +337,7 @@
     <string name="profile_phone">Phone Number</string>
     <string name="profile_identity_num">Identity Number</string>
     <string name="user_profile_text">User Profile</string>
+    <string name="user_bug_report_text">Bug Report</string>
     <string name="edit_didi">Edit</string>
     <string name="delete_didi">Delete</string>
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
@@ -399,5 +401,13 @@
     <string name="score_comparison_section_1_text">Section 1</string>
     <string name="village_is_not_vo_endorsed_right_now">Village is not VO Endorsed Right Now!</string>
     <string name="refresh_failed_please_try_again">Refresh Failed, Please try again!</string>
+    <string name="reference_of_forms">Reference of Forms :</string>
+    <string name="link_of_a">Link For Form A</string>
+    <string name="link_of_b">Link For Form B</string>
+
+
+    <string name="do_you_want_to_exit_the_app">Do you want to exit the app?</string>
+    <string name="exit">Exit</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

@@ -154,7 +154,7 @@ fun DidiItemCardForPatSummary(
                     CircularDidiImage(
                         didi = didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){}
                     Row(
                         modifier = Modifier
                             .layoutId("didiRow")
@@ -295,7 +295,8 @@ fun DidiItemCardForVoForSummary(
     navController: NavHostController,
     didi: DidiEntity,
     modifier: Modifier,
-    onItemClick: (DidiEntity) -> Unit
+    onItemClick: (DidiEntity) -> Unit,
+    onCircularImageClick:(DidiEntity) ->Unit
 ) {
 
     Card(
@@ -322,7 +323,9 @@ fun DidiItemCardForVoForSummary(
                     CircularDidiImage(
                         didi = didi,
                         modifier = Modifier.layoutId("didiImage")
-                    )
+                    ){
+                        onCircularImageClick(didi)
+                    }
                     Row(
                         modifier = Modifier
                             .layoutId("didiRow")

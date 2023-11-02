@@ -151,6 +151,9 @@ class VillageSelectionViewModel @Inject constructor(
     val multiVillageRequest = mutableStateOf("2")
 
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
+    var _filterVillageList = MutableStateFlow(listOf<VillageEntity>())
+    val filterVillageList: StateFlow<List<VillageEntity>> get() = _filterVillageList
+
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
 
@@ -1495,6 +1498,7 @@ class VillageSelectionViewModel @Inject constructor(
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList
+                   _filterVillageList.value = villageList.value
                     setVoEndorsementCompleteForVillages()
                     apiSuccess(true)
                 } else {
@@ -1518,6 +1522,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 else{
                                     _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
                                 }
+                                _filterVillageList.value=villageList.value
                                 if (it.typeName.equals(BPC_USER_TYPE, true)) {
                                     prefRepo.setIsUserBPC(true)
                                 } else {
@@ -1598,8 +1603,9 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
 
-    fun saveVillageListAfterTokenRefresh(villageList: List<VillageEntity>) {
-        _villagList.value = villageList
+    fun saveVillageListAfterTokenRefresh(mVillageList: List<VillageEntity>) {
+        _villagList.value = mVillageList
+        _filterVillageList.value=villageList.value
         RetryHelper.retryApiList.remove(ApiType.VILLAGE_LIST_API)
     }
 
@@ -1714,6 +1720,21 @@ class VillageSelectionViewModel @Inject constructor(
                 showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
             }
         })
+    }
+
+
+    fun performQuery(query: String) {
+        _filterVillageList.value = if (query.isNotEmpty()) {
+            val filteredList = ArrayList<VillageEntity>()
+            villageList.value.forEach { village ->
+                if (village.name.lowercase().contains(query.lowercase())) {
+                    filteredList.add(village)
+                }
+            }
+            filteredList
+        } else {
+            villageList.value
+        }
     }
 
 }

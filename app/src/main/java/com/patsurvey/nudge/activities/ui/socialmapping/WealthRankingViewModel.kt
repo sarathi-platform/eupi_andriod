@@ -52,9 +52,6 @@ class WealthRankingViewModel @Inject constructor(
 
     var villageId: Int = -1
     var stepId: Int = -1
-    val isTolaSynced = mutableStateOf(0)
-    val isDidiSynced = mutableStateOf(0)
-
     val showLoader = mutableStateOf(false)
 
     init {
