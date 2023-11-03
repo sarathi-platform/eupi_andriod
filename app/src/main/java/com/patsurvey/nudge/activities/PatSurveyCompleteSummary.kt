@@ -79,7 +79,7 @@ fun PatSurveyCompleteSummary(
     }
 
     BackHandler() {
-        if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+        if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
             if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
                 navController.popBackStack()
             else
@@ -150,12 +150,12 @@ fun PatSurveyCompleteSummary(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = patSectionSummaryViewModel.prefRepo,
+                    prefRepo = patSectionSummaryViewModel.patSectionRepository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
                 Text(
-                    text = if (patSectionSummaryViewModel.prefRepo.isUserBPC()) stringResource(id = R.string.bpc_pat_survey_complete) else stringResource(
+                    text = if (patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()) stringResource(id = R.string.bpc_pat_survey_complete) else stringResource(
                         id = R.string.pat_survey_complete
                     ),
                     modifier = Modifier
@@ -228,12 +228,12 @@ fun PatSurveyCompleteSummary(
                             optionValue =  answer?.optionValue?:0,
                             isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                             questionImageUrl =question.questionImageUrl?: BLANK_STRING ){
-                            if ((patSectionSummaryViewModel.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
+                            if ((patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC() && patSectionSummaryViewModel.isBPCVerificationStepComplete.value == StepStatus.INPROGRESS.ordinal)
                                 || patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
-                                patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
+                                patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(
                                     PageFrom.SUMMARY_PAGE.ordinal
                                 )
-                                if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                                if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC())
                                     navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_EXCLUSION/$index")
                                 else navController.navigate("single_question_screen/${didiId}/$TYPE_EXCLUSION/$it")
                             }
@@ -307,10 +307,10 @@ fun PatSurveyCompleteSummary(
                                 questionFlag = answer?.questionFlag ?: QUESTION_FLAG_WEIGHT
                             ){
                                 if(patSectionSummaryViewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal) {
-                                    patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(
+                                    patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(
                                         PageFrom.SUMMARY_PAGE.ordinal
                                     )
-                                    if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                                    if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC())
                                         navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_INCLUSION/$index")
                                     else navController.navigate("single_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                                 }
@@ -337,7 +337,7 @@ fun PatSurveyCompleteSummary(
             positiveButtonText = stringResource(id = R.string.done_text),
             negativeButtonRequired = false,
             positiveButtonOnClick = {
-                if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
                     if (fromScreen == ARG_FROM_PAT_SUMMARY_SCREEN)
                         navController.popBackStack()
                     else

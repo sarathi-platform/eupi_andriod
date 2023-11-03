@@ -22,8 +22,7 @@ class ProgressScreenRepository @Inject constructor(
     val prefRepo: PrefRepo,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
-    val tolaDao: TolaDao,
-    val didiDao: DidiDao
+    val tolaDao: TolaDao
 ) : BaseRepository() {
 
     fun getAccessToken(): String? {

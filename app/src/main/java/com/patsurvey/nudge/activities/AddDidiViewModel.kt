@@ -38,7 +38,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddDidiViewModel @Inject constructor(
-    val tolaDao: TolaDao,
     val addDidiRepository: AddDidiRepository
 ) : BaseViewModel() {
     val houseNumber = mutableStateOf(BLANK_STRING)

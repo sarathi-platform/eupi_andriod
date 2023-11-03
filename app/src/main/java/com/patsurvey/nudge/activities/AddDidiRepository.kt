@@ -35,7 +35,6 @@ class AddDidiRepository @Inject constructor(
     val prefRepo: PrefRepo,
     val casteListDao: CasteListDao,
     val tolaDao: TolaDao,
-    val didiDao: DidiDao,
     val stepsListDao: StepsListDao,
     val villageListDao: VillageListDao,
     val lastSelectedTolaDao: LastSelectedTolaDao,
