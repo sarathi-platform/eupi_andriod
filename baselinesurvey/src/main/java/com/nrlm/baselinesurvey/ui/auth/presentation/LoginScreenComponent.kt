@@ -75,9 +75,11 @@ fun LoginScreenComponent(
 
     setKeyboardToReadjust(activity)
     val networkErrorMessage = viewModel.networkErrorMessage.value
+
     BackHandler {
         (context as? Activity)?.finish()
     }
+
     if(networkErrorMessage.isNotEmpty()){
         snackState.addMessage(
             message = networkErrorMessage,
@@ -218,20 +220,6 @@ fun LoginScreenComponent(
                         )
                     } else {
                         viewModel.onEvent(LoginScreenEvent.GenerateOtpEvent(mobileNumberState.mobileNumber))
-                        /*viewModel.generateOtp { success, message ->
-                            if (success) {
-                                if(navController.graph.route?.equals(Graph.HOME,true) == true){
-                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                                }else
-                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                            } else {
-                                snackState.addMessage(
-                                    message = message,
-                                    isSuccess = false,
-                                    isCustomIcon = false
-                                )
-                            }
-                        }*/
                     }
                 },
                 modifier = Modifier

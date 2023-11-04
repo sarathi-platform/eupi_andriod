@@ -44,22 +44,28 @@ class SurveyeeScreenViewModel @Inject constructor(
     fun init() {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            surveyeeScreenUseCase.getSurveyeeListUseCase.invoke().onEach { items ->
-                items.forEach { surveyeeEntity ->
-                    val surveyeeState = SurveyeeCardState(
-                        surveyeeDetails = surveyeeEntity,
-                        imagePath = surveyeeEntity.crpImageName,
-                        subtitle = surveyeeEntity.dadaName,
-                        address = getSurveyeeAddress(surveyeeEntity),
-                        surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                    )
-                    _surveyeeListState.value.add(surveyeeState)
+            val success = surveyeeScreenUseCase.getSurveyeeListUseCase.getSurveyeeListFromNetwork()
+            if (success) {
+                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke().onEach { items ->
+                    items.forEach { surveyeeEntity ->
+                        val surveyeeState = SurveyeeCardState(
+                            surveyeeDetails = surveyeeEntity,
+                            imagePath = surveyeeEntity.crpImageName,
+                            subtitle = surveyeeEntity.dadaName,
+                            address = getSurveyeeAddress(surveyeeEntity),
+                            surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                        )
+                        _surveyeeListState.value.add(surveyeeState)
+                    }
+                }
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
+                }
+            } else {
+                withContext(Dispatchers.Main) {
+                    onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
             }
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
-
         }
 
     }

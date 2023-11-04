@@ -7,7 +7,7 @@ import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nrlm.baselinesurvey.database.converters.BeneficiaryStepConverter
 import com.nrlm.baselinesurvey.database.converters.IntConverter
-import com.nrlm.baselinesurvey.database.dao.DidiDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -26,7 +26,7 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun languageListDao(): LanguageListDao
 
-    abstract fun didiDao(): DidiDao
+    abstract fun didiDao(): SurveyeeEntityDao
 
 
     companion object {

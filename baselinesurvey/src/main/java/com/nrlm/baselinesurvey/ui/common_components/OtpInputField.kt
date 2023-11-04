@@ -25,6 +25,7 @@ import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.otpBorderColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -125,7 +126,9 @@ fun OtpCell(
             width = if (isFocus) 2.dp else 1.dp,
             color = if (isFocus) textColorDark else otpBorderColor,
             shape = MaterialTheme.shapes.small
-        ))
+        ),
+        color = white
+    )
         {
             Text(
                 text = char,

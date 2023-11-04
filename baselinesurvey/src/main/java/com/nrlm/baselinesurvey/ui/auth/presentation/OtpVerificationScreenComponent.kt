@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.auth.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -107,6 +108,10 @@ fun OtpVerificationScreenComponent(
     LaunchedEffect(key1 = true){
         otpValue.value= BLANK_STRING
         viewModel.otpNumber.value= BLANK_STRING
+    }
+
+    BackHandler {
+        navController.popBackStack()
     }
 
     Box(

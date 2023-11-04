@@ -10,4 +10,8 @@ class GetSurveyeeListUseCase(
     operator fun invoke(): Flow<List<SurveyeeEntity>> {
         return repository.getSurveyeeList()
     }
+
+    suspend fun getSurveyeeListFromNetwork(): Boolean {
+        return repository.getSurveyeeListFromNetwork()
+    }
 }

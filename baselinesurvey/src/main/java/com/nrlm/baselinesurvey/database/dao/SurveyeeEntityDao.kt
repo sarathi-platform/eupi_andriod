@@ -6,7 +6,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface DidiDao {
+interface SurveyeeEntityDao {
 
     @Query("SELECT * FROM $SURVEYEE_TABLE ORDER BY id DESC")
     fun getAllDidis(): Flow<List<SurveyeeEntity>>
@@ -22,6 +22,9 @@ interface DidiDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(didis: List<SurveyeeEntity>)
+
+    @Query("DELETE FROM $SURVEYEE_TABLE")
+    fun deleteSurveyees()
 
     @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :crpImageLocalPath WHERE didiId = :didiId")
     fun updateImageLocalPath(didiId: Int, crpImageLocalPath: String)

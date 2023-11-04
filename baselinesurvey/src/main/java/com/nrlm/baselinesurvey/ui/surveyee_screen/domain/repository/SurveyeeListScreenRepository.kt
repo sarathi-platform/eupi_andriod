@@ -7,4 +7,6 @@ interface SurveyeeListScreenRepository {
 
     fun getSurveyeeList(): Flow<List<SurveyeeEntity>>
 
+    suspend fun getSurveyeeListFromNetwork(): Boolean
+
 }

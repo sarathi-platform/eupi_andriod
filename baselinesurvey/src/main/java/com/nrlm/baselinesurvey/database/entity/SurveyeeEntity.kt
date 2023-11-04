@@ -12,7 +12,7 @@ import com.nrlm.baselinesurvey.utils.SurveyState
 
 @Entity(tableName = SURVEYEE_TABLE)
 data class SurveyeeEntity(
-    @PrimaryKey
+    @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     @Expose
     @ColumnInfo(name = "id")
@@ -21,7 +21,7 @@ data class SurveyeeEntity(
     @SerializedName("userId")
     @Expose
     @ColumnInfo(name = "userId")
-    var userId: Int,
+    var userId: Int?,
 
     @SerializedName("didiId")
     @Expose

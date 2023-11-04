@@ -5,7 +5,7 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.DidiDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
@@ -144,9 +144,10 @@ object BaselineModule {
     fun provideSurveyeeListScreenRepository(
         prefRepo: PrefRepo,
         apiService: ApiService,
-        didiDao: DidiDao
+        surveyeeEntityDao: SurveyeeEntityDao,
+        languageListDao: LanguageListDao
     ): SurveyeeListScreenRepository {
-        return SurveyeeListScreenRepositoryImpl(prefRepo, apiService, didiDao)
+        return SurveyeeListScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, languageListDao)
     }
 
     @Provides

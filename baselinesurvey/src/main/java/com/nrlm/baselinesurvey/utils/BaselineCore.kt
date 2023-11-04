@@ -1,23 +1,16 @@
 package com.nrlm.baselinesurvey.utils
 
-import android.app.Activity
 import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
 import android.net.Network
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
-import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
-import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
-import com.akexorcist.localizationactivity.ui.LocalizationActivity
 import com.nrlm.baselinesurvey.BaselineApplication
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
-import com.nrlm.baselinesurvey.database.dao.DidiDao
+import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.download.AndroidDownloader
 import com.nrlm.baselinesurvey.download.utils.FileType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 object BaselineCore {
 
@@ -87,7 +80,7 @@ object BaselineCore {
         }
     }
 
-    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, didiDao: DidiDao) {
+    fun downloadAuthorizedImageItem(id:Int, image: String, prefRepo: PrefRepo, surveyeeEntityDao: SurveyeeEntityDao) {
         BaselineApplication.appScopeLaunch {
             try {
                 val imageFile = getAuthImagePath(getAppContext(), image)
@@ -105,13 +98,13 @@ object BaselineCore {
                             id,
                             downloadManager,
                             onDownloadComplete = {
-                                didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                                surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
                             }, onDownloadFailed = {
                                 BaselineLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
                             })
                     }
                 } else {
-                    didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                    surveyeeEntityDao.updateImageLocalPath(id,imageFile.absolutePath)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
