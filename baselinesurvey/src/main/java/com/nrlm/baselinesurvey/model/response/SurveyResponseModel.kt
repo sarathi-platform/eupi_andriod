@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.model.response
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 
 data class SurveyResponseModel(
@@ -23,15 +22,19 @@ data class SurveyResponseModel(
     @Expose
     val thresholdScore: Int,
 
-    @SerializedName("surveyDescription")
+   /* @SerializedName("surveyDescription")
     @Expose
     val surveyDescription: String,
 
     @SerializedName("surveyDescriptionType")
     @Expose
-    val surveyDescriptionType: String,
+    val surveyDescriptionType: String,*/
 
-    @SerializedName("listOfQuestionSectionList")
+    @SerializedName("contentList")
     @Expose
-    val listOfQuestionSectionList: List<Sections>
+    val contentList: List<ContentList>,
+
+    @SerializedName("surveyList")
+    @Expose
+    val surveyList: List<Sections>
 )

@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SurveyeeListScreenRepository {
 
-    fun getSurveyeeList(): Flow<List<SurveyeeEntity>>
+    suspend fun getSurveyeeList(): List<SurveyeeEntity>
 
     suspend fun getSurveyeeListFromNetwork(): Boolean
 

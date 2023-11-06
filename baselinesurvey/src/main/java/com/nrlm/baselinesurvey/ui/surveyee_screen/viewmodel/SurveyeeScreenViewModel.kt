@@ -44,30 +44,31 @@ class SurveyeeScreenViewModel @Inject constructor(
     fun init() {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val success = surveyeeScreenUseCase.getSurveyeeListUseCase.getSurveyeeListFromNetwork()
-            if (success) {
-                surveyeeScreenUseCase.getSurveyeeListUseCase.invoke().onEach { items ->
-                    items.forEach { surveyeeEntity ->
-                        val surveyeeState = SurveyeeCardState(
-                            surveyeeDetails = surveyeeEntity,
-                            imagePath = surveyeeEntity.crpImageName,
-                            subtitle = surveyeeEntity.dadaName,
-                            address = getSurveyeeAddress(surveyeeEntity),
-                            surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                        )
-                        _surveyeeListState.value.add(surveyeeState)
-                    }
+//            val success = surveyeeScreenUseCase.getSurveyeeListUseCase.getSurveyeeListFromNetwork()
+//            if (success) {
+                if (_surveyeeListState.value.isEmpty()) {
+                    surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+                        .forEach { surveyeeEntity ->
+                            val surveyeeState = SurveyeeCardState(
+                                surveyeeDetails = surveyeeEntity,
+                                imagePath = surveyeeEntity.crpImageName,
+                                subtitle = surveyeeEntity.dadaName,
+                                address = getSurveyeeAddress(surveyeeEntity),
+                                surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                            )
+                            _surveyeeListState.value.add(surveyeeState)
+                        }
                 }
+                _filteredSurveyeeListState.value = _surveyeeListState.value
                 withContext(Dispatchers.Main) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
-            } else {
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                }
-            }
+//            } else {
+//                withContext(Dispatchers.Main) {
+//                    onEvent(LoaderEvent.UpdateLoaderState(false))
+//                }
+//            }
         }
-
     }
 
 

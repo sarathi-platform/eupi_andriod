@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
+import android.util.Log
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.PREF_KEY_EMAIL
 import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
@@ -15,6 +16,7 @@ import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
+import com.nrlm.baselinesurvey.utils.createMultiLanguageVillageRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.count
 import kotlinx.coroutines.flow.onEach
@@ -27,7 +29,7 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
     private val languageListDao: LanguageListDao
 ): SurveyeeListScreenRepository {
 
-    override fun getSurveyeeList(): Flow<List<SurveyeeEntity>> {
+    override suspend fun getSurveyeeList(): List<SurveyeeEntity> {
         return surveyeeEntityDao.getAllDidis()
     }
 
@@ -49,8 +51,8 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 val apiResponse = userApiResponse.data?.username?.toInt()
                     ?.let { apiService.getDidisFromNetwork(userId = it) }
                 if (apiResponse?.status?.equals(SUCCESS, false) == true) {
-                    surveyeeEntityDao.deleteSurveyees()
                     if (apiResponse?.data?.didiList != null) {
+                        surveyeeEntityDao.deleteSurveyees()
                         apiResponse?.data?.didiList.forEach {
                             val surveyeeEntity = SurveyeeEntity(
                                 id = 0,
@@ -79,22 +81,9 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 return false
             }
         } catch (ex: Exception) {
+            Log.e("SurveyeeListScreenRepositoryImpl", "getSurveyeeListFromNetwork: ", ex)
             return false
         }
-    }
-
-    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>):String {
-        var requestString:StringBuilder= StringBuilder()
-        var request:String= "2"
-        if(localLanguageList.isNotEmpty()){
-            localLanguageList.forEach {
-                requestString.append("${it.id}-")
-            }
-        }else request = "2"
-        if(requestString.contains("-")){
-            request= requestString.substring(0,requestString.length-1)
-        }
-        return request
     }
 
 }

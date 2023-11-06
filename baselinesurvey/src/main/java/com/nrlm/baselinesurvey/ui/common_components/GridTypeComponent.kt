@@ -29,7 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntityOld
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -48,7 +48,7 @@ import com.patsurvey.nudge.customviews.htmltext.HtmlText
 @Composable
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
-    question: QuestionEntity,
+    question: QuestionEntityOld,
     index: Int,
     isAnswerSelected: Boolean = false,
     onAnswerSelection: (Int) -> Unit,
@@ -177,7 +177,7 @@ fun GridTypeQuestionPreview() {
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
     }
 
-    val question = QuestionEntity(
+    val question = QuestionEntityOld(
         id = 3,
         questionId = 12,
         questionDisplay = "How much is your current savings? (Select all that apply)",

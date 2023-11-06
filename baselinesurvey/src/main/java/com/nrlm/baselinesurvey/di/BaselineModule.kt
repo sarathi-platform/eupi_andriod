@@ -7,6 +7,9 @@ import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
+import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
+import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
+import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.splash.domain.repository.SplashScreenRepository
@@ -44,8 +47,14 @@ import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListSc
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import dagger.Module
@@ -162,9 +171,12 @@ object BaselineModule {
     @Singleton
     fun provideSectionListScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        apiService: ApiService,
+        surveyEntityDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        questionEntityDao: QuestionEntityDao
     ): SectionListScreenRepository {
-        return SectionListScreenRepositoryImpl(prefRepo, apiService)
+        return SectionListScreenRepositoryImpl(prefRepo, apiService, surveyEntityDao, sectionEntityDao, questionEntityDao)
     }
 
     @Provides
@@ -212,6 +224,32 @@ object BaselineModule {
     ): MainActivityUseCase {
         return MainActivityUseCase(
             isLoggedInUseCase = IsLoggedInUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDataLoadingScreenRepository(
+        prefRepo: PrefRepo,
+        apiService: ApiService,
+        languageListDao: LanguageListDao,
+        surveyeeEntityDao: SurveyeeEntityDao,
+        surveyEntityDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        questionEntityDao: QuestionEntityDao
+    ): DataLoadingScreenRepository {
+        return DataLoadingScreenRepositoryImpl(prefRepo, apiService, languageListDao, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFetchDataUseCaseUseCase(
+        repository: DataLoadingScreenRepository
+    ): FetchDataUseCase {
+        return FetchDataUseCase(
+            fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
+            fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
+            fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository)
         )
     }
 

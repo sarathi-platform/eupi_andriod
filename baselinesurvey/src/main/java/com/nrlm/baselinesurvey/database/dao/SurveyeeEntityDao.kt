@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 interface SurveyeeEntityDao {
 
     @Query("SELECT * FROM $SURVEYEE_TABLE ORDER BY id DESC")
-    fun getAllDidis(): Flow<List<SurveyeeEntity>>
+    suspend fun getAllDidis(): List<SurveyeeEntity>
 
     @Query("SELECT * FROM $SURVEYEE_TABLE where villageId = :villageId  ORDER BY didiId DESC")
     fun getAllDidisForVillage(villageId: Int): List<SurveyeeEntity>

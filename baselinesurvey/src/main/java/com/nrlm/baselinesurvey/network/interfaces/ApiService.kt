@@ -42,7 +42,7 @@ interface ApiService {
         @Query("languageId") languageId: String
     ): ApiResponseModel<UserDetailsResponse>
 
-    @GET("/survey-engine/survey/view")
+    @POST("/survey-engine/survey/view")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
 

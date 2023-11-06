@@ -4,7 +4,6 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
 import com.nrlm.baselinesurvey.utils.firstSampleList
-import com.nrlm.baselinesurvey.utils.secondSampleList
 import javax.inject.Inject
 
 class QuestionScreenRepositoryImpl @Inject constructor(

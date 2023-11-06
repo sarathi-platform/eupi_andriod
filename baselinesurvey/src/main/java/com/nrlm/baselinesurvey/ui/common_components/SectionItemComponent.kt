@@ -124,7 +124,7 @@ fun SectionItemComponent(
                         ),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
+                        /*Icon(
                             painter = painterResource(id = sectionStateItem.section.sectionIcon),
                             contentDescription = null,
                             tint = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name) or sectionStateItem.sectionStatus.name.equals(
@@ -134,7 +134,7 @@ fun SectionItemComponent(
                                 if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) stepIconCompleted else stepIconEnableColor
                             } else stepIconDisableColor,
                             modifier = Modifier
-                        )
+                        )*/
                     }
                 }
 
@@ -227,7 +227,7 @@ fun SectionItemComponent(
 fun SectionItemComponentPreview(
     modifier: Modifier = Modifier
 ) {
-    val sectionStateItem1 = SectionState(sampleSetcion1, SectionStatus.INPROGRESS)
+   /* val sectionStateItem1 = SectionState(sampleSetcion1, SectionStatus.INPROGRESS)
     val sectionStateItem2 = SectionState(sampleSection2, SectionStatus.COMPLETED)
     val sectionStateItem3 = SectionState(sampleSection2, SectionStatus.NOT_STARTED)
 
@@ -245,5 +245,5 @@ fun SectionItemComponentPreview(
             sectionStateItem = sectionStateItem3,
             onclick = {},
             onDetailIconClicked = {})
-    }
+    }*/
 }

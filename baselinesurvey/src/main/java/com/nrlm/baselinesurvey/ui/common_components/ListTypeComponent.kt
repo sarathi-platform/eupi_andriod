@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntityOld
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -45,7 +45,7 @@ import com.patsurvey.nudge.customviews.htmltext.HtmlText
 @Composable
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
-    question: QuestionEntity,
+    question: QuestionEntityOld,
     index: Int,
     isAnswerSelected: Boolean = false,
     onAnswerSelection: (Int) -> Unit,
@@ -125,7 +125,7 @@ fun ListTypeQuestion(
         optionList.add(OptionsItem("Option Value $i", i + 1, i, 1, "Summery"))
     }
 
-    val question = QuestionEntity(
+    val question = QuestionEntityOld(
         id = 2,
         questionId = 1,
         questionDisplay = "What is the <b>educational status </b> of adult members in the family?",

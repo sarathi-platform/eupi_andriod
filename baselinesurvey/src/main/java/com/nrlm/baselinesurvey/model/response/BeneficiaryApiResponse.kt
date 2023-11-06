@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.model.datamodel.DidiDetailList
 
 data class BeneficiaryApiResponse(
-    @SerializedName("beneficiaryList")
+    @SerializedName("didiList")
     @Expose
     val didiList:List<DidiDetailList>
 )

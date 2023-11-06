@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -53,9 +54,11 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewMo
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
+import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
+import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
@@ -140,7 +143,7 @@ fun SurveyeeListScreen(
 
         Box {
             Column(modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .padding(it)
                 .align(Alignment.TopCenter)
                 .pullRefresh(pullRefreshState)
@@ -163,7 +166,7 @@ fun SurveyeeListScreen(
                                 filterSelected = isFilterAppliedState.value.isFilterApplied,
                                 onFilterSelected = {
                                     if (surveyeeList.isNotEmpty()) {
-                                        isFilterAppliedState.value.copy(
+                                        isFilterAppliedState.value = isFilterAppliedState.value.copy(
                                             isFilterApplied = !it
                                         )
                                         viewModel.onEvent(SearchEvent.FilterList)
@@ -193,7 +196,7 @@ fun SurveyeeListScreen(
 
                         }
 
-                        if (isFilterAppliedState.value.isFilterApplied) {
+                        if (!isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
                                 SurveyeeCardComponent(surveyeeState = item) { buttonName ->
                                     handleButtonClick(buttonName, navController)
@@ -221,10 +224,12 @@ fun SurveyeeListScreen(
                                 }
                             }
                         }
+                        item { 
+                            Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
+                        }
                     }
                 }
             }
-
 
             PullRefreshIndicator(
                 refreshing = loaderState.isLoaderVisible,

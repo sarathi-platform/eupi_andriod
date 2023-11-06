@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 class GetSurveyeeListUseCase(
     private val repository: SurveyeeListScreenRepository
 ) {
-    operator fun invoke(): Flow<List<SurveyeeEntity>> {
+    suspend operator fun invoke(): List<SurveyeeEntity> {
         return repository.getSurveyeeList()
     }
 

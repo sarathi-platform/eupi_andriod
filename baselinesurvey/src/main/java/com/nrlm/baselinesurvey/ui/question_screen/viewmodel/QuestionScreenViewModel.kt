@@ -2,8 +2,10 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.response.ContentList
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.LoaderState
@@ -18,7 +20,8 @@ class QuestionScreenViewModel @Inject constructor(
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
-    private val _sectionDetail = mutableStateOf<Sections>(Sections())
+    private val _sectionDetail = mutableStateOf<Sections>(Sections(contentList = listOf(ContentList(
+        BLANK_STRING, BLANK_STRING))))
     val sectionDetail: State<Sections> get() = _sectionDetail
 
     fun init(sectionId: Int) {

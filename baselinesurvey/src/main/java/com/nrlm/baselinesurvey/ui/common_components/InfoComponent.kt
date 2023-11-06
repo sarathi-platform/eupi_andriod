@@ -25,7 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntityOld
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.descriptionBoxBackgroundLightBlue
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -43,7 +43,7 @@ import com.patsurvey.nudge.customviews.htmltext.HtmlText
 fun InfoComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    question: QuestionEntity
+    question: QuestionEntityOld
 ) {
     val questionDetailVisibilityState = remember {
         mutableStateOf(false)

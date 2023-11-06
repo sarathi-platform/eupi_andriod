@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreen
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
 import com.patsurvey.nudge.navigation.AuthScreen
 
@@ -20,8 +21,13 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
     NavHost(
         navController = navController,
         route = Graph.HOME,
-        startDestination = HomeScreens.SURVEYEE_LIST_SCREEN.route
+        startDestination = HomeScreens.DATA_LOADING_SCREEN.route
     ) {
+
+        composable(route = HomeScreens.DATA_LOADING_SCREEN.route) {
+            DataLoadingScreenComponent(viewModel = hiltViewModel(), navController = navController)
+        }
+
         composable(route = HomeScreens.SURVEYEE_LIST_SCREEN.route) {
             SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
         }
@@ -45,6 +51,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
 }
 
 sealed class HomeScreens(val route: String) {
+    object DATA_LOADING_SCREEN : HomeScreens(route = "data_loading_screen")
     object SECTION_SCREEN : HomeScreens(route = "section_screen")
     object QUESTION_SCREEN : HomeScreens(route = "question_screen/{$ARG_SECTION_ID}")
     object SURVEYEE_LIST_SCREEN : HomeScreens(route = "surveyee_list_screen")

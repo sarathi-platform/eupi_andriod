@@ -44,7 +44,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.TYPE_GRID
 import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntityOld
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
@@ -283,7 +283,7 @@ fun QuestionScreen(
                         items = sectionDetails.questionList ?: emptyList()
                     ) { index, question ->
 
-                        CreateQuestions(question, index, scope, listState)
+//                        CreateQuestions(question, index, scope, listState)
                     }
                     item {
                         Spacer(modifier = Modifier.width(dimen_24_dp))
@@ -296,7 +296,7 @@ fun QuestionScreen(
 
 @Composable
 private fun CreateQuestions(
-    question: QuestionEntity?,
+    question: QuestionEntityOld?,
     index: Int,
     scope: CoroutineScope,
     listState: LazyListState

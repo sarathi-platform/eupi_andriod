@@ -19,8 +19,9 @@ import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.model.response.ContentList
+import com.nrlm.baselinesurvey.model.response.QuestionList
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -118,16 +119,29 @@ fun getAuthImagePath(context: Context, imagePath:String): File {
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${imageName}")
 }
 
+fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>):String {
+    var requestString:StringBuilder= StringBuilder()
+    var request:String= "2"
+    if(localLanguageList.isNotEmpty()){
+        localLanguageList.forEach {
+            requestString.append("${it.id}-")
+        }
+    }else request = "2"
+    if(requestString.contains("-")){
+        request= requestString.substring(0,requestString.length-1)
+    }
+    return request
+}
+
 val sampleSetcion1 = Sections(
     sectionId = 1,
     sectionName = "Financial Inclusion",
     sectionOrder = 1,
-//    sectionIcon = "sample_step_icon_1",
-    sectionIcon = R.drawable.sample_step_icon_1,
+    sectionIcon = "sample_step_icon_1",
+//    sectionIcon = R.drawable.sample_step_icon_1,
     sectionDetails = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
     questionList = listOf(
-        QuestionEntity(
-            id = 1,
+        QuestionList(
             questionId = 1,
             questionDisplay = "Did everyone in your family have at least 2 meals per day in the last 1 month?",
             questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not? \n\nPlease check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
@@ -154,10 +168,9 @@ val sampleSetcion1 = Sections(
                     optionType = ""
                 )
             ),
-            questionImageUrl = "Section1_GovtService.webp",
+            /*questionImageUrl = "Section1_GovtService.webp",*/
         ),
-        QuestionEntity(
-            id = 2,
+        QuestionList(
             questionId = 2,
             questionDisplay = "Does the family have a working <b>2-wheeler</b>?",
             questionSummary = "Please check if the family is getting ration through the public distribution system (PDS) of the government or not?",
@@ -201,11 +214,10 @@ val sampleSetcion1 = Sections(
                     ""
                 )
             ),
-            questionImageUrl =
-            "Section1_2wheeler.webp",
+            /*questionImageUrl =
+            "Section1_2wheeler.webp"*/
         ),
-        QuestionEntity(
-            id = 3,
+        QuestionList(
             questionId = 3,
             questionDisplay = "Does the family have a working <b>Colour Television or Fridge</b>?",
             questionSummary = "Does the family have a working <b>Colour Television or Fridge</b>?",
@@ -231,21 +243,22 @@ val sampleSetcion1 = Sections(
                     optionImage = R.drawable.icon_close,
                     optionType = ""
                 )
-            ),
-            questionImageUrl = "Section1_ColourTV.webp",
             )
-    )
+            /*questionImageUrl = "Section1_ColourTV.webp"*/
+            )
+
+    ),
+    contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING))
 )
 val sampleSection2 = Sections(
     sectionId = 2,
     sectionName = "Food Security",
     sectionOrder = 2,
     sectionDetails = "Please check the granary/ where they store their grain and also check with neighbors also to understand the food security of the family",
-//    sectionIcon = "sample_step_icon_3",
-    sectionIcon = R.drawable.sample_step_icon_3,
+    sectionIcon = "sample_step_icon_3",
+//    sectionIcon = R.drawable.sample_step_icon_3,
     questionList = listOf(
-        QuestionEntity(
-            id = 1,
+        QuestionList(
             questionId = 18,
             questionDisplay = "Is this a <b>woman headed</b> family?",
             questionSummary = "Is this a <b>woman headed</b> family?",
@@ -271,11 +284,10 @@ val sampleSection2 = Sections(
                     optionImage = R.drawable.icon_check,
                     optionType = ""
                 )
-            ),
-            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",
+            )/*,
+            questionImageUrl = "Section1and2_AdultFemale_WomanHeaded.webp",*/
         ),
-        QuestionEntity(
-            id = 2,
+        QuestionList(
             questionId = 21,
             questionDisplay = "What is the <b>educational status </b> of adult members in the family?",
             questionSummary = "What is the <b>educational status </b> of adult members in the family?",
@@ -333,12 +345,11 @@ val sampleSection2 = Sections(
                     optionType =
                     ""
                 )
-            ),
+            )/*,
             questionImageUrl =
-            "Section1_2wheeler.webp",
+            "Section1_2wheeler.webp",*/
         ),
-        QuestionEntity(
-            id = 3,
+        QuestionList(
             questionId = 12,
             questionDisplay = "How much is your current savings? (Select all that apply)",
             questionSummary = "How much is your current savings? (Select all that apply)",
@@ -382,12 +393,13 @@ val sampleSection2 = Sections(
                     optionImage = 0,
                     optionType = ""
                 )
-            ),
-            questionImageUrl = "Section1_ColourTV.webp",
+            )/*,
+            questionImageUrl = "Section1_ColourTV.webp",*/
         )
-    )
+    ),
+    contentList = listOf(ContentList(BLANK_STRING, BLANK_STRING))
 )
-val sampleSetcion3 = Sections(
+/*val sampleSetcion3 = Sections(
     sectionId = 3,
     sectionOrder = 1,
 //    sectionIcon = "sample_step_icon_2",
@@ -489,8 +501,8 @@ val sampleSetcion3 = Sections(
 
             )
     )
-)
+)*/
 val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
-val secondSampleList = listOf<Sections>(sampleSetcion3)
+//val secondSampleList = listOf<Sections>(sampleSetcion3)
 
 

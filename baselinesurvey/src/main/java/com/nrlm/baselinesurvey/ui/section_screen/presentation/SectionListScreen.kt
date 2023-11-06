@@ -23,6 +23,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -71,9 +72,13 @@ fun SectionListScreen(
     modifier: Modifier = Modifier
 ) {
 
-    val sectionsList = viewModel.sectionItemStateList.toList()
-    
     val loaderState = viewModel.loaderState.value
+
+    LaunchedEffect(key1 = true) {
+        viewModel.init()
+    }
+
+    val sectionsList = viewModel.sectionItemStateList.toList()
 
     val selectedSectionDescription = remember {
         mutableStateOf<String>(BLANK_STRING)
