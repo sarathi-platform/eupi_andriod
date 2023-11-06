@@ -9,19 +9,14 @@ import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.request.EditDidiWealthRankingRequest
 import com.patsurvey.nudge.model.request.EditWorkFlowRequest
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ACCEPTED
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
@@ -60,11 +55,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class FormPictureScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val villageListDao: VillageListDao,
-    val stepsListDao: StepsListDao,
-    val didiDao: DidiDao,
-    val apiService: ApiService
+    val repository: FormPictureScreenRepository
 ): BaseViewModel() {
 
     lateinit var outputDirectory: File
@@ -116,12 +107,12 @@ class FormPictureScreenViewModel @Inject constructor(
 
     init {
         cameraExecutor = Executors.newSingleThreadExecutor()
-        setVillage(prefRepo.getSelectedVillage().id)
+        setVillage(repository.prefRepo.getSelectedVillage().id)
         for (i in 1..5) {
             formCPageList.value = formCPageList.value.also {
                 Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_C, i))}")
                 val imagePath =
-                    prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                    repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
                 }
@@ -130,7 +121,7 @@ class FormPictureScreenViewModel @Inject constructor(
             formDPageList.value = formDPageList.value.also {
                 Log.d("FormPictureScreenViewModel", "init: ${getFormPathKey(getFormSubPath(FORM_D, i))}")
                 val imagePath =
-                    prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
+                    repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
                 }
@@ -141,7 +132,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun setVillage(villageId: Int) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            var village = villageListDao.fetchVillageDetailsForLanguage(villageId, prefRepo.getAppLanguageId() ?: 2) ?: villageListDao.getVillage(villageId)
+            var village = repository.fetchVillageForLanguage(villageId)
             withContext(Dispatchers.Main) {
                 villageEntity.value = village
             }
@@ -175,13 +166,13 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun saveFormPath(formPath: String, formName: String){
         Log.d("FormPictureScreen_saveFormPath", "prefKey: ${PREF_FORM_PATH}_${formName}, formPath: $formPath ")
-        prefRepo.savePref(getFormPathKey(formName)
+        repository.prefRepo.savePref(getFormPathKey(formName)
             /*"${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().name}_$formName"*/, formPath)
     }
 
     fun markVoEndorsementComplete(villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val existingList = repository.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
             if (!existingList.isNullOrEmpty()) {
                 existingList.forEach {
@@ -189,23 +180,18 @@ class FormPictureScreenViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(stepId, StepStatus.COMPLETED.ordinal,villageId)
-            stepsListDao.updateNeedToPost(stepId, villageId, true)
-            val stepDetails=stepsListDao.getStepForVillage(villageId, stepId)
-            if(stepDetails.orderNumber<stepsListDao.getAllSteps().size){
-                stepsListDao.markStepAsInProgress((stepDetails.orderNumber+1),
-                    StepStatus.INPROGRESS.ordinal,villageId)
-                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
-            }
-            prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", true)
+            repository.markVOEndorsementStatusComplete(
+                villageId = villageId,
+                stepId = stepId,
+                updatedCompletedStepsList = updatedCompletedStepsList
+            )
         }
     }
 
     fun updateDidiVoEndorsementStatus() {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus called")
-            val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
+            val didiList = repository.getAllDidisForVillage()
             didiList.forEach {didi ->
                 NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus didi: $didi \n\n")
                 if (didi.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal) {
@@ -216,7 +202,7 @@ class FormPictureScreenViewModel @Inject constructor(
                     }
                     updatedStatus.add(BeneficiaryProcessStatusModel("VO_ENDORSEMENT", "ACCEPTED"))
                     NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
-                    didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+                    repository.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
 
                     NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
 
@@ -230,12 +216,16 @@ class FormPictureScreenViewModel @Inject constructor(
 
                     NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  before = updatedStatus: $updatedStatus \n\n")
 
-                    didiDao.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
+                    repository.updateBeneficiaryProcessStatus(didi.id, updatedStatus)
 
                     NudgeLogger.d("FormPictureScreenViewModel", "updateDidiVoEndorsementStatus-> didiDao.updateBeneficiaryProcessStatus  after = updatedStatus: $updatedStatus \n\n")
 
                 } else {
-                    didiDao.updateNeedToPostVO(false, didiId = didi.id, didi.villageId)
+                    repository.updateNeedToPostVO(
+                        needsToPostVo = false,
+                        didiId = didi.id,
+                        villageId = didi.villageId
+                    )
                 }
             }
         }
@@ -243,7 +233,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun saveVoEndorsementDate() {
         val currentTime = System.currentTimeMillis()
-        prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+prefRepo.getSelectedVillage().id, currentTime)
+        repository.prefRepo.savePref(PREF_VO_ENDORSEMENT_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id, currentTime)
     }
 
     override fun onServerError(error: ErrorModel?) {
@@ -255,10 +245,10 @@ class FormPictureScreenViewModel @Inject constructor(
     }
 
     fun updateFormCImageCount(size: Int) {
-        prefRepo.savePref(PREF_FORM_C_PAGE_COUNT, size)
+        repository.prefRepo.savePref(PREF_FORM_C_PAGE_COUNT, size)
     }
     fun updateFormDImageCount(size: Int) {
-        prefRepo.savePref(PREF_FORM_D_PAGE_COUNT, size)
+        repository.prefRepo.savePref(PREF_FORM_D_PAGE_COUNT, size)
     }
 
     fun updateVoStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
@@ -266,9 +256,8 @@ class FormPictureScreenViewModel @Inject constructor(
             var onFailCounter = 0
             NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork called")
             try {
-                val needToPostDidiList = didiDao.getAllNeedToPostVoDidi(
-                    needsToPostVo = true,
-                    villageId = prefRepo.getSelectedVillage().id
+                val needToPostDidiList = repository.getAllNeedToPostVoDidi(
+                    needsToPostVo = true
                 )
 
                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> needToPostDidiList: $needToPostDidiList \n\n")
@@ -291,7 +280,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
                                         " $updateVoStatusRequest \n\n")
 
-                                val updateVoStatusResponse = apiService.updateDidiRanking(
+                                val updateVoStatusResponse = repository.updateDidiRanking(
                                     updateVoStatusRequest
                                 )
 
@@ -301,7 +290,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                 if (updateVoStatusResponse.status.equals(SUCCESS, true)) {
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
                                             "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
-                                    didiDao.updateNeedToPostVO(needsToPostVo = false, didi.id, didi.villageId)
+                                    repository.updateNeedToPostVO(needsToPostVo = false, didi.id, didi.villageId)
 
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
 
@@ -313,7 +302,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                 }
                                 if (!updateVoStatusResponse.lastSyncTime.isNullOrEmpty()) {
                                     updateLastSyncTime(
-                                        prefRepo,
+                                        repository.prefRepo,
                                         updateVoStatusResponse.lastSyncTime
                                     )
                                 }
@@ -331,7 +320,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> updateVoStatusRequest:" +
                                         " $updateVoStatusRequest \n\n")
 
-                                val updateVoStatusResponse = apiService.updateDidiRanking(
+                                val updateVoStatusResponse = repository.updateDidiRanking(
                                     updateVoStatusRequest
                                 )
                                 NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
@@ -342,7 +331,7 @@ class FormPictureScreenViewModel @Inject constructor(
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
                                             "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
 
-                                    didiDao.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                    repository.updateNeedToPostVO(false, didi.id, didi.villageId)
 
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
                                 } else {
@@ -354,7 +343,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
                                 if (!updateVoStatusResponse.lastSyncTime.isNullOrEmpty()) {
                                     updateLastSyncTime(
-                                        prefRepo,
+                                        repository.prefRepo,
                                         updateVoStatusResponse.lastSyncTime
                                     )
                                 }
@@ -378,22 +367,22 @@ class FormPictureScreenViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> called")
             try {
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
+                val dbResponse=repository.getStepForVillage(villageId, stepId)
                 NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
 
-                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                val stepList = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> stepList = $stepList")
 
                 if(dbResponse.workFlowId>0){
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(5)].workFlowId,
-                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(
-                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                            StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(
+                                PREF_VO_ENDORSEMENT_COMPLETION_DATE_ +repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
                         )
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
 
-                    val response = apiService.editWorkFlow(
+                    val response = repository.editWorkFlow(
                         primaryWorkFlowRequest
                     )
                     NudgeLogger.d("FormPictureScreenViewModel", "callWorkFlowAPI -> " +
@@ -404,12 +393,12 @@ class FormPictureScreenViewModel @Inject constructor(
 
                     if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {
-                                stepsListDao.updateWorkflowId(
+                                repository.updateWorkflowId(
                                     stepId = stepList[stepList.map { it.orderNumber }.indexOf(5)].id,
                                     workflowId = stepList[stepList.map { it.orderNumber }
                                         .indexOf(5)].workFlowId,
-                                    villageId,
-                                    it[0].status
+                                    villageId=villageId,
+                                   status =  it[0].status
                                 )
                             }
                         NudgeLogger.d(
@@ -419,7 +408,11 @@ class FormPictureScreenViewModel @Inject constructor(
                                     .indexOf(5)].id
                             }, villageId = $villageId, needToPost = false \n")
 
-                        stepsListDao.updateNeedToPost(stepId, villageId, false)
+                        repository.updateNeedToPost(
+                            stepId = stepId,
+                            villageId = villageId,
+                            needsToPost = false
+                        )
 
                         NudgeLogger.d(
                             "FormPictureScreenViewModel",
@@ -436,10 +429,10 @@ class FormPictureScreenViewModel @Inject constructor(
                                 )
                             )
                             val bpcStepWorkFlowResponse =
-                                apiService.editWorkFlow(bpcStepWorkFlowRequest)
+                                repository.editWorkFlow(bpcStepWorkFlowRequest)
                             if (bpcStepWorkFlowResponse.status.equals(SUCCESS, true)) {
                                 bpcStepWorkFlowResponse.data?.let {
-                                    stepsListDao.updateWorkflowId(
+                                    repository.updateWorkflowId(
                                         stepId = stepList[stepList.map { it.orderNumber }.indexOf(
                                             BPC_VERIFICATION_STEP_ORDER
                                         )].id,
@@ -460,10 +453,10 @@ class FormPictureScreenViewModel @Inject constructor(
                                 )
                             )
                             val bpcStepWorkFlowResponse =
-                                apiService.addWorkFlow(bpcStepWorkFlowRequest)
+                                repository.addWorkFlow(bpcStepWorkFlowRequest)
                             if (bpcStepWorkFlowResponse.status.equals(SUCCESS, true)) {
                                 bpcStepWorkFlowResponse.data?.let {
-                                    stepsListDao.updateWorkflowId(
+                                    repository.updateWorkflowId(
                                         stepId,
                                         it[0].id,
                                         villageId,
@@ -480,7 +473,7 @@ class FormPictureScreenViewModel @Inject constructor(
                     }
 
                     if (!response.lastSyncTime.isNullOrEmpty()) {
-                        updateLastSyncTime(prefRepo, response.lastSyncTime)
+                        updateLastSyncTime(repository.prefRepo, response.lastSyncTime)
                     }
                 }
 
@@ -497,7 +490,7 @@ class FormPictureScreenViewModel @Inject constructor(
     fun getFormPathKey(subPath: String): String {
         //val subPath formPictureScreenViewModel.pageItemClicked.value
         //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
+        return "${PREF_FORM_PATH}_${repository.prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
@@ -554,17 +547,17 @@ class FormPictureScreenViewModel @Inject constructor(
                 val requestVillageId =
                     RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
-                        prefRepo.getSelectedVillage().id.toString()
+                        repository.prefRepo.getSelectedVillage().id.toString()
                     )
                 val requestUserType =
                     RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
-                        if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
+                        if (repository.prefRepo.isUserBPC()) USER_BPC else USER_CRP
                     )
-                val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
+                val response = repository.uploadDocument(formList = formList, villageId = requestVillageId, userType = requestUserType)
                 if(response.status == SUCCESS){
-                    prefRepo.savePref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                    repository.prefRepo.savePref(
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + repository.prefRepo.getSelectedVillage().id,false)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -580,7 +573,7 @@ class FormPictureScreenViewModel @Inject constructor(
 
     fun updateVoEndorsementEditFlag() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            didiDao.updateVoEndorsementEditFlag(prefRepo.getSelectedVillage().id, false)
+            repository.updateVoEndorsementEditFlag(voEndorsementEdit =  false)
         }
     }
 

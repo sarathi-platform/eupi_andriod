@@ -330,7 +330,7 @@ fun FormPictureScreen(
                             }
 
                             VOAndVillageBoxView(
-                                prefRepo = formPictureScreenViewModel.prefRepo,
+                                prefRepo = formPictureScreenViewModel.repository.prefRepo,
                                 modifier = Modifier.fillMaxWidth(),
                                 startPadding = 0.dp
                             )
@@ -371,7 +371,7 @@ fun FormPictureScreen(
                                                     it
                                                 )
                                             formPictureScreenViewModel.imagePath.value =
-                                                formPictureScreenViewModel.prefRepo.getPref(
+                                                formPictureScreenViewModel.repository.prefRepo.getPref(
                                                     formPictureScreenViewModel.getFormPathKey(
                                                         formPictureScreenViewModel.pageItemClicked.value
                                                     ),
@@ -656,7 +656,7 @@ fun FormPictureScreen(
                                         formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
                                         formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
                                         for (i in 1..5) {
-                                            formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
+                                            formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
                                         }
                                     }
                                 )
@@ -681,7 +681,7 @@ fun FormPictureScreen(
                                                     it
                                                 )
                                             formPictureScreenViewModel.imagePath.value =
-                                                formPictureScreenViewModel.prefRepo.getPref(
+                                                formPictureScreenViewModel.repository.prefRepo.getPref(
                                                     formPictureScreenViewModel.getFormPathKey(
                                                         formPictureScreenViewModel.pageItemClicked.value
                                                     ),
@@ -837,7 +837,7 @@ fun FormPictureScreen(
                                         formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
                                         formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
                                         for (i in 1..5) {
-                                            formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
+                                            formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
                                         }
                                     }
                                 )
@@ -863,12 +863,12 @@ fun FormPictureScreen(
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
                             NudgeLogger.d("FormPictureScreen", "submit button clicked")
-                            formPictureScreenViewModel.prefRepo.savePref(
-                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
+                            formPictureScreenViewModel.repository.prefRepo.savePref(
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,true)
                             formPictureScreenViewModel.updateVoEndorsementEditFlag()
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
-                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
@@ -877,7 +877,7 @@ fun FormPictureScreen(
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
                                         formPictureScreenViewModel.callWorkFlowAPI(
-                                            formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                            formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                             stepId,
                                             object :
                                                 NetworkCallbackListener {
