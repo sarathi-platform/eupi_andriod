@@ -81,7 +81,7 @@ fun QuestionScreen(
             val mAnsweredQuestion = mAnswerList.size
             if (mAnsweredQuestion > 0 && !mAnswerList.isNullOrEmpty()) {
                 viewModel.isAnswerSelected.value=false
-                viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
                 pagerState.animateScrollToPage(mAnsweredQuestion)
             }
         } catch (ex: Exception) {
@@ -125,8 +125,8 @@ fun QuestionScreen(
 
     val context = LocalContext.current
     BackHandler {
-        if (viewModel.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
-            if (viewModel.prefRepo.isUserBPC()) {
+        if (viewModel.repository.prefRepo.questionScreenOpenFrom() == PageFrom.DIDI_LIST_PAGE.ordinal) {
+            if (viewModel.repository.prefRepo.isUserBPC()) {
                 navController.popBackStack(
                     BpcDidiListScreens.BPC_DIDI_LIST.route,
                     inclusive = false
@@ -135,7 +135,7 @@ fun QuestionScreen(
                 navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
             }
         } else {
-            if (viewModel.prefRepo.isUserBPC())
+            if (viewModel.repository.prefRepo.isUserBPC())
                 navController.popBackStack(
                     BpcDidiListScreens.BPC_DIDI_LIST.route,
                     inclusive = false
@@ -174,7 +174,7 @@ fun QuestionScreen(
             }
 
             VOAndVillageBoxView(
-                prefRepo = viewModel.prefRepo,
+                prefRepo = viewModel.repository.prefRepo,
                 modifier = Modifier
                     .fillMaxWidth(),
                 startPadding = 0.dp
@@ -278,7 +278,7 @@ fun QuestionScreen(
                                     enteredAssetAmount = "0",
                                     questionFlag = BLANK_STRING
                                 ) {
-                                    if (viewModel.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal) {
+                                    if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal) {
                                         if (!nextButtonClick)
                                             viewModel.updateDidiQuesSection(
                                                 didiId,
@@ -327,9 +327,9 @@ fun QuestionScreen(
                             ) { selectedIndex ->
                                 viewModel.prevButtonVisible.value = false
                                 viewModel.nextButtonVisible.value = false
-                                viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                                viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
                                 viewModel.isAnswerSelected.value = true
-                                if (viewModel.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
+                                if (viewModel.repository.prefRepo.questionScreenOpenFrom() != PageFrom.DIDI_LIST_PAGE.ordinal)
                                     viewModel.updateDidiQuesSection(
                                         didiId,
                                         PatSurveyStatus.INPROGRESS.ordinal
@@ -422,7 +422,7 @@ fun QuestionScreen(
                                     if (value == 1) {
                                         viewModel.prevButtonVisible.value = false
                                         viewModel.nextButtonVisible.value = false
-                                        viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                                        viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
                                         coroutineScope.launch {
                                             delay(250)
                                             if (answeredQuestion.value < (questionList.size)) {
@@ -473,7 +473,7 @@ fun QuestionScreen(
                 ) {
                     viewModel.prevButtonVisible.value = false
                     viewModel.nextButtonVisible.value = false
-                    viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                    viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
                     viewModel.isAnswerSelected.value = false
                     selQuesIndex.value = selQuesIndex.value - 1
                     val prevPageIndex = pagerState.currentPage - 1
@@ -541,7 +541,7 @@ fun QuestionScreen(
                     if (viewModel.isClickEnable.value) {
                         viewModel.prevButtonVisible.value = false
                         viewModel.nextButtonVisible.value = false
-                        viewModel.prefRepo.saveNeedQuestionToScroll(true)
+                        viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
                         viewModel.isAnswerSelected.value = false
                         selQuesIndex.value = selQuesIndex.value + 1
                         val nextPageIndex = pagerState.currentPage + 1
@@ -616,11 +616,11 @@ fun QuestionScreen(
 
 fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
     if(quesViewModel.sectionType.value.equals(TYPE_EXCLUSION,true)){
-        if(quesViewModel.prefRepo.isUserBPC())
+        if(quesViewModel.repository.prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
         else navController.navigate("pat_section_one_summary_screen/$didiId")
     }else{
-        if(quesViewModel.prefRepo.isUserBPC())
+        if(quesViewModel.repository.prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_two_summary_screen/$didiId")
          else  navController.navigate("pat_section_two_summary_screen/$didiId")
 
@@ -629,7 +629,7 @@ fun navigateToSummeryPage(navController: NavHostController, didiId: Int,quesView
 
 fun navigateToSummeryOnePage(navController: NavHostController, didiId: Int,quesViewModel: QuestionScreenViewModel) {
     if(quesViewModel.sectionType.value.equals(TYPE_INCLUSION,true)){
-        if(quesViewModel.prefRepo.isUserBPC())
+        if(quesViewModel.repository.prefRepo.isUserBPC())
             navController.navigate("bpc_pat_section_one_summary_screen/$didiId")
         else navController.navigate("pat_section_one_summary_screen/$didiId")
     }

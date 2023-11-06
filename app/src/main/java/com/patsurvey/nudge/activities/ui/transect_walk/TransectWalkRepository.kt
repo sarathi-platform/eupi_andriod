@@ -25,7 +25,6 @@ class TransectWalkRepository @Inject constructor(
     val prefRepo: PrefRepo,
     val tolaDao: TolaDao,
     val stepsListDao: StepsListDao,
-    val didiDao: DidiDao,
     val villageListDao: VillageListDao
 ) : BaseRepository() {
 

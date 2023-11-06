@@ -162,7 +162,7 @@ fun VoEndorsementScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = viewModel.prefRepo,
+                    prefRepo = viewModel.repository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
@@ -252,7 +252,7 @@ fun VoEndorsementScreen(
                                         ?: emptyList(),
                                     modifier = modifier,
                                     onNavigate = {
-                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
+                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate(
                                             "vo_endorsement_summary_screen/${
                                                 newFilteredTolaDidiList[didiKey]?.get(
@@ -285,7 +285,7 @@ fun VoEndorsementScreen(
                                     didi = didi,
                                     modifier = modifier,
                                     onItemClick = {
-                                        viewModel.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
+                                        viewModel.repository.prefRepo.savePref(PREF_KEY_VO_SUMMARY_OPEN_FROM,PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal)
                                         navController.navigate("vo_endorsement_summary_screen/${didi.id}/${didi.voEndorsementStatus}")
                                         viewModel.performQuery(BLANK_STRING, filterSelected)
                                     },

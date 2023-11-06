@@ -13,7 +13,6 @@ import javax.inject.Inject
 
 class DigitalFormRepository @Inject constructor(
     val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
     val poorDidiListDao: PoorDidiListDao,
     val casteListDao: CasteListDao
 ) : BaseRepository() {
