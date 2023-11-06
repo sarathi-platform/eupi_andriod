@@ -1,9 +1,11 @@
 package com.nrlm.baselinesurvey.ui.section_screen.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -176,6 +178,16 @@ fun SectionListScreen(
                             vertical = dimen_16_dp
                         )
                     ) {
+                        item {
+                            Row {
+                                Image(painter = painterResource(id = R.drawable.ic_ionic_close),
+                                    contentDescription ="" )
+                                Text(text = "Quick refresher on baseline survey")
+                                Image(painter = painterResource(id = R.drawable.info_icon),
+                                    contentDescription ="" )
+                            }
+                        }
+
                         item {
                             SearchWithFilterViewComponent(
                                 placeholderString = "Search Question",

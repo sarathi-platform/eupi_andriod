@@ -157,4 +157,17 @@ dependencies {
     //Coil
     implementation "io.coil-kt:coil-compose:1.4.0"
 
+
+    // Exoplayer
+    def exoplayer_version = "2.19.1"
+    implementation "com.google.android.exoplayer:exoplayer:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exoplayer_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
+    implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
+    implementation "com.google.android.exoplayer:extension-okhttp:$exoplayer_version"
+
+    implementation "androidx.media3:media3-exoplayer:1.1.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+    implementation "androidx.media3:media3-ui:1.1.1"
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
 }

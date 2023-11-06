@@ -1,12 +1,14 @@
 package com.nrlm.baselinesurvey.utils
 
 import android.content.Context
+import android.content.ContextWrapper
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.view.WindowManager
 import android.widget.Toast
+import androidx.activity.ComponentActivity
 import androidx.core.content.FileProvider
 import androidx.core.text.isDigitsOnly
 import com.google.gson.Gson
@@ -495,4 +497,8 @@ val sampleSetcion3 = Sections(
 val firstSampleList = listOf<Sections>(sampleSetcion1, sampleSection2)
 val secondSampleList = listOf<Sections>(sampleSetcion3)
 
-
+fun Context.findActivity(): ComponentActivity? = when (this) {
+    is ComponentActivity -> this
+    is ContextWrapper -> baseContext.findActivity()
+    else -> null
+}
