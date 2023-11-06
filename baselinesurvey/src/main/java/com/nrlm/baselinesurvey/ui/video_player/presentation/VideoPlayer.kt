@@ -7,7 +7,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,7 +25,6 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,11 +35,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.media3.common.MediaItem
 import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Player
@@ -51,9 +46,6 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.theme.NotoSans
-import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.utils.Media
 import com.nrlm.baselinesurvey.utils.MediaState
 import com.nrlm.baselinesurvey.utils.ShowBuffering
@@ -65,8 +57,7 @@ import com.nrlm.baselinesurvey.utils.rememberMediaState
 
 @Composable
 fun FullscreenView(
-    navController: NavHostController,
-    videoId: Int
+    navController: NavHostController
 ) {
 
 
@@ -122,9 +113,9 @@ fun FullscreenView(
             .systemBarsPadding()
             .background(Color.White),
     ) { padding ->
-        Column(modifier = Modifier.background(
+        Box(modifier = Modifier.background(
             Color.White
-        )) {
+        ).fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isLandscape) {
                 mediaContent(
                     false,
@@ -143,32 +134,6 @@ fun FullscreenView(
                 )
             }
 
-            Column(modifier = Modifier.fillMaxSize().background(Color.White)) {
-                Text(
-                  "title",
-                    style = mediumTextStyle,
-                    color = textColorDark,
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 8.dp)
-                )
-
-                Text(
-                    text = "description",
-                    style = TextStyle(
-                        color = textColorDark,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Medium,
-                        fontFamily = NotoSans,
-                    ),
-                    modifier = Modifier
-                        .align(Alignment.Start)
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-            }
         }
     }
 }

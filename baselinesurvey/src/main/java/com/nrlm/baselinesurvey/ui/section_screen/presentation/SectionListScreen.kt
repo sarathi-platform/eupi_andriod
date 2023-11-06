@@ -2,6 +2,9 @@ package com.nrlm.baselinesurvey.ui.section_screen.presentation
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +17,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
-import androidx.compose.material.ButtonColors
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
@@ -32,16 +34,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
@@ -52,16 +51,13 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_14_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nrlm.baselinesurvey.ui.theme.lightBlue
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
-import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.SectionState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -179,12 +175,33 @@ fun SectionListScreen(
                         )
                     ) {
                         item {
-                            Row {
-                                Image(painter = painterResource(id = R.drawable.ic_ionic_close),
-                                    contentDescription ="" )
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    .background(lightBlue,
+                                        shape = RoundedCornerShape(6.dp))
+                                    .clickable {
+                                        navController.navigate(HomeScreens.VIDEO_PLAYER_SCREEN.route)
+                                    }
+                                    .border(
+                                        border = ButtonDefaults.outlinedBorder,
+                                        shape = RoundedCornerShape(6.dp)
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Image(
+                                    modifier = Modifier.padding(10.dp),
+                                    painter = painterResource(id = R.drawable.ic_ionic_close),
+                                    contentDescription = ""
+                                )
                                 Text(text = "Quick refresher on baseline survey")
-                                Image(painter = painterResource(id = R.drawable.info_icon),
-                                    contentDescription ="" )
+                                Image(
+                                    modifier = Modifier.padding(10.dp),
+                                    painter = painterResource(id = R.drawable.info_icon),
+                                    contentDescription = ""
+                                )
                             }
                         }
 
