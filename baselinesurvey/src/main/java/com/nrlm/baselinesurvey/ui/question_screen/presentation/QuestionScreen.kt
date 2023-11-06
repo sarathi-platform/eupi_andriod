@@ -1,18 +1,24 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import android.util.Log
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.Orientation
+import androidx.compose.foundation.gestures.rememberScrollableState
+import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +27,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Surface
@@ -33,21 +38,29 @@ import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.TYPE_GRID
+import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
+import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
+import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
+import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
@@ -58,7 +71,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
@@ -69,10 +81,11 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun QuestionScreen(
     modifier: Modifier = Modifier,
@@ -113,7 +126,7 @@ fun QuestionScreen(
                         /*.height(((2 * screenHeight) / 3).dp)*/
                     ) {
 
-                        Column() {
+                        Column {
 //                        BaselineLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                             Box(
                                 modifier = Modifier
@@ -175,124 +188,230 @@ fun QuestionScreen(
                 sheetBackgroundColor = Color.White,
                 sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             ) {
+                NestedLazyList(navController = navController, sectionDetails = sectionDetails)
+            }
+        }
+    }
+}
 
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                    modifier = Modifier.padding(horizontal = dimen_16_dp, vertical = dimen_16_dp),
-                    state = listState
-
-                ) {
-                    item {
-                        SearchWithFilterViewComponent(
-                            placeholderString = "Search Question",
-                            showFilter = false,
-                            onFilterSelected = {
-
-                            },
-                            onSearchValueChange = {
-
-                            }
-                        )
-                    }
-
-                    item {
-                        TopAppBar(
-                            title = {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.Center
-                                ) {
-                                    /*if (sectionDetails.sectionIcon != null) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.sample_step_icon_2),
-                                            contentDescription = "section icon",
-                                            tint = textColorDark
-                                        )
-                                        Spacer(modifier = Modifier.width(dimen_4_dp))
-                                    }*/
-                                    if (!sectionDetails.sectionName.equals(NO_SECTION, true))
-                                        Text(text = sectionDetails.sectionName, color = textColorDark)
-                                }
-                            },
-                            navigationIcon = {
-
-                                Icon(
-                                    Icons.Filled.ArrowBack,
-                                    null,
-                                    tint = textColorDark,
-                                    modifier = Modifier.clickable {
-                                        if (!sectionDetails.sectionName.equals(NO_SECTION, true))
-                                            navController.popBackStack()
-                                        else
-                                            navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
-                                    })
-
-                            },
-                            actions = {
-
-                                Icon(
-                                    painterResource(id = R.drawable.info_icon),
-                                    null,
-                                    tint = textColorDark,
-                                    modifier = Modifier.clickable {
-                                        scope.launch {
-                                            if (!scaffoldState.isVisible) {
-                                                scaffoldState.show()
-                                            } else {
-                                                scaffoldState.hide()
-                                            }
-                                        }
-                                    }
-                                )
-                            },
-                            backgroundColor = white,
-                            elevation = 0.dp,
-
-                            )
-                    }
-
-                    item {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            LinearProgressIndicator(
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(dimen_8_dp)
-                                    .padding(top = 1.dp)
-                                    .clip(RoundedCornerShape(14.dp)),
-                                color = progressIndicatorColor,
-                                trackColor = trackColor,
-                                progress = 0.2f
-                            )
-                            Spacer(modifier = Modifier.width(dimen_8_dp))
-                            Text(
-                                text = "2/4",
-                                color = textColorDark,
-                                style = smallTextStyle
-                            )
-                        }
-
-                    }
-
-                    itemsIndexed(
-                        items = sectionDetails.questionList ?: emptyList()
-                    ) { index, question ->
-                        when (question?.type) {
-                            TYPE_RADIO_BUTTON -> {
-                                RadioQuestionBoxComponent(index = index, question = question) {
-                                    scope.launch {
-                                        listState.animateScrollToItem(it+3, -10)
-                                    }
-                                }
-                            }
-
-                            else -> {}
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.width(dimen_24_dp))
-                    }
+@Composable
+private fun CreateQuestions(
+    question: QuestionEntity?,
+    index: Int,
+    scope: CoroutineScope,
+    listState: LazyListState,
+    maxCustomHeight: Dp
+) {
+    when (question?.type) {
+        TYPE_RADIO_BUTTON -> {
+            RadioQuestionBoxComponent(
+                index = index, question = question,
+                maxCustomHeight = maxCustomHeight
+            ) {
+                scope.launch {
+                    listState.animateScrollToItem(it + 3, -10)
                 }
             }
         }
+
+        TYPE_LIST -> {
+            ListTypeQuestion(
+                question = question,
+                onAnswerSelection = {},
+                questionDetailExpanded = {},
+                index = index,
+                maxCustomHeight = maxCustomHeight
+            )
+        }
+
+        TYPE_GRID -> {
+            GridTypeComponent(
+                question = question,
+                index = index,
+                maxCustomHeight = maxCustomHeight,
+                onAnswerSelection = {},
+                questionDetailExpanded = {}
+            )
+        }
+
+        else -> {}
+    }
+
+}
+
+@Composable
+fun NestedLazyList(
+    modifier: Modifier = Modifier,
+    outerState: LazyListState = rememberLazyListState(),
+    innerState: LazyListState = rememberLazyListState(),
+    queLazyState: LazyListState = rememberLazyListState(),
+    navController: NavController,
+    sectionDetails: Sections
+
+) {
+    val innerQueState: LazyListState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
+    val innerFirstVisibleItemIndex by remember {
+        derivedStateOf {
+            innerState.firstVisibleItemIndex
+        }
+    }
+    SideEffect {
+        if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
+            scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
+        println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
+        println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
+    }
+
+    BoxWithConstraints(
+        modifier = modifier
+            .scrollable(
+                state = rememberScrollableState {
+                    scope.launch {
+                        val toDown = it <= 0
+                        if (toDown) {
+                            if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                Log.i("TAG", "NestedLazyList: down inner")
+                                innerState.scrollBy(-it)
+                            } else {
+                                Log.i("TAG", "NestedLazyList: down outer")
+                                outerState.scrollBy(-it)
+                            }
+                        } else {
+                            if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
+                                Log.i("TAG", "NestedLazyList: up outer")
+                                outerState.scrollBy(-it)
+                            } else {
+                                Log.i("TAG", "NestedLazyList: up inner")
+                                innerState.scrollBy(-it)
+                            }
+                        }
+                    }
+                    it
+                },
+                Orientation.Vertical,
+            )
+    ) {
+        LazyColumn(
+            userScrollEnabled = false,
+            state = outerState,
+            modifier = Modifier
+                .heightIn(maxHeight)
+                .padding(horizontal = 16.dp), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+        ) {
+            item {
+                SearchWithFilterViewComponent(
+                    placeholderString = "Search Question",
+                    showFilter = false,
+                    onFilterSelected = {
+
+                    },
+                    onSearchValueChange = {
+
+                    }
+                )
+            }
+
+            item {
+                TopAppBar(
+                    title = {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            /*if (sectionDetails.sectionIcon != null) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.sample_step_icon_2),
+                                    contentDescription = "section icon",
+                                    tint = textColorDark
+                                )
+                                Spacer(modifier = Modifier.width(dimen_4_dp))
+                            }*/
+                            if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                                Text(
+                                    text = sectionDetails.sectionName,
+                                    color = textColorDark
+                                )
+                        }
+                    },
+                    navigationIcon = {
+
+                        Icon(
+                            Icons.Filled.ArrowBack,
+                            null,
+                            tint = textColorDark,
+                            modifier = Modifier.clickable {
+                                if (!sectionDetails.sectionName.equals(NO_SECTION, true))
+                                    navController.popBackStack()
+                                else
+                                    navController.popBackStack(
+                                        HomeScreens.SURVEYEE_LIST_SCREEN.route,
+                                        false
+                                    )
+                            })
+
+                    },
+                    actions = {
+
+                        Icon(
+                            painterResource(id = R.drawable.info_icon),
+                            null,
+                            tint = textColorDark,
+                            modifier = Modifier.clickable {
+                                scope.launch {
+//                                                if (!scaffoldState.isVisible) {
+//                                                    scaffoldState.show()
+//                                                } else {
+//                                                    scaffoldState.hide()
+//                                                }
+                                }
+                            }
+                        )
+                    },
+                    backgroundColor = white,
+                    elevation = 0.dp,
+
+                    )
+            }
+
+            item {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(dimen_8_dp)
+                            .padding(top = 1.dp)
+                            .clip(RoundedCornerShape(14.dp)),
+                        color = progressIndicatorColor,
+                        trackColor = trackColor,
+                        progress = 0.2f
+                    )
+                    Spacer(modifier = Modifier.width(dimen_8_dp))
+                    Text(
+                        text = "2/4",
+                        color = textColorDark,
+                        style = smallTextStyle
+                    )
+                }
+            }
+            item {
+                LazyColumn(
+                    state = innerState,
+                    userScrollEnabled = false,
+                    modifier = Modifier
+                        .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+
+                ) {
+                    itemsIndexed(
+                        items = sectionDetails.questionList ?: emptyList()
+                    ) { index, question ->
+
+                        CreateQuestions(question, index, scope, queLazyState, maxHeight)
+                    }
+
+                }
+            }
+        }
+
     }
 }
