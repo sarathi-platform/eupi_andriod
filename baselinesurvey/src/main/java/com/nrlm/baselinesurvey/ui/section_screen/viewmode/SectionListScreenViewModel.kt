@@ -44,7 +44,7 @@ class SectionListScreenViewModel @Inject constructor(
                     sectionsList.value.forEachIndexed { index, section ->
                         val sectionState = SectionState(
                             section,
-                            if (sectionProgressForDidi.map { it.sectionId }.contains(section.sectionId)) {
+                            sectionStatus = if (sectionProgressForDidi.map { it.sectionId }.contains(section.sectionId)) {
                                 SectionStatus.getSectionStatusFromOrdinal(
                                     sectionProgressForDidi.findItemBySectionId(section.sectionId).sectionStatus
                                 )

@@ -185,7 +185,7 @@ fun QuestionScreen(
                                     )
                                 )
 //                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
-                                navController.popBackStack()
+                                navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
                             }
                         }
                     ) {

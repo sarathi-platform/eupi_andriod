@@ -7,6 +7,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_PROFILE_IMAGE
 import com.nrlm.baselinesurvey.PREF_KEY_ROLE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_TYPE_NAME
 import com.nrlm.baselinesurvey.PREF_KEY_USER_NAME
+import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -105,6 +106,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsResponse.profileImage ?: "")
         prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsResponse.roleName ?: "")
         prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsResponse.typeName ?: "")
+        prefRepo.savePref(PREF_STATE_ID, userDetailsResponse.referenceId.first().stateId ?: -1)
     }
 
     override fun getUserId(): Int {

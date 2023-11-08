@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.model.response
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nrlm.baselinesurvey.model.datamodel.ReferenceIdModel
 
 data class UserDetailsResponse(
     @SerializedName("username")
@@ -35,5 +36,9 @@ data class UserDetailsResponse(
 
     @SerializedName("villageList")
     @Expose
-    val villageList:List<VillageEntity>?
+    val villageList:List<VillageEntity>?,
+
+    @SerializedName("referenceId")
+    @Expose
+    val referenceId: List<ReferenceIdModel>
 )

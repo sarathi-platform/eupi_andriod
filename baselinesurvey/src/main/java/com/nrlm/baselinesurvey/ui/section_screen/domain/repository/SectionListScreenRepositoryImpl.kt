@@ -53,14 +53,14 @@ class SectionListScreenRepositoryImpl(
                         sectionStatus = SectionStatus.INPROGRESS.ordinal
                     )
                 )
-            } else {
+            } /*else {
                 didiSectionProgressEntityDao.updateSectionStatusForDidi(
                     sectionEntity.surveyId,
                     sectionEntity.sectionId,
                     didiId,
                     SectionStatus.INPROGRESS.ordinal
                 )
-            }
+            }*/
         }
         return sectionList
     }
