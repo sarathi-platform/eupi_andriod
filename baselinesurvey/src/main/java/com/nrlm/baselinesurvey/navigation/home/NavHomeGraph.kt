@@ -15,6 +15,7 @@ import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreen
 import com.nrlm.baselinesurvey.ui.section_screen.presentation.SectionListScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreen
+import com.nrlm.baselinesurvey.ui.video_player.presentation.FullscreenView
 import com.patsurvey.nudge.navigation.AuthScreen
 
 @Composable
@@ -61,6 +62,12 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 ARG_SECTION_ID) ?: 0)
         }
 
+        composable(
+            route = HomeScreens.VIDEO_PLAYER_SCREEN.route,
+        ) {
+            FullscreenView(navController = navController)
+        }
+
     }
 }
 
@@ -69,5 +76,7 @@ sealed class HomeScreens(val route: String) {
     object SECTION_SCREEN : HomeScreens(route = "section_screen/{$ARG_DIDI_ID}")
     object QUESTION_SCREEN : HomeScreens(route = "question_screen/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}")
     object SURVEYEE_LIST_SCREEN : HomeScreens(route = "surveyee_list_screen")
+    object VIDEO_PLAYER_SCREEN : HomeScreens(route = "video_player_screen")
+
 }
 
