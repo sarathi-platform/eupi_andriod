@@ -28,7 +28,7 @@ fun RadioButtonOptionComponent(
     index: Int,
     selectedIndex: Int,
     optionsItem:OptionsItem,
-    onOptionSelected: (Int) -> Unit
+    onOptionSelected: (OptionsItem) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -59,9 +59,12 @@ fun RadioButtonOptionComponent(
                     else
                         redOffline
                 },
-                icon = optionsItem.optionImage?.let { painterResource(id = it) }
+                icon = if (optionsItem.optionValue == 1)
+                    painterResource(id = R.drawable.icon_check)
+                else
+                    painterResource(id = R.drawable.icon_close)
             ) {
-                onOptionSelected(index)
+                onOptionSelected(optionsItem)
             }
         }
         Spacer(modifier = Modifier

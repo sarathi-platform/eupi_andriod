@@ -196,9 +196,6 @@ fun SectionItemComponent(
             }
         }
 
-
-
-
         if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) {
             Image(
                 painter = painterResource(id = R.drawable.icon_check_circle_green),
@@ -208,7 +205,6 @@ fun SectionItemComponent(
                         width = 2.dp,
                         color = Color.Transparent,
                         shape = CircleShape
-
                     )
                     .clip(CircleShape)
                     .background(Color.Transparent)

@@ -5,9 +5,11 @@ import com.nrlm.baselinesurvey.activity.domain.repository.MainActivityRepository
 import com.nrlm.baselinesurvey.activity.domain.use_case.IsLoggedInUseCase
 import com.nrlm.baselinesurvey.activity.domain.use_case.MainActivityUseCase
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
+import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
+import com.nrlm.baselinesurvey.database.dao.SectionAnswerEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
@@ -41,11 +43,15 @@ import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedLanguageU
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.SaveSelectedVillageUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepository
 import com.nrlm.baselinesurvey.ui.question_screen.domain.repository.QuestionScreenRepositoryImpl
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionAnswersUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.GetSectionUseCase
 import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreenUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.SaveSectionAnswerUseCase
+import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.UpdateSectionProgressUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepository
 import com.nrlm.baselinesurvey.ui.section_screen.domain.repository.SectionListScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionListUseCase
+import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.GetSectionProgressForDidiUseCase
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
@@ -174,9 +180,10 @@ object BaselineModule {
         apiService: ApiService,
         surveyEntityDao: SurveyEntityDao,
         sectionEntityDao: SectionEntityDao,
-        questionEntityDao: QuestionEntityDao
+        questionEntityDao: QuestionEntityDao,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao
     ): SectionListScreenRepository {
-        return SectionListScreenRepositoryImpl(prefRepo, apiService, surveyEntityDao, sectionEntityDao, questionEntityDao)
+        return SectionListScreenRepositoryImpl(prefRepo, apiService, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao)
     }
 
     @Provides
@@ -185,7 +192,8 @@ object BaselineModule {
         sectionListScreenRepository: SectionListScreenRepository
     ): SectionListScreenUseCase {
         return SectionListScreenUseCase(
-            GetSectionListUseCase(sectionListScreenRepository)
+            getSectionListUseCase = GetSectionListUseCase(sectionListScreenRepository),
+            getSectionProgressForDidiUseCase = GetSectionProgressForDidiUseCase(sectionListScreenRepository)
         )
     }
 
@@ -193,9 +201,15 @@ object BaselineModule {
     @Singleton
     fun provideQuestionScreenRepository(
         prefRepo: PrefRepo,
-        apiService: ApiService
+        apiService: ApiService,
+        surveyeeEntityDao: SurveyeeEntityDao,
+        surveyEntityDao: SurveyEntityDao,
+        sectionEntityDao: SectionEntityDao,
+        questionEntityDao: QuestionEntityDao,
+        didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
+        sectionAnswerEntityDao: SectionAnswerEntityDao
     ): QuestionScreenRepository {
-        return QuestionScreenRepositoryImpl(prefRepo, apiService)
+        return QuestionScreenRepositoryImpl(prefRepo, apiService, surveyeeEntityDao, surveyEntityDao, sectionEntityDao, questionEntityDao, didiSectionProgressEntityDao, sectionAnswerEntityDao)
     }
 
     @Provides
@@ -204,7 +218,10 @@ object BaselineModule {
         questionScreenRepository: QuestionScreenRepository
     ): QuestionScreenUseCase {
         return QuestionScreenUseCase(
-            getSectionUseCase = GetSectionUseCase(questionScreenRepository)
+            getSectionUseCase = GetSectionUseCase(questionScreenRepository),
+            updateSectionProgressUseCase = UpdateSectionProgressUseCase(questionScreenRepository),
+            saveSectionAnswerUseCase = SaveSectionAnswerUseCase(questionScreenRepository),
+            getSectionAnswersUseCase = GetSectionAnswersUseCase(questionScreenRepository)
         )
     }
 

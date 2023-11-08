@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nrlm.baselinesurvey.DEFAULT_LANGUAGE_NAME
 import com.nrlm.baselinesurvey.activity.MainActivity
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.Sections
@@ -131,6 +132,14 @@ fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>):S
         request= requestString.substring(0,requestString.length-1)
     }
     return request
+}
+
+fun List<DidiSectionProgressEntity>.findItemBySectionId(sectionId:Int): DidiSectionProgressEntity {
+    return this[this.map { it.sectionId }.indexOf(sectionId)]
+}
+
+fun List<OptionsItem>.findItemBySectionId(optionId:Int): OptionsItem {
+    return this[this.map { it.optionId }.indexOf(optionId)]
 }
 
 val sampleSetcion1 = Sections(

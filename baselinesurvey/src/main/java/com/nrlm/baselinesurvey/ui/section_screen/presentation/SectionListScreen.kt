@@ -69,16 +69,17 @@ import kotlinx.coroutines.launch
 fun SectionListScreen(
     navController: NavController,
     viewModel: SectionListScreenViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    didiId: Int
 ) {
 
     val loaderState = viewModel.loaderState.value
 
     LaunchedEffect(key1 = true) {
-        viewModel.init()
+        viewModel.init(didiId)
     }
 
-    val sectionsList = viewModel.sectionItemStateList.toList()
+    val sectionsList = viewModel.sectionItemStateList.value
 
     val selectedSectionDescription = remember {
         mutableStateOf<String>(BLANK_STRING)
@@ -101,7 +102,7 @@ fun SectionListScreen(
 
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navController.navigate("question_screen/${sectionsList[0].section.sectionId}")
+                navController.navigate("question_screen/${sectionsList[0].section.sectionId}/$didiId")
             } else {
                 ModalBottomSheetLayout(
                     sheetContent = {
@@ -206,7 +207,7 @@ fun SectionListScreen(
                             SectionItemComponent(
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}")
+                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}/$didiId")
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {

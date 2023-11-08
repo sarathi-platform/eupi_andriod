@@ -20,8 +20,8 @@ data class OptionsItem(
     @SerializedName("summary")
     val summary: String? = null,
 
-    @SerializedName("isSelected")
-    val isSelected: Boolean? = false,
+/*    @SerializedName("isSelected")
+    val isSelected: Boolean? = false,*/
 
     @SerializedName("count")
     var count: Int? = 0,

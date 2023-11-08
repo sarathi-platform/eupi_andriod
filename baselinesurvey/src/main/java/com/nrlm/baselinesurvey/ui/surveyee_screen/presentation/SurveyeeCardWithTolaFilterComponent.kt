@@ -47,7 +47,7 @@ fun SurveyeeCardWithTolaFilterComponent(
     modifier: Modifier = Modifier,
     tolaName: String,
     surveyeeStateList: List<SurveyeeCardState>,
-    buttonClicked: (buttonName: ButtonName) -> Unit
+    buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
     Column() {
         Row(
@@ -106,8 +106,8 @@ fun SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList.forEachIndexed { index, surveyeeCardState ->
                 SurveyeeCardComponent(
                     surveyeeState = surveyeeCardState,
-                    buttonClicked = {
-                        buttonClicked(it)
+                    buttonClicked = { buttonName, surveyeeId ->
+                        buttonClicked(buttonName, surveyeeId)
                     }
                 )
             }
@@ -170,13 +170,13 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList1,
             tolaName = "Sundar Pahar"
-        ) {
+        ) { buttonName, surveyeeId ->
 
         }
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList2,
             tolaName = "Sundar Pahar 2"
-        ) {
+        ) { buttonName, surveyeeId ->
 
         }
     }

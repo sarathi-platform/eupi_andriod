@@ -11,7 +11,9 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -35,7 +37,8 @@ class DataLoadingScreenViewModel @Inject constructor(
 
     fun fetchAllData(callBack: () -> Unit) {
         try {
-            BaselineApplication.appScopeLaunch(Dispatchers.IO) {
+//            BaselineApplication.appScopeLaunch(Dispatchers.IO) {
+            CoroutineScope(Dispatchers.IO).launch {
                 val fetchUserDetailFromNetworkUseCaseSuccess = fetchDataUseCase.fetchUserDetailFromNetworkUseCase.invoke()
                 if (fetchUserDetailFromNetworkUseCaseSuccess) {
                     fetchDataUseCase.fetchSurveyeeListFromNetworkUseCase.invoke()

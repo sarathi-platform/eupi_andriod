@@ -29,4 +29,7 @@ interface SurveyeeEntityDao {
     @Query("UPDATE $SURVEYEE_TABLE SET crpImageLocalPath = :crpImageLocalPath WHERE didiId = :didiId")
     fun updateImageLocalPath(didiId: Int, crpImageLocalPath: String)
 
+    @Query("Select villageId from $SURVEYEE_TABLE where didiId = :didiId")
+    fun getVillageIdForDidi(didiId: Int): Int
+
 }

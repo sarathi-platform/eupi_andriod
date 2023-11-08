@@ -47,4 +47,12 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideQuestionEntityDao(db: NudgeBaselineDatabase) = db.questionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) = db.didiSectionProgressEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSectionAnswerEntityDao(db: NudgeBaselineDatabase) = db.sectionAnswerEntityDao()
 }

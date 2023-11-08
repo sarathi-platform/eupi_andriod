@@ -15,7 +15,7 @@ interface SectionEntityDao {
     fun insertSection(sectionEntity: SectionEntity)
 
     @Query("Select * from $SECTION_TABLE where sectionId = :sectionId and surveyId = :surveyId and languageId = :languageId")
-    fun getSurveySectionForLanguage(sectionId: Int, surveyId: Int, languageId: Int): SectionEntity?
+    fun getSurveySectionForLanguage(sectionId: Int, surveyId: Int, languageId: Int): SectionEntity
 
     @Query("Select * from $SECTION_TABLE where surveyId = :surveyId and languageId = :languageId")
     fun getAllSectionForSurveyInLanguage(surveyId: Int, languageId: Int): List<SectionEntity>

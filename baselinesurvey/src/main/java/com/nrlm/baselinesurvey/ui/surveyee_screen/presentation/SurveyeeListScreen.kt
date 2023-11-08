@@ -44,6 +44,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ALL_TAB
+import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
@@ -198,8 +199,8 @@ fun SurveyeeListScreen(
 
                         if (!isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
-                                SurveyeeCardComponent(surveyeeState = item) { buttonName ->
-                                    handleButtonClick(buttonName, navController)
+                                SurveyeeCardComponent(surveyeeState = item) { buttonName, surveyeeId ->
+                                    handleButtonClick(buttonName, surveyeeId, navController)
                                 }
                             }
                         } else {
@@ -208,8 +209,8 @@ fun SurveyeeListScreen(
                                     tolaName = key,
                                     surveyeeStateList = surveyeeListWithTolaFilter[key]
                                         ?: emptyList(),
-                                    buttonClicked = { buttonName ->
-                                        handleButtonClick(buttonName, navController)
+                                    buttonClicked = { buttonName, surveyeeId ->
+                                        handleButtonClick(buttonName, surveyeeId, navController)
                                     }
                                 )
                                 if (index < surveyeeListWithTolaFilter.keys.size - 1) {
@@ -241,10 +242,10 @@ fun SurveyeeListScreen(
     }
 }
 
-fun handleButtonClick(buttonName: ButtonName, navController: NavController) {
+fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: NavController) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navController.navigate(HomeScreens.SECTION_SCREEN.route)
+            navController.navigate("section_screen/$surveyeeId")
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {

@@ -55,7 +55,7 @@ import com.nrlm.baselinesurvey.utils.SurveyeeCardState
 fun SurveyeeCardComponent(
     modifier: Modifier = Modifier,
     surveyeeState: SurveyeeCardState,
-    buttonClicked: (buttonName: ButtonName) -> Unit
+    buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
 
     Card(
@@ -120,7 +120,7 @@ fun SurveyeeCardComponent(
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
             ) {
                 Button(
-                    onClick = { buttonClicked(ButtonName.NEGATIVE_BUTTON) },
+                    onClick = { buttonClicked(ButtonName.NEGATIVE_BUTTON, surveyeeState.surveyeeDetails.didiId ?: 0) },
                     enabled = true,
                     shape = RoundedCornerShape(roundedCornerRadiusDefault),
                     border = BorderStroke(1.dp, borderGreyLight),
@@ -133,7 +133,7 @@ fun SurveyeeCardComponent(
                     Text(text = "Not Available", style = smallTextStyleNormalWeight)
                 }
                 Button(
-                    onClick = { buttonClicked(ButtonName.START_BUTTON) },
+                    onClick = { buttonClicked(ButtonName.START_BUTTON, surveyeeState.surveyeeDetails.didiId ?: 0) },
                     enabled = true,
                     shape = RoundedCornerShape(roundedCornerRadiusDefault),
                     colors = ButtonDefaults.buttonColors(
@@ -179,7 +179,7 @@ fun SurveyeeCardPreview() {
                 address = didi.houseNo + ", " + didi.cohortName,
                 surveyState = SurveyState.NOT_STARTED
             )
-        ) {
+        ) { buttonName, surveyeeId ->
 
         }
     }

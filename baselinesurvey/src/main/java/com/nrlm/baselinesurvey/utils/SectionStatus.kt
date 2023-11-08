@@ -6,7 +6,7 @@ enum class SectionStatus {
     COMPLETED;
 
     companion object {
-        fun getSectionStatusFromOrdinal (ordinal: Int): String {
+        fun getSectionStatusNameFromOrdinal (ordinal: Int): String {
             return when (ordinal) {
                 0 -> NOT_STARTED.name
                 1 -> INPROGRESS.name
@@ -21,6 +21,15 @@ enum class SectionStatus {
                 INPROGRESS.name -> INPROGRESS.ordinal
                 COMPLETED.name -> COMPLETED.ordinal
                 else -> NOT_STARTED.ordinal
+            }
+        }
+
+        fun getSectionStatusFromOrdinal (ordinal: Int): SectionStatus {
+            return when (ordinal) {
+                0 -> NOT_STARTED
+                1 -> INPROGRESS
+                2 -> COMPLETED
+                else -> INPROGRESS
             }
         }
     }

@@ -365,4 +365,6 @@
     <string name="refresh_failed_please_try_again">रिफ्रेस खालामनाया फेलें जादों, अन्नानै फिन नाजा!</string>
     <string name="this_week_tab_title">This Week</string>
     <string name="all_tab_title">All</string>
+    <string name="search_question_placeholder">Search Question</string>
+    <string name="save_next_section_button_text"><![CDATA[Save & Next Section]]></string>
 </resources>

@@ -9,6 +9,8 @@ data class SectionListItem(
 
     val sectionId: Int = 0,
 
+    val surveyId: Int = 0,
+
     val sectionName: String = NO_SECTION,
 
     val sectionOrder: Int = 1,
@@ -21,6 +23,8 @@ data class SectionListItem(
     val contentList: List<ContentList>,
 
     val questionList: List<QuestionEntity> = listOf(),
+
+    val questionAnswerMapping: Map<Int, List<OptionsItem>> = mapOf(),
 
     val languageId: Int
 

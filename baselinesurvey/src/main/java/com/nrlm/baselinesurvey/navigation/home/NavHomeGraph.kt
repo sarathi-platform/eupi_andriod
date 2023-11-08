@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
@@ -32,8 +33,15 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
             SurveyeeListScreen(viewModel = hiltViewModel(), navController = navController)
         }
 
-        composable(route = HomeScreens.SECTION_SCREEN.route) {
-            SectionListScreen(navController, viewModel = hiltViewModel())
+        composable(route = HomeScreens.SECTION_SCREEN.route, arguments = listOf(
+            navArgument(
+                name = ARG_DIDI_ID
+            ) {
+                type = NavType.IntType
+            }
+        )) {
+            SectionListScreen(navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
+                ARG_DIDI_ID) ?: 0)
         }
 
         composable(route = HomeScreens.QUESTION_SCREEN.route, arguments = listOf(
@@ -41,9 +49,15 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 name = ARG_SECTION_ID
             ) {
                 type = NavType.IntType
+            },
+            navArgument(
+                name = ARG_DIDI_ID
+            ) {
+                type = NavType.IntType
             }
         )) {
-            QuestionScreen(navController = navController, viewModel = hiltViewModel(), sectionId = it.arguments?.getInt(
+            QuestionScreen(navController = navController, viewModel = hiltViewModel(), surveyeeId = it.arguments?.getInt(
+                ARG_DIDI_ID) ?: 0, sectionId = it.arguments?.getInt(
                 ARG_SECTION_ID) ?: 0)
         }
 
@@ -52,8 +66,8 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
 
 sealed class HomeScreens(val route: String) {
     object DATA_LOADING_SCREEN : HomeScreens(route = "data_loading_screen")
-    object SECTION_SCREEN : HomeScreens(route = "section_screen")
-    object QUESTION_SCREEN : HomeScreens(route = "question_screen/{$ARG_SECTION_ID}")
+    object SECTION_SCREEN : HomeScreens(route = "section_screen/{$ARG_DIDI_ID}")
+    object QUESTION_SCREEN : HomeScreens(route = "question_screen/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}")
     object SURVEYEE_LIST_SCREEN : HomeScreens(route = "surveyee_list_screen")
 }
 

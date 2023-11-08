@@ -8,8 +8,8 @@ class GetSectionListUseCase(
     private val sectionListScreenRepository: SectionListScreenRepository
 ) {
 
-    operator fun invoke(languageId: Int): List<SectionListItem>{
-        return sectionListScreenRepository.getSectionsList(languageId)
+    operator fun invoke(didiId: Int, languageId: Int): List<SectionListItem>{
+        return sectionListScreenRepository.getSectionsListForDidi(didiId, languageId)
     }
 
     fun getSelectedLanguage(): Int {
