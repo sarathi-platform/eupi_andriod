@@ -10,6 +10,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
 import com.nrlm.baselinesurvey.utils.LoaderState
 import com.nrlm.baselinesurvey.utils.SurveyState
 import com.nrlm.baselinesurvey.utils.SurveyeeCardState
@@ -84,6 +85,15 @@ class SurveyeeScreenViewModel @Inject constructor(
            }
            is SearchEvent.FilterList -> {
                filterList()
+           }
+           is SurveyeeListEvents.CancelAllSelection -> {
+               if (!event.isFilterApplied) {
+                   _filteredSurveyeeListState.value = _filteredSurveyeeListState.value.also {
+                       it.forEach { surveyeeCardState ->
+                           surveyeeCardState.isChecked = mutableStateOf(false)
+                       }
+                   }
+               }
            }
        }
     }
