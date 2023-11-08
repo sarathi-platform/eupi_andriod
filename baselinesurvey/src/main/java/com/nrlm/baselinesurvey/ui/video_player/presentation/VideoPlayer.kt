@@ -7,6 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -46,6 +47,8 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.Media
 import com.nrlm.baselinesurvey.utils.MediaState
 import com.nrlm.baselinesurvey.utils.ShowBuffering
@@ -111,10 +114,10 @@ fun FullscreenView(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding()
-            .background(Color.White),
+            .background(Color.Black),
     ) { padding ->
         Box(modifier = Modifier.background(
-            Color.White
+            Color.Black
         ).fillMaxSize(), contentAlignment = Alignment.Center) {
             if (!isLandscape) {
                 mediaContent(
@@ -185,7 +188,7 @@ private fun MediaContent(
         )
         Crossfade(
             targetState = mediaState.isControllerShowing,
-            modifier = Modifier.align(Alignment.BottomEnd)
+            modifier = Modifier.align(Alignment.BottomEnd), label = ""
         ) {
             if (it) {
                 IconButton(
@@ -205,7 +208,7 @@ private fun MediaContent(
 
         Crossfade(
             targetState = mediaState.isControllerShowing,
-            modifier = Modifier.align(Alignment.TopStart)
+            modifier = Modifier.align(Alignment.TopStart), label = ""
         ) {
             if (it) {
                 IconButton(

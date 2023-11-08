@@ -184,7 +184,7 @@ fun SectionListScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    .padding(vertical = 10.dp)
                                     .background(lightBlue,
                                         shape = RoundedCornerShape(6.dp))
                                     .clickable {
@@ -198,7 +198,8 @@ fun SectionListScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Image(
-                                    modifier = Modifier.padding(10.dp),
+                                    modifier = Modifier.padding(10.dp).clickable {
+                                    },
                                     painter = painterResource(id = R.drawable.ic_ionic_close),
                                     contentDescription = ""
                                 )
@@ -226,7 +227,7 @@ fun SectionListScreen(
 
                         item {
                             Text(
-                                text = "Chose Section",
+                                text = "Choose Section",
                                 style = smallerTextStyle,
                                 color = textColorDark
                             )
