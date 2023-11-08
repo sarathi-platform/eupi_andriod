@@ -26,12 +26,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -40,7 +42,9 @@ import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.placeholderGrey
+import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
+import com.nrlm.baselinesurvey.ui.theme.white
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -131,12 +135,14 @@ fun SearchWithFilterViewComponent(
                     Card(modifier = Modifier
                         .height(/*dimensionResource(id = R.dimen.filter_image_height)*/40.dp)
                         .width(/*dimensionResource(id = R.dimen.filter_image_width)*/40.dp)
-                        .background(color = Color.White)
+                        .background(color = if (!filterSelected) white else blueDark, shape = RoundedCornerShape(
+                            roundedCornerRadiusDefault))
                         .border(
                             dimensionResource(id = R.dimen.dp_1),
                             color = (if (!filterSelected) Color.LightGray else blueDark),
-                            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6))
+                            shape = RoundedCornerShape(roundedCornerRadiusDefault)
                         )
+                        .clip(RoundedCornerShape(roundedCornerRadiusDefault))
                         .clickable {
                             focusManager.clearFocus()
                             onFilterSelected(filterSelected)
@@ -149,11 +155,27 @@ fun SearchWithFilterViewComponent(
                                     if (!filterSelected) Color.White else blueDark
                                 )
                                 .padding(horizontal = 10.dp, vertical = 10.dp)
-
                         )
                     }
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun SearchWithFilterViewComponentPreview() {
+    Surface(modifier = Modifier.padding(horizontal = 16.dp)) {
+        SearchWithFilterViewComponent(
+            placeholderString = "Search",
+            filterSelected = true,
+            onFilterSelected = {
+
+            },
+            onSearchValueChange = {
+
+            }
+        )
     }
 }

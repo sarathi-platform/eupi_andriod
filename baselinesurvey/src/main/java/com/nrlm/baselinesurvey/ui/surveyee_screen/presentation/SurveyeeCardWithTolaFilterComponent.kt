@@ -47,6 +47,8 @@ fun SurveyeeCardWithTolaFilterComponent(
     modifier: Modifier = Modifier,
     tolaName: String,
     surveyeeStateList: List<SurveyeeCardState>,
+    showCheckBox: Boolean,
+    checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
     Column() {
@@ -106,6 +108,10 @@ fun SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList.forEachIndexed { index, surveyeeCardState ->
                 SurveyeeCardComponent(
                     surveyeeState = surveyeeCardState,
+                    showCheckBox = showCheckBox,
+                    checkBoxChecked = { surveyeeEntity, isChecked ->
+                        checkBoxChecked(surveyeeEntity, isChecked)
+                    },
                     buttonClicked = { buttonName, surveyeeId ->
                         buttonClicked(buttonName, surveyeeId)
                     }
@@ -169,13 +175,21 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
         verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList1,
-            tolaName = "Sundar Pahar"
+            tolaName = "Sundar Pahar",
+            showCheckBox = false,
+            checkBoxChecked = { surveyeeEntity, isChecked ->
+
+            },
         ) { buttonName, surveyeeId ->
 
         }
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList2,
-            tolaName = "Sundar Pahar 2"
+            tolaName = "Sundar Pahar 2",
+            showCheckBox = false,
+            checkBoxChecked = { surveyeeEntity, isChecked ->
+
+            }
         ) { buttonName, surveyeeId ->
 
         }

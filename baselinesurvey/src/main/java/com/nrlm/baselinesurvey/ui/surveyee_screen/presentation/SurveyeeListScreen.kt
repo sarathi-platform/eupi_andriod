@@ -1,6 +1,8 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import androidx.compose.foundation.background
+import android.annotation.SuppressLint
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,10 +18,12 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
@@ -33,6 +37,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -48,6 +53,7 @@ import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
@@ -71,14 +77,18 @@ import com.nrlm.baselinesurvey.utils.FilterListState
 import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun SurveyeeListScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: SurveyeeScreenViewModel
 ) {
-
     val context = LocalContext.current
+
+    val checkedItemsState = remember {
+        mutableStateOf(mutableSetOf<Int>())
+    }
 
     LaunchedEffect(key1 = true) {
         viewModel.init()
@@ -91,6 +101,10 @@ fun SurveyeeListScreen(
 
     val isFilterAppliedState = remember {
         mutableStateOf(FilterListState())
+    }
+
+    val isSelectionEnabled = remember {
+        mutableStateOf(false)
     }
 
     var selectedTabIndex = remember { mutableIntStateOf(1) }
@@ -138,6 +152,40 @@ fun SurveyeeListScreen(
                 }
 
             }
+        },
+        floatingActionButton = {
+            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible) {
+                androidx.compose.material.FloatingActionButton(
+                    onClick = {
+                              isSelectionEnabled.value = true
+                    },
+                    backgroundColor = white
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_fab_convert_check_box),
+                        contentDescription = ""
+                    )
+                }
+            }
+        },
+        bottomBar = {
+            if (isSelectionEnabled.value && !loaderState.isLoaderVisible) {
+                PrimarySecandaryButtonBoxPreFilled(
+                    modifier = Modifier,
+                    primaryButtonText = stringResource(id = R.string.more_item_text),
+                    secandaryButtonText = stringResource(id = R.string.cancel_tola_text),
+                    secandaryButtonRequired = true,
+                    primaryButtonOnClick = {
+
+                    },
+                    secandaryButtonOnClick = {
+//                        isCancelBtnClick.value = true
+                        isSelectionEnabled.value = false
+                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
+                    }
+                )
+            }
+
         },
         containerColor = white
     ) {
@@ -199,7 +247,15 @@ fun SurveyeeListScreen(
 
                         if (!isFilterAppliedState.value.isFilterApplied) {
                             itemsIndexed(items = surveyeeList) { index, item ->
-                                SurveyeeCardComponent(surveyeeState = item) { buttonName, surveyeeId ->
+                                SurveyeeCardComponent(
+                                    surveyeeState = item,
+                                    showCheckBox = !isSelectionEnabled.value,
+                                    checkBoxChecked = { surveyeeEntity, isChecked ->
+                                        if (isChecked)
+                                            checkedItemsState.value.add(surveyeeEntity.didiId ?: -1)
+                                        else
+                                            checkedItemsState.value.remove(surveyeeEntity.didiId)
+                                    }) { buttonName, surveyeeId ->
                                     handleButtonClick(buttonName, surveyeeId, navController)
                                 }
                             }
@@ -209,8 +265,16 @@ fun SurveyeeListScreen(
                                     tolaName = key,
                                     surveyeeStateList = surveyeeListWithTolaFilter[key]
                                         ?: emptyList(),
+                                    showCheckBox = isSelectionEnabled.value,
+
                                     buttonClicked = { buttonName, surveyeeId ->
                                         handleButtonClick(buttonName, surveyeeId, navController)
+                                    },
+                                    checkBoxChecked = { surveyeeEntity, isChecked ->
+                                        if (isChecked)
+                                            checkedItemsState.value.add(surveyeeEntity.didiId ?: -1)
+                                        else
+                                            checkedItemsState.value.remove(surveyeeEntity.didiId)
                                     }
                                 )
                                 if (index < surveyeeListWithTolaFilter.keys.size - 1) {
@@ -225,8 +289,10 @@ fun SurveyeeListScreen(
                                 }
                             }
                         }
-                        item { 
-                            Spacer(modifier = Modifier.fillMaxWidth().height(dimen_10_dp))
+                        item {
+                            Spacer(modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_10_dp))
                         }
                     }
                 }
