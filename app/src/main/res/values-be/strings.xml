@@ -370,4 +370,5 @@
     <string name="exit">बाहर निकलना</string>
     <string name="cancel">रद्द करना</string>
     <string name="user_bug_report_text">বাগ রিপোর্ট</string>
+    <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
 </resources>
