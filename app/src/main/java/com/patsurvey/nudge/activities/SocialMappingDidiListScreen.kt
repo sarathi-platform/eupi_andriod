@@ -115,6 +115,9 @@ fun SocialMappingDidiListScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.isSocialMappingComplete(stepId)
+        if(filterSelected){
+            didiViewModel.filterList()
+        }
     }
 
     var completeTolaAdditionClicked by remember { mutableStateOf(false) }
