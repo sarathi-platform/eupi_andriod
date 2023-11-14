@@ -74,10 +74,10 @@ class WealthRankingSurveyViewModel @Inject constructor(
         selectedVillage = prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
-        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync(tolaDao){
-            isTolaSynced.value=it
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync() {
+            isTolaSynced.value = it
         }
-        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(didiDao){
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(didiDao) {
             isDidiSynced.value = it
         }
     }

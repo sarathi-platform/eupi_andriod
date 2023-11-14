@@ -214,7 +214,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_10))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().name,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().name,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -240,8 +240,12 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = changeMilliDateToDate(viewModel.prefRepo.getPref(
-                                    PREF_WEALTH_RANKING_COMPLETION_DATE_ +viewModel.prefRepo.getSelectedVillage().id,0L)) ?: BLANK_STRING,
+                                text = changeMilliDateToDate(
+                                    viewModel.digitalFormRepository.getPref(
+                                        PREF_WEALTH_RANKING_COMPLETION_DATE_ + viewModel.digitalFormRepository.getSelectedVillage().id,
+                                        0L
+                                    )
+                                ) ?: BLANK_STRING,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -267,7 +271,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().federationName,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().federationName,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -293,7 +297,7 @@ fun DigitalFormAScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = if (viewModel.prefRepo.isUserBPC()) didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString() else didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString(),
+                                text = if (viewModel.digitalFormRepository.isUserBPC()) didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString() else didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -338,14 +342,20 @@ fun DigitalFormAScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        if (viewModel.prefRepo.isUserBPC()) {
+                        if (viewModel.digitalFormRepository.isUserBPC()) {
                             items(didiListForBpc.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
-                                NudgeLogger.d("DigitalFormAScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
+                                NudgeLogger.d(
+                                    "DigitalFormAScreen",
+                                    "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}"
+                                )
                                 DidiVillageItem(card, viewModel)
                             }
                         } else {
                             items(didiList.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) { card ->
-                                NudgeLogger.d("DigitalFormAScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
+                                NudgeLogger.d(
+                                    "DigitalFormAScreen",
+                                    "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}"
+                                )
                                 DidiVillageItem(card, viewModel)
                             }
                         }
@@ -386,7 +396,7 @@ fun DigitalFormAScreen(
                                 Environment.DIRECTORY_DOCUMENTS
                             )?.absolutePath
                         }",
-                        "${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
+                        "${FORM_A_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
                     )
                     viewModel.generateFormAPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormAScreen", "Digital Form A Downloaded")
@@ -415,7 +425,7 @@ fun DigitalFormAScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${FORM_A_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormAPdf(context) { formGenerated, formPath ->

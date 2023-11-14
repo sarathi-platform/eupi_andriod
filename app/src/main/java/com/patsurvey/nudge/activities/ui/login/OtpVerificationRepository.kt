@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -14,7 +15,10 @@ class OtpVerificationRepository @Inject constructor(
     val villageListDao: VillageListDao
 )  :BaseRepository() {
 
-    suspend fun validateOtp(otpRequest: OtpRequest): ApiResponseModel<OtpVerificationModel>{
+    suspend fun validateOtp(otpNumber: String): ApiResponseModel<OtpVerificationModel>{
+
+        val otpRequest =
+            OtpRequest(mobileNumber = getMobileNumber() ?: "", otp = otpNumber ) //Text this code
         return apiInterface.validateOtp(otpRequest);
     }
 
@@ -22,8 +26,10 @@ class OtpVerificationRepository @Inject constructor(
         prefRepo.saveAccessToken(token)
     }
 
-    suspend fun generateOtp( loginRequest: LoginRequest
+    suspend fun generateOtp(
     ): ApiResponseModel<String>{
+        val loginRequest =
+            LoginRequest(mobileNumber = getMobileNumber() ?: "")
         return apiInterface.generateOtp(loginRequest);
     }
 

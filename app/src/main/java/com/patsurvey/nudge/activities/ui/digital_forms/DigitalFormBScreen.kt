@@ -206,7 +206,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_10))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().name,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().name,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -232,8 +232,12 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = changeMilliDateToDate(viewModel.prefRepo.getPref(
-                                    PREF_PAT_COMPLETION_DATE_ +viewModel.prefRepo.getSelectedVillage().id,0L)) ?: BLANK_STRING,
+                                text = changeMilliDateToDate(
+                                    viewModel.digitalFormRepository.getPref(
+                                        PREF_PAT_COMPLETION_DATE_ + viewModel.digitalFormRepository.getSelectedVillage().id,
+                                        0L
+                                    )
+                                ) ?: BLANK_STRING,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -259,7 +263,7 @@ fun DigitalFormBScreen(
                                     .padding(top = dimensionResource(id = R.dimen.dp_5))
                             )
                             Text(
-                                text = viewModel.prefRepo.getSelectedVillage().federationName,
+                                text = viewModel.digitalFormRepository.getSelectedVillage().federationName,
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -286,12 +290,16 @@ fun DigitalFormBScreen(
                             )
                             Text(
                                 text =
-                                if (viewModel.prefRepo.isUserBPC())
-                                    didiListForBpc.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
-                                            it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                if (viewModel.digitalFormRepository.isUserBPC())
+                                    didiListForBpc.filter {
+                                        it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                                it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit
+                                    }.size.toString()
                                 else
-                                    didiList.filter {it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
-                                            it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                    didiList.filter {
+                                        it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal ||
+                                                it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit
+                                    }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -318,10 +326,10 @@ fun DigitalFormBScreen(
                             )
                             Text(
                                 text =
-                                if (viewModel.prefRepo.isUserBPC())
-                                    didiListForBpc.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                if (viewModel.digitalFormRepository.isUserBPC())
+                                    didiListForBpc.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }.size.toString()
                                 else
-                                    didiList.filter {it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                    didiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -348,10 +356,10 @@ fun DigitalFormBScreen(
                             )
                             Text(
                                 text =
-                                if (viewModel.prefRepo.isUserBPC())
-                                    didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString()
+                                if (viewModel.digitalFormRepository.isUserBPC())
+                                    didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }.size.toString()
                                 else
-                                    didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }.size.toString(),
+                                    didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }.size.toString(),
                                 color = Color.Black,
                                 fontSize = 14.sp,
                                 fontFamily = NotoSans,
@@ -396,14 +404,20 @@ fun DigitalFormBScreen(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        if (viewModel.prefRepo.isUserBPC()) {
-                            items(didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
-                                NudgeLogger.d("DigitalFormBScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
+                        if (viewModel.digitalFormRepository.isUserBPC()) {
+                            items(didiListForBpc.filter { it.forVoEndorsement == 1 && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }) { card ->
+                                NudgeLogger.d(
+                                    "DigitalFormBScreen",
+                                    "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}"
+                                )
                                 DidiVillageItem(didiDetailsModel = card, viewModel)
                             }
                         } else {
-                            items( didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal  && !it.patEdit }) { card ->
-                                NudgeLogger.d("DigitalFormBScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
+                            items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }) { card ->
+                                NudgeLogger.d(
+                                    "DigitalFormBScreen",
+                                    "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}"
+                                )
                                 DidiVillageItem(didiDetailsModel = card, viewModel)
                             }
                         }
@@ -441,7 +455,8 @@ fun DigitalFormBScreen(
                             context.getExternalFilesDir(
                                 Environment.DIRECTORY_DOCUMENTS
                             )?.absolutePath
-                        }", "${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf"
+                        }",
+                        "${FORM_B_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf"
                     )
                     viewModel.generateFormBPdf(context) { formGenerated, formPath ->
                         Log.d("DigitalFormBScreen", "Digital Form B Downloaded")
@@ -471,7 +486,7 @@ fun DigitalFormBScreen(
                     showLoader = showLoader.value,
                 ) {
                     if (formPathState.value.isFile) {
-                        navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.prefRepo.getSelectedVillage().id}.pdf")
+                        navController.navigate("pdf_viewer/${FORM_B_PDF_NAME}_${viewModel.digitalFormRepository.getSelectedVillage().id}.pdf")
                     } else {
                         showLoader.value = true
                         viewModel.generateFormBPdf(context) { formGenerated, formPath ->

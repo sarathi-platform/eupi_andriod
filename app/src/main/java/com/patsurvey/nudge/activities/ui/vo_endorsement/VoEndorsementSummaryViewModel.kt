@@ -32,11 +32,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VoEndorsementSummaryViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
-    val answerDao: AnswerDao,
-    val questionListDao: QuestionListDao,
-    val stepsListDao: StepsListDao
+    val repository: VoEndorsementSummaryRepository
 ):BaseViewModel() {
 
     private val _didiEntity = MutableStateFlow(
@@ -99,10 +95,10 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
     fun setDidiDetailsFromDb(didiId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localDidiDetails=didiDao.getDidi(didiId)
-            val localQuesList=questionListDao.getAllQuestionsForLanguage(prefRepo.getAppLanguageId()?:2)
-            val localDidiList = didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id) /*answerDao.fetchAllDidisForVO(prefRepo.getSelectedVillage().id)*/
-            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }
+            val localDidiDetails=repository.getDidiFromDB(didiId)
+            val localQuesList=repository.getAllQuestionsForLanguage()
+            val localDidiList = repository.fetchVOEndorseStatusDidi()
+            val stepList = repository.getAllStepsForVillage().sortedBy { it.orderNumber }
             voEndorsementStatus.value = stepList[stepList.map { it.orderNumber }.indexOf(5)].isComplete
             withContext(Dispatchers.IO){
                  selPageIndex.value= localDidiList.map { it.id }.indexOf(didiId)
@@ -116,8 +112,8 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
     fun getSummaryQuesList(didiId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localSec1List = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
-            val localSec2List = answerDao.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
+            val localSec1List = repository.getAnswerForDidi(didiId = didiId, actionType = TYPE_EXCLUSION)
+            val localSec2List = repository.getAnswerForDidi(didiId = didiId, actionType = TYPE_INCLUSION)
             withContext(Dispatchers.IO){
                 if(localSec1List.isNotEmpty()){
                     localSec1List.forEach { answer->
@@ -144,12 +140,12 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
     fun updateVoEndorsementStatus(didiId: Int,status:Int){
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
-            val villageId = prefRepo.getSelectedVillage().id
+            val villageId = repository.prefRepo.getSelectedVillage().id
             NudgeLogger.e("VoEndorsementSummaryViewModel",
                 "updateVoEndorsementStatus -> didiDao.updateVOEndorsementStatus before: villageId = $villageId, didiId = $didiId" +
                         "status: $status")
 
-            didiDao.updateVOEndorsementStatus(villageId = villageId, didiId, status)
+            repository.updateVOEndorsementStatus(villageId = villageId, didiId, status)
 
             NudgeLogger.e("VoEndorsementSummaryViewModel",
                 "updateVoEndorsementStatus -> didiDao.updateVOEndorsementStatus after")
@@ -157,7 +153,7 @@ class VoEndorsementSummaryViewModel @Inject constructor(
             NudgeLogger.e("VoEndorsementSummaryViewModel",
                 "updateVoEndorsementStatus -> didiDao.updateNeedToPostVO before: didiId = $didiId, villageId: $villageId, needsToPostVo = true")
 
-            didiDao.updateNeedToPostVO(
+            repository.updateNeedToPostVO(
                 didiId = didiId,
                 needsToPostVo = true,
                 villageId = villageId
@@ -170,7 +166,7 @@ class VoEndorsementSummaryViewModel @Inject constructor(
 
     fun updateDidiDetailsForBox(didiId: Int){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localDidiDetails=didiDao.getDidi(didiId)
+            val localDidiDetails=repository.getDidiFromDB(didiId)
             withContext(Dispatchers.IO){
                 _didiEntity.emit(localDidiDetails)
             }

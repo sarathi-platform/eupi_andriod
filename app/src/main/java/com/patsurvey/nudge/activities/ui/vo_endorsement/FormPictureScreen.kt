@@ -302,11 +302,11 @@ fun FormPictureScreen(
                                     }
                                 }
 
-                                VOAndVillageBoxView(
-                                    prefRepo = formPictureScreenViewModel.prefRepo,
-                                    modifier = Modifier.fillMaxWidth(),
-                                    startPadding = 0.dp
-                                )
+                            VOAndVillageBoxView(
+                                prefRepo = formPictureScreenViewModel.repository.prefRepo,
+                                modifier = Modifier.fillMaxWidth(),
+                                startPadding = 0.dp
+                            )
 
                                 Column(
                                     modifier = Modifier
@@ -325,49 +325,49 @@ fun FormPictureScreen(
 
                                     Spacer(modifier = Modifier.height(10.dp))
 
-                                    FormPictureCard(
-                                        modifier = Modifier,
-                                        navController = navController,
-                                        showIcon = formPictureScreenViewModel.formCPageList.value.isEmpty(),
-                                        cardTitle = if (formPictureScreenViewModel.formCPageList.value.isEmpty()) stringResource(
-                                            R.string.form_c_photo_button_text
-                                        ) else "${stringResource(id = R.string.view)} C",
-                                        contentColor = textColorDark,
-                                        borderColor = textColorDark,
-                                        expanded = formCCardExpanded.value,
-                                        pageList = formPictureScreenViewModel.formCPageList.value,
-                                        pageItemClicked = {
-                                            scope.launch {
-                                                formPictureScreenViewModel.pageItemClicked.value =
-                                                    formPictureScreenViewModel.getFormSubPath(
-                                                        FORM_C,
-                                                        it
-                                                    )
-                                                formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
-                                                        formPictureScreenViewModel.getFormPathKey(
-                                                            formPictureScreenViewModel.pageItemClicked.value
-                                                        ),
-                                                        ""
-                                                    )?.let { if (it.isNotEmpty()) it else "" }
-                                                        .toString()
-                                                if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
-                                                    formPictureScreenViewModel.setUri(localContext)
-                                                imageRequest = ImageRequest.Builder(localContext)
-                                                    .data(File(formPictureScreenViewModel.imagePath.value))
-                                                    .memoryCachePolicy(CachePolicy.DISABLED)
-                                                    .diskCachePolicy(CachePolicy.DISABLED)
-                                                    .setParameter("requestId", requestId, memoryCacheKey = null)
-                                                    .build()
-                                                delay(250)
-                                                if (!scaffoldState.isVisible)
-                                                    scaffoldState.show()
-                                                else
-                                                    scaffoldState.hide()
-                                            }
-                                        },
-                                        formPictureCardClicked = {
-                                            formCCardExpanded.value = !formCCardExpanded.value
+                                FormPictureCard(
+                                    modifier = Modifier,
+                                    navController = navController,
+                                    showIcon = formPictureScreenViewModel.formCPageList.value.isEmpty(),
+                                    cardTitle = if (formPictureScreenViewModel.formCPageList.value.isEmpty()) stringResource(
+                                        R.string.form_c_photo_button_text
+                                    ) else "${stringResource(id = R.string.view)} C",
+                                    contentColor = textColorDark,
+                                    borderColor = textColorDark,
+                                    expanded = formCCardExpanded.value,
+                                    pageList = formPictureScreenViewModel.formCPageList.value,
+                                    pageItemClicked = {
+                                        scope.launch {
+                                            formPictureScreenViewModel.pageItemClicked.value =
+                                                formPictureScreenViewModel.getFormSubPath(
+                                                    FORM_C,
+                                                    it
+                                                )
+                                            formPictureScreenViewModel.imagePath.value =
+                                                formPictureScreenViewModel.repository.prefRepo.getPref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.pageItemClicked.value
+                                                    ),
+                                                    ""
+                                                )?.let { if (it.isNotEmpty()) it else "" }
+                                                    .toString()
+                                            if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                formPictureScreenViewModel.setUri(localContext)
+                                            imageRequest = ImageRequest.Builder(localContext)
+                                                .data(File(formPictureScreenViewModel.imagePath.value))
+                                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                                .diskCachePolicy(CachePolicy.DISABLED)
+                                                .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                .build()
+                                            delay(250)
+                                            if (!scaffoldState.isVisible)
+                                                scaffoldState.show()
+                                            else
+                                                scaffoldState.hide()
+                                        }
+                                    },
+                                    formPictureCardClicked = {
+                                        formCCardExpanded.value = !formCCardExpanded.value
 
                                         },
                                         addPageClicked = {
@@ -522,12 +522,12 @@ fun FormPictureScreen(
                                                         formPictureScreenViewModel.tempUri = uri
                                                         cameraLauncher.launch(uri)
 
-                                                        /*val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
-                                                        patDidiSummaryViewModel.imagePath = imageFile.absolutePath
-                                                        val uri = uriFromFile(localContext, imageFile)
-                                                        patDidiSummaryViewModel.tempUri = uri
-                                                        cameraLauncher.launch(uri)*/
-                                                    }
+                                                    /*val imageFile = patDidiSummaryViewModel.getFileName(localContext, didi.value)
+                                                    patDidiSummaryViewModel.imagePath = imageFile.absolutePath
+                                                    val uri = uriFromFile(localContext, imageFile)
+                                                    patDidiSummaryViewModel.tempUri = uri
+                                                    cameraLauncher.launch(uri)*/
+                                                }
 
                                                     ActivityCompat.shouldShowRequestPermissionRationale(
                                                         localContext as Activity,
@@ -612,82 +612,82 @@ fun FormPictureScreen(
                                             formPictureScreenViewModel.retakeImageIndex.value =
                                                 index
 //                                        formPictureScreenViewModel.setCameraExecutor()
-                                            formPictureScreenViewModel.shouldShowCamera.value =
-                                                Pair(FORM_C, true)
-                                            val imageToBeReplaced =
-                                                formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
-                                        },
-                                        deleteButtonClicked = {
-                                            formPictureScreenViewModel.formCPageList.value = mutableListOf()
-                                            formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
-                                            formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
-                                            for (i in 1..5) {
-                                                formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
-                                            }
+                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                            Pair(FORM_C, true)
+                                        val imageToBeReplaced =
+                                            formPictureScreenViewModel.formCImageList.value["Page_${index + 1}"]
+                                    },
+                                    deleteButtonClicked = {
+                                        formPictureScreenViewModel.formCPageList.value = mutableListOf()
+                                        formPictureScreenViewModel.formCImageList.value =  mutableMapOf()
+                                        formPictureScreenViewModel.formsCClicked.value = --formPictureScreenViewModel.formsCClicked.value
+                                        for (i in 1..5) {
+                                            formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_C, i)), "")
                                         }
-                                    )
+                                    }
+                                )
 
 
-                                    FormPictureCard(
-                                        modifier = Modifier,
-                                        navController = navController,
-                                        showIcon = formPictureScreenViewModel.formDPageList.value.isEmpty(),
-                                        cardTitle = if (formPictureScreenViewModel.formDPageList.value.isEmpty()) stringResource(
-                                            R.string.form_d_photo_button_text
-                                        ) else "${stringResource(id = R.string.view)} D",
-                                        contentColor = textColorDark,
-                                        borderColor = textColorDark,
-                                        expanded = formDCardExpanded.value,
-                                        pageList = formPictureScreenViewModel.formDPageList.value,
-                                        pageItemClicked = {
-                                            scope.launch {
-                                                formPictureScreenViewModel.pageItemClicked.value =
-                                                    formPictureScreenViewModel.getFormSubPath(
-                                                        FORM_D,
-                                                        it
-                                                    )
-                                                formPictureScreenViewModel.imagePath.value =
-                                                    formPictureScreenViewModel.prefRepo.getPref(
-                                                        formPictureScreenViewModel.getFormPathKey(
-                                                            formPictureScreenViewModel.pageItemClicked.value
-                                                        ),
-                                                        ""
-                                                    )?.let { if (it.isNotEmpty()) it else "" }
-                                                        .toString()
-                                                if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
-                                                    formPictureScreenViewModel.setUri(localContext)
-                                                imageRequest = ImageRequest.Builder(localContext)
-                                                    .data(File(formPictureScreenViewModel.imagePath.value))
-                                                    .memoryCachePolicy(CachePolicy.DISABLED)
-                                                    .diskCachePolicy(CachePolicy.DISABLED)
-                                                    .setParameter("requestId", requestId, memoryCacheKey = null)
-                                                    .build()
-                                                delay(250)
-                                                if (!scaffoldState.isVisible)
-                                                    scaffoldState.show()
-                                                else
-                                                    scaffoldState.hide()
-                                            }
-                                        },
-                                        formPictureCardClicked = {
-                                            formDCardExpanded.value = !formDCardExpanded.value
-                                        },
-                                        addPageClicked = {
-                                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
-                                                when {
-                                                    ContextCompat.checkSelfPermission(
-                                                        localContext as Activity,
-                                                        Manifest.permission.CAMERA
-                                                    ) == PackageManager.PERMISSION_GRANTED
-                                                            && ContextCompat.checkSelfPermission(
-                                                        localContext as Activity,
-                                                        Manifest.permission.WRITE_EXTERNAL_STORAGE
-                                                    ) == PackageManager.PERMISSION_GRANTED
-                                                            && ContextCompat.checkSelfPermission(
-                                                        localContext as Activity,
-                                                        Manifest.permission.READ_EXTERNAL_STORAGE
-                                                    ) == PackageManager.PERMISSION_GRANTED -> {
-                                                        NudgeLogger.d("FormPictureScreen", "Permission previously granted")
+                                FormPictureCard(
+                                    modifier = Modifier,
+                                    navController = navController,
+                                    showIcon = formPictureScreenViewModel.formDPageList.value.isEmpty(),
+                                    cardTitle = if (formPictureScreenViewModel.formDPageList.value.isEmpty()) stringResource(
+                                        R.string.form_d_photo_button_text
+                                    ) else "${stringResource(id = R.string.view)} D",
+                                    contentColor = textColorDark,
+                                    borderColor = textColorDark,
+                                    expanded = formDCardExpanded.value,
+                                    pageList = formPictureScreenViewModel.formDPageList.value,
+                                    pageItemClicked = {
+                                        scope.launch {
+                                            formPictureScreenViewModel.pageItemClicked.value =
+                                                formPictureScreenViewModel.getFormSubPath(
+                                                    FORM_D,
+                                                    it
+                                                )
+                                            formPictureScreenViewModel.imagePath.value =
+                                                formPictureScreenViewModel.repository.prefRepo.getPref(
+                                                    formPictureScreenViewModel.getFormPathKey(
+                                                        formPictureScreenViewModel.pageItemClicked.value
+                                                    ),
+                                                    ""
+                                                )?.let { if (it.isNotEmpty()) it else "" }
+                                                    .toString()
+                                            if (!formPictureScreenViewModel.imagePath.value.isNullOrEmpty())
+                                                formPictureScreenViewModel.setUri(localContext)
+                                            imageRequest = ImageRequest.Builder(localContext)
+                                                .data(File(formPictureScreenViewModel.imagePath.value))
+                                                .memoryCachePolicy(CachePolicy.DISABLED)
+                                                .diskCachePolicy(CachePolicy.DISABLED)
+                                                .setParameter("requestId", requestId, memoryCacheKey = null)
+                                                .build()
+                                            delay(250)
+                                            if (!scaffoldState.isVisible)
+                                                scaffoldState.show()
+                                            else
+                                                scaffoldState.hide()
+                                        }
+                                    },
+                                    formPictureCardClicked = {
+                                        formDCardExpanded.value = !formDCardExpanded.value
+                                    },
+                                    addPageClicked = {
+                                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+                                            when {
+                                                ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.CAMERA
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.WRITE_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED
+                                                        && ContextCompat.checkSelfPermission(
+                                                    localContext as Activity,
+                                                    Manifest.permission.READ_EXTERNAL_STORAGE
+                                                ) == PackageManager.PERMISSION_GRANTED -> {
+                                                    NudgeLogger.d("FormPictureScreen", "Permission previously granted")
 
                                                         if (formPictureScreenViewModel.formDPageList.value.size < 5) {
                                                             formPictureScreenViewModel.shouldShowCamera.value =
@@ -785,29 +785,28 @@ fun FormPictureScreen(
                                         },
                                         retakeButtonClicked = { index ->
 
-                                            formPictureScreenViewModel.retakeImageIndex.value =
-                                                index
-                                            formPictureScreenViewModel.shouldShowCamera.value =
-                                                Pair(FORM_D, true)
-                                            val formName = formPictureScreenViewModel.getFormSubPath(
-                                                formPictureScreenViewModel.shouldShowCamera.value.first
-                                                , formPictureScreenViewModel.formDPageList.value.size + 1)
-                                            val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
-                                            formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
-                                            val uri = uriFromFile(context = context, imageFile)
-                                            formPictureScreenViewModel.tempUri = uri
-                                            cameraLauncher.launch(uri)
-                                        },
-                                        deleteButtonClicked = {
-                                            formPictureScreenViewModel.formDPageList.value = mutableListOf()
-                                            formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
-                                            formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
-                                            for (i in 1..5) {
-                                                formPictureScreenViewModel.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
-                                            }
+                                        formPictureScreenViewModel.retakeImageIndex.value =
+                                            index
+                                        formPictureScreenViewModel.shouldShowCamera.value =
+                                            Pair(FORM_D, true)
+                                        val formName = formPictureScreenViewModel.getFormSubPath(
+                                            formPictureScreenViewModel.shouldShowCamera.value.first
+                                            , formPictureScreenViewModel.formDPageList.value.size + 1)
+                                        val imageFile = formPictureScreenViewModel.getImageFileName(context, formName)
+                                        formPictureScreenViewModel.imagePathForCapture = imageFile.absolutePath
+                                        val uri = uriFromFile(context = context, imageFile)
+                                        formPictureScreenViewModel.tempUri = uri
+                                        cameraLauncher.launch(uri)
+                                    },
+                                    deleteButtonClicked = {
+                                        formPictureScreenViewModel.formDPageList.value = mutableListOf()
+                                        formPictureScreenViewModel.formDImageList.value =  mutableMapOf()
+                                        formPictureScreenViewModel.formsDClicked.value = --formPictureScreenViewModel.formsDClicked.value
+                                        for (i in 1..5) {
+                                            formPictureScreenViewModel.repository.prefRepo.savePref(formPictureScreenViewModel.getFormPathKey(formPictureScreenViewModel.getFormSubPath(FORM_D, i)), "")
                                         }
-                                    )
-                                }
+                                    }
+                                )
                             }
                         }
 
@@ -875,12 +874,12 @@ fun FormPictureScreen(
                         positiveButtonText = stringResource(id = R.string.submit),
                         positiveButtonOnClick = {
                             NudgeLogger.d("FormPictureScreen", "submit button clicked")
-                            formPictureScreenViewModel.prefRepo.savePref(
-                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.prefRepo.getSelectedVillage().id,true)
+                            formPictureScreenViewModel.repository.prefRepo.savePref(
+                                PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,true)
                             formPictureScreenViewModel.updateVoEndorsementEditFlag()
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
-                                formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 stepId
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
@@ -889,7 +888,7 @@ fun FormPictureScreen(
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
                                         formPictureScreenViewModel.callWorkFlowAPI(
-                                            formPictureScreenViewModel.prefRepo.getSelectedVillage().id,
+                                            formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                             stepId,
                                             object :
                                                 NetworkCallbackListener {

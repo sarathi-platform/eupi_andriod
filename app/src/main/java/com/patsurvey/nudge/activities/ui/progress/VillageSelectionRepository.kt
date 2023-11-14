@@ -135,7 +135,6 @@ class VillageSelectionRepository @Inject constructor(
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
     val tolaDao: TolaDao,
-    val didiDao: DidiDao,
     val casteListDao: CasteListDao,
     val languageListDao: LanguageListDao,
     val questionDao: QuestionListDao,

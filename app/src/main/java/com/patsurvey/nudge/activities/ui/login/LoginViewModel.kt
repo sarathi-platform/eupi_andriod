@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val loginRepository: LoginRepository
+    private val loginRepository: LoginRepository
 ) : BaseViewModel() {
     val mobileNumber = mutableStateOf(TextFieldValue())
 
