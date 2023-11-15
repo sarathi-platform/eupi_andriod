@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities
 
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
@@ -27,6 +28,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
 
@@ -383,6 +385,7 @@ class AddDidiRepository @Inject constructor(
     }
 
     suspend fun deleteDidi(didiId: JsonArray): ApiResponseModel<List<DidiEntity>> {
+        NudgeLogger.d("AddDidiRepository","deleteDidi Request=>${Gson().toJson(didiId)}")
         return this.apiInterface.deleteDidi(didiId)
     }
 
@@ -391,14 +394,17 @@ class AddDidiRepository @Inject constructor(
     }
 
     suspend fun updateDidis(didiWealthRankingRequest: List<EditDidiRequest>): ApiResponseModel<List<DidiEntity>> {
+        NudgeLogger.d("AddDidiRepository","updateDidis Request=>${Gson().toJson(didiWealthRankingRequest)}")
         return this.apiInterface.updateDidis(didiWealthRankingRequest)
     }
 
     suspend fun addDidis(didiList: JsonArray): ApiResponseModel<List<DidiApiResponse>> {
+        NudgeLogger.d("AddDidiRepository","addDidis Request=>${Gson().toJson(didiList)}")
         return this.apiInterface.addDidis(didiList)
     }
 
     suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>> {
+        NudgeLogger.d("AddDidiRepository","editWorkFlow Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return this.apiInterface.editWorkFlow(addWorkFlowRequest)
     }
 

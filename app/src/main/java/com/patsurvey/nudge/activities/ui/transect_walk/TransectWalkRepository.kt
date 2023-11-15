@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.transect_walk
 
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
@@ -227,6 +228,7 @@ class TransectWalkRepository @Inject constructor(
     }
 
     suspend fun addCohort(cohortList: JsonArray): ApiResponseModel<List<TolaApiResponse>> {
+        NudgeLogger.d("TransectWalkRepository","addCohort Request=> ${Gson().toJson(cohortList)}")
         return this.apiInterface.addCohort(cohortList)
     }
 
@@ -235,18 +237,22 @@ class TransectWalkRepository @Inject constructor(
     }
 
     suspend fun deleteCohort(deleteCohort: JsonArray): ApiResponseModel<List<TolaApiResponse?>> {
+        NudgeLogger.d("TransectWalkRepository","deleteCohort Request=>${Gson().toJson(deleteCohort)}")
         return this.apiInterface.deleteCohort(deleteCohort)
     }
 
     suspend fun editCohort(updatedCohort: JsonArray): ApiResponseModel<List<TolaApiResponse>> {
+        NudgeLogger.d("TransectWalkRepository","editCohort Request=> ${Gson().toJson(updatedCohort)}")
         return this.apiInterface.editCohort(updatedCohort)
     }
 
     suspend fun deleteDidi(didiId: JsonArray): ApiResponseModel<List<DidiEntity>> {
+        NudgeLogger.d("TransectWalkRepository","deleteDidi Request=> ${didiId.json()}")
         return this.apiInterface.deleteDidi(didiId)
     }
 
     suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>> {
+        NudgeLogger.d("TransectWalkRepository","addWorkFlowRequest Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return this.apiInterface.editWorkFlow(addWorkFlowRequest)
     }
 

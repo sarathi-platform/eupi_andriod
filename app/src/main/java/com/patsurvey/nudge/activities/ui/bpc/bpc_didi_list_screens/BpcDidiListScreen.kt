@@ -152,7 +152,7 @@ fun BpcDidiListScreen(
             ) {
                 Column(modifier = Modifier) {
                     VOAndVillageBoxView(
-                        prefRepo = bpcDidiListViewModel.prefRepo,
+                        prefRepo = bpcDidiListViewModel.repository.prefRepo,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -308,11 +308,11 @@ fun BpcDidiListScreen(
                                 ) { index, didiKey ->
 
                                     ShowDidisFromTola(navController = navController,
-                                        prefRepo = bpcDidiListViewModel.prefRepo,
+                                        prefRepo = bpcDidiListViewModel.repository.prefRepo,
                                         didiTola = didiKey,
-                                        answerDao = bpcDidiListViewModel.answerDao,
-                                        questionListDao = bpcDidiListViewModel.questionListDao,
-                                        didiList = if (bpcDidiListViewModel.prefRepo.getFromPage()
+                                        answerDao = bpcDidiListViewModel.repository.answerDao,
+                                        questionListDao = bpcDidiListViewModel.repository.questionListDao,
+                                        didiList = if (bpcDidiListViewModel.repository.prefRepo.getFromPage()
                                                 .equals(ARG_FROM_PAT_SURVEY, true)
                                         )
                                             newFilteredTolaDidiList[didiKey]?.filter { it.wealth_ranking == WealthRank.POOR.rank }
@@ -352,12 +352,12 @@ fun BpcDidiListScreen(
                                     didi = didi,
                                     expanded = true,
                                     modifier = modifier,
-                                    answerDao = bpcDidiListViewModel.answerDao,
-                                    questionListDao = bpcDidiListViewModel.questionListDao,
+                                    answerDao = bpcDidiListViewModel.repository.answerDao,
+                                    questionListDao = bpcDidiListViewModel.repository.questionListDao,
                                     onExpendClick = { _, _ ->
 
                                         },
-                                        prefRepo = bpcDidiListViewModel.prefRepo,
+                                        prefRepo = bpcDidiListViewModel.repository.prefRepo,
                                         onNotAvailableClick = { didiEntity ->
                                             bpcDidiListViewModel.setDidiAsUnavailable(didiEntity.id)
                                         },

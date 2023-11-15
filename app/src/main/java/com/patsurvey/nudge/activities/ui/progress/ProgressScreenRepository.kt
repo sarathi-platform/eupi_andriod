@@ -1,6 +1,7 @@
 package com.patsurvey.nudge.activities.ui.progress
 
 import androidx.lifecycle.LiveData
+import com.google.gson.Gson
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
@@ -14,6 +15,7 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
 
@@ -90,6 +92,7 @@ class ProgressScreenRepository @Inject constructor(
     }
 
     suspend fun addWorkFlow(addWorkFlowRequest: List<AddWorkFlowRequest>): ApiResponseModel<List<WorkFlowResponse>> {
+        NudgeLogger.d("ProgressScreenRepository","addWorkFlow Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return apiInterface.addWorkFlow(addWorkFlowRequest)
     }
 

@@ -598,8 +598,8 @@ class FormPictureScreenViewModel @Inject constructor(
                     formAAvailable.value = true
                 }
             } else {
-                if (prefRepo.isUserBPC()) {
-                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) {
+                if (repository.prefRepo.isUserBPC()) {
+                    if (repository.poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }) {
                         withContext(Dispatchers.Main) {
                             formAAvailable.value = true
                         }
@@ -609,7 +609,7 @@ class FormPictureScreenViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
+                    if (repository.didiDao.getAllDidisForVillage(villageId = villageId).any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
                     ) {
                         withContext(Dispatchers.Main) {
                             formAAvailable.value = true
@@ -632,8 +632,8 @@ class FormPictureScreenViewModel @Inject constructor(
                     formBAvailable.value = true
                 }
             } else {
-                if (prefRepo.isUserBPC()) {
-                    if (poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                if (repository.prefRepo.isUserBPC()) {
+                    if (repository.poorDidiListDao.getAllPoorDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
                     ) {
                         withContext(Dispatchers.Main) {
                             formBAvailable.value = true
@@ -644,7 +644,7 @@ class FormPictureScreenViewModel @Inject constructor(
                         }
                     }
                 } else {
-                    if (didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
+                    if (repository.didiDao.getAllDidisForVillage(villageId = villageId).any { it.forVoEndorsement == 1 && !it.patEdit }
                     ) {
                         withContext(Dispatchers.Main) {
                             formBAvailable.value = true

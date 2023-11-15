@@ -46,15 +46,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class WealthRankingSurveyViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val tolaDao: TolaDao,
-    val didiDao: DidiDao,
-    val stepsListDao: StepsListDao,
-    val villageListDao: VillageListDao,
-    val answerDao: AnswerDao,
-    val numericAnswerDao: NumericAnswerDao,
-    val questionDao: QuestionListDao,
-    val apiService: ApiService
+    val repository: WealthRankingSurveyRepository
 ) : BaseViewModel() {
 
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
@@ -71,13 +63,13 @@ class WealthRankingSurveyViewModel @Inject constructor(
     var selectedVillage: VillageEntity? = null
 
     init {
-        selectedVillage = prefRepo.getSelectedVillage()
+        selectedVillage = repository.prefRepo.getSelectedVillage()
         villageId = selectedVillage?.id ?: -1
         fetchDidisFromDB()
         CheckDBStatus(this@WealthRankingSurveyViewModel).isFirstStepNeedToBeSync() {
             isTolaSynced.value = it
         }
-        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(didiDao) {
+        CheckDBStatus(this@WealthRankingSurveyViewModel).isSecondStepNeedToBeSync(repository.didiDao) {
             isDidiSynced.value = it
         }
     }
@@ -85,7 +77,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     fun fetchDidisFromDB() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                _didiList.emit(didiDao.getAllDidisForVillage(villageId))
+                _didiList.emit(repository.getAllDidisForVillage(villageId))
             }
         }
     }
@@ -108,18 +100,18 @@ class WealthRankingSurveyViewModel @Inject constructor(
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> called")
             try {
-                val dbResponse = stepsListDao.getStepForVillage(villageId, stepId)
+                val dbResponse = repository.getStepForVillage(villageId, stepId)
                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> dbResponse = $dbResponse")
-                val stepList = stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
+                val stepList = repository.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepList = $stepList")
                 if (dbResponse.workFlowId > 0) {
                     val primaryWorkFlowRequest = listOf(
                         EditWorkFlowRequest(stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
-                            StepStatus.COMPLETED.name, longToString(prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
+                            StepStatus.COMPLETED.name, longToString(repository.prefRepo.getPref(PREF_WEALTH_RANKING_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id,System.currentTimeMillis()))
                         )
                     )
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> primaryWorkFlowRequest = $primaryWorkFlowRequest")
-                    val response = apiService.editWorkFlow(primaryWorkFlowRequest)
+                    val response = repository.editWorkFlow(primaryWorkFlowRequest)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> response: status = ${response.status}, message = ${response.message}, data = ${response.data.toString()} \n")
 
                         if (response.status.equals(SUCCESS, true)) {
@@ -127,7 +119,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId before: id: ${
                                     stepList[stepList.map { it.orderNumber }.indexOf(3)].id
                                 }, workFlowId: ${stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId}, status: ${it[0].status}")
-                                stepsListDao.updateWorkflowId(
+                                repository.updateWorkflowId(
                                     stepList[stepList.map { it.orderNumber }.indexOf(3)].id,
                                     stepList[stepList.map { it.orderNumber }.indexOf(3)].workFlowId,
                                     villageId,
@@ -136,7 +128,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId after")
 
                                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before ")
-                                stepsListDao.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(3)].id, villageId, false)
+                                repository.updateNeedToPost(stepList[stepList.map { it.orderNumber }.indexOf(3)].id, villageId, false)
                                 NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after")
                             }
                         } else {
@@ -146,7 +138,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                         }
 
                         if(!response.lastSyncTime.isNullOrEmpty()){
-                            updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            updateLastSyncTime(repository.prefRepo,response.lastSyncTime)
                         }
 
                 }
@@ -165,7 +157,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 )
                             )
                             NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> inProgressStepRequest = $inProgressStepRequest")
-                            val inProgressStepResponse = apiService.editWorkFlow(inProgressStepRequest)
+                            val inProgressStepResponse = repository.editWorkFlow(inProgressStepRequest)
 
                             NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> inProgressStepResponse: status = ${inProgressStepResponse.status}, " +
                                     "message = ${inProgressStepResponse.message}, data = ${inProgressStepResponse.data.toString()} \n")
@@ -173,7 +165,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                             if (inProgressStepResponse.status.equals(SUCCESS, true)) {
                                 inProgressStepResponse.data?.let {
                                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId before stepId: ${step.id}, workflowId: ${step.workFlowId}, status: ${it[0].status}")
-                                    stepsListDao.updateWorkflowId(
+                                    repository.updateWorkflowId(
                                         step.id,
                                         step.workFlowId,
                                         villageId,
@@ -182,14 +174,14 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId after")
 
                                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before stepId: ${step.id}")
-                                    stepsListDao.updateNeedToPost(step.id, villageId, false)
+                                    repository.updateNeedToPost(step.id, villageId, false)
                                     NudgeLogger.d("WealthRankingSurveyViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after")
 
                                 }
 
                             }
                             if(!inProgressStepResponse.lastSyncTime.isNullOrEmpty()){
-                                updateLastSyncTime(prefRepo,inProgressStepResponse.lastSyncTime)
+                                updateLastSyncTime(repository.prefRepo,inProgressStepResponse.lastSyncTime)
                             }
                         }
                     }
@@ -207,7 +199,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun markWealthRakningComplete(villageId: Int, stepId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val existingList = villageListDao.getVillage(villageId).steps_completed
+            val existingList = repository.getVillage(villageId).steps_completed
             val updatedCompletedStepsList = mutableListOf<Int>()
             if (!existingList.isNullOrEmpty()) {
                 existingList.forEach {
@@ -215,25 +207,25 @@ class WealthRankingSurveyViewModel @Inject constructor(
                 }
             }
             updatedCompletedStepsList.add(stepId)
-            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepsList)
-            stepsListDao.markStepAsCompleteOrInProgress(
+            repository.updateLastCompleteStep(villageId, updatedCompletedStepsList)
+            repository.markStepAsCompleteOrInProgress(
                 stepId,
                 StepStatus.COMPLETED.ordinal,
                 villageId
             )
-            stepsListDao.updateNeedToPost(stepId, villageId, true)
-            val stepDetails = stepsListDao.getStepForVillage(villageId, stepId)
-            if (stepDetails.orderNumber < stepsListDao.getAllSteps().size) {
-                stepsListDao.markStepAsInProgress(
+            repository.updateNeedToPost(stepId, villageId, true)
+            val stepDetails = repository.getStepForVillage(villageId, stepId)
+            if (stepDetails.orderNumber < repository.getAllSteps().size) {
+                repository.markStepAsInProgress(
                     (stepDetails.orderNumber + 1),
                     StepStatus.INPROGRESS.ordinal,
                     villageId
                 )
-                stepsListDao.updateNeedToPost(stepDetails.id, villageId, true)
-                prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
+                repository.updateNeedToPost(stepDetails.id, villageId, true)
+                repository. prefRepo.savePref("$VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_${villageId}", false)
                 for (i in 1..5) {
-                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
-                    prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
+                    repository.prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
+                    repository.prefRepo.savePref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 }
             }
         }
@@ -241,12 +233,12 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun saveWealthRankingCompletionDate() {
         val currentTime = System.currentTimeMillis()
-        prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE_+prefRepo.getSelectedVillage().id, currentTime)
+        repository.prefRepo.savePref(PREF_WEALTH_RANKING_COMPLETION_DATE_+repository.prefRepo.getSelectedVillage().id, currentTime)
     }
 
     fun getWealthRankingStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepStatus = stepsListDao.isStepComplete(stepId, prefRepo.getSelectedVillage().id)
+            val stepStatus = repository.isStepComplete(stepId)
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     callBack(true)
@@ -268,7 +260,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     fun updateWealthRankingToNetwork(networkCallbackListener: NetworkCallbackListener) {
         job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             try {
-                val needToPostDidiList = didiDao.getAllNeedToPostDidiRanking(true, prefRepo.getSelectedVillage().id)
+                val needToPostDidiList = repository.getAllNeedToPostDidiRanking(true)
                 NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> needToPostDidiList: $needToPostDidiList")
                 if (needToPostDidiList.isNotEmpty()) {
                     val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -279,12 +271,12 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     }
                     didiWealthRequestList.addAll(didiStepRequestList)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiRequestList: $didiWealthRequestList")
-                    val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
+                    val updateWealthRankResponse = repository.updateDidiRanking(didiWealthRequestList)
                     NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> response: status = ${updateWealthRankResponse.status}, message = ${updateWealthRankResponse.message}, data = ${updateWealthRankResponse.data.toString()}")
                     if (updateWealthRankResponse.status.equals(SUCCESS, true)) {
                         if(updateWealthRankResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
                             needToPostDidiList.forEach{didi ->
-                                didiDao.setNeedToPostRanking(didi.id, false)
+                                repository.setNeedToPostRanking(didi.id, false)
                             }
                             networkCallbackListener.onSuccess()
                         } else {
@@ -293,7 +285,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 val serverResponseDidi = updateWealthRankResponse.data?.get(i)
                                 val localDidi = needToPostDidiList[i]
                                 serverResponseDidi?.transactionId?.let {
-                                    didiDao.updateDidiTransactionId(localDidi.id,
+                                    repository.updateDidiTransactionId(localDidi.id,
                                         it
                                     )
                                 }
@@ -324,21 +316,21 @@ class WealthRankingSurveyViewModel @Inject constructor(
             override fun run() {
                 job = appScopeLaunch (Dispatchers.IO + exceptionHandler) {
                     try {
-                        val didiList = didiDao.fetchPendingWealthStatusDidi(true, "")
+                        val didiList = repository.fetchPendingWealthStatusDidi(true, "")
                         if (didiList.isNotEmpty()) {
                             val ids: ArrayList<String> = arrayListOf()
                             didiList.forEach { didi ->
                                 didi.transactionId?.let { ids.add(it) }
                             }
                             NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> didiList: $didiList")
-                            val response = apiService.getPendingStatus(TransactionIdRequest("", ids))
+                            val response = repository.getPendingStatus(TransactionIdRequest("", ids))
                             NudgeLogger.d("WealthRankingSurveyViewModel", "updateWealthRankingToNetwork -> response: ${response.toString()}")
                             if (response.status.equals(SUCCESS, true)) {
                                 response.data?.forEach { transactionIdResponse ->
                                     didiList.forEach { didi ->
                                         if (transactionIdResponse.transactionId == didi.transactionId) {
-                                            didiDao.updateDidiNeedToPostWealthRank(didi.id, false)
-                                            didiDao.updateDidiTransactionId(didi.id, "")
+                                            repository.updateDidiNeedToPostWealthRank(didi.id, false)
+                                            repository.updateDidiTransactionId(didi.id, "")
                                         }
                                     }
                                 }
@@ -349,7 +341,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                                 networkCallbackListener.onFailed()
                             }
                             if(!response.lastSyncTime.isNullOrEmpty()){
-                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                                updateLastSyncTime(repository.prefRepo,response.lastSyncTime)
                             }
                         } else {
                             networkCallbackListener.onSuccess()
@@ -370,7 +362,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun checkIfLastStepIsComplete(currentStepId: Int, callBack: (isPreviousStepComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            val stepList = repository.getAllStepsForVillage(repository.prefRepo.getSelectedVillage().id)
             val currentStepIndex = stepList.map { it.id }.indexOf(currentStepId)
 
             withContext(Dispatchers.Main) {
@@ -383,7 +375,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
     fun getFormPathKey(subPath: String): String {
         //val subPath formPictureScreenViewModel.pageItemClicked.value
         //"${PREF_FORM_PATH}_${formPictureScreenViewModel.prefRepo.getSelectedVillage().name}_${subPath}"
-        return "${PREF_FORM_PATH}_${prefRepo.getSelectedVillage().id}_${subPath}"
+        return "${PREF_FORM_PATH}_${repository.prefRepo.getSelectedVillage().id}_${subPath}"
     }
 
     fun getFormSubPath(formName: String, pageNumber: Int): String {
@@ -392,8 +384,8 @@ class WealthRankingSurveyViewModel @Inject constructor(
 
     fun updateWealthRankingFlagForDidis() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageId = prefRepo.getSelectedVillage().id
-            didiDao.updateRankEditFlag(villageId, false)
+            val villageId = repository.prefRepo.getSelectedVillage().id
+            repository.updateRankEditFlag(villageId, false)
         }
     }
 

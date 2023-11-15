@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import com.google.gson.Gson
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -8,6 +9,7 @@ import com.patsurvey.nudge.model.request.LoginRequest
 import com.patsurvey.nudge.model.request.OtpRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.OtpVerificationModel
+import com.patsurvey.nudge.utils.NudgeLogger
 import javax.inject.Inject
 
 class OtpVerificationRepository @Inject constructor(
@@ -19,6 +21,7 @@ class OtpVerificationRepository @Inject constructor(
 
         val otpRequest =
             OtpRequest(mobileNumber = getMobileNumber() ?: "", otp = otpNumber ) //Text this code
+        NudgeLogger.d("OtpVerificationRepository","validateOtp => ${Gson().toJson(otpRequest)}")
         return apiInterface.validateOtp(otpRequest);
     }
 
@@ -30,6 +33,7 @@ class OtpVerificationRepository @Inject constructor(
     ): ApiResponseModel<String>{
         val loginRequest =
             LoginRequest(mobileNumber = getMobileNumber() ?: "")
+        NudgeLogger.d("OtpVerificationRepository ","generateOtp=> ${Gson().toJson(loginRequest)}")
         return apiInterface.generateOtp(loginRequest);
     }
 

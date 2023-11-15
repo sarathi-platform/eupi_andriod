@@ -410,7 +410,7 @@ fun DigitalFormBScreen(
                                     "DigitalFormBScreen",
                                     "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}"
                                 )
-                                DidiVillageItem(didiDetailsModel = card, viewModel)
+                                DidiVillageItem(didiDetailsModel = card)
                             }
                         } else {
                             items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit }) { card ->
@@ -418,7 +418,7 @@ fun DigitalFormBScreen(
                                     "DigitalFormBScreen",
                                     "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}"
                                 )
-                                DidiVillageItem(didiDetailsModel = card, viewModel)
+                                DidiVillageItem(didiDetailsModel = card)
                             }
                         }
                     }

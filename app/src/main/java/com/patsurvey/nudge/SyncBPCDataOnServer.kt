@@ -2,6 +2,7 @@ package com.patsurvey.nudge
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
+import com.google.gson.Gson
 import com.patsurvey.nudge.activities.settings.SettingViewModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
@@ -259,7 +260,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
 
                     val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
-
+                    NudgeLogger.d("SyncBPCDataOnServer","addWorkFlow Request=> ${Gson().toJson(Collections.unmodifiableList(addWorkFlowRequest))}")
                     NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
 
                     if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
@@ -322,7 +323,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 }
                 val responseForStepUpdation =
                     apiService.editWorkFlow(requestForStepUpdation)
-
+                NudgeLogger.d("SyncBPCDataOnServer","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
                 NudgeLogger.e(
                     "SyncHelper",
                     "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
@@ -397,6 +398,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
                     )
                     val requestList = arrayListOf(saveMatchSummaryRequest)
+                    NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore saveMatchSummary Request=> ${requestList.json()}")
                     val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
                     if (saveMatchSummaryResponse.status.equals(SUCCESS, true)) {
                         withContext(Dispatchers.Main) {
@@ -477,6 +479,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     )
                     try {
                         val updatedPatResponse = apiService.updateDidiRanking(didiRequestList)
+                        NudgeLogger.d("SyncBPCDataOnServer","updateDidiRanking Request=> ${Gson().toJson(didiRequestList)}")
                         if (updatedPatResponse.status.equals(SUCCESS, true)) {
                             if (updatedPatResponse.data?.isNotEmpty() == true) {
                                 if (updatedPatResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -680,7 +683,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         }
                         if(answeredDidiList.isNotEmpty()){
                             withContext(Dispatchers.IO){
-                                NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer answeredDidiList: $answeredDidiList")
+                                NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer answeredDidiList Request: ${answeredDidiList.json()}")
                                 val saveAPIResponse= apiService.savePATSurveyToServer(answeredDidiList)
                                 if(saveAPIResponse.status.equals(SUCCESS,true)){
                                     if(saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -716,7 +719,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 if(!saveAPIResponse.lastSyncTime.isNullOrEmpty()){
                                     updateLastSyncTime(prefRepo,saveAPIResponse.lastSyncTime)
                                 }
-                                NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer scoreDidiList: $scoreDidiList")
+                                NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer updateDidiScore Request=>: ${scoreDidiList.json()}")
                                 apiService.updateDidiScore(scoreDidiList)
                             }
                         }

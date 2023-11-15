@@ -365,7 +365,7 @@ fun DigitalFormCScreen(
                                         "DigitalFormCScreen",
                                         "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}"
                                     )
-                                    DidiVillageItem(card, viewModel)
+                                    DidiVillageItem(card)
                                 }
                             } else {
                                 items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
@@ -373,7 +373,7 @@ fun DigitalFormCScreen(
                                         "DigitalFormCScreen",
                                         "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}"
                                     )
-                                    DidiVillageItem(card, viewModel)
+                                    DidiVillageItem(card)
                                 }
                             }
 

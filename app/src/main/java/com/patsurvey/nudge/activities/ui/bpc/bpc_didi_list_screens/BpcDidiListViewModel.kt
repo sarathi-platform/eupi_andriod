@@ -33,12 +33,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class BpcDidiListViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val didiDao: DidiDao,
-    val tolaDao: TolaDao,
-    val stepsListDao: StepsListDao,
-    val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao
+    val repository: BPCDidiListRepository
 ): BaseViewModel() {
 
     val pendingDidiCount = mutableStateOf(0)
@@ -68,23 +63,23 @@ class BpcDidiListViewModel @Inject constructor(
     val showLoader = mutableStateOf(false)
 
     init {
-        villageId = prefRepo.getSelectedVillage().id
+        villageId = repository.prefRepo.getSelectedVillage().id
         fetchDidiListForBPC()
         checkIfStepIsComplete()
     }
 
     private fun checkIfStepIsComplete() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+            val stepList = repository.getAllStepsForVillage()
             isStepComplete.value = stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal
         }
     }
 
     fun fetchDidiListForBPC(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localDidiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
+            val localDidiList = repository.getAllDidisForVillage()
             _selectedDidiList.value = localDidiList
-            _tolaList.emit(tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id))
+            _tolaList.emit(repository.getAllTolasForVillage())
             filterDidiList = selectedDidiList.value
             pendingDidiCount.value = filterDidiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_STARTED.ordinal || it.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal }.size
         }
@@ -148,12 +143,12 @@ class BpcDidiListViewModel @Inject constructor(
             it.add(didiId)
         }
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiPatProgress = didiDao.getDidi(didiId).patSurveyStatus
+            val didiPatProgress = repository.getDidiFromDB(didiId).patSurveyStatus
             if (didiPatProgress == PatSurveyStatus.INPROGRESS.ordinal || didiPatProgress == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
                 _selectedDidiList.value[_selectedDidiList.value.map { it.id }
                     .indexOf(didiId)].patSurveyStatus =
                     PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
-                didiDao.updateQuesSectionStatus(
+                repository.updateQuesSectionStatus(
                     didiId,
                     PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
                 )
@@ -161,11 +156,11 @@ class BpcDidiListViewModel @Inject constructor(
                 _selectedDidiList.value[_selectedDidiList.value.map { it.id }
                     .indexOf(didiId)].patSurveyStatus =
                     PatSurveyStatus.NOT_AVAILABLE.ordinal
-                didiDao.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
+                repository.updateQuesSectionStatus(didiId, PatSurveyStatus.NOT_AVAILABLE.ordinal)
             }
-            didiDao.updateNeedToPostPAT(true, didiId, prefRepo.getSelectedVillage().id)
+            repository.updateNeedToPostPAT(true, didiId)
             pendingDidiCount.value =
-                didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)
+                repository.getAllPendingPATDidisCount()
         }
     }
 
@@ -181,50 +176,9 @@ class BpcDidiListViewModel @Inject constructor(
         ReplaceHelper.didiToBeReplaced.value = Pair(index, didiId)
     }
 
-    fun addDidiForPatIdRequired(didiId: Int) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiEntityList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
-            val didiEntity = filterDidiList[filterDidiList.map { it.id }.indexOf(didiId)]
-            if (!didiEntityList.map { it.id }.contains(didiEntity.id)) {
-                didiDao.insertDidi(
-                    DidiEntity(
-                        id = didiEntity.id,
-                        serverId = didiEntity.serverId,
-                        name = didiEntity.name,
-                        address = didiEntity.address,
-                        guardianName = didiEntity.guardianName,
-                        relationship = didiEntity.relationship,
-                        castId = didiEntity.castId,
-                        castName = didiEntity.castName,
-                        cohortId = didiEntity.cohortId,
-                        cohortName = didiEntity.cohortName,
-                        villageId = didiEntity.villageId,
-                        wealth_ranking = didiEntity.wealth_ranking,
-                        needsToPost = didiEntity.needsToPost,
-                        localPath = didiEntity.localPath,
-                        createdDate = didiEntity.createdDate,
-                        modifiedDate = didiEntity.modifiedDate,
-                        activeStatus = didiEntity.activeStatus,
-                        patSurveyStatus = didiEntity.patSurveyStatus,
-                        section1Status = didiEntity.section1Status,
-                        section2Status = didiEntity.section2Status,
-                        beneficiaryProcessStatus = didiEntity.beneficiaryProcessStatus,
-                        shgFlag = didiEntity.shgFlag,
-                        bpcComment = didiEntity.bpcComment,
-                        bpcScore = didiEntity.bpcScore,
-                        crpScore = didiEntity.crpScore,
-                        crpComment = didiEntity.crpComment,
-                        needsToPostBPCProcessStatus = didiEntity.beneficiaryProcessStatus?.map { it.name }?.contains(BPC_SURVEY_CONSTANT) ?: true,
-                        ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
-                    )
-                )
-            }
-        }
-    }
-
     fun getPatStepStatus(stepId: Int, callBack: (isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepStatus = stepsListDao.isStepComplete(stepId, villageId)
+            val stepStatus = repository.isStepComplete(stepId, villageId)
             withContext(Dispatchers.Main) {
                 if (stepStatus == StepStatus.COMPLETED.ordinal) {
                     delay(100)
@@ -239,7 +193,7 @@ class BpcDidiListViewModel @Inject constructor(
 
     fun isStepComplete(callBack: (stepId: Int, isComplete: Boolean) -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val step  = stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id).sortedBy { it.orderNumber }.last()
+            val step  = repository.getAllStepsForVillage().sortedBy { it.orderNumber }.last()
             val isComplete = step.isComplete
             withContext(Dispatchers.Main){
                 if (isComplete == StepStatus.COMPLETED.ordinal)

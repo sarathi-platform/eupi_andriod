@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.survey
 
+import com.google.gson.Gson
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
 import com.patsurvey.nudge.base.BaseRepository
@@ -29,11 +30,13 @@ import com.patsurvey.nudge.model.response.WorkFlowResponse
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
+import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_FORM_PATH
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.getFormSubPath
+import com.patsurvey.nudge.utils.json
 import javax.inject.Inject
 
 class SurveySummaryRepository @Inject constructor(
@@ -99,10 +102,12 @@ class SurveySummaryRepository @Inject constructor(
     }
 
     suspend fun savePATSurveyToServer(patSummarySaveRequest: List<PATSummarySaveRequest>): ApiResponseModel<List<TransactionResponseModel>> {
+        NudgeLogger.d("SurveySummaryRepository","savePATSurveyToServer Request=>${patSummarySaveRequest.json()}")
         return apiService.savePATSurveyToServer(patSummarySaveRequest)
     }
 
     suspend fun updateDidiScore(scoreDidiList: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>{
+        NudgeLogger.d("SurveySummaryRepository","updateDidiScore Request=>${scoreDidiList.json()}")
        return apiService.updateDidiScore(scoreDidiList)
     }
 
@@ -133,6 +138,7 @@ class SurveySummaryRepository @Inject constructor(
     }
 
    suspend fun editWorkFlow(addWorkFlowRequest: List<EditWorkFlowRequest>):ApiResponseModel<List<WorkFlowResponse>>{
+       NudgeLogger.d("SurveySummaryRepository","editWorkFlow Request=> ${Gson().toJson(addWorkFlowRequest)}")
         return apiService.editWorkFlow(
             addWorkFlowRequest
         )
@@ -204,6 +210,7 @@ class SurveySummaryRepository @Inject constructor(
     }
 
     suspend fun updateDidiRanking(didiWealthRankingRequest: List<EditDidiWealthRankingRequest>): ApiResponseModel<List<DidiEntity>>{
+        NudgeLogger.d("SurveySummaryRepository","updateDidiRanking Request=> ${Gson().toJson(didiWealthRankingRequest)}")
        return apiService.updateDidiRanking(didiWealthRankingRequest)
     }
 
@@ -212,6 +219,7 @@ class SurveySummaryRepository @Inject constructor(
     }
 
     suspend fun saveMatchSummary(saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<ArrayList<SaveMatchSummaryResponse>> {
+        NudgeLogger.d("SurveySummaryRepository","saveMatchSummary Request=> ${Gson().toJson(saveMatchSummaryRequest)}")
        return apiService.saveMatchSummary(saveMatchSummaryRequest)
     }
 
