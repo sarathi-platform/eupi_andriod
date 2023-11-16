@@ -62,7 +62,6 @@ import com.patsurvey.nudge.utils.ButtonPositive
 import com.patsurvey.nudge.utils.IncrementDecrementView
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
-import com.patsurvey.nudge.utils.VALUE_OF_PRODUCTIVE_ASSETS
 import com.patsurvey.nudge.utils.roundOffDecimalPoints
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.launch

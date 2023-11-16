@@ -358,12 +358,12 @@ fun DigitalFormCScreen(
                             if (viewModel.prefRepo.isUserBPC()) {
                                 items(didiListForBpc.value.filter { it.forVoEndorsement == 1 && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
                                     NudgeLogger.d("DigitalFormCScreen", "LazyColumn isUserBPC -> card.id: ${card.id}, card.name: ${card.name}")
-                                    DidiVillageItem(card)
+                                    DidiVillageItem(card, viewModel)
                                 }
                             } else {
                                 items(didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }) { card ->
                                     NudgeLogger.d("DigitalFormCScreen", "LazyColumn -> card.id: ${card.id}, card.name: ${card.name}")
-                                    DidiVillageItem(card)
+                                    DidiVillageItem(card, viewModel)
                                 }
                             }
 

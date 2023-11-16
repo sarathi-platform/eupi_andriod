@@ -233,17 +233,25 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
                     val bpcStep = stepList.last()
                     if (bpcStep.workFlowId > 0) {
-                        editWorkFlowRequest.add((EditWorkFlowRequest(
-                            bpcStep.workFlowId,
-                            StepStatus.getStepFromOrdinal(bpcStep.isComplete)
-                        )))
-                        needToEditStep.add(bpcStep)
+                        if (bpcStep.needToPost) {
+                            editWorkFlowRequest.add(
+                                (EditWorkFlowRequest(
+                                    bpcStep.workFlowId,
+                                    StepStatus.getStepFromOrdinal(bpcStep.isComplete)
+                                ))
+                            )
+                            needToEditStep.add(bpcStep)
+                        }
                     } else {
-                        needToAddStep.add(bpcStep)
-                        addWorkFlowRequest.add((AddWorkFlowRequest(
-                            StepStatus.INPROGRESS.name, bpcStep.villageId,
-                            bpcStep.programId, bpcStep.id
-                        )))
+                        if (bpcStep.needToPost) {
+                            needToAddStep.add(bpcStep)
+                            addWorkFlowRequest.add(
+                                (AddWorkFlowRequest(
+                                    StepStatus.INPROGRESS.name, bpcStep.villageId,
+                                    bpcStep.programId, bpcStep.id
+                                ))
+                            )
+                        }
                     }
                 }
                 if (addWorkFlowRequest.size > 0) {
@@ -650,7 +658,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                 )
                             )
                             val patSummarySaveRequest = PATSummarySaveRequest(
-                                villageId = village.id,
+                                villageId = didi.villageId,
                                 surveyId = surveyId,
                                 beneficiaryId = if (didi.serverId == 0) didi.id else didi.serverId,
                                 languageId = prefRepo.getAppLanguageId() ?: 2,
@@ -680,7 +688,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                             didiDao.updateNeedToPostPAT(
                                                 false,
                                                 didiItem.id,
-                                                village.id
+                                                didiItem.villageId
                                             )
                                         }
                                         NudgeLogger.d("SyncBPCDataOnServer", "savePATSummeryToServer -> saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()")

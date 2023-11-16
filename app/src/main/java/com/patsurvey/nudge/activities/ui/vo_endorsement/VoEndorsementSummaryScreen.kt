@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.ui.vo_endorsement
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -51,6 +52,7 @@ import com.patsurvey.nudge.utils.*
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun VoEndorsementSummaryScreen(
@@ -106,6 +108,14 @@ fun VoEndorsementSummaryScreen(
             NudgeLogger.e("VoEndorsementSummaryScreen", "LaunchedEffect(key1 = Unit, key2 = !voDidiList.isNullOrEmpty()) -> exception", ex)
         }
 
+    }
+
+    if(viewModel.showDidiImageDialog.value){
+        viewModel.didiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                viewModel.showDidiImageDialog.value = false
+            }
+        }
     }
 
     Box(modifier = Modifier
@@ -200,7 +210,9 @@ fun VoEndorsementSummaryScreen(
                                     modifier = Modifier,
                                     screenHeight = screenHeight,
                                     didi = it
-                                )
+                                ){
+                                    viewModel.showDidiImageDialog.value=true
+                                }
                             }
                             Spacer(
                                 modifier = Modifier
@@ -595,20 +607,6 @@ fun ShowAcceptRejectDialog(
     action:Int,
     screenHeight:Int,
 ) {
-//    AnimatedVisibility(visible =true, enter =slideInHorizontally(
-//        initialOffsetX = { it }, // it == fullWidth
-//        animationSpec = tween(
-//            durationMillis = EXPANSTION_TRANSITION_DURATION,
-//            easing = LinearEasing
-//        )
-//    ), exit =slideOutHorizontally(
-//        targetOffsetX = { it },
-//        animationSpec = tween(
-//            durationMillis = EXPANSTION_TRANSITION_DURATION,
-//            easing = LinearEasing
-//        )
-//    ) ) {
-
     Dialog(onDismissRequest = { /*setShowDialog(false)*/ },
         properties = DialogProperties(
             usePlatformDefaultWidth = false,
@@ -635,7 +633,7 @@ fun ShowAcceptRejectDialog(
                             ),
                         screenHeight = screenHeight,
                         didi = didi
-                    )
+                    ){ }
                     Spacer(modifier = Modifier
                         .fillMaxWidth()
                         .height(15.dp))

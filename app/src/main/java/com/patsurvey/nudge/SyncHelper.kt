@@ -1270,32 +1270,31 @@ class SyncHelper (
                                     }
                                 }
                             }
-                    scoreDidiList.add(
-                        EditDidiWealthRankingRequest(
-                            id = if (didi.serverId == 0) didi.id else didi.serverId,
-                            score = didi.score,
-                            comment = comment,
-                            type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
-                            result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
-                                DIDI_NOT_AVAILABLE
-                            } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
-                                PatSurveyStatus.INPROGRESS.name
-                            } else {
-                                if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
-                                    if (prefRepo.isUserBPC())
-                                        VERIFIED_STRING
-                                    else
-                                        COMPLETED_STRING
-                                }
-                            },
-                            rankingEdit = didi.patEdit,
-                            shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
-                            ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                        scoreDidiList.add(
+                            EditDidiWealthRankingRequest(
+                                id = if (didi.serverId == 0) didi.id else didi.serverId,
+                                score = didi.score,
+                                comment = comment,
+                                type = if (prefRepo.isUserBPC()) BPC_SURVEY_CONSTANT else PAT_SURVEY,
+                                result = if (didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal || didi.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal) {
+                                    DIDI_NOT_AVAILABLE
+                                } else if (didi.patSurveyStatus == PatSurveyStatus.INPROGRESS.ordinal) {
+                                    PatSurveyStatus.INPROGRESS.name
+                                } else {
+                                    if (didi.forVoEndorsement == 0 || didi.patExclusionStatus != ExclusionType.NO_EXCLUSION.ordinal) DIDI_REJECTED else {
+                                        if (prefRepo.isUserBPC())
+                                            VERIFIED_STRING
+                                        else
+                                            COMPLETED_STRING
+                                    }
+                                },
+                                rankingEdit = didi.patEdit,
+                                shgFlag = SHGFlag.fromInt(didi.shgFlag).name,
+                                ableBodiedFlag = AbleBodiedFlag.fromInt(didi.ableBodiedFlag).name
+                            )
                         )
-                    )
-                    val stateId = villegeListDao.getVillage(didi.villageId).stateId
-                    answeredDidiList.add(
-                        PATSummarySaveRequest(
+                        val stateId = villegeListDao.getVillage(didi.villageId).stateId
+                        val patSummarySaveRequest = PATSummarySaveRequest(
                             villageId = didi.villageId,
                             surveyId = surveyId,
                             beneficiaryId = didi.serverId,
@@ -1309,9 +1308,16 @@ class SyncHelper (
                             section2Status = didi.section2Status,
                             section1Status = didi.section1Status,
                             shgFlag = didi.shgFlag,
-                            patExclusionStatus = didi.patExclusionStatus  ?: 0
+                            patExclusionStatus = didi.patExclusionStatus ?: 0
                         )
-                    )
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "savePATSummeryToServer patSummarySaveRequest: $patSummarySaveRequest"
+                        )
+
+                        answeredDidiList.add(
+                            patSummarySaveRequest
+                        )
                 }
                 if (answeredDidiList.isNotEmpty()) {
                     withContext(Dispatchers.IO) {

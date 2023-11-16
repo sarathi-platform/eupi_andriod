@@ -63,6 +63,7 @@ import com.patsurvey.nudge.utils.DidiItemCardForPat
 import com.patsurvey.nudge.utils.DoubleButtonBox
 import com.patsurvey.nudge.utils.ShowDidisFromTola
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.showDidiImageDialog
 import kotlinx.coroutines.delay
 
 @SuppressLint("StateFlowValueCalledInComposition")
@@ -112,6 +113,14 @@ fun BpcDidiListScreen(
     LaunchedEffect(key1 = Unit) {
         bpcDidiListViewModel.fetchDidiListForBPC()
         delay(100)
+    }
+
+    if(bpcDidiListViewModel.showDidiImageDialog.value){
+        bpcDidiListViewModel.dialogDidiEntity.value?.let {
+            showDidiImageDialog(didi = it){
+                bpcDidiListViewModel.showDidiImageDialog.value = false
+            }
+        }
     }
 
     if (bpcDidiListViewModel.showLoader.value) {
@@ -317,6 +326,10 @@ fun BpcDidiListScreen(
                                     onNavigate = {
                                     },
                                     onDeleteClicked = {
+                                    },
+                                    onCircularImageClick = {
+                                        bpcDidiListViewModel.showDidiImageDialog.value=true
+                                        bpcDidiListViewModel.dialogDidiEntity.value=it
                                     }
                                 )
                                 if (index < newFilteredTolaDidiList.keys.size - 1) {
@@ -349,7 +362,11 @@ fun BpcDidiListScreen(
                                             bpcDidiListViewModel.setDidiAsUnavailable(didiEntity.id)
                                         },
                                         onItemClick = {
-                                        }
+                                        },
+                                     onCircularImageClick = {
+                                         bpcDidiListViewModel.showDidiImageDialog.value=true
+                                         bpcDidiListViewModel.dialogDidiEntity.value=it
+                                     }
                                     )
                                     Spacer(modifier = Modifier.height(10.dp))
                                 }
