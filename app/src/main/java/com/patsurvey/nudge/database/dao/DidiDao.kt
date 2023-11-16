@@ -169,7 +169,7 @@ interface DidiDao {
     fun updateDidiNeedToPostPat(didiId: Int, needsToPostPAT: Boolean)
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostPAT = :needsToPostPAT and transactionId != :transactionId")
-    fun fetchPendingPatStatusDidi(needsToPostPAT: Boolean,transactionId : String?) : List<DidiEntity>
+    fun fetchPendingPatStatusDidi(needsToPostPAT: Boolean, transactionId: String?): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET activeStatus = :activeStatus, needsToPostDeleteStatus = :needsToPostDeleteStatus where id = :id")
     fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean)
@@ -187,10 +187,10 @@ interface DidiDao {
     fun updateDeletedDidiNeedToPostStatus(id: Int, needsToPostDeleteStatus: Boolean)
 
     @Query("UPDATE $DIDI_TABLE SET cohortId = :cohortId WHERE id =:id")
-    fun updateTolaIdForDidi(cohortId:Int,id:Int)
+    fun updateTolaIdForDidi(cohortId: Int, id: Int)
 
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus>2 AND villageId =:villageId AND activeStatus = 1")
-    fun fetchNotAvailableDidis(villageId: Int) : Int
+    fun fetchNotAvailableDidis(villageId: Int): Int
 
     @Query("UPDATE $DIDI_TABLE set needsToPostVo =:needsToPostVo WHERE id=:didiId ")
     fun updateNeedToPostVO(needsToPostVo: Boolean,didiId: Int)

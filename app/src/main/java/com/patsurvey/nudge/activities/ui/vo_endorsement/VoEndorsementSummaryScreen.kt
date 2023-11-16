@@ -149,7 +149,7 @@ fun VoEndorsementSummaryScreen(
                     start.linkTo(parent.start)
                     top.linkTo(parent.top)
                     bottom.linkTo(
-                        if (viewModel.prefRepo.getPref(
+                        if (viewModel.repository.prefRepo.getPref(
                                 PREF_KEY_VO_SUMMARY_OPEN_FROM,
                                 6
                             ) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal
@@ -162,7 +162,7 @@ fun VoEndorsementSummaryScreen(
                     .fillMaxWidth()
                     .padding(top = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally) {
-                    viewModel?.prefRepo?.let {
+                    viewModel?.repository?.prefRepo?.let {
                         VOAndVillageBoxView(
                             prefRepo = it,
                             modifier = Modifier.fillMaxWidth(),
@@ -436,7 +436,7 @@ fun VoEndorsementSummaryScreen(
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.ENDORSED.ordinal)
                         coroutineScope.launch {
 //                            showDialog.value = false
-                            if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
+                            if (viewModel.repository.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM,6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
                                 val nextPageIndex = pagerState.currentPage + 1
                                 if (nextPageIndex < voDidiList.size) {
                                     viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
@@ -464,7 +464,7 @@ fun VoEndorsementSummaryScreen(
                         viewModel.updateVoEndorsementStatus(voDidiList[pagerState.currentPage].id, DidiEndorsementStatus.REJECTED.ordinal)
                         coroutineScope.launch {
 //                            showDialog.value = false
-                            if (viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
+                            if (viewModel.repository.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal) {
                                 val nextPageIndex = pagerState.currentPage + 1
                                 if (nextPageIndex < voDidiList.size) {
                                     viewModel.updateDidiDetailsForBox(voDidiList[nextPageIndex].id)
@@ -500,7 +500,7 @@ fun VoEndorsementSummaryScreen(
             }
         }
 
-        AnimatedVisibility(visible = (prevButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = (prevButtonVisible.value && viewModel.repository.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(prevButtonVisible.value)
@@ -531,7 +531,7 @@ fun VoEndorsementSummaryScreen(
                 },
             )
         }
-        AnimatedVisibility(visible = ( nextButtonVisible.value && viewModel.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
+        AnimatedVisibility(visible = ( nextButtonVisible.value && viewModel.repository.prefRepo.getPref(PREF_KEY_VO_SUMMARY_OPEN_FROM, 6) == PageFrom.VO_ENDORSEMENT_LIST_PAGE.ordinal), modifier = Modifier
             .padding(end = 5.dp)
             .padding(top = 200.dp)
             .visible(nextButtonVisible.value)

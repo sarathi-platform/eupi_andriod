@@ -7,23 +7,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.CasteListDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.NumericAnswerDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
-import com.patsurvey.nudge.database.dao.TolaDao
-import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
-import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ApiType
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -33,7 +23,6 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.SUCCESS
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.WealthRank
-import com.patsurvey.nudge.utils.updateLastSyncTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,16 +35,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProgressScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val apiInterface: ApiService,
-    val stepsListDao: StepsListDao,
-    val villageListDao: VillageListDao,
-    val tolaDao: TolaDao,
-    val didiDao: DidiDao,
-    val casteListDao: CasteListDao,
-    val answerDao: AnswerDao,
-    val numericAnswerDao: NumericAnswerDao,
-    val questionDao: QuestionListDao
+    private val progressScreenRepository: ProgressScreenRepository
 ) : BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -79,7 +59,7 @@ class ProgressScreenViewModel @Inject constructor(
 
     val isVoEndorsementComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
 
-    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+    fun isLoggedIn() = (progressScreenRepository.getAccessToken()?.isNotEmpty() == true)
 
     fun init() {
         showLoader.value = true
@@ -98,8 +78,9 @@ class ProgressScreenViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 villageList.value.forEach { village ->
-                    val stepList = stepsListDao.getAllStepsForVillage(village.id)
-                    isVoEndorsementComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
+                    val stepList = progressScreenRepository.getAllStepsForVillage(village.id)
+                    isVoEndorsementComplete.value[village.id] =
+                        (stepList.sortedBy { it.orderNumber }[4].isComplete == StepStatus.COMPLETED.ordinal)
                 }
             } catch (ex: Exception) {
                 Log.d("TAG", "setVoEndorsementCompleteForVillages: exception -> $ex")
@@ -109,80 +90,103 @@ class ProgressScreenViewModel @Inject constructor(
 
     private fun checkAndUpdateCompletedStepsForVillage() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val villageId = prefRepo.getSelectedVillage().id
+            val villageId = progressScreenRepository.getSelectedVillage().id
             val updatedCompletedStepList = mutableListOf<Int>()
             stepList.value.forEach {
                 if (it.isComplete == StepStatus.COMPLETED.ordinal) {
                     updatedCompletedStepList.add(it.id)
                 }
             }
-            villageListDao.updateLastCompleteStep(villageId, updatedCompletedStepList)
+            progressScreenRepository.updateLastCompleteStep(villageId, updatedCompletedStepList)
         }
     }
 
-     fun getStepsList(villageId:Int) {
+    fun getStepsList(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-            val mDidiList = didiDao.getAllDidisForVillage(villageId)
-            val mTolaList = tolaDao.getAllTolasForVillage(villageId)
+            val stepList = progressScreenRepository.getAllStepsForVillage(villageId)
+            val mDidiList = progressScreenRepository.getAllDidisForVillage(villageId)
+            val mTolaList = progressScreenRepository.getAllTolasForVillage(villageId)
             _tolaList.value = mTolaList
             _didiList.value = mDidiList
-            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
-            if(dbInProgressStep!=null){
-                if(stepList.size>dbInProgressStep.orderNumber) {
-                    stepsListDao.markStepAsInProgress(
+            val dbInProgressStep = progressScreenRepository.fetchLastInProgressStep(
+                villageId,
+                StepStatus.COMPLETED.ordinal
+            )
+            if (dbInProgressStep != null) {
+                if (stepList.size > dbInProgressStep.orderNumber) {
+                    progressScreenRepository.markStepAsInProgress(
                         (dbInProgressStep.orderNumber + 1),
                         StepStatus.INPROGRESS.ordinal,
                         villageId
                     )
                 }
-            }else{
-                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
+            } else {
+                progressScreenRepository.markStepAsInProgress(
+                    1,
+                    StepStatus.INPROGRESS.ordinal,
+                    villageId
+                )
             }
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
-                tolaCount.value=_tolaList.value.filter { it.name != EMPTY_TOLA_NAME }.size
-                didiCount.value=didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                poorDidiCount.value = didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                ultrPoorDidiCount.value = didiList.value.filter { it.forVoEndorsement==1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
-                        && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
-                endorsedDidiCount.value = didiList.value.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
-                        && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                tolaCount.value = _tolaList.value.filter { it.name != EMPTY_TOLA_NAME }.size
+                didiCount.value =
+                    didiList.value.filter { it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                poorDidiCount.value =
+                    didiList.value.filter { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal }.size
+                ultrPoorDidiCount.value = didiList.value.filter {
+                    it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                            && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal
+                }.size
+                endorsedDidiCount.value = didiList.value.filter {
+                    it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal
+                            && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal
+                }.size
             }
         }
     }
 
 
-
-
-
-    fun fetchVillageList(){
-        job=viewModelScope.launch {
-            withContext(Dispatchers.IO){
+    fun fetchVillageList() {
+        job = viewModelScope.launch {
+            withContext(Dispatchers.IO) {
                 var villageList = emptyList<VillageEntity>()
-                val villageCountList= villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                val villageCountList = progressScreenRepository.getAllVillages(
+                    progressScreenRepository.getAppLanguageId() ?: 2
+                )
                 villageList = villageCountList.ifEmpty {
-                    villageListDao.getAllVillages(2)
+                    progressScreenRepository.getAllVillages(2)
                 }
 
-                NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList size: ${villageList.size} ")
+                NudgeLogger.d(
+                    "ProgressScreenViewModel",
+                    "fetchVillageList size: ${villageList.size} "
+                )
 
-                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
+                val tolaDBList =
+                    progressScreenRepository.getAllTolasForVillage(progressScreenRepository.getSelectedVillage().id)
                 _villagList.value = villageList
                 _tolaList.emit(tolaDBList)
-                _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
+                _didiList.emit(
+                    progressScreenRepository.getAllDidisForVillage(
+                        progressScreenRepository.getSelectedVillage().id
+                    )
+                )
                 withContext(Dispatchers.Main) {
-                    NudgeLogger.d("ProgressScreenViewModel", "fetchVillageList VillageList  $villageList Size: ${villageList.size} ")
+                    NudgeLogger.d(
+                        "ProgressScreenViewModel",
+                        "fetchVillageList VillageList  $villageList Size: ${villageList.size} "
+                    )
                     if (villageList.isNotEmpty()) {
                         villageList.mapIndexed { index, villageEntity ->
-                            if (prefRepo.getSelectedVillage().id == villageEntity.id) {
+                            if (progressScreenRepository.getSelectedVillage().id == villageEntity.id) {
                                 villageSelected.value = index
                                 selectedText.value = villageEntity.name
                             }
                         }
 //                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
 //                    selectedText.value = villageList[villageSelected.value].name
-                        getStepsList(prefRepo.getSelectedVillage().id)
+                        getStepsList(progressScreenRepository.getSelectedVillage().id)
                     }
 //                    showLoader.value = false
                 }
@@ -190,8 +194,8 @@ class ProgressScreenViewModel @Inject constructor(
         }
     }
 
-    fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int> {
-        return stepsListDao.isStepCompleteLiveForCrp(stepId,villageId)
+    fun isStepComplete(stepId: Int, villageId: Int): LiveData<Int> {
+        return progressScreenRepository.isStepCompleteLiveForCrp(stepId, villageId)
     }
 
     fun updateSelectedStep(stepId: Int) {
@@ -201,6 +205,7 @@ class ProgressScreenViewModel @Inject constructor(
             5 -> {
                 currentStepIndex
             }
+
             else -> {
                 0
             }
@@ -208,27 +213,42 @@ class ProgressScreenViewModel @Inject constructor(
     }
 
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
-        prefRepo.saveSelectedVillage(selectedVillageEntity)
+        progressScreenRepository.saveSelectedVillage(selectedVillageEntity)
     }
-    fun findInProgressStep(villageId: Int){
-        job= CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
-            if(dbInProgressStep!=null){
-                if(stepList.value.size>dbInProgressStep.orderNumber)
-                    stepsListDao.markStepAsInProgress((dbInProgressStep.orderNumber+1),StepStatus.INPROGRESS.ordinal,villageId)
+
+    fun findInProgressStep(villageId: Int) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val dbInProgressStep = progressScreenRepository.fetchLastInProgressStep(
+                villageId,
+                StepStatus.COMPLETED.ordinal
+            )
+            if (dbInProgressStep != null) {
+                if (stepList.value.size > dbInProgressStep.orderNumber)
+                    progressScreenRepository.markStepAsInProgress(
+                        (dbInProgressStep.orderNumber + 1),
+                        StepStatus.INPROGRESS.ordinal,
+                        villageId
+                    )
 //                stepsListDao.updateNeedToPost(dbInProgressStep.id, true)
-            }else{
-                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
+            } else {
+                progressScreenRepository.markStepAsInProgress(
+                    1,
+                    StepStatus.INPROGRESS.ordinal,
+                    villageId
+                )
             }
         }
     }
 
-     fun callWorkFlowAPI(villageId: Int,stepId: Int,programId:Int){
+    fun callWorkFlowAPI(villageId: Int, stepId: Int, programId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val dbResponse=stepsListDao.getStepForVillage(villageId, stepId)
-                NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}")
-                if(dbResponse.workFlowId==0){
+                val dbResponse = progressScreenRepository.getStepForVillage(villageId, stepId)
+                NudgeLogger.d(
+                    "ProgressScreenViewModel",
+                    "callWorkFlowAPI -> dbResponse: ${dbResponse.toString()}"
+                )
+                if (dbResponse.workFlowId == 0) {
                     val workFlowRequest = listOf(
                         AddWorkFlowRequest(
                             StepStatus.INPROGRESS.name, villageId,
@@ -239,36 +259,54 @@ class ProgressScreenViewModel @Inject constructor(
                         "ProgressScreenViewModel",
                         "callWorkFlowAPI -> workFlowRequest: ${workFlowRequest}"
                     )
-                    val response = apiInterface.addWorkFlow(workFlowRequest)
+                    val response = progressScreenRepository.addWorkFlow(workFlowRequest)
                     NudgeLogger.d(
                         "ProgressScreenViewModel",
                         "callWorkFlowAPI -> response: status: ${response.status}, message: ${response.message}, data: ${response.data.toString()}"
                     )
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId before for stepId: $stepId, workFlowId: ${it[0].id}")
-                            stepsListDao.updateWorkflowId(stepId, it[0].id, villageId, it[0].status)
-                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateWorkflowId after for stepId: $stepId, villageId: $villageId, workFlowId: ${it[0].id}")
-                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost before for stepId: $stepId, villageId: $villageId, needToPost: false")
-                            stepsListDao.updateNeedToPost(stepId, villageId, false)
-                            NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> stepsListDao.updateNeedToPost after for stepId: $stepId, villageId: $villageId, needToPost: false")
+                            NudgeLogger.d(
+                                "ProgressScreenViewModel",
+                                "callWorkFlowAPI -> stepsListDao.updateWorkflowId before for stepId: $stepId, workFlowId: ${it[0].id}"
+                            )
+                            progressScreenRepository.updateWorkflowId(
+                                stepId,
+                                it[0].id,
+                                villageId,
+                                it[0].status
+                            )
+                            NudgeLogger.d(
+                                "ProgressScreenViewModel",
+                                "callWorkFlowAPI -> stepsListDao.updateWorkflowId after for stepId: $stepId, villageId: $villageId, workFlowId: ${it[0].id}"
+                            )
+                            NudgeLogger.d(
+                                "ProgressScreenViewModel",
+                                "callWorkFlowAPI -> stepsListDao.updateNeedToPost before for stepId: $stepId, villageId: $villageId, needToPost: false"
+                            )
+                            progressScreenRepository.updateNeedToPost(stepId, villageId, false)
+                            NudgeLogger.d(
+                                "ProgressScreenViewModel",
+                                "callWorkFlowAPI -> stepsListDao.updateNeedToPost after for stepId: $stepId, villageId: $villageId, needToPost: false"
+                            )
                         }
                     } else {
                         onError(tag = "ProgressScreenViewModel", "Error : ${response.message}")
                     }
                     if (!response.lastSyncTime.isNullOrEmpty()) {
-                        updateLastSyncTime(prefRepo, response.lastSyncTime)
+                        progressScreenRepository.updateLastSyncTime(response.lastSyncTime)
                     }
                 } else {
                     NudgeLogger.d("ProgressScreenViewModel", "callWorkFlowAPI -> workFlowId != 0")
                 }
 
-            }catch (ex:Exception){
+            } catch (ex: Exception) {
                 onCatchError(ex, ApiType.ADD_WORK_FLOW_API)
                 onError(tag = "ProgressScreenViewModel", "Error : ${ex.localizedMessage}")
             }
         }
     }
+
     override fun onServerError(error: ErrorModel?) {
         showLoader.value = false
     }
@@ -276,4 +314,29 @@ class ProgressScreenViewModel @Inject constructor(
     override fun onServerError(errorModel: ErrorModelWithApi?) {
         TODO("Not yet implemented")
     }
+
+    fun isUserBPC(): Boolean {
+        return progressScreenRepository.isUserBPC()
+    }
+
+    fun savePref(key: String, value: String) {
+        progressScreenRepository.savePref(key, value)
+    }
+
+    fun savePref(key: String, value: Boolean) {
+        progressScreenRepository.savePref(key, value)
+    }
+
+    fun saveSettingOpenFrom(openFrom: Int) {
+        progressScreenRepository.saveSettingOpenFrom(openFrom)
+    }
+
+    fun getPref(key: String, defaultValue: String): String? {
+        return progressScreenRepository.getPref(key, defaultValue)
+    }
+
+    fun saveFromPage(pageFrom: String) {
+        progressScreenRepository.saveFromPage(pageFrom)
+    }
+
 }

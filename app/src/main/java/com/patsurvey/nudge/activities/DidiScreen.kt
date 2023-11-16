@@ -51,7 +51,7 @@ fun DidiScreen(
 
     LaunchedEffect(key1 = true) {
         didiViewModel.checkIfTolaIsNotDeleted()
-        didiViewModel.prefRepo.saveStepId(stepId)
+        didiViewModel.saveStepId(stepId)
         didiViewModel.isSocialMappingComplete(stepId)
     }
     val openSummaryPage = remember {
@@ -76,7 +76,7 @@ fun DidiScreen(
             ) {
                 Column(modifier = Modifier) {
                     VOAndVillageBoxView(
-                        prefRepo = didiViewModel.prefRepo,
+                        prefRepo = didiViewModel.addDidiRepository.prefRepo,
                         modifier = Modifier.fillMaxWidth()
                     )
                     Box(modifier = Modifier.fillMaxSize()) {
@@ -111,9 +111,10 @@ fun DidiScreen(
                                 },
                                 modifier = Modifier.padding(top = 32.dp)
                             )
-                            Log.d("arg",didiViewModel.prefRepo.getFromPage())
-                            if (!didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_HOME, true)
-                                && !didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)){
+                            Log.d("arg", didiViewModel.getFromPage())
+                            if (!didiViewModel.getFromPage().equals(ARG_FROM_HOME, true)
+                                && !didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)
+                            ) {
                                 BlueButtonWithDrawableIcon(
                                     buttonText = stringResource(id = R.string.add_didi),
                                     icon = Icons.Default.Add,
@@ -131,17 +132,17 @@ fun DidiScreen(
         }
 
 
-            if (didiViewModel.prefRepo.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
-                if(didiViewModel.isPATSurveyComplete.value){
-                    if(!openSummaryPage.value) {
-                        (context as MainActivity).isBackFromSummary.value=false
-                        onNavigateToSummary()
-                    }
-                     openSummaryPage.value = true
-                }else{
-                    SocialMappingDidiListScreen(
-                        navController,
-                        modifier = modifier,
+        if (didiViewModel.getFromPage().equals(ARG_FROM_PAT_SURVEY, true)) {
+            if (didiViewModel.isPATSurveyComplete.value) {
+                if (!openSummaryPage.value) {
+                    (context as MainActivity).isBackFromSummary.value = false
+                    onNavigateToSummary()
+                }
+                openSummaryPage.value = true
+            } else {
+                SocialMappingDidiListScreen(
+                    navController,
+                    modifier = modifier,
                         didiViewModel = didiViewModel,
                         villageId = villageId,
                         stepId = stepId
