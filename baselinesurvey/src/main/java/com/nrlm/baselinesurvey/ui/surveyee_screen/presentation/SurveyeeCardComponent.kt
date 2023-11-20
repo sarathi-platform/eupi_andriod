@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -12,34 +13,46 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.Surface
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.HUSBAND_STRING
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.database.entity.DidiEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.ui.common_components.CircularImageViewComponent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.brownDark
+import com.nrlm.baselinesurvey.ui.theme.buttonBgColor
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_4_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.greenDark
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
@@ -55,7 +68,9 @@ import com.nrlm.baselinesurvey.utils.SurveyeeCardState
 fun SurveyeeCardComponent(
     modifier: Modifier = Modifier,
     surveyeeState: SurveyeeCardState,
-    buttonClicked: (buttonName: ButtonName) -> Unit
+    showCheckBox: Boolean,
+    checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
+    buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
 
     Card(
@@ -70,121 +85,189 @@ fun SurveyeeCardComponent(
             }
             .then(modifier)
     ) {
-        Column(modifier = Modifier
-            .fillMaxWidth()
-            .background(white)
-            .padding(dimen_10_dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = dimen_4_dp),
-                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                verticalAlignment = Alignment.CenterVertically
+
+        Box {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopEnd)
+                    .zIndex(1f),
+                contentAlignment = Alignment.TopEnd,
             ) {
-                CircularImageViewComponent(modifier = Modifier, surveyeeState.imagePath)
-                Column(
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text(text = surveyeeState.didiDetails.name, style = mediumTextStyle, color = brownDark)
-                    if (surveyeeState.subtitle != BLANK_STRING) {
-                        Text(
-                            text = surveyeeState.subtitle,
-                            style = smallTextStyleMediumWeight,
-                            color = textColorDark80
-                        )
-                    }
-                    if (surveyeeState.address != BLANK_STRING) {
-                        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.home_icn),
-                                contentDescription = "home icon",
-                                tint = Color.Black,
-                                modifier = Modifier.height(dimen_18_dp)
-                            )
-                            Spacer(modifier = Modifier.width(dimen_8_dp))
-                            Text(
-                                text = surveyeeState.address,
-                                style = smallTextStyleMediumWeight,
-                                color = textColorDark
+                if (showCheckBox) {
+                    Surface (
+                        elevation = dimen_4_dp,
+                        shape = RoundedCornerShape(topEnd = dimen_6_dp, bottomStart = dimen_6_dp)
+                    ) {
+                        IconButton(
+                            onClick = {
+                            },
+                            modifier = Modifier
+                                .background(Color.White)
+                        ) {
+                            Image(
+                                painter = painterResource(id = R.drawable.convert_check_box),
+                                contentDescription = ""
                             )
                         }
                     }
+                } else {
+                    Surface (
+                        shape = RoundedCornerShape(topEnd = dimen_6_dp, bottomStart = dimen_6_dp)
+                    ) {
+                        Checkbox(modifier = Modifier,
+                            checked = surveyeeState.isChecked.value,
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = greenDark,
+                                uncheckedColor = textColorDark, checkmarkColor = buttonBgColor
+                            ),
+                            onCheckedChange = {
+                                surveyeeState.isChecked.value = it
+                                checkBoxChecked(surveyeeState.surveyeeDetails, it)
+                            })
+                    }
                 }
-            }
 
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(top = dimen_18_dp),
-                horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(white)
+                    .padding(dimen_10_dp)
             ) {
-                Button(
-                    onClick = { buttonClicked(ButtonName.NEGATIVE_BUTTON) },
-                    enabled = true,
-                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                    border = BorderStroke(1.dp, borderGreyLight),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = languageItemActiveBg,
-                        contentColor = blueDark
-                    ),
-                    modifier = Modifier.weight(1f)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimen_4_dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Not Available", style = smallTextStyleNormalWeight)
+                    CircularImageViewComponent(modifier = Modifier, surveyeeState.imagePath)
+                    Column(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = surveyeeState.surveyeeDetails.didiName,
+                            style = mediumTextStyle,
+                            color = brownDark
+                        )
+                        if (surveyeeState.subtitle != BLANK_STRING) {
+                            Text(
+                                text = surveyeeState.subtitle,
+                                style = smallTextStyleMediumWeight,
+                                color = textColorDark80
+                            )
+                        }
+                        if (surveyeeState.address != BLANK_STRING) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.home_icn),
+                                    contentDescription = "home icon",
+                                    tint = Color.Black,
+                                    modifier = Modifier.height(dimen_18_dp)
+                                )
+                                Spacer(modifier = Modifier.width(dimen_8_dp))
+                                Text(
+                                    text = surveyeeState.address,
+                                    style = smallTextStyleMediumWeight,
+                                    color = textColorDark
+                                )
+                            }
+                        }
+                    }
                 }
-                Button(
-                    onClick = { buttonClicked(ButtonName.START_BUTTON) },
-                    enabled = true,
-                    shape = RoundedCornerShape(roundedCornerRadiusDefault),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = blueDark,
-                        contentColor = white
-                    ),
-                    modifier = Modifier.weight(1f)
-                ) {
-                    Text(text = "Start Baseline", style = smallTextStyleMediumWeight)
-                }
-            }
 
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_18_dp),
+                    horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                ) {
+                    Button(
+                        onClick = {
+                            buttonClicked(
+                                ButtonName.NEGATIVE_BUTTON,
+                                surveyeeState.surveyeeDetails.didiId ?: 0
+                            )
+                        },
+                        enabled = true,
+                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                        border = BorderStroke(1.dp, borderGreyLight),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = languageItemActiveBg,
+                            contentColor = blueDark
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Not Available", style = smallTextStyleNormalWeight)
+                    }
+                    Button(
+                        onClick = {
+                            buttonClicked(
+                                ButtonName.START_BUTTON,
+                                surveyeeState.surveyeeDetails.didiId ?: 0
+                            )
+                        },
+                        enabled = true,
+                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = blueDark,
+                            contentColor = white
+                        ),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text(text = "Start Baseline", style = smallTextStyleMediumWeight)
+                    }
+                }
+
+            }
         }
     }
-
 }
 
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun SurveyeeCardPreview() {
-    val didi = DidiEntity(
+    val didi = SurveyeeEntity(
         id = 0,
-        name = "Shanti Devi",
-        guardianName = "Manoj Parhaiya",
-        address = "A2",
-        castId = 1,
-        castName = "SC",
+        didiId = 1,
+        didiName = "Shanti Devi",
+        dadaName = "Manoj Parhaiya",
+        houseNo = "A2",
+        casteId = 1,
         cohortId = 1,
         cohortName = "Sundar Pahar",
         relationship = HUSBAND_STRING,
         villageId = 1,
-        createdDate = 0,
-        modifiedDate = System.currentTimeMillis(),
-        shgFlag = 0,
-        patSurveyStatus = 2,
-        section1Status = 2,
-        section2Status = 2,
-        ableBodiedFlag = 1
+        villageName = "Sundar Pahar",
+        ableBodied = "No",
+        userId = 525
     )
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .padding(horizontal = 16.dp, vertical = 10.dp)) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp, vertical = 10.dp)
+    ) {
         SurveyeeCardComponent(
             surveyeeState = SurveyeeCardState(
-                didiDetails = didi,
-                subtitle = didi.guardianName,
-                address = didi.address + ", " + didi.cohortName,
+                surveyeeDetails = didi,
+                subtitle = didi.didiName,
+                address = didi.houseNo + ", " + didi.cohortName,
                 surveyState = SurveyState.NOT_STARTED
-            )
-        ) {
+            ),
+            showCheckBox = false,
+            checkBoxChecked = { surveyeeEntity, isChecked ->  
+                
+            }
+        ) { buttonName, surveyeeId ->
 
         }
     }
@@ -192,7 +275,7 @@ fun SurveyeeCardPreview() {
 }
 
 sealed class ButtonName {
-    object START_BUTTON: ButtonName()
-    object NEGATIVE_BUTTON: ButtonName()
-    object SHOW_BUTTON: ButtonName()
+    object START_BUTTON : ButtonName()
+    object NEGATIVE_BUTTON : ButtonName()
+    object SHOW_BUTTON : ButtonName()
 }

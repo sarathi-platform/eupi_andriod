@@ -36,4 +36,23 @@ object DatabaseModule {
     @Singleton
     fun provideDidiDao(db: NudgeBaselineDatabase) = db.didiDao()
 
+    @Provides
+    @Singleton
+    fun provideSurveyEntityDao(db: NudgeBaselineDatabase) = db.surveyEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSectionEntityDao(db: NudgeBaselineDatabase) = db.sectionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideQuestionEntityDao(db: NudgeBaselineDatabase) = db.questionEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideDidiSectionProgressEntityDao(db: NudgeBaselineDatabase) = db.didiSectionProgressEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideSectionAnswerEntityDao(db: NudgeBaselineDatabase) = db.sectionAnswerEntityDao()
 }

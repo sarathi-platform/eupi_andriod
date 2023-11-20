@@ -1,6 +1,6 @@
 package com.nrlm.baselinesurvey.ui.language.presentation
 
-import com.nrlm.baselinesurvey.MainActivity
+import com.nrlm.baselinesurvey.activity.MainActivity
 
 sealed class LanguageSelectionEvent {
     data class ToggleSelectedLanguageId(val id: Int): LanguageSelectionEvent()

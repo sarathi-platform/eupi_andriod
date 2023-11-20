@@ -42,10 +42,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
@@ -60,10 +60,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun RadioQuestionBoxComponent(
     modifier: Modifier = Modifier,
-    index: Int,
+    questionIndex: Int,
     question: QuestionEntity,
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
@@ -108,7 +109,7 @@ fun RadioQuestionBoxComponent(
             Column(modifier = Modifier.background(white)) {
 
                 Column(
-                    Modifier.padding(vertical = dimen_10_dp, horizontal = dimen_16_dp),
+                    Modifier.padding(top = dimen_16_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_18_dp)
                 ) {
                     LazyColumn(
@@ -119,9 +120,9 @@ fun RadioQuestionBoxComponent(
 
                         item {
 
-                            Row(modifier = Modifier.padding(bottom = 10.dp)) {
+                            Row(modifier = Modifier.padding(bottom = 10.dp).padding(horizontal = dimen_16_dp)) {
                                 Text(
-                                    text = "${index + 1}. ", style = defaultTextStyle,
+                                    text = "${questionIndex + 1}. ", style = defaultTextStyle,
                                     color = textColorDark
                                 )
                                 HtmlText(
@@ -141,17 +142,19 @@ fun RadioQuestionBoxComponent(
                                     columns = GridCells.Fixed(2),
                                     modifier = Modifier
                                         .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
                                         .heightIn(min = 110.dp, max = maxCustomHeight)
                                 ) {
                                     itemsIndexed(
                                         question.options ?: emptyList()
-                                    ) { index: Int, optionsItem: OptionsItem ->
+                                    ) { _index: Int, optionsItem: OptionsItem ->
                                         RadioButtonOptionComponent(
-                                            index = index,
+                                            index = _index,
                                             optionsItem = optionsItem,
                                             selectedIndex = selectedIndex
                                         ) {
-
+                                            selectedIndex = _index
+                                            onAnswerSelection(questionIndex, optionsItem)
                                         }
                                     }
                                 }
@@ -174,7 +177,7 @@ fun RadioQuestionBoxComponent(
                                 color = lightGray2,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            InfoComponent(questionDetailExpanded, index, question)
+                            InfoComponent(questionDetailExpanded, questionIndex, question)
                         }
 
                     }
@@ -225,10 +228,13 @@ fun RadioQuestionBoxComponentPreview(
             )
         ),
         questionImageUrl = "Section1_GovtService.webp",
+        surveyId = 1
     )
     Surface {
         BoxWithConstraints(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-            RadioQuestionBoxComponent(index = 0, question = question, maxCustomHeight = maxHeight) {
+            RadioQuestionBoxComponent(questionIndex = 0, question = question, maxCustomHeight = maxHeight, onAnswerSelection = {
+                questionIndex, optionItem ->
+            }) {
 
             }
         }

@@ -31,12 +31,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,8 +44,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
@@ -56,7 +56,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
-import com.nrlm.baselinesurvey.ui.theme.redOffline
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -67,10 +66,10 @@ import kotlinx.coroutines.launch
 fun GridTypeComponent(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
-    index: Int,
-    isAnswerSelected: Boolean = false,
+    questionIndex: Int,
+    selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
-    onAnswerSelection: (Int) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItems: List<OptionsItem>, selectedIndeciesCount: List<Int>) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
@@ -82,6 +81,12 @@ fun GridTypeComponent(
             innerState.firstVisibleItemIndex
         }
     }
+
+    val selectedIndices = remember { mutableStateListOf<Int>() }
+    selectedIndices.addAll(selectedOptionIndices)
+
+    val selectedOptionsItem = remember { mutableListOf<OptionsItem>() }
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -112,7 +117,7 @@ fun GridTypeComponent(
         ) {
             Column(modifier = Modifier.background(white)) {
                 Column(
-                    Modifier.padding(vertical = dimen_16_dp, horizontal = dimen_16_dp),
+                    Modifier.padding(top = dimen_16_dp),
                     verticalArrangement = Arrangement.spacedBy(
                         dimen_18_dp
                     )
@@ -123,7 +128,9 @@ fun GridTypeComponent(
                             .heightIn(min = 110.dp, max = maxCustomHeight)
                     ) {
                         item {
-                            Row {
+                            Row(
+                                modifier = Modifier.padding(horizontal = dimen_16_dp)
+                            ) {
                                 HtmlText(
                                     text = "${question.questionId} .",
                                     style = TextStyle(
@@ -157,17 +164,29 @@ fun GridTypeComponent(
                                     columns = GridCells.Fixed(2),
                                     modifier = Modifier
                                         .wrapContentWidth()
+                                        .padding(horizontal = dimen_16_dp)
                                         .heightIn(min = 110.dp, max = maxCustomHeight)
                                 ) {
                                     itemsIndexed(question.options?.sortedBy { it.optionValue }
-                                        ?: emptyList()) { index, option ->
-                                        OptionCard(
-                                            buttonTitle = option.display ?: BLANK_STRING,
-                                            index = index,
-                                            selectedIndex = index
+                                        ?: emptyList()) { _index, optionItem ->
+                                        GridOptionCard(
+                                            buttonTitle = optionItem.display ?: BLANK_STRING,
+                                            index = _index,
+                                            selectedIndex = selectedIndices
                                         ) {
-                                            if (!isAnswerSelected)
-                                                onAnswerSelection(index)
+                                            if (!selectedIndices.contains(it)) {
+                                                selectedIndices.add(it)
+                                            } else {
+                                                selectedIndices.remove(it)
+                                            }
+
+                                            if (!selectedOptionsItem.contains(optionItem)) {
+                                                selectedOptionsItem.add(optionItem)
+                                            } else {
+                                                selectedOptionsItem.remove(optionItem)
+                                            }
+
+                                            onAnswerSelection(questionIndex, selectedOptionsItem, selectedIndices)
                                         }
                                         Spacer(modifier = Modifier.height(4.dp))
                                     }
@@ -182,7 +201,7 @@ fun GridTypeComponent(
                                     .padding(bottom = 10.dp)
                             )
                             Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
-                            InfoComponent(questionDetailExpanded, index, question)
+                            InfoComponent(questionDetailExpanded, questionIndex, question)
                         }
                     }
 
@@ -194,18 +213,18 @@ fun GridTypeComponent(
 }
 
 @Composable
-private fun OptionCard(
+private fun GridOptionCard(
     modifier: Modifier = Modifier,
     buttonTitle: String,
     index: Int,
-    selectedIndex: Int,
+    selectedIndex: List<Int>,
     onOptionSelected: (Int) -> Unit
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
         .padding(horizontal = dimen_5_dp, vertical = dimen_5_dp)
         .clip(RoundedCornerShape(6.dp))
-        .background(if (selectedIndex == index) blueDark else languageItemActiveBg)
+        .background(if (selectedIndex.contains(index)) blueDark else languageItemActiveBg)
         .clickable {
             onOptionSelected(index)
         }
@@ -221,11 +240,11 @@ private fun OptionCard(
                 HtmlText(
                     text = buttonTitle,
                     style = TextStyle(
-                        color = if (selectedIndex == index) Color.White else redOffline,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,
-                    )
+                    ),
+                    color = if (selectedIndex.contains(index)) white else textColorDark
                 )
             }
         }
@@ -293,16 +312,20 @@ fun GridTypeQuestionPreview() {
             )
         ),
         questionImageUrl = "Section1_ColourTV.webp",
+        surveyId = 1
     )
 
     BoxWithConstraints() {
         GridTypeComponent(
             modifier = Modifier.padding(16.dp),
             question = question,
-            onAnswerSelection = {},
+            onAnswerSelection = { questionIndex, optionsItem, selectedIndeciesCount ->
+
+            },
             questionDetailExpanded = {},
-            index = 1,
-            maxCustomHeight = maxHeight
+            questionIndex = 1,
+            maxCustomHeight = maxHeight,
+            selectedOptionIndices = listOf()
         )
     }
 }
@@ -310,5 +333,8 @@ fun GridTypeQuestionPreview() {
 @Preview(showBackground = true)
 @Composable
 fun GridOptionCardPreview() {
-    OptionCard(modifier = Modifier, "Option", index = 0, onOptionSelected = {}, selectedIndex = 0)
+    /*val selectedIndex = remember {
+        mutableStateOf(mutableListOf<Int>(0))
+    }
+    GridOptionCard(modifier = Modifier, "Option", index = 0, onOptionSelected = {}, selectedIndex = selectedIndex)*/
 }

@@ -1,10 +1,11 @@
-package com.nrlm.baselinesurvey
+package com.nrlm.baselinesurvey.activity
 
 import android.content.Context
 import android.content.res.Resources
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -15,11 +16,13 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
+import com.nrlm.baselinesurvey.activity.viewmodel.MainActivityViewModel
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.ui.theme.The_nudgeTheme
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
 import com.nrlm.baselinesurvey.navigation.navgraph.RootNavigationGraph
+import com.nrlm.baselinesurvey.ui.common_components.NetworkBanner
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -30,6 +33,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     @Inject
     lateinit var sharedPrefs: PrefRepo
+
+    private val mViewModel: MainActivityViewModel by viewModels()
 
     private lateinit var connectionLiveData: ConnectionMonitor
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -43,7 +48,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                 ) {
                     ConstraintLayout() {
                         val (networkBanner, mainContent) = createRefs()
-                        /*if (mViewModel.isLoggedIn.value) {
+                        if (mViewModel.isLoggedIn()) {
                             NetworkBanner(
                                 modifier = Modifier
                                     .constrainAs(networkBanner) {
@@ -52,11 +57,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
                                         end.linkTo(parent.end)
                                         width = Dimension.fillToConstraints
                                     },
-                                isOnline = isOnline.value
+                                isOnline = BaselineCore.isOnline.value
                             )
-                        }*/
+                        }
                         Box(modifier = Modifier.constrainAs(mainContent){
-                            top.linkTo(/*if (mViewModel.isLoggedIn.value) networkBanner.bottom else */parent.top)
+                            top.linkTo(if (mViewModel.isLoggedIn()) networkBanner.bottom else parent.top)
                             start.linkTo(parent.start)
                             bottom.linkTo(parent.bottom)
                             height = Dimension.fillToConstraints

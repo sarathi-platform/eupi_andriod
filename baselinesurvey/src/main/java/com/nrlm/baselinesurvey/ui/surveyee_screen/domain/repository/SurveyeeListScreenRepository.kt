@@ -1,9 +1,12 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
-import com.nrlm.baselinesurvey.database.entity.DidiEntity
+import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import kotlinx.coroutines.flow.Flow
 
 interface SurveyeeListScreenRepository {
 
-    suspend fun getSurveyeeList(): List<DidiEntity>
+    suspend fun getSurveyeeList(): List<SurveyeeEntity>
+
+    suspend fun getSurveyeeListFromNetwork(): Boolean
 
 }

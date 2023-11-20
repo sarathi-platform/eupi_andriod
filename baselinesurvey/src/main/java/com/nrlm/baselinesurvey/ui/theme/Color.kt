@@ -115,3 +115,7 @@ val sectionIconCompletedBg = Color(0xFFD3FFF5)
 val sectionIconNotStartedBg = Color(0xFFF7F7F7)
 val descriptionBoxBackgroundLightBlue = Color(0xFFF8FAFF)
 val lightBlue= Color(0xFFF4F7FF)
+val unselectedTabColor = Color(0xFF7C7C7C)
+
+val inactiveLightBlue = Color(0xFFE2E9FF)
+val inactiveTextBlue = Color(0xFF576488)

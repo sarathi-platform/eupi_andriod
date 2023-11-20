@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.auth.presentation
 
 import android.annotation.SuppressLint
 import android.os.CountDownTimer
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -63,6 +64,7 @@ import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.patsurvey.nudge.navigation.AuthScreen
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import java.text.SimpleDateFormat
 import java.util.Date
 
@@ -108,6 +110,10 @@ fun OtpVerificationScreenComponent(
         viewModel.otpNumber.value= BLANK_STRING
     }
 
+    BackHandler {
+        navController.popBackStack()
+    }
+
     Box(
         modifier = Modifier
             .background(color = Color.White)
@@ -119,11 +125,15 @@ fun OtpVerificationScreenComponent(
             .then(modifier)
 
     ) {
-        SarathiLogoTextViewComponent()
+        Column(
+            verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
 
-        LoaderComponent(
-            visible = loaderState.isLoaderVisible
-        )
+            SarathiLogoTextViewComponent()
+
+            LoaderComponent(visible = loaderState.isLoaderVisible)
+        }
 
         Column(
             modifier = Modifier

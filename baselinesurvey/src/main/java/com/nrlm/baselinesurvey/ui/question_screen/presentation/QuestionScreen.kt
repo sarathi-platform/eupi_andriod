@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
-import android.util.Log
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.rememberScrollableState
@@ -10,8 +11,11 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -29,18 +33,24 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -48,7 +58,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.NO_SECTION
@@ -56,8 +67,8 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.TYPE_GRID
 import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
-import com.nrlm.baselinesurvey.model.datamodel.Sections
+import com.nrlm.baselinesurvey.base.BaseViewModel
+import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
@@ -67,12 +78,21 @@ import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponen
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
+import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
+import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
+import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
+import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
@@ -81,16 +101,17 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import kotlinx.coroutines.CoroutineScope
+import com.nrlm.baselinesurvey.utils.SectionStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun QuestionScreen(
     modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: QuestionScreenViewModel,
+    surveyeeId: Int,
     sectionId: Int
 ) {
 
@@ -100,7 +121,7 @@ fun QuestionScreen(
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.init(sectionId)
+        viewModel.init(sectionId, surveyeeId)
         delay(100)
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
     }
@@ -109,11 +130,83 @@ fun QuestionScreen(
         rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
     val scope = rememberCoroutineScope()
 
-    val listState = rememberLazyListState()
+    val totalQuestionCount = sectionDetails.questionList.size
+    val answeredQuestionCount = remember { mutableIntStateOf(sectionDetails.questionAnswerMapping.size) }
 
-    Surface(color = white) {
+    val curPercentage = animateFloatAsState(
+        targetValue =
+        if (totalQuestionCount != 0)
+            (answeredQuestionCount.value.toFloat() / totalQuestionCount.toFloat()).coerceIn(
+                0F,
+                totalQuestionCount.toFloat()
+            )
+        else
+            0F,
+        label = "",
+        animationSpec = tween()
+    )
 
-        LoaderComponent(visible = loaderState.isLoaderVisible)
+
+    Scaffold(
+        containerColor = white,
+        modifier = Modifier.padding(top = dimen_10_dp),
+        bottomBar = {
+            BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
+                Column {
+                    LinearProgressIndicator(
+                        modifier = Modifier
+                            .height(dimen_6_dp)
+                            .fillMaxWidth()
+                            .clip(
+                                RoundedCornerShape(
+                                    topStart = roundedCornerRadiusDefault,
+                                    topEnd = roundedCornerRadiusDefault
+                                )
+                            )
+                            ,
+                        color = greenOnline,
+                        trackColor = Color.Transparent,
+                        progress = curPercentage.value
+                    )
+                    ExtendedFloatingActionButton(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
+                        containerColor = if (answeredQuestionCount.value == totalQuestionCount) blueDark else inactiveLightBlue,
+                        contentColor = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                        onClick = {
+                            if (answeredQuestionCount.value == totalQuestionCount) {
+                                viewModel.onEvent(
+                                    QuestionScreenEvents.SectionProgressUpdated(
+                                        surveyId = sectionDetails.surveyId,
+                                        sectionId = sectionDetails.sectionId,
+                                        didiId = surveyeeId,
+                                        SectionStatus.COMPLETED
+                                    )
+                                )
+//                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
+                                navController.popBackStack(HomeScreens.SURVEYEE_LIST_SCREEN.route, false)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.save_next_section_button_text),
+                            style = defaultTextStyle,
+                            color = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "save section button",
+                            tint = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
+                            modifier = Modifier.absolutePadding(top = dimen_3_dp)
+                        )
+                    }
+                }
+            }
+        }
+    ) {
+
+        LoaderComponent(visible = loaderState.isLoaderVisible, modifier = Modifier.padding(it))
 
         if (!loaderState.isLoaderVisible) {
 
@@ -123,11 +216,9 @@ fun QuestionScreen(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
                         horizontalAlignment = Alignment.Start,
                         modifier = Modifier
-                        /*.height(((2 * screenHeight) / 3).dp)*/
                     ) {
 
                         Column {
-//                        BaselineLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -188,56 +279,29 @@ fun QuestionScreen(
                 sheetBackgroundColor = Color.White,
                 sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             ) {
-                NestedLazyList(navController = navController, sectionDetails = sectionDetails)
+                NestedLazyList(
+                    navController = navController,
+                    sectionDetails = sectionDetails,
+                    viewModel = viewModel,
+                    surveyeeId = surveyeeId,
+                    sectionInfoButtonClicked = {
+                        scope.launch {
+                            if (!scaffoldState.isVisible) {
+                                scaffoldState.show()
+                            } else {
+                                scaffoldState.hide()
+                            }
+                        }
+                    },
+                    answeredQuestionCountIncreased = { count ->
+                        answeredQuestionCount.value = count
+                    }
+                )
             }
         }
     }
 }
 
-@Composable
-private fun CreateQuestions(
-    question: QuestionEntity?,
-    index: Int,
-    scope: CoroutineScope,
-    listState: LazyListState,
-    maxCustomHeight: Dp
-) {
-    when (question?.type) {
-        TYPE_RADIO_BUTTON -> {
-            RadioQuestionBoxComponent(
-                index = index, question = question,
-                maxCustomHeight = maxCustomHeight
-            ) {
-                scope.launch {
-                    listState.animateScrollToItem(it + 3, -10)
-                }
-            }
-        }
-
-        TYPE_LIST -> {
-            ListTypeQuestion(
-                question = question,
-                onAnswerSelection = {},
-                questionDetailExpanded = {},
-                index = index,
-                maxCustomHeight = maxCustomHeight
-            )
-        }
-
-        TYPE_GRID -> {
-            GridTypeComponent(
-                question = question,
-                index = index,
-                maxCustomHeight = maxCustomHeight,
-                onAnswerSelection = {},
-                questionDetailExpanded = {}
-            )
-        }
-
-        else -> {}
-    }
-
-}
 
 @Composable
 fun NestedLazyList(
@@ -245,10 +309,15 @@ fun NestedLazyList(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     queLazyState: LazyListState = rememberLazyListState(),
+    surveyeeId: Int,
     navController: NavController,
-    sectionDetails: Sections
-
+    viewModel: BaseViewModel,
+    sectionDetails: SectionListItem,
+    sectionInfoButtonClicked: () -> Unit,
+    answeredQuestionCountIncreased: (count: Int) -> Unit,
 ) {
+    val questionScreenViewModel = (viewModel as QuestionScreenViewModel)
+
     val innerQueState: LazyListState = rememberLazyListState()
     val scope = rememberCoroutineScope()
     val innerFirstVisibleItemIndex by remember {
@@ -256,11 +325,27 @@ fun NestedLazyList(
             innerState.firstVisibleItemIndex
         }
     }
+
+    //TODO handle multiple selection of same question
+
+    val answeredQuestionCount = remember {
+        mutableIntStateOf(sectionDetails.questionAnswerMapping.size)
+    }
+
+    val answeredQuestionIndices = remember {
+        mutableStateOf(mutableListOf<Int>())
+    }
+
+    val curPercentage = animateFloatAsState(
+        targetValue = answeredQuestionCount.value.toFloat()/sectionDetails.questionList.size.toFloat(),
+        label = "" ,
+        animationSpec = tween()
+    )
+
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
-        println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
-        println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
 
     BoxWithConstraints(
@@ -271,18 +356,14 @@ fun NestedLazyList(
                         val toDown = it <= 0
                         if (toDown) {
                             if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                Log.i("TAG", "NestedLazyList: down inner")
                                 innerState.scrollBy(-it)
                             } else {
-                                Log.i("TAG", "NestedLazyList: down outer")
                                 outerState.scrollBy(-it)
                             }
                         } else {
                             if (innerFirstVisibleItemIndex == 0 && innerState.firstVisibleItemScrollOffset == 0) {
-                                Log.i("TAG", "NestedLazyList: up outer")
                                 outerState.scrollBy(-it)
                             } else {
-                                Log.i("TAG", "NestedLazyList: up inner")
                                 innerState.scrollBy(-it)
                             }
                         }
@@ -301,7 +382,7 @@ fun NestedLazyList(
         ) {
             item {
                 SearchWithFilterViewComponent(
-                    placeholderString = "Search Question",
+                    placeholderString = stringResource(R.string.search_question_placeholder),
                     showFilter = false,
                     onFilterSelected = {
 
@@ -358,13 +439,7 @@ fun NestedLazyList(
                             null,
                             tint = textColorDark,
                             modifier = Modifier.clickable {
-                                scope.launch {
-//                                                if (!scaffoldState.isVisible) {
-//                                                    scaffoldState.show()
-//                                                } else {
-//                                                    scaffoldState.hide()
-//                                                }
-                                }
+                                sectionInfoButtonClicked()
                             }
                         )
                     },
@@ -384,16 +459,19 @@ fun NestedLazyList(
                             .clip(RoundedCornerShape(14.dp)),
                         color = progressIndicatorColor,
                         trackColor = trackColor,
-                        progress = 0.2f
+                        progress = curPercentage.value
                     )
                     Spacer(modifier = Modifier.width(dimen_8_dp))
                     Text(
-                        text = "2/4",
+                        text = "${answeredQuestionCount.value}/${sectionDetails.questionList.size}",
                         color = textColorDark,
                         style = smallTextStyle
                     )
                 }
             }
+            item { Spacer(modifier = Modifier
+                .fillMaxWidth()
+                .height(dimen_8_dp)) }
             item {
                 LazyColumn(
                     state = innerState,
@@ -402,16 +480,178 @@ fun NestedLazyList(
                         .height(maxHeight), verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
 
                 ) {
+                    item {
+                        Spacer(modifier = Modifier.width(dimen_24_dp))
+                    }
+
                     itemsIndexed(
                         items = sectionDetails.questionList ?: emptyList()
                     ) { index, question ->
 
-                        CreateQuestions(question, index, scope, queLazyState, maxHeight)
+                        when (question?.type) {
+                            TYPE_RADIO_BUTTON -> {
+                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                RadioQuestionBoxComponent(
+                                    questionIndex = index, question = question,
+                                    maxCustomHeight = maxHeight,
+                                    selectedOptionIndex = question.options.indexOf(selectedOption) ?: -1,
+                                    onAnswerSelection = { questionIndex, optionItem ->
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        }
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.SectionProgressUpdated(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                SectionStatus.INPROGRESS
+                                            )
+                                        )
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.RatioTypeQuestionAnswered(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                optionsItem = optionItem,
+                                                questionEntity = question
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    scope.launch {
+                                        queLazyState.animateScrollToItem(it + 3, -10)
+                                    }
+                                }
+                            }
+
+                            TYPE_LIST -> {
+                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]?.first()
+                                ListTypeQuestion(
+                                    question = question,
+                                    selectedOptionIndex = question.options.indexOf(selectedOption) ?: -1,
+                                    onAnswerSelection = { questionIndex, optionItem ->
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                            answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                        }
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.SectionProgressUpdated(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                SectionStatus.INPROGRESS
+                                            )
+                                        )
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.ListTypeQuestionAnswered(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                optionsItem = optionItem,
+                                                questionEntity = question
+                                            )
+                                        )
+
+                                    },
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
+                                    },
+                                    questionIndex = index,
+                                    maxCustomHeight = maxHeight,
+                                )
+                            }
+
+                            TYPE_GRID -> {
+                                val selectedOption = sectionDetails.questionAnswerMapping[question.questionId]
+                                val selectedIndices = mutableListOf<Int>()
+                                selectedOption?.forEach {
+                                    selectedIndices.add(question.options.indexOf(it))
+                                }
+                                GridTypeComponent(
+                                    question = question,
+                                    questionIndex = index,
+                                    selectedOptionIndices = selectedIndices,
+                                    maxCustomHeight = maxHeight,
+                                    onAnswerSelection = { questionIndex, optionItems, selectedIndeciesCount ->
+                                        if (!answeredQuestionIndices.value.contains(questionIndex)) {
+                                            answeredQuestionIndices.value.add(questionIndex)
+                                            if (selectedIndeciesCount.size <= 1) {
+                                                answeredQuestionCount.value = answeredQuestionCount.value.inc().coerceIn(0, sectionDetails.questionList.size)
+                                                answeredQuestionCountIncreased(answeredQuestionCount.value)
+                                            }
+                                        }
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.SectionProgressUpdated(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                sectionStatus = SectionStatus.INPROGRESS
+                                            )
+                                        )
+
+                                        questionScreenViewModel.onEvent(
+                                            QuestionScreenEvents.GridTypeQuestionAnswered(
+                                                surveyId = sectionDetails.surveyId,
+                                                sectionId = sectionDetails.sectionId,
+                                                didiId = surveyeeId,
+                                                questionId = question.questionId ?: 0,
+                                                optionsItems = optionItems,
+                                                questionEntity = question
+                                            )
+                                        )
+                                    },
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
+                                    }
+                                )
+                            }
+
+                            else -> {}
+                        }
+                    }
+                    item {
+                        Spacer(modifier = Modifier
+                            .fillMaxWidth()
+                            .height(dimen_80_dp + dimen_16_dp))
                     }
 
                 }
             }
         }
 
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showSystemUi = true, showBackground = true)
+@Composable
+fun TestPreviewPreview() {
+    Scaffold(Modifier.fillMaxSize(), bottomBar = {
+        BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
+            ExtendedFloatingActionButton(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(roundedCornerRadiusDefault),
+                containerColor = inactiveLightBlue,
+                contentColor = inactiveTextBlue,
+                onClick = {  }
+            ) {
+                Text(text = "Save & Next Section")
+                Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "save section button")
+            }
+        }
+    }) {
+        it
     }
 }

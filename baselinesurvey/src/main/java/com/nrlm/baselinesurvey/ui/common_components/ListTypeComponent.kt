@@ -28,12 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -41,13 +41,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.BLANK_STRING
+import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.model.datamodel.QuestionEntity
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_1_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.languageItemActiveBg
 import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
@@ -61,10 +63,10 @@ import kotlinx.coroutines.launch
 fun ListTypeQuestion(
     modifier: Modifier = Modifier,
     question: QuestionEntity,
-    index: Int,
-    isAnswerSelected: Boolean = false,
+    questionIndex: Int,
+    selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
-    onAnswerSelection: (Int) -> Unit,
+    onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
@@ -76,6 +78,9 @@ fun ListTypeQuestion(
             innerState.firstVisibleItemIndex
         }
     }
+
+    val selectedIndex = remember { mutableStateOf(selectedOptionIndex) }
+
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -106,7 +111,7 @@ fun ListTypeQuestion(
         ) {
             Column(modifier = Modifier.background(white)) {
                 Column(
-                    Modifier.padding(vertical = dimen_10_dp, horizontal = dimen_10_dp),
+                    Modifier.padding(top = dimen_16_dp),
                     verticalArrangement = Arrangement.spacedBy(
                         dimen_10_dp
                     )
@@ -118,9 +123,9 @@ fun ListTypeQuestion(
                     ) {
 
                         item {
-                            Row {
+                            Row(modifier = Modifier.padding(horizontal = dimen_16_dp)) {
                                 HtmlText(
-                                    text = "${question.questionId} .",
+                                    text = "${question.questionId}. ",
                                     style = TextStyle(
                                         fontFamily = NotoSans,
                                         fontWeight = FontWeight.SemiBold,
@@ -140,6 +145,10 @@ fun ListTypeQuestion(
                                 )
                             }
                         }
+                        
+                        item {
+                            Spacer(modifier = Modifier.fillMaxWidth().height(dimen_16_dp))
+                        }
 
                         item {
                             LazyColumn(
@@ -147,6 +156,7 @@ fun ListTypeQuestion(
                                 state = innerState,
                                 modifier = Modifier
                                     .wrapContentWidth()
+                                    .padding(horizontal = dimen_16_dp)
                                     .heightIn(min = 110.dp, max = maxCustomHeight)
                             ) {
                                 itemsIndexed(
@@ -155,12 +165,12 @@ fun ListTypeQuestion(
                                     OptionCard(
                                         buttonTitle = optionsItem.display ?: BLANK_STRING,
                                         index = _index,
-                                        selectedIndex = index
+                                        selectedIndex = selectedIndex.value,
                                     ) {
-                                        if (!isAnswerSelected)
-                                            onAnswerSelection(index)
+                                        selectedIndex.value = questionIndex
+                                        onAnswerSelection(questionIndex, optionsItem)
                                     }
-                                    Spacer(modifier = Modifier.height(4.dp))
+                                    Spacer(modifier = Modifier.height(dimen_8_dp))
                                 }
                             }
 
@@ -176,7 +186,7 @@ fun ListTypeQuestion(
                                 color = lightGray2,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            InfoComponent(questionDetailExpanded, index, question)
+                            InfoComponent(questionDetailExpanded, questionIndex, question)
                         }
 
                     }
@@ -257,17 +267,19 @@ fun ListTypeQuestion(
                 ""
             )
         ),
-        questionImageUrl =
-        "Section1_2wheeler.webp",
+        questionImageUrl = "Section1_2wheeler.webp",
+        surveyId = 1
     )
     BoxWithConstraints() {
 
         ListTypeQuestion(
             modifier = Modifier.padding(10.dp),
             question = question,
-            onAnswerSelection = {},
+            onAnswerSelection = {
+                                questionIndex, optionItem ->
+            },
             questionDetailExpanded = {},
-            index = 1,
+            questionIndex = 1,
             maxCustomHeight = maxHeight
         )
     }
@@ -301,11 +313,11 @@ private fun OptionCard(
                 HtmlText(
                     text = buttonTitle,
                     style = TextStyle(
-                        color = if (selectedIndex == index) Color.White else Color.Black,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp
-                    )
+                    ),
+                    color = if (selectedIndex == index) white else textColorDark
                 )
             }
         }

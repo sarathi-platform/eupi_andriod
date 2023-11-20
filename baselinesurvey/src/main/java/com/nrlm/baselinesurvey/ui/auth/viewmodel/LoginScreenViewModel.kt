@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.viewModelScope
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.response.ApiResponseModel
@@ -37,19 +38,22 @@ class LoginScreenViewModel @Inject constructor(
                 )
             }
             is LoginScreenEvent.GenerateOtpEvent -> {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
                 job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-                    val loginResponse = /*loginScreenUseCase.generateOtpUseCase.invoke(event.mobileNumber.text)*/ ApiResponseModel<String>(status = SUCCESS, "Otp successfully Send", data = "Otp successfully Send")
+                    val loginResponse = loginScreenUseCase.generateOtpUseCase.invoke(event.mobileNumber.text) /*ApiResponseModel<String>(status = SUCCESS, "Otp successfully Send", data = "Otp successfully Send")*/
                     if (loginResponse.status.equals(SUCCESS, true)) {
                         _mobileNumberState.value = _mobileNumberState.value.copy(
                             isMobileNumberValidatedFromServer = true,
                             errorMessage = loginResponse.message
                         )
                         loginScreenUseCase.saveMobileNumberUseCase.invoke(event.mobileNumber.text)
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
                     } else {
                         _mobileNumberState.value = _mobileNumberState.value.copy(
                             isMobileNumberValidatedFromServer = false,
                             errorMessage = loginResponse.message
                         )
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
                     }
                 }
             }
@@ -59,6 +63,13 @@ class LoginScreenViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun resetMobileNumberState() {
+        _mobileNumberState.value = _mobileNumberState.value.copy(
+            isMobileNumberValidatedFromServer = false,
+            errorMessage = BLANK_STRING
+        )
     }
 
 }

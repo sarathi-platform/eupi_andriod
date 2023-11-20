@@ -27,6 +27,7 @@ import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -66,12 +67,17 @@ import kotlinx.coroutines.launch
 fun SectionListScreen(
     navController: NavController,
     viewModel: SectionListScreenViewModel,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    didiId: Int
 ) {
 
-    val sectionsList = viewModel.sectionItemStateList.toList()
-    
     val loaderState = viewModel.loaderState.value
+
+    LaunchedEffect(key1 = true) {
+        viewModel.init(didiId)
+    }
+
+    val sectionsList = viewModel.sectionItemStateList.value
 
     val selectedSectionDescription = remember {
         mutableStateOf<String>(BLANK_STRING)
@@ -94,7 +100,7 @@ fun SectionListScreen(
 
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navController.navigate("question_screen/${sectionsList[0].section.sectionId}")
+                navController.navigate("question_screen/${sectionsList[0].section.sectionId}/$didiId")
             } else {
                 ModalBottomSheetLayout(
                     sheetContent = {
@@ -178,7 +184,7 @@ fun SectionListScreen(
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(horizontal = 20.dp, vertical = 10.dp)
+                                    .padding(vertical = 10.dp)
                                     .background(lightBlue,
                                         shape = RoundedCornerShape(6.dp))
                                     .clickable {
@@ -192,7 +198,8 @@ fun SectionListScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Image(
-                                    modifier = Modifier.padding(10.dp),
+                                    modifier = Modifier.padding(10.dp).clickable {
+                                    },
                                     painter = painterResource(id = R.drawable.ic_ionic_close),
                                     contentDescription = ""
                                 )
@@ -220,7 +227,7 @@ fun SectionListScreen(
 
                         item {
                             Text(
-                                text = "Chose Section",
+                                text = "Choose Section",
                                 style = smallerTextStyle,
                                 color = textColorDark
                             )
@@ -230,7 +237,7 @@ fun SectionListScreen(
                             SectionItemComponent(
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}")
+                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}/$didiId")
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {
