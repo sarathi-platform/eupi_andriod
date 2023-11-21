@@ -13,17 +13,27 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class CheckDBStatus (val viewModel : BaseViewModel){
-    fun isFirstStepNeedToBeSync(tolaDao : TolaDao, onResult:(Int)->Unit) {
+class CheckDBStatus(val viewModel: BaseViewModel) {
+
+    @Inject
+    lateinit var tolaDao: TolaDao
+
+    fun isFirstStepNeedToBeSync(onResult: (Int) -> Unit) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
-            if (tolaDao.fetchTolaNeedToPost(true, "",0).isEmpty()
+            if (tolaDao.fetchTolaNeedToPost(true, "", 0).isEmpty()
                 && tolaDao.fetchPendingTola(true, "").isEmpty()
                 && tolaDao.fetchAllTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal).isEmpty()
-                && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal,"").isEmpty()
-                && tolaDao.fetchAllTolaNeedToUpdate(true,"",0).isEmpty()
-                && tolaDao.fetchAllPendingTolaNeedToUpdate(true,"").isEmpty()) {
-                NudgeLogger.d("CheckDBStatus", "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2")
+                && tolaDao.fetchAllPendingTolaNeedToDelete(TolaStatus.TOLA_DELETED.ordinal, "")
+                    .isEmpty()
+                && tolaDao.fetchAllTolaNeedToUpdate(true, "", 0).isEmpty()
+                && tolaDao.fetchAllPendingTolaNeedToUpdate(true, "").isEmpty()
+            ) {
+                NudgeLogger.d(
+                    "CheckDBStatus",
+                    "isFirstStepNeedToBeSync -> isNeedToBeSync.value = 2"
+                )
                 withContext(Dispatchers.Main) {
                     onResult(2)
                 }

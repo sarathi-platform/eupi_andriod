@@ -29,7 +29,7 @@ interface AnswerDao {
     fun updateAnswer(didiId: Int,optionId:Int ,questionId: Int,actionType:String,optionValue:Int,weight:Int,answerValue:String,type:String,totalAssetAmount:Double,summary:String,assetAmount:String,questionFlag:String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAnswer(Answer: SectionAnswerEntity)
+    fun insertAnswer(answer: SectionAnswerEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(Answers: List<SectionAnswerEntity>)
@@ -68,7 +68,7 @@ interface AnswerDao {
     fun fetchAllDidisForVO(villageId: Int): List<DidiEntity>
 
     @Query("Update $ANSWER_TABLE set needsToPost = :needsToPost where didiId = :didiId AND questionId = :questionId ")
-    fun updateNeedToPost(didiId: Int,questionId: Int,needsToPost:Boolean)
+    fun updateNeedToPost(didiId: Int, questionId: Int, needsToPost: Boolean)
 
     @Query("Select * FROM $ANSWER_TABLE where didiId = :didiId AND actionType = 'INCLUSION'")
     fun getAllInclusiveQues(didiId: Int): List<SectionAnswerEntity>

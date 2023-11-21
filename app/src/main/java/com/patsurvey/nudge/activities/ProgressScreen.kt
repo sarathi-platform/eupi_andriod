@@ -144,7 +144,7 @@ fun ProgressScreen(
                                 statusId = village.statusId,
                                 isVoEndorsementComplete = viewModel.isVoEndorsementComplete.value[village.id] ?: false,
                                 context = context,
-                                isUserBPC = viewModel.prefRepo.isUserBPC()
+                                isUserBPC = viewModel.isUserBPC()
                             ) {
                                 viewModel.showLoader.value = true
                                 viewModel.villageSelected.value = it
@@ -189,8 +189,8 @@ fun ProgressScreen(
                         },
                         actions = {
                             IconButton(onClick = {
-                                viewModel.prefRepo.savePref(PREF_OPEN_FROM_HOME,true)
-                                viewModel.prefRepo.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
+                                viewModel.savePref(PREF_OPEN_FROM_HOME,true)
+                                viewModel.saveSettingOpenFrom(PageFrom.HOME_PAGE.ordinal)
                                 onNavigateToSetting()
                             }) {
                                 Icon(
@@ -259,11 +259,11 @@ fun ProgressScreen(
                         item {
                             UserDataView(
                                 modifier = Modifier,
-                                name = viewModel.prefRepo.getPref(
+                                name = viewModel.getPref(
                                     PREF_KEY_NAME,
                                     BLANK_STRING
                                 ) ?: "",
-                                identity = viewModel.prefRepo.getPref(
+                                identity = viewModel.getPref(
                                     PREF_KEY_IDENTITY_NUMBER,
                                     BLANK_STRING
                                 ) ?: "",
@@ -287,7 +287,7 @@ fun ProgressScreen(
                             Spacer(modifier = Modifier.height(8.dp))
                         }
                         itemsIndexed(items = steps.sortedBy { it.orderNumber }) { index, step ->
-                            if ((viewModel.prefRepo.getPref(PREF_PROGRAM_NAME, "")
+                            if ((viewModel.getPref(PREF_PROGRAM_NAME, "")
                                     ?: "").equals("CRP Program", true) && index < 5
                             ) {
                                 val villageId=villages[viewModel.villageSelected.value].id
@@ -348,7 +348,7 @@ fun ProgressScreen(
                                 ) { index ->
                                     viewModel.stepSelected.value = index
                                     val step=viewModel.stepList.value[index]
-                                    viewModel.prefRepo.saveFromPage(ARG_FROM_PROGRESS)
+                                    viewModel.saveFromPage(ARG_FROM_PROGRESS)
                                     if (mainActivity?.isOnline?.value == true) {
                                        viewModel.callWorkFlowAPI(villageId,step.id,step.programId)
                                     }
@@ -362,7 +362,7 @@ fun ProgressScreen(
                                         2 -> {}
                                         3 -> {
                                             if (isStepCompleted == StepStatus.INPROGRESS.ordinal || isStepCompleted == StepStatus.COMPLETED.ordinal)
-                                                viewModel.prefRepo.saveFromPage(ARG_FROM_PAT_SURVEY)
+                                                viewModel.saveFromPage(ARG_FROM_PAT_SURVEY)
                                         }
                                         4 -> {}
                                         5 -> {}

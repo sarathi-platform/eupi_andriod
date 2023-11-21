@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.bpc.progress_screens
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
+import com.google.gson.Gson
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -44,18 +45,12 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Collections
 import javax.inject.Inject
 
 @HiltViewModel
 class BpcProgressScreenViewModel @Inject constructor(
-    val prefRepo: PrefRepo,
-    val apiService: ApiService,
-    val villageListDao: VillageListDao,
-    val stepsListDao: StepsListDao,
-    val didiDao: DidiDao,
-    val bpcSummaryDao: BpcSummaryDao,
-    val questionListDao: QuestionListDao,
-    val answerDao: AnswerDao
+    val repository: BPCProgressScreenRepository
 ): BaseViewModel() {
 
     private val _stepsList = MutableStateFlow(listOf<StepListEntity>())
@@ -75,14 +70,14 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     val isBpcVerificationComplete = mutableStateOf(mutableMapOf<Int, Boolean>())
 
-    fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)
+    fun isLoggedIn() = (repository.prefRepo.getAccessToken()?.isNotEmpty() == true)
 
     fun init() {
         showLoader.value = true
         appScopeLaunch(Dispatchers.IO) {
             fetchVillageList()
             delay(100)
-            fetchBpcSummaryData(prefRepo.getSelectedVillage().id)
+            fetchBpcSummaryData(repository.prefRepo.getSelectedVillage().id)
             setBpcVerificationCompleteForVillages()
             delay(200)
             withContext(Dispatchers.Main) {
@@ -94,8 +89,9 @@ class BpcProgressScreenViewModel @Inject constructor(
     fun fetchBpcSummaryData(villageId: Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val summary = bpcSummaryDao.getBpcSummaryForVillage(villageId) ?: BpcSummaryEntity(
-                    0, 0, 0, 0, 0, 0, villageId = villageId)
+                val summary = repository.getBpcSummaryForVillage(villageId) ?: BpcSummaryEntity(
+                    0, 0, 0, 0, 0, 0, villageId = villageId
+                )
                 _summaryData.value = summary
             } catch (ex: Exception) {
                 NudgeLogger.e("BpcProgressScreenViewModel", "fetchBpcSummaryData -> catch", ex)
@@ -107,10 +103,9 @@ class BpcProgressScreenViewModel @Inject constructor(
     }
 
     fun fetchVillageList(){
-        val villageId=prefRepo.getSelectedVillage().id
         job=viewModelScope.launch {
             withContext(Dispatchers.IO){
-                val villageList=villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                val villageList=repository.getAllVillages()
 //                val stepList = stepsListDao.getAllStepsForVillage(villageId = villageId)
 //                val tolaDBList=tolaDao.getAllTolasForVillage(prefRepo.getSelectedVillage().id)
                 _villagList.value = villageList
@@ -118,12 +113,12 @@ class BpcProgressScreenViewModel @Inject constructor(
 //                _didiList.emit(didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id))
                 withContext(Dispatchers.Main){
                     villageList.mapIndexed { index, villageEntity ->
-                        if(prefRepo.getSelectedVillage().id==villageEntity.id){
+                        if(repository.prefRepo.getSelectedVillage().id==villageEntity.id){
                             villageSelected.value=index
                         }
                     }
-                    selectedText.value = villageList[villageList.map { it.id }.indexOf(prefRepo.getSelectedVillage().id)].name
-                    getStepsList(prefRepo.getSelectedVillage().id)
+                    selectedText.value = villageList[villageList.map { it.id }.indexOf(repository.prefRepo.getSelectedVillage().id)].name
+                    getStepsList(repository.prefRepo.getSelectedVillage().id)
                 }
             }
         }
@@ -131,19 +126,7 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun getStepsList(villageId:Int) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val stepList = stepsListDao.getAllStepsForVillage(villageId)
-//            val dbInProgressStep=stepsListDao.fetchLastInProgressStep(villageId,StepStatus.COMPLETED.ordinal)
-//            if(dbInProgressStep!=null){
-//                if(stepList.size>dbInProgressStep.orderNumber) {
-//                    stepsListDao.markStepAsInProgress(
-//                        (dbInProgressStep.orderNumber + 1),
-//                        StepStatus.INPROGRESS.ordinal,
-//                        villageId
-//                    )
-//                }
-//            }else{
-//                stepsListDao.markStepAsInProgress(1,StepStatus.INPROGRESS.ordinal,villageId)
-//            }
+            val stepList = repository.getAllStepsForVillage(villageId)
             withContext(Dispatchers.IO) {
                 _stepsList.value = stepList
             }
@@ -151,33 +134,41 @@ class BpcProgressScreenViewModel @Inject constructor(
     }
 
     fun isStepComplete(stepId: Int,villageId: Int): LiveData<Int>? {
-        return stepsListDao.isStepCompleteLiveForBpc(stepId,villageId)
+        return repository.stepsListDao.isStepCompleteLiveForBpc(stepId,villageId)
     }
 
     fun updateSelectedVillage(selectedVillageEntity: VillageEntity) {
-        prefRepo.saveSelectedVillage(selectedVillageEntity)
+        repository.prefRepo.saveSelectedVillage(selectedVillageEntity)
     }
 
     fun callWorkFlowApiToGetWorkFlowId(){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val dbResponse=stepsListDao.getAllStepsForVillage(prefRepo.getSelectedVillage().id)
+                val dbResponse=repository.getAllStepsForVillage(repository.prefRepo.getSelectedVillage().id)
                 val bpcStep = dbResponse.sortedBy { it.orderNumber }.last()
                 if(bpcStep.workFlowId==0){
-                    val response = apiService.addWorkFlow(
+                    val response = repository.addWorkFlow(
                         listOf(
                             AddWorkFlowRequest(
-                                StepStatus.INPROGRESS.name, prefRepo.getSelectedVillage().id,
+                                StepStatus.INPROGRESS.name, repository.prefRepo.getSelectedVillage().id,
                                 bpcStep.programId, bpcStep.id
                             )
                         )
                     )
+                    NudgeLogger.d("BpcProgressScreenViewModel","addWorkFlow Request=> ${
+                        Gson().toJson(listOf(
+                            AddWorkFlowRequest(
+                                StepStatus.INPROGRESS.name, repository.prefRepo.getSelectedVillage().id,
+                                bpcStep.programId, bpcStep.id
+                            )
+                        ))}")
+
                     if (response.status.equals(SUCCESS, true)) {
                         response.data?.let {
-                            stepsListDao.updateWorkflowId(
+                            repository.updateWorkflowId(
                                 bpcStep.id,
                                 it[0].id,
-                                prefRepo.getSelectedVillage().id,
+                                repository.prefRepo.getSelectedVillage().id,
                                 it[0].status
                             )
                         }
@@ -187,7 +178,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                         onError(tag = "BpcProgressScreenViewModel", "Error : ${response.message}")
                     }
                     if (!response.lastSyncTime.isNullOrEmpty()) {
-                        updateLastSyncTime(prefRepo, response.lastSyncTime)
+                        updateLastSyncTime(repository.prefRepo, response.lastSyncTime)
                     }
                 }
             }catch (ex:Exception){
@@ -207,7 +198,7 @@ class BpcProgressScreenViewModel @Inject constructor(
 
     fun getBpcCompletedDidiCount() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
+            val didiList = repository.getAllDidisForVillage()
 //            val passingScore = questionListDao.getPassingScore()
             val verifiedDidiCount = didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }.size/*didiList.filter { (it.score?.toInt() ?: 0) >= passingScore && (it.crpScore?.toInt() ?: 0) >= passingScore }.size*/
             withContext(Dispatchers.Main) {
@@ -221,14 +212,14 @@ class BpcProgressScreenViewModel @Inject constructor(
         var comment = LOW_SCORE
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.IO) {
-                val inclusiveQueList = answerDao.getAllInclusiveQues(didiId = didiId)
+                val inclusiveQueList = repository.getAllInclusiveQues(didiId = didiId)
                 if (inclusiveQueList.isNotEmpty()) {
-                    var totalWightWithoutNumQue = answerDao.getTotalWeightWithoutNumQues(didiId)
+                    var totalWightWithoutNumQue = repository.getTotalWeightWithoutNumQues(didiId)
                     val numQueList =
                         inclusiveQueList.filter { it.type == QuestionType.Numeric_Field.name }
                     if (numQueList.isNotEmpty()) {
                         numQueList.forEach { answer ->
-                            val numQue = questionListDao.getQuestion(answer.questionId)
+                            val numQue = repository.getQuestion(answer.questionId)
                             passingMark = numQue.surveyPassingMark ?: 0
                             if (numQue.questionFlag?.equals(FLAG_WEIGHT, true) == true) {
                                 val weightList = toWeightageRatio(numQue.json.toString())
@@ -255,20 +246,18 @@ class BpcProgressScreenViewModel @Inject constructor(
                     if (totalWightWithoutNumQue >= passingMark) {
                         isDidiAccepted = true
                         comment = BLANK_STRING
-                        didiDao.updateVOEndorsementDidiStatus(
-                            prefRepo.getSelectedVillage().id,
-                            didiId,
-                            1
+                        repository.updateVOEndorsementDidiStatus(
+                            didiId=didiId,
+                            status = 1
                         )
                     } else {
                         isDidiAccepted = false
-                        didiDao.updateVOEndorsementDidiStatus(
-                            prefRepo.getSelectedVillage().id,
-                            didiId,
-                            0
+                        repository.updateVOEndorsementDidiStatus(
+                           didiId =  didiId,
+                            status = 0
                         )
                     }
-                    didiDao.updateDidiScore(
+                    repository.updateDidiScore(
                         score = totalWightWithoutNumQue,
                         comment = comment,
                         didiId = didiId,
@@ -276,7 +265,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                     )
                 }
                 else {
-                    didiDao.updateDidiScore(
+                    repository.updateDidiScore(
                         score = 0.0,
                         comment = TYPE_EXCLUSION,
                         didiId = didiId,
@@ -284,7 +273,7 @@ class BpcProgressScreenViewModel @Inject constructor(
                     )
 
                 }
-                didiDao.updateModifiedDateServerId(System.currentTimeMillis(), didiId)
+                repository.updateModifiedDateServerId(didiId)
             }
         }
     }
@@ -292,7 +281,7 @@ class BpcProgressScreenViewModel @Inject constructor(
     fun setBpcVerificationCompleteForVillages() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             villageList.value.forEach { village ->
-                val stepList = stepsListDao.getAllStepsForVillage(village.id)
+                val stepList = repository.getAllStepsForVillage(village.id)
                 isBpcVerificationComplete.value[village.id] = (stepList.sortedBy { it.orderNumber }.last().isComplete == StepStatus.COMPLETED.ordinal)
             }
         }

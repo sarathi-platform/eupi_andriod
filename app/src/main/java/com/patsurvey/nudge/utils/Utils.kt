@@ -1116,3 +1116,5 @@ fun getFormSubPath(formName: String, pageNumber: Int): String {
 fun getFormPathKey(subPath: String,villageId: Int): String {
     return "${PREF_FORM_PATH}_${villageId}_${subPath}"
 }
+
+inline fun <reified T : Any> T.json(): String = Gson().toJson(this, T::class.java)

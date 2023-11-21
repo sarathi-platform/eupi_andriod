@@ -21,7 +21,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ConfigViewModel @Inject constructor(
-    val configRepository: ConfigRepository,
+    private val configRepository: ConfigRepository,
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {

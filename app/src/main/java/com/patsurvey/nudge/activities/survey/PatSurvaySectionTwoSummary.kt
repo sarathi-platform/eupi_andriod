@@ -82,7 +82,7 @@ fun PatSurvaySectionTwoSummaryScreen(
     }
     BackHandler {
         if(patSectionSummaryViewModel.didiEntity.value.section2Status != PatSurveyStatus.COMPLETED.ordinal) {
-            if (patSectionSummaryViewModel.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal)
+            if (patSectionSummaryViewModel.patSectionRepository.prefRepo.summaryScreenOpenFrom() == PageFrom.SUMMARY_TWO_PAGE.ordinal)
                 navController.navigate("yes_no_question_screen/${didiId}/$TYPE_INCLUSION/0")
             else navController.popBackStack()
         }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
@@ -125,7 +125,7 @@ fun PatSurvaySectionTwoSummaryScreen(
                 patSectionSummaryViewModel.setPATSurveyComplete(didi.value.id,PatSurveyStatus.COMPLETED.ordinal)
                 patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,ExclusionType.NO_EXCLUSION.ordinal,
                     BLANK_STRING)
-                if(patSectionSummaryViewModel.prefRepo.isUserBPC()){
+                if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC()){
 
                     navController.popBackStack(BpcDidiListScreens.BPC_DIDI_LIST.route, inclusive = false)
                 }else navController.popBackStack(PatScreens.PAT_LIST_SCREEN.route, inclusive = false)
@@ -151,7 +151,7 @@ fun PatSurvaySectionTwoSummaryScreen(
             ) {
 
                 VOAndVillageBoxView(
-                    prefRepo = patSectionSummaryViewModel.prefRepo,
+                    prefRepo = patSectionSummaryViewModel.patSectionRepository.prefRepo,
                     modifier = Modifier.fillMaxWidth(),
                     startPadding = 0.dp
                 )
@@ -214,8 +214,8 @@ fun PatSurvaySectionTwoSummaryScreen(
                           isArrowVisible = isArrowVisible(patSectionSummaryViewModel,didi),
                           questionFlag = answer?.questionFlag?: QUESTION_FLAG_WEIGHT)
                       {
-                          patSectionSummaryViewModel.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
-                          if(patSectionSummaryViewModel.prefRepo.isUserBPC())
+                          patSectionSummaryViewModel.patSectionRepository.prefRepo.saveQuestionScreenOpenFrom(PageFrom.SUMMARY_TWO_PAGE.ordinal)
+                          if(patSectionSummaryViewModel.patSectionRepository.prefRepo.isUserBPC())
                               navController.navigate("bpc_single_question_screen/${didiId}/$TYPE_INCLUSION/$index")
                           else navController.navigate("single_question_screen/${didiId}/$TYPE_INCLUSION/$it")
                       }

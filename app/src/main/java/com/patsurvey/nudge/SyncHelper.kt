@@ -5,6 +5,7 @@ import android.content.Context
 import android.text.TextUtils
 import android.util.Log
 import androidx.compose.runtime.MutableState
+import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.patsurvey.nudge.activities.settings.SettingViewModel
@@ -75,6 +76,7 @@ import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.getFileNameFromURL
+import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
@@ -648,6 +650,7 @@ class SyncHelper (
                 }
                 Log.e("tola need to post","$tolaList.size")
                 val response = apiService.addCohort(jsonTola)
+                NudgeLogger.d("SyncHelper","addCohort Request=> ${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -743,6 +746,7 @@ class SyncHelper (
                 }
                 Log.e("tola need to post","$tolaList.size")
                 val response = apiService.editCohort(jsonTola)
+                NudgeLogger.d("SyncHelper","editCohort Request=> ${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -807,6 +811,7 @@ class SyncHelper (
                 NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> tola need to post :${tolaList.size}")
                 NudgeLogger.d("SyncHelper","deleteTolaToNetwork -> jsonTola :${jsonTola}")
                 val response = apiService.deleteCohort(jsonTola)
+                NudgeLogger.d("SyncHelper","deleteCohort Request=>${Gson().toJson(jsonTola)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0]?.transactionId.isNullOrEmpty())) {
@@ -871,6 +876,7 @@ class SyncHelper (
                     jsonDidi.add(AddDidiRequest.getRequestObjectForDidi(didi).toJson())
                 }
                 val response = apiService.addDidis(jsonDidi)
+                NudgeLogger.d("SyncHelper","addDidis Request=>${Gson().toJson(jsonDidi)}")
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
@@ -932,6 +938,7 @@ class SyncHelper (
                 didiList.forEach { didi->
                     didiRequestList.add(EditDidiRequest(didi.serverId,didi.name,didi.address,didi.guardianName,didi.castId,didi.cohortId))
                 }
+                NudgeLogger.d("SyncHelper","updateDidiToNetwork updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -1048,6 +1055,7 @@ class SyncHelper (
                 }
                 Log.e("tola need to post","$didiList.size")
                 val response = apiService.deleteDidi(jsonDidi)
+                NudgeLogger.d("SyncHelper","deleteDidi Request=> ${Gson().toJson(jsonDidi)}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         if((response.data[0].transactionId.isNullOrEmpty())) {
@@ -1109,6 +1117,7 @@ class SyncHelper (
                         }
                         didiWealthRequestList.addAll(didiStepRequestList)
                         val updateWealthRankResponse = apiService.updateDidiRanking(didiWealthRequestList)
+                        NudgeLogger.d("SyncHelper","updateWealthRankingToNetwork updateDidiRanking Request=> ${Gson().toJson(didiWealthRequestList)}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if(!didiListResponse?.get(0)?.transactionId.isNullOrEmpty()){
@@ -1322,6 +1331,10 @@ class SyncHelper (
                 if (answeredDidiList.isNotEmpty()) {
                     withContext(Dispatchers.IO) {
                         val saveAPIResponse = apiService.savePATSurveyToServer(answeredDidiList)
+                        NudgeLogger.d(
+                            "SyncHelper",
+                            "savePATSummeryToServer patSummarySaveRequest Request=>: ${answeredDidiList.json()}"
+                        )
                         if (saveAPIResponse.status.equals(SUCCESS, true)) {
                             if (saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
                                 didiIDList.forEach { didiItem ->
@@ -1381,6 +1394,7 @@ class SyncHelper (
     private fun savePatScoreToServer(scoreDidiList: java.util.ArrayList<EditDidiWealthRankingRequest>) {
         if(scoreDidiList.isNotEmpty()) {
             job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+                NudgeLogger.d("SyncHelper","savePatScoreToServer updateDidiScore Request=> ${scoreDidiList.json()}")
                 apiService.updateDidiScore(scoreDidiList)
             }
         }
@@ -1412,6 +1426,7 @@ class SyncHelper (
                             }
                         }
                         val updateWealthRankResponse=apiService.updateDidiRanking(didiRequestList)
+                        NudgeLogger.d("SyncHelper","updateVoStatusToNetwork updateDidiRanking Request=> ${Gson().toJson(didiRequestList)}")
                         if(updateWealthRankResponse.status.equals(SUCCESS,true)){
                             val didiListResponse = updateWealthRankResponse.data
                             if (didiListResponse?.get(0)?.transactionId != null) {
@@ -1582,7 +1597,7 @@ class SyncHelper (
                     NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
 
                     val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
-
+                    NudgeLogger.d("SyncHelper","addWorkFlow Request=> ${Gson().toJson(Collections.unmodifiableList(addWorkFlowRequest))}")
                     NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
 
                     if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
@@ -1665,7 +1680,7 @@ class SyncHelper (
 
             val responseForStepUpdation =
                 apiService.editWorkFlow(requestForStepUpdation)
-
+            NudgeLogger.d("SyncHelper","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
             NudgeLogger.e(
                 "SyncHelper",
                 "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
