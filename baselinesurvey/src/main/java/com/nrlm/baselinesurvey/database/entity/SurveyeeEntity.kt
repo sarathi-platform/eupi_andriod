@@ -101,6 +101,11 @@ data class SurveyeeEntity(
     @SerializedName("surveyStatus")
     @Expose
     @ColumnInfo(name = "surveyStatus")
-    var surveyStatus: Int = SurveyState.NOT_STARTED.ordinal
+    var surveyStatus: Int = SurveyState.NOT_STARTED.ordinal,
+
+    @SerializedName("movedToThisWeek")
+    @Expose
+    @ColumnInfo(name = "movedToThisWeek")
+    var movedToThisWeek: Boolean = false
 
 )

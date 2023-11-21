@@ -9,4 +9,8 @@ interface SurveyeeListScreenRepository {
 
     suspend fun getSurveyeeListFromNetwork(): Boolean
 
+    suspend fun moveSurveyeesToThisWeek(didiIdList: Set<Int>, moveDidisToNextWeek: Boolean)
+
+    suspend fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
+
 }
