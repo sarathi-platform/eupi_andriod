@@ -2,13 +2,11 @@ package com.nrlm.baselinesurvey.ui.question_screen.viewmodel
 
 import android.util.Log
 import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
-import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.model.response.ContentList
@@ -16,12 +14,10 @@ import com.nrlm.baselinesurvey.ui.question_screen.domain.use_case.QuestionScreen
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.LoaderState
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -40,6 +36,9 @@ class QuestionScreenViewModel @Inject constructor(
     val totalQuestionCount = sectionDetail.value.questionList.size
     val answeredQuestionCount = mutableStateOf(sectionDetail.value.questionAnswerMapping.values.size)
 
+    val showExpandedImage = mutableStateOf(false)
+
+    val expandedImagePath = mutableStateOf("")
 
     fun init(sectionId: Int, surveyeeId: Int) {
         onEvent(LoaderEvent.UpdateLoaderState(true))

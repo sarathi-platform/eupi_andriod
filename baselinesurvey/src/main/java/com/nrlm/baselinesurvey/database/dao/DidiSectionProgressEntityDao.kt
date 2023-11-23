@@ -5,7 +5,6 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.nrlm.baselinesurvey.DIDI_SECTION_PROGRESS_TABLE
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
-import com.nrlm.baselinesurvey.utils.SectionStatus
 
 @Dao
 interface DidiSectionProgressEntityDao {

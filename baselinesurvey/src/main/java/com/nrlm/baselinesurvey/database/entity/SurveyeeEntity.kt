@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SURVEYEE_TABLE
-import com.nrlm.baselinesurvey.utils.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 
 @Entity(tableName = SURVEYEE_TABLE)

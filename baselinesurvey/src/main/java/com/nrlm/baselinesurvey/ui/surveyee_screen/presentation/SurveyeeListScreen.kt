@@ -28,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
+import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
@@ -38,7 +39,7 @@ import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.FilterListState
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -212,7 +213,7 @@ fun SurveyeeListScreen(
 fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: NavController) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navController.navigate("section_screen/$surveyeeId")
+            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {

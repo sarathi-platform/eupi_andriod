@@ -16,6 +16,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.utils.states.MediaState
 import kotlinx.coroutines.delay
 
 @Composable

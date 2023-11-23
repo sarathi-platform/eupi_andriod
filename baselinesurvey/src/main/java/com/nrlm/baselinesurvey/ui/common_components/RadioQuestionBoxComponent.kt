@@ -54,6 +54,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -65,7 +66,8 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
-    questionDetailExpanded: (index: Int) -> Unit
+    questionDetailExpanded: (index: Int) -> Unit,
+    onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit
 ) {
 
     val scope = rememberCoroutineScope()
@@ -120,7 +122,9 @@ fun RadioQuestionBoxComponent(
 
                         item {
 
-                            Row(modifier = Modifier.padding(bottom = 10.dp).padding(horizontal = dimen_16_dp)) {
+                            Row(modifier = Modifier
+                                .padding(bottom = 10.dp)
+                                .padding(horizontal = dimen_16_dp)) {
                                 Text(
                                     text = "${questionIndex + 1}. ", style = defaultTextStyle,
                                     color = textColorDark
@@ -177,19 +181,23 @@ fun RadioQuestionBoxComponent(
                                 color = lightGray2,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            InfoComponent(questionDetailExpanded, questionIndex, question)
+                            ExpandableDescriptionContentComponent(
+                                questionDetailExpanded,
+                                questionIndex,
+                                question,
+                                imageClickListener = { imageTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                },
+                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                }
+                            )
                         }
-
                     }
                 }
             }
-
         }
-
-
     }
-
-
 }
 
 
@@ -232,11 +240,19 @@ fun RadioQuestionBoxComponentPreview(
     )
     Surface {
         BoxWithConstraints(Modifier.padding(horizontal = 16.dp, vertical = 16.dp)) {
-            RadioQuestionBoxComponent(questionIndex = 0, question = question, maxCustomHeight = maxHeight, onAnswerSelection = {
-                questionIndex, optionItem ->
-            }) {
+            RadioQuestionBoxComponent(
+                questionIndex = 0,
+                question = question,
+                maxCustomHeight = maxHeight,
+                onAnswerSelection = { questionIndex, optionItem ->
+                },
+                onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
 
-            }
+                },
+                questionDetailExpanded = {
+
+                }
+            )
         }
     }
 }

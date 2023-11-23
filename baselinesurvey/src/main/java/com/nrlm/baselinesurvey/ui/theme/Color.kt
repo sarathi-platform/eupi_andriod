@@ -125,3 +125,5 @@ val bannerBgGreen = Color(0xFFDDFFF7)
 val bannerTextGreen = Color(0xFF0C7960)
 
 val completeTickColor = Color(0xFF439a86)
+val greyDivider = Color(0xFFDDDDDD)
+val greyTransparentColor = Color(0xc6c5b9)

@@ -8,7 +8,7 @@ import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.splash.domain.use_case.SplashScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.LoaderState
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

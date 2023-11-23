@@ -3,7 +3,6 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
@@ -13,9 +12,9 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
-import com.nrlm.baselinesurvey.utils.LoaderState
-import com.nrlm.baselinesurvey.utils.SurveyState
-import com.nrlm.baselinesurvey.utils.SurveyeeCardState
+import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

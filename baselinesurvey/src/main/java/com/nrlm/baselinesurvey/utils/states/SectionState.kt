@@ -1,8 +1,6 @@
-package com.nrlm.baselinesurvey.utils
+package com.nrlm.baselinesurvey.utils.states
 
-import com.nrlm.baselinesurvey.database.entity.SectionEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.datamodel.Sections
 
 data class SectionState(
     val section: SectionListItem,

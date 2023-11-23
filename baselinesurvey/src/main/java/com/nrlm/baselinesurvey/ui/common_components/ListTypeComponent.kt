@@ -55,6 +55,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -67,6 +68,7 @@ fun ListTypeQuestion(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionItem: OptionsItem) -> Unit,
+    onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
@@ -147,7 +149,9 @@ fun ListTypeQuestion(
                         }
                         
                         item {
-                            Spacer(modifier = Modifier.fillMaxWidth().height(dimen_16_dp))
+                            Spacer(modifier = Modifier
+                                .fillMaxWidth()
+                                .height(dimen_16_dp))
                         }
 
                         item {
@@ -173,8 +177,8 @@ fun ListTypeQuestion(
                                     Spacer(modifier = Modifier.height(dimen_8_dp))
                                 }
                             }
-
                         }
+
                         item {
                             Spacer(
                                 modifier = Modifier
@@ -186,15 +190,22 @@ fun ListTypeQuestion(
                                 color = lightGray2,
                                 modifier = Modifier.fillMaxWidth()
                             )
-                            InfoComponent(questionDetailExpanded, questionIndex, question)
+                            ExpandableDescriptionContentComponent(
+                                questionDetailExpanded,
+                                questionIndex,
+                                question,
+                                imageClickListener = { imageTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                },
+                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                }
+                            )
                         }
-
                     }
-
                 }
             }
         }
-
     }
 }
 
@@ -280,7 +291,10 @@ fun ListTypeQuestion(
             },
             questionDetailExpanded = {},
             questionIndex = 1,
-            maxCustomHeight = maxHeight
+            maxCustomHeight = maxHeight,
+            onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+
+            }
         )
     }
 }
