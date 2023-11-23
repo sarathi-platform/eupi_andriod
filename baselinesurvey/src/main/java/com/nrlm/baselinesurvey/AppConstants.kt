@@ -267,4 +267,5 @@ const val THIS_WEEK_TAB = "This Week"
 const val ALL_TAB = "All"
 
 const val BASE_LINE = "BASE_LINE"
+const val ARG_VIDEO_PATH = "video_path"
 

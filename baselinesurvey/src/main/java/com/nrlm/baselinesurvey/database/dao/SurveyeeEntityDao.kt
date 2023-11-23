@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.database.dao
 import androidx.room.*
 import com.nrlm.baselinesurvey.SURVEYEE_TABLE
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -31,5 +32,13 @@ interface SurveyeeEntityDao {
 
     @Query("Select villageId from $SURVEYEE_TABLE where didiId = :didiId")
     fun getVillageIdForDidi(didiId: Int): Int
+    @Query("UPDATE $SURVEYEE_TABLE SET surveyStatus = :didiSurveyStatus where didiId = :didiId")
+    fun updateDidiSurveyStatus(didiSurveyStatus: Int, didiId: Int)
+
+    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where didiId in (:didiIdList)")
+    fun moveSurveyeesToThisWeek(didiIdList: List<Int>, moveDidisToNextWeek: Boolean)
+
+    @Query("UPDATE $SURVEYEE_TABLE SET movedToThisWeek = :moveDidisToNextWeek where didiId = :didiId")
+    fun moveSurveyeeToThisWeek(didiId: Int, moveDidisToNextWeek: Boolean)
 
 }

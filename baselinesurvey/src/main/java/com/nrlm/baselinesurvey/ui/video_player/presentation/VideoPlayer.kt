@@ -7,7 +7,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -47,28 +46,26 @@ import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import androidx.navigation.NavHostController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.nrlm.baselinesurvey.R
-import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.Media
-import com.nrlm.baselinesurvey.utils.MediaState
+import com.nrlm.baselinesurvey.utils.states.MediaState
 import com.nrlm.baselinesurvey.utils.ShowBuffering
 import com.nrlm.baselinesurvey.utils.SimpleController
 import com.nrlm.baselinesurvey.utils.findActivity
 import com.nrlm.baselinesurvey.utils.rememberManagedPlayer
-import com.nrlm.baselinesurvey.utils.rememberMediaState
+import com.nrlm.baselinesurvey.utils.states.rememberMediaState
 
 
 @Composable
 fun FullscreenView(
-    navController: NavHostController
+    navController: NavHostController,
+    videoPath: String
 ) {
 
 
     val context = LocalContext.current
 
     val mMediaItem = remember { mutableStateOf(MediaItem.EMPTY) }
-    val mediaItem = MediaItem.Builder().setUri("https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4")
-        .setMediaId("5")
+    val mediaItem = MediaItem.Builder().setUri(videoPath)
         .setMediaMetadata(MediaMetadata.Builder().setDisplayTitle("Participatory Wealth Ranking").build()).build()
     mMediaItem.value = mediaItem
 

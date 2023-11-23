@@ -59,6 +59,7 @@ import com.nrlm.baselinesurvey.ui.theme.lightGray2
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.DescriptionContentType
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
@@ -70,6 +71,7 @@ fun GridTypeComponent(
     selectedOptionIndices: List<Int>,
     maxCustomHeight: Dp,
     onAnswerSelection: (questionIndex: Int, optionItems: List<OptionsItem>, selectedIndeciesCount: List<Int>) -> Unit,
+    onMediaTypeDescriptionAction: (descriptionContentType: DescriptionContentType, contentLink: String) -> Unit,
     questionDetailExpanded: (index: Int) -> Unit
 ) {
 
@@ -201,7 +203,17 @@ fun GridTypeComponent(
                                     .padding(bottom = 10.dp)
                             )
                             Divider(thickness = dimen_1_dp, color = lightGray2, modifier = Modifier.fillMaxWidth())
-                            InfoComponent(questionDetailExpanded, questionIndex, question)
+                            ExpandableDescriptionContentComponent(
+                                questionDetailExpanded,
+                                questionIndex,
+                                question,
+                                imageClickListener = { imageTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT, imageTypeDescriptionContent)
+                                },
+                                videoLinkClicked = { videoTypeDescriptionContent ->
+                                    onMediaTypeDescriptionAction(DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT, videoTypeDescriptionContent)
+                                }
+                            )
                         }
                     }
 
@@ -325,7 +337,10 @@ fun GridTypeQuestionPreview() {
             questionDetailExpanded = {},
             questionIndex = 1,
             maxCustomHeight = maxHeight,
-            selectedOptionIndices = listOf()
+            selectedOptionIndices = listOf(),
+            onMediaTypeDescriptionAction = {
+                descriptionContentType, contentLink ->
+            }
         )
     }
 }

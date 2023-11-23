@@ -7,9 +7,9 @@ import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.ui.section_screen.domain.use_case.SectionListScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.LoaderState
-import com.nrlm.baselinesurvey.utils.SectionState
-import com.nrlm.baselinesurvey.utils.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SectionState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.findItemBySectionId
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope

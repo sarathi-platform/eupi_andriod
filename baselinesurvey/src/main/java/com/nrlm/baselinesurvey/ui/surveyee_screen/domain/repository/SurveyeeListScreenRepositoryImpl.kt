@@ -86,4 +86,20 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun moveSurveyeesToThisWeek(
+        didiIdList: Set<Int>,
+        moveDidisToNextWeek: Boolean
+    ) {
+        didiIdList.forEach {
+            surveyeeEntityDao.moveSurveyeesToThisWeek(didiIdList.toList(), moveDidisToNextWeek)
+        }
+    }
+
+    override suspend fun moveSurveyeeToThisWeek(
+        didiId: Int,
+        moveDidisToNextWeek: Boolean
+    ) {
+        surveyeeEntityDao.moveSurveyeeToThisWeek(didiId, moveDidisToNextWeek)
+    }
+
 }

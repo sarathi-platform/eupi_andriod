@@ -9,6 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
+import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.navigation.navgraph.Graph
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreen
@@ -63,20 +65,32 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         }
 
         composable(
-            route = HomeScreens.VIDEO_PLAYER_SCREEN.route,
+            route = HomeScreens.VIDEO_PLAYER_SCREEN.route, arguments = listOf(
+                navArgument(
+                    name = ARG_VIDEO_PATH
+                ) {
+                    type = NavType.StringType
+                }
+            )
         ) {
-            FullscreenView(navController = navController)
+            FullscreenView(navController = navController, videoPath = it.arguments?.getString(ARG_VIDEO_PATH) ?: BLANK_STRING)
         }
 
     }
 }
 
 sealed class HomeScreens(val route: String) {
-    object DATA_LOADING_SCREEN : HomeScreens(route = "data_loading_screen")
-    object SECTION_SCREEN : HomeScreens(route = "section_screen/{$ARG_DIDI_ID}")
-    object QUESTION_SCREEN : HomeScreens(route = "question_screen/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}")
-    object SURVEYEE_LIST_SCREEN : HomeScreens(route = "surveyee_list_screen")
-    object VIDEO_PLAYER_SCREEN : HomeScreens(route = "video_player_screen")
+    object DATA_LOADING_SCREEN : HomeScreens(route = DATA_LOADING_SCREEN_ROUTE_NAME)
+    object SECTION_SCREEN : HomeScreens(route = "$SECTION_SCREEN_ROUTE_NAME/{$ARG_DIDI_ID}")
+    object QUESTION_SCREEN : HomeScreens(route = "$QUESTION_SCREEN_ROUTE_NAME/{$ARG_SECTION_ID}/{$ARG_DIDI_ID}")
+    object SURVEYEE_LIST_SCREEN : HomeScreens(route = SECTION_SCREEN_ROUTE_NAME)
+    object VIDEO_PLAYER_SCREEN : HomeScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{$ARG_VIDEO_PATH}")
 
 }
+
+const val DATA_LOADING_SCREEN_ROUTE_NAME = "data_loading_screen"
+const val SECTION_SCREEN_ROUTE_NAME = "section_screen"
+const val QUESTION_SCREEN_ROUTE_NAME = "question_screen"
+const val SURVEYEE_LIST_SCREEN_ROUTE_NAME = "surveyee_list_screen"
+const val VIDEO_PLAYER_SCREEN_ROUTE_NAME = "video_player_screen"
 

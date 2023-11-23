@@ -27,4 +27,6 @@ interface DataLoadingScreenRepository {
     fun deleteSurveyeeList()
 
     fun saveSurveyeeList(surveyeeEntity: SurveyeeEntity)
+
+    suspend fun fetchSurveyeeListFromLocalDb(): List<SurveyeeEntity>
 }

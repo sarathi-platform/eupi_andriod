@@ -14,15 +14,12 @@ import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.datamodel.Sections
 import com.nrlm.baselinesurvey.model.request.AnswerDetailDTOList
 import com.nrlm.baselinesurvey.model.request.Options
 import com.nrlm.baselinesurvey.model.request.SaveSurveyRequestModel
 import com.nrlm.baselinesurvey.model.request.SectionList
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.utils.SectionStatus
-import com.nrlm.baselinesurvey.utils.findItemBySectionId
-import com.nrlm.baselinesurvey.utils.firstSampleList
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import javax.inject.Inject
 
 class QuestionScreenRepositoryImpl @Inject constructor(
@@ -87,6 +84,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         } else {
             didiSectionProgressEntityDao.updateSectionStatusForDidi(surveyId, sectionId, didiId, sectionStatus.ordinal)
         }
+        surveyeeEntityDao.updateDidiSurveyStatus(sectionStatus.ordinal, didiId)
     }
 
     override fun saveSectionAnswerForDidi(

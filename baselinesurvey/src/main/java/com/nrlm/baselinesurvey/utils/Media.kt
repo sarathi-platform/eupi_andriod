@@ -21,6 +21,8 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.text.CueGroup
+import com.nrlm.baselinesurvey.utils.states.ControllerVisibility
+import com.nrlm.baselinesurvey.utils.states.MediaState
 
 /**
  * The type of surface view used for video playbacks.

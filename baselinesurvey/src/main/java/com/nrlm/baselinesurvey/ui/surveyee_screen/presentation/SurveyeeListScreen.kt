@@ -1,30 +1,10 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
-import androidx.compose.foundation.background
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.Icon
-import androidx.compose.material.pullrefresh.PullRefreshIndicator
-import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
@@ -34,46 +14,32 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.ALL_TAB
-import com.nrlm.baselinesurvey.ARG_DIDI_ID
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.THIS_WEEK_TAB
-import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.home.SECTION_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.PrimarySecandaryButtonBoxPreFilled
-import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
-import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
-import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
+import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListScreenActions.CheckBoxClicked
 import com.nrlm.baselinesurvey.ui.surveyee_screen.viewmodel.SurveyeeScreenViewModel
-import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
-import com.nrlm.baselinesurvey.ui.theme.red
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyleWithNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
-import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.unselectedTabColor
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nrlm.baselinesurvey.utils.BaselineCore
-import com.nrlm.baselinesurvey.utils.FilterListState
+import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.showCustomToast
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -86,18 +52,11 @@ fun SurveyeeListScreen(
 ) {
     val context = LocalContext.current
 
-    val checkedItemsState = remember {
-        mutableStateOf(mutableSetOf<Int>())
-    }
-
     LaunchedEffect(key1 = true) {
         viewModel.init()
     }
 
     val loaderState = viewModel.loaderState.value
-    val surveyeeList = viewModel.filteredSurveyeeListState.value
-
-    val surveyeeListWithTolaFilter = viewModel.tolaMapSurveyeeListState.value
 
     val isFilterAppliedState = remember {
         mutableStateOf(FilterListState())
@@ -121,7 +80,10 @@ fun SurveyeeListScreen(
                     //Handle API/DB Call
                 }
             } else {
-                showCustomToast(context, context.getString(R.string.refresh_failed_please_try_again))
+                showCustomToast(
+                    context,
+                    context.getString(R.string.refresh_failed_please_try_again)
+                )
             }
 
         })
@@ -142,7 +104,9 @@ fun SurveyeeListScreen(
                         onClick = { selectedTabIndex.intValue = tabIndex },
                         text = {
                             Text(
-                                text = if (tab == THIS_WEEK_TAB) stringResource(R.string.this_week_tab_title) else stringResource(R.string.all_tab_title),
+                                text = if (tab == THIS_WEEK_TAB) stringResource(R.string.this_week_tab_title) else stringResource(
+                                    R.string.all_tab_title
+                                ),
                                 style = if (tabIndex == selectedTabIndex.intValue) smallTextStyle else smallTextStyleWithNormalWeight
                             )
                         },
@@ -154,10 +118,10 @@ fun SurveyeeListScreen(
             }
         },
         floatingActionButton = {
-            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible) {
+            if (!isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
                 androidx.compose.material.FloatingActionButton(
                     onClick = {
-                              isSelectionEnabled.value = true
+                        isSelectionEnabled.value = true
                     },
                     backgroundColor = white
                 ) {
@@ -169,14 +133,21 @@ fun SurveyeeListScreen(
             }
         },
         bottomBar = {
-            if (isSelectionEnabled.value && !loaderState.isLoaderVisible) {
+            if (isSelectionEnabled.value && !loaderState.isLoaderVisible && selectedTabIndex.intValue != 0) {
                 PrimarySecandaryButtonBoxPreFilled(
                     modifier = Modifier,
                     primaryButtonText = stringResource(id = R.string.more_item_text),
                     secandaryButtonText = stringResource(id = R.string.cancel_tola_text),
                     secandaryButtonRequired = true,
                     primaryButtonOnClick = {
-
+                        viewModel.onEvent(
+                            SurveyeeListEvents.MoveDidisThisWeek(
+                                viewModel.checkedItemsState.value,
+                                true
+                            )
+                        )
+                        isSelectionEnabled.value = false
+                        viewModel.onEvent(SurveyeeListEvents.CancelAllSelection(isFilterAppliedState.value.isFilterApplied))
                     },
                     secandaryButtonOnClick = {
 //                        isCancelBtnClick.value = true
@@ -190,120 +161,51 @@ fun SurveyeeListScreen(
         containerColor = white
     ) {
 
-        Box {
-            Column(modifier = Modifier
-                .fillMaxSize()
-                .padding(it)
-                .align(Alignment.TopCenter)
-                .pullRefresh(pullRefreshState)
-            ) {
+        when (selectedTabIndex.intValue) {
+            0 -> {
+                ThisWeekSurvyeeListTab(
+                    paddingValues = it,
+                    loaderState = loaderState,
+                    pullRefreshState = pullRefreshState,
+                    viewModel = viewModel,
+                    navController = navController,
+                    onActionEvent = { surveyeeListScreenActions ->
 
-                LoaderComponent(visible = loaderState.isLoaderVisible)
+                    }
+                )
+            }
 
-                if (!loaderState.isLoaderVisible) {
-                    LazyColumn(
-                        verticalArrangement = Arrangement.spacedBy(dimen_8_dp),
-                        modifier = Modifier
-                            .padding(horizontal = dimen_16_dp, vertical = dimen_16_dp)
-                            .background(
-                                white
-                            )
-                    ) {
-                        item {
-                            SearchWithFilterViewComponent(
-                                placeholderString = stringResource(id = R.string.search_didis),
-                                filterSelected = isFilterAppliedState.value.isFilterApplied,
-                                onFilterSelected = {
-                                    if (surveyeeList.isNotEmpty()) {
-                                        isFilterAppliedState.value = isFilterAppliedState.value.copy(
-                                            isFilterApplied = !it
-                                        )
-                                        viewModel.onEvent(SearchEvent.FilterList)
-                                    }
-                                },
-                                onSearchValueChange = { queryTerm ->
-                                    viewModel.onEvent(SearchEvent.PerformSearch(queryTerm, isFilterAppliedState.value.isFilterApplied))
-                                }
-                            )
-                        }
-
-                        item {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                LinearProgressIndicator(
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(dimen_8_dp)
-                                        .padding(top = 1.dp)
-                                        .clip(RoundedCornerShape(14.dp)),
-                                    color = progressIndicatorColor,
-                                    trackColor = trackColor,
-                                    progress = 0.2f
-                                )
-                                Spacer(modifier = Modifier.width(dimen_8_dp))
-                                Text(text = "2/4", color = textColorDark, style = smallTextStyle)
-                            }
-
-                        }
-
-                        if (!isFilterAppliedState.value.isFilterApplied) {
-                            itemsIndexed(items = surveyeeList) { index, item ->
-                                SurveyeeCardComponent(
-                                    surveyeeState = item,
-                                    showCheckBox = !isSelectionEnabled.value,
-                                    checkBoxChecked = { surveyeeEntity, isChecked ->
-                                        if (isChecked)
-                                            checkedItemsState.value.add(surveyeeEntity.didiId ?: -1)
-                                        else
-                                            checkedItemsState.value.remove(surveyeeEntity.didiId)
-                                    }) { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
-                                }
-                            }
-                        } else {
-                            itemsIndexed(items = surveyeeListWithTolaFilter.keys.toList()) { index, key ->
-                                SurveyeeCardWithTolaFilterComponent(
-                                    tolaName = key,
-                                    surveyeeStateList = surveyeeListWithTolaFilter[key]
-                                        ?: emptyList(),
-                                    showCheckBox = isSelectionEnabled.value,
-
-                                    buttonClicked = { buttonName, surveyeeId ->
-                                        handleButtonClick(buttonName, surveyeeId, navController)
-                                    },
-                                    checkBoxChecked = { surveyeeEntity, isChecked ->
-                                        if (isChecked)
-                                            checkedItemsState.value.add(surveyeeEntity.didiId ?: -1)
-                                        else
-                                            checkedItemsState.value.remove(surveyeeEntity.didiId)
-                                    }
-                                )
-                                if (index < surveyeeListWithTolaFilter.keys.size - 1) {
-                                    Divider(
-                                        color = borderGreyLight,
-                                        thickness = 1.dp,
-                                        modifier = Modifier.padding(
-                                            top = 22.dp,
-                                            bottom = 1.dp
-                                        )
+            1 -> {
+                AllSurveyeeListTab(
+                    paddingValues = it,
+                    loaderState = loaderState,
+                    pullRefreshState = pullRefreshState,
+                    viewModel = viewModel,
+                    isSelectionEnabled = isSelectionEnabled,
+                    navController = navController,
+                    onActionEvent = { surveyeeListScreenActions ->
+                        when (surveyeeListScreenActions) {
+                            is CheckBoxClicked -> {
+                                if (surveyeeListScreenActions.isChecked) {
+                                    viewModel.checkedItemsState.value.add(
+                                        surveyeeListScreenActions.surveyeeEntity.didiId ?: -1
+                                    )
+                                } else {
+                                    viewModel.checkedItemsState.value.remove(
+                                        surveyeeListScreenActions.surveyeeEntity.didiId
                                     )
                                 }
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier
-                                .fillMaxWidth()
-                                .height(dimen_10_dp))
+
+                            is SurveyeeListScreenActions.IsFilterApplied -> {
+                                isFilterAppliedState.value = isFilterAppliedState.value.copy(
+                                    isFilterApplied = surveyeeListScreenActions.isFilterAppliedState.isFilterApplied
+                                )
+                            }
                         }
                     }
-                }
+                )
             }
-
-            PullRefreshIndicator(
-                refreshing = loaderState.isLoaderVisible,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter),
-                contentColor = blueDark,
-            )
         }
     }
 }
@@ -311,7 +213,7 @@ fun SurveyeeListScreen(
 fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: NavController) {
     when (buttonName) {
         is ButtonName.START_BUTTON -> {
-            navController.navigate("section_screen/$surveyeeId")
+            navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$surveyeeId")
         }
 
         is ButtonName.NEGATIVE_BUTTON -> {
@@ -319,6 +221,10 @@ fun handleButtonClick(buttonName: ButtonName, surveyeeId: Int, navController: Na
         }
 
         is ButtonName.SHOW_BUTTON -> {
+
+        }
+
+        is ButtonName.EXPORT_BUTTON -> {
 
         }
     }

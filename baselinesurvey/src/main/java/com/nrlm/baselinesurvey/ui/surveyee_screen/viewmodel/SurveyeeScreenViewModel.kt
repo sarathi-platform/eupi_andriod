@@ -4,6 +4,7 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.NO_TOLA_TITLE
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -11,13 +12,12 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.SearchEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.SurveyeeListEvents
-import com.nrlm.baselinesurvey.utils.LoaderState
-import com.nrlm.baselinesurvey.utils.SurveyState
-import com.nrlm.baselinesurvey.utils.SurveyeeCardState
+import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -25,7 +25,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SurveyeeScreenViewModel @Inject constructor(
     private val surveyeeScreenUseCase: SurveyeeScreenUseCase
-): BaseViewModel() {
+) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
@@ -33,119 +33,209 @@ class SurveyeeScreenViewModel @Inject constructor(
     private val _surveyeeListState = mutableStateOf(mutableListOf<SurveyeeCardState>())
     val surveyeeListState: State<List<SurveyeeCardState>> get() = _surveyeeListState
 
+    private val _thisWeekSurveyeeListState = mutableStateOf(mutableListOf<SurveyeeCardState>())
+    val thisWeekSurveyeeListState: State<List<SurveyeeCardState>> get() = _thisWeekSurveyeeListState
+
     private var _filteredSurveyeeListState = mutableStateOf(mutableListOf<SurveyeeCardState>())
     val filteredSurveyeeListState: State<List<SurveyeeCardState>> get() = _filteredSurveyeeListState
+
+    private val _thisWeekFilteredSurveyeeListState =
+        mutableStateOf(mutableListOf<SurveyeeCardState>())
+    val thisWeekFilteredSurveyeeListState: State<List<SurveyeeCardState>> get() = _thisWeekFilteredSurveyeeListState
 
     var tolaMapList by mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
 
     private var _tolaMapSurveyeeListState = mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
     val tolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _tolaMapSurveyeeListState
 
+    private var _thisWeekTolaMapSurveyeeListState =
+        mutableStateOf(mapOf<String, List<SurveyeeCardState>>())
+
+    val thisWeekTolaMapSurveyeeListState: State<Map<String, List<SurveyeeCardState>>> get() = _thisWeekTolaMapSurveyeeListState
+
+    val checkedItemsState = mutableStateOf(mutableSetOf<Int>())
+
+    val showMoveDidisBanner = mutableStateOf(false)
 
     fun init() {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-//            val success = surveyeeScreenUseCase.getSurveyeeListUseCase.getSurveyeeListFromNetwork()
-//            if (success) {
-                if (_surveyeeListState.value.isEmpty()) {
-                    surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
-                        .forEach { surveyeeEntity ->
-                            val surveyeeState = SurveyeeCardState(
-                                surveyeeDetails = surveyeeEntity,
-                                imagePath = surveyeeEntity.crpImageName,
-                                subtitle = surveyeeEntity.dadaName,
-                                address = getSurveyeeAddress(surveyeeEntity),
-                                surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
-                            )
-                            _surveyeeListState.value.add(surveyeeState)
-                        }
+            if (_surveyeeListState.value.isEmpty()) {
+                val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+                surveyeeListFromDb.forEach { surveyeeEntity ->
+                    val surveyeeState = SurveyeeCardState(
+                        surveyeeDetails = surveyeeEntity,
+                        imagePath = surveyeeEntity.crpImageName,
+                        subtitle = surveyeeEntity.dadaName,
+                        address = getSurveyeeAddress(surveyeeEntity),
+                        surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                    )
+                    _surveyeeListState.value.add(surveyeeState)
                 }
                 _filteredSurveyeeListState.value = _surveyeeListState.value
-                withContext(Dispatchers.Main) {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
+
+                surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
+                    val surveyeeState = SurveyeeCardState(
+                        surveyeeDetails = surveyeeEntity,
+                        imagePath = surveyeeEntity.crpImageName,
+                        subtitle = surveyeeEntity.dadaName,
+                        address = getSurveyeeAddress(surveyeeEntity),
+                        surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                    )
+                    _thisWeekSurveyeeListState.value.add(surveyeeState)
                 }
-//            } else {
-//                withContext(Dispatchers.Main) {
-//                    onEvent(LoaderEvent.UpdateLoaderState(false))
-//                }
-//            }
+            }
+            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
+
+            withContext(Dispatchers.Main) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
+    }
+
+    fun getThisWeekSurveyeeList() {
+        CoroutineScope(Dispatchers.IO).launch {
+            val surveyeeListFromDb = surveyeeScreenUseCase.getSurveyeeListUseCase.invoke()
+            surveyeeListFromDb.filter { it.movedToThisWeek }.forEach { surveyeeEntity ->
+                val surveyeeState = SurveyeeCardState(
+                    surveyeeDetails = surveyeeEntity,
+                    imagePath = surveyeeEntity.crpImageName,
+                    subtitle = surveyeeEntity.dadaName,
+                    address = getSurveyeeAddress(surveyeeEntity),
+                    surveyState = SurveyState.getStatusFromOrdinal(surveyeeEntity.surveyStatus)
+                )
+                if (!_thisWeekSurveyeeListState.value.map { it.surveyeeDetails.didiId }.contains(surveyeeEntity.didiId))
+                    _thisWeekSurveyeeListState.value.add(surveyeeState)
+            }
+            _thisWeekFilteredSurveyeeListState.value = _thisWeekSurveyeeListState.value
+        }
+
     }
 
 
     override fun <T> onEvent(event: T) {
-       when (event) {
-           is LoaderEvent.UpdateLoaderState -> {
-               _loaderState.value = _loaderState.value.copy(
-                   isLoaderVisible = event.showLoader
-               )
-           }
-           is SearchEvent.PerformSearch -> {
-               performSearchQuery(event.searchTerm, event.isFilterApplied)
-           }
-           is SearchEvent.FilterList -> {
-               filterList()
-           }
-           is SurveyeeListEvents.CancelAllSelection -> {
-               if (!event.isFilterApplied) {
-                   _filteredSurveyeeListState.value = _filteredSurveyeeListState.value.also {
-                       it.forEach { surveyeeCardState ->
-                           surveyeeCardState.isChecked = mutableStateOf(false)
-                       }
-                   }
-               }
-           }
-       }
-    }
-
-    override fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean) {
-        if (!isFilterApplied) {
-            _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
-                val filteredList = ArrayList<SurveyeeCardState>()
-                surveyeeListState.value.forEach { surveyeeCardState ->
-                    if (surveyeeCardState.surveyeeDetails.didiName.lowercase().contains(queryTerm.lowercase())) {
-                        filteredList.add(surveyeeCardState)
-                    }
-                }
-                filteredList
-            } else {
-                _surveyeeListState.value
+        when (event) {
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
             }
-        } else {
-            if (queryTerm.isNotEmpty()) {
-                val mFilterMap = mutableMapOf<String, MutableList<SurveyeeCardState>>()
-                tolaMapList.keys.forEach {  key ->
-                    val mSurveyeeCardState = ArrayList<SurveyeeCardState>()
-                    tolaMapList[key]?.forEach { surveyeeCardState ->
-                        if (surveyeeCardState.surveyeeDetails.didiName.lowercase().contains(queryTerm.lowercase())) {
-                            mSurveyeeCardState.add(surveyeeCardState)
+
+            is SearchEvent.PerformSearch -> {
+                performSearchQuery(event.searchTerm, event.isFilterApplied, event.fromScreen)
+            }
+
+            is SearchEvent.FilterList -> {
+                filterList(event.fromScreen)
+            }
+
+            is SurveyeeListEvents.CancelAllSelection -> {
+                if (!event.isFilterApplied) {
+                    _filteredSurveyeeListState.value = _filteredSurveyeeListState.value.also {
+                        it.forEach { surveyeeCardState ->
+                            surveyeeCardState.isChecked = mutableStateOf(false)
                         }
                     }
-                    if (mSurveyeeCardState.isNotEmpty())
-                        mFilterMap[key] = mSurveyeeCardState
                 }
-                _tolaMapSurveyeeListState.value = mFilterMap
-            } else {
-                _surveyeeListState.value
+            }
+
+            is SurveyeeListEvents.MoveDidisThisWeek -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (event.didiIdList.isNotEmpty()) {
+                        surveyeeScreenUseCase.moveSurveyeeToThisWeek.moveSurveyeesToThisWeek(
+                            event.didiIdList,
+                            event.moveDidisToNextWeek
+                        )
+                        showMoveDidisBanner.value = true
+                        getThisWeekSurveyeeList()
+                    }
+                }
+            }
+            is SurveyeeListEvents.MoveDidiToThisWeek -> {
+                CoroutineScope(Dispatchers.IO).launch {
+                    if (event.didiId != -1) {
+                        surveyeeScreenUseCase.moveSurveyeeToThisWeek.moveSurveyeeToThisWeek(
+                            event.didiId,
+                            event.moveDidisToNextWeek
+                        )
+                        getThisWeekSurveyeeList()
+                    }
+                }
             }
         }
     }
 
-    override fun filterList() {
-        val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
-        surveyeeListState.value.forEachIndexed { index, surveyeeCardState ->
-            if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
-                map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+    override fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {
+        if (fromScreen == ALL_TAB) {
+            if (!isFilterApplied) {
+                _filteredSurveyeeListState.value = if (queryTerm.isNotEmpty()) {
+                    val filteredList = ArrayList<SurveyeeCardState>()
+                    surveyeeListState.value.forEach { surveyeeCardState ->
+                        if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                .contains(queryTerm.lowercase())
+                        ) {
+                            filteredList.add(surveyeeCardState)
+                        }
+                    }
+                    filteredList
+                } else {
+                    _surveyeeListState.value
+                }
             } else {
-                map[surveyeeCardState.surveyeeDetails.cohortName] = mutableListOf(surveyeeCardState)
+                if (queryTerm.isNotEmpty()) {
+                    val mFilterMap = mutableMapOf<String, MutableList<SurveyeeCardState>>()
+                    tolaMapList.keys.forEach { key ->
+                        val mSurveyeeCardState = ArrayList<SurveyeeCardState>()
+                        tolaMapList[key]?.forEach { surveyeeCardState ->
+                            if (surveyeeCardState.surveyeeDetails.didiName.lowercase()
+                                    .contains(queryTerm.lowercase())
+                            ) {
+                                mSurveyeeCardState.add(surveyeeCardState)
+                            }
+                        }
+                        if (mSurveyeeCardState.isNotEmpty())
+                            mFilterMap[key] = mSurveyeeCardState
+                    }
+                    _tolaMapSurveyeeListState.value = mFilterMap
+                } else {
+                    _surveyeeListState.value
+                }
             }
+        } else {
+
         }
-        tolaMapList = map
-        _tolaMapSurveyeeListState.value = map
+
+    }
+
+    override fun filterList(fromScreen: String) {
+        if (fromScreen == ALL_TAB) {
+            val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
+            surveyeeListState.value.forEachIndexed { index, surveyeeCardState ->
+                if (map.contains(surveyeeCardState.surveyeeDetails.cohortName)) {
+                    map[surveyeeCardState.surveyeeDetails.cohortName]?.add(surveyeeCardState)
+                } else {
+                    map[surveyeeCardState.surveyeeDetails.cohortName] =
+                        mutableListOf(surveyeeCardState)
+                }
+            }
+            tolaMapList = map
+            _tolaMapSurveyeeListState.value = map
+        } else {
+            val map = mutableMapOf<String, MutableList<SurveyeeCardState>>()
+            thisWeekSurveyeeListState.value.forEachIndexed { index, thisWeekSurveyeeCardState ->
+                if (map.contains(thisWeekSurveyeeCardState.surveyeeDetails.cohortName)) {
+                    map[thisWeekSurveyeeCardState.surveyeeDetails.cohortName]?.add(thisWeekSurveyeeCardState)
+                } else {
+                    map[thisWeekSurveyeeCardState.surveyeeDetails.cohortName] = mutableListOf(thisWeekSurveyeeCardState)
+                }
+            }
+            tolaMapList = map
+            _thisWeekTolaMapSurveyeeListState.value = map
+        }
     }
 
 
-    fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
+    private fun getSurveyeeAddress(surveyeeEntity: SurveyeeEntity): String {
         return if (surveyeeEntity.cohortName.equals(NO_TOLA_TITLE, true))
             surveyeeEntity.houseNo + "," + surveyeeEntity.cohortName
         else

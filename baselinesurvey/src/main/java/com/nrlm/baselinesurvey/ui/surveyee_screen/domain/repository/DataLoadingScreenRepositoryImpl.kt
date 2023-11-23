@@ -121,5 +121,9 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         surveyeeEntityDao.insertDidi(surveyeeEntity)
     }
 
+    override suspend fun fetchSurveyeeListFromLocalDb(): List<SurveyeeEntity> {
+        return surveyeeEntityDao.getAllDidis()
+    }
+
 
 }
