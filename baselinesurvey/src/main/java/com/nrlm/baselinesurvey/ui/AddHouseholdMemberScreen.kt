@@ -8,12 +8,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
@@ -38,18 +38,19 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
+import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
 @Composable
-fun AddIncomScreen(navController: NavHostController) {
+fun AddHouseholdMemberScreen(navController: NavHostController) {
     val focusManager = LocalFocusManager.current
     Scaffold(
         topBar = {
-            TopAppBar(
+            androidx.compose.material.TopAppBar(
                 title = {
-                    Text(
-                        text = "Add Income Source",
+                    androidx.compose.material.Text(
+                        text = "Add Household Member",
                         color = textColorDark,
                         modifier = Modifier.fillMaxWidth(),
                         textAlign = TextAlign.Start,
@@ -90,26 +91,29 @@ fun AddIncomScreen(navController: NavHostController) {
             Column(
                 modifier = Modifier
                     .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
-                    .padding(top = it.calculateTopPadding() + 20.dp)
-                    .constrainAs(mainBox) {
-                        start.linkTo(parent.start)
-                        top.linkTo(parent.top)
-                    },
+                    .padding(top = it.calculateTopPadding() + 20.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                DropDownView()
-                EditTextWithTitleComponent(title = "Quantity (in Kg)")
-                EditTextWithTitleComponent(title = "Price per Kg")
-                EditTextWithTitleComponent(title = "Total expenses")
+                EditTextWithTitleComponent(title = "Name")
+                RationDropDown()
+                EditTextWithTitleComponent(title = "Age")
+                EducationDropDown()
+                SwitchComponent()
+                SwitchComponent()
+                SwitchComponent()
+                SwitchComponent()
             }
-
         }
+
+
     }
+
 }
 
 @Composable
-fun DropDownView() {
+fun RationDropDown() {
     val screens = listOf(
         "Setting",
         "Question",
@@ -124,7 +128,42 @@ fun DropDownView() {
     var selectedOptionText by remember { mutableStateOf(screens[0]) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
     DropDownWithTitleComponent(
-        title = "Source",
+        title = "Relation",
+        items = screens,
+        modifier = Modifier.fillMaxWidth(),
+        mTextFieldSize = textFieldSize,
+        expanded = expanded,
+        selectedItem = selectedOptionText,
+        onExpandedChange = {
+            expanded = !it
+        },
+        onDismissRequest = {
+            expanded = false
+        },
+        onGlobalPositioned = { coordinates ->
+            textFieldSize = coordinates.size.toSize()
+        },
+        onItemSelected = {},
+    )
+}
+
+@Composable
+fun EducationDropDown() {
+    val screens = listOf(
+        "Setting",
+        "Question",
+        "SingleQuestion",
+        "DigitalFormA",
+        "DigitalFormB",
+        "DigitalFormC",
+        "Login",
+        "Other"
+    )
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOptionText by remember { mutableStateOf(screens[0]) }
+    var textFieldSize by remember { mutableStateOf(Size.Zero) }
+    DropDownWithTitleComponent(
+        title = "Highest education",
         items = screens,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
@@ -145,7 +184,7 @@ fun DropDownView() {
 
 @Preview(showBackground = true)
 @Composable
-private fun AddIncomPreview() {
-    MaterialTheme { AddIncomScreen(rememberNavController()) }
+private fun AddHouseholdMemberScreenPreview() {
+    MaterialTheme { AddHouseholdMemberScreen(rememberNavController()) }
 
 }

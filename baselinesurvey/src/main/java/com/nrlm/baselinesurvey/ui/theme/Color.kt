@@ -119,3 +119,4 @@ val unselectedTabColor = Color(0xFF7C7C7C)
 
 val inactiveLightBlue = Color(0xFFE2E9FF)
 val inactiveTextBlue = Color(0xFF576488)
+val switchColor = Color(0xFFD5D8E2)

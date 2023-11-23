@@ -85,7 +85,7 @@ fun <T : Any> DropDownWithTitleComponent(
                 withStyle(
                     style = SpanStyle(
                         color = textColorDark,
-                        fontSize = 14.sp,
+                        fontSize = 20.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = NotoSans
                     )
