@@ -100,10 +100,10 @@ fun AddHouseholdMemberScreen(navController: NavHostController) {
                 RationDropDown()
                 EditTextWithTitleComponent(title = "Age")
                 EducationDropDown()
-                SwitchComponent()
-                SwitchComponent()
-                SwitchComponent()
-                SwitchComponent()
+                SwitchComponent("Married")
+                SwitchComponent("Disabled")
+                SwitchComponent("Working")
+                SwitchComponent("Pension")
             }
         }
 

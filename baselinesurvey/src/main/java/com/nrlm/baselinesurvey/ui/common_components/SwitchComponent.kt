@@ -3,9 +3,14 @@ package com.nrlm.baselinesurvey.ui.common_components
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Switch
-import androidx.compose.material.SwitchDefaults
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +27,10 @@ import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.switchColor
 import com.nrlm.baselinesurvey.ui.theme.white
 
-@Preview(showBackground = true)
 @Composable
-fun SwitchComponent() {
+fun SwitchComponent(title: String) {
     var checked by remember { mutableStateOf(true) }
+    val icon = if (checked) Icons.Filled.Check else Icons.Filled.Close
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -33,13 +38,12 @@ fun SwitchComponent() {
         ) {
         Text(
             modifier = Modifier.weight(0.7F),
-            text = "Married",
+            text = title,
             textAlign = TextAlign.Start,
             style = largeTextStyle,
             color = black100Percent
         )
-        Switch(
-            checked = checked,
+        Switch(checked = checked,
             onCheckedChange = { checked = it },
             modifier = Modifier
                 .padding(10.dp)
@@ -48,8 +52,14 @@ fun SwitchComponent() {
                 checkedThumbColor = white,
                 checkedTrackColor = if (checked) greenOnline else switchColor,
                 uncheckedThumbColor = white
-            )
-        )
+            ),
+            thumbContent = {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                )
+            })
         Text(
             text = if (checked) "Yes" else "No",
             textAlign = TextAlign.Center,
@@ -58,6 +68,10 @@ fun SwitchComponent() {
         )
 
     }
+}
 
-
+@Preview(showBackground = true)
+@Composable
+fun SwitchComponentPreview() {
+    SwitchComponent("Married")
 }

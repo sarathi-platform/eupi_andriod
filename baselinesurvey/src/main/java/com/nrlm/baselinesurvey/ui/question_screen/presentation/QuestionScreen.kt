@@ -26,12 +26,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -57,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,8 +66,10 @@ import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
 import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
@@ -86,19 +85,15 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
 import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
@@ -519,6 +514,20 @@ fun NestedLazyList(
                     elevation = 0.dp,
 
                     )
+            }
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+                        // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+                        navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
+
+                    }
+                }
             }
 
             item {
