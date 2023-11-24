@@ -27,6 +27,12 @@ android {
         }
     }
 
+    bundle {
+        language {
+            enableSplit = false
+        }
+    }
+
     signingConfigs {
         release {
             storeFile file("../cert_thenudge.jks")
