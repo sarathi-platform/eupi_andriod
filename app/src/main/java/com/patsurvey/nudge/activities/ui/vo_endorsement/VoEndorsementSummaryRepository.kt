@@ -24,7 +24,7 @@ class VoEndorsementSummaryRepository @Inject constructor(
     }
 
     fun fetchVOEndorseStatusDidi(): List<DidiEntity>{
-       return didiDao.fetchVOEndorseStatusDidi(prefRepo.getSelectedVillage().id)
+       return didiDao.fetchVOEndorseSummaryStatusDidi(prefRepo.getSelectedVillage().id)
     }
 
     fun getAllStepsForVillage(): List<StepListEntity>{
