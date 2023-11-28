@@ -132,6 +132,13 @@ fun SettingScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val mainActivity = LocalContext.current as? MainActivity
+
+    NudgeLogger.e(
+        "SettingScreen",
+        "Speed Type: ${mainActivity?.connectionSpeedType?.value} Connection Speed: ${mainActivity?.connectionSpeed?.value}"
+    )
+
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
     val rootNavController = rememberNavController()

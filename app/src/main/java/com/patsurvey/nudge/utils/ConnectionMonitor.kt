@@ -18,13 +18,14 @@ import java.net.InetSocketAddress
 import javax.net.SocketFactory
 
 
-class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
+class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
     val TAG = "ConnectionMonitor"
 
     private lateinit var networkCallback: ConnectivityManager.NetworkCallback
     private val connectivityManager =
         context.getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
     private val validNetworks: MutableSet<Network> = HashSet()
+    private var downLoadSpeed: Int = 0
 
     private fun checkValidNetworks() {
         NudgeLogger.d(TAG, "checkValidNetworks : ${validNetworks.toString()}")
@@ -34,7 +35,14 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
                 checkValidNetworkAvailability(network)
             }
         }
-        postValue(validNetworks.size > 0)
+        //  postValue(validNetworks.size > 0)
+        postValue(
+            NetworkInfo(
+                validNetworks.size > 0,
+                downLoadSpeed,
+                getNetworkSpeed(downLoadSpeed)
+            )
+        )
     }
 
     override fun onActive() {
@@ -78,10 +86,15 @@ class ConnectionMonitor(context: Context) : LiveData<Boolean>() {
         ) {
             super.onCapabilitiesChanged(network, networkCapabilities)
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
-            val downLoadSpeed = networkCapabilities?.linkDownstreamBandwidthKbps
-            if (downLoadSpeed != null) {
-                getNetworkSpeed(downLoadSpeed)
-            }
+            downLoadSpeed = networkCapabilities?.linkDownstreamBandwidthKbps!!
+            postValue(
+                NetworkInfo(
+                    validNetworks.size > 0,
+                    downLoadSpeed,
+                    getNetworkSpeed(downLoadSpeed)
+                )
+            )
+            getNetworkSpeed(downLoadSpeed)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             NudgeLogger.d(TAG, "onCapabilitiesChanged: ${network}, $hasInternetCapability")
 
