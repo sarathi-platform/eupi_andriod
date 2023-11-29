@@ -1469,7 +1469,7 @@ class VillageSelectionRepository @Inject constructor(
     }
 
     private fun updateWealthRankingToNetwork(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        Log.e("add didi","called")
+        Log.e("update wealth ranking","called")
         callCrpWorkFlowAPIForStep(prefRepo, 2)
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {

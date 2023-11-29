@@ -509,7 +509,7 @@ class SyncHelper (
             val villageList = villegeListDao.getAllVillages(languageId)
             for (village in villageList) {
                 if (prefRepo.getPref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + village.id,
                         false
                     )
                 ) {
@@ -570,7 +570,7 @@ class SyncHelper (
                                 File(compressedFormD)
                             )
                             val formDFilePart = MultipartBody.Part.createFormData(
-                                "formD",
+                                " ",
                                 File(compressedFormD).name,
                                 requestFormD
                             )
@@ -584,7 +584,7 @@ class SyncHelper (
                 val requestVillageId =
                     RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
-                        prefRepo.getSelectedVillage().id.toString()
+                        villageId.toString()
                     )
                 val requestUserType =
                     RequestBody.create(
@@ -594,7 +594,7 @@ class SyncHelper (
                 val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
                 if(response.status == SUCCESS){
                     prefRepo.savePref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + villageId,false)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()

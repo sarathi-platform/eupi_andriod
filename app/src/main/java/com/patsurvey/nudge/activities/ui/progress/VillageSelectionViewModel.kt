@@ -1472,6 +1472,7 @@ class VillageSelectionViewModel @Inject constructor(
 
 
     fun updateSelectedVillage() {
+        NudgeLogger.d("VillageAndVoBoxForBottomSheet","villageList.value[villageSelected.value] = ${villageList.value[villageSelected.value]}")
         prefRepo.saveSelectedVillage(villageList.value[villageSelected.value])
     }
 
