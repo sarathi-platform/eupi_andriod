@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -39,6 +40,7 @@ import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.DropDownWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.EditTextWithTitleComponent
 import com.nrlm.baselinesurvey.ui.common_components.SwitchComponent
+import com.nrlm.baselinesurvey.ui.theme.borderGrey
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 
@@ -93,7 +95,7 @@ fun AddHouseholdMemberScreen(navController: NavHostController) {
                     .fillMaxSize()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 16.dp)
-                    .padding(top = it.calculateTopPadding() + 20.dp),
+                    .padding(top = it.calculateTopPadding() + 20.dp, bottom = 50.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 EditTextWithTitleComponent(title = "Name")
@@ -101,8 +103,36 @@ fun AddHouseholdMemberScreen(navController: NavHostController) {
                 EditTextWithTitleComponent(title = "Age")
                 EducationDropDown()
                 SwitchComponent("Married")
+                Divider(
+                    color = borderGrey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp)
+                )
+
                 SwitchComponent("Disabled")
+                Divider(
+                    color = borderGrey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp)
+                )
+
                 SwitchComponent("Working")
+                Divider(
+                    color = borderGrey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp)
+                )
+
+                SwitchComponent("MIREGA job card")
+                Divider(
+                    color = borderGrey,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 10.dp, end = 10.dp)
+                )
                 SwitchComponent("Pension")
             }
         }
