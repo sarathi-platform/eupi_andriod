@@ -182,7 +182,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
-        list.add(SettingOptionModel(7, "Import Data", BLANK_STRING))
+//        list.add(SettingOptionModel(7, stringResource(R.string.export_data_test), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -427,8 +427,6 @@ fun SettingScreen(
                                 5 -> {
 //                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
                                     viewModel.buildAndShareLogs()
-                                    viewModel.exportLocalData()
-
                                 }
 
                                 else -> {
@@ -507,7 +505,6 @@ fun SettingScreen(
                                 stepFiveStatus
                             )
                             if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
-//                                viewModel.exportLocalData()
                                 viewModel.performLogout(object : NetworkCallbackListener {
                                     override fun onFailed() {
                                         logout(context, viewModel, logout, rootNavController)

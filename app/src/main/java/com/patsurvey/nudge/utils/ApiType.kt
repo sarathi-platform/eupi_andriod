@@ -34,7 +34,8 @@ enum class ApiType {
     FETCH_ALL_DATA, /*General Type for fetch all data on village screen*/
     DOCUMENT_UPLOAD_API,
     DIDI_IMAGE_UPLOAD_API,
-    BPC_POOR_DIDI_LIST_API;
+    BPC_POOR_DIDI_LIST_API,
+    UPDLOAD_DATA_DUMP_API;
 
 
     /*    fun fromString(apiName: String): ApiType {

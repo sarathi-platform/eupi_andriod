@@ -640,7 +640,8 @@ class SettingViewModel @Inject constructor(
         showAPILoader.value = true
         hitApiStatus.value = 1
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            delay(1000)
+            exportLocalData()
+            delay(2000)
             try {
                 val response = apiInterface.performLogout()
                 if (response.status.equals(SUCCESS, true)) {
@@ -696,11 +697,12 @@ class SettingViewModel @Inject constructor(
     fun buildAndShareLogs() {
         NudgeLogger.d("SettingViewModel", "buildAndShareLogs---------------")
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            exportLocalData()
             LogWriter.buildSupportLogAndShare()
         }
     }
 
-    fun exportLocalData() {
+    suspend fun exportLocalData() {
         exportHelper.exportAllData()
     }
 }

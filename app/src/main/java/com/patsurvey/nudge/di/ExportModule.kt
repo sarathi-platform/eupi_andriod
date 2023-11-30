@@ -23,9 +23,9 @@ object ExportModule {
     @Singleton
     @Provides
     fun provideExportHelper(
-        apiService: ApiService, didiDao: DidiDao, tolaDao: TolaDao, answerDao: AnswerDao, numericAnswerDao: NumericAnswerDao
+        prefRepo: PrefRepo, apiService: ApiService, didiDao: DidiDao, tolaDao: TolaDao, answerDao: AnswerDao, numericAnswerDao: NumericAnswerDao
     ): ExportHelper {
-        return ExportHelper(apiService, didiDao, tolaDao, answerDao, numericAnswerDao)
+        return ExportHelper(apiService, prefRepo, didiDao, tolaDao, answerDao, numericAnswerDao)
     }
 
 }

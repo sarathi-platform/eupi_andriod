@@ -381,6 +381,7 @@
     <string name="cancel">বাতিল কৰক</string>
     <string name="user_bug_report_text">বাগ প্ৰতিবেদন</string>
     <string name="vo_endorsement_not_started">VO Endorsement আৰম্ভ কৰা হোৱা নাই</string>
+    <string name="export_data_test">তথ্য ৰপ্তানি কৰক</string>
 
 
 </resources>
