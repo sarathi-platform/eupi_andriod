@@ -28,6 +28,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
@@ -212,7 +213,7 @@ class AddDidiRepository @Inject constructor(
     }
 
     fun fetchAllDidiNeedToDelete(status: Int): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToDelete(status)
+        return this.didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
     }
 
     fun fetchAllPendingDidiNeedToUpdate(
