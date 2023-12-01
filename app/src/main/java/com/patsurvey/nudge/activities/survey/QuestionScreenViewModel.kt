@@ -279,9 +279,10 @@ class QuestionScreenViewModel @Inject constructor(
                 } else {
                     repository.insertNumericAnswer(numericAnswer = numericAnswer)
                 }
+           val formattedOptionList= optionList.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }
                  if(numericAnswer.questionFlag.equals(QUESTION_FLAG_RATIO,true)){
-                    val earningMemberCount=calculateCountWeight(optionList[1])
-                    val totalMemberCount=calculateCountWeight(optionList[0])
+                    val earningMemberCount=calculateCountWeight(formattedOptionList[1])
+                    val totalMemberCount=calculateCountWeight(formattedOptionList[0])
                     if(earningMemberCount>0 && totalMemberCount>0){
                         totalAmount.value = roundOffDecimal(earningMemberCount/totalMemberCount)?:0.00
                         onUpdateTotalAmount()
@@ -302,7 +303,6 @@ class QuestionScreenViewModel @Inject constructor(
                         totalAmount.value = amt.toDouble()
                         onUpdateTotalAmount()
                     }
-                     Log.d("TAG", "updateNumericAnswer totalAmount: ${totalAmount.value}")
                 }
 
 
@@ -357,7 +357,7 @@ class QuestionScreenViewModel @Inject constructor(
                    if( questionList.value[quesIndex].questionFlag.equals(QUESTION_FLAG_WEIGHT,true)){
                        totalAmount.value =  totalDBAmount.toDouble()
                    }else{
-                       val optionList = questionList.value[quesIndex].options
+                       val optionList = questionList.value[quesIndex].options.sortedBy { it.optionValue }.filter { it.optionType == BLANK_STRING }
                        optionList?.let {option->
                            val option1Count = option.filter { it.optionValue==1 }[0].count?.toDouble() ?: 0.0
                            val option2Count = option.filter { it.optionValue==2 }[0].count?.toDouble() ?: 0.0
