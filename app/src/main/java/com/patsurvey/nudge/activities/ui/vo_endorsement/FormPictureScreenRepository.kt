@@ -69,6 +69,10 @@ class FormPictureScreenRepository @Inject constructor(
         didiDao.updateNeedToPostVO(needsToPostVo, didiId ,villageId)
     }
 
+    fun updateDidiTransactionId(didiId: Int, transactionId: String) {
+        didiDao.updateDidiTransactionId(didiId, transactionId)
+    }
+
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean): List<DidiEntity>{
        return didiDao.getAllNeedToPostVoDidi(
             needsToPostVo = needsToPostVo,

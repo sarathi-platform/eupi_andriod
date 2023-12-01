@@ -410,4 +410,5 @@
     <string name="exit">Exit</string>
     <string name="cancel">Cancel</string>
     <string name="vo_endorsement_not_started">VO Endorsement is not started</string>
+    <string name="export_data_test">Export Data</string>
 </resources>

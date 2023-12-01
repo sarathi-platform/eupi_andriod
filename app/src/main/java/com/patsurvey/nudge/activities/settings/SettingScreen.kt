@@ -5,7 +5,10 @@ import android.content.Context.BATTERY_SERVICE
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.BatteryManager
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.animateFloatAsState
@@ -77,6 +80,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -89,11 +93,13 @@ import com.patsurvey.nudge.activities.ui.theme.greenDark
 import com.patsurvey.nudge.activities.ui.theme.greenOnline
 import com.patsurvey.nudge.activities.ui.theme.greyBorder
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.newMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.redBgLight
 import com.patsurvey.nudge.activities.ui.theme.redIconColor
 import com.patsurvey.nudge.activities.ui.theme.redMessageColor
 import com.patsurvey.nudge.activities.ui.theme.redOffline
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
+import com.patsurvey.nudge.activities.ui.theme.textColorDark50
 import com.patsurvey.nudge.activities.ui.theme.textColorDark80
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomProgressBar
@@ -120,6 +126,7 @@ import com.patsurvey.nudge.utils.showCustomToast
 import com.patsurvey.nudge.utils.showToast
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -129,9 +136,16 @@ fun SettingScreen(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
+    val mainActivity = LocalContext.current as? MainActivity
+
+    NudgeLogger.e(
+        "SettingScreen",
+        "Speed Type: ${mainActivity?.connectionSpeedType?.value} Connection Speed: ${mainActivity?.connectionSpeed?.value}"
+    )
+
     val context = LocalContext.current
 //    LaunchedEffect(key1 = true) {
-    val rootNavController= rememberNavController()
+    val rootNavController = rememberNavController()
 
     val extraNetworkCheck = remember {
         mutableStateOf(true)
@@ -147,7 +161,7 @@ fun SettingScreen(
         mutableStateOf(true)
     }
 
-    if(viewModel.prefRepo.settingOpenFrom()==PageFrom.VILLAGE_PAGE.ordinal){
+    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
         list.add(SettingOptionModel(1, context.getString(R.string.profile), BLANK_STRING))
         list.add(SettingOptionModel(2, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(3, context.getString(R.string.language_text), BLANK_STRING))
@@ -159,7 +173,7 @@ fun SettingScreen(
                 BLANK_STRING
             )
         )*/
-    }else {
+    } else {
         val dateFormat = SimpleDateFormat("dd/MM/yyyy hh:mm a", Locale.US)
         val lastSyncTime = if (lastSyncTimeInMS != 0L) dateFormat.format(lastSyncTimeInMS) else ""
         list.add(
@@ -175,6 +189,7 @@ fun SettingScreen(
         list.add(SettingOptionModel(4, context.getString(R.string.training_videos), BLANK_STRING))
         list.add(SettingOptionModel(5, context.getString(R.string.language_text), BLANK_STRING))
         list.add(SettingOptionModel(6, stringResource(id = R.string.share_logs), BLANK_STRING))
+//        list.add(SettingOptionModel(7, stringResource(R.string.export_data_test), BLANK_STRING))
         /*if (BuildConfig.DEBUG) *//*list.add(
             SettingOptionModel(
                 6,
@@ -192,11 +207,13 @@ fun SettingScreen(
         viewModel.isFormCAvailableForVillage(context = context, villageId = villageId)
         launch(Dispatchers.IO) {
             if (MyApplication.getValidNetworksList().isNotEmpty()) {
-                val localConnectionMonitor = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+                val localConnectionMonitor =
+                    context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
                 MyApplication.getValidNetworksList().forEach {
-                    val hasInternet = localConnectionMonitor.getNetworkCapabilities(it)?.hasCapability(
-                        NetworkCapabilities.NET_CAPABILITY_INTERNET
-                    )
+                    val hasInternet =
+                        localConnectionMonitor.getNetworkCapabilities(it)?.hasCapability(
+                            NetworkCapabilities.NET_CAPABILITY_INTERNET
+                        )
                     if (hasInternet == true) {
                         if (!ConnectionMonitor.DoesNetworkHaveInternet.execute(it.socketFactory)) {
                             extraNetworkCheck.value = false
@@ -268,35 +285,43 @@ fun SettingScreen(
             viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
             viewModel.isFourthStepNeedToBeSync(stepFourStatus)
             viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-            if(stepOneStatus.value == 0
+            if (stepOneStatus.value == 0
                 || stepTwoStatus.value == 0
                 || stepThreeStatus.value == 0
                 || stepFourStatus.value == 0
-                || stepFiveStatus.value == 0)
+                || stepFiveStatus.value == 0
+            )
                 isDataNeedToBeSynced.value = 1
-            else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
                 && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
                 && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
                 && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
+                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+            )
                 isDataNeedToBeSynced.value = 2
             else
                 isDataNeedToBeSynced.value = 0
-            viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+            viewModel.isDataNeedToBeSynced(
+                stepOneStatus,
+                stepTwoStatus,
+                stepThreeStatus,
+                stepFourStatus,
+                stepFiveStatus
+            )
         } else {
             viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
         }
     }
 
     BackHandler() {
-        if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
+        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
             navController.navigate(Graph.HOME) {
                 popUpTo(HomeScreens.PROGRESS_SCREEN.route) {
                     inclusive = true
                     saveState = false
                 }
             }
-        }else {
+        } else {
             navController.popBackStack()
         }
     }
@@ -345,7 +370,7 @@ fun SettingScreen(
                 .padding(top = it.calculateTopPadding())
                 .fillMaxSize()
         ) {
-            val (mainBox, logoutButton) = createRefs()
+            val (mainBox, logoutButton, versionBox) = createRefs()
 
             Column(modifier = Modifier
                 .background(Color.White)
@@ -369,7 +394,7 @@ fun SettingScreen(
                             when (index) {
                                 0 -> {
                                     viewModel.syncErrorMessage.value = ""
-                                    if(viewModel.prefRepo.settingOpenFrom()== PageFrom.HOME_PAGE.ordinal) {
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal) {
                                         if (!viewModel.prefRepo.isUserBPC()) {
                                             viewModel.showSyncDialog.value = true
                                         } else {
@@ -377,18 +402,18 @@ fun SettingScreen(
                                             isBPCDataNeedToBeSynced.value = false
                                             viewModel.showBPCSyncDialog.value = true
                                         }
-                                    }else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
+                                    } else navController.navigate(AuthScreen.PROFILE_SCREEN.route)
                                 }
 
                                 1 -> {
-                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
                                         navController.navigate(SettingScreens.PROFILE_SCREEN.route)
                                     else navController.navigate(AuthScreen.VIDEO_LIST_SCREEN.route)
-                                  }
+                                }
 
                                 2 -> {
-                                    if(viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
-                                         expanded.value = !expanded.value
+                                    if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
+                                        expanded.value = !expanded.value
                                     else navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                                 }
 
@@ -396,15 +421,16 @@ fun SettingScreen(
                                     if (viewModel.prefRepo.settingOpenFrom() == PageFrom.HOME_PAGE.ordinal)
                                         navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
                                     else
-                                        navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
+                                    //navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
 
-                                    //  viewModel.buildAndShareLogs()
+                                        viewModel.buildAndShareLogs()
 
                                 }
 
                                 4 -> {
                                     navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
                                 }
+
                                 5 -> {
 //                                    navController.navigate(SettingScreens.BUG_LOGGING_SCREEN.route)
                                     viewModel.buildAndShareLogs()
@@ -420,6 +446,22 @@ fun SettingScreen(
                         }
                     }
                 }
+            }
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .constrainAs(versionBox) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    bottom.linkTo(logoutButton.top)
+                }) {
+                Text(
+                    text = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                    color = textColorDark50,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    textAlign = TextAlign.Center,
+                    style = newMediumTextStyle
+                )
             }
             Box(modifier = Modifier
                 .fillMaxWidth()
@@ -446,21 +488,29 @@ fun SettingScreen(
                             viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                             viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                             viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                            if(stepOneStatus.value == 0
+                            if (stepOneStatus.value == 0
                                 || stepTwoStatus.value == 0
                                 || stepThreeStatus.value == 0
                                 || stepFourStatus.value == 0
-                                || stepFiveStatus.value == 0)
+                                || stepFiveStatus.value == 0
+                            )
                                 isDataNeedToBeSynced.value = 1
-                            else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                            else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
                                 && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
                                 && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
                                 && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
+                                && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+                            )
                                 isDataNeedToBeSynced.value = 2
                             else
                                 isDataNeedToBeSynced.value = 0
-                            viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                            viewModel.isDataNeedToBeSynced(
+                                stepOneStatus,
+                                stepTwoStatus,
+                                stepThreeStatus,
+                                stepFourStatus,
+                                stepFiveStatus
+                            )
                             if (isDataNeedToBeSynced.value == 0 || isDataNeedToBeSynced.value == 2) {
                                 viewModel.performLogout(object : NetworkCallbackListener {
                                     override fun onFailed() {
@@ -483,7 +533,7 @@ fun SettingScreen(
                             }
                         } else {
                             viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-                            if(isBPCDataNeedToBeSynced.value){
+                            if (isBPCDataNeedToBeSynced.value) {
                                 showToast(
                                     context,
                                     context.getString(R.string.logout_sync_error_message)
@@ -511,9 +561,10 @@ fun SettingScreen(
                 }
             }
             if (viewModel.showSyncDialog.value) {
-                showSyncDialog(setShowDialog = {
-                    viewModel.showSyncDialog.value = it
-                }, settingViewModel = viewModel,
+                showSyncDialog(
+                    setShowDialog = {
+                        viewModel.showSyncDialog.value = it
+                    }, settingViewModel = viewModel,
                     showSyncDialogStatus = viewModel.showSyncDialog,
                     isDataNeedToBeSynced = isDataNeedToBeSynced,
                     extraNetworkCheck = extraNetworkCheck.value
@@ -523,27 +574,36 @@ fun SettingScreen(
                 viewModel.isThirdStepNeedToBeSync(stepThreeStatus)
                 viewModel.isFourthStepNeedToBeSync(stepFourStatus)
                 viewModel.isFifthStepNeedToBeSync(stepFiveStatus)
-                if(stepOneStatus.value == 0
+                if (stepOneStatus.value == 0
                     || stepTwoStatus.value == 0
                     || stepThreeStatus.value == 0
                     || stepFourStatus.value == 0
-                    || stepFiveStatus.value == 0)
+                    || stepFiveStatus.value == 0
+                )
                     isDataNeedToBeSynced.value = 1
-                else if((stepOneStatus.value == 3 || stepOneStatus.value == 2)
-                        && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
-                        && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
-                        && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
-                        && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2))
+                else if ((stepOneStatus.value == 3 || stepOneStatus.value == 2)
+                    && (stepTwoStatus.value == 3 || stepTwoStatus.value == 2)
+                    && (stepThreeStatus.value == 3 || stepThreeStatus.value == 2)
+                    && (stepFourStatus.value == 3 || stepFourStatus.value == 2)
+                    && (stepFiveStatus.value == 3 || stepFiveStatus.value == 2)
+                )
                     isDataNeedToBeSynced.value = 2
                 else
                     isDataNeedToBeSynced.value = 0
-                viewModel.isDataNeedToBeSynced(stepOneStatus,stepTwoStatus,stepThreeStatus,stepFourStatus,stepFiveStatus)
+                viewModel.isDataNeedToBeSynced(
+                    stepOneStatus,
+                    stepTwoStatus,
+                    stepThreeStatus,
+                    stepFourStatus,
+                    stepFiveStatus
+                )
             }
             if (viewModel.showBPCSyncDialog.value) {
                 viewModel.isBPCDataNeedToBeSynced(isBPCDataNeedToBeSynced)
-                showBPCSyncDialog(setShowDialog = {
-                    viewModel.showBPCSyncDialog.value = it
-                }, settingViewModel = viewModel,
+                showBPCSyncDialog(
+                    setShowDialog = {
+                        viewModel.showBPCSyncDialog.value = it
+                    }, settingViewModel = viewModel,
                     showBPCSyncDialog = viewModel.showBPCSyncDialog,
                     syncBPCStatus = syncBPCStatus,
                     isBPCDataNeedToBeSynced = isBPCDataNeedToBeSynced,
@@ -552,35 +612,36 @@ fun SettingScreen(
             }
         }
         CustomSnackBarShow(state = snackState, position = CustomSnackBarViewPosition.Bottom)
+
     }
-    if(networkError.isNotEmpty()){
+    if (networkError.isNotEmpty()) {
         var errorMessage = networkError
-        if(errorMessage.equals(SYNC_SUCCESSFULL,true)){
+        if (errorMessage.equals(SYNC_SUCCESSFULL, true)) {
             errorMessage = stringResource(id = R.string.online_sync_successful)
         }
-        if(errorMessage.equals(SYNC_FAILED,true)){
+        if (errorMessage.equals(SYNC_FAILED, true)) {
             errorMessage = stringResource(id = R.string.sync_failed)
-            showCustomToast(context,errorMessage)
+            showCustomToast(context, errorMessage)
         }
 
     }
-    if(viewModel.showAPILoader.value){
+    if (viewModel.showAPILoader.value) {
         CustomProgressBar(modifier = Modifier)
     }
-    if(viewModel.onLogoutError.value){
-        logout(context, viewModel,logout,rootNavController)
-        changeGraph.value=true
+    if (viewModel.onLogoutError.value) {
+        logout(context, viewModel, logout, rootNavController)
+        changeGraph.value = true
     }
 
-    if(changeGraph.value){
-        if(isChangeGraphCalled.value) {
+    if (changeGraph.value) {
+        if (isChangeGraphCalled.value) {
             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                 navController.navigate(AuthScreen.LOGIN.route)
-                isChangeGraphCalled.value=false
+                isChangeGraphCalled.value = false
             } else navController.navigate(Graph.LOGOUT_GRAPH)
         }
 
-        changeGraph.value=false
+        changeGraph.value = false
     }
 }
 
@@ -589,8 +650,8 @@ private fun logout(
     viewModel: SettingViewModel,
     logout: MutableState<Boolean>,
     navController: NavController
-){
-    NudgeLogger.e("SettingScreen","logout called")
+) {
+    NudgeLogger.e("SettingScreen", "logout called")
     if (!logout.value) {
         viewModel.clearLocalDB(context, logout)
         viewModel.onLogoutError.value = false
@@ -601,8 +662,8 @@ private fun logout(
 fun showSyncDialog(
     setShowDialog: (Boolean) -> Unit,
     settingViewModel: SettingViewModel,
-    showSyncDialogStatus : MutableState<Boolean>,
-    isDataNeedToBeSynced : MutableState<Int>,
+    showSyncDialogStatus: MutableState<Boolean>,
+    isDataNeedToBeSynced: MutableState<Int>,
     extraNetworkCheck: Boolean
 ) {
 
@@ -617,15 +678,17 @@ fun showSyncDialog(
     NudgeLogger.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
-        targetValue =  settingViewModel.syncPercentage.value,
+        targetValue = settingViewModel.syncPercentage.value,
         animationSpec = tween(), label = ""
     )
 
 
 
-    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
-        dismissOnClickOutside = false
-    )) {
+    Dialog(
+        onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
+            dismissOnClickOutside = false
+        )
+    ) {
         Surface(
             color = Color.Transparent,
             modifier = Modifier.fillMaxSize()
@@ -635,14 +698,19 @@ fun showSyncDialog(
                     modifier = Modifier
                         .background(color = white, shape = RoundedCornerShape(6.dp)),
                 ) {
-                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceAround,
                             modifier = Modifier
                         ) {
                             MainTitle(
-                                if (isDataNeedToBeSynced.value == 1) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 0 ) stringResource(R.string.your_data_already_synced) else stringResource(R.string.data_synced_successfully),
+                                if (isDataNeedToBeSynced.value == 1) stringResource(R.string.sync_your_data) else if (isDataNeedToBeSynced.value == 0) stringResource(
+                                    R.string.your_data_already_synced
+                                ) else stringResource(R.string.data_synced_successfully),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -739,7 +807,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepOneSyncStatus.value == 2 || settingViewModel.stepOneSyncStatus.value == 3) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step one tick")
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -749,9 +817,8 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (settingViewModel.stepOneSyncStatus.value == 1) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step one circle")
+                                } else if (settingViewModel.stepOneSyncStatus.value == 1) {
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -761,7 +828,10 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step one not sync icon")
+                                    NudgeLogger.d(
+                                        "NudgeLogger",
+                                        "sync dialog step one not sync icon"
+                                    )
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
@@ -801,7 +871,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepTwoSyncStatus.value == 2 || settingViewModel.stepTwoSyncStatus.value == 3) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step two tick")
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step two tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -811,9 +881,8 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (settingViewModel.stepTwoSyncStatus.value == 1) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step two circle")
+                                } else if (settingViewModel.stepTwoSyncStatus.value == 1) {
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step two circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -823,7 +892,10 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step two not sync icon")
+                                    NudgeLogger.d(
+                                        "NudgeLogger",
+                                        "sync dialog step two not sync icon"
+                                    )
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
@@ -863,7 +935,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepThreeSyncStatus.value == 2 || settingViewModel.stepThreeSyncStatus.value == 3) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step three tick")
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step three tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -873,9 +945,8 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (settingViewModel.stepThreeSyncStatus.value == 1) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step three circle")
+                                } else if (settingViewModel.stepThreeSyncStatus.value == 1) {
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step three circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -885,7 +956,10 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step three not sync icon")
+                                    NudgeLogger.d(
+                                        "NudgeLogger",
+                                        "sync dialog step three not sync icon"
+                                    )
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
@@ -925,7 +999,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFourSyncStatus.value == 2 || settingViewModel.stepFourSyncStatus.value == 3) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step four tick")
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step four tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -935,9 +1009,8 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (settingViewModel.stepFourSyncStatus.value == 1) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step four circle")
+                                } else if (settingViewModel.stepFourSyncStatus.value == 1) {
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step four circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -947,7 +1020,10 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step four not sync icon")
+                                    NudgeLogger.d(
+                                        "NudgeLogger",
+                                        "sync dialog step four not sync icon"
+                                    )
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
@@ -987,7 +1063,7 @@ fun showSyncDialog(
                                 )*/
                                 }
                                 if (settingViewModel.stepFifthSyncStatus.value == 2 || settingViewModel.stepFifthSyncStatus.value == 3) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth tick")
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step fifth tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
                                         contentDescription = null,
@@ -997,9 +1073,8 @@ fun showSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (settingViewModel.stepFifthSyncStatus.value == 1) {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth circle")
+                                } else if (settingViewModel.stepFifthSyncStatus.value == 1) {
+                                    NudgeLogger.d("NudgeLogger", "sync dialog step fifth circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -1009,7 +1084,10 @@ fun showSyncDialog(
                                         strokeWidth = 1.dp
                                     )
                                 } else {
-                                    NudgeLogger.d("NudgeLogger","sync dialog step fifth not sync icon")
+                                    NudgeLogger.d(
+                                        "NudgeLogger",
+                                        "sync dialog step fifth not sync icon"
+                                    )
                                     Icon(
                                         painter = painterResource(id = R.drawable.not_sync_icon_complete),
                                         contentDescription = null,
@@ -1027,7 +1105,8 @@ fun showSyncDialog(
                         Spacer(modifier = Modifier.height(4.dp))
 
                         if (settingViewModel.showLoader.value
-                            || settingViewModel.syncErrorMessage.value.isNotEmpty()) {
+                            || settingViewModel.syncErrorMessage.value.isNotEmpty()
+                        ) {
                             LinearProgressIndicator(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -1068,13 +1147,22 @@ fun showSyncDialog(
                                     end = Offset(x = progress, y = 0f)
                                 )
                             }*/
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
-                                .padding(10.dp)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.Top,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = redBgLight,
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
+                                    .padding(10.dp)
+                            ) {
 
-                                Box(modifier = Modifier
-                                    .absolutePadding(top = 4.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .absolutePadding(top = 4.dp)
+                                ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.info_icn),
                                         contentDescription = null,
@@ -1086,7 +1174,9 @@ fun showSyncDialog(
 
 
                                 Text(
-                                    text = if(settingViewModel.syncErrorMessage.value.isEmpty()) stringResource(R.string.do_not_close_app_message) else settingViewModel.syncErrorMessage.value,
+                                    text = if (settingViewModel.syncErrorMessage.value.isEmpty()) stringResource(
+                                        R.string.do_not_close_app_message
+                                    ) else settingViewModel.syncErrorMessage.value,
                                     style = numberStyle,
                                     textAlign = TextAlign.Start,
                                     fontSize = 12.sp,
@@ -1127,10 +1217,11 @@ fun showSyncDialog(
 //                                positiveButtonClicked()
                                 }
                             }
-                        } else if(isDataNeedToBeSynced.value == 0
-                                || isDataNeedToBeSynced.value == 2
-                                || !isInternetConnected
-                                || batteryLevel < 30){
+                        } else if (isDataNeedToBeSynced.value == 0
+                            || isDataNeedToBeSynced.value == 2
+                            || !isInternetConnected
+                            || batteryLevel < 30
+                        ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
                                     buttonTitle = stringResource(id = R.string.close),
@@ -1152,9 +1243,9 @@ fun showSyncDialog(
 fun showBPCSyncDialog(
     setShowDialog: (Boolean) -> Unit,
     settingViewModel: SettingViewModel,
-    showBPCSyncDialog : MutableState<Boolean>,
-    syncBPCStatus : MutableState<Int>,
-    isBPCDataNeedToBeSynced : MutableState<Boolean>,
+    showBPCSyncDialog: MutableState<Boolean>,
+    syncBPCStatus: MutableState<Int>,
+    isBPCDataNeedToBeSynced: MutableState<Boolean>,
     extraNetworkCheck: Boolean
 ) {
 
@@ -1169,12 +1260,14 @@ fun showBPCSyncDialog(
     NudgeLogger.e("sync", "->$syncPercentage")
 
     val animateNumber = animateFloatAsState(
-        targetValue =  settingViewModel.syncPercentage.value,
+        targetValue = settingViewModel.syncPercentage.value,
         animationSpec = tween()
     )
-    Dialog(onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
-        dismissOnClickOutside = false
-    )) {
+    Dialog(
+        onDismissRequest = { setShowDialog(false) }, properties = DialogProperties(
+            dismissOnClickOutside = false
+        )
+    ) {
         Surface(
             color = Color.Transparent,
             modifier = Modifier.fillMaxSize()
@@ -1184,7 +1277,10 @@ fun showBPCSyncDialog(
                     modifier = Modifier
                         .background(color = white, shape = RoundedCornerShape(6.dp)),
                 ) {
-                    Column(Modifier.padding(vertical = 16.dp, horizontal = 16.dp),verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Column(
+                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceAround,
@@ -1192,9 +1288,13 @@ fun showBPCSyncDialog(
                         ) {
                             MainTitle(
                                 if (!isBPCDataNeedToBeSynced.value
-                                    && syncBPCStatus.value == 0) stringResource(R.string.your_data_already_synced)
+                                    && syncBPCStatus.value == 0
+                                ) stringResource(R.string.your_data_already_synced)
                                 else if (!isBPCDataNeedToBeSynced.value
-                                    && syncBPCStatus.value == 3 ) stringResource(R.string.data_synced_successfully) else stringResource(R.string.sync_your_data),
+                                    && syncBPCStatus.value == 3
+                                ) stringResource(R.string.data_synced_successfully) else stringResource(
+                                    R.string.sync_your_data
+                                ),
                                 Modifier
                                     .weight(1f)
                                     .fillMaxWidth(),
@@ -1284,7 +1384,8 @@ fun showBPCSyncDialog(
                                 }
                                 if (!isBPCDataNeedToBeSynced.value
                                     && (syncBPCStatus.value == 3
-                                            || syncBPCStatus.value == 0)) {
+                                            || syncBPCStatus.value == 0)
+                                ) {
                                     NudgeLogger.e("sync dialog", "step one tick")
                                     Icon(
                                         painter = painterResource(id = R.drawable.icon_check_green_without_border),
@@ -1295,9 +1396,8 @@ fun showBPCSyncDialog(
                                             .size(24.dp)
                                             .padding(4.dp)
                                     )
-                                }
-                                else if (syncBPCStatus.value == 2) {
-                                    NudgeLogger.e("sync dialog","step one circle")
+                                } else if (syncBPCStatus.value == 2) {
+                                    NudgeLogger.e("sync dialog", "step one circle")
                                     CircularProgressIndicator(
                                         modifier = Modifier
                                             .size(24.dp)
@@ -1334,13 +1434,22 @@ fun showBPCSyncDialog(
                                 progress = animateNumber.value
                             )
 
-                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.Top, modifier = Modifier
-                                .fillMaxWidth()
-                                .background(color = redBgLight, shape = RoundedCornerShape(6.dp))
-                                .padding(10.dp)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                                verticalAlignment = Alignment.Top,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        color = redBgLight,
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
+                                    .padding(10.dp)
+                            ) {
 
-                                Box(modifier = Modifier
-                                    .absolutePadding(top = 4.dp)) {
+                                Box(
+                                    modifier = Modifier
+                                        .absolutePadding(top = 4.dp)
+                                ) {
                                     Icon(
                                         painter = painterResource(id = R.drawable.info_icn),
                                         contentDescription = null,
@@ -1368,7 +1477,7 @@ fun showBPCSyncDialog(
                         if ((isInternetConnected
                                     && (batteryLevel >= 30)
                                     && !settingViewModel.showLoader.value)
-                                    && (isBPCDataNeedToBeSynced.value)
+                            && (isBPCDataNeedToBeSynced.value)
                         ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
@@ -1387,16 +1496,24 @@ fun showBPCSyncDialog(
                                         .padding(vertical = 2.dp)
                                 ) {
 //                                    settingViewModel.showLoader.value = true
-                                    settingViewModel.syncBPCDataOnServer(context, showBPCSyncDialog,syncBPCStatus)
+                                    settingViewModel.syncBPCDataOnServer(
+                                        context,
+                                        showBPCSyncDialog,
+                                        syncBPCStatus
+                                    )
                                     val updatedSyncTime = System.currentTimeMillis()
                                     settingViewModel.lastSyncTime.value = updatedSyncTime
-                                    settingViewModel.prefRepo.savePref(LAST_SYNC_TIME, updatedSyncTime)
+                                    settingViewModel.prefRepo.savePref(
+                                        LAST_SYNC_TIME,
+                                        updatedSyncTime
+                                    )
                                 }
                             }
-                        } else if(!isBPCDataNeedToBeSynced.value
-                                || syncBPCStatus.value == 3
-                                || !isInternetConnected
-                                || batteryLevel < 30){
+                        } else if (!isBPCDataNeedToBeSynced.value
+                            || syncBPCStatus.value == 3
+                            || !isInternetConnected
+                            || batteryLevel < 30
+                        ) {
                             Row(modifier = Modifier.fillMaxWidth()) {
                                 ButtonNegative(
                                     buttonTitle = stringResource(id = R.string.close),

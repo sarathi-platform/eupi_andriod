@@ -164,7 +164,13 @@ class SyncHelper (
                 tolaList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+
+                val checkTolaUpdateStatusRequest = TransactionIdRequest("",ids)
+                NudgeLogger.d("SyncHelper","checkTolaUpdateStatus checkTolaUpdateStatusRequest request=> ${checkTolaUpdateStatusRequest.json()}")
+
+                val response = apiService.getPendingStatus(checkTolaUpdateStatusRequest)
+                NudgeLogger.d("SyncHelper","checkTolaUpdateStatus checkTolaUpdateStatusRequest response=> ${response.json()}")
+
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         tolaList.forEach { tola ->
@@ -228,7 +234,10 @@ class SyncHelper (
                 tolaList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                val checkTolaDeleteStatusRequest = TransactionIdRequest("",ids)
+                NudgeLogger.d("SyncHelper","checkTolaDeleteStatus checkTolaDeleteStatusRequest request=> ${checkTolaDeleteStatusRequest.json()}")
+                val response = apiService.getPendingStatus(checkTolaDeleteStatusRequest)
+                NudgeLogger.d("SyncHelper", "checkTolaDeleteStatus checkTolaDeleteStatusRequest response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         tolaList.forEach { tola ->
@@ -307,7 +316,10 @@ class SyncHelper (
                 didiList.forEach { didi ->
                     didi.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatusForPat(TransactionIdRequest("PAT",ids))
+                val checkDidiPatStatusRequest = TransactionIdRequest("PAT",ids)
+                NudgeLogger.d("SyncHelper","checkDidiPatStatus checkDidiPatStatusRequest request=> ${checkDidiPatStatusRequest.json()}")
+                val response = apiService.getPendingStatusForPat(checkDidiPatStatusRequest)
+                NudgeLogger.d("SyncHelper","checkDidiPatStatus checkDidiPatStatusRequest response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -403,7 +415,12 @@ class SyncHelper (
                 didiList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+
+                val checkAddDidiStatusRequest = TransactionIdRequest("",ids)
+                NudgeLogger.d("SyncHelper", "checkAddDidiStatus checkAddDidiStatusRequest request => ${checkAddDidiStatusRequest.json()}")
+                val response = apiService.getPendingStatus(checkAddDidiStatusRequest)
+                NudgeLogger.d("SyncHelper", "checkAddDidiStatus checkAddDidiStatusRequest response => ${response.json()}")
+
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         didiList.forEach { didi ->
@@ -509,7 +526,7 @@ class SyncHelper (
             val villageList = villegeListDao.getAllVillages(languageId)
             for (village in villageList) {
                 if (prefRepo.getPref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + village.id,
                         false
                     )
                 ) {
@@ -584,7 +601,7 @@ class SyncHelper (
                 val requestVillageId =
                     RequestBody.create(
                         "multipart/form-data".toMediaTypeOrNull(),
-                        prefRepo.getSelectedVillage().id.toString()
+                        villageId.toString()
                     )
                 val requestUserType =
                     RequestBody.create(
@@ -594,7 +611,7 @@ class SyncHelper (
                 val response = apiService.uploadDocument(formList, requestVillageId, requestUserType)
                 if(response.status == SUCCESS){
                     prefRepo.savePref(
-                        PREF_NEED_TO_POST_FORM_C_AND_D_ + prefRepo.getSelectedVillage().id,false)
+                        PREF_NEED_TO_POST_FORM_C_AND_D_ + villageId,false)
                 }
             } catch (ex: Exception) {
                 ex.printStackTrace()
@@ -611,7 +628,10 @@ class SyncHelper (
                 tolaList.forEach { tola ->
                     tola.transactionId?.let { ids.add(it) }
                 }
-                val response = apiService.getPendingStatus(TransactionIdRequest("",ids))
+                val checkTolaAddStatusRequest = TransactionIdRequest("",ids)
+                NudgeLogger.d("SyncHelper","checkTolaAddStatus checkTolaAddStatusRequest request=> ${checkTolaAddStatusRequest.json()}")
+                val response = apiService.getPendingStatus(checkTolaAddStatusRequest)
+                NudgeLogger.d("SyncHelper","checkTolaAddStatus checkTolaAddStatusRequest response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.forEach { transactionIdResponse ->
                         tolaList.forEach { tola ->
@@ -940,6 +960,7 @@ class SyncHelper (
                 }
                 NudgeLogger.d("SyncHelper","updateDidiToNetwork updateDidis Request=> ${didiRequestList.json()}")
                 val response = apiService.updateDidis(didiRequestList)
+                NudgeLogger.d("SyncHelper","updateDidiToNetwork updateDidis response=> ${response.json()}")
                 if (response.status.equals(SUCCESS, true)) {
                     if(response.data?.get(0)?.transactionId.isNullOrEmpty()) {
                         response.data?.let {
@@ -1330,11 +1351,12 @@ class SyncHelper (
                 }
                 if (answeredDidiList.isNotEmpty()) {
                     withContext(Dispatchers.IO) {
-                        val saveAPIResponse = apiService.savePATSurveyToServer(answeredDidiList)
                         NudgeLogger.d(
-                            "SyncHelper",
-                            "savePATSummeryToServer patSummarySaveRequest Request=>: ${answeredDidiList.json()}"
-                        )
+                        "SyncHelper",
+                        "savePATSummeryToServer patSummarySaveRequest Request=>: ${answeredDidiList.json()}"
+                    )
+                        val saveAPIResponse = apiService.savePATSurveyToServer(answeredDidiList)
+                        NudgeLogger.d("SyncHelper","savePATSummeryToServer patSummarySaveRequest response=> ${saveAPIResponse.json()}")
                         if (saveAPIResponse.status.equals(SUCCESS, true)) {
                             if (saveAPIResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
                                 didiIDList.forEach { didiItem ->
@@ -1595,10 +1617,9 @@ class SyncHelper (
                 if (addWorkFlowRequest.size > 0) {
 
                     NudgeLogger.e("SyncHelper", "callWorkFlowAPI addWorkFlowRequest: $addWorkFlowRequest \n\n")
-
-                    val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
                     NudgeLogger.d("SyncHelper","addWorkFlow Request=> ${Gson().toJson(Collections.unmodifiableList(addWorkFlowRequest))}")
-                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data} \n\n")
+                    val addWorkFlowResponse = apiService.addWorkFlow(Collections.unmodifiableList(addWorkFlowRequest))
+                    NudgeLogger.e("SyncHelper","callWorkFlowAPI response: status: ${addWorkFlowResponse.status}, message: ${addWorkFlowResponse.message}, data: ${addWorkFlowResponse.data?.json()} \n\n")
 
                     if (addWorkFlowResponse.status.equals(SUCCESS, true)) {
                         addWorkFlowResponse.data?.let {
@@ -1677,13 +1698,13 @@ class SyncHelper (
                     )
                 )
             }
-
+            NudgeLogger.d("SyncHelper","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
             val responseForStepUpdation =
                 apiService.editWorkFlow(requestForStepUpdation)
-            NudgeLogger.d("SyncHelper","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
+
             NudgeLogger.e(
                 "SyncHelper",
-                "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
+                "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data?.json()} \n\n"
             )
 
 

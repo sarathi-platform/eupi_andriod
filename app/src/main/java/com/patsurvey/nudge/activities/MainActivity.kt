@@ -30,7 +30,6 @@ import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.analytics.AnalyticsHelper
@@ -38,6 +37,7 @@ import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
+import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.ConnectionMonitor
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
@@ -49,6 +49,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainActivity : ComponentActivity(), OnLocaleChangedListener {
     private val localizationDelegate = LocalizationActivityDelegate(this)
+
     @Inject
     lateinit var sharedPrefs: PrefRepo
 
@@ -59,6 +60,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(true)
+    val connectionSpeedType = mutableStateOf("")
+    val connectionSpeed = mutableStateOf(0)
     val isBackFromSummary = mutableStateOf(false)
     val isFilterApplied = mutableStateOf(false)
 
@@ -181,7 +184,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         connectionLiveData = ConnectionMonitor(this)
         connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value = isNetworkAvailable
+            isOnline.value = isNetworkAvailable.isOnline
+            connectionSpeed.value = isNetworkAvailable.connectionSpeed
+            connectionSpeedType.value = isNetworkAvailable.speedType
         }
 
         startSmartUserConsent()

@@ -331,6 +331,7 @@ fun VillageSelectionScreen(
                                     statusId = village.statusId,
                                     context = context
                                 ) {
+                                    NudgeLogger.d("VillageAndVoBoxForBottomSheet","id = $it")
                                     viewModel.villageSelected.value = it
                                     viewModel.updateSelectedVillage()
                                 }
