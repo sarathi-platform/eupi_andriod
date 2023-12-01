@@ -335,13 +335,13 @@ class SettingViewModel @Inject constructor(
             val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
             NudgeLogger.d(
                 "SettingViewModel",
-                "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
-                        "\n fetchAllDidiNeedToDeleteList -> ${fetchAllDidiNeedToDeleteList.json()};; \n fetchAllPendingDidiNeedToDeleteList -> ${fetchAllPendingDidiNeedToDeleteList.json()};; " +
-                        "\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
+                "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
+                        "\n\n fetchAllDidiNeedToDeleteList -> ${fetchAllDidiNeedToDeleteList.json()};; \n\n fetchAllPendingDidiNeedToDeleteList -> ${fetchAllPendingDidiNeedToDeleteList.json()};; " +
+                        "\n\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n\n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
             )
             NudgeLogger.d(
-                "SettingViewModel",
-                "isSecondStepNeedToBeSync -> " +
+                "\n\nSettingViewModel",
+                "isSecondStepNeedToBeSync -> \n" +
                         "            fetchAllDidiNeedToPostList.isEmpty() -> ${fetchAllDidiNeedToPostList.isEmpty()}\n" +
                         "            && fetchPendingDidiList.isEmpty() -> ${fetchPendingDidiList.isEmpty()}\n" +
                         "            && fetchAllDidiNeedToDeleteList.isEmpty() -> ${fetchAllDidiNeedToDeleteList.isEmpty()}\n" +
