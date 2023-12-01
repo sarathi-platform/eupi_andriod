@@ -1,8 +1,13 @@
 package com.patsurvey.nudge.database.service.csv
 
-import androidx.lifecycle.viewModelScope
+import android.content.Context
+import android.os.Build
+import com.google.firebase.ktx.Firebase
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
+import com.google.firebase.storage.storageMetadata
 import com.google.gson.JsonSyntaxException
-import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.analytics.AnalyticsHelper
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -16,43 +21,20 @@ import com.patsurvey.nudge.database.service.csv.adapter.DidiTableCSV
 import com.patsurvey.nudge.database.service.csv.adapter.NumericAnswerTableCSV
 import com.patsurvey.nudge.database.service.csv.adapter.TolaTableCSV
 import com.patsurvey.nudge.database.service.csv.adapter.toCsv
-import com.patsurvey.nudge.intefaces.NetworkCallbackListener
-import com.patsurvey.nudge.model.dataModel.ErrorModel
-import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.utils.ANSWER_TABLE
 import com.patsurvey.nudge.utils.ApiResponseFailException
 import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
-import com.patsurvey.nudge.utils.COMMON_ERROR_MSG
 import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.NUMERIC_TABLE_NAME
 import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.RESPONSE_CODE_500
-import com.patsurvey.nudge.utils.RESPONSE_CODE_BAD_GATEWAY
-import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
-import com.patsurvey.nudge.utils.RESPONSE_CODE_DEACTIVATED
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NETWORK_ERROR
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NOT_FOUND
-import com.patsurvey.nudge.utils.RESPONSE_CODE_NO_DATA
-import com.patsurvey.nudge.utils.RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE
-import com.patsurvey.nudge.utils.RESPONSE_CODE_TIMEOUT
-import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.SUCCESS
-import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.TOLA_TABLE
-import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
-import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.json
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.patsurvey.nudge.utils.uriFromFile
 import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.HttpException
 import java.io.File
 import java.io.IOException
@@ -70,14 +52,18 @@ class ExportHelper @Inject constructor(
 
     private val TAG = ExportHelper::class.java.simpleName
 
-    suspend fun exportAllData() {
-        exportTolaTableToCsv()
-        exportDidiTableToCsv()
-        exportAnswerTableToCsv()
-        exportNumericAnswerTableToCsv()
+    private val storageRef = Firebase.storage.reference
+    private val folderName = if (BuildConfig.DEBUG) "debug" else "prod"
+
+   val tablePaths = mutableListOf<String>()
+    suspend fun exportAllData(context: Context) {
+        exportTolaTableToCsv(context)
+        exportDidiTableToCsv(context)
+        exportAnswerTableToCsv(context)
+        exportNumericAnswerTableToCsv(context)
     }
 
-    suspend fun exportDidiTableToCsv() {
+    suspend fun exportDidiTableToCsv(context: Context) {
         val didiEntity = didiDao.getAllDidis()
 
         ExportService.export<DidiTableCSV>(
@@ -87,14 +73,53 @@ class ExportHelper @Inject constructor(
             // handle error here
             NudgeLogger.e(TAG, "exportDidiTableToCsv error", error)
         }.collect { path ->
-            NudgeLogger.d(TAG, "exportDidiTableToCsv: $path")
+            NudgeLogger.d(TAG, "exportDidiTableToCsv: path => $path")
+
+            try {
+                    val file = uriFromFile(context, File(path))
+                    val didiTableDumpRef = storageRef.child("$folderName/${file.lastPathSegment}")
+                    val didiTableDumpUploadTask = didiTableDumpRef
+                        .putFile(file)
+
+                didiTableDumpUploadTask
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                                NudgeLogger.d(
+                                    TAG,
+                                    "exportDidiTableToCsv addOnCompleteListener didiTableDumpUploadTask success"
+                                )
+
+                            } else {
+                                NudgeLogger.d(
+                                    TAG,
+                                    "exportDidiTableToCsv addOnCompleteListener failure"
+                                )
+                            }
+                        }
+                        .addOnFailureListener {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener failure"
+                            )
+                        }
+
+
+
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.UPDLOAD_DATA_DUMP_API)
+            }
+
             try {
                 val dataDumpRequestParts = DataDumpRequestParts.getDataDumpRequestParts(
+                    context,
                     path,
                     DataDumpTableName.DATA_DUMP_DIDI_TABLE,
                     (prefRepo.getMobileNumber() ?: -1).toString(),
                     if (prefRepo.isUserBPC()) USER_BPC else USER_CRP
                 )
+                NudgeLogger.d(TAG, "DataDumpRequestParts: dataDump = ${dataDumpRequestParts.dataDump.body.json()},\n" +
+                        "                    villageId = ${dataDumpRequestParts.villageId},\n" +
+                        "                    userType = ${dataDumpRequestParts.userType}")
                 val uploadDidiTableDumpResponse = apiService.uploadDataDump(
                     dataDump = dataDumpRequestParts.dataDump,
                     villageId = dataDumpRequestParts.villageId,
@@ -118,7 +143,7 @@ class ExportHelper @Inject constructor(
         }
     }
 
-    suspend fun exportTolaTableToCsv() {
+    suspend fun exportTolaTableToCsv(context: Context) {
         val tolaEntity = tolaDao.getAllTolas()
 
         ExportService.export<TolaTableCSV>(
@@ -128,9 +153,41 @@ class ExportHelper @Inject constructor(
             // handle error here
             NudgeLogger.e(TAG, "exportTolaTableToCsv error", error)
         }.collect { path ->
-            NudgeLogger.d(TAG, "exportTolaTableToCsv: $path")
+            NudgeLogger.d(TAG, "exportTolaTableToCsv: path => $path")
+            try {
+                val file = uriFromFile(context, File(path))
+                val tolaTableDumpRef = storageRef.child("$folderName/${file.lastPathSegment}")
+                val tolaTableDumpUploadTask = tolaTableDumpRef
+                    .putFile(file)
+
+                tolaTableDumpUploadTask
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener tolaTableDumpUploadTask success"
+                            )
+
+                        } else {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener failure"
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        NudgeLogger.d(
+                            TAG,
+                            "exportDidiTableToCsv addOnCompleteListener failure"
+                        )
+                    }
+
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.UPDLOAD_DATA_DUMP_API)
+            }
             try {
                 val dataDumpRequestParts = DataDumpRequestParts.getDataDumpRequestParts(
+                    context,
                     path,
                     DataDumpTableName.DATA_DUMP_TOLA_TABLE,
                     (prefRepo.getMobileNumber() ?: -1).toString(),
@@ -159,7 +216,7 @@ class ExportHelper @Inject constructor(
         }
     }
 
-    suspend fun exportAnswerTableToCsv() {
+    suspend fun exportAnswerTableToCsv(context: Context) {
         val answerEntity = answerDao.getAllAnswer()
 
         ExportService.export<AnswerTableCSV>(
@@ -169,9 +226,43 @@ class ExportHelper @Inject constructor(
             // handle error here
             NudgeLogger.e(TAG, "exportAnswerTableToCsv error", error)
         }.collect { path ->
-            NudgeLogger.d(TAG, "exportAnswerTableToCsv: $path")
+            NudgeLogger.d(TAG, "exportAnswerTableToCsv: path => $path")
+
+            try {
+                val file = uriFromFile(context, File(path))
+                val answerTableDumpRef = storageRef.child("$folderName/${file.lastPathSegment}")
+                val answerTableDumpUploadTask = answerTableDumpRef
+                    .putFile(file)
+
+                answerTableDumpUploadTask
+                    .addOnCompleteListener { it ->
+                        if (it.isSuccessful) {
+                             NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener answerTableDumpUploadTask success"
+                            )
+
+                        } else {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener failure"
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        NudgeLogger.d(
+                            TAG,
+                            "exportDidiTableToCsv addOnCompleteListener failure"
+                        )
+                    }
+
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.UPDLOAD_DATA_DUMP_API)
+            }
+
             try {
                 val dataDumpRequestParts = DataDumpRequestParts.getDataDumpRequestParts(
+                    context,
                     path,
                     DataDumpTableName.DATA_DUMP_ANSWERS_TABLE,
                     (prefRepo.getMobileNumber() ?: -1).toString(),
@@ -200,7 +291,7 @@ class ExportHelper @Inject constructor(
         }
     }
 
-    suspend fun exportNumericAnswerTableToCsv() {
+    suspend fun exportNumericAnswerTableToCsv(context: Context) {
 
         val numericAnswerEntity = numericAnswerDao.getAllNumericAnswers()
 
@@ -211,9 +302,41 @@ class ExportHelper @Inject constructor(
             // handle error here
             NudgeLogger.e(TAG, "exportNumericAnswerTableToCsv error", error)
         }.collect { path ->
-            NudgeLogger.d(TAG, "exportNumericAnswerTableToCsv: $path")
+            NudgeLogger.d(TAG, "exportNumericAnswerTableToCsv: path => $path")
+            try {
+                val file = uriFromFile(context, File(path))
+                val numericAnswerTableDumpRef = storageRef.child("$folderName/${file.lastPathSegment}")
+                val numericAnswerTableDumpUploadTask = numericAnswerTableDumpRef
+                    .putFile(file)
+
+                numericAnswerTableDumpUploadTask
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener numericAnswerTableDumpUploadTask success"
+                            )
+
+                        } else {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener failure"
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        NudgeLogger.d(
+                            TAG,
+                            "exportDidiTableToCsv addOnCompleteListener failure"
+                        )
+                    }
+
+            } catch (ex: Exception) {
+                onCatchError(ex, ApiType.UPDLOAD_DATA_DUMP_API)
+            }
             try {
                 val dataDumpRequestParts = DataDumpRequestParts.getDataDumpRequestParts(
+                    context,
                     path,
                     DataDumpTableName.DATA_DUMP_NUMERIC_ANSWERS_TABLE,
                     (prefRepo.getMobileNumber() ?: -1).toString(),
@@ -287,6 +410,58 @@ class ExportHelper @Inject constructor(
                 "BaseViewModel",
                 "onCatchError exception: ${e.javaClass} message: ${e.message}, api: ${api.name}"
             )
+        }
+    }
+
+    private suspend fun uploadFileToFirebase(context: Context, filePaths: List<String>) {
+        try {
+            filePaths.forEach { path ->
+                val file = uriFromFile(context, File(path))
+                val didiTableDumpRef = storageRef.child("$folderName/${file.lastPathSegment}")
+                val uploadTask = didiTableDumpRef
+                    .putFile(file)
+
+                uploadTask
+                    .addOnSuccessListener { it ->
+                        if (it.task.isSuccessful) {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener success response => path: ${didiTableDumpRef.downloadUrl.result.path}, " +
+                                        "\n name = ${didiTableDumpRef.downloadUrl.result.lastPathSegment}"
+                            )
+
+                        } else {
+                            NudgeLogger.d(
+                                TAG,
+                                "exportDidiTableToCsv addOnCompleteListener failure"
+                            )
+                        }
+                    }
+                    .addOnFailureListener {
+                        NudgeLogger.d(
+                            TAG,
+                            "exportDidiTableToCsv addOnCompleteListener failure"
+                        )
+                    }
+
+                /*val urlTask = uploadTask.continueWithTask { task ->
+                    if (!task.isSuccessful) {
+                        task.exception?.let {
+                            throw it
+                        }
+                    }
+                    NudgeLogger.d(
+                        TAG,
+                        "exportDidiTableToCsv continueWithTask downloadUrl = ${didiTableDumpRef.downloadUrl}"
+                    )
+                    didiTableDumpRef.downloadUrl
+                }.addOnCompleteListener { task ->
+
+                }*/
+            }
+
+        } catch (ex: Exception) {
+            onCatchError(ex, ApiType.UPDLOAD_DATA_DUMP_API)
         }
     }
 

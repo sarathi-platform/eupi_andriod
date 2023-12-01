@@ -1,12 +1,25 @@
 package com.patsurvey.nudge.database.service.csv.adapter
 
-import com.patsurvey.nudge.utils.USER_BPC
-import com.patsurvey.nudge.utils.USER_CRP
+import android.content.Context
+import android.net.Uri
+import android.os.Environment
+import android.text.TextUtils
+import com.patsurvey.nudge.utils.NudgeCore
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.uriFromFile
+import okhttp3.MediaType
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Part
+import java.io.BufferedInputStream
+import java.io.BufferedOutputStream
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.io.InputStream
+import java.io.OutputStream
+
 
 data class DataDumpRequestParts(
     @Part val dataDump: MultipartBody.Part,
@@ -15,7 +28,11 @@ data class DataDumpRequestParts(
 ) {
 
     companion object {
-        fun getDataDumpRequestParts(dataDumpFilePath: String, tableName: DataDumpTableName, mobileNumber: String, userType: String): DataDumpRequestParts {
+
+        private val TAG = DataDumpRequestParts::class.java.simpleName
+
+        fun getDataDumpRequestParts(context: Context, dataDumpFilePath: String, tableName: DataDumpTableName, mobileNumber: String, userType: String): DataDumpRequestParts {
+            val dataDumpList = arrayListOf<MultipartBody.Part>()
             val fileName = when (tableName) {
                 DataDumpTableName.DATA_DUMP_DIDI_TABLE -> "dataDumpDidiTable"
                 DataDumpTableName.DATA_DUMP_TOLA_TABLE -> "dataDumpTolaTable"
