@@ -503,14 +503,12 @@ fun SectionOneSummeryItem(
             )
 
             if(isArrowVisible) {
-                IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Forward Arrow",
                         tint = textColorDark,
-                        modifier = Modifier
+                        modifier = Modifier.padding(5.dp)
                     )
-                }
             }
         }
         Divider(
