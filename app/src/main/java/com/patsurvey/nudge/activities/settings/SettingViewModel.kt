@@ -327,7 +327,7 @@ class SettingViewModel @Inject constructor(
     fun isSecondStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepTwoSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "")
+            val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
             val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
             val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
@@ -395,7 +395,7 @@ class SettingViewModel @Inject constructor(
     fun isThirdStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepThreeSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
+            if (didiDao.getAllNeedToPostDidiRankingDidis(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
                 && isStepStatusSync(3)
             ) {
@@ -444,10 +444,8 @@ class SettingViewModel @Inject constructor(
     fun isFifthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostVoDidi(
-                    needsToPostVo = true,
-                    villageId = prefRepo.getSelectedVillage().id
-                ).isEmpty()
+            if (didiDao.getAllNeedToPostVoDidis(true, "").isEmpty()
+                && didiDao.fetchPendingVOStatusStatusDidi(true,"").isEmpty()
                 && isStepStatusSync(5)
                 && !isFormNeedToBeUpload()
             ) {

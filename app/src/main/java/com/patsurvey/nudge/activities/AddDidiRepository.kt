@@ -201,7 +201,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId, DidiStatus.DIDI_ACTIVE.ordinal)
     }
 
     fun fetchAllDidiNeedToUpdate(

@@ -883,7 +883,7 @@ class SyncHelper (
                 settingViewModel.stepTwoSyncStatus.value = 1
                 settingViewModel.syncPercentage.value = 0.2f
             }
-            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0, DidiStatus.DIDI_ACTIVE.ordinal)
             for(didi in didiList){
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
                 if (tola != null) {
@@ -1128,7 +1128,7 @@ class SyncHelper (
             }
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
+                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -1433,7 +1433,7 @@ class SyncHelper (
                     settingViewModel.syncPercentage.value = 0.8f
                 }
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "")
+                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
@@ -1522,7 +1522,7 @@ class SyncHelper (
     fun getStepTwoDataSizeInSync(stepOneMutableString : MutableState<String>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             var sizeToBeShown = ""
-            val didiList = didiDao.fetchAllDidiNeedToPost(true, "")
+            val didiList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             if (didiList.isNotEmpty()) {
                 val didiJson = JsonArray()
                 for (didi in didiList) {
@@ -1539,7 +1539,7 @@ class SyncHelper (
     fun getStepThreeDataSizeInSync(stepOneMutableString : MutableState<String>){
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             var sizeToBeShown = ""
-            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true)
+            val didiWealthList = didiDao.getAllNeedToPostDidiRanking(true, 0)
             if (didiWealthList.isNotEmpty()) {
                 val jsonDidi = JsonArray()
                 for (didi in didiWealthList) {
