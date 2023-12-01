@@ -64,7 +64,7 @@ class ExportHelper @Inject constructor(
     }
 
     suspend fun exportDidiTableToCsv(context: Context) {
-        val didiEntity = didiDao.getAllDidis()
+        val didiEntity = didiDao.getDidiTableDump()
 
         ExportService.export<DidiTableCSV>(
             type = Exports.CSV(CsvConfig(prefix = "$DIDI_TABLE-${prefRepo.getMobileNumber()}")),
@@ -144,7 +144,7 @@ class ExportHelper @Inject constructor(
     }
 
     suspend fun exportTolaTableToCsv(context: Context) {
-        val tolaEntity = tolaDao.getAllTolas()
+        val tolaEntity = tolaDao.getTolaTableDump()
 
         ExportService.export<TolaTableCSV>(
             type = Exports.CSV(CsvConfig(prefix = "$TOLA_TABLE-${prefRepo.getMobileNumber()}")),
