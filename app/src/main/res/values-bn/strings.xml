@@ -380,6 +380,7 @@
     <string name="link_of_b">বি ফর্মের লিঙ্ক</string>
     <string name="user_bug_report_text">বাগ রিপোর্ট</string>
     <string name="vo_endorsement_not_started">VO অনুমোদন শুরু হয় না</string>
+    <string name="export_data_test">ডেটা এক্সপোর্ট করুন</string>
 
 
 </resources>
