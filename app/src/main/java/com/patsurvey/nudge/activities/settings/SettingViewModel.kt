@@ -329,7 +329,7 @@ class SettingViewModel @Inject constructor(
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "")
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
-            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal)
+            val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
             val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
             val fetchAllDidiNeedToUpdateList = didiDao.fetchAllDidiNeedToUpdate(true, "", 0)
             val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)

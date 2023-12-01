@@ -48,7 +48,7 @@ class CheckDBStatus(val viewModel: BaseViewModel) {
         viewModel.job = CoroutineScope(Dispatchers.IO + viewModel.exceptionHandler).launch {
             if(didiDao.fetchAllDidiNeedToPost(true,"").isEmpty()
                 && didiDao.fetchPendingDidi(true,"").isEmpty()
-                && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal).isEmpty()
+                && didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0).isEmpty()
                 && didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal,"",0).isEmpty()
                 && didiDao.fetchAllDidiNeedToUpdate(true,"",0).isEmpty()
                 && didiDao.fetchAllPendingDidiNeedToUpdate(true,"",0).isEmpty()) {

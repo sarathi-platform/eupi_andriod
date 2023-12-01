@@ -216,8 +216,8 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllDidiNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
 
-    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status")
-    fun fetchAllDidiNeedToDelete(status: Int) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where activeStatus = :status and needsToPostDeleteStatus =:needsToPostDeleteStatus and transactionId = :transactionId and serverId != :serverId")
+    fun fetchAllDidiNeedToDelete(status: Int, needsToPostDeleteStatus: Boolean, transactionId: String, serverId: Int) : List<DidiEntity>
 
     @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId != :transactionId and serverId != :serverId")
     fun fetchAllPendingDidiNeedToUpdate(  needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
@@ -280,5 +280,8 @@ interface DidiDao {
 
     @Query("SELECT COUNT(*) from $DIDI_TABLE where patSurveyStatus = 0 and section1Status = 0 and section2Status = 0 and villageId = :villageId")
     fun fetchPendingVerificationDidiCount(villageId: Int): Int
+
+    @Query("SELECT * from $DIDI_TABLE")
+    fun getDidiTableDump(): List<DidiEntity>
 
 }
