@@ -333,7 +333,7 @@ fun VillageSelectionScreen(
                                 ) {
                                     NudgeLogger.d("VillageAndVoBoxForBottomSheet","id = $it")
                                     viewModel.villageSelected.value = it
-                                    viewModel.updateSelectedVillage()
+                                    viewModel.updateSelectedVillage(villages)
                                 }
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
@@ -366,7 +366,7 @@ fun VillageSelectionScreen(
                                 when (fetchBorderColorForVillage(stepId, statusId)) {
                                     0,2 -> showCustomToast(context,  context.getString(R.string.village_is_not_vo_endorsed_right_now))
                                     else -> {
-                                        viewModel.updateSelectedVillage()
+                                        viewModel.updateSelectedVillage(villageList = villages)
                                         navController.popBackStack()
                                         navController.navigate(
                                             "home_graph/${
@@ -378,7 +378,7 @@ fun VillageSelectionScreen(
                                     }
                                 }
                             } else {
-                                viewModel.updateSelectedVillage()
+                                viewModel.updateSelectedVillage(villageList = villages)
                                 navController.popBackStack()
                                 navController.navigate(
                                     "home_graph/${
@@ -437,7 +437,7 @@ fun VillageAndVoBoxForBottomSheet(
             ) {
                 if (isUserBPC) {
                     when (fetchBorderColorForVillage(stepId, statusId)) {
-                        0,2 -> showCustomToast(
+                        0, 2 -> showCustomToast(
                             context,
                             context.getString(R.string.village_is_not_vo_endorsed_right_now)
                         )
