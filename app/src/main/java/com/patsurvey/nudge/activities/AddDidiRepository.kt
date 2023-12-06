@@ -256,10 +256,6 @@ class AddDidiRepository @Inject constructor(
         return this.didiDao.getAllNeedToPostVoDidi(needsToPostVo, villageId)
     }
 
-    fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment: String) {
-        this.didiDao.updateExclusionStatus(didiId, patExclusionStatus, crpComment)
-    }
-
     fun updateImageLocalPath(didiId: Int, localPath: String) {
         this.didiDao.updateImageLocalPath(didiId, localPath)
     }
