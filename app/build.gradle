@@ -260,8 +260,11 @@ dependencies {
     testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
 
     //CSV Export
-    implementation ("com.opencsv:opencsv:5.3")
+    implementation("com.opencsv:opencsv:5.3")
 
     implementation 'com.google.firebase:firebase-storage:20.3.0'
+
+    debugImplementation "com.github.chuckerteam.chucker:library:4.0.0"
+    releaseImplementation "com.github.chuckerteam.chucker:library-no-op:4.0.0"
 
 }

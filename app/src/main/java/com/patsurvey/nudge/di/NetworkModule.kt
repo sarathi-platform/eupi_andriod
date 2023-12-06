@@ -3,6 +3,7 @@ package com.patsurvey.nudge.di
 import android.app.Application
 import android.content.Context
 import android.os.Build
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.patsurvey.nudge.BuildConfig
@@ -82,6 +83,7 @@ object NetworkModule {
         application.applicationContext
       )
     )
+    clientBuilder.addInterceptor(ChuckerInterceptor(application.applicationContext))
     if (interceptors.isNotEmpty()) {
       interceptors.forEach { interceptor ->
         clientBuilder.addInterceptor(interceptor)
