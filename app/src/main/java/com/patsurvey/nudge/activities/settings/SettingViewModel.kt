@@ -6,7 +6,6 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -25,12 +24,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.database.service.csv.ExportService
-import com.patsurvey.nudge.database.service.csv.CsvConfig
 import com.patsurvey.nudge.database.service.csv.ExportHelper
-import com.patsurvey.nudge.database.service.csv.adapter.DidiTableCSV
-import com.patsurvey.nudge.database.service.csv.Exports
-import com.patsurvey.nudge.database.service.csv.adapter.toCsv
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -38,13 +32,13 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LogWriter
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
@@ -62,7 +56,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -381,13 +374,12 @@ class SettingViewModel @Inject constructor(
             val isBpcScoreSaved = prefRepo.getPref(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
-
             )
+            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
             if (isBpcScoreSaved)
                 return isBpcScoreSaved
             else
                 return false
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
         }
         return false
     }
@@ -569,7 +561,7 @@ class SettingViewModel @Inject constructor(
         syncErrorMessage.value = ""
         showSyncDialog = syncDialog
         resetPosition()
-        if (isInternetAvailable(cxt)) {
+        if (NudgeCore.isOnline()) {
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {
@@ -632,7 +624,7 @@ class SettingViewModel @Inject constructor(
 //        hitApiStatus.value = 3
         showBPCSyncDialog = syncDialog
         bpcSyncStatus.value = 2
-        if (isInternetAvailable(cxt)) {
+        if (NudgeCore.isOnline()) {
             bpcSyncHelper.syncBPCDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {

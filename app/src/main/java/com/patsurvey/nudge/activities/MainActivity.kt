@@ -39,6 +39,8 @@ import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.navgraph.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.ConnectionMonitor
+import com.patsurvey.nudge.utils.NetworkSpeed
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.SENDER_NUMBER
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -184,9 +186,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener {
 
         connectionLiveData = ConnectionMonitor(this)
         connectionLiveData.observe(this) { isNetworkAvailable ->
-            isOnline.value = isNetworkAvailable.isOnline
+            isOnline.value = isNetworkAvailable.isOnline && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString())
             connectionSpeed.value = isNetworkAvailable.connectionSpeed
             connectionSpeedType.value = isNetworkAvailable.speedType
+            NudgeCore.updateIsOnline(isNetworkAvailable.isOnline
+                    && (isNetworkAvailable.speedType != NetworkSpeed.POOR.toString() || isNetworkAvailable.speedType != NetworkSpeed.UNKNOWN.toString()))
         }
 
         startSmartUserConsent()
