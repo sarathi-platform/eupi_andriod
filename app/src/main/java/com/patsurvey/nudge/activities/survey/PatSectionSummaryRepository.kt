@@ -85,6 +85,14 @@ class PatSectionSummaryRepository @Inject constructor(
         )
     }
 
+    fun updateVOEndorsementStatus(didiId: Int,status:Int){
+        didiDao.updateVOEndorsementStatus(prefRepo.getSelectedVillage().id,
+            didiId,
+            status
+        )
+    }
+
+
     fun updateDidiScoreInDB(score: Double,comment:String,isDidiAccepted:Boolean,didiId: Int){
         didiDao.updateDidiScore(
             score = score,

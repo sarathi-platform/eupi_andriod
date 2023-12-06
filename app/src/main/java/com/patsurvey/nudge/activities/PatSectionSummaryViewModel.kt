@@ -4,20 +4,17 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.patsurvey.nudge.activities.survey.PatSectionSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
-import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.QuestionListDao
-import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.AbleBodiedFlag
 import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
+import com.patsurvey.nudge.utils.ForVOEndorsementType
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PageFrom
@@ -28,7 +25,6 @@ import com.patsurvey.nudge.utils.TYPE_EXCLUSION
 import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.toWeightageRatio
-import com.patsurvey.nudge.utils.updateStepStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -260,13 +256,13 @@ class PatSectionSummaryViewModel @Inject constructor(
                         comment = BLANK_STRING
                         patSectionRepository.updateVOEndorsementDidiStatus(
                             didiId = didiId,
-                            status = 1
+                            status = ForVOEndorsementType.ACCEPTED.ordinal
                         )
                     } else {
                         isDidiAccepted = false
                         patSectionRepository.updateVOEndorsementDidiStatus(
                             didiId = didiId,
-                            status = 0
+                            status = ForVOEndorsementType.REJECTED.ordinal
                         )
                     }
                     Log.d("TAG", "calculateDidiScorePATSection:  $totalWightWithoutNumQue  :: $didiId :: $isDidiAccepted")
@@ -290,6 +286,19 @@ class PatSectionSummaryViewModel @Inject constructor(
                 }
                 patSectionRepository.updateModifiedDateServerId(didiId)
             }
+        }
+    }
+
+    fun updateVOEndorseAfterDidiRejected(didiId:Int,forVoEndorsementStatus:Int){
+        job = CoroutineScope(Dispatchers.IO +exceptionHandler).launch {
+            if(didiEntity.value.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal){
+                patSectionRepository.updateVOEndorsementStatus(didiId = didiId,
+                    status = DidiEndorsementStatus.REJECTED.ordinal)
+            }
+            patSectionRepository.updateVOEndorsementDidiStatus(
+                didiId = didiId,
+                status = forVoEndorsementStatus
+            )
         }
     }
 }
