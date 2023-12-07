@@ -5,9 +5,7 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import android.util.Log
-import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -1463,7 +1461,10 @@ class VillageSelectionViewModel @Inject constructor(
                 startRetryIfAny()
                 withContext(Dispatchers.Main) {
                     delay(250)
-                    NudgeLogger.d("VillageSelectionScreen", "fetchVillageList finally -> viewModel.showLoader.value = false")
+                    NudgeLogger.d(
+                        "VillageSelectionScreen",
+                        "fetchVillageList finally -> viewModel.showLoader.value = false"
+                    )
                     showLoader.value = false
                 }
             }
@@ -1471,19 +1472,22 @@ class VillageSelectionViewModel @Inject constructor(
     }
 
 
-    fun updateSelectedVillage() {
-        NudgeLogger.d("VillageAndVoBoxForBottomSheet","villageList.value[villageSelected.value] = ${villageList.value[villageSelected.value]}")
-        prefRepo.saveSelectedVillage(villageList.value[villageSelected.value])
+    fun updateSelectedVillage(villageList: List<VillageEntity>) {
+        NudgeLogger.d(
+            "VillageAndVoBoxForBottomSheet",
+            "villageList.value[villageSelected.value] = ${villageList[villageSelected.value]}"
+        )
+        prefRepo.saveSelectedVillage(villageList[villageSelected.value])
     }
 
-    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>):String {
-        var requestString:StringBuilder= StringBuilder()
-        var request:String= "2"
-        if(localLanguageList.isNotEmpty()){
+    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>): String {
+        var requestString: StringBuilder = StringBuilder()
+        var request: String = "2"
+        if (localLanguageList.isNotEmpty()) {
             localLanguageList.forEach {
                 requestString.append("${it.id}-")
             }
-        }else request = "2"
+        } else request = "2"
         if(requestString.contains("-")){
            request= requestString.substring(0,requestString.length-1)
         }

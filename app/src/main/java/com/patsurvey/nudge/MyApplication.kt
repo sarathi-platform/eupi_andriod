@@ -5,13 +5,19 @@ import android.content.Context
 import android.content.res.Configuration
 import android.content.res.Resources
 import android.net.Network
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.NudgeLogger.e
 import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.Locale
 import kotlin.coroutines.CoroutineContext
@@ -19,9 +25,33 @@ import kotlin.coroutines.CoroutineContext
 @HiltAndroidApp
 class MyApplication: Application() {
 
-    init {
+    private fun init() {
         instance = this
+        NudgeCore.init(applicationContext)
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        init()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onAppDestroy() {
+        NudgeLogger.d(TAG, "onAppDestroy")
+        cleanUp()
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun onAppForegrounded() {
+        NudgeLogger.d(TAG, "onAppForegrounded")
+//        CompatibilityUtil.setAppBackground(false)
+    }
+
+    private fun cleanUp() {
+        NudgeCore.cleanUp()
+    }
+
+
     companion object {
         private val TAG = MyApplication::class.java.simpleName
 
@@ -59,6 +89,22 @@ class MyApplication: Application() {
                 }
             } catch (ex: Throwable) {
                 NudgeLogger.e(tag, message ?: "appScopeLaunch", ex)
+            }
+            return null
+        }
+
+        fun appScopeAsync(coroutineContext: CoroutineContext = Dispatchers.Default, tag: String = TAG, message: String? = "appScopeAsync", func: suspend () -> Unit): Deferred<Unit>? {
+            try {
+                val asyncJob = scope().async(coroutineContext) {
+                    try {
+                        func()
+                    } catch (ex: Throwable) {
+                        e(tag, "appScopeAsync $message", ex, true)
+                    }
+                }
+                return asyncJob
+            } catch (ex: Throwable) {
+                e(tag, message ?: "appScopeAsync", ex)
             }
             return null
         }

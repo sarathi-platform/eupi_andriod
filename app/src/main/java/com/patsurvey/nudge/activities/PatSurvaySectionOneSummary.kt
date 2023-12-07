@@ -263,6 +263,7 @@ fun PatSurvaySectionSummaryScreen(
                     }
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
                         TYPE_EXCLUSION)
+                    patSectionSummaryViewModel.updateVOEndorseAfterDidiRejected(didi.value.id,ForVOEndorsementType.REJECTED.ordinal)
                     if (showPatCompletion.value) {
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,

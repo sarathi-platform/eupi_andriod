@@ -6,7 +6,6 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.viewModelScope
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.SyncBPCDataOnServer
@@ -25,12 +24,7 @@ import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.UserDao
 import com.patsurvey.nudge.database.dao.VillageListDao
-import com.patsurvey.nudge.database.service.csv.ExportService
-import com.patsurvey.nudge.database.service.csv.CsvConfig
 import com.patsurvey.nudge.database.service.csv.ExportHelper
-import com.patsurvey.nudge.database.service.csv.adapter.DidiTableCSV
-import com.patsurvey.nudge.database.service.csv.Exports
-import com.patsurvey.nudge.database.service.csv.adapter.toCsv
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -38,13 +32,13 @@ import com.patsurvey.nudge.model.dataModel.SettingOptionModel
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.patsurvey.nudge.network.isInternetAvailable
 import com.patsurvey.nudge.utils.ApiType
-import com.patsurvey.nudge.utils.DIDI_TABLE
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
 import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LogWriter
+import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
@@ -62,7 +56,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
@@ -327,7 +320,7 @@ class SettingViewModel @Inject constructor(
     fun isSecondStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepTwoSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "")
+            val fetchAllDidiNeedToPostList = didiDao.fetchAllDidiNeedToPost(true, "", 0)
             val fetchPendingDidiList = didiDao.fetchPendingDidi(true, "")
             val fetchAllDidiNeedToDeleteList = didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
             val fetchAllPendingDidiNeedToDeleteList = didiDao.fetchAllPendingDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, "", 0)
@@ -335,13 +328,13 @@ class SettingViewModel @Inject constructor(
             val fetchAllPendingDidiNeedToUpdateList = didiDao.fetchAllPendingDidiNeedToUpdate(true, "", 0)
             NudgeLogger.d(
                 "SettingViewModel",
-                "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
-                        "\n fetchAllDidiNeedToDeleteList -> ${fetchAllDidiNeedToDeleteList.json()};; \n fetchAllPendingDidiNeedToDeleteList -> ${fetchAllPendingDidiNeedToDeleteList.json()};; " +
-                        "\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
+                "isSecondStepNeedToBeSync -> fetchAllDidiNeedToPostList -> ${fetchAllDidiNeedToPostList.json()};; \n\n fetchPendingDidiList -> ${fetchPendingDidiList.json()};; " +
+                        "\n\n fetchAllDidiNeedToDeleteList -> ${fetchAllDidiNeedToDeleteList.json()};; \n\n fetchAllPendingDidiNeedToDeleteList -> ${fetchAllPendingDidiNeedToDeleteList.json()};; " +
+                        "\n\n fetchAllDidiNeedToUpdateList -> ${fetchAllDidiNeedToUpdateList.json()};; \n\n fetchAllPendingDidiNeedToUpdateList -> ${fetchAllPendingDidiNeedToUpdateList.json()}"
             )
             NudgeLogger.d(
-                "SettingViewModel",
-                "isSecondStepNeedToBeSync -> " +
+                "\n\nSettingViewModel",
+                "isSecondStepNeedToBeSync -> \n" +
                         "            fetchAllDidiNeedToPostList.isEmpty() -> ${fetchAllDidiNeedToPostList.isEmpty()}\n" +
                         "            && fetchPendingDidiList.isEmpty() -> ${fetchPendingDidiList.isEmpty()}\n" +
                         "            && fetchAllDidiNeedToDeleteList.isEmpty() -> ${fetchAllDidiNeedToDeleteList.isEmpty()}\n" +
@@ -381,13 +374,12 @@ class SettingViewModel @Inject constructor(
             val isBpcScoreSaved = prefRepo.getPref(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
-
             )
+            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
             if (isBpcScoreSaved)
                 return isBpcScoreSaved
             else
                 return false
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
         }
         return false
     }
@@ -395,7 +387,7 @@ class SettingViewModel @Inject constructor(
     fun isThirdStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepThreeSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostDidiRanking(true).isEmpty()
+            if (didiDao.getAllNeedToPostDidiRankingDidis(true).isEmpty()
                 && didiDao.fetchPendingWealthStatusDidi(true, "").isEmpty()
                 && isStepStatusSync(3)
             ) {
@@ -444,10 +436,8 @@ class SettingViewModel @Inject constructor(
     fun isFifthStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
         stepFifthSyncStatus = isNeedToBeSync
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (didiDao.getAllNeedToPostVoDidi(
-                    needsToPostVo = true,
-                    villageId = prefRepo.getSelectedVillage().id
-                ).isEmpty()
+            if (didiDao.getAllNeedToPostVoDidis(true, "").isEmpty()
+                && didiDao.fetchPendingVOStatusStatusDidi(true,"").isEmpty()
                 && isStepStatusSync(5)
                 && !isFormNeedToBeUpload()
             ) {
@@ -571,7 +561,7 @@ class SettingViewModel @Inject constructor(
         syncErrorMessage.value = ""
         showSyncDialog = syncDialog
         resetPosition()
-        if (isInternetAvailable(cxt)) {
+        if (NudgeCore.isOnline()) {
             syncHelper.syncDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {
@@ -634,7 +624,7 @@ class SettingViewModel @Inject constructor(
 //        hitApiStatus.value = 3
         showBPCSyncDialog = syncDialog
         bpcSyncStatus.value = 2
-        if (isInternetAvailable(cxt)) {
+        if (NudgeCore.isOnline()) {
             bpcSyncHelper.syncBPCDataToServer(object :
                 NetworkCallbackListener {
                 override fun onSuccess() {

@@ -3,7 +3,6 @@ package com.patsurvey.nudge.utils
 import com.google.gson.GsonBuilder
 import com.google.gson.JsonParser
 import com.google.gson.JsonSyntaxException
-import com.patsurvey.nudge.BuildConfig
 import okhttp3.*
 import okhttp3.internal.http.promisesBody
 import okhttp3.logging.HttpLoggingInterceptor.Logger
@@ -46,16 +45,8 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
         var i = 0
         val count: Int = headers.size
         while (i < count) {
-            val name: String =  headers.name(i)
-            val value: String = if (headers.name(i).equals("authorization", true)) {
-                if (BuildConfig.DEBUG) {
-                    headers.value(i)
-                } else {
-                    "token"
-                }
-            } else {
-                headers.value(i)
-            }
+            val name: String = headers.name(i)
+            val value: String = headers.value(i)
             if ("Accept-Encoding".equals(name, ignoreCase = true) && "gzip".equals(value, ignoreCase = true)) {
                 compressed = true
             }
@@ -77,9 +68,8 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
         }
         curlCmd += (if (compressed) " --compressed " else " ") + "\"" + request.url + "\""
         logger.log("╭--- cURL (" + request.url.toString() + ")")
-        NudgeLogger.d("CurlLoggingInterceptor", "╭--- cURL (" + request.url.toString() + ")")
         logger.log(curlCmd)
-        NudgeLogger.d("CurlLoggingInterceptor", curlCmd)
+//        logger.log("╰--- (copy and paste the above line to a terminal)")
 
         val startNs = System.nanoTime()
         val response: Response
@@ -87,7 +77,6 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
             response = chain.proceed(request)
         } catch (e: Exception) {
             logger.log("<-- HTTP FAILED: $e")
-            NudgeLogger.d("CurlLoggingInterceptor", "$e")
             throw e
         }
 
@@ -98,16 +87,12 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
         val bodySize = if (contentLength != -1L) "$contentLength-byte" else "unknown-length"
         logger.log(
             "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms)")
-        NudgeLogger.d("CurlLoggingInterceptor",
-            "<-- ${response.code}${if (response.message.isEmpty()) "" else ' ' + response.message} ${response.request.url} (${tookMs}ms)")
+
 
             if (!response.promisesBody()) {
                 logger.log("<-- END HTTP")
-                NudgeLogger.d("CurlLoggingInterceptor", "<-- END HTTP")
-
             } else if (bodyHasUnknownEncoding(response.headers)) {
                 logger.log("<-- END HTTP (encoded body omitted)")
-                NudgeLogger.d("CurlLoggingInterceptor", "<-- END HTTP (encoded body omitted)")
             } else {
                 val source = responseBody.source()
                 source.request(Long.MAX_VALUE) // Buffer the entire body.
@@ -127,9 +112,7 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
 
                 if (contentLength != 0L) {
                     logger.log("")
-                    NudgeLogger.d("CurlLoggingInterceptor", "")
                     logger.log(buffer.clone().readString(charset))
-                    NudgeLogger.d("CurlLoggingInterceptor", buffer.clone().readString(charset))
                 }
 
                 //Enable this code to prettify json in logcat
@@ -150,10 +133,8 @@ class CurlLoggingInterceptor @JvmOverloads constructor(val logger: Logger = Logg
 
                 if (gzippedLength != null) {
                     logger.log("<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
-                    NudgeLogger.d("CurlLoggingInterceptor", "<-- END HTTP (${buffer.size}-byte, $gzippedLength-gzipped-byte body)")
                 } else {
                     logger.log("<-- END HTTP (${buffer.size}-byte body)")
-                    NudgeLogger.d("CurlLoggingInterceptor", "<-- END HTTP (${buffer.size}-byte body)")
                 }
             }
         return response

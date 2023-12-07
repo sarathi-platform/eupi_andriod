@@ -65,7 +65,7 @@ interface DidiDao {
     fun saveLocalImagePath(path: String, didiId: Int)
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking AND villageId = :villageId")
-    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean,villageId: Int): List<DidiEntity>
+    fun getAllNeedToPostDidiRankingForVillage(needsToPostRanking: Boolean,villageId: Int): List<DidiEntity>
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostPAT = :needsToPostPAT AND villageId = :villageId")
     fun getAllNeedToPostPATDidi(needsToPostPAT: Boolean, villageId: Int): List<DidiEntity>
@@ -108,14 +108,17 @@ interface DidiDao {
     @Query("update $DIDI_TABLE set cohortName = :newName where cohortId = :id")
     fun updateTolaName(id: Int, newName: String)
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId")
-    fun fetchAllDidiNeedToPost( needsToPost: Boolean,transactionId : String?) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId")
+    fun fetchAllDidiNeedToPost( needsToPost: Boolean,transactionId : String?, serverId: Int) : List<DidiEntity>
 
     @Query("DELETE from $DIDI_TABLE where needsToPost = :needsToPost")
     fun deleteDidiNeedToPost( needsToPost: Boolean)
 
+    @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking and serverId != :serverId")
+    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean, serverId: Int): List<DidiEntity>
+
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostRanking = :needsToPostRanking")
-    fun getAllNeedToPostDidiRanking(needsToPostRanking: Boolean): List<DidiEntity>
+    fun getAllNeedToPostDidiRankingDidis(needsToPostRanking: Boolean): List<DidiEntity>
 
     @Query("select COUNT(*) from $DIDI_TABLE where villageId =:villageId AND patSurveyStatus=0 AND wealth_ranking='POOR' AND activeStatus = 1")
     fun fetchPendingDidiCount(villageId: Int): Int
@@ -201,8 +204,8 @@ interface DidiDao {
     @Query("SELECT * from $DIDI_TABLE ORDER BY id DESC LIMIT 1")
     fun fetchLastDidiDetails(): DidiEntity
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId")
-    fun fetchAllVONeedToPostStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId and serverId != :serverId")
+    fun fetchAllVONeedToPostStatusDidi(needsToPostVo: Boolean,transactionId: String?, serverId: Int): List<DidiEntity>
 
     @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId != :transactionId")
     fun fetchPendingVOStatusStatusDidi(needsToPostVo: Boolean,transactionId: String?): List<DidiEntity>
@@ -210,8 +213,8 @@ interface DidiDao {
     @Query("DELETE from $DIDI_TABLE")
     fun deleteAllDidi()
 
-    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId")
-    fun fetchAllDidiNeedToAdd( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
+    @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId = :serverId and activeStatus = :activeStatus")
+    fun fetchAllDidiNeedToAdd( needsToPost: Boolean,transactionId : String?,serverId : Int, activeStatus: Int) : List<DidiEntity>
 
     @Query("SELECT * from $DIDI_TABLE where needsToPost = :needsToPost and transactionId = :transactionId and serverId != :serverId")
     fun fetchAllDidiNeedToUpdate( needsToPost: Boolean,transactionId : String?,serverId : Int) : List<DidiEntity>
@@ -244,6 +247,9 @@ interface DidiDao {
 
     @Query("SELECT * FROM $DIDI_TABLE where needsToPostVo = :needsToPostVo AND villageId = :villageId")
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity>
+
+    @Query("SELECT * from $DIDI_TABLE where needsToPostVo = :needsToPostVo and transactionId = :transactionId")
+    fun getAllNeedToPostVoDidis(needsToPostVo: Boolean, transactionId: String): List<DidiEntity>
 
     @Query("UPDATE $DIDI_TABLE SET patExclusionStatus = :patExclusionStatus, crpComment=:crpComment WHERE id = :didiId")
     fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment:String)

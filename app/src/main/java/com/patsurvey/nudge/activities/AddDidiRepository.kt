@@ -201,7 +201,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId, DidiStatus.DIDI_ACTIVE.ordinal)
     }
 
     fun fetchAllDidiNeedToUpdate(
@@ -254,10 +254,6 @@ class AddDidiRepository @Inject constructor(
 
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity> {
         return this.didiDao.getAllNeedToPostVoDidi(needsToPostVo, villageId)
-    }
-
-    fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment: String) {
-        this.didiDao.updateExclusionStatus(didiId, patExclusionStatus, crpComment)
     }
 
     fun updateImageLocalPath(didiId: Int, localPath: String) {
