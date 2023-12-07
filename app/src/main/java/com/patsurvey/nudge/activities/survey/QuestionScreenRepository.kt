@@ -56,6 +56,9 @@ class QuestionScreenRepository@Inject constructor(
     }
     fun updateNeedToPostPAT(didiId: Int) {
         didiDao.updateNeedToPostPAT(true, didiId, villageId = prefRepo.getSelectedVillage().id)
+        if (prefRepo.isUserBPC()) {
+            didiDao.updateNeedsToPostBPCProcessStatus(true, didiId)
+        }
     }
 
     fun isAlreadyAnswered(didiId: Int, questionId: Int, sectionType: String): Int {

@@ -1099,13 +1099,43 @@ fun updateStepStatus(stepsListDao: StepsListDao, didiDao: DidiDao,didiId:Int,pre
 }
 
 fun addDefaultLanguage(languageListDao: LanguageListDao) {
-    languageListDao.insertLanguage(
-        LanguageEntity(
-            id = 2,
-            language = "English",
-            langCode = "en",
-            orderNumber = 1,
-            localName = "English"
+    languageListDao.insertAll(
+        listOf(
+            LanguageEntity(
+                id = 2,
+                language = "English",
+                langCode = "en",
+                orderNumber = 1,
+                localName = "English"
+            ),
+            LanguageEntity(
+                1,
+                language = "Hindi",
+                langCode = "hi",
+                orderNumber = 2,
+                localName = "हिंदी"
+            ),
+            LanguageEntity(
+                3,
+                language = "Bengali",
+                langCode = "bn",
+                orderNumber = 3,
+                localName = "বাংলা"
+            ),
+            LanguageEntity(
+                4,
+                language = "Assamese",
+                langCode = "as",
+                orderNumber = 4,
+                localName = "অসমীয়া"
+            ),
+            LanguageEntity(
+                5,
+                language = "Bodo",
+                langCode = "be",
+                orderNumber = 5,
+                localName = "बर'"
+            )
         )
     )
 }

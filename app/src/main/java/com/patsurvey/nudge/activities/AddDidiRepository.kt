@@ -346,6 +346,10 @@ class AddDidiRepository @Inject constructor(
 
     fun updateNeedToPostPAT(needsToPostPAT: Boolean, didiId: Int, villageId: Int) {
         this.didiDao.updateNeedToPostPAT(needsToPostPAT, didiId, villageId)
+        if (this.prefRepo.isUserBPC()) {
+            didiDao.updateNeedsToPostBPCProcessStatus(true, didiId)
+        }
+
     }
 
     fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean) {
