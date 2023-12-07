@@ -87,13 +87,6 @@ class ConnectionMonitor(context: Context) : LiveData<NetworkInfo>() {
             super.onCapabilitiesChanged(network, networkCapabilities)
             val networkCapabilities = connectivityManager.getNetworkCapabilities(network)
             downLoadSpeed = networkCapabilities?.linkDownstreamBandwidthKbps!!
-            postValue(
-                NetworkInfo(
-                    validNetworks.size > 0,
-                    downLoadSpeed,
-                    getNetworkSpeed(downLoadSpeed)
-                )
-            )
             getNetworkSpeed(downLoadSpeed)
             val hasInternetCapability = networkCapabilities?.hasCapability(NET_CAPABILITY_INTERNET)
             NudgeLogger.d(TAG, "onCapabilitiesChanged: ${network}, $hasInternetCapability")
