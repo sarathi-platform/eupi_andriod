@@ -369,19 +369,20 @@ class SettingViewModel @Inject constructor(
     }
 
     fun isBPCScoreSaved(): Boolean {
-        val villageList = villegeListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 0)
+        val villageList = villegeListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
+        val isBpcScoreSavedList = mutableListOf<Boolean>()
         for (village in villageList) {
             val isBpcScoreSaved = prefRepo.getPref(
                 PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id,
                 false
             )
-            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved -> $isBpcScoreSaved")
-            if (isBpcScoreSaved)
-                return isBpcScoreSaved
-            else
-                return false
+            NudgeLogger.d("SettingViewModel", "isBPCScoreSaved: village.id -> ${village.id}, isBPCScoreSaved -> $isBpcScoreSaved")
+            isBpcScoreSavedList.add(isBpcScoreSaved)
         }
-        return false
+        if (isBpcScoreSavedList.contains(false))
+            return false
+        else
+            return true
     }
 
     fun isThirdStepNeedToBeSync(isNeedToBeSync: MutableState<Int>) {
