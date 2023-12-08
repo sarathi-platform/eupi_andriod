@@ -53,7 +53,7 @@ class ExportHelper @Inject constructor(
     private val TAG = ExportHelper::class.java.simpleName
 
     private val storageRef = Firebase.storage.reference
-    private val folderName = if (BuildConfig.DEBUG) "debug" else "prod"
+    private val folderName = if (!BuildConfig.FLAVOR.equals("production", true)) "debug" else "prod"
 
    val tablePaths = mutableListOf<String>()
     suspend fun exportAllData(context: Context) {

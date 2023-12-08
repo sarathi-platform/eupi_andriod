@@ -10,7 +10,7 @@ plugins {
 
 }
 def version = "0.1.42"
-def prodVersion = "1.0.2"
+def prodVersion = "1.0.3"
 android {
     compileSdk 33
 
@@ -115,6 +115,10 @@ kapt {
 android.applicationVariants.all {
     def aptOutputDir = new File(buildDir, "generated/source/kapt/${it.unitTestVariant.dirName}")
     it.unitTestVariant.addJavaSourceFoldersToModel(aptOutputDir)
+}
+
+configurations {
+    all*.exclude group: 'commons-logging', module: 'commons-logging'
 }
 
 dependencies {
