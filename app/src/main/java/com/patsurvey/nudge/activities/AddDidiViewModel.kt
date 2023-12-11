@@ -1294,6 +1294,9 @@ class AddDidiViewModel @Inject constructor(
                 activeStatus = DidiStatus.DIID_DELETED.ordinal,
                 needsToPostDeleteStatus = if (didi.serverId != 0) true else false
             )
+            if (didi.serverId == 0)
+                addDidiRepository.updateNeedToPost(id = didi.id, needsToPost = false)
+
             _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
             filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
 

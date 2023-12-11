@@ -345,8 +345,9 @@ class QuestionScreenViewModel @Inject constructor(
                     questionId = questionList.value[quesIndex].questionId ?: 0,
                     actionType=sectionType.value
                 )
+
                 if(optionId>0){
-                    val index = questionList.value[quesIndex].options.map { it.optionId }.indexOf(optionId)
+                    val index = questionList.value[quesIndex].options.sortedBy { it.optionValue }.map { it.optionId }.indexOf(optionId)
                     listTypeAnswerIndex.value = index
                     _selIndValue.value = index
                     totalAmount.value =0.0
