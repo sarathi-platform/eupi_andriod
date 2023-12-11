@@ -13,25 +13,29 @@ class FetchSurveyeeListFromNetworkUseCase(
     suspend operator fun invoke(): Boolean {
         val userId = repository.getUserId()
         val apiResponse = repository.fetchSurveyeeListFromNetwork(userId)
+        val localSurveyeeEntityList = repository.fetchSurveyeeListFromLocalDb()
         if (apiResponse?.status?.equals(SUCCESS, false) == true) {
             if (apiResponse?.data?.didiList != null) {
-                repository.deleteSurveyeeList()
+//                repository.deleteSurveyeeList()
                 apiResponse?.data?.didiList.forEach {
-                    val surveyeeEntity = SurveyeeEntity(
-                        id = 0,
-                        userId = it.userId,
-                        didiId = it.didiId,
-                        didiName = it.didiName ?: BLANK_STRING,
-                        dadaName = it.dadaName ?: BLANK_STRING,
-                        casteId = it.casteId ?: -1,
-                        cohortId = it.cohortId ?: -1,
-                        cohortName = it.cohortName ?: BLANK_STRING,
-                        houseNo = it.houseNo ?: BLANK_STRING,
-                        villageId = it.villageId ?: -1,
-                        villageName = it.villageName ?: BLANK_STRING,
-                        ableBodied = it.ableBodied ?: BLANK_STRING
-                    )
-                    repository.saveSurveyeeList(surveyeeEntity)
+                    if (!localSurveyeeEntityList.map { surveyeeEntity -> surveyeeEntity.didiId }.contains(it.didiId)) { //TODO Modify this if to keep backend changes as well
+                        val surveyeeEntity = SurveyeeEntity(
+                            id = 0,
+                            userId = it.userId,
+                            didiId = it.didiId,
+                            didiName = it.didiName ?: BLANK_STRING,
+                            dadaName = it.dadaName ?: BLANK_STRING,
+                            casteId = it.casteId ?: -1,
+                            cohortId = it.cohortId ?: -1,
+                            cohortName = it.cohortName ?: BLANK_STRING,
+                            houseNo = it.houseNo ?: BLANK_STRING,
+                            villageId = it.villageId ?: -1,
+                            villageName = it.villageName ?: BLANK_STRING,
+                            ableBodied = it.ableBodied ?: BLANK_STRING
+                        )
+                        repository.saveSurveyeeList(surveyeeEntity)
+                    }
+
                 }
                 return true
             } else {

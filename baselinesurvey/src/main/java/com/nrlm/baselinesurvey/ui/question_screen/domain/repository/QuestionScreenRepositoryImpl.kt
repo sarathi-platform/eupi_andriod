@@ -87,6 +87,7 @@ class QuestionScreenRepositoryImpl @Inject constructor(
         } else {
             didiSectionProgressEntityDao.updateSectionStatusForDidi(surveyId, sectionId, didiId, sectionStatus.ordinal)
         }
+        surveyeeEntityDao.updateDidiSurveyStatus(sectionStatus.ordinal, didiId)
     }
 
     override fun saveSectionAnswerForDidi(

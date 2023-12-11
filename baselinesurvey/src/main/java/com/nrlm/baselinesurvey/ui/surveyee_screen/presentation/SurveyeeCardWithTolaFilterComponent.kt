@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.HUSBAND_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -48,7 +49,9 @@ fun SurveyeeCardWithTolaFilterComponent(
     tolaName: String,
     surveyeeStateList: List<SurveyeeCardState>,
     showCheckBox: Boolean,
+    fromScreen: String,
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
+    moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
     Column() {
@@ -109,11 +112,15 @@ fun SurveyeeCardWithTolaFilterComponent(
                 SurveyeeCardComponent(
                     surveyeeState = surveyeeCardState,
                     showCheckBox = showCheckBox,
+                    fromScreen = fromScreen,
                     checkBoxChecked = { surveyeeEntity, isChecked ->
                         checkBoxChecked(surveyeeEntity, isChecked)
                     },
                     buttonClicked = { buttonName, surveyeeId ->
                         buttonClicked(buttonName, surveyeeId)
+                    },
+                    moveDidiToThisWeek = { surveyeeEntity, isChecked ->
+                        moveDidiToThisWeek(surveyeeEntity, isChecked)
                     }
                 )
             }
@@ -177,21 +184,31 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
             surveyeeStateList = surveyeeStateList1,
             tolaName = "Sundar Pahar",
             showCheckBox = false,
+            fromScreen = ALL_TAB,
             checkBoxChecked = { surveyeeEntity, isChecked ->
 
             },
-        ) { buttonName, surveyeeId ->
+            moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
-        }
+            },
+            buttonClicked = { buttonName, surveyeeId ->
+
+            }
+        )
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList2,
             tolaName = "Sundar Pahar 2",
             showCheckBox = false,
+            fromScreen = ALL_TAB,
             checkBoxChecked = { surveyeeEntity, isChecked ->
 
-            }
-        ) { buttonName, surveyeeId ->
+            },
+            moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
-        }
+            },
+            buttonClicked = { buttonName, surveyeeId ->
+
+            }
+        )
     }
 }
