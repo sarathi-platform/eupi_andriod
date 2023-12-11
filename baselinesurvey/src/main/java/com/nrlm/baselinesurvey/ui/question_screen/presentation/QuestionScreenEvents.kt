@@ -2,7 +2,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
-import com.nrlm.baselinesurvey.utils.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 sealed class QuestionScreenEvents {
     data class RatioTypeQuestionAnswered(val surveyId: Int, val sectionId: Int, val didiId: Int, val questionId: Int, val optionsItem: OptionsItem, val questionEntity: QuestionEntity) : QuestionScreenEvents()

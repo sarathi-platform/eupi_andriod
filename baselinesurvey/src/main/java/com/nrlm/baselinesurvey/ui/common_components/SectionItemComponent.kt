@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -30,7 +29,6 @@ import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
-import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.greenLight
 import com.nrlm.baselinesurvey.ui.theme.greenOnline
 import com.nrlm.baselinesurvey.ui.theme.greyBorder
@@ -39,16 +37,11 @@ import com.nrlm.baselinesurvey.ui.theme.sectionIconInProgressBg
 import com.nrlm.baselinesurvey.ui.theme.sectionIconNotStartedBg
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.stepBoxActiveColor
-import com.nrlm.baselinesurvey.ui.theme.stepIconCompleted
-import com.nrlm.baselinesurvey.ui.theme.stepIconDisableColor
-import com.nrlm.baselinesurvey.ui.theme.stepIconEnableColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.SectionState
-import com.nrlm.baselinesurvey.utils.SectionStatus
-import com.nrlm.baselinesurvey.utils.sampleSection2
-import com.nrlm.baselinesurvey.utils.sampleSetcion1
+import com.nrlm.baselinesurvey.utils.states.SectionState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 @Composable
 fun SectionItemComponent(
@@ -152,7 +145,8 @@ fun SectionItemComponent(
                 ) {
                     Text(
                         text = sectionStateItem.section.sectionName,
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(
+                                SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
                         modifier = Modifier
                             .fillMaxWidth(),
                         softWrap = true,
@@ -163,7 +157,8 @@ fun SectionItemComponent(
                     )
                     Text(
                         text = "${sectionStateItem.section.questionList?.size} Questions",
-                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
+                        color = if (sectionStateItem.sectionStatus.name.equals(SectionStatus.COMPLETED.name)) greenOnline else if(sectionStateItem.sectionStatus.name.equals(
+                                SectionStatus.INPROGRESS.name)) textColorDark else textColorDark50,
                         modifier = Modifier
                             .fillMaxWidth(),
                         softWrap = true,

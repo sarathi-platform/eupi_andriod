@@ -23,9 +23,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
+import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.descriptionBoxBackgroundLightBlue
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -37,17 +40,26 @@ import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.patsurvey.nudge.customviews.htmltext.HtmlText
 
 @Composable
-fun InfoComponent(
+fun ExpandableDescriptionContentComponent(
     questionDetailExpanded: (index: Int) -> Unit,
     index: Int,
-    question: QuestionEntity
+    question: QuestionEntity,
+    imageClickListener: (imageTypeDescriptionContent: String) -> Unit,
+    videoLinkClicked: (videoTypeDescriptionContent: String) -> Unit,
 ) {
     val questionDetailVisibilityState = remember {
         mutableStateOf(false)
     }
+
+    //TODO Modify code to handle contentList.
+    val descriptionContentState = remember {
+        mutableStateOf(DescriptionContentState(textTypeDescriptionContent = question.questionSummary ?: BLANK_STRING))
+    }
+
     Box(
         Modifier
             .fillMaxWidth()
@@ -78,47 +90,19 @@ fun InfoComponent(
                     modifier = Modifier.fillMaxWidth()
                 )
 
-                Column(
-                    modifier = Modifier.padding(horizontal = dimen_16_dp),
-                    verticalArrangement = Arrangement.spacedBy(dimen_10_dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(dimen_10_dp)
-                    )
-                    HtmlText(
-                        text = question.questionSummary ?: BLANK_STRING,
-                        style = smallerTextStyleNormalWeight,
-                        color = blueDark,
-                        modifier = Modifier.padding(dimen_16_dp)
-                    )
-                    Button(
-                        onClick = {
-                            questionDetailVisibilityState.value =
-                                !questionDetailVisibilityState.value
-                        }, shape = RoundedCornerShape(
-                            roundedCornerRadiusDefault
-                        ), colors = ButtonDefaults.buttonColors(
-                            backgroundColor = blueDark,
-                            contentColor = white
-                        )
-                    ) {
-                        Text(
-                            text = "Ok",
-                            color = white,
-                            style = smallerTextStyle
-                        )
-                    }
-
-                    Spacer(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(dimen_10_dp)
-                    )
-
-                }
+                DescriptionContentComponent(
+                    buttonClickListener = {
+                        questionDetailVisibilityState.value =
+                            !questionDetailVisibilityState.value
+                    },
+                    imageClickListener = { imageTypeDescriptionContent ->
+                        imageClickListener(imageTypeDescriptionContent)
+                    },
+                    videoLinkClicked = { videoTypeDescriptionContent ->
+                        videoLinkClicked(videoTypeDescriptionContent)
+                    },
+                    descriptionContentState = descriptionContentState.value
+                )
             }
         }
     }

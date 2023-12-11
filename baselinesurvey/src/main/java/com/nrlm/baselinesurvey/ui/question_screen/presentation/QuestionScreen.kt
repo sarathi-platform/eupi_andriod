@@ -26,12 +26,8 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Divider
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
-import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
@@ -57,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,12 +66,18 @@ import com.nrlm.baselinesurvey.TYPE_LIST
 import com.nrlm.baselinesurvey.TYPE_RADIO_BUTTON
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
+import com.nrlm.baselinesurvey.navigation.home.AddHouseHoldMember_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.ui.common_components.CTAButtonComponent
 import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
@@ -82,26 +85,21 @@ import com.nrlm.baselinesurvey.ui.theme.defaultCardElevation
 import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_24_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_3_dp
-import com.nrlm.baselinesurvey.ui.theme.dimen_6_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_80_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
-import com.nrlm.baselinesurvey.ui.theme.greenOnline
-import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.inactiveLightBlue
 import com.nrlm.baselinesurvey.ui.theme.inactiveTextBlue
-import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.progressIndicatorColor
 import com.nrlm.baselinesurvey.ui.theme.roundedCornerRadiusDefault
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
-import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.trackColor
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.SectionStatus
+import com.nrlm.baselinesurvey.utils.DescriptionContentType
+import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -153,7 +151,7 @@ fun QuestionScreen(
         bottomBar = {
             BottomAppBar(containerColor = white, tonalElevation = defaultCardElevation, contentPadding = PaddingValues(horizontal = dimen_16_dp)) {
                 Column {
-                    LinearProgressIndicator(
+                    /*LinearProgressIndicator(
                         modifier = Modifier
                             .height(dimen_6_dp)
                             .fillMaxWidth()
@@ -167,11 +165,12 @@ fun QuestionScreen(
                         color = greenOnline,
                         trackColor = Color.Transparent,
                         progress = curPercentage.value
-                    )
+                    )*/
                     ExtendedFloatingActionButton(
                         modifier = Modifier
                             .fillMaxWidth(),
-                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
+//                        shape = RoundedCornerShape(bottomStart = roundedCornerRadiusDefault, bottomEnd = roundedCornerRadiusDefault),
+                        shape = RoundedCornerShape(roundedCornerRadiusDefault),
                         containerColor = if (answeredQuestionCount.value == totalQuestionCount) blueDark else inactiveLightBlue,
                         contentColor = if (answeredQuestionCount.value == totalQuestionCount) white else inactiveTextBlue,
                         onClick = {
@@ -210,7 +209,68 @@ fun QuestionScreen(
 
         if (!loaderState.isLoaderVisible) {
 
-            ModalBottomSheetLayout(
+            ModelBottomSheetDescriptionContentComponent(
+                sheetContent = {
+                    DescriptionContentComponent(
+                        buttonClickListener = {
+                            scope.launch {
+                                scaffoldState.hide()
+                            }
+                        },
+                        imageClickListener = { imageTypeDescriptionContent ->
+                            handleOnMediaTypeDescriptionActions(
+                                viewModel,
+                                navController,
+                                DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT,
+                                imageTypeDescriptionContent
+                            )
+                        },
+                        videoLinkClicked = { videoTypeDescriptionContent ->
+                            handleOnMediaTypeDescriptionActions(
+                                viewModel,
+                                navController,
+                                DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT,
+                                videoTypeDescriptionContent
+                            )
+
+                        },
+                        descriptionContentState = DescriptionContentState(textTypeDescriptionContent = sectionDetails.sectionDetails)
+                    )
+                },
+                sheetState = scaffoldState,
+                sheetElevation = 20.dp,
+                sheetBackgroundColor = Color.White,
+                sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+            ) {
+                if (viewModel.showExpandedImage.value) {
+                    ImageExpanderDialogComponent(
+                        viewModel.expandedImagePath.value
+                    ) {
+                        viewModel.showExpandedImage.value = false
+                    }
+                }
+
+                NestedLazyList(
+                    navController = navController,
+                    sectionDetails = sectionDetails,
+                    viewModel = viewModel,
+                    surveyeeId = surveyeeId,
+                    sectionInfoButtonClicked = {
+                        scope.launch {
+                            if (!scaffoldState.isVisible) {
+                                scaffoldState.show()
+                            } else {
+                                scaffoldState.hide()
+                            }
+                        }
+                    },
+                    answeredQuestionCountIncreased = { count ->
+                        answeredQuestionCount.value = count
+                    }
+                )
+            }
+
+            /*ModalBottomSheetLayout(
                 sheetContent = {
                     Column(
                         verticalArrangement = Arrangement.spacedBy(10.dp),
@@ -279,6 +339,15 @@ fun QuestionScreen(
                 sheetBackgroundColor = Color.White,
                 sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
             ) {
+
+                if (viewModel.showExpandedImage.value) {
+                    ImageExpanderDialogComponent(
+                        viewModel.expandedImagePath.value
+                    ) {
+                        viewModel.showExpandedImage.value = false
+                    }
+                }
+
                 NestedLazyList(
                     navController = navController,
                     sectionDetails = sectionDetails,
@@ -297,7 +366,7 @@ fun QuestionScreen(
                         answeredQuestionCount.value = count
                     }
                 )
-            }
+            }*/
         }
     }
 }
@@ -325,8 +394,6 @@ fun NestedLazyList(
             innerState.firstVisibleItemIndex
         }
     }
-
-    //TODO handle multiple selection of same question
 
     val answeredQuestionCount = remember {
         mutableIntStateOf(sectionDetails.questionAnswerMapping.size)
@@ -448,6 +515,20 @@ fun NestedLazyList(
 
                     )
             }
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
+                        .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                ) {
+                    CTAButtonComponent(tittle = "Add Income Source", Modifier.fillMaxWidth()) {
+                        // navController.navigate(AddIncome_SCREEN_ROUTE_NAME)
+                        navController.navigate(AddHouseHoldMember_SCREEN_ROUTE_NAME)
+
+                    }
+                }
+            }
 
             item {
                 Row(verticalAlignment = Alignment.CenterVertically) {
@@ -519,12 +600,16 @@ fun NestedLazyList(
                                                 questionEntity = question
                                             )
                                         )
+                                    },
+                                    questionDetailExpanded = {
+                                        scope.launch {
+                                            queLazyState.animateScrollToItem(it + 3, -10)
+                                        }
+                                    },
+                                    onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
                                     }
-                                ) {
-                                    scope.launch {
-                                        queLazyState.animateScrollToItem(it + 3, -10)
-                                    }
-                                }
+                                ) 
                             }
 
                             TYPE_LIST -> {
@@ -532,6 +617,8 @@ fun NestedLazyList(
                                 ListTypeQuestion(
                                     question = question,
                                     selectedOptionIndex = question.options.indexOf(selectedOption) ?: -1,
+                                    questionIndex = index,
+                                    maxCustomHeight = maxHeight,
                                     onAnswerSelection = { questionIndex, optionItem ->
                                         if (!answeredQuestionIndices.value.contains(questionIndex)) {
                                             answeredQuestionIndices.value.add(questionIndex)
@@ -564,8 +651,9 @@ fun NestedLazyList(
                                             queLazyState.animateScrollToItem(it + 3, -10)
                                         }
                                     },
-                                    questionIndex = index,
-                                    maxCustomHeight = maxHeight,
+                                    onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
+                                    }
                                 )
                             }
 
@@ -613,11 +701,12 @@ fun NestedLazyList(
                                         scope.launch {
                                             queLazyState.animateScrollToItem(it + 3, -10)
                                         }
+                                    },
+                                    onMediaTypeDescriptionAction = { descriptionContentType, contentLink ->
+                                        handleOnMediaTypeDescriptionActions(viewModel, navController, descriptionContentType, contentLink)
                                     }
                                 )
                             }
-
-                            else -> {}
                         }
                     }
                     item {
@@ -630,6 +719,16 @@ fun NestedLazyList(
             }
         }
 
+    }
+}
+
+fun handleOnMediaTypeDescriptionActions(viewModel: QuestionScreenViewModel, navController: NavController, descriptionContentType: DescriptionContentType, contentLink: String) {
+    if (descriptionContentType == DescriptionContentType.IMAGE_TYPE_DESCRIPTION_CONTENT) {
+        viewModel.expandedImagePath.value = contentLink
+        viewModel.showExpandedImage.value = true
+    }
+    if (descriptionContentType == DescriptionContentType.VIDEO_TYPE_DESCRIPTION_CONTENT) {
+        navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/$contentLink")
     }
 }
 

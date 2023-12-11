@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.base
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.google.gson.JsonSyntaxException
@@ -21,7 +20,6 @@ import com.nrlm.baselinesurvey.UNAUTHORISED_MESSAGE
 import com.nrlm.baselinesurvey.UNREACHABLE_ERROR_MSG
 import com.nrlm.baselinesurvey.model.datamodel.ErrorModel
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.nrlm.baselinesurvey.utils.SurveyeeCardState
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.Job
 import retrofit2.HttpException
@@ -32,9 +30,9 @@ abstract class BaseViewModel : ViewModel(){
 
     abstract fun <T> onEvent(event: T)
 
-    open fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean) {}
+    open fun performSearchQuery(queryTerm: String, isFilterApplied: Boolean, fromScreen: String) {}
 
-    open fun filterList() {}
+    open fun filterList(fromScreen: String) {}
 
     val baseOtpNumber = mutableStateOf("")
     val baseSummarySecond = mutableStateOf(0)

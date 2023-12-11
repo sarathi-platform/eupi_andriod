@@ -8,7 +8,7 @@ import com.nrlm.baselinesurvey.ui.language.presentation.LanguageSelectionEvent
 import com.nrlm.baselinesurvey.ui.language.presentation.LanguagesState
 import com.nrlm.baselinesurvey.ui.language.domain.use_case.LanguageScreenUseCase
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.LoaderState
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers

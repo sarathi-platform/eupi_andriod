@@ -7,7 +7,7 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.SURVEYEE_TABLE
-import com.nrlm.baselinesurvey.utils.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
 
 
 @Entity(tableName = SURVEYEE_TABLE)
@@ -101,6 +101,11 @@ data class SurveyeeEntity(
     @SerializedName("surveyStatus")
     @Expose
     @ColumnInfo(name = "surveyStatus")
-    var surveyStatus: Int = SurveyState.NOT_STARTED.ordinal
+    var surveyStatus: Int = SurveyState.NOT_STARTED.ordinal,
+
+    @SerializedName("movedToThisWeek")
+    @Expose
+    @ColumnInfo(name = "movedToThisWeek")
+    var movedToThisWeek: Boolean = false
 
 )

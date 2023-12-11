@@ -62,6 +62,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyFro
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSurveyeeListFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchUserDetailFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeListUseCase
+import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import dagger.Module
 import dagger.Provides
@@ -169,7 +170,8 @@ object BaselineModule {
     @Singleton
     fun provideSurveyeeScreenUseCase(surveyeeListScreenRepository: SurveyeeListScreenRepository): SurveyeeScreenUseCase {
         return SurveyeeScreenUseCase(
-           getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository)
+            getSurveyeeListUseCase = GetSurveyeeListUseCase(surveyeeListScreenRepository),
+            moveSurveyeeToThisWeek = MoveSurveyeeToThisWeekUseCase(surveyeeListScreenRepository)
         )
     }
 

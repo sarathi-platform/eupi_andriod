@@ -22,12 +22,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.nrlm.baselinesurvey.ALL_TAB
 import com.nrlm.baselinesurvey.HUSBAND_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
@@ -39,8 +37,8 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.textColorBlueLight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.yellowBg
-import com.nrlm.baselinesurvey.utils.SurveyState
-import com.nrlm.baselinesurvey.utils.SurveyeeCardState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 
 @Composable
 fun SurveyeeCardWithTolaFilterComponent(
@@ -48,7 +46,9 @@ fun SurveyeeCardWithTolaFilterComponent(
     tolaName: String,
     surveyeeStateList: List<SurveyeeCardState>,
     showCheckBox: Boolean,
+    fromScreen: String,
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
+    moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit,
     buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
 ) {
     Column() {
@@ -109,11 +109,15 @@ fun SurveyeeCardWithTolaFilterComponent(
                 SurveyeeCardComponent(
                     surveyeeState = surveyeeCardState,
                     showCheckBox = showCheckBox,
+                    fromScreen = fromScreen,
                     checkBoxChecked = { surveyeeEntity, isChecked ->
                         checkBoxChecked(surveyeeEntity, isChecked)
                     },
                     buttonClicked = { buttonName, surveyeeId ->
                         buttonClicked(buttonName, surveyeeId)
+                    },
+                    moveDidiToThisWeek = { surveyeeEntity, isChecked ->
+                        moveDidiToThisWeek(surveyeeEntity, isChecked)
                     }
                 )
             }
@@ -177,21 +181,31 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
             surveyeeStateList = surveyeeStateList1,
             tolaName = "Sundar Pahar",
             showCheckBox = false,
+            fromScreen = ALL_TAB,
             checkBoxChecked = { surveyeeEntity, isChecked ->
 
             },
-        ) { buttonName, surveyeeId ->
+            moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
-        }
+            },
+            buttonClicked = { buttonName, surveyeeId ->
+
+            }
+        )
         SurveyeeCardWithTolaFilterComponent(
             surveyeeStateList = surveyeeStateList2,
             tolaName = "Sundar Pahar 2",
             showCheckBox = false,
+            fromScreen = ALL_TAB,
             checkBoxChecked = { surveyeeEntity, isChecked ->
 
-            }
-        ) { buttonName, surveyeeId ->
+            },
+            moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
-        }
+            },
+            buttonClicked = { buttonName, surveyeeId ->
+
+            }
+        )
     }
 }
