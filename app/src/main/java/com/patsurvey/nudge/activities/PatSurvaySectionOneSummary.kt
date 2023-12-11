@@ -263,6 +263,7 @@ fun PatSurvaySectionSummaryScreen(
                     }
                     patSectionSummaryViewModel.updateExclusionStatus(didi.value.id,exclusionType,
                         TYPE_EXCLUSION)
+                    patSectionSummaryViewModel.updateVOEndorseAfterDidiRejected(didi.value.id,ForVOEndorsementType.REJECTED.ordinal)
                     if (showPatCompletion.value) {
                         patSectionSummaryViewModel.setPATSurveyComplete(
                             didi.value.id,
@@ -503,14 +504,12 @@ fun SectionOneSummeryItem(
             )
 
             if(isArrowVisible) {
-                IconButton(onClick = { }) {
                     Icon(
                         imageVector = Icons.Default.ArrowForward,
                         contentDescription = "Forward Arrow",
                         tint = textColorDark,
-                        modifier = Modifier
+                        modifier = Modifier.padding(5.dp)
                     )
-                }
             }
         }
         Divider(

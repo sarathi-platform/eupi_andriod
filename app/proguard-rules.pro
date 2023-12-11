@@ -111,3 +111,9 @@
 -keep @androidx.room.Entity class *
 -dontwarn androidx.room.paging.**
 -keep class com.thenudge.uat.database.model.** {*; }
+
+-dontwarn com.opencsv.**
+-dontwarn org.apache.commons.beanutils.**
+-dontwarn org.apache.commons.collections.**
+-keepattributes *Annotation*,Signature,InnerClasses,EnclosingMethod
+-dontoptimize

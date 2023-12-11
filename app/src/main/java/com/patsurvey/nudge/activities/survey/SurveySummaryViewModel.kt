@@ -615,7 +615,7 @@ class SurveySummaryViewModel @Inject constructor(
                                         didiId = didi.id,
                                         didi.villageId
                                     )
-                                    repository.updateNeedsToPostBPCProcessStatus(false,didi.id)
+                                    repository.updateNeedsToPostBPCProcessStatus(false, didi.id)
                                 } else {
                                     networkCallbackListener.onFailed()
                                 }
@@ -645,6 +645,7 @@ class SurveySummaryViewModel @Inject constructor(
                                             didiId = didi.id,
                                             didi.villageId
                                         )
+                                        repository.updateNeedsToPostBPCProcessStatus(false, didi.id)
                                     } else {
                                         networkCallbackListener.onFailed()
                                     }
@@ -886,6 +887,10 @@ class SurveySummaryViewModel @Inject constructor(
         }
     }
 
-
+    fun updateNeedsToPostBPCProcessStatus(didiId: Int, status: Boolean) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            repository.updateNeedsToPostBPCProcessStatus(status, didiId)
+        }
+    }
 
 }

@@ -41,7 +41,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
     }
 
     // step 1
-    private fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
+    /*private fun sendBpcUpdatedDidiList(networkCallbackListener: NetworkCallbackListener) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
                 delay(1000)
@@ -102,7 +102,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 savePATSummeryToServer(networkCallbackListener)
             }
         }
-    }
+    }*/
 
     private fun isBPCDidiNeedToBeReplaced() : Boolean{
         val villageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
@@ -160,7 +160,8 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                     response.data?.forEach { transactionIdResponse ->
                         didiIDList.forEach { didiEntity ->
                             if (transactionIdResponse.transactionId == didiEntity.transactionId) {
-                                didiDao.updateNeedToPostPAT(false,didiEntity.serverId)
+                                didiDao.updateNeedToPostPAT(false, didiEntity.serverId)
+                                didiDao.updateDidiTransactionId(didiEntity.serverId,"")
                             }
                         }
                     }
@@ -196,10 +197,15 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         didiIDList.forEach { didiEntity ->
                             if (transactionIdResponse.transactionId == didiEntity.transactionId) {
                                 didiDao.updateNeedToPostPAT(false,didiEntity.serverId)
+                                didiDao.updateNeedsToPostBPCProcessStatus(
+                                    needsToPostBPCProcessStatus = false,
+                                    didiId = didiEntity.serverId
+                                )
+                                didiDao.updateDidiTransactionId(didiEntity.serverId,"")
                             }
                         }
                     }
-                    updateBpcPatStatusToNetwork(networkCallbackListener)
+                    callWorkFlowAPIForBpc(networkCallbackListener)
                 } else {
                     withContext(Dispatchers.Main) {
                         networkCallbackListener.onFailed()
@@ -210,13 +216,14 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                 }
 
             } else {
-                updateBpcPatStatusToNetwork(networkCallbackListener)
+                callWorkFlowAPIForBpc(networkCallbackListener)
             }
         }
     }
 
     // step 4
     fun callWorkFlowAPIForBpc( networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("SyncBPCDataOnServer","callWorkFlowAPIForBpc -> Called}")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.Main) {
@@ -275,12 +282,12 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     )
                                     step.workFlowId = it[0].id
                                     NudgeLogger.e(
-                                        "SyncHelper",
+                                        "SyncBPCDataOnServer",
                                         "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId before stepId: $step.stepId, it[0].id: ${it[0].id}, villageId: $step.villageId"
                                     )
                                 }
                                 NudgeLogger.e(
-                                    "SyncHelper",
+                                    "SyncBPCDataOnServer",
                                     "callWorkFlowAPI stepsListDao.updateOnlyWorkFlowId after"
                                 )
                                 delay(100)
@@ -289,124 +296,156 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                             }
                         }
                     } else {
+                        NudgeLogger.e("SyncBPCDataOnServer",
+                            "callWorkFlowAPI ApiResponseFailException", ApiResponseFailException(addWorkFlowResponse.message))
                         networkCallbackListener.onFailed()
                     }
 
-                } else if(needToEditStep.size>0){
+                } else if (needToEditStep.size > 0){
                     updateBpcStepsToServer(needToEditStep, networkCallbackListener)
                 }
 
+                if (needToEditStep.isEmpty()) {
+                    sendBpcMatchScore(networkCallbackListener)
+                }
+
             }catch (ex:Exception){
+                settingViewModel.onCatchError(ex, ApiType.ADD_WORK_FLOW_API)
                 withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
-                settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
             }
         }
     }
 
     private fun updateBpcStepsToServer(needToEditStep: MutableList<StepListEntity>, networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("SyncBPCDataOnServer","updateBpcStepsToServer -> Called}")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            if (needToEditStep.isNotEmpty()) {
-                val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
-                for (step in needToEditStep) {
-                    var stepCompletionDate = BLANK_STRING
-                    stepCompletionDate =longToString(prefRepo.getPref(
-                        PREF_BPC_PAT_COMPLETION_DATE_+step.villageId, System.currentTimeMillis()))
-                    requestForStepUpdation.add(
-                        EditWorkFlowRequest(
-                            step.workFlowId,
-                            StepStatus.getStepFromOrdinal(step.isComplete),
-                            stepCompletionDate
-                        )
-                    )
-                }
-                val responseForStepUpdation =
-                    apiService.editWorkFlow(requestForStepUpdation)
-                NudgeLogger.d("SyncBPCDataOnServer","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
-                NudgeLogger.e(
-                    "SyncHelper",
-                    "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
-                )
-
-
-                if (responseForStepUpdation.status.equals(SUCCESS, true)) {
-                    responseForStepUpdation.data?.let {
-
-                        for(i in responseForStepUpdation.data.indices) {
-                            val step = needToEditStep[i]
-                            stepsListDao.updateWorkflowId(
-                                step.stepId,
+            try {
+                if (needToEditStep.isNotEmpty()) {
+                    val requestForStepUpdation = mutableListOf<EditWorkFlowRequest>()
+                    for (step in needToEditStep) {
+                        var stepCompletionDate = BLANK_STRING
+                        stepCompletionDate =longToString(prefRepo.getPref(
+                            PREF_BPC_PAT_COMPLETION_DATE_+step.villageId, System.currentTimeMillis()))
+                        requestForStepUpdation.add(
+                            EditWorkFlowRequest(
                                 step.workFlowId,
-                                step.villageId,
-                                step.status
+                                StepStatus.getStepFromOrdinal(step.isComplete),
+                                stepCompletionDate
                             )
-
-                            NudgeLogger.e(
-                                "SyncHelper",
-                                "callWorkFlowAPI stepsListDao.updateWorkflowId after "
-                            )
-                            NudgeLogger.e(
-                                "SyncHelper",
-                                "callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $step.stepId"
-                            )
-                            stepsListDao.updateNeedToPost(step.id, step.villageId, false)
-                            NudgeLogger.e(
-                                "SyncHelper",
-                                "callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $step.stepId"
-                            )
-
-                        }
+                        )
                     }
-                    sendBpcMatchScore(networkCallbackListener)
+                    val responseForStepUpdation =
+                        apiService.editWorkFlow(requestForStepUpdation)
+                    NudgeLogger.d("SyncBPCDataOnServer","editWorkFlow Request=> ${Gson().toJson(requestForStepUpdation)}")
+                    NudgeLogger.e(
+                        "SyncBPCDataOnServer",
+                        "callWorkFlowAPI response: status: ${responseForStepUpdation.status}, message: ${responseForStepUpdation.message}, data: ${responseForStepUpdation.data} \n\n"
+                    )
+
+
+                    if (responseForStepUpdation.status.equals(SUCCESS, true)) {
+                        responseForStepUpdation.data?.let {
+
+                            for(i in responseForStepUpdation.data.indices) {
+                                val step = needToEditStep[i]
+                                stepsListDao.updateWorkflowId(
+                                    step.stepId,
+                                    step.workFlowId,
+                                    step.villageId,
+                                    step.status
+                                )
+
+                                NudgeLogger.e(
+                                    "SyncBPCDataOnServer",
+                                    "callWorkFlowAPI stepsListDao.updateWorkflowId after "
+                                )
+                                NudgeLogger.e(
+                                    "SyncBPCDataOnServer",
+                                    "callWorkFlowAPI stepsListDao.updateNeedToPost before stepId: $step.stepId"
+                                )
+                                stepsListDao.updateNeedToPost(step.id, step.villageId, false)
+                                NudgeLogger.e(
+                                    "SyncBPCDataOnServer",
+                                    "callWorkFlowAPI stepsListDao.updateNeedToPost after stepId: $step.stepId"
+                                )
+
+                            }
+                        }
+                        sendBpcMatchScore(networkCallbackListener)
+                    } else {
+                        NudgeLogger.e("SyncBPCDataOnServer",
+                            "callWorkFlowAPI ApiResponseFailException", ApiResponseFailException(responseForStepUpdation.message))
+                        networkCallbackListener.onFailed()
+                    }
+                    if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
+                        updateLastSyncTime(
+                            prefRepo,
+                            responseForStepUpdation.lastSyncTime
+                        )
+                    }
                 } else {
+                    sendBpcMatchScore(networkCallbackListener)
+                }
+            } catch (ex: Exception) {
+                settingViewModel.onCatchError(ex, ApiType.WORK_FLOW_API)
+                withContext(Dispatchers.Main) {
                     networkCallbackListener.onFailed()
                 }
-                if (!responseForStepUpdation.lastSyncTime.isNullOrEmpty()) {
-                    updateLastSyncTime(
-                        prefRepo,
-                        responseForStepUpdation.lastSyncTime
-                    )
-                }
-            } else {
-                sendBpcMatchScore(networkCallbackListener)
             }
+
         }
     }
 
     // step 5
     fun sendBpcMatchScore(networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore -> Called}")
+
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
                 delay(1000)
                 syncPercentage.value = 0.6f
             }
             if (!settingViewModel.isBPCScoreSaved()) {
-                val didiList = didiDao.getAllDidisForVillage(prefRepo.getSelectedVillage().id)
                 try {
-                    val villageId = prefRepo.getSelectedVillage().id
+                    val villageList  = villageListDao.getAllVillages(prefRepo.getAppLanguageId() ?: 2)
                     val passingScore = questionDao.getPassingScore()
-                    val bpcStep =
-                        stepsListDao.getAllStepsForVillage(villageId).sortedBy { it.orderNumber }
-                            .last()
-                    val matchPercentage = calculateMatchPercentage(didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal }, passingScore)
-                    val saveMatchSummaryRequest = SaveMatchSummaryRequest(
-                        programId = bpcStep.programId,
-                        score = matchPercentage,
-                        villageId = villageId,
-                        didiNotAvailableCountBPC = didiList.filter { it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
-                                || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal }.size
-                    )
-                    val requestList = arrayListOf(saveMatchSummaryRequest)
+                    val requestList = arrayListOf<SaveMatchSummaryRequest>()
+                    villageList.forEach { village ->
+                        val bpcStep =
+                            stepsListDao.getAllStepsForVillage(village.id).sortedBy { it.orderNumber }.last()
+                        if (bpcStep.isComplete == StepStatus.COMPLETED.ordinal && !prefRepo.getPref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + village.id, false)) {
+                            val didiList = didiDao.getAllDidisForVillage(village.id)
+                            val matchPercentage = calculateMatchPercentage(
+                                didiList.filter { it.patSurveyStatus == PatSurveyStatus.COMPLETED.ordinal },
+                                passingScore
+                            )
+                            val saveMatchSummaryRequest = SaveMatchSummaryRequest(
+                                programId = bpcStep.programId,
+                                score = matchPercentage,
+                                villageId = village.id,
+                                didiNotAvailableCountBPC = didiList.filter {
+                                    it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE.ordinal
+                                            || it.patSurveyStatus == PatSurveyStatus.NOT_AVAILABLE_WITH_CONTINUE.ordinal
+                                }.size
+                            )
+                            requestList.add(saveMatchSummaryRequest)
+                        }
+                    }
                     NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore saveMatchSummary Request=> ${requestList.json()}")
                     val saveMatchSummaryResponse = apiService.saveMatchSummary(requestList)
+                    NudgeLogger.d("SyncBPCDataOnServer","sendBpcMatchScore saveMatchSummary saveMatchSummaryResponse=> ${saveMatchSummaryResponse.json()}")
                     if (saveMatchSummaryResponse.status.equals(SUCCESS, true)) {
+                        saveMatchSummaryResponse.data?.forEach { saveMatchSummaryResponse ->
+                            prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + saveMatchSummaryResponse.villageId, true)
+                        }
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onSuccess()
-                            prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, true)
+
                         }
                     } else {
-                        prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
+//                        prefRepo.savePref(PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_ + prefRepo.getSelectedVillage().id, false)
                         withContext(Dispatchers.Main) {
                             networkCallbackListener.onFailed()
                         }
@@ -440,6 +479,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
 
     // step 3 transaction id
     fun updateBpcPatStatusToNetwork(networkCallbackListener: NetworkCallbackListener) {
+        NudgeLogger.d("SyncBPCDataOnServer", "updateBpcPatStatusToNetwork -> called")
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             withContext(Dispatchers.Main) {
                 delay(1000)
@@ -447,6 +487,7 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
             }
             val needToPostPatDidi =
                 didiDao.getAllNeedToPostBPCProcessDidi(true)
+            NudgeLogger.d("SyncBPCDataOnServer", "updateBpcPatStatusToNetwork -> needToPostPatDidi: $needToPostPatDidi")
             val passingScore = questionDao.getPassingScore()
             if (!needToPostPatDidi.isNullOrEmpty()) {
                 val didiRequestList : ArrayList<EditDidiWealthRankingRequest> = arrayListOf()
@@ -478,8 +519,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                         )
                     )
                     try {
+                        NudgeLogger.d("SyncBPCDataOnServer", "updateBpcPatStatusToNetwork -> didiRequestList: ${didiRequestList.json()}")
                         val updatedPatResponse = apiService.updateDidiRanking(didiRequestList)
-                        NudgeLogger.d("SyncBPCDataOnServer","updateDidiRanking Request=> ${Gson().toJson(didiRequestList)}")
+                        NudgeLogger.d("SyncBPCDataOnServer","updateBpcPatStatusToNetwork updatedPatResponse=> ${updatedPatResponse.json()}")
                         if (updatedPatResponse.status.equals(SUCCESS, true)) {
                             if (updatedPatResponse.data?.isNotEmpty() == true) {
                                 if (updatedPatResponse.data?.get(0)?.transactionId.isNullOrEmpty()) {
@@ -503,11 +545,9 @@ class SyncBPCDataOnServer(val settingViewModel: SettingViewModel,
                                     startSyncTimer(networkCallbackListener)
                                 }
                             } else {
-                                didiDao.updateNeedsToPostBPCProcessStatus(
-                                    needsToPostBPCProcessStatus = false,
-                                    didiId = didi.id
-                                )
-                                callWorkFlowAPIForBpc(networkCallbackListener)
+                                withContext(Dispatchers.Main) {
+                                    networkCallbackListener.onFailed()
+                                }
                             }
                         } else {
                             withContext(Dispatchers.Main) {

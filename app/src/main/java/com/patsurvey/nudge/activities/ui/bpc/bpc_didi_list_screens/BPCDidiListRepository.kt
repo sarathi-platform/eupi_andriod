@@ -42,6 +42,9 @@ class BPCDidiListRepository @Inject constructor(
 
     fun updateNeedToPostPAT(needsToPostPAT: Boolean,didiId: Int){
         didiDao.updateNeedToPostPAT(needsToPostPAT, didiId, prefRepo.getSelectedVillage().id)
+        if (this.prefRepo.isUserBPC()) {
+            didiDao.updateNeedsToPostBPCProcessStatus(true, didiId)
+        }
     }
     fun getAllPendingPATDidisCount(): Int{
        return didiDao.getAllPendingPATDidisCount(prefRepo.getSelectedVillage().id)

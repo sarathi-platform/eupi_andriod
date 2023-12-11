@@ -28,6 +28,7 @@ import com.patsurvey.nudge.model.request.EditWorkFlowRequest
 import com.patsurvey.nudge.model.response.ApiResponseModel
 import com.patsurvey.nudge.model.response.DidiApiResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import javax.inject.Inject
@@ -200,7 +201,7 @@ class AddDidiRepository @Inject constructor(
         transactionId: String?,
         serverId: Int
     ): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId)
+        return this.didiDao.fetchAllDidiNeedToAdd(needsToPost, transactionId, serverId, DidiStatus.DIDI_ACTIVE.ordinal)
     }
 
     fun fetchAllDidiNeedToUpdate(
@@ -212,7 +213,7 @@ class AddDidiRepository @Inject constructor(
     }
 
     fun fetchAllDidiNeedToDelete(status: Int): List<DidiEntity> {
-        return this.didiDao.fetchAllDidiNeedToDelete(status)
+        return this.didiDao.fetchAllDidiNeedToDelete(DidiStatus.DIID_DELETED.ordinal, true, "", 0)
     }
 
     fun fetchAllPendingDidiNeedToUpdate(
@@ -253,10 +254,6 @@ class AddDidiRepository @Inject constructor(
 
     fun getAllNeedToPostVoDidi(needsToPostVo: Boolean, villageId: Int): List<DidiEntity> {
         return this.didiDao.getAllNeedToPostVoDidi(needsToPostVo, villageId)
-    }
-
-    fun updateExclusionStatus(didiId: Int, patExclusionStatus: Int, crpComment: String) {
-        this.didiDao.updateExclusionStatus(didiId, patExclusionStatus, crpComment)
     }
 
     fun updateImageLocalPath(didiId: Int, localPath: String) {
@@ -349,6 +346,10 @@ class AddDidiRepository @Inject constructor(
 
     fun updateNeedToPostPAT(needsToPostPAT: Boolean, didiId: Int, villageId: Int) {
         this.didiDao.updateNeedToPostPAT(needsToPostPAT, didiId, villageId)
+        if (this.prefRepo.isUserBPC()) {
+            didiDao.updateNeedsToPostBPCProcessStatus(true, didiId)
+        }
+
     }
 
     fun deleteDidiOffline(id: Int, activeStatus: Int, needsToPostDeleteStatus: Boolean) {

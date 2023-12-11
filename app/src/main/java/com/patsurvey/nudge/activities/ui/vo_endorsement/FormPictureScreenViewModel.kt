@@ -300,11 +300,27 @@ class FormPictureScreenViewModel @Inject constructor(
                                         "updateVoStatusResponse: status = ${updateVoStatusResponse.status}, message = ${updateVoStatusResponse.message}, data = ${updateVoStatusResponse.data.toString()}")
 
                                 if (updateVoStatusResponse.status.equals(SUCCESS, true)) {
-                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
-                                            "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
-                                    repository.updateNeedToPostVO(needsToPostVo = false, didi.id, didi.villageId)
+                                    if (updateVoStatusResponse.data?.get(0)?.transactionId?.isNullOrEmpty() != true) {
+                                        NudgeLogger.d(
+                                            "FormPictureScreenViewModel",
+                                            "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
+                                                    "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false"
+                                        )
+                                        updateVoStatusResponse.data?.get(0)?.transactionId?.let { transitionId ->
+                                            repository.updateDidiTransactionId(didi.id, transitionId)
+                                        }
 
-                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
+                                        /*repository.updateNeedToPostVO(
+                                            needsToPostVo = false,
+                                            didi.id,
+                                            didi.villageId
+                                        )*/
+
+                                        NudgeLogger.d(
+                                            "FormPictureScreenViewModel",
+                                            "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after"
+                                        )
+                                    }
 
                                 } else {
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
@@ -340,12 +356,24 @@ class FormPictureScreenViewModel @Inject constructor(
 
 
                                 if (updateVoStatusResponse.status.equals(SUCCESS, true)) {
-                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
-                                            "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
+                                    if (updateVoStatusResponse.data?.get(0)?.transactionId?.isNullOrEmpty() != true) {
+                                        NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO before:" +
+                                                "didiId = ${didi.id}, villageId = ${didi.villageId}, needsToPostVo = false")
 
-                                    repository.updateNeedToPostVO(false, didi.id, didi.villageId)
+                                        updateVoStatusResponse.data?.get(0)?.transactionId?.let { transitionId ->
+                                            repository.updateDidiTransactionId(didi.id, transitionId)
+                                        }
 
-                                    NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
+                                        /*repository.updateNeedToPostVO(
+                                            needsToPostVo = false,
+                                            didi.id,
+                                            didi.villageId
+                                        )*/
+
+
+                                        NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> didiDao.updateNeedToPostVO after")
+                                    }
+
                                 } else {
                                     NudgeLogger.d("FormPictureScreenViewModel", "updateVoStatusToNetwork -> " +
                                             "updateVoStatusResponse: onFailed")

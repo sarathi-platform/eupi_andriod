@@ -885,7 +885,7 @@ fun FormPictureScreen(
                             )
                             formPictureScreenViewModel.saveVoEndorsementDate()
                             if ((context as MainActivity).isOnline.value ?: false) {
-                                formPictureScreenViewModel.updateVoStatusToNetwork(object :
+                                /*formPictureScreenViewModel.updateVoStatusToNetwork(object :
                                     NetworkCallbackListener {
                                     override fun onSuccess() {
                                         formPictureScreenViewModel.callWorkFlowAPI(
@@ -905,7 +905,7 @@ fun FormPictureScreen(
                                     override fun onFailed() {
 //                                        showCustomToast(context, SYNC_FAILED)
                                     }
-                                })
+                                })*/
                                 formPictureScreenViewModel.uploadFormsCAndD(context)
 
                             }

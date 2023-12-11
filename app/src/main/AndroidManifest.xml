@@ -28,6 +28,9 @@
         android:requestLegacyExternalStorage="true"
         android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/Theme.Android_starter_project">
+
+        <uses-library android:name ="org.apache.http.legacy" android:required ="false"/>
+
         <activity
             android:name=".activities.SocialMappingActivity"
             android:exported="false"

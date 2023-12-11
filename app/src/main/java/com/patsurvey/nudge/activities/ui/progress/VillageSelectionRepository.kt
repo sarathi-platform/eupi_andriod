@@ -1202,7 +1202,7 @@ class VillageSelectionRepository @Inject constructor(
         callCrpWorkFlowAPIForStep(prefRepo, 1)
         Log.e("add didi","called")
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0)
+            val didiList = didiDao.fetchAllDidiNeedToAdd(true,"",0, DidiStatus.DIDI_ACTIVE.ordinal)
             for(didi in didiList){
                 val tola = tolaDao.fetchSingleTolaFromServerId(didi.cohortId)
                 if (tola != null) {
@@ -1469,12 +1469,12 @@ class VillageSelectionRepository @Inject constructor(
     }
 
     private fun updateWealthRankingToNetwork(prefRepo: PrefRepo, networkCallbackListener: NetworkCallbackListener) {
-        Log.e("add didi","called")
+        Log.e("update wealth ranking","called")
         callCrpWorkFlowAPIForStep(prefRepo, 2)
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true)
+                    val needToPostDidiList=didiDao.getAllNeedToPostDidiRanking(true, 0)
                     if (needToPostDidiList.isNotEmpty()) {
                         val didiWealthRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         val didiStepRequestList = arrayListOf<EditDidiWealthRankingRequest>()
@@ -1875,7 +1875,7 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
                 withContext(Dispatchers.IO){
-                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "")
+                    val needToPostDidiList=didiDao.fetchAllVONeedToPostStatusDidi(needsToPostVo = true, transactionId = "", 0)
                     if(needToPostDidiList.isNotEmpty()){
                         val didiRequestList = arrayListOf<EditDidiWealthRankingRequest>()
                         needToPostDidiList.forEach { didi->
