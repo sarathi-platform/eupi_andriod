@@ -316,15 +316,16 @@ fun QuestionScreen(
                                 }
                             }
                         } else if (questionList[it].type == QuestionType.List.name) {
+                            val sortedOptionList = questionList[it].options.sortedBy {it.optionValue}
                             ListTypeQuestion(
                                 modifier = modifier,
                                 questionNumber = (it + 1),
                                 index = viewModel.selIndValue.collectAsState().value,
                                 question = questionList[it].questionDisplay ?: "",
                                 selectedIndex = viewModel.selIndValue.collectAsState().value,
-                                optionList = questionList[it].options,
+                                optionList = sortedOptionList,
                                 isAnswerSelected = viewModel.isAnswerSelected.value
-                            ) { selectedIndex ->
+                            ) { selectedOptionId,selectedIndex ->
                                 viewModel.prevButtonVisible.value = false
                                 viewModel.nextButtonVisible.value = false
                                 viewModel.repository.prefRepo.saveNeedQuestionToScroll(true)
@@ -337,7 +338,7 @@ fun QuestionScreen(
                                 viewModel.setAnswerToQuestion(
                                     didiId = didiId,
                                     questionId = questionList[it].questionId ?: 0,
-                                    answerOptionModel = questionList[it].options[selectedIndex],
+                                    answerOptionModel = sortedOptionList[selectedIndex] /*questionList[it].options[questionList[it].options.map {it.optionId }.indexOf(selectedOptionId)]*/,
                                     assetAmount = 0.0,
                                     quesType = QuestionType.List.name,
                                     summary = questionList[it].questionSummary ?: BLANK_STRING,
