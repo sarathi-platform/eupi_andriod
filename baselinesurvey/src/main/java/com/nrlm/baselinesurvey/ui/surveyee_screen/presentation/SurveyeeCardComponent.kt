@@ -61,8 +61,8 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark80
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nrlm.baselinesurvey.utils.SurveyState
-import com.nrlm.baselinesurvey.utils.SurveyeeCardState
+import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 
 @Composable
 fun SurveyeeCardComponent(
@@ -350,7 +350,7 @@ fun SurveyeeCardPreview() {
                 
             },
             moveDidiToThisWeek = {
-                surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean ->
+                    surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean ->
             },
             buttonClicked = { buttonName, surveyeeId ->
 

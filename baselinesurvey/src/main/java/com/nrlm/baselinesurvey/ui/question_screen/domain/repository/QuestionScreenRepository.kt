@@ -3,8 +3,7 @@ package com.nrlm.baselinesurvey.ui.question_screen.domain.repository
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
 import com.nrlm.baselinesurvey.model.datamodel.OptionsItem
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
-import com.nrlm.baselinesurvey.model.datamodel.Sections
-import com.nrlm.baselinesurvey.utils.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 interface QuestionScreenRepository {
 

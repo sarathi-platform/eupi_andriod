@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.utils
+package com.nrlm.baselinesurvey.utils.states
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf

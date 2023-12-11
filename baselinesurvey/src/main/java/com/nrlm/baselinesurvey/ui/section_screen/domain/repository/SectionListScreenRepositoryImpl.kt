@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.ui.section_screen.domain.repository
 
-import android.util.Log
 import com.nrlm.baselinesurvey.data.prefs.PrefRepo
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
@@ -9,7 +8,7 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.model.datamodel.SectionListItem
 import com.nrlm.baselinesurvey.network.interfaces.ApiService
-import com.nrlm.baselinesurvey.utils.SectionStatus
+import com.nrlm.baselinesurvey.utils.states.SectionStatus
 
 class SectionListScreenRepositoryImpl(
     private val prefRepo: PrefRepo,

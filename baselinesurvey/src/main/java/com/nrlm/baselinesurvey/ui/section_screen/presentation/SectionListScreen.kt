@@ -36,15 +36,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NO_SECTION
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.navigation.home.HomeScreens
+import com.nrlm.baselinesurvey.navigation.home.QUESTION_SCREEN_ROUTE_NAME
+import com.nrlm.baselinesurvey.navigation.home.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.common_components.SearchWithFilterViewComponent
 import com.nrlm.baselinesurvey.ui.common_components.SectionItemComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.description_component.presentation.descriptionContentStateSample
 import com.nrlm.baselinesurvey.ui.section_screen.viewmode.SectionListScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -59,6 +66,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallerTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -80,7 +88,7 @@ fun SectionListScreen(
     val sectionsList = viewModel.sectionItemStateList.value
 
     val selectedSectionDescription = remember {
-        mutableStateOf<String>(BLANK_STRING)
+        mutableStateOf(DescriptionContentState())
     }
 
     val scaffoldState =
@@ -88,7 +96,13 @@ fun SectionListScreen(
     val scope = rememberCoroutineScope()
 
     val configuration = LocalConfiguration.current
-    val screenHeight = configuration.screenHeightDp
+
+    val showExpandedImage = remember {
+        mutableStateOf(false)
+    }
+    val expandedImagePath = remember {
+        mutableStateOf("")
+    }
 
     BackHandler {
         navController.popBackStack()
@@ -98,75 +112,35 @@ fun SectionListScreen(
         
         LoaderComponent(visible = loaderState.isLoaderVisible)
 
+        if (showExpandedImage.value) {
+            ImageExpanderDialogComponent(
+                expandedImagePath.value
+            ) {
+                showExpandedImage.value = false
+            }
+        }
+
         if (!loaderState.isLoaderVisible) {
             if (sectionsList.size == 1 && sectionsList[0].section.sectionName.equals(NO_SECTION, true)) {
-                navController.navigate("question_screen/${sectionsList[0].section.sectionId}/$didiId")
+                navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionsList[0].section.sectionId}/$didiId")
             } else {
-                ModalBottomSheetLayout(
+                ModelBottomSheetDescriptionContentComponent(
                     sheetContent = {
-                        Column(
-                            verticalArrangement = Arrangement.spacedBy(10.dp),
-                            horizontalAlignment = Alignment.Start,
-                            modifier = Modifier
-                            /*.height(((2 * screenHeight) / 3).dp)*/
-                        ) {
-
-                            Column() {
-//                        BaselineLogger.d("ProgressScreen","BottomSheet : $villages :: size ${villages.size}")
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = dimen_10_dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        painter = painterResource(id = R.drawable.info_icon),
-                                        contentDescription = "info icon"
-                                    )
+                        DescriptionContentComponent(
+                            buttonClickListener = {
+                                scope.launch {
+                                    scaffoldState.hide()
                                 }
-                                Divider(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(1.dp), color = greyBorder
-                                )
-
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = dimen_16_dp, horizontal = dimen_18_dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        text = selectedSectionDescription.value,
-                                        color = textColorDark,
-                                        style = smallerTextStyleNormalWeight,
-                                        modifier = Modifier.padding(horizontal = dimen_10_dp)
-                                    )
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(vertical = dimen_16_dp, horizontal = dimen_24_dp),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Button(
-                                        onClick = {
-                                            scope.launch {
-                                                scaffoldState.hide()
-                                            }
-                                        }, shape = RoundedCornerShape(
-                                            roundedCornerRadiusDefault
-                                        ), colors = ButtonDefaults.buttonColors(
-                                            backgroundColor = blueDark,
-                                            contentColor = white
-                                        )
-                                    ) {
-                                        Text(text = "Ok", color = white, style = smallerTextStyle)
-                                    }
-                                }
-                                Spacer(modifier = Modifier.height(16.dp))
-                            }
-                        }
+                            },
+                            imageClickListener = {
+                                expandedImagePath.value = it
+                                showExpandedImage.value = true
+                            },
+                            videoLinkClicked = {
+                                navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/$it")
+                            },
+                            descriptionContentState = selectedSectionDescription.value
+                        )
                     },
                     sheetState = scaffoldState,
                     sheetElevation = 20.dp,
@@ -185,10 +159,12 @@ fun SectionListScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(vertical = 10.dp)
-                                    .background(lightBlue,
-                                        shape = RoundedCornerShape(6.dp))
+                                    .background(
+                                        lightBlue,
+                                        shape = RoundedCornerShape(6.dp)
+                                    )
                                     .clickable {
-                                        navController.navigate(HomeScreens.VIDEO_PLAYER_SCREEN.route)
+                                        navController.navigate("$VIDEO_PLAYER_SCREEN_ROUTE_NAME/https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4")
                                     }
                                     .border(
                                         border = ButtonDefaults.outlinedBorder,
@@ -198,8 +174,10 @@ fun SectionListScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
                                 Image(
-                                    modifier = Modifier.padding(10.dp).clickable {
-                                    },
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .clickable {
+                                        },
                                     painter = painterResource(id = R.drawable.ic_ionic_close),
                                     contentDescription = ""
                                 )
@@ -237,12 +215,16 @@ fun SectionListScreen(
                             SectionItemComponent(
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
-                                    navController.navigate("question_screen/${sectionStateItem.section.sectionId}/$didiId")
+                                    navController.navigate("$QUESTION_SCREEN_ROUTE_NAME/${sectionStateItem.section.sectionId}/$didiId")
                                 },
                                 onDetailIconClicked = {
                                     scope.launch {
+                                        //TODO Modify code to handle contentList.
                                         selectedSectionDescription.value =
-                                            sectionStateItem.section.sectionDetails
+                                            selectedSectionDescription.value.copy(
+                                                textTypeDescriptionContent = sectionStateItem.section.sectionDetails
+                                            )
+
                                         delay(100)
                                         if (!scaffoldState.isVisible) {
                                             scaffoldState.show()

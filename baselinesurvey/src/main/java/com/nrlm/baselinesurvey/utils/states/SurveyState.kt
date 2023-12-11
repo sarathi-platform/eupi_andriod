@@ -1,4 +1,4 @@
-package com.nrlm.baselinesurvey.utils
+package com.nrlm.baselinesurvey.utils.states
 
 enum class SurveyState {
     NOT_STARTED,

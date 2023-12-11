@@ -4,6 +4,8 @@ import androidx.compose.runtime.*
 import androidx.media3.common.C
 import androidx.media3.common.Player
 import androidx.media3.common.Timeline
+import com.nrlm.baselinesurvey.utils.states.MediaState
+import com.nrlm.baselinesurvey.utils.states.PlayerState
 
 /**
  * Create and [remember] a [ControllerState] instance.
