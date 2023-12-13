@@ -47,7 +47,7 @@ fun ListTypeQuestion(
     selectedIndex: Int,
     optionList: List<OptionsItem?>?,
     isAnswerSelected:Boolean =false,
-    onAnswerSelection: (Int) -> Unit
+    onAnswerSelection: (Int,Int) -> Unit
 ) {
     Column(modifier = modifier) {
         HtmlText(
@@ -92,9 +92,8 @@ fun ListTypeQuestion(
             LazyColumn(modifier = Modifier.fillMaxWidth()){
                 itemsIndexed(optionList?.sortedBy { it?.optionValue } ?: emptyList()){ index, option ->
                   OptionCard(buttonTitle = option?.display?: BLANK_STRING, index = index, selectedIndex = selectedIndex ){
-//                      selectedIndex=it
                       if(!isAnswerSelected)
-                            onAnswerSelection(index)
+                            onAnswerSelection(option?.optionId?:-1,index)
                   }
                     Spacer(modifier = Modifier.height(4.dp))
                 }
@@ -118,14 +117,6 @@ fun ListTypeQuestionPreview() {
     for (i in 1..5){
         optionList.add(OptionsItem("Option Value $i",i+1,i,1,"Summery"))
     }
-    ListTypeQuestion(
-       modifier = Modifier.padding(16.dp),
-        questionNumber = 1,
-        question = "This is a sample text. This is an example of adding border to text.",
-        optionList= optionList,
-        selectedIndex = 0,
-        onAnswerSelection = {},
-    )
 }
 
 @Composable
