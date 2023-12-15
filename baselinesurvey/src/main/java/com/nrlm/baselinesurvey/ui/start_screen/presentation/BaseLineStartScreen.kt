@@ -74,7 +74,7 @@ import java.util.function.Consumer
 fun BaseLineStartScreen(
     navController: NavHostController,
     baseLineStartViewModel: BaseLineStartViewModel,
-    didiId: Int,
+    didiId: Int
 ) {
     val localContext = LocalContext.current
     val screenHeight = LocalConfiguration.current.screenHeightDp
@@ -95,7 +95,9 @@ fun BaseLineStartScreen(
                     .shadow(10.dp),
                 positiveButtonText = stringResource(id = R.string.continue_text),
                 negativeButtonText = stringResource(id = R.string.go_back_text),
+                isActive = baseLineStartViewModel.photoUri != null,
                 positiveButtonOnClick = {
+                    navController.navigate("$SECTION_SCREEN_ROUTE_NAME/$didiId")
                 },
                 negativeButtonOnClick = {
                     navController.navigate(SECTION_SCREEN_ROUTE_NAME)

@@ -274,6 +274,7 @@ fun DoubleButtonBox(
     negativeButtonText: String = "",
     positiveButtonOnClick: () -> Unit,
     negativeButtonOnClick: () -> Unit,
+    isActive: Boolean = true
 ) {
     Surface(
         modifier = Modifier
@@ -300,7 +301,8 @@ fun DoubleButtonBox(
                 }
                 ButtonPositive(
                     modifier = Modifier.weight(1.25f),
-                    buttonTitle = positiveButtonText
+                    buttonTitle = positiveButtonText,
+                    isActive = isActive
                 ) {
                     positiveButtonOnClick()
                 }

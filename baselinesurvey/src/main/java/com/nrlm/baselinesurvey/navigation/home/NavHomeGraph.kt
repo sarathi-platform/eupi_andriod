@@ -45,8 +45,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            SectionListScreen(navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
-                ARG_DIDI_ID) ?: 0)
+            SectionListScreen(
+                navController, viewModel = hiltViewModel(), didiId = it.arguments?.getInt(
+                    ARG_DIDI_ID
+                ) ?: 0
+            )
         }
 
         composable(route = HomeScreens.QUESTION_SCREEN.route, arguments = listOf(
@@ -61,9 +64,16 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 type = NavType.IntType
             }
         )) {
-            QuestionScreen(navController = navController, viewModel = hiltViewModel(), surveyeeId = it.arguments?.getInt(
-                ARG_DIDI_ID) ?: 0, sectionId = it.arguments?.getInt(
-                ARG_SECTION_ID) ?: 0)
+            QuestionScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                surveyeeId = it.arguments?.getInt(
+                    ARG_DIDI_ID
+                ) ?: 0,
+                sectionId = it.arguments?.getInt(
+                    ARG_SECTION_ID
+                ) ?: 0
+            )
         }
 
 

@@ -176,7 +176,7 @@ fun AllSurveyeeListTab(
                                     )
                                 },
                                 buttonClicked = { buttonName, surveyeeId ->
-                                    handleButtonClick(buttonName, surveyeeId, navController)
+                                    navController.navigate("base_line_start_screen/$surveyeeId")
                                 }
                             )
                         }
