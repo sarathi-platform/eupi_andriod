@@ -11,6 +11,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.patsurvey.nudge.ProfileScreen
 import com.patsurvey.nudge.activities.SplashScreen
+import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.VillageSelectionScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.SettingScreen
@@ -76,9 +77,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-            VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+            VillageScreen(navController = navController) {
                 navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
             }
+            /*VillageSelectionScreen(navController = navController, viewModel = hiltViewModel()){
+                navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
+            }*/
         }
 
         composable(route = AuthScreen.AUTH_SETTING_SCREEN.route) {

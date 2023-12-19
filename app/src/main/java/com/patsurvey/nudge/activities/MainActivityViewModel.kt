@@ -7,6 +7,7 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -34,7 +35,8 @@ class MainActivityViewModel @Inject constructor(
     val casteListDao: CasteListDao,
     val trainingVideoDao: TrainingVideoDao,
     val bpcSummaryDao: BpcSummaryDao,
-    val poorDidiListDao: PoorDidiListDao
+    val poorDidiListDao: PoorDidiListDao,
+    val languageListDao: LanguageListDao
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)

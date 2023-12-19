@@ -10,17 +10,21 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
 import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.StepListEntity
 import com.patsurvey.nudge.database.TolaEntity
+import com.patsurvey.nudge.database.TrainingVideoEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
@@ -36,6 +40,8 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.download.FileType
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
+import com.patsurvey.nudge.model.dataModel.UserAndVillageDetailsModel
+import com.patsurvey.nudge.model.dataModel.UserDetailsModel
 import com.patsurvey.nudge.model.request.AddCohortRequest
 import com.patsurvey.nudge.model.request.AddDidiRequest
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
@@ -60,17 +66,21 @@ import com.patsurvey.nudge.utils.BPC_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.BPC_VERIFICATION_STEP_ORDER
 import com.patsurvey.nudge.utils.COMPLETED_STRING
+import com.patsurvey.nudge.utils.DEFAULT_LANGUAGE_ID
 import com.patsurvey.nudge.utils.DIDI_NOT_AVAILABLE
 import com.patsurvey.nudge.utils.DIDI_REJECTED
 import com.patsurvey.nudge.utils.DOUBLE_ZERO
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
+import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.ExclusionType
+import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.FLAG_RATIO
 import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
+import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -78,7 +88,13 @@ import com.patsurvey.nudge.utils.PAT_SURVEY
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
 import com.patsurvey.nudge.utils.PREF_BPC_DIDI_LIST_SYNCED_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.PREF_BPC_PAT_COMPLETION_DATE_
+import com.patsurvey.nudge.utils.PREF_KEY_EMAIL
+import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
+import com.patsurvey.nudge.utils.PREF_KEY_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_PROFILE_IMAGE
+import com.patsurvey.nudge.utils.PREF_KEY_ROLE_NAME
 import com.patsurvey.nudge.utils.PREF_KEY_TYPE_NAME
+import com.patsurvey.nudge.utils.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_BPC_MATCH_SCORE_FOR_
 import com.patsurvey.nudge.utils.PREF_NEED_TO_POST_FORM_C_AND_D_
 import com.patsurvey.nudge.utils.PREF_PAT_COMPLETION_DATE_
@@ -91,6 +107,8 @@ import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.QUESTION_FLAG_RATIO
 import com.patsurvey.nudge.utils.QUESTION_FLAG_WEIGHT
 import com.patsurvey.nudge.utils.QuestionType
+import com.patsurvey.nudge.utils.RESPONSE_CODE_CONFLICT
+import com.patsurvey.nudge.utils.RESPONSE_CODE_UNAUTHORIZED
 import com.patsurvey.nudge.utils.ResultType
 import com.patsurvey.nudge.utils.SHGFlag
 import com.patsurvey.nudge.utils.SUCCESS
@@ -102,21 +120,26 @@ import com.patsurvey.nudge.utils.USER_BPC
 import com.patsurvey.nudge.utils.USER_CRP
 import com.patsurvey.nudge.utils.VERIFIED_STRING
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_STEP_ORDER
+import com.patsurvey.nudge.utils.VillageListDiffUtil
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.calculateScore
 import com.patsurvey.nudge.utils.compressImage
 import com.patsurvey.nudge.utils.findImageLocationFromPath
 import com.patsurvey.nudge.utils.formatRatio
 import com.patsurvey.nudge.utils.getAuthImagePath
+import com.patsurvey.nudge.utils.getEmitLanguageList
 import com.patsurvey.nudge.utils.getFileNameFromURL
 import com.patsurvey.nudge.utils.getFormPathKey
 import com.patsurvey.nudge.utils.getFormSubPath
+import com.patsurvey.nudge.utils.getImagePath
+import com.patsurvey.nudge.utils.getVideoPath
 import com.patsurvey.nudge.utils.intToString
 import com.patsurvey.nudge.utils.json
 import com.patsurvey.nudge.utils.longToString
 import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
+import com.patsurvey.nudge.utils.videoList
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -126,6 +149,7 @@ import kotlinx.coroutines.withContext
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import retrofit2.HttpException
 import java.io.File
 import java.util.Collections
 import java.util.Timer
@@ -133,6 +157,7 @@ import java.util.TimerTask
 import javax.inject.Inject
 
 class VillageSelectionRepository @Inject constructor(
+    val prefRepo: PrefRepo,
     val apiService: ApiService,
     val villageListDao: VillageListDao,
     val stepsListDao: StepsListDao,
@@ -156,7 +181,6 @@ class VillageSelectionRepository @Inject constructor(
         repoJob = MyApplication.appScopeLaunch (Dispatchers.IO + exceptionHandler) {
             val awaitDeff = CoroutineScope(Dispatchers.IO).async {
                 try {
-
                     //Fetch PAT Question
                     fetchQuestions(prefRepo)
 
@@ -3561,6 +3585,248 @@ class VillageSelectionRepository @Inject constructor(
                 NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
             }
         }
+    }
+
+
+
+    private fun createMultiLanguageVillageRequest(localLanguageList: List<LanguageEntity>): String {
+        var requestString: StringBuilder = StringBuilder()
+        var request: String = "2"
+        if (localLanguageList.isNotEmpty()) {
+            localLanguageList.forEach {
+                requestString.append("${it.id}-")
+            }
+        } else request = "2"
+        if(requestString.contains("-")){
+            request= requestString.substring(0,requestString.length-1)
+        }
+        return request
+    }
+
+    fun downloadImageItem(context: Context, image: String) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                if (!getImagePath(context, image).exists()) {
+                    val localDownloader = (context as MainActivity).downloader
+                    val downloadManager = context.getSystemService(DownloadManager::class.java)
+                    val downloadId = localDownloader?.downloadImageFile(image, FileType.IMAGE)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                Log.e("VideoListViewModel", "downloadItem exception", ex)
+            }
+        }
+
+    }
+
+    private fun downloadAuthorizedImageItem(id:Int, downloader: AndroidDownloader, image: String, prefRepo: PrefRepo) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val imageFile = getAuthImagePath(downloader.mContext, image)
+                if (!imageFile.exists()) {
+                    val localDownloader = downloader
+                    val downloadManager = downloader.mContext.getSystemService(DownloadManager::class.java)
+                    localDownloader?.currentDownloadingId?.value = id
+                    val downloadId = localDownloader?.downloadAuthorizedImageFile(
+                        image,
+                        FileType.IMAGE,
+                        prefRepo
+                    )
+                    if (downloadId != null) {
+                        localDownloader.checkDownloadStatus(downloadId,
+                            id,
+                            downloadManager,
+                            onDownloadComplete = {
+                                didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                                didiDao.updateNeedsToPostImage(id, false)
+                            }, onDownloadFailed = {
+                                NudgeLogger.d("VillageSelectorViewModel", "downloadAuthorizedImageItem -> onDownloadFailed")
+                            })
+                    }
+                } else {
+                    didiDao.updateImageLocalPath(id,imageFile.absolutePath)
+                    didiDao.updateNeedsToPostImage(id, false)
+                }
+            } catch (ex: Exception) {
+                ex.printStackTrace()
+                NudgeLogger.e("VillageSelectorViewModel", "downloadAuthorizedImageItem -> downloadItem exception", ex)
+            }
+        }
+    }
+
+    fun saveVideosToDb(context: Context) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val trainingVideos = trainingVideoDao.getVideoList()
+            if (trainingVideos.isEmpty()) {
+                videoList.forEach {
+                    val trainingVideoEntity = TrainingVideoEntity(
+                        id = it.id,
+                        title = it.title,
+                        description = it.description,
+                        url = it.url,
+                        thumbUrl = it.thumbUrl,
+                        isDownload = if (getVideoPath(
+                                context, it.id, fileType = FileType.VIDEO
+                            ).exists()
+                        ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                    )
+                    trainingVideoDao.insert(trainingVideoEntity)
+                }
+            } else {
+                trainingVideos.forEach {
+                    val videoIsDownloaded = if (getVideoPath(
+                            context, it.id, fileType = FileType.VIDEO
+                        ).exists()
+                    ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+                    if (it.isDownload != videoIsDownloaded) {
+                        val trainingVideoEntity = TrainingVideoEntity(
+                            id = it.id,
+                            title = it.title,
+                            description = it.description,
+                            url = it.url,
+                            thumbUrl = it.thumbUrl,
+                            isDownload = videoIsDownloaded
+                        )
+                        trainingVideoDao.insert(trainingVideoEntity)
+                    }
+                }
+            }
+        }
+    }
+
+    fun fetchUserAndVillageDetails(forceRefresh: Boolean = false, apiSuccess: (success: UserAndVillageDetailsModel) -> Unit) {
+        repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                var userAndVillageDetailsModel: UserAndVillageDetailsModel? = null
+                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                val localLanguageList = languageListDao.getAllLanguages()
+                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
+                if (forceRefresh)
+                if (!localVillageList.isNullOrEmpty()) {
+                    val stateId = localVillageList[0].stateId
+                    userAndVillageDetailsModel = UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
+//                    _villagList.value = localVillageList
+//                    _filterVillageList.value = villageList.value
+                    apiSuccess(userAndVillageDetailsModel)
+                } else {
+                    val response = apiService.userAndVillageListAPI(villageReq)
+                    withContext(Dispatchers.IO) {
+                        if (response.status.equals(SUCCESS, true)) {
+                            response.data?.let {
+                                saveUserDetailsInPref(UserDetailsModel(it.username ?: "", it.name ?: "", it.email ?: "", it.identityNumber  ?: "", it.profileImage ?: "", it.roleName ?: "", it.typeName ?: ""))
+                                val oldVillageList: List<VillageEntity> = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
+                                villageListDao.insertAll(it.villageList ?: listOf())
+                                if (forceRefresh)
+                                    preserveOldRecord(oldVillageList)
+
+                                val stateId = if (it.villageList?.isNotEmpty() == true) it.villageList?.get(0)?.stateId?:1 else -1
+                                val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
+                                val defaultLanguageVillageList = villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID)
+                                /*if (localVillageList.isNotEmpty()) {
+                                    _villagList.emit(localVillageList)
+                                } else {
+                                    _villagList.emit(villageListDao.getAllVillages(DEFAULT_LANGUAGE_ID))
+                                }*/
+                                userAndVillageDetailsModel = if (localVillageList.isNotEmpty()) {
+                                    UserAndVillageDetailsModel(true, localVillageList, stateId = stateId)
+                                } else {
+                                    UserAndVillageDetailsModel(true, getEmitLanguageList(defaultLanguageVillageList, localVillageList, prefRepo.getAppLanguageId() ?: 2), stateId)
+                                }
+
+                                apiSuccess(userAndVillageDetailsModel!!)
+                            }
+
+                            if (response.data == null) {
+                                apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                            }
+
+                            if(!response.lastSyncTime.isNullOrEmpty()){
+                                updateLastSyncTime(prefRepo,response.lastSyncTime)
+                            }
+
+                            Log.d("TAG", "fetchUserDetails: ${prefRepo.getPref(LAST_SYNC_TIME,0L)}")
+
+                        } else if (response.status.equals(FAIL, true)) {
+                            withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails response.status.equals(FAIL, true) -> viewModel.showLoader.value = false")
+                            }
+                            apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                            NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> response.status: ${response.status}, message: ${response.message}")
+                        } else {
+                            NudgeLogger.d("VillageSelectionViewModel", "fetchUserDetails -> Error: ${response.message}")
+                            onError(tag = "VillageSelectionViewModel", "Error : ${response.message}")
+                            withContext(Dispatchers.Main) {
+                                NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails else 1 -> viewModel.showLoader.value = false")
+                            }
+                        }
+                    }
+                }
+                NudgeLogger.d("VillageSelectionViewModel", "UserDetails => " + "\n" +
+                        "MOBILE NUMBER: ${prefRepo.getMobileNumber()}\n" +
+                        "PREF_KEY_USER_NAME: ${prefRepo.getPref(PREF_KEY_USER_NAME, "")}\n" +
+                        "PREF_KEY_NAME: ${prefRepo.getPref(PREF_KEY_NAME, "")}\n" +
+                        "PREF_KEY_EMAIL: ${prefRepo.getPref(PREF_KEY_EMAIL, "")}\n" +
+                        "PREF_KEY_IDENTITY_NUMBER: ${prefRepo.getPref(PREF_KEY_IDENTITY_NUMBER, "")}\n" +
+                        "PREF_KEY_PROFILE_IMAGE: ${prefRepo.getPref(PREF_KEY_PROFILE_IMAGE, "")}\n" +
+                        "PREF_KEY_ROLE_NAME: ${prefRepo.getPref(PREF_KEY_ROLE_NAME, "")}\n" +
+                        "PREF_KEY_TYPE_NAME: ${prefRepo.getPref(PREF_KEY_TYPE_NAME, "")}")
+            } catch (ex: Exception) {
+                NudgeLogger.e("VillageSelectionViewModel", "fetchUserDetails -> catch called", ex)
+                withContext(Dispatchers.Main){
+                    NudgeLogger.d("VillageSelectionScreen", "fetchUserDetails catch (ex: Exception) -> viewModel.showLoader.value = false")
+                }
+                apiSuccess(UserAndVillageDetailsModel.getFailedResponseModel())
+                onCatchError(ex, ApiType.VILLAGE_LIST_API)
+                if (ex is HttpException) {
+                    if (ex.response()?.code() == RESPONSE_CODE_UNAUTHORIZED || ex.response()
+                            ?.code() == RESPONSE_CODE_CONFLICT
+                    ) {
+                        RetryHelper.retryApiList.add(ApiType.VILLAGE_LIST_API)
+                        withContext(Dispatchers.Main) {
+                            RetryHelper.tokenExpired.value = true
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun preserveOldRecord(oldVillageList: List<VillageEntity>) {
+        if (oldVillageList.isNotEmpty()) {
+            oldVillageList.forEach { oldVillageItem ->
+                villageListDao.updateVillageDataLoadStatus(oldVillageItem.id, oldVillageItem.isDataLoadTriedOnce)
+            }
+        }
+    }
+
+    private fun saveUserDetailsInPref(userDetailsModel: UserDetailsModel) {
+        prefRepo.savePref(PREF_KEY_USER_NAME, userDetailsModel.username ?: "")
+        prefRepo.savePref(PREF_KEY_NAME, userDetailsModel.name ?: "")
+        prefRepo.savePref(PREF_KEY_EMAIL, userDetailsModel.email ?: "")
+        prefRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsModel.identityNumber ?: "")
+        prefRepo.savePref(PREF_KEY_PROFILE_IMAGE, userDetailsModel.profileImage ?: "")
+        prefRepo.savePref(PREF_KEY_ROLE_NAME, userDetailsModel.roleName ?: "")
+        prefRepo.savePref(PREF_KEY_TYPE_NAME, userDetailsModel.typeName ?: "")
+
+        if (userDetailsModel.typeName.equals(BPC_USER_TYPE, true)) {
+            prefRepo.setIsUserBPC(true)
+        } else {
+            prefRepo.setIsUserBPC(false)
+        }
+
+    }
+
+    fun saveSelectedVillage(villageEntity: VillageEntity) {
+        prefRepo.saveSelectedVillage(villageEntity)
+    }
+
+    fun isUserBPC() = prefRepo.isUserBPC()
+    fun saveSettingOpenFrom(fromPage: Int) {
+        prefRepo.saveSettingOpenFrom(fromPage)
+    }
+
+    fun fetchPatQuestionsFromNetwork() {
+        fetchQuestions(prefRepo)
     }
 
 }

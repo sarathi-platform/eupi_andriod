@@ -85,4 +85,7 @@ interface StepsListDao {
     @Query("UPDATE $STEPS_LIST_TABLE SET needToPost = :needsToPost WHERE orderNumber =:orderNumber and villageId = :villageId")
     fun updateNeedToPostByOrderNumber(orderNumber: Int, villageId: Int, needsToPost: Boolean)
 
+    @Query("SELECT * FROM $STEPS_LIST_TABLE WHERE villageId = :villageId  ORDER BY orderNumber ASC")
+    fun getAllStepsForVillageLive(villageId: Int): LiveData<List<StepListEntity>>
+
 }

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.database.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -26,5 +27,11 @@ interface BpcSummaryDao {
 
     @Query("DELETE from $BPC_SUMMARY_TABLE where villageId = :villageId")
     fun deleteForVillage(villageId: Int)
+
+    @Query("Select * from $BPC_SUMMARY_TABLE where villageId = :villageId")
+    fun getBpcSummaryForVillageLiveData(villageId: Int): LiveData<BpcSummaryEntity>
+
+    @Query("SELECT COUNT(*) from $BPC_SUMMARY_TABLE where villageId = :villageId")
+    fun isSummaryAlreadyExistsForVillage(villageId: Int): Int
 
 }
